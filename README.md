@@ -15,4 +15,4 @@ The Mirror oAGG is managed by Janusch Rentenatus, providing code review since 20
 
 **License Notice:**
 
-This description is subject to the **Eclipse Public License 2.0**. For more information about the license, please visit here.
+This description is subject to the **Eclipse Public License 2.0**. For more information about the license, please visit [here](https://www.eclipse.org/legal/epl-2.0/).
