@@ -1,16 +1,15 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 /* JJT: 0.2.2 */
-
 package agg.attribute.parser.javaExpr;
-
 
 /**
  * @version $Id: ASTPrimaryExpression.java,v 1.11 2010/12/07 16:36:45 olga Exp $
@@ -18,94 +17,93 @@ package agg.attribute.parser.javaExpr;
  */
 public class ASTPrimaryExpression extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTPrimaryExpression(String id) {
-		super(id);
-	}
+    ASTPrimaryExpression(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTPrimaryExpression(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTPrimaryExpression(id);
+    }
 
-	/*
+    /*
 	 * Override this method if you want to customize how the node dumps out its
 	 * children.
-	 */
+     */
+    public void dump(String prefix) {
+        if (this.children != null) {
+            for (java.util.Enumeration<Node> e = this.children.elements(); e
+                    .hasMoreElements();) {
+                SimpleNode n = (SimpleNode) e.nextElement();
+                n.dump(prefix);
+            }
+        }
+    }
 
-	public void dump(String prefix) {
-		if (this.children != null) {
-			for (java.util.Enumeration<Node> e = this.children.elements(); e
-					.hasMoreElements();) {
-				SimpleNode n = (SimpleNode) e.nextElement();
-				n.dump(prefix);
-			}
-		}
-	}
+    public void checkContext() throws ASTWrongTypeException {
+        int nChildren = jjtGetNumChildren();
+        Node prefix, suffix = null;
 
-	public void checkContext() throws ASTWrongTypeException {
-		int nChildren = jjtGetNumChildren();
-		Node prefix, suffix = null;
+        try {
+            prefix = jjtGetChild(0);
+            prefix.checkContext();
+            for (int i = 1; i < nChildren; i++) {
+                suffix = jjtGetChild(i);
+                if (((SimpleNode) suffix).isMember()) {
+                    ((MemberNode) suffix).checkContext((SimpleNode) prefix);
+                } else if (((SimpleNode) suffix).isArrayIndex()) {
+                    ((ASTArrayIndex) suffix).checkContext((SimpleNode) prefix);
+                }
+                if (!((SimpleNode) suffix).isAction()) {
+                    prefix = suffix;
+                }
+            }
+            if (suffix == null || ((SimpleNode) suffix).isAction()) {
+                takeNodeClassFrom((SimpleNode) prefix);
+            } else {
+                takeNodeClassFrom((SimpleNode) suffix);
+            }
+        } catch (Exception e) {
+            throw (RuntimeException) e;
+        }
+    }
 
-		try {
-			prefix = jjtGetChild(0);
-			prefix.checkContext();
-			for (int i = 1; i < nChildren; i++) {
-				suffix = jjtGetChild(i);
-				if (((SimpleNode)suffix).isMember()) {
-					((MemberNode) suffix).checkContext((SimpleNode)prefix);
-				} else if (((SimpleNode)suffix).isArrayIndex()) {
-					((ASTArrayIndex) suffix).checkContext((SimpleNode)prefix);
-				}
-				if (!((SimpleNode)suffix).isAction()) {
-					prefix = suffix;
-				}
-			}
-			if (suffix == null || ((SimpleNode)suffix).isAction()) {
-				takeNodeClassFrom((SimpleNode)prefix);
-			} else {
-				takeNodeClassFrom((SimpleNode)suffix);
-			}
-		} catch (Exception e) {
-			throw (RuntimeException) e;
-		}
-	}
+    public void interpret() {
+        int nChildren = jjtGetNumChildren();
+        Node prefix, suffix;
 
-	public void interpret() {
-		int nChildren = jjtGetNumChildren();
-		Node prefix, suffix;
+        try {
+            prefix = jjtGetChild(0);
+            prefix.interpret();
 
-		try {
-			prefix = jjtGetChild(0);
-			prefix.interpret();
-			
-			for (int i = 1; i < nChildren; i++) {
-				suffix = jjtGetChild(i);
-				if (((SimpleNode)suffix).isMember()) {
-					((MemberNode) suffix).interpret((SimpleNode)prefix);
-				} else if (((SimpleNode)suffix).isArrayIndex()) {
-					((ASTArrayIndex) suffix).interpret((SimpleNode)prefix);
-				}
-				top--;
-				if (!((SimpleNode)suffix).isAction()) {
-					stack.set(top, stack.get(top+1));
-					prefix = suffix;
-				}
-			}
-		} catch (Exception e) {
-			throw (RuntimeException) e;
-		}
-	}
+            for (int i = 1; i < nChildren; i++) {
+                suffix = jjtGetChild(i);
+                if (((SimpleNode) suffix).isMember()) {
+                    ((MemberNode) suffix).interpret((SimpleNode) prefix);
+                } else if (((SimpleNode) suffix).isArrayIndex()) {
+                    ((ASTArrayIndex) suffix).interpret((SimpleNode) prefix);
+                }
+                top--;
+                if (!((SimpleNode) suffix).isAction()) {
+                    stack.set(top, stack.get(top + 1));
+                    prefix = suffix;
+                }
+            }
+        } catch (Exception e) {
+            throw (RuntimeException) e;
+        }
+    }
 
-	public String getString() {
-		int nChildren = jjtGetNumChildren();
-		String result = "";
-		for (int i = 0; i < nChildren; i++) {
-			Node child = jjtGetChild(i);
-			result += child.getString();
-		}
-		return result;
-	}
+    public String getString() {
+        int nChildren = jjtGetNumChildren();
+        String result = "";
+        for (int i = 0; i < nChildren; i++) {
+            Node child = jjtGetChild(i);
+            result += child.getString();
+        }
+        return result;
+    }
 }
 /*
  * $Log: ASTPrimaryExpression.java,v $

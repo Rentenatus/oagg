@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: Filter_Duplicates.java,v 1.3 2010/09/20 14:30:29 olga Exp $
-
 // $Log: Filter_Duplicates.java,v $
 // Revision 1.3  2010/09/20 14:30:29  olga
 // tuning
@@ -42,37 +42,33 @@
 // Revision 1.1  1998/05/03 23:11:27  mich
 // Initial revision
 //
-
 package agg.util.csp;
 
 import java.util.HashSet;
 
-
 /**
- * A sample filter for use with <code>FilterIterator</code>. It removes
- * duplicate elements from an iteration. <code>equals()</code> is used as the
- * method to determine if two objects are the same.
+ * A sample filter for use with <code>FilterIterator</code>. It removes duplicate elements from an iteration.
+ * <code>equals()</code> is used as the method to determine if two objects are the same.
  */
 public class Filter_Duplicates implements UnaryPredicate {
-	/**
-	 * Construct myself to be a filter that skips an object if the same object
-	 * has been processed before.
-	 */
-	@SuppressWarnings("rawtypes")
-	public Filter_Duplicates() {
-		this.itsSet = new HashSet();
-	}
 
-	/**
-	 * Return <code>true</code> for an object if <code>execute()</code> has
-	 * been called for it before.
-	 */
-	@SuppressWarnings("unchecked")
-	public final boolean execute(Object obj) {
-		return (this.itsSet.add(obj)) ? true : false;
-	}
+    /**
+     * Construct myself to be a filter that skips an object if the same object has been processed before.
+     */
+    @SuppressWarnings("rawtypes")
+    public Filter_Duplicates() {
+        this.itsSet = new HashSet();
+    }
 
-	@SuppressWarnings("rawtypes")
-	private HashSet itsSet;
+    /**
+     * Return <code>true</code> for an object if <code>execute()</code> has been called for it before.
+     */
+    @SuppressWarnings("unchecked")
+    public final boolean execute(Object obj) {
+        return (this.itsSet.add(obj)) ? true : false;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private HashSet itsSet;
 
 }

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.options;
 
 import java.awt.BorderLayout;
@@ -33,180 +34,171 @@ import javax.swing.event.ChangeListener;
 import agg.gui.parser.event.StatusMessageListener;
 
 /**
- * This is the main class for all option. This class holds a tabbed pane to
- * provide different option panels. At the moment there are parser, layer and
- * critical pair option.
- * 
+ * This is the main class for all option. This class holds a tabbed pane to provide different option panels. At the
+ * moment there are parser, layer and critical pair option.
+ *
  * @version $Id: OptionGUI.java,v 1.4 2010/09/23 08:20:39 olga Exp $
  * @author $Author: olga $
  */
 @SuppressWarnings("serial")
 public class OptionGUI extends JDialog implements ActionListener,
-		ChangeListener {
+        ChangeListener {
 
-	public final static int GENERAL = 0;
-	public final static int TRANSFORMATION = 1;
-	public final static int PARSER = 2;
-	public final static int CRITICAL_PAIRS = 3;
-	public final static int LAYOUTER = 4;
-	
-	private Vector<StatusMessageListener> listener;
+    public final static int GENERAL = 0;
+    public final static int TRANSFORMATION = 1;
+    public final static int PARSER = 2;
+    public final static int CRITICAL_PAIRS = 3;
+    public final static int LAYOUTER = 4;
 
-	private JButton closeButton;
+    private Vector<StatusMessageListener> listener;
 
-	private JTabbedPane tabbedPane;
+    private JButton closeButton;
 
-	private JPanel dialogPanel;
+    private JTabbedPane tabbedPane;
 
-	private WindowAdapter wl;
+    private JPanel dialogPanel;
 
-	private final Hashtable<String, AbstractOptionGUI> title2optiongui;
-	/**
-	 * Creates the main option window with the different option.
-	 * 
-	 * @param parent
-	 *            The parent frame.
-	 * @param title
-	 *            The title for the option window.
-	 * @param modal
-	 *            The modality of the window.
-	 */
-	public OptionGUI(JFrame parent, String title, boolean modal) {
-		super();
-		setModal(modal);
-		setTitle(title);
-		// setSize(400, 500);
-		setLocation(200, 100);
+    private WindowAdapter wl;
 
-		this.listener = new Vector<StatusMessageListener>();
+    private final Hashtable<String, AbstractOptionGUI> title2optiongui;
 
-		this.wl = new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				// System.out.println("windowClosing");
-				setVisible(false);
-			}
-		};
+    /**
+     * Creates the main option window with the different option.
+     *
+     * @param parent The parent frame.
+     * @param title The title for the option window.
+     * @param modal The modality of the window.
+     */
+    public OptionGUI(JFrame parent, String title, boolean modal) {
+        super();
+        setModal(modal);
+        setTitle(title);
+        // setSize(400, 500);
+        setLocation(200, 100);
 
-		this.addWindowListener(this.wl);
+        this.listener = new Vector<StatusMessageListener>();
 
-		this.title2optiongui = new Hashtable<String, AbstractOptionGUI>();
-		
-		this.tabbedPane = new JTabbedPane();
-		this.tabbedPane.addChangeListener(this);
+        this.wl = new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                // System.out.println("windowClosing");
+                setVisible(false);
+            }
+        };
 
-		this.closeButton = new JButton("Close");
-		this.closeButton.addActionListener(this);
+        this.addWindowListener(this.wl);
 
-		this.dialogPanel = new JPanel(new BorderLayout());
-		this.dialogPanel.setBackground(Color.cyan);
-		this.dialogPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		this.dialogPanel.add(this.tabbedPane, BorderLayout.CENTER);
-		this.dialogPanel.add(this.closeButton, BorderLayout.SOUTH);
+        this.title2optiongui = new Hashtable<String, AbstractOptionGUI>();
 
-		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(this.dialogPanel, BorderLayout.CENTER);
-		this.pack();
-	}
+        this.tabbedPane = new JTabbedPane();
+        this.tabbedPane.addChangeListener(this);
 
-	public Dimension getPreferredSize() {
-		return new Dimension(430, 700);
-	}
+        this.closeButton = new JButton("Close");
+        this.closeButton.addActionListener(this);
 
-	/**
-	 * Adds a new option panel to the main window to a special position. If the
-	 * position is negative the option are added at the end.
-	 * 
-	 * @param gui
-	 *            The added gui
-	 * @param pos
-	 *            The position of the option.
-	 */
-	public void addGUI(AbstractOptionGUI gui, int pos) {
-		if (pos < 0)
-			this.tabbedPane.addTab(gui.getTabTitle(), gui.getIcon(), gui, gui
-					.getTabTip());
-		else {
-			this.tabbedPane.insertTab(gui.getTabTitle(), gui.getIcon(), gui, gui
-					.getTabTip(), pos);
-		}
-		this.title2optiongui.put(gui.getTabTitle(), gui);
-		pack();
-		validate();
-	}
+        this.dialogPanel = new JPanel(new BorderLayout());
+        this.dialogPanel.setBackground(Color.cyan);
+        this.dialogPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        this.dialogPanel.add(this.tabbedPane, BorderLayout.CENTER);
+        this.dialogPanel.add(this.closeButton, BorderLayout.SOUTH);
 
-	public AbstractOptionGUI getGuiComponent(String title) {
-		for (int i=0; i<this.tabbedPane.getComponentCount(); i++) {
-			Component comp = this.tabbedPane.getComponentAt(i);
-			if (comp instanceof AbstractOptionGUI) {
-				if (((AbstractOptionGUI)comp).getTabTitle().indexOf(title) != -1){
-					return (AbstractOptionGUI) comp;
-				}
-			}
-		}
-				
-		return null;
-	}
-	
-	/**
-	 * Adds a new option panel to the main window to the end.
-	 * 
-	 * @param gui
-	 *            The added gui.
-	 */
-	public void addGUI(AbstractOptionGUI gui) {
-		addGUI(gui, -1);
-		pack();
-	}
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(this.dialogPanel, BorderLayout.CENTER);
+        this.pack();
+    }
 
-	/**
-	 * If option are not longer needed they can removed here.
-	 * 
-	 * @param gui
-	 *            The gui to remove
-	 */
-	public void removeGUI(AbstractOptionGUI gui) {
-		this.tabbedPane.remove(gui);
-		pack();
-		validate();
-	}
+    public Dimension getPreferredSize() {
+        return new Dimension(430, 700);
+    }
 
-	/**
-	 * The method for the close button.
-	 * 
-	 * @param e
-	 *            The event from the close button.
-	 */
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == this.closeButton) {
-			executeOnClose();
-			setVisible(false);
-		}
-	}
+    /**
+     * Adds a new option panel to the main window to a special position. If the position is negative the option are
+     * added at the end.
+     *
+     * @param gui The added gui
+     * @param pos The position of the option.
+     */
+    public void addGUI(AbstractOptionGUI gui, int pos) {
+        if (pos < 0) {
+            this.tabbedPane.addTab(gui.getTabTitle(), gui.getIcon(), gui, gui
+                    .getTabTip());
+        } else {
+            this.tabbedPane.insertTab(gui.getTabTitle(), gui.getIcon(), gui, gui
+                    .getTabTip(), pos);
+        }
+        this.title2optiongui.put(gui.getTabTitle(), gui);
+        pack();
+        validate();
+    }
 
-	/**
-	 * Registers a listener for messages for the status bar.
-	 * 
-	 * @param sml
-	 *            the listener to register.
-	 */
-	public void addStatusMessageListener(StatusMessageListener sml) {
-		if (!this.listener.contains(sml))
-			this.listener.addElement(sml);
-	}
+    public AbstractOptionGUI getGuiComponent(String title) {
+        for (int i = 0; i < this.tabbedPane.getComponentCount(); i++) {
+            Component comp = this.tabbedPane.getComponentAt(i);
+            if (comp instanceof AbstractOptionGUI) {
+                if (((AbstractOptionGUI) comp).getTabTitle().indexOf(title) != -1) {
+                    return (AbstractOptionGUI) comp;
+                }
+            }
+        }
 
-	/**
-	 * If a listener doesn't want to receive anymore messages. The listener has
-	 * to quit here.
-	 * 
-	 * @param sml
-	 *            The listener to remove.
-	 */
-	public void removeStatusMessageListener(StatusMessageListener sml) {
-		if (this.listener.contains(sml))
-			this.listener.removeElement(sml);
-	}
+        return null;
+    }
 
-	/*
+    /**
+     * Adds a new option panel to the main window to the end.
+     *
+     * @param gui The added gui.
+     */
+    public void addGUI(AbstractOptionGUI gui) {
+        addGUI(gui, -1);
+        pack();
+    }
+
+    /**
+     * If option are not longer needed they can removed here.
+     *
+     * @param gui The gui to remove
+     */
+    public void removeGUI(AbstractOptionGUI gui) {
+        this.tabbedPane.remove(gui);
+        pack();
+        validate();
+    }
+
+    /**
+     * The method for the close button.
+     *
+     * @param e The event from the close button.
+     */
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == this.closeButton) {
+            executeOnClose();
+            setVisible(false);
+        }
+    }
+
+    /**
+     * Registers a listener for messages for the status bar.
+     *
+     * @param sml the listener to register.
+     */
+    public void addStatusMessageListener(StatusMessageListener sml) {
+        if (!this.listener.contains(sml)) {
+            this.listener.addElement(sml);
+        }
+    }
+
+    /**
+     * If a listener doesn't want to receive anymore messages. The listener has to quit here.
+     *
+     * @param sml The listener to remove.
+     */
+    public void removeStatusMessageListener(StatusMessageListener sml) {
+        if (this.listener.contains(sml)) {
+            this.listener.removeElement(sml);
+        }
+    }
+
+    /*
 	private void fireStatusMessageEvent(StatusMessageEvent sme) {
 		for (int i = 0; i < listener.size(); i++)
 			listener.elementAt(i).newMessage(sme);
@@ -216,48 +208,46 @@ public class OptionGUI extends JDialog implements ActionListener,
 		for (int i = 0; i < tabbedPane.getTabCount(); i++)
 			((AbstractOptionGUI) tabbedPane.getComponentAt(i)).update();
 	}
-*/
-	
-	/**
-	 * If the another tab is selected the selected tab will be updated.
-	 * 
-	 * @param e
-	 *            The event from the tabbeed pane.
-	 */
-	public void stateChanged(ChangeEvent e) {
-		((AbstractOptionGUI) this.tabbedPane.getSelectedComponent()).update();
-	}
-	
-	public void selectOptions(final int kind) {
-		switch (kind) {
-		case GENERAL:
-			this.tabbedPane.setSelectedComponent(this.title2optiongui.get("General"));
-			break;
-		case TRANSFORMATION:
-			this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Transformation"));
-			break;
-		case PARSER:
-			this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Parser"));
-			break;
-		case CRITICAL_PAIRS:
-			this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Critical Pairs"));
-			break;
-		case LAYOUTER:
-			this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Layouter"));
-			break;
-		}
-		
-	}
-	
-	protected void executeOnClose() {
-		for (int i=0; i<this.tabbedPane.getComponentCount(); i++) {
-			Component comp = this.tabbedPane.getComponentAt(i);
-			if (comp instanceof AbstractOptionGUI) {
-				((AbstractOptionGUI) comp).executeOnClose();
-			}
-		}
-	}
-	
+     */
+    /**
+     * If the another tab is selected the selected tab will be updated.
+     *
+     * @param e The event from the tabbeed pane.
+     */
+    public void stateChanged(ChangeEvent e) {
+        ((AbstractOptionGUI) this.tabbedPane.getSelectedComponent()).update();
+    }
+
+    public void selectOptions(final int kind) {
+        switch (kind) {
+            case GENERAL:
+                this.tabbedPane.setSelectedComponent(this.title2optiongui.get("General"));
+                break;
+            case TRANSFORMATION:
+                this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Transformation"));
+                break;
+            case PARSER:
+                this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Parser"));
+                break;
+            case CRITICAL_PAIRS:
+                this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Critical Pairs"));
+                break;
+            case LAYOUTER:
+                this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Layouter"));
+                break;
+        }
+
+    }
+
+    protected void executeOnClose() {
+        for (int i = 0; i < this.tabbedPane.getComponentCount(); i++) {
+            Component comp = this.tabbedPane.getComponentAt(i);
+            if (comp instanceof AbstractOptionGUI) {
+                ((AbstractOptionGUI) comp).executeOnClose();
+            }
+        }
+    }
+
 }
 /*
  * $Log: OptionGUI.java,v $

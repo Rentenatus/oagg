@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.editor.impl;
 
 import java.util.List;
@@ -19,88 +20,88 @@ import agg.util.XMLObject;
 
 public class EdConstraint implements XMLObject {
 
-	private Formula formula;
+    private Formula formula;
 
-	private String fstrByIndx, fstrByNames;
+    private String fstrByIndx, fstrByNames;
 
-	transient protected EdGraGra eGra; // my EdGraGra
+    transient protected EdGraGra eGra; // my EdGraGra
 
-	public EdConstraint(String n) {
-		this(new Formula(true), n);
-		this.fstrByNames = "true";
-		this.fstrByIndx = "true";
-	}
+    public EdConstraint(String n) {
+        this(new Formula(true), n);
+        this.fstrByNames = "true";
+        this.fstrByIndx = "true";
+    }
 
-	public EdConstraint(Formula f, String n) {
-		this.formula = f;
-		this.formula.setName(n);
-		this.fstrByNames = "";
-		this.fstrByIndx = "";
-	}
+    public EdConstraint(Formula f, String n) {
+        this.formula = f;
+        this.formula.setName(n);
+        this.fstrByNames = "";
+        this.fstrByIndx = "";
+    }
 
-	public void dispose() {
-		this.fstrByNames = "";
-		this.fstrByIndx = "";
-		this.formula = null;
-		this.eGra = null;
-	}
-	
-	public void finalize() {
-	}
-	
-	public Formula getBasisConstraint() {
-		return this.formula;
-	}
+    public void dispose() {
+        this.fstrByNames = "";
+        this.fstrByIndx = "";
+        this.formula = null;
+        this.eGra = null;
+    }
 
-	public void update() {
-		/* We'll see if we need this method. */
-	}
+    public void finalize() {
+    }
 
-	public String getName() {
-		return this.formula.getName();
-	}
+    public Formula getBasisConstraint() {
+        return this.formula;
+    }
 
-	public void setName(String n) {
-		this.formula.setName(n);
-	}
+    public void update() {
+        /* We'll see if we need this method. */
+    }
 
-	public void setVarSet(List<Evaluable> v) {
-		this.fstrByNames = this.formula.getAsString(v);
-		this.fstrByIndx = this.fstrByNames;
-	}
+    public String getName() {
+        return this.formula.getName();
+    }
 
-	public void setVarSet(List<Evaluable> v, List<String> names) {
-		this.fstrByNames = this.formula.getAsString(v, names);
-		this.fstrByIndx = this.formula.getAsString(v, new Vector<String>());
-	}
+    public void setName(String n) {
+        this.formula.setName(n);
+    }
 
-	public EdGraGra getGraGra() {
-		return this.eGra;
-	}
+    public void setVarSet(List<Evaluable> v) {
+        this.fstrByNames = this.formula.getAsString(v);
+        this.fstrByIndx = this.fstrByNames;
+    }
 
-	public void setGraGra(EdGraGra egra) {
-		this.eGra = egra;
-	}
+    public void setVarSet(List<Evaluable> v, List<String> names) {
+        this.fstrByNames = this.formula.getAsString(v, names);
+        this.fstrByIndx = this.formula.getAsString(v, new Vector<String>());
+    }
 
-	public String getAsString() {
-		return this.fstrByNames;
-	}
+    public EdGraGra getGraGra() {
+        return this.eGra;
+    }
 
-	public String getAsIndxString() {
-		return this.fstrByIndx;
-	}
-	
-	public void XreadObject(XMLHelper h) {
-		if (h.peekObject(this.formula, this)) {
-			String n = h.readAttr("name");
-			this.formula.setName(n);
-			h.close();
-		}
-	}
+    public void setGraGra(EdGraGra egra) {
+        this.eGra = egra;
+    }
 
-	public void XwriteObject(XMLHelper h) {
-		h.openObject(this.formula, this);
-		h.close();
-	}
+    public String getAsString() {
+        return this.fstrByNames;
+    }
+
+    public String getAsIndxString() {
+        return this.fstrByIndx;
+    }
+
+    public void XreadObject(XMLHelper h) {
+        if (h.peekObject(this.formula, this)) {
+            String n = h.readAttr("name");
+            this.formula.setName(n);
+            h.close();
+        }
+    }
+
+    public void XwriteObject(XMLHelper h) {
+        h.openObject(this.formula, this);
+        h.close();
+    }
 
 }

@@ -1,27 +1,29 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui;
 
 // import java.beans.*;
-
 /**
  * Most comprehensive editor for the attribute component.
- * 
+ *
  * @author $Author: olga $
  * @version $Id: AttrTopEditor.java,v 1.3 2007/09/10 13:05:50 olga Exp $
  */
 public interface AttrTopEditor extends AttrContextEditor, AttrTupleEditor,
-		AttrCustomizingEditor {
+        AttrCustomizingEditor {
 
-	/** enables the context editor */
-	public void enableContextEditor(boolean b);
+    /**
+     * enables the context editor
+     */
+    public void enableContextEditor(boolean b);
 }
 
 /*

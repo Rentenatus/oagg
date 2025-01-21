@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import agg.xt_basis.GraGra;
@@ -15,462 +16,435 @@ import agg.xt_basis.RuleLayer;
 
 // ---------------------------------------------------------------------------+
 /**
- * This factory produces different objects. With the help of some option objects
- * the specific object is creates. E.g. if a parser is desired the option
- * distinguish which parser is created.
- * 
+ * This factory produces different objects. With the help of some option objects the specific object is creates. E.g. if
+ * a parser is desired the option distinguish which parser is created.
+ *
  * @author $Author: olga $ Parser Group
  * @version $Id: ParserFactory.java,v 1.20 2010/11/16 23:33:08 olga Exp $
  */
 public class ParserFactory {
 
-	private ParserFactory() {
-	}
+    private ParserFactory() {
+    }
 
-	/**
-	 * Here is a new parser created. The correct parser is chosen by the option.
-	 * So the option must not be <code>null</code>. Anyway only the critical
-	 * pairs can be <code>null</code> if they are not needed for the
-	 * configured parser. This can happen e.g. for parser without optimization.
-	 * <b>If one of the parameters is <code>null</code> <code>null</code> is
-	 * returned.</b>
-	 * 
-	 * @param grammar
-	 *            The graph grammar with all the rules.
-	 * @param hostGraph
-	 *            The host graph to work on.
-	 * @param stopGraph
-	 *            The stop graph stops the parser.
-	 * @param pairs
-	 *            The critical pairs for optimization.
-	 * @see agg.parser.ParserFactory#generateCriticalPairs
-	 * @param option
-	 *            The option to configure the parser.
-	 * @param layer
-	 *            The layer function.
-	 * @return The new specific parser.
-	 * @deprecated
-	 */
-	public static Parser createParser(GraGra grammar, Graph hostGraph,
-			Graph stopGraph, PairContainer pairs, ParserOption option,
-			LayerFunction layer) {
-		Parser p = null;
-		if (option != null && grammar != null && hostGraph != null
-				&& stopGraph != null) {
-			switch (option.getSelectedParser()) {
-			case ParserOption.SIMPLEPARSER:
-				if (option.layerEnabled()) {
-					p = new LayeredSimpleParser(grammar, hostGraph, stopGraph,
-							layer);
-				} else {
-					p = new SimpleParser(grammar, hostGraph, stopGraph);
-				}
-				break;
-			case ParserOption.EXCLUDEPARSER:
-				if (pairs != null && pairs instanceof ExcludePairContainer) {
-					if (option.layerEnabled()) {
-						p = new LayeredExcludeParser(grammar, hostGraph,
-								stopGraph, (LayeredExcludePairContainer) pairs,
-								layer);
-					} else {
-						p = new ExcludeParser(grammar, hostGraph, stopGraph,
-								(ExcludePairContainer) pairs);
-					}
-				}
-				break;
-			case ParserOption.SIMPLEEXCLUDEPARSER:
-				if (pairs != null && pairs instanceof ExcludePairContainer) {
-					if (option.layerEnabled()) {
-						p = new LayeredSimpleExcludeParser(grammar, hostGraph,
-								stopGraph, (LayeredExcludePairContainer) pairs,
-								layer);
-					} else {
-						p = new SimpleExcludeParser(grammar, hostGraph,
-								stopGraph, (ExcludePairContainer) pairs);
-					}
-				}
-				break;
-			default:
-				break;
-			}
-		}
-		return p;
-	}
+    /**
+     * Here is a new parser created. The correct parser is chosen by the option. So the option must not be
+     * <code>null</code>. Anyway only the critical pairs can be <code>null</code> if they are not needed for the
+     * configured parser. This can happen e.g. for parser without optimization.
+     * <b>If one of the parameters is <code>null</code> <code>null</code> is returned.</b>
+     *
+     * @param grammar The graph grammar with all the rules.
+     * @param hostGraph The host graph to work on.
+     * @param stopGraph The stop graph stops the parser.
+     * @param pairs The critical pairs for optimization.
+     * @see agg.parser.ParserFactory#generateCriticalPairs
+     * @param option The option to configure the parser.
+     * @param layer The layer function.
+     * @return The new specific parser.
+     * @deprecated
+     */
+    public static Parser createParser(GraGra grammar, Graph hostGraph,
+            Graph stopGraph, PairContainer pairs, ParserOption option,
+            LayerFunction layer) {
+        Parser p = null;
+        if (option != null && grammar != null && hostGraph != null
+                && stopGraph != null) {
+            switch (option.getSelectedParser()) {
+                case ParserOption.SIMPLEPARSER:
+                    if (option.layerEnabled()) {
+                        p = new LayeredSimpleParser(grammar, hostGraph, stopGraph,
+                                layer);
+                    } else {
+                        p = new SimpleParser(grammar, hostGraph, stopGraph);
+                    }
+                    break;
+                case ParserOption.EXCLUDEPARSER:
+                    if (pairs != null && pairs instanceof ExcludePairContainer) {
+                        if (option.layerEnabled()) {
+                            p = new LayeredExcludeParser(grammar, hostGraph,
+                                    stopGraph, (LayeredExcludePairContainer) pairs,
+                                    layer);
+                        } else {
+                            p = new ExcludeParser(grammar, hostGraph, stopGraph,
+                                    (ExcludePairContainer) pairs);
+                        }
+                    }
+                    break;
+                case ParserOption.SIMPLEEXCLUDEPARSER:
+                    if (pairs != null && pairs instanceof ExcludePairContainer) {
+                        if (option.layerEnabled()) {
+                            p = new LayeredSimpleExcludeParser(grammar, hostGraph,
+                                    stopGraph, (LayeredExcludePairContainer) pairs,
+                                    layer);
+                        } else {
+                            p = new SimpleExcludeParser(grammar, hostGraph,
+                                    stopGraph, (ExcludePairContainer) pairs);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return p;
+    }
 
-	/**
-	 * Here is a new parser created. The correct parser is chosen by the option.
-	 * So the option must not be <code>null</code>. Anyway only the critical
-	 * pairs can be <code>null</code> if they are not needed for the
-	 * configured parser. This can happen e.g. for parser without optimization.
-	 * <b>If one of the parameters is <code>null</code> <code>null</code> is
-	 * returned.</b>
-	 * 
-	 * @param grammar
-	 *            The graph grammar with all the rules.
-	 * @param hostGraph
-	 *            The host graph to work on.
-	 * @param stopGraph
-	 *            The stop graph stops the parser.
-	 * @param pairs
-	 *            The critical pairs for optimization.
-	 * @see agg.parser.ParserFactory#generateCriticalPairs
-	 * @param option
-	 *            The option to configure the parser.
-	 * @param layer
-	 *            The layer function.
-	 * @return The new specific parser.
-	 */
-	public static Parser createParser(GraGra grammar, Graph hostGraph,
-			Graph stopGraph, PairContainer pairs, ParserOption option,
-			RuleLayer layer) {
-		if (option == null || grammar == null || hostGraph == null
-				|| stopGraph == null)
-			return null;
+    /**
+     * Here is a new parser created. The correct parser is chosen by the option. So the option must not be
+     * <code>null</code>. Anyway only the critical pairs can be <code>null</code> if they are not needed for the
+     * configured parser. This can happen e.g. for parser without optimization.
+     * <b>If one of the parameters is <code>null</code> <code>null</code> is returned.</b>
+     *
+     * @param grammar The graph grammar with all the rules.
+     * @param hostGraph The host graph to work on.
+     * @param stopGraph The stop graph stops the parser.
+     * @param pairs The critical pairs for optimization.
+     * @see agg.parser.ParserFactory#generateCriticalPairs
+     * @param option The option to configure the parser.
+     * @param layer The layer function.
+     * @return The new specific parser.
+     */
+    public static Parser createParser(GraGra grammar, Graph hostGraph,
+            Graph stopGraph, PairContainer pairs, ParserOption option,
+            RuleLayer layer) {
+        if (option == null || grammar == null || hostGraph == null
+                || stopGraph == null) {
+            return null;
+        }
 
-		Parser p = null;
-		switch (option.getSelectedParser()) {
-		case ParserOption.SIMPLEPARSER:
-			if (option.layerEnabled()) {
-				p = new LayeredSimpleParser(grammar, hostGraph, stopGraph,
-						layer);
-			} else {
-				p = new SimpleParser(grammar, hostGraph, stopGraph);
-			}
-			break;
-		case ParserOption.EXCLUDEPARSER:
-			if (pairs != null && pairs instanceof ExcludePairContainer) {
-				if (option.layerEnabled()) {
-					p = new LayeredExcludeParser(grammar, hostGraph, stopGraph,
-							(LayeredExcludePairContainer) pairs, layer);
-				} else {
-					p = new ExcludeParser(grammar, hostGraph, stopGraph,
-							(ExcludePairContainer) pairs);
-				}
-			}
-			break;
-		case ParserOption.SIMPLEEXCLUDEPARSER:
-			if (pairs != null && pairs instanceof ExcludePairContainer) {
-				if (option.layerEnabled()) {
-					p = new LayeredSimpleExcludeParser(grammar, hostGraph,
-							stopGraph, (LayeredExcludePairContainer) pairs,
-							layer);
-				} else {
-					p = new SimpleExcludeParser(grammar, hostGraph, stopGraph,
-							(ExcludePairContainer) pairs);
-				}
-			}
-			break;
-		default:
-			break;
-		}
-		return p;
-	}
+        Parser p = null;
+        switch (option.getSelectedParser()) {
+            case ParserOption.SIMPLEPARSER:
+                if (option.layerEnabled()) {
+                    p = new LayeredSimpleParser(grammar, hostGraph, stopGraph,
+                            layer);
+                } else {
+                    p = new SimpleParser(grammar, hostGraph, stopGraph);
+                }
+                break;
+            case ParserOption.EXCLUDEPARSER:
+                if (pairs != null && pairs instanceof ExcludePairContainer) {
+                    if (option.layerEnabled()) {
+                        p = new LayeredExcludeParser(grammar, hostGraph, stopGraph,
+                                (LayeredExcludePairContainer) pairs, layer);
+                    } else {
+                        p = new ExcludeParser(grammar, hostGraph, stopGraph,
+                                (ExcludePairContainer) pairs);
+                    }
+                }
+                break;
+            case ParserOption.SIMPLEEXCLUDEPARSER:
+                if (pairs != null && pairs instanceof ExcludePairContainer) {
+                    if (option.layerEnabled()) {
+                        p = new LayeredSimpleExcludeParser(grammar, hostGraph,
+                                stopGraph, (LayeredExcludePairContainer) pairs,
+                                layer);
+                    } else {
+                        p = new SimpleExcludeParser(grammar, hostGraph, stopGraph,
+                                (ExcludePairContainer) pairs);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return p;
+    }
 
-	/**
-	 * Creates a empty container for critical pairs. This container has to be
-	 * filled.
-	 * 
-	 * @param grammar
-	 *            The graph grammar to generate the pairs for. This must not be
-	 *            <code>null</code> or <code>null</code> is returned.
-	 * @param layerFunc
-	 *            The layer function. This can only be <code>null</code> if
-	 *            the critical pairs do not need them. (<code>null</code> can
-	 *            be returned.)
-	 * @param option
-	 *            The option to configure the critical pairs. This must not be
-	 *            <code>null</code> or <code>null</code> is returned.
-	 * @return A empty container.
-	 * @deprecated
-	 */
-	public static PairContainer createEmptyCriticalPairs(GraGra grammar,
-			LayerFunction layerFunc, CriticalPairOption option) {
-		PairContainer pc = null;
-		if (option != null && grammar != null) {
-			switch (option.getCriticalPairAlgorithm()) {
-			case CriticalPairOption.EXCLUDEONLY:
-				if (option.layeredEnabled()) {
-					pc = new LayeredExcludePairContainer(grammar);
-					((LayeredExcludePairContainer) pc).setLayer(
-							option.getLayer());
-				} else
-					pc = new ExcludePairContainer(grammar);
-				((ExcludePairContainer) pc).enableComplete(
-						option.completeEnabled());
-				((ExcludePairContainer) pc).enableNACs(
-						option.nacsEnabled());
-				((ExcludePairContainer) pc).enablePACs(
-						option.pacsEnabled());
-				((ExcludePairContainer) pc).enableReduce(
-						option.reduceEnabled());
-				((ExcludePairContainer) pc).enableConsistent(
-						option.consistentEnabled());
-				((ExcludePairContainer) pc)
-						.enableStrongAttrCheck(option.strongAttrCheckEnabled());
-				((ExcludePairContainer) pc)
-						.enableEqualVariableNameOfAttrMapping(
-								option.equalVariableNameOfAttrMappingEnabled());
-				((ExcludePairContainer) pc).enableIgnoreIdenticalRules(
-						option.ignoreIdenticalRulesEnabled());
-				((ExcludePairContainer) pc).enableReduceSameMatch(
-						option.reduceSameMatchEnabled());
-				((ExcludePairContainer) pc).enableDirectlyStrictConfluent(
-						option.directlyStrictConflEnabled());
-				((ExcludePairContainer) pc).enableDirectlyStrictConfluentUpToIso(
-						option.directlyStrictConflUpToIsoEnabled());
-				((ExcludePairContainer) pc).enableNamedObjectOnly(
-						option.namedObjectEnabled());
-				((ExcludePairContainer) pc).enableMaxBoundOfCriticKind(
-						option.getMaxBoundOfCriticKind());
-				break;
-			case CriticalPairOption.TRIGGER_DEPEND:
-			case CriticalPairOption.TRIGGER_SWITCH_DEPEND:	
-				// System.out.println("DependencyPairContainer will be used");
-				if (option.layeredEnabled()) {
-					pc = new LayeredDependencyPairContainer(grammar);
-					((LayeredExcludePairContainer) pc).setLayer(
-							option.getLayer());
-				} else
-					pc = new DependencyPairContainer(grammar);
-				
-				((DependencyPairContainer) pc).enableSwitchDependency(
-						option.switchDependencyEnabled());
-				((DependencyPairContainer) pc).enableComplete(
-						option.completeEnabled());
-				((DependencyPairContainer) pc).enableNACs(
-						option.nacsEnabled());
-				((DependencyPairContainer) pc).enableReduce(
-						option.reduceEnabled());
-				((DependencyPairContainer) pc).enableConsistent(
-						option.consistentEnabled());
-				((DependencyPairContainer) pc).enableIgnoreIdenticalRules(
-						option.ignoreIdenticalRulesEnabled());
-				((DependencyPairContainer) pc).enableReduceSameMatch(
-						option.reduceSameMatchEnabled());
-				((DependencyPairContainer) pc).enableDirectlyStrictConfluent(
-						option.directlyStrictConflEnabled());
-				((DependencyPairContainer) pc).enableNamedObjectOnly(
-						option.namedObjectEnabled());
-				((DependencyPairContainer) pc).enableMaxBoundOfCriticKind(
-						option.getMaxBoundOfCriticKind());
-				break;
-			default:
-				break;
-			}
-		}
-		return pc;
-	}
+    /**
+     * Creates a empty container for critical pairs. This container has to be filled.
+     *
+     * @param grammar The graph grammar to generate the pairs for. This must not be <code>null</code> or
+     * <code>null</code> is returned.
+     * @param layerFunc The layer function. This can only be <code>null</code> if the critical pairs do not need them.
+     * (<code>null</code> can be returned.)
+     * @param option The option to configure the critical pairs. This must not be <code>null</code> or <code>null</code>
+     * is returned.
+     * @return A empty container.
+     * @deprecated
+     */
+    public static PairContainer createEmptyCriticalPairs(GraGra grammar,
+            LayerFunction layerFunc, CriticalPairOption option) {
+        PairContainer pc = null;
+        if (option != null && grammar != null) {
+            switch (option.getCriticalPairAlgorithm()) {
+                case CriticalPairOption.EXCLUDEONLY:
+                    if (option.layeredEnabled()) {
+                        pc = new LayeredExcludePairContainer(grammar);
+                        ((LayeredExcludePairContainer) pc).setLayer(
+                                option.getLayer());
+                    } else {
+                        pc = new ExcludePairContainer(grammar);
+                    }
+                    ((ExcludePairContainer) pc).enableComplete(
+                            option.completeEnabled());
+                    ((ExcludePairContainer) pc).enableNACs(
+                            option.nacsEnabled());
+                    ((ExcludePairContainer) pc).enablePACs(
+                            option.pacsEnabled());
+                    ((ExcludePairContainer) pc).enableReduce(
+                            option.reduceEnabled());
+                    ((ExcludePairContainer) pc).enableConsistent(
+                            option.consistentEnabled());
+                    ((ExcludePairContainer) pc)
+                            .enableStrongAttrCheck(option.strongAttrCheckEnabled());
+                    ((ExcludePairContainer) pc)
+                            .enableEqualVariableNameOfAttrMapping(
+                                    option.equalVariableNameOfAttrMappingEnabled());
+                    ((ExcludePairContainer) pc).enableIgnoreIdenticalRules(
+                            option.ignoreIdenticalRulesEnabled());
+                    ((ExcludePairContainer) pc).enableReduceSameMatch(
+                            option.reduceSameMatchEnabled());
+                    ((ExcludePairContainer) pc).enableDirectlyStrictConfluent(
+                            option.directlyStrictConflEnabled());
+                    ((ExcludePairContainer) pc).enableDirectlyStrictConfluentUpToIso(
+                            option.directlyStrictConflUpToIsoEnabled());
+                    ((ExcludePairContainer) pc).enableNamedObjectOnly(
+                            option.namedObjectEnabled());
+                    ((ExcludePairContainer) pc).enableMaxBoundOfCriticKind(
+                            option.getMaxBoundOfCriticKind());
+                    break;
+                case CriticalPairOption.TRIGGER_DEPEND:
+                case CriticalPairOption.TRIGGER_SWITCH_DEPEND:
+                    // System.out.println("DependencyPairContainer will be used");
+                    if (option.layeredEnabled()) {
+                        pc = new LayeredDependencyPairContainer(grammar);
+                        ((LayeredExcludePairContainer) pc).setLayer(
+                                option.getLayer());
+                    } else {
+                        pc = new DependencyPairContainer(grammar);
+                    }
 
-	/**
-	 * Creates a empty container for critical pairs. This container has to be
-	 * filled.
-	 * 
-	 * @param grammar
-	 *            The graph grammar to generate the pairs for. This must not be
-	 *            <code>null</code> or <code>null</code> is returned.
-	 * @param option
-	 *            The option to configure the critical pairs. This must not be
-	 *            <code>null</code> or <code>null</code> is returned.
-	 * @return A empty container.
-	 */
-	@SuppressWarnings("deprecation")
-	public static PairContainer createEmptyCriticalPairs(GraGra grammar,
-			CriticalPairOption option) {
-		PairContainer pc = null;
-		if (option != null && grammar != null) {
-			switch (option.getCriticalPairAlgorithm()) {
-			case CriticalPairOption.EXCLUDEONLY:
-				if (option.layeredEnabled()) {
-					pc = new LayeredExcludePairContainer(grammar);
-					((LayeredExcludePairContainer) pc).setLayer(
-							option.getLayer());
-				} else
-					pc = new ExcludePairContainer(grammar);
-				((ExcludePairContainer) pc).enableComplete(
-						option.completeEnabled());
-				((ExcludePairContainer) pc).enableNACs(
-						option.nacsEnabled());
-				((ExcludePairContainer) pc).enablePACs(
-						option.pacsEnabled());
-				((ExcludePairContainer) pc).enableReduce(
-						option.reduceEnabled());
-				((ExcludePairContainer) pc).enableConsistent(
-						option.consistentEnabled());
-				((ExcludePairContainer) pc)
-						.enableStrongAttrCheck(option.strongAttrCheckEnabled());
-				((ExcludePairContainer) pc)
-						.enableEqualVariableNameOfAttrMapping(
-								option.equalVariableNameOfAttrMappingEnabled());
-				((ExcludePairContainer) pc).enableIgnoreIdenticalRules(
-						option.ignoreIdenticalRulesEnabled());
-				((ExcludePairContainer) pc).enableReduceSameMatch(
-						option.reduceSameMatchEnabled());
-				((ExcludePairContainer) pc).enableDirectlyStrictConfluent(
-						option.directlyStrictConflEnabled());
-				((ExcludePairContainer) pc).enableDirectlyStrictConfluentUpToIso(
-						option.directlyStrictConflUpToIsoEnabled());
-				((ExcludePairContainer) pc).enableNamedObjectOnly(
-						option.namedObjectEnabled());
-				((ExcludePairContainer) pc).enableMaxBoundOfCriticKind(
-						option.getMaxBoundOfCriticKind());
-				break;
-			case CriticalPairOption.TRIGGER_DEPEND:
-			case CriticalPairOption.TRIGGER_SWITCH_DEPEND:
-				// System.out.println("DependencyPairContainer will be used");
+                    ((DependencyPairContainer) pc).enableSwitchDependency(
+                            option.switchDependencyEnabled());
+                    ((DependencyPairContainer) pc).enableComplete(
+                            option.completeEnabled());
+                    ((DependencyPairContainer) pc).enableNACs(
+                            option.nacsEnabled());
+                    ((DependencyPairContainer) pc).enableReduce(
+                            option.reduceEnabled());
+                    ((DependencyPairContainer) pc).enableConsistent(
+                            option.consistentEnabled());
+                    ((DependencyPairContainer) pc).enableIgnoreIdenticalRules(
+                            option.ignoreIdenticalRulesEnabled());
+                    ((DependencyPairContainer) pc).enableReduceSameMatch(
+                            option.reduceSameMatchEnabled());
+                    ((DependencyPairContainer) pc).enableDirectlyStrictConfluent(
+                            option.directlyStrictConflEnabled());
+                    ((DependencyPairContainer) pc).enableNamedObjectOnly(
+                            option.namedObjectEnabled());
+                    ((DependencyPairContainer) pc).enableMaxBoundOfCriticKind(
+                            option.getMaxBoundOfCriticKind());
+                    break;
+                default:
+                    break;
+            }
+        }
+        return pc;
+    }
 
-				if (option.layeredEnabled()) {
-					pc = new LayeredDependencyPairContainer(grammar);
-					((LayeredExcludePairContainer) pc).setLayer(
-							option.getLayer());
-				} else
-					pc = new DependencyPairContainer(grammar);
-				
-				((DependencyPairContainer) pc).enableSwitchDependency(
-						option.switchDependencyEnabled());
-				((DependencyPairContainer) pc).enableComplete(
-						option.completeEnabled());
-				((DependencyPairContainer) pc).enableNACs(
-						option.nacsEnabled());
-				((DependencyPairContainer) pc).enableReduce(
-						option.reduceEnabled());
-				((DependencyPairContainer) pc).enableConsistent(						
-						option.consistentEnabled());
-				((DependencyPairContainer) pc).enableStrongAttrCheck(
-						option.strongAttrCheckEnabled());
-				((DependencyPairContainer) pc).enableIgnoreIdenticalRules(
-						option.ignoreIdenticalRulesEnabled());
-				((DependencyPairContainer) pc).enableReduceSameMatch(
-						option.reduceSameMatchEnabled());
-				((DependencyPairContainer) pc).enableDirectlyStrictConfluent(
-						option.directlyStrictConflEnabled());
-				((DependencyPairContainer) pc).enableNamedObjectOnly(
-						option.namedObjectEnabled());
-				((DependencyPairContainer) pc).enableMaxBoundOfCriticKind(
-						option.getMaxBoundOfCriticKind());
-				break;
-			default:
-				break;
-			}
-		}
-		return pc;
-	}
+    /**
+     * Creates a empty container for critical pairs. This container has to be filled.
+     *
+     * @param grammar The graph grammar to generate the pairs for. This must not be <code>null</code> or
+     * <code>null</code> is returned.
+     * @param option The option to configure the critical pairs. This must not be <code>null</code> or <code>null</code>
+     * is returned.
+     * @return A empty container.
+     */
+    @SuppressWarnings("deprecation")
+    public static PairContainer createEmptyCriticalPairs(GraGra grammar,
+            CriticalPairOption option) {
+        PairContainer pc = null;
+        if (option != null && grammar != null) {
+            switch (option.getCriticalPairAlgorithm()) {
+                case CriticalPairOption.EXCLUDEONLY:
+                    if (option.layeredEnabled()) {
+                        pc = new LayeredExcludePairContainer(grammar);
+                        ((LayeredExcludePairContainer) pc).setLayer(
+                                option.getLayer());
+                    } else {
+                        pc = new ExcludePairContainer(grammar);
+                    }
+                    ((ExcludePairContainer) pc).enableComplete(
+                            option.completeEnabled());
+                    ((ExcludePairContainer) pc).enableNACs(
+                            option.nacsEnabled());
+                    ((ExcludePairContainer) pc).enablePACs(
+                            option.pacsEnabled());
+                    ((ExcludePairContainer) pc).enableReduce(
+                            option.reduceEnabled());
+                    ((ExcludePairContainer) pc).enableConsistent(
+                            option.consistentEnabled());
+                    ((ExcludePairContainer) pc)
+                            .enableStrongAttrCheck(option.strongAttrCheckEnabled());
+                    ((ExcludePairContainer) pc)
+                            .enableEqualVariableNameOfAttrMapping(
+                                    option.equalVariableNameOfAttrMappingEnabled());
+                    ((ExcludePairContainer) pc).enableIgnoreIdenticalRules(
+                            option.ignoreIdenticalRulesEnabled());
+                    ((ExcludePairContainer) pc).enableReduceSameMatch(
+                            option.reduceSameMatchEnabled());
+                    ((ExcludePairContainer) pc).enableDirectlyStrictConfluent(
+                            option.directlyStrictConflEnabled());
+                    ((ExcludePairContainer) pc).enableDirectlyStrictConfluentUpToIso(
+                            option.directlyStrictConflUpToIsoEnabled());
+                    ((ExcludePairContainer) pc).enableNamedObjectOnly(
+                            option.namedObjectEnabled());
+                    ((ExcludePairContainer) pc).enableMaxBoundOfCriticKind(
+                            option.getMaxBoundOfCriticKind());
+                    break;
+                case CriticalPairOption.TRIGGER_DEPEND:
+                case CriticalPairOption.TRIGGER_SWITCH_DEPEND:
+                    // System.out.println("DependencyPairContainer will be used");
 
-	public static PairContainer createEmptyCriticalPairs(GraGra grammar,
-			int algorithm, boolean layered) {
-		PairContainer pc = null;
-		if (grammar != null) {
-			switch (algorithm) {
-			case CriticalPairOption.EXCLUDEONLY:
-				if (layered)
-					pc = new LayeredExcludePairContainer(grammar);
-				else if (grammar.trafoByPriority())
-					pc = new PriorityExcludePairContainer(grammar);
-				else
-					pc = new ExcludePairContainer(grammar);
-				break;
-			case CriticalPairOption.TRIGGER_DEPEND:
-			case CriticalPairOption.TRIGGER_SWITCH_DEPEND:
-				if (layered)
-					pc = new LayeredDependencyPairContainer(grammar);
-				else if (grammar.trafoByPriority())
-					pc = new PriorityDependencyPairContainer(grammar);
-				else
-					pc = new DependencyPairContainer(grammar);
-				
-				if (algorithm == CriticalPairOption.TRIGGER_SWITCH_DEPEND)
-					((DependencyPairContainer) pc).enableSwitchDependency(
-							true);
-				break;
-			default:
-				break;
-			}
-		}
-		return pc;
-	}
+                    if (option.layeredEnabled()) {
+                        pc = new LayeredDependencyPairContainer(grammar);
+                        ((LayeredExcludePairContainer) pc).setLayer(
+                                option.getLayer());
+                    } else {
+                        pc = new DependencyPairContainer(grammar);
+                    }
 
-	/**
-	 * Generates critical pairs. These pairs are generated parallel. Use these
-	 * generated pairs for the parser.
-	 * 
-	 * @param pc
-	 *            The pair container to be filled.
-	 */
-	public static Thread generateCriticalPairs(PairContainer pc) {
-		Thread t = null;
-		if (pc != null && pc instanceof Runnable) {
-			t = new Thread((Runnable) pc);
-			t.setPriority(4);
-			t.start();
-		}
-		return t;
-	}
+                    ((DependencyPairContainer) pc).enableSwitchDependency(
+                            option.switchDependencyEnabled());
+                    ((DependencyPairContainer) pc).enableComplete(
+                            option.completeEnabled());
+                    ((DependencyPairContainer) pc).enableNACs(
+                            option.nacsEnabled());
+                    ((DependencyPairContainer) pc).enableReduce(
+                            option.reduceEnabled());
+                    ((DependencyPairContainer) pc).enableConsistent(
+                            option.consistentEnabled());
+                    ((DependencyPairContainer) pc).enableStrongAttrCheck(
+                            option.strongAttrCheckEnabled());
+                    ((DependencyPairContainer) pc).enableIgnoreIdenticalRules(
+                            option.ignoreIdenticalRulesEnabled());
+                    ((DependencyPairContainer) pc).enableReduceSameMatch(
+                            option.reduceSameMatchEnabled());
+                    ((DependencyPairContainer) pc).enableDirectlyStrictConfluent(
+                            option.directlyStrictConflEnabled());
+                    ((DependencyPairContainer) pc).enableNamedObjectOnly(
+                            option.namedObjectEnabled());
+                    ((DependencyPairContainer) pc).enableMaxBoundOfCriticKind(
+                            option.getMaxBoundOfCriticKind());
+                    break;
+                default:
+                    break;
+            }
+        }
+        return pc;
+    }
 
-	/**
-	 * Creates and generates critical pairs. These pairs are generated parallel.
-	 * Use these generated pairs for the parser.
-	 * 
-	 * @param grammar
-	 *            The graph grammar to generate the pairs for. This must not be
-	 *            <CODE>null</CODE> or <CODE>null</CODE> is returned.
-	 * @param layer
-	 *            The layer function. This can only be <CODE>null</CODE> if
-	 *            the critical pairs do not need them.
-	 * @param option
-	 *            The option to configure the critical pairs. This must not be
-	 *            <CODE>null</CODE>.
-	 * @return The genrated pairs in a container.
-	 * @deprecated
-	 */
-	public static PairContainer generateCriticalPairs(GraGra grammar,
-			LayerFunction layer, CriticalPairOption option) {
-		PairContainer pc = createEmptyCriticalPairs(grammar, layer, option);
-		generateCriticalPairs(pc);
-		return pc;
-	}
+    public static PairContainer createEmptyCriticalPairs(GraGra grammar,
+            int algorithm, boolean layered) {
+        PairContainer pc = null;
+        if (grammar != null) {
+            switch (algorithm) {
+                case CriticalPairOption.EXCLUDEONLY:
+                    if (layered) {
+                        pc = new LayeredExcludePairContainer(grammar);
+                    } else if (grammar.trafoByPriority()) {
+                        pc = new PriorityExcludePairContainer(grammar);
+                    } else {
+                        pc = new ExcludePairContainer(grammar);
+                    }
+                    break;
+                case CriticalPairOption.TRIGGER_DEPEND:
+                case CriticalPairOption.TRIGGER_SWITCH_DEPEND:
+                    if (layered) {
+                        pc = new LayeredDependencyPairContainer(grammar);
+                    } else if (grammar.trafoByPriority()) {
+                        pc = new PriorityDependencyPairContainer(grammar);
+                    } else {
+                        pc = new DependencyPairContainer(grammar);
+                    }
 
-	/**
-	 * Creates a new layer function with a invalid layer.
-	 * 
-	 * @param grammar
-	 *            The graph grammar to generate the layer function for. This
-	 *            must not be <code>null</code> or <code>null</code> is
-	 *            returned.
-	 * @param option
-	 *            The option to configure the layer function. This must not be
-	 *            <code>null</code> or <code>null</code> is returned.
-	 * @return The new layer function.
-	 * @deprecated
-	 */
-	public static LayerFunction createLayerFunction(GraGra grammar,
-			LayerOption option) {
-		// System.out.println("ParserFactory.createLayerFunction ");
-		LayerFunction lf = null;
-		if (option != null && grammar != null) {
-			switch (option.getLayer()) {
-			case LayerOption.RCD_LAYER:
-				lf = new LayerFunction(grammar);
-				// System.out.println("Rule, Creation, Deletion, Rule must
-				// delete");
-				break;
-			case LayerOption.RCDN_LAYER:
-				lf = new ExtendedLayerFunction(grammar);
-				// System.out.println("Rule, Creation, Deletion, Rule must
-				// delete, NAC check");
-				break;
-			case LayerOption.WEAK_RCD_LAYER:
-				lf = new WeakLayerFunction(grammar);
-				// System.out.println("Rule, Creation, Deletion");
-				break;
-			case LayerOption.WEAK_RCDN_LAYER:
-				lf = new WeakExtendedLayerFunction(grammar);
-				// System.out.println("Rule, Creation, Deletion, NAC check");
-				break;
-			default:
-				break;
-			}
-		}
-		return lf;
-	}
+                    if (algorithm == CriticalPairOption.TRIGGER_SWITCH_DEPEND) {
+                        ((DependencyPairContainer) pc).enableSwitchDependency(
+                                true);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return pc;
+    }
+
+    /**
+     * Generates critical pairs. These pairs are generated parallel. Use these generated pairs for the parser.
+     *
+     * @param pc The pair container to be filled.
+     */
+    public static Thread generateCriticalPairs(PairContainer pc) {
+        Thread t = null;
+        if (pc != null && pc instanceof Runnable) {
+            t = new Thread((Runnable) pc);
+            t.setPriority(4);
+            t.start();
+        }
+        return t;
+    }
+
+    /**
+     * Creates and generates critical pairs. These pairs are generated parallel. Use these generated pairs for the
+     * parser.
+     *
+     * @param grammar The graph grammar to generate the pairs for. This must not be <CODE>null</CODE> or
+     * <CODE>null</CODE> is returned.
+     * @param layer The layer function. This can only be <CODE>null</CODE> if the critical pairs do not need them.
+     * @param option The option to configure the critical pairs. This must not be <CODE>null</CODE>.
+     * @return The genrated pairs in a container.
+     * @deprecated
+     */
+    public static PairContainer generateCriticalPairs(GraGra grammar,
+            LayerFunction layer, CriticalPairOption option) {
+        PairContainer pc = createEmptyCriticalPairs(grammar, layer, option);
+        generateCriticalPairs(pc);
+        return pc;
+    }
+
+    /**
+     * Creates a new layer function with a invalid layer.
+     *
+     * @param grammar The graph grammar to generate the layer function for. This must not be <code>null</code> or
+     * <code>null</code> is returned.
+     * @param option The option to configure the layer function. This must not be <code>null</code> or <code>null</code>
+     * is returned.
+     * @return The new layer function.
+     * @deprecated
+     */
+    public static LayerFunction createLayerFunction(GraGra grammar,
+            LayerOption option) {
+        // System.out.println("ParserFactory.createLayerFunction ");
+        LayerFunction lf = null;
+        if (option != null && grammar != null) {
+            switch (option.getLayer()) {
+                case LayerOption.RCD_LAYER:
+                    lf = new LayerFunction(grammar);
+                    // System.out.println("Rule, Creation, Deletion, Rule must
+                    // delete");
+                    break;
+                case LayerOption.RCDN_LAYER:
+                    lf = new ExtendedLayerFunction(grammar);
+                    // System.out.println("Rule, Creation, Deletion, Rule must
+                    // delete, NAC check");
+                    break;
+                case LayerOption.WEAK_RCD_LAYER:
+                    lf = new WeakLayerFunction(grammar);
+                    // System.out.println("Rule, Creation, Deletion");
+                    break;
+                case LayerOption.WEAK_RCDN_LAYER:
+                    lf = new WeakExtendedLayerFunction(grammar);
+                    // System.out.println("Rule, Creation, Deletion, NAC check");
+                    break;
+                default:
+                    break;
+            }
+        }
+        return lf;
+    }
 }
 
 /*

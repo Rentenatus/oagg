@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.saveload;
 
 import java.io.File;
@@ -38,436 +39,447 @@ import agg.xt_basis.GraGra;
  */
 public class GraGraLoad {
 
-	final private Vector<LoadEventListener> loadListeners = new Vector<LoadEventListener>();
+    final private Vector<LoadEventListener> loadListeners = new Vector<LoadEventListener>();
 
-	public GraGraLoad(JFrame fr) {
-		this(fr, "", "");
-	}
+    public GraGraLoad(JFrame fr) {
+        this(fr, "", "");
+    }
 
-	public GraGraLoad(JFrame fr, String dname, String fname) {
-		this.applFrame = fr;
-		this.dirName = dname;
-		this.fileName = fname;
+    public GraGraLoad(JFrame fr, String dname, String fname) {
+        this.applFrame = fr;
+        this.dirName = dname;
+        this.fileName = fname;
 
-		/* create a file chooser */
-		if (!this.dirName.equals(""))
-			this.chooser = new JFileChooser(this.dirName);
-		else
-			this.chooser = new JFileChooser(System.getProperty("user.dir"));
+        /* create a file chooser */
+        if (!this.dirName.equals("")) {
+            this.chooser = new JFileChooser(this.dirName);
+        } else {
+            this.chooser = new JFileChooser(System.getProperty("user.dir"));
+        }
 
-		/* create file filters */
-		this.filterXML = new AGGFileFilter("ggx", "AGG Files XML (.ggx)");		
-		this.chooser.addChoosableFileFilter(this.filterXML);
-		
-		/* set a file filter */
-		this.chooser.setFileFilter(this.filterXML);
+        /* create file filters */
+        this.filterXML = new AGGFileFilter("ggx", "AGG Files XML (.ggx)");
+        this.chooser.addChoosableFileFilter(this.filterXML);
 
-		/* create a progress bar */
-		this.bar = createProgressBar();
-	}
+        /* set a file filter */
+        this.chooser.setFileFilter(this.filterXML);
 
-	public javax.swing.filechooser.FileFilter getFileFilter() {
-		return this.chooser.getFileFilter();
-	}
+        /* create a progress bar */
+        this.bar = createProgressBar();
+    }
 
-	public void setFileFilter(javax.swing.filechooser.FileFilter filter) {
-		this.chooser.setFileFilter(filter);
-	}
+    public javax.swing.filechooser.FileFilter getFileFilter() {
+        return this.chooser.getFileFilter();
+    }
 
-	public void setExtensionFileFilter(ExtensionFileFilter filter) {
-		this.chooser.setFileFilter(filter);
-	}
+    public void setFileFilter(javax.swing.filechooser.FileFilter filter) {
+        this.chooser.setFileFilter(filter);
+    }
 
-	public void load() {
-		fireLoad(new LoadEvent(this, LoadEvent.LOAD, ""));
-		this.gra = null;
-		this.basis = null;
-		int returnVal = this.chooser.showOpenDialog(this.applFrame);
-		this.dirName = this.chooser.getCurrentDirectory().toString();
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			if (this.chooser.getSelectedFile() != null
-					&& !this.chooser.getSelectedFile().getName().equals("")) {
-				this.fileName = this.chooser.getSelectedFile().getName();
-				if (!this.dirName.endsWith(File.separator))
-					this.dirName += File.separator;
-				
-				reload();
-			} else
-				fireLoad(new LoadEvent(this, LoadEvent.EMPTY_ERROR, ""));
-		} else if (returnVal == JFileChooser.CANCEL_OPTION) {
-			this.canceled = true;
-		}		
-	}
-	
-	public boolean isCanceled() {
-		return this.canceled;
-	}
+    public void setExtensionFileFilter(ExtensionFileFilter filter) {
+        this.chooser.setFileFilter(filter);
+    }
 
-	public void reload(String dirname, String filename) {
-		this.dirName = dirname;
-		this.fileName = filename;
-		reload();
-	}
+    public void load() {
+        fireLoad(new LoadEvent(this, LoadEvent.LOAD, ""));
+        this.gra = null;
+        this.basis = null;
+        int returnVal = this.chooser.showOpenDialog(this.applFrame);
+        this.dirName = this.chooser.getCurrentDirectory().toString();
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            if (this.chooser.getSelectedFile() != null
+                    && !this.chooser.getSelectedFile().getName().equals("")) {
+                this.fileName = this.chooser.getSelectedFile().getName();
+                if (!this.dirName.endsWith(File.separator)) {
+                    this.dirName += File.separator;
+                }
 
-	public void reload() {
-		AGGAppl.showFileLoadLogo();
+                reload();
+            } else {
+                fireLoad(new LoadEvent(this, LoadEvent.EMPTY_ERROR, ""));
+            }
+        } else if (returnVal == JFileChooser.CANCEL_OPTION) {
+            this.canceled = true;
+        }
+    }
 
-		if (!this.fileName.endsWith(".ggx")
-				&& this.chooser.getFileFilter() == this.filterXML)
-			this.fileName = this.fileName + ".ggx";
+    public boolean isCanceled() {
+        return this.canceled;
+    }
 
-		if (this.fileName.endsWith(".ggx")
-				|| this.chooser.getFileFilter() != this.filterXML) {
-			
-			File f = new File(this.dirName + this.fileName);
-			if (f.exists()) {
-				fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
+    public void reload(String dirname, String filename) {
+        this.dirName = dirname;
+        this.fileName = filename;
+        reload();
+    }
 
-				XMLHelper h = new XMLHelper();
-				/*
+    public void reload() {
+        AGGAppl.showFileLoadLogo();
+
+        if (!this.fileName.endsWith(".ggx")
+                && this.chooser.getFileFilter() == this.filterXML) {
+            this.fileName = this.fileName + ".ggx";
+        }
+
+        if (this.fileName.endsWith(".ggx")
+                || this.chooser.getFileFilter() != this.filterXML) {
+
+            File f = new File(this.dirName + this.fileName);
+            if (f.exists()) {
+                fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
+
+                XMLHelper h = new XMLHelper();
+                /*
 				 * if(XMLHelper.hasGermanSpecialCh(this.fileName)){
 				 * JOptionPane.showMessageDialog(null, "\t"+this.fileName +"\n Read
 				 * file name exception occurred! " +"\n Maybe the German
 				 * characters like ä, ö, ü, ß or space were used. " +"\n Please
 				 * rename the file " +"\nand try again.", "Cannot load file",
 				 * JOptionPane.WARNING_MESSAGE); this.gra = null; return; }
-				 */
+                 */
 
-				
-				if ((this.dirName.equals("") && h.read_from_xml(this.fileName))				
-						|| h.read_from_xml(this.dirName + this.fileName)) {
+                if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
+                        || h.read_from_xml(this.dirName + this.fileName)) {
 
-					long time0 = System.currentTimeMillis();
-					
-					GraGra bgra = BaseFactory.theFactory().createGraGra(false);				
-					h.getTopObject(bgra);
-					
-					this.gra = new EdGraGra(bgra);
-					this.gra.setDirName(this.dirName);
-					this.gra.setFileName(this.fileName);
-					this.gra.getTypeSet().setResourcesPath(this.dirName);
-					
-					h.enrichObject(this.gra);
-					
-					System.out.println("(Base) Grammar  <" + this.gra.getName()
-							+ ">  loaded in  "
-							+ (System.currentTimeMillis() - time0) + "ms");
-	
-					fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName
-							+ this.fileName));
-					fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
-				}
-			} else {
-				JOptionPane.showMessageDialog(null, "File  \"" + this.dirName
-						+ this.fileName + "\"  does not exist!", "Cannot load file",
-						JOptionPane.WARNING_MESSAGE);
-				System.out.println("agg.gui.GraGraLoad:  File  \"" + this.dirName
-						+ this.fileName + "\"  does not exist!");
-			}
-		} // if XML
-		else {
-			if (!this.dirName.equals("") && !this.fileName.equals("")) {
-				fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, this.bar
-						.getContentPanel(), ""));
-				this.bar.start();
+                    long time0 = System.currentTimeMillis();
 
-				int key = -1;
-				this.addMsg = "";
-				try {
-					File f = new File(this.dirName + this.fileName);
-					long datei = f.length();
-					double multi = (datei + datei * 0.04) / 16000.0;
-					LoadSaveStatus.setMaximum((int) (100 * multi));
-					FileInputStream fis = new FileInputStream(f);
-					ObjectInputStream ois = new ObjectInputStream(fis);
-					this.gra = (EdGraGra) ois.readObject();
-					this.gra.setDirName(this.dirName);
-					this.gra.setFileName(this.fileName);
-					this.gra.getTypeSet().setResourcesPath(this.dirName);
-					if (!this.gra.getTypeSet().basisTypeReprComplete())
-						this.gra.getTypeSet().setAdditionalReprOfBasisType();
-					this.gra.update();
+                    GraGra bgra = BaseFactory.theFactory().createGraGra(false);
+                    h.getTopObject(bgra);
 
-					fis.close();
-					key = LoadEvent.LOADED;
-				} // try
-				catch (FileNotFoundException fnfx) {
-					this.gra = null;
-					key = LoadEvent.CLASS_NOT_FOUND_ERROR;
-					this.addMsg = "";
-				} catch (SecurityException sx) {
-					this.gra = null;
-					key = LoadEvent.SECURITY_ERROR;
-					if (sx.getMessage() == null) {
-						this.addMsg = "";
-					} else {
-						this.addMsg = sx.getLocalizedMessage();
-					}
-				} catch (StreamCorruptedException scx) {
-					this.gra = null;
-					key = LoadEvent.STREAM_ERROR;
-				} catch (ClassNotFoundException cnfx) {
-					this.gra = null;
-					key = LoadEvent.CLASS_NOT_FOUND_ERROR;
-					this.addMsg = cnfx.getLocalizedMessage();
-				} catch (InvalidClassException icx) {
-					this.gra = null;
-					key = LoadEvent.INVALID_CLASS_ERROR;
-					this.addMsg = icx.getLocalizedMessage();
-				} catch (OptionalDataException odx) { // what kind exception
-					// is this?
-					this.gra = null;
-					key = LoadEvent.DATA_ERROR;
-					this.addMsg = odx.getLocalizedMessage();
-				} catch (IOException iox) {
-					this.gra = null;
-					key = LoadEvent.IO_ERROR;
-					if (iox.getLocalizedMessage() == null) {
-						this.addMsg = "";
-					} else {
-						this.addMsg = iox.getLocalizedMessage();
-					}
-				} catch (StackOverflowError sox) {
-					this.gra = null;
-					key = LoadEvent.STACK_OVERFLOW_ERROR;
-					if (sox.getLocalizedMessage() == null) {
-						this.addMsg = "";
-					} else {
-						this.addMsg = sox.getLocalizedMessage();
-					}
-				} finally {
-					fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED,
-							this.bar.getContentPanel(), ""));
-					fireLoad(new LoadEvent(this, key, this.dirName + this.fileName,
-							this.addMsg));
-					this.bar.finish();
-					this.bar.quit();
-				}
-			} // if (!this.dirName.equals("") && !this.fileName.equals("")
-		} // else
-	}
+                    this.gra = new EdGraGra(bgra);
+                    this.gra.setDirName(this.dirName);
+                    this.gra.setFileName(this.fileName);
+                    this.gra.getTypeSet().setResourcesPath(this.dirName);
 
-	public void loadBase() {
-		fireLoad(new LoadEvent(this, LoadEvent.LOAD, ""));
+                    h.enrichObject(this.gra);
 
-		int returnVal = this.chooser.showOpenDialog(this.applFrame);
-		this.dirName = this.chooser.getCurrentDirectory().toString();
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			if (this.chooser.getSelectedFile() != null
-					&& !this.chooser.getSelectedFile().getName().equals("")) {
-				this.fileName = this.chooser.getSelectedFile().getName();
-				if (!this.dirName.endsWith(File.separator))
-					this.dirName += File.separator;
-				reloadBase();
-			} else
-				fireLoad(new LoadEvent(this, LoadEvent.EMPTY_ERROR, ""));
-		} else
-			fireLoad(new LoadEvent(this, LoadEvent.EMPTY_ERROR, ""));
-	}
+                    System.out.println("(Base) Grammar  <" + this.gra.getName()
+                            + ">  loaded in  "
+                            + (System.currentTimeMillis() - time0) + "ms");
 
-	public void reloadBase() {
-		AGGAppl.showFileLoadLogo();
+                    fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName
+                            + this.fileName));
+                    fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "File  \"" + this.dirName
+                        + this.fileName + "\"  does not exist!", "Cannot load file",
+                        JOptionPane.WARNING_MESSAGE);
+                System.out.println("agg.gui.GraGraLoad:  File  \"" + this.dirName
+                        + this.fileName + "\"  does not exist!");
+            }
+        } // if XML
+        else {
+            if (!this.dirName.equals("") && !this.fileName.equals("")) {
+                fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, this.bar
+                        .getContentPanel(), ""));
+                this.bar.start();
 
-		if (this.fileName.endsWith(".ggx")
-				&& this.chooser.getFileFilter() == this.filterXML) {
-			fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
+                int key = -1;
+                this.addMsg = "";
+                try {
+                    File f = new File(this.dirName + this.fileName);
+                    long datei = f.length();
+                    double multi = (datei + datei * 0.04) / 16000.0;
+                    LoadSaveStatus.setMaximum((int) (100 * multi));
+                    FileInputStream fis = new FileInputStream(f);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    this.gra = (EdGraGra) ois.readObject();
+                    this.gra.setDirName(this.dirName);
+                    this.gra.setFileName(this.fileName);
+                    this.gra.getTypeSet().setResourcesPath(this.dirName);
+                    if (!this.gra.getTypeSet().basisTypeReprComplete()) {
+                        this.gra.getTypeSet().setAdditionalReprOfBasisType();
+                    }
+                    this.gra.update();
 
-			XMLHelper h = new XMLHelper();
-			/*
+                    fis.close();
+                    key = LoadEvent.LOADED;
+                } // try
+                catch (FileNotFoundException fnfx) {
+                    this.gra = null;
+                    key = LoadEvent.CLASS_NOT_FOUND_ERROR;
+                    this.addMsg = "";
+                } catch (SecurityException sx) {
+                    this.gra = null;
+                    key = LoadEvent.SECURITY_ERROR;
+                    if (sx.getMessage() == null) {
+                        this.addMsg = "";
+                    } else {
+                        this.addMsg = sx.getLocalizedMessage();
+                    }
+                } catch (StreamCorruptedException scx) {
+                    this.gra = null;
+                    key = LoadEvent.STREAM_ERROR;
+                } catch (ClassNotFoundException cnfx) {
+                    this.gra = null;
+                    key = LoadEvent.CLASS_NOT_FOUND_ERROR;
+                    this.addMsg = cnfx.getLocalizedMessage();
+                } catch (InvalidClassException icx) {
+                    this.gra = null;
+                    key = LoadEvent.INVALID_CLASS_ERROR;
+                    this.addMsg = icx.getLocalizedMessage();
+                } catch (OptionalDataException odx) { // what kind exception
+                    // is this?
+                    this.gra = null;
+                    key = LoadEvent.DATA_ERROR;
+                    this.addMsg = odx.getLocalizedMessage();
+                } catch (IOException iox) {
+                    this.gra = null;
+                    key = LoadEvent.IO_ERROR;
+                    if (iox.getLocalizedMessage() == null) {
+                        this.addMsg = "";
+                    } else {
+                        this.addMsg = iox.getLocalizedMessage();
+                    }
+                } catch (StackOverflowError sox) {
+                    this.gra = null;
+                    key = LoadEvent.STACK_OVERFLOW_ERROR;
+                    if (sox.getLocalizedMessage() == null) {
+                        this.addMsg = "";
+                    } else {
+                        this.addMsg = sox.getLocalizedMessage();
+                    }
+                } finally {
+                    fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED,
+                            this.bar.getContentPanel(), ""));
+                    fireLoad(new LoadEvent(this, key, this.dirName + this.fileName,
+                            this.addMsg));
+                    this.bar.finish();
+                    this.bar.quit();
+                }
+            } // if (!this.dirName.equals("") && !this.fileName.equals("")
+        } // else
+    }
+
+    public void loadBase() {
+        fireLoad(new LoadEvent(this, LoadEvent.LOAD, ""));
+
+        int returnVal = this.chooser.showOpenDialog(this.applFrame);
+        this.dirName = this.chooser.getCurrentDirectory().toString();
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            if (this.chooser.getSelectedFile() != null
+                    && !this.chooser.getSelectedFile().getName().equals("")) {
+                this.fileName = this.chooser.getSelectedFile().getName();
+                if (!this.dirName.endsWith(File.separator)) {
+                    this.dirName += File.separator;
+                }
+                reloadBase();
+            } else {
+                fireLoad(new LoadEvent(this, LoadEvent.EMPTY_ERROR, ""));
+            }
+        } else {
+            fireLoad(new LoadEvent(this, LoadEvent.EMPTY_ERROR, ""));
+        }
+    }
+
+    public void reloadBase() {
+        AGGAppl.showFileLoadLogo();
+
+        if (this.fileName.endsWith(".ggx")
+                && this.chooser.getFileFilter() == this.filterXML) {
+            fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
+
+            XMLHelper h = new XMLHelper();
+            /*
 			 * if(XMLHelper.hasGermanSpecialCh(this.fileName)){
 			 * JOptionPane.showMessageDialog(null, "\t"+this.fileName +"\n Read file
 			 * name exception occurred! " +"\n Maybe the German characters like
 			 * ä, ö, ü, ß or space were used. " +"\n Please rename the file "
 			 * +"\nand try again.", "Cannot load file",
 			 * JOptionPane.WARNING_MESSAGE); this.gra = null; return; }
-			 */
-			if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
-					|| h.read_from_xml(this.dirName + this.fileName)) {
-			
-	//			this.basis = BaseFactory.theFactory().createGraGra();
-				
-				this.basis = new GraGra(false);			
-				h.getTopObject(this.basis);
-	
-				fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName + this.fileName));
-				// fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
-			}
-		} // if XML
-		else {
-			if (!this.dirName.equals("") && !this.fileName.equals("")) {
-				fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, this.bar
-						.getContentPanel(), ""));
-				this.bar.start();
+             */
+            if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
+                    || h.read_from_xml(this.dirName + this.fileName)) {
 
-				int key = -1;
-				this.addMsg = "";
-				try {
-					File f = new File(this.dirName + this.fileName);
-					long datei = f.length();
-					double multi = (datei + datei * 0.04) / 16000.0;
-					LoadSaveStatus.setMaximum((int) (100 * multi));
+                //			this.basis = BaseFactory.theFactory().createGraGra();
+                this.basis = new GraGra(false);
+                h.getTopObject(this.basis);
 
-					FileInputStream fis = new FileInputStream(f);
-					ObjectInputStream ois = new ObjectInputStream(fis);
-					this.basis = (GraGra) ois.readObject();
+                fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName + this.fileName));
+                // fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
+            }
+        } // if XML
+        else {
+            if (!this.dirName.equals("") && !this.fileName.equals("")) {
+                fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, this.bar
+                        .getContentPanel(), ""));
+                this.bar.start();
 
-					fis.close();
-					key = LoadEvent.LOADED;
-				} catch (FileNotFoundException fnfx) {
-					key = LoadEvent.CLASS_NOT_FOUND_ERROR;
-					this.addMsg = "";
-				} catch (SecurityException sx) {
-					key = LoadEvent.SECURITY_ERROR;
-					if (sx.getMessage() == null) {
-						this.addMsg = "";
-					} else {
-						this.addMsg = sx.getLocalizedMessage();
-					}
-				} catch (StreamCorruptedException scx) {
-					key = LoadEvent.STREAM_ERROR;
-				} catch (ClassNotFoundException cnfx) {
-					key = LoadEvent.CLASS_NOT_FOUND_ERROR;
-					this.addMsg = cnfx.getLocalizedMessage();
-				} catch (InvalidClassException icx) {
-					key = LoadEvent.INVALID_CLASS_ERROR;
-					this.addMsg = icx.getLocalizedMessage();
-				} catch (OptionalDataException odx) {
-					key = LoadEvent.DATA_ERROR;
-					this.addMsg = odx.getLocalizedMessage();
-				} catch (IOException iox) {
-					key = LoadEvent.IO_ERROR;
-					if (iox.getMessage() == null) {
-						this.addMsg = "";
-					} else {
-						this.addMsg = iox.getLocalizedMessage();
-					}
-				} catch (StackOverflowError sox) {
-					key = LoadEvent.STACK_OVERFLOW_ERROR;
-					if (sox.getMessage() == null) {
-						this.addMsg = "";
-					} else {
-						this.addMsg = sox.getLocalizedMessage();
-					}
-				} finally {
-					fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED,
-							this.bar.getContentPanel(), ""));
-					fireLoad(new LoadEvent(this, key, this.dirName + this.fileName,
-							this.addMsg));
-					this.bar.finish();
-					this.bar.quit();
-				}
-			}
-		}
-	}
+                int key = -1;
+                this.addMsg = "";
+                try {
+                    File f = new File(this.dirName + this.fileName);
+                    long datei = f.length();
+                    double multi = (datei + datei * 0.04) / 16000.0;
+                    LoadSaveStatus.setMaximum((int) (100 * multi));
 
-	public String getFileName() {
-		return this.fileName;
-	}
+                    FileInputStream fis = new FileInputStream(f);
+                    ObjectInputStream ois = new ObjectInputStream(fis);
+                    this.basis = (GraGra) ois.readObject();
 
-	public String getDirName() {
-		return this.dirName;
-	}
+                    fis.close();
+                    key = LoadEvent.LOADED;
+                } catch (FileNotFoundException fnfx) {
+                    key = LoadEvent.CLASS_NOT_FOUND_ERROR;
+                    this.addMsg = "";
+                } catch (SecurityException sx) {
+                    key = LoadEvent.SECURITY_ERROR;
+                    if (sx.getMessage() == null) {
+                        this.addMsg = "";
+                    } else {
+                        this.addMsg = sx.getLocalizedMessage();
+                    }
+                } catch (StreamCorruptedException scx) {
+                    key = LoadEvent.STREAM_ERROR;
+                } catch (ClassNotFoundException cnfx) {
+                    key = LoadEvent.CLASS_NOT_FOUND_ERROR;
+                    this.addMsg = cnfx.getLocalizedMessage();
+                } catch (InvalidClassException icx) {
+                    key = LoadEvent.INVALID_CLASS_ERROR;
+                    this.addMsg = icx.getLocalizedMessage();
+                } catch (OptionalDataException odx) {
+                    key = LoadEvent.DATA_ERROR;
+                    this.addMsg = odx.getLocalizedMessage();
+                } catch (IOException iox) {
+                    key = LoadEvent.IO_ERROR;
+                    if (iox.getMessage() == null) {
+                        this.addMsg = "";
+                    } else {
+                        this.addMsg = iox.getLocalizedMessage();
+                    }
+                } catch (StackOverflowError sox) {
+                    key = LoadEvent.STACK_OVERFLOW_ERROR;
+                    if (sox.getMessage() == null) {
+                        this.addMsg = "";
+                    } else {
+                        this.addMsg = sox.getLocalizedMessage();
+                    }
+                } finally {
+                    fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED,
+                            this.bar.getContentPanel(), ""));
+                    fireLoad(new LoadEvent(this, key, this.dirName + this.fileName,
+                            this.addMsg));
+                    this.bar.finish();
+                    this.bar.quit();
+                }
+            }
+        }
+    }
 
-	public void setDirName(String directory) {
-		if (!directory.equals("")) {
-			this.dirName = directory;
-			this.chooser = new JFileChooser(this.dirName);
-			/* create file filters */
-			this.filterXML = new AGGFileFilter("ggx", "AGG Files XML (.ggx)");
-			
-			this.chooser.addChoosableFileFilter(this.filterXML);
-			
-			/* set a file filter */
-			this.chooser.setFileFilter(this.filterXML);
-		}
-	}
+    public String getFileName() {
+        return this.fileName;
+    }
 
-	public EdGraGra getGraGra() {
-		return this.gra;
-	}
+    public String getDirName() {
+        return this.dirName;
+    }
 
-	public GraGra getBaseGraGra() {
-		return this.basis;
-	}
+    public void setDirName(String directory) {
+        if (!directory.equals("")) {
+            this.dirName = directory;
+            this.chooser = new JFileChooser(this.dirName);
+            /* create file filters */
+            this.filterXML = new AGGFileFilter("ggx", "AGG Files XML (.ggx)");
 
-	public void setGraGra(EdGraGra gragra, String dirname, String filename) {
-		this.gra = gragra;
-		if ((dirname != null) && !dirname.equals("")) {
-			if (dirname.endsWith(File.separator))
-				this.dirName = dirname;
-			else
-				this.dirName = dirname.concat(File.separator);
-		}
-		this.fileName = filename;
-	}
+            this.chooser.addChoosableFileFilter(this.filterXML);
 
-	public void setBaseGraGra(GraGra gragra) {
-		this.basis = gragra;
-	}
+            /* set a file filter */
+            this.chooser.setFileFilter(this.filterXML);
+        }
+    }
 
-	public void setBaseGraGra(GraGra gragra, String dirname, String filename) {
-		this.basis = gragra;
-		if ((dirname != null) && !dirname.equals("")) {
-			if (dirname.endsWith(File.separator))
-				this.dirName = dirname;
-			else
-				this.dirName = dirname.concat(File.separator);
-		}
-		this.fileName = filename;
-	}
+    public EdGraGra getGraGra() {
+        return this.gra;
+    }
 
-	public void setFrame(JFrame f) {
-		this.applFrame = f;
-		if (this.bar != null)
-			this.bar.setFrame(f);
-	}
+    public GraGra getBaseGraGra() {
+        return this.basis;
+    }
 
-	public synchronized void addLoadEventListener(LoadEventListener l) {
-		if (!this.loadListeners.contains(l))
-			this.loadListeners.addElement(l);
-	}
+    public void setGraGra(EdGraGra gragra, String dirname, String filename) {
+        this.gra = gragra;
+        if ((dirname != null) && !dirname.equals("")) {
+            if (dirname.endsWith(File.separator)) {
+                this.dirName = dirname;
+            } else {
+                this.dirName = dirname.concat(File.separator);
+            }
+        }
+        this.fileName = filename;
+    }
 
-	public synchronized void removeLoadEventListener(LoadEventListener l) {
-		if (this.loadListeners.contains(l))
-			this.loadListeners.removeElement(l);
-	}
+    public void setBaseGraGra(GraGra gragra) {
+        this.basis = gragra;
+    }
 
-	private void fireLoad(LoadEvent e) {
-		for (int i = 0; i < this.loadListeners.size(); i++) {
-			this.loadListeners.elementAt(i).loadEventOccurred(e);
-		}
-	}
+    public void setBaseGraGra(GraGra gragra, String dirname, String filename) {
+        this.basis = gragra;
+        if ((dirname != null) && !dirname.equals("")) {
+            if (dirname.endsWith(File.separator)) {
+                this.dirName = dirname;
+            } else {
+                this.dirName = dirname.concat(File.separator);
+            }
+        }
+        this.fileName = filename;
+    }
 
-	/* create a progress bar */
-	private ProgressBar createProgressBar() {
-		ProgressBar pbar = new ProgressBar("Save");
-		// pbar.setFrame(this.applFrame);
-		pbar.setLabel("Saving Files ...");
-		pbar.setFinishText("Saving Files done");
-		pbar.setToolTipText("Save Status");
-		pbar.setFinishAppend(false);
-		return pbar;
-	}
+    public void setFrame(JFrame f) {
+        this.applFrame = f;
+        if (this.bar != null) {
+            this.bar.setFrame(f);
+        }
+    }
 
-	private ProgressBar bar;
+    public synchronized void addLoadEventListener(LoadEventListener l) {
+        if (!this.loadListeners.contains(l)) {
+            this.loadListeners.addElement(l);
+        }
+    }
 
-	private JFrame applFrame;
+    public synchronized void removeLoadEventListener(LoadEventListener l) {
+        if (this.loadListeners.contains(l)) {
+            this.loadListeners.removeElement(l);
+        }
+    }
 
-	private JFileChooser chooser;
-	 
-	private boolean canceled;
-	
-	private ExtensionFileFilter filterXML; 
+    private void fireLoad(LoadEvent e) {
+        for (int i = 0; i < this.loadListeners.size(); i++) {
+            this.loadListeners.elementAt(i).loadEventOccurred(e);
+        }
+    }
 
-	private String addMsg;
+    /* create a progress bar */
+    private ProgressBar createProgressBar() {
+        ProgressBar pbar = new ProgressBar("Save");
+        // pbar.setFrame(this.applFrame);
+        pbar.setLabel("Saving Files ...");
+        pbar.setFinishText("Saving Files done");
+        pbar.setToolTipText("Save Status");
+        pbar.setFinishAppend(false);
+        return pbar;
+    }
 
-	private EdGraGra gra;
+    private ProgressBar bar;
 
-	private GraGra basis;
+    private JFrame applFrame;
 
-	private String dirName = "";
+    private JFileChooser chooser;
 
-	private String fileName = "";
+    private boolean canceled;
+
+    private ExtensionFileFilter filterXML;
+
+    private String addMsg;
+
+    private EdGraGra gra;
+
+    private GraGra basis;
+
+    private String dirName = "";
+
+    private String fileName = "";
 
 }
 

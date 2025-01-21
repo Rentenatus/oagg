@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.Component;
@@ -25,115 +26,126 @@ import agg.attribute.handler.gui.HandlerEditorManager;
 
 /**
  * Editor for all data of a value tuple.
- * 
+ *
  * @author $Author: olga $
  * @version $Id: AbstractEditor.java,v 1.3 2007/11/05 09:18:19 olga Exp $
  */
 public abstract class AbstractEditor extends PropertyEditorSupport implements
-		AttrEditor, ComponentListener {
+        AttrEditor, ComponentListener {
 
-	protected AttrManager attrManager;
+    protected AttrManager attrManager;
 
-	protected AttrEditorManager editorManager;
+    protected AttrEditorManager editorManager;
 
-	protected JPanel mainPanel;
+    protected JPanel mainPanel;
 
-	public AbstractEditor(AttrManager m, AttrEditorManager em) {
-		super();
-		this.attrManager = m;
-		this.editorManager = em;
-		genericCreateAllViews(); // Generic: override, please;
-		genericCustomizeMainLayout(); // Generic: override, please;
-	}
+    public AbstractEditor(AttrManager m, AttrEditorManager em) {
+        super();
+        this.attrManager = m;
+        this.editorManager = em;
+        genericCreateAllViews(); // Generic: override, please;
+        genericCustomizeMainLayout(); // Generic: override, please;
+    }
 
-	// Internal
+    // Internal
+    /**
+     * Creates all subviews.
+     */
+    protected abstract void genericCreateAllViews();
 
-	/** Creates all subviews. */
-	protected abstract void genericCreateAllViews();
+    /**
+     * Must create mainPanel and set it up.
+     */
+    protected abstract void genericCustomizeMainLayout();
 
-	/** Must create mainPanel and set it up. */
-	protected abstract void genericCustomizeMainLayout();
+    /**
+     * Convenience method.
+     */
+    protected HandlerEditorManager getHandlerEditorManager() {
+        return getEditorManager().getHandlerEditorManager();
+    }
 
-	/** Convenience method. */
-	protected HandlerEditorManager getHandlerEditorManager() {
-		return getEditorManager().getHandlerEditorManager();
-	}
+    /**
+     * Sets the size, if it is not 0.
+     */
+    protected void setComponentSize(JComponent c, Dimension size) {
+        if (size.width > 0 && size.height > 0) {
+            c.setMinimumSize(size);
+        }
+    }
 
-	/** Sets the size, if it is not 0. */
-	protected void setComponentSize(JComponent c, Dimension size) {
-		if (size.width > 0 && size.height > 0) {
-			c.setMinimumSize(size);
-		}
-	}
+    // Implementation of the AttrEditor interface
+    public AttrManager getAttrManager() {
+        return this.attrManager;
+    }
 
-	// Implementation of the AttrEditor interface
+    public void setAttrManager(AttrManager m) {
+        this.attrManager = m;
+    }
 
-	public AttrManager getAttrManager() {
-		return this.attrManager;
-	}
+    public AttrEditorManager getEditorManager() {
+        return this.editorManager;
+    }
 
-	public void setAttrManager(AttrManager m) {
-		this.attrManager = m;
-	}
+    public void setEditorManager(AttrEditorManager m) {
+        this.editorManager = m;
+    }
 
-	public AttrEditorManager getEditorManager() {
-		return this.editorManager;
-	}
+    /**
+     * Implemented: returns always 'mainPanel'. As long as extending classes have their component hierarchy placed in
+     * this 'mainPanel', they don't have to redefine this method.
+     */
+    public Component getComponent() {
+        arrangeMainPanel();
+        return this.mainPanel;
+    }
 
-	public void setEditorManager(AttrEditorManager m) {
-		this.editorManager = m;
-	}
+    /**
+     * sets up some internal stuff this method has to be overriden by subclasses
+     */
+    protected abstract void arrangeMainPanel();
 
-	/**
-	 * Implemented: returns always 'mainPanel'. As long as extending classes
-	 * have their component hierarchy placed in this 'mainPanel', they don't
-	 * have to redefine this method.
-	 */
-	public Component getComponent() {
-		arrangeMainPanel();
-		return this.mainPanel;
-	}
+    // PropertyEditor
+    /**
+     * Returns true.
+     */
+    public boolean isPaintable() {
+        return true;
+    }
 
-	/**
-	 * sets up some internal stuff this method has to be overriden by subclasses
-	 */
-	protected abstract void arrangeMainPanel();
+    /**
+     * Returns null.
+     */
+    public String getAsString() {
+        return null;
+    }
 
-	// PropertyEditor
+    /**
+     * Returns true.
+     */
+    public boolean supportsCustomEditor() {
+        return true;
+    }
 
-	/** Returns true. */
-	public boolean isPaintable() {
-		return true;
-	}
+    /**
+     * Same as #getComponent().
+     */
+    public Component getCustomEditor() {
+        return getComponent();
+    }
 
-	/** Returns null. */
-	public String getAsString() {
-		return null;
-	}
+    // ComponentListener
+    public void componentResized(ComponentEvent e) {
+    }
 
-	/** Returns true. */
-	public boolean supportsCustomEditor() {
-		return true;
-	}
+    public void componentMoved(ComponentEvent e) {
+    }
 
-	/** Same as #getComponent(). */
-	public Component getCustomEditor() {
-		return getComponent();
-	}
+    public void componentShown(ComponentEvent e) {
+    }
 
-	// ComponentListener
-
-	public void componentResized(ComponentEvent e) {
-	}
-
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	public void componentShown(ComponentEvent e) {
-	}
-
-	public void componentHidden(ComponentEvent e) {
-	}
+    public void componentHidden(ComponentEvent e) {
+    }
 }
 
 /*

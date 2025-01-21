@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -30,203 +31,206 @@ import agg.attribute.view.AttrViewSetting;
 import agg.gui.saveload.GraphicsExportJPEG;
 
 /**
- * Combination of both a context and a full instance editor of an attribute
- * manager. Delegating, most of the time.
- * 
+ * Combination of both a context and a full instance editor of an attribute manager. Delegating, most of the time.
+ *
  * @author $Author: olga $
  * @version $Id: TopEditor.java,v 1.14 2010/08/18 09:24:53 olga Exp $
  */
 public class TopEditor extends AbstractEditor implements AttrTopEditor {
 
-	protected JPanel titlePanel;
-	protected JLabel titleLabel;
-	
-	protected JPanel instPanel, contextPanel;
+    protected JPanel titlePanel;
+    protected JLabel titleLabel;
 
-	protected JTabbedPane tabbedPane;
+    protected JPanel instPanel, contextPanel;
 
-	protected JPanel tabPanel;
+    protected JTabbedPane tabbedPane;
 
-	protected ContextEditor contextEditor;
+    protected JPanel tabPanel;
 
-	protected FullInstanceTupleEditor instEditor;
+    protected ContextEditor contextEditor;
 
-	protected CustomizingEditor customEditor;
+    protected FullInstanceTupleEditor instEditor;
 
-	protected GraphicsExportJPEG exportJPEG;
+    protected CustomizingEditor customEditor;
 
-	protected JButton exportJPEGButton;
+    protected GraphicsExportJPEG exportJPEG;
 
-	public TopEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-	}
+    protected JButton exportJPEGButton;
 
-	protected void genericCreateAllViews() {
-		this.contextEditor = new ContextEditor(getAttrManager(), getEditorManager());
-		this.instEditor = new FullInstanceTupleEditor(getAttrManager(),
-				getEditorManager());
-		this.customEditor = new CustomizingEditor(getAttrManager(),
-				getEditorManager());
-	}
+    public TopEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+    }
 
-	protected void genericCustomizeMainLayout() {
-		this.tabbedPane = new JTabbedPane(SwingConstants.TOP);
-		this.tabbedPane.addTab("Attribute Context", this.contextEditor.getComponent());
-		this.tabbedPane.addTab("Current Attribute", this.instEditor.getComponent());
-		this.tabbedPane.addTab("Customize", this.customEditor.getComponent());
-		int i = this.tabbedPane.indexOfTab("Current Attribute");
-		this.tabbedPane.setSelectedIndex(i);
-		
-		this.tabPanel = new JPanel(new BorderLayout());
-		this.tabPanel.add(this.tabbedPane, BorderLayout.CENTER);
+    protected void genericCreateAllViews() {
+        this.contextEditor = new ContextEditor(getAttrManager(), getEditorManager());
+        this.instEditor = new FullInstanceTupleEditor(getAttrManager(),
+                getEditorManager());
+        this.customEditor = new CustomizingEditor(getAttrManager(),
+                getEditorManager());
+    }
 
-		this.exportJPEGButton = createExportJPEGButton();
-		this.titlePanel = new JPanel(new BorderLayout());
-		this.titleLabel = new JLabel("     ");
-		this.titlePanel.add(this.titleLabel, BorderLayout.CENTER);
-		this.titlePanel.add(new JLabel("  "), BorderLayout.WEST);
-		if (this.exportJPEGButton != null) {
-			this.titlePanel.add(this.exportJPEGButton, BorderLayout.EAST);
-		}
-		
-		this.mainPanel = new JPanel(new BorderLayout());
-		this.mainPanel.add(this.titlePanel, BorderLayout.NORTH);
+    protected void genericCustomizeMainLayout() {
+        this.tabbedPane = new JTabbedPane(SwingConstants.TOP);
+        this.tabbedPane.addTab("Attribute Context", this.contextEditor.getComponent());
+        this.tabbedPane.addTab("Current Attribute", this.instEditor.getComponent());
+        this.tabbedPane.addTab("Customize", this.customEditor.getComponent());
+        int i = this.tabbedPane.indexOfTab("Current Attribute");
+        this.tabbedPane.setSelectedIndex(i);
 
-		// mainPanel.setDebugGraphicsOptions( DebugGraphics.LOG_OPTION );
-		// mainPanel.setDebugGraphicsOptions( DebugGraphics.FLASH_OPTION );
-		// mainPanel.setDebugGraphicsOptions( DebugGraphics.BUFFERED_OPTION );
+        this.tabPanel = new JPanel(new BorderLayout());
+        this.tabPanel.add(this.tabbedPane, BorderLayout.CENTER);
 
-		this.mainPanel.add(this.tabPanel, BorderLayout.CENTER);
+        this.exportJPEGButton = createExportJPEGButton();
+        this.titlePanel = new JPanel(new BorderLayout());
+        this.titleLabel = new JLabel("     ");
+        this.titlePanel.add(this.titleLabel, BorderLayout.CENTER);
+        this.titlePanel.add(new JLabel("  "), BorderLayout.WEST);
+        if (this.exportJPEGButton != null) {
+            this.titlePanel.add(this.exportJPEGButton, BorderLayout.EAST);
+        }
 
-	}
+        this.mainPanel = new JPanel(new BorderLayout());
+        this.mainPanel.add(this.titlePanel, BorderLayout.NORTH);
 
-	private JButton createExportJPEGButton() {
-		URL imgsrc = ClassLoader.getSystemClassLoader().getResource("agg/lib/icons/print.gif");
-		if (imgsrc != null) {
-			ImageIcon image = new ImageIcon(imgsrc);
-			// System.out.println(image);
-			JButton b = new JButton(image);
-			b.setToolTipText("Export JPEG");
-			b.setMargin(new Insets(-5, 0, -5, 0));
-			b.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (TopEditor.this.exportJPEG != null)
-						TopEditor.this.exportJPEG.save(TopEditor.this.tabPanel);
-				}
-			});
-			b.setEnabled(true);
-			return b;
-		} 
-		return null;
-				
-	}
+        // mainPanel.setDebugGraphicsOptions( DebugGraphics.LOG_OPTION );
+        // mainPanel.setDebugGraphicsOptions( DebugGraphics.FLASH_OPTION );
+        // mainPanel.setDebugGraphicsOptions( DebugGraphics.BUFFERED_OPTION );
+        this.mainPanel.add(this.tabPanel, BorderLayout.CENTER);
 
-	/** implements some arrangement stuff */
-	protected void arrangeMainPanel() {
-		int i = this.tabbedPane.indexOfTab("Current Attribute");
-		this.tabbedPane.setSelectedIndex(i);
-	}
+    }
 
-	public void selectAttributeEditor(boolean b) {
-		if (b)
-			this.tabbedPane.setSelectedIndex(this.tabbedPane
-					.indexOfTab("Current Attribute"));
-		else
-			this.tabbedPane.setSelectedIndex(0);
-	}
+    private JButton createExportJPEGButton() {
+        URL imgsrc = ClassLoader.getSystemClassLoader().getResource("agg/lib/icons/print.gif");
+        if (imgsrc != null) {
+            ImageIcon image = new ImageIcon(imgsrc);
+            // System.out.println(image);
+            JButton b = new JButton(image);
+            b.setToolTipText("Export JPEG");
+            b.setMargin(new Insets(-5, 0, -5, 0));
+            b.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    if (TopEditor.this.exportJPEG != null) {
+                        TopEditor.this.exportJPEG.save(TopEditor.this.tabPanel);
+                    }
+                }
+            });
+            b.setEnabled(true);
+            return b;
+        }
+        return null;
 
-	public void selectContextEditor(boolean b) {
-		if (b)
-			this.tabbedPane.setSelectedIndex(this.tabbedPane
-					.indexOfTab("Attribute Context"));
-		else
-			this.tabbedPane.setSelectedIndex(this.tabbedPane
-					.indexOfTab("Current Attribute"));
-	}
+    }
 
-	public void selectCustomEditor(boolean b) {
-		if (b)
-			this.tabbedPane.setSelectedIndex(this.tabbedPane.indexOfTab("Customize"));
-		else
-			this.tabbedPane.setSelectedIndex(this.tabbedPane
-					.indexOfTab("Current Attribute"));
-	}
+    /**
+     * implements some arrangement stuff
+     */
+    protected void arrangeMainPanel() {
+        int i = this.tabbedPane.indexOfTab("Current Attribute");
+        this.tabbedPane.setSelectedIndex(i);
+    }
 
-	public FullInstanceTupleEditor getAttrInstanceEditor() {
-		return this.instEditor;
-	}
+    public void selectAttributeEditor(boolean b) {
+        if (b) {
+            this.tabbedPane.setSelectedIndex(this.tabbedPane
+                    .indexOfTab("Current Attribute"));
+        } else {
+            this.tabbedPane.setSelectedIndex(0);
+        }
+    }
 
-	public ContextEditor getContextEditor() {
-		return this.contextEditor;
-	}
+    public void selectContextEditor(boolean b) {
+        if (b) {
+            this.tabbedPane.setSelectedIndex(this.tabbedPane
+                    .indexOfTab("Attribute Context"));
+        } else {
+            this.tabbedPane.setSelectedIndex(this.tabbedPane
+                    .indexOfTab("Current Attribute"));
+        }
+    }
 
-	public CustomizingEditor getCustomizingEditor() {
-		return this.customEditor;
-	}
+    public void selectCustomEditor(boolean b) {
+        if (b) {
+            this.tabbedPane.setSelectedIndex(this.tabbedPane.indexOfTab("Customize"));
+        } else {
+            this.tabbedPane.setSelectedIndex(this.tabbedPane
+                    .indexOfTab("Current Attribute"));
+        }
+    }
 
-	public void enableContextEditor(boolean b) {
-		arrangeMainPanel();
-		int i = this.tabbedPane.indexOfTab("Attribute Context");
-		if (i != -1)
-			this.tabbedPane.setEnabledAt(i, b);
-	}
+    public FullInstanceTupleEditor getAttrInstanceEditor() {
+        return this.instEditor;
+    }
 
-	// Implementation of the AttrContextEditor interface
+    public ContextEditor getContextEditor() {
+        return this.contextEditor;
+    }
 
-	public void setContext(AttrContext anAttrContext) {
-		this.contextEditor.setContext(anAttrContext);
-	}
+    public CustomizingEditor getCustomizingEditor() {
+        return this.customEditor;
+    }
 
-	public AttrContext getContext() {
-		return this.contextEditor.getContext();
-	}
+    public void enableContextEditor(boolean b) {
+        arrangeMainPanel();
+        int i = this.tabbedPane.indexOfTab("Attribute Context");
+        if (i != -1) {
+            this.tabbedPane.setEnabledAt(i, b);
+        }
+    }
 
-	// Implementation of the AttrTupleEditor interface
+    // Implementation of the AttrContextEditor interface
+    public void setContext(AttrContext anAttrContext) {
+        this.contextEditor.setContext(anAttrContext);
+    }
 
-	public void setAttrManager(AttrManager m) {
-		super.setAttrManager(m);
-		this.contextEditor.setAttrManager(m);
-		this.instEditor.setAttrManager(m);
-		this.customEditor.setAttrManager(m);
-	}
+    public AttrContext getContext() {
+        return this.contextEditor.getContext();
+    }
 
-	public void setEditorManager(AttrEditorManager m) {
-		super.setEditorManager(m);
-		this.contextEditor.setEditorManager(m);
-		this.instEditor.setEditorManager(m);
-		this.customEditor.setEditorManager(m);
-	}
+    // Implementation of the AttrTupleEditor interface
+    public void setAttrManager(AttrManager m) {
+        super.setAttrManager(m);
+        this.contextEditor.setAttrManager(m);
+        this.instEditor.setAttrManager(m);
+        this.customEditor.setAttrManager(m);
+    }
 
-	public void setTuple(AttrTuple anAttrTuple) {
-		this.instEditor.setTuple(anAttrTuple);
-	} // setTuple()
+    public void setEditorManager(AttrEditorManager m) {
+        super.setEditorManager(m);
+        this.contextEditor.setEditorManager(m);
+        this.instEditor.setEditorManager(m);
+        this.customEditor.setEditorManager(m);
+    }
 
-	public AttrTuple getTuple() {
-		return this.instEditor.getTuple();
-	} // getTuple()
+    public void setTuple(AttrTuple anAttrTuple) {
+        this.instEditor.setTuple(anAttrTuple);
+    } // setTuple()
 
-	public void setViewSetting(AttrViewSetting anAttrViewSetting) {
-		if (this.instEditor != null) {
-			this.instEditor.setViewSetting(anAttrViewSetting);
-		} 
-	}
+    public AttrTuple getTuple() {
+        return this.instEditor.getTuple();
+    } // getTuple()
 
-	public AttrViewSetting getViewSetting() {
-		return this.instEditor.getViewSetting();
-	} // getViewSetting()
+    public void setViewSetting(AttrViewSetting anAttrViewSetting) {
+        if (this.instEditor != null) {
+            this.instEditor.setViewSetting(anAttrViewSetting);
+        }
+    }
 
-	public String getTitleOfSelectedEditor() {
-		return this.tabbedPane.getTitleAt(this.tabbedPane.getSelectedIndex());
-	}
+    public AttrViewSetting getViewSetting() {
+        return this.instEditor.getViewSetting();
+    } // getViewSetting()
 
-	public void setExportJPEG(GraphicsExportJPEG jpg) {
-		this.exportJPEG = jpg;
-	}
+    public String getTitleOfSelectedEditor() {
+        return this.tabbedPane.getTitleAt(this.tabbedPane.getSelectedIndex());
+    }
 
-	public void setTitleText(String str) {
-		this.titleLabel.setText(str);
-	}
-	
+    public void setExportJPEG(GraphicsExportJPEG jpg) {
+        this.exportJPEG = jpg;
+    }
+
+    public void setTitleText(String str) {
+        this.titleLabel.setText(str);
+    }
+
 }
 /*
  * $Log: TopEditor.java,v $

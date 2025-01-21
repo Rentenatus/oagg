@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.cpa;
 
 //import java.util.Enumeration;
@@ -25,105 +26,105 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 
 /**
- * This class models a set of rules as a tree. This tree is used to display all
- * rules of a selected graph grammar.
- * 
+ * This class models a set of rules as a tree. This tree is used to display all rules of a selected graph grammar.
+ *
  * @version $Id: RuleModel.java,v 1.4 2010/09/23 08:18:50 olga Exp $
  * @author $Author: olga $
  */
 public class RuleModel implements TreeModel {
 
-	@SuppressWarnings("serial")
-	public class TreeData extends DefaultMutableTreeNode {
+    @SuppressWarnings("serial")
+    public class TreeData extends DefaultMutableTreeNode {
 
-		boolean atomic;
+        boolean atomic;
 
-		boolean rule;
+        boolean rule;
 
-		boolean nac;
+        boolean nac;
 
-		boolean root;
+        boolean root;
 
-		TreeData(Object o) {
-			super(o);
-			// initialisieren
-			this.rule = false;
-			this.nac = false;
-			this.root = false;
+        TreeData(Object o) {
+            super(o);
+            // initialisieren
+            this.rule = false;
+            this.nac = false;
+            this.root = false;
 
-			if (o instanceof String)
-				this.root = true;
-			else if (o instanceof AtomConstraint)
-				this.atomic = true;
-			else if (o instanceof Rule)
-				this.rule = true;
-			else if (o instanceof OrdinaryMorphism)
-				this.nac = true;
-		}
+            if (o instanceof String) {
+                this.root = true;
+            } else if (o instanceof AtomConstraint) {
+                this.atomic = true;
+            } else if (o instanceof Rule) {
+                this.rule = true;
+            } else if (o instanceof OrdinaryMorphism) {
+                this.nac = true;
+            }
+        }
 
-		public OrdinaryMorphism getData() {
-			Object tmpObj = getUserObject();
-			if (isRule() || isNAC() || isAtomic())
-				return (OrdinaryMorphism) tmpObj;
-			
-			return null;
-		}
+        public OrdinaryMorphism getData() {
+            Object tmpObj = getUserObject();
+            if (isRule() || isNAC() || isAtomic()) {
+                return (OrdinaryMorphism) tmpObj;
+            }
 
-		public String toString() {
-			Object tmpObj = getUserObject();
-			if (isRule() || isNAC() || isAtomic())
-				return ((OrdinaryMorphism) tmpObj).getName();
-			
-			return tmpObj.toString();
-		}
+            return null;
+        }
 
-		public boolean isAtomic() {
-			return this.atomic;
-		}
+        public String toString() {
+            Object tmpObj = getUserObject();
+            if (isRule() || isNAC() || isAtomic()) {
+                return ((OrdinaryMorphism) tmpObj).getName();
+            }
 
-		public boolean isNAC() {
-			return this.nac;
-		}
+            return tmpObj.toString();
+        }
 
-		public boolean isRule() {
-			return this.rule;
-		}
+        public boolean isAtomic() {
+            return this.atomic;
+        }
 
-		public boolean isRoot() {
-			return this.root;
-		}
-	}
+        public boolean isNAC() {
+            return this.nac;
+        }
 
-	private Vector<TreeModelListener> treeModelListeners;
+        public boolean isRule() {
+            return this.rule;
+        }
 
-	private TreeData rootNode;
+        public boolean isRoot() {
+            return this.root;
+        }
+    }
 
-	private GraGra grammar;
+    private Vector<TreeModelListener> treeModelListeners;
+
+    private TreeData rootNode;
+
+    private GraGra grammar;
 
 //	private boolean showAtomics;
+    private boolean withNACs;
 
-	private boolean withNACs;
-
-	/**
-	 * Creates a new model for a set of rule. These rules are given by a graph
-	 * grammar.
-	 * 
-	 * @param gragra
-	 *            The grammar provides the set of rules.
-	 */
-	public RuleModel(GraGra gragra, boolean atomics, boolean nacs) {
-		this.treeModelListeners = new Vector<TreeModelListener>();
-		if (gragra != null)
-			this.rootNode = new TreeData((atomics ? "Atomics of" : "Rules of ")
-					+ gragra.getName());
-		else
-			this.rootNode = new TreeData("--EMPTY--");
-		this.grammar = gragra;
+    /**
+     * Creates a new model for a set of rule. These rules are given by a graph grammar.
+     *
+     * @param gragra The grammar provides the set of rules.
+     */
+    public RuleModel(GraGra gragra, boolean atomics, boolean nacs) {
+        this.treeModelListeners = new Vector<TreeModelListener>();
+        if (gragra != null) {
+            this.rootNode = new TreeData((atomics ? "Atomics of" : "Rules of ")
+                    + gragra.getName());
+        } else {
+            this.rootNode = new TreeData("--EMPTY--");
+        }
+        this.grammar = gragra;
 //		showAtomics = atomics;
-		this.withNACs = nacs;
-	}
+        this.withNACs = nacs;
+    }
 
-	/*
+    /*
 	private Vector<TreeData> getAtomics() {
 		Vector<TreeData> tmpVector = new Vector<TreeData>();
 		if (grammar != null) {
@@ -134,156 +135,148 @@ public class RuleModel implements TreeModel {
 		}
 		return tmpVector;
 	}
-*/
-	
-	private Vector<TreeData> getRules() {
-		Vector<TreeData> tmpVector = new Vector<TreeData>();
-		if (this.grammar != null) {
-			Iterator<?> en = this.grammar.getListOfRules().iterator();
-			while (en.hasNext()) {
-				tmpVector.add(new TreeData(en.next()));
-			}
-		}
-		return tmpVector;
-	}
+     */
+    private Vector<TreeData> getRules() {
+        Vector<TreeData> tmpVector = new Vector<TreeData>();
+        if (this.grammar != null) {
+            Iterator<?> en = this.grammar.getListOfRules().iterator();
+            while (en.hasNext()) {
+                tmpVector.add(new TreeData(en.next()));
+            }
+        }
+        return tmpVector;
+    }
 
-	private Vector<TreeData> getNACs(Rule r) {
-		Vector<TreeData> tmpVector = new Vector<TreeData>();
-		final List<OrdinaryMorphism> nacs = r.getNACsList();
-		for (int l=0; l<nacs.size(); l++) {		
-			tmpVector.addElement(new TreeData(nacs.get(l)));
-		}
-		return tmpVector;
-	}
+    private Vector<TreeData> getNACs(Rule r) {
+        Vector<TreeData> tmpVector = new Vector<TreeData>();
+        final List<OrdinaryMorphism> nacs = r.getNACsList();
+        for (int l = 0; l < nacs.size(); l++) {
+            tmpVector.addElement(new TreeData(nacs.get(l)));
+        }
+        return tmpVector;
+    }
 
-	// ////////////// TreeModel interface implementation ///////////////////////
+    // ////////////// TreeModel interface implementation ///////////////////////
+    /**
+     * Adds a listener for the TreeModelEvent posted after the tree changes.
+     *
+     * @param l The listen will be registered.
+     */
+    public void addTreeModelListener(TreeModelListener l) {
+        if (!this.treeModelListeners.contains(l)) {
+            this.treeModelListeners.addElement(l);
+        }
+    }
 
-	/**
-	 * Adds a listener for the TreeModelEvent posted after the tree changes.
-	 * 
-	 * @param l
-	 *            The listen will be registered.
-	 */
-	public void addTreeModelListener(TreeModelListener l) {
-		if (!this.treeModelListeners.contains(l))
-			this.treeModelListeners.addElement(l);
-	}
+    /**
+     * Returns the child of parent at index index in the parent's child array.
+     *
+     * @param parent The parent of a leave in the tree.
+     * @param index The index of the child.
+     * @return The child
+     */
+    public Object getChild(Object parent, int index) {
+        if (parent == getRoot()) {
+            return getRules().elementAt(index);
+        }
+        TreeData td = (TreeData) parent;
+        OrdinaryMorphism morph = td.getData();
+        if (morph != null && this.withNACs && morph instanceof Rule) {
+            return getNACs((Rule) morph).elementAt(index);
+        }
 
-	/**
-	 * Returns the child of parent at index index in the parent's child array.
-	 * 
-	 * @param parent
-	 *            The parent of a leave in the tree.
-	 * @param index
-	 *            The index of the child.
-	 * @return The child
-	 */
-	public Object getChild(Object parent, int index) {
-		if (parent == getRoot()) {
-			return getRules().elementAt(index);
-		} 
-		TreeData td = (TreeData) parent;
-		OrdinaryMorphism morph = td.getData();
-		if (morph != null && this.withNACs && morph instanceof Rule) {
-			return getNACs((Rule) morph).elementAt(index);
-		}
-		
-		// hier muessen NACs sein. NACs haben keine Kinder
-		return null;
-	}
+        // hier muessen NACs sein. NACs haben keine Kinder
+        return null;
+    }
 
-	/**
-	 * Returns the number of children of parent.
-	 * 
-	 * @param parent
-	 *            The parent of the child.
-	 * @return The amount of children of the given parent.
-	 */
-	public int getChildCount(Object parent) {
-		if (parent == getRoot())
-			return getRules().size();
-		
-		TreeData td = (TreeData) parent;
-		OrdinaryMorphism morph = td.getData();
-		if (morph != null && this.withNACs && morph instanceof Rule) {
-			int result = getNACs((Rule) morph).size();
-			return result;
-		}
-		
-		// NACs haben Null Kinder
-		return 0;
-	}
+    /**
+     * Returns the number of children of parent.
+     *
+     * @param parent The parent of the child.
+     * @return The amount of children of the given parent.
+     */
+    public int getChildCount(Object parent) {
+        if (parent == getRoot()) {
+            return getRules().size();
+        }
 
-	/**
-	 * Returns the index of child in parent.
-	 * 
-	 * @param parent
-	 *            The parent of the child.
-	 * @param child
-	 *            The child the index is searched for.
-	 * @return The index of the given child.
-	 */
-	public int getIndexOfChild(Object parent, Object child) {
-		if (parent == getRoot())
-			return getRules().indexOf(child);
-		
-		TreeData td = (TreeData) parent;
-		OrdinaryMorphism morph = td.getData();
-		if (morph != null && this.withNACs && morph instanceof Rule)
-			return getNACs((Rule) morph).indexOf(child);
-		
-		return 0;
-	}
+        TreeData td = (TreeData) parent;
+        OrdinaryMorphism morph = td.getData();
+        if (morph != null && this.withNACs && morph instanceof Rule) {
+            int result = getNACs((Rule) morph).size();
+            return result;
+        }
 
-	/**
-	 * Returns the root of the tree.
-	 * 
-	 * @return The root of the tree.
-	 */
-	public Object getRoot() {
-		return this.rootNode;
-	}
+        // NACs haben Null Kinder
+        return 0;
+    }
 
-	/**
-	 * Returns true if node is a leaf.
-	 * 
-	 * @param node
-	 *            The examined node in a tree.
-	 * @return For rules true is returned.
-	 */
-	public boolean isLeaf(Object node) {
-		if (node == getRoot())
-			return false;
-		
-		// getChildCount liefert fuer NACs immer Null
-		// bei Rules ist es abhaengig, ob NACs vorhanden sind.
-		return getChildCount(node) == 0;
-		
-	}
+    /**
+     * Returns the index of child in parent.
+     *
+     * @param parent The parent of the child.
+     * @param child The child the index is searched for.
+     * @return The index of the given child.
+     */
+    public int getIndexOfChild(Object parent, Object child) {
+        if (parent == getRoot()) {
+            return getRules().indexOf(child);
+        }
 
-	/**
-	 * Removes a listener previously added with addTreeModelListener().
-	 * 
-	 * @param l
-	 *            The listener
-	 */
-	public void removeTreeModelListener(TreeModelListener l) {
-		this.treeModelListeners.removeElement(l);
-	}
+        TreeData td = (TreeData) parent;
+        OrdinaryMorphism morph = td.getData();
+        if (morph != null && this.withNACs && morph instanceof Rule) {
+            return getNACs((Rule) morph).indexOf(child);
+        }
 
-	/**
-	 * Messaged when the user has altered the value for the item identified by
-	 * path to newValue. Not used by this model.
-	 * 
-	 * @param path
-	 *            The path to a node.
-	 * @param newValue
-	 *            The new value for a node.
-	 */
-	public void valueForPathChanged(TreePath path, Object newValue) {
-		System.out.println("*** valueForPathChanged : " + path + " --> "
-				+ newValue);
-	}
+        return 0;
+    }
+
+    /**
+     * Returns the root of the tree.
+     *
+     * @return The root of the tree.
+     */
+    public Object getRoot() {
+        return this.rootNode;
+    }
+
+    /**
+     * Returns true if node is a leaf.
+     *
+     * @param node The examined node in a tree.
+     * @return For rules true is returned.
+     */
+    public boolean isLeaf(Object node) {
+        if (node == getRoot()) {
+            return false;
+        }
+
+        // getChildCount liefert fuer NACs immer Null
+        // bei Rules ist es abhaengig, ob NACs vorhanden sind.
+        return getChildCount(node) == 0;
+
+    }
+
+    /**
+     * Removes a listener previously added with addTreeModelListener().
+     *
+     * @param l The listener
+     */
+    public void removeTreeModelListener(TreeModelListener l) {
+        this.treeModelListeners.removeElement(l);
+    }
+
+    /**
+     * Messaged when the user has altered the value for the item identified by path to newValue. Not used by this model.
+     *
+     * @param path The path to a node.
+     * @param newValue The new value for a node.
+     */
+    public void valueForPathChanged(TreePath path, Object newValue) {
+        System.out.println("*** valueForPathChanged : " + path + " --> "
+                + newValue);
+    }
 
 }
 /*

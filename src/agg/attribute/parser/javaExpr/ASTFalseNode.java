@@ -1,41 +1,41 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTFalseNode.java,v 1.3 2010/07/29 10:09:24 olga Exp $
  * @author $Author: olga $
  */
 public class ASTFalseNode extends BoolNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTFalseNode(String id) {
-		super(id);
-	}
+    ASTFalseNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTFalseNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTFalseNode(id);
+    }
 
-	public void interpret() {
+    public void interpret() {
 //		stack[++top] = new Boolean(false);
-		stack.add(++top, new Boolean(false)); 
-	}
+        stack.add(++top, new Boolean(false));
+    }
 
-	public String getString() {
-		return "false";
-	}
+    public String getString() {
+        return "false";
+    }
 }
 /*
  * $Log: ASTFalseNode.java,v $

@@ -1,41 +1,54 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 /**
  * The interface for a variable tuple member.
- * 
+ *
  * @version $Id: AttrVariableMember.java,v 1.2 2007/09/10 13:05:31 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrVariableMember extends AttrInstanceMember {
 
-	static final long serialVersionUID = -8961313298573825182L;
+    static final long serialVersionUID = -8961313298573825182L;
 
-	/** Removes this member from its tuple. */
-	public void delete();
+    /**
+     * Removes this member from its tuple.
+     */
+    public void delete();
 
-	/** Test, if the variable evaluates to a definite value. */
-	public boolean isDefinite();
+    /**
+     * Test, if the variable evaluates to a definite value.
+     */
+    public boolean isDefinite();
 
-	/** Tests if this variable is an IN-parameter. */
-	public boolean isInputParameter();
+    /**
+     * Tests if this variable is an IN-parameter.
+     */
+    public boolean isInputParameter();
 
-	/** Sets, if the variable is to be an IN-parameter. */
-	public void setInputParameter(boolean b);
+    /**
+     * Sets, if the variable is to be an IN-parameter.
+     */
+    public void setInputParameter(boolean b);
 
-	/** Tests if this variable is an OUT-parameter. */
-	public boolean isOutputParameter();
+    /**
+     * Tests if this variable is an OUT-parameter.
+     */
+    public boolean isOutputParameter();
 
-	/** Sets, if the variable is to be an OUT-parameter. */
-	public void setOutputParameter(boolean b);
+    /**
+     * Sets, if the variable is to be an OUT-parameter.
+     */
+    public void setOutputParameter(boolean b);
 }
 /*
  * $Log: AttrVariableMember.java,v $

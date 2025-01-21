@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -20,61 +21,59 @@ import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrEditorManager;
 
 /**
- * Abstract editor, providing a general layout: From top to bottom: 1. The table
- * view. 2. Message text area. 3. Button panel.
- * 
- * @version $Id: TabMesTool_TupleEditor.java,v 1.1 2005/08/25 11:56:58 enrico
- *          Exp $
+ * Abstract editor, providing a general layout: From top to bottom: 1. The table view. 2. Message text area. 3. Button
+ * panel.
+ *
+ * @version $Id: TabMesTool_TupleEditor.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
  * @author $Author: olga $
  */
 public abstract class TabMesTool_TupleEditor extends ExtendedTupleEditorSupport {
 
-	public TabMesTool_TupleEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-	}
+    public TabMesTool_TupleEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+    }
 
-	//
-	// Overriding...
+    //
+    // Overriding...
+    protected void genericCreateAllViews() {
+        createTableView();
+        createOutputTextArea();
+        createToolBar();
+    }
 
-	protected void genericCreateAllViews() {
-		createTableView();
-		createOutputTextArea();
-		createToolBar();
-	}
+    /**
+     * From top to bottom: 1. The table view with the whole tuple, all entries visible. 2. Message text area. 3. Button
+     * panel.
+     */
+    protected void genericCustomizeMainLayout() {
+        this.mainPanel = new JPanel(new BorderLayout());
+        this.tableAndOutputSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                this.tableScrollPane, this.outputScrollPane);
+        this.tableAndOutputSplitPane.setMinimumSize(new Dimension(80, 50));
+        this.mainPanel.add(this.tableAndOutputSplitPane, BorderLayout.CENTER);
+        this.mainPanel.add(this.toolBarPanel, BorderLayout.SOUTH);
+        this.mainPanel.setMinimumSize(new Dimension(80, 70));
+        this.mainPanel.addComponentListener(this);
+        this.tableScrollPane.setPreferredSize(new Dimension(300, 100));
+        resize();
+        // mainPanel.setPreferredSize( getMainDim());
+    }
 
-	/**
-	 * From top to bottom: 1. The table view with the whole tuple, all entries
-	 * visible. 2. Message text area. 3. Button panel.
-	 */
-	protected void genericCustomizeMainLayout() {
-		this.mainPanel = new JPanel(new BorderLayout());
-		this.tableAndOutputSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
-				this.tableScrollPane, this.outputScrollPane);
-		this.tableAndOutputSplitPane.setMinimumSize(new Dimension(80, 50));
-		this.mainPanel.add(this.tableAndOutputSplitPane, BorderLayout.CENTER);
-		this.mainPanel.add(this.toolBarPanel, BorderLayout.SOUTH);
-		this.mainPanel.setMinimumSize(new Dimension(80, 70));
-		this.mainPanel.addComponentListener(this);
-		this.tableScrollPane.setPreferredSize(new Dimension(300, 100));
-		resize();
-		// mainPanel.setPreferredSize( getMainDim());
-	}
+    protected void resize() {
+        this.tableAndOutputSplitPane.setDividerLocation(0.9);
+        this.mainPanel.revalidate();
+        this.mainPanel.repaint();
+    }
 
-	protected void resize() {
-		this.tableAndOutputSplitPane.setDividerLocation(0.9);
-		this.mainPanel.revalidate();
-		this.mainPanel.repaint();
-	}
+    public void componentShown(ComponentEvent e) {
+        resize();
+    }
 
-	public void componentShown(ComponentEvent e) {
-		resize();
-	}
+    public void componentResized(ComponentEvent e) {
+        resize();
+    }
 
-	public void componentResized(ComponentEvent e) {
-		resize();
-	}
-
-	protected abstract void createToolBar();
+    protected abstract void createToolBar();
 }
 /*
  * $Log: TabMesTool_TupleEditor.java,v $

@@ -1,135 +1,131 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 /**
  * This class reports some messages to standard out.
- * 
+ *
  * @author $Author: olga $
  * @version $Id: Report.java,v 1.2 2007/09/10 13:05:41 olga Exp $
  */
 public class Report {
 
-	private static int tab = 0;
+    private static int tab = 0;
 
-	/**
-	 * General switch for showing messages.
-	 */
-	public static boolean ON = false;
+    /**
+     * General switch for showing messages.
+     */
+    public static boolean ON = false;
 
-	/**
-	 * Switch for method invokation.
-	 */
-	public static boolean TRACE = false;
+    /**
+     * Switch for method invokation.
+     */
+    public static boolean TRACE = false;
 
-	/**
-	 * Switch for the computation of exclude rules.
-	 */
-	public static boolean EXCLUDE = false;
+    /**
+     * Switch for the computation of exclude rules.
+     */
+    public static boolean EXCLUDE = false;
 
-	/**
-	 * Switch for attribute operations.
-	 */
-	public static boolean ATTRIBUTES = false;
+    /**
+     * Switch for attribute operations.
+     */
+    public static boolean ATTRIBUTES = false;
 
-	/**
-	 * Switch for CP - attribute operations.
-	 */
-	public static boolean ATTRIBUTES_CP = false;
+    /**
+     * Switch for CP - attribute operations.
+     */
+    public static boolean ATTRIBUTES_CP = false;
 
-	/**
-	 * Switch for CP - NACs operations.
-	 */
-	public static boolean NAC_CP = false;
+    /**
+     * Switch for CP - NACs operations.
+     */
+    public static boolean NAC_CP = false;
 
-	/**
-	 * Switch for overlapping graphs.
-	 */
-	public static boolean OVERLAPPING = false;
+    /**
+     * Switch for overlapping graphs.
+     */
+    public static boolean OVERLAPPING = false;
 
-	/**
-	 * Switch for general container operation.
-	 */
-	public static boolean CONTAINER = false;
+    /**
+     * Switch for general container operation.
+     */
+    public static boolean CONTAINER = false;
 
-	/**
-	 * Switch for parser messages.
-	 */
-	public static boolean PARSER = false;
+    /**
+     * Switch for parser messages.
+     */
+    public static boolean PARSER = false;
 
-	/**
-	 * Switch for layer messages.
-	 */
-	public static boolean LAYER = false;
+    /**
+     * Switch for layer messages.
+     */
+    public static boolean LAYER = false;
 
-	/**
-	 * Switch for load messages.
-	 */
-	public static boolean LADEN = false;
+    /**
+     * Switch for load messages.
+     */
+    public static boolean LADEN = false;
 
-	private Report() {
-	}
+    private Report() {
+    }
 
-	/**
-	 * Prints a message.
-	 * 
-	 * @param message
-	 *            The messages.
-	 */
-	public static void println(Object message) {
-		if (ON) {
-			String theMessage = "";
-			if (tab >= 0) {
-				for (int i = 0; i < tab; i++) {
-					theMessage += " ";
-				}
-			} else {
-				tab = 0;
-			}
-			theMessage += message;
-			System.err.println(theMessage);
-		}
-	}
+    /**
+     * Prints a message.
+     *
+     * @param message The messages.
+     */
+    public static void println(Object message) {
+        if (ON) {
+            String theMessage = "";
+            if (tab >= 0) {
+                for (int i = 0; i < tab; i++) {
+                    theMessage += " ";
+                }
+            } else {
+                tab = 0;
+            }
+            theMessage += message;
+            System.err.println(theMessage);
+        }
+    }
 
-	/**
-	 * Prints only a message if the topic is true.
-	 * 
-	 * @param message
-	 *            The message.
-	 * @param topic
-	 *            A topic.
-	 */
-	public static void println(Object message, boolean topic) {
-		if (topic) {
-			System.err.println(message);
-			// println(message);
-		}
-	}
+    /**
+     * Prints only a message if the topic is true.
+     *
+     * @param message The message.
+     * @param topic A topic.
+     */
+    public static void println(Object message, boolean topic) {
+        if (topic) {
+            System.err.println(message);
+            // println(message);
+        }
+    }
 
-	/**
-	 * Prints messages from the mehod invokation.
-	 * 
-	 * @param message
-	 *            The message.
-	 * @param tabstop
-	 *            The number of spaces preceeding the message.
-	 */
-	public static void trace(Object message, int tabstop) {
-		if (tabstop < 0) {
-			tab += tabstop;
-			println(message, TRACE);
-		} else {
-			println(message, TRACE);
-			tab += tabstop;
-		}
-	}
+    /**
+     * Prints messages from the mehod invokation.
+     *
+     * @param message The message.
+     * @param tabstop The number of spaces preceeding the message.
+     */
+    public static void trace(Object message, int tabstop) {
+        if (tabstop < 0) {
+            tab += tabstop;
+            println(message, TRACE);
+        } else {
+            println(message, TRACE);
+            tab += tabstop;
+        }
+    }
 }
 /*
  * $Log: Report.java,v $

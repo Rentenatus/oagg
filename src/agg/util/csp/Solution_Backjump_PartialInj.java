@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: Solution_Backjump_PartialInj.java,v 1.4 2010/09/23 08:26:52 olga Exp $
-
 // $Log: Solution_Backjump_PartialInj.java,v $
 // Revision 1.4  2010/09/23 08:26:52  olga
 // tuning
@@ -221,7 +221,6 @@
 // Revision 1.1  1997/09/20 03:49:55  mich
 // Initial revision
 //
-
 package agg.util.csp;
 
 import java.lang.ref.WeakReference;
@@ -236,480 +235,473 @@ import java.util.Vector;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.csp.Query_Type;
 
-
-/** A CSP solution strategy using the backjumping technique. */
+/**
+ * A CSP solution strategy using the backjumping technique.
+ */
 public class Solution_Backjump_PartialInj implements SolutionStrategy {
-		
-	private CSP itsCSP;
 
-	private boolean itsInjectiveFlag;
-	
-	private boolean parallel;
-	
-	private boolean startParallelbyFirst;
-	
-	final private Vector<Query> itsQueries = new Vector<Query>();
+    private CSP itsCSP;
 
-	final private Dictionary<Variable, Integer> 
-	itsVarIndexMap = new Hashtable<Variable, Integer>();
+    private boolean itsInjectiveFlag;
 
-	final private Dictionary<Object, Variable> 
-	itsInstanceVarMap = new Hashtable<Object, Variable>();
+    private boolean parallel;
 
-	// the map of other solution solver
-	private Dictionary<Object, Variable> otherInstanceVarMap;
+    private boolean startParallelbyFirst;
 
-	final private SearchStrategy itsSearcher = new Search_BreadthFirst();
+    final private Vector<Query> itsQueries = new Vector<Query>();
 
-	/**
-	 * Vector elements are of type <code>OrderedSet</code> of
-	 * <code>Variable</code>. Elements are of type <code>Variable</code>.
-	 */
-	final private HashSet<Variable> itsBackjumpTargets = new HashSet<Variable>();
+    final private Dictionary<Variable, Integer> itsVarIndexMap = new Hashtable<Variable, Integer>();
 
-	/**
-	 * Value is either <code>NEXT</code> or <code>BACK</code> according to
-	 * the recent traversal direction of the search tree.
-	 */
-	private int itsDirection;
+    final private Dictionary<Object, Variable> itsInstanceVarMap = new Hashtable<Object, Variable>();
 
-	/** Index into <code>itsVariables</code>. */
-	private int itsCurrentIndex;
+    // the map of other solution solver
+    private Dictionary<Object, Variable> otherInstanceVarMap;
 
-	/**
-	 * Index into <code>itsVariables</code>. Variables below this index are
-	 * considered to be preinstantiated and will not be touched by the solution
-	 * algorithm.
-	 */
-	private Variable itsCurrentVar;
+    final private SearchStrategy itsSearcher = new Search_BreadthFirst();
+
+    /**
+     * Vector elements are of type <code>OrderedSet</code> of <code>Variable</code>. Elements are of type
+     * <code>Variable</code>.
+     */
+    final private HashSet<Variable> itsBackjumpTargets = new HashSet<Variable>();
+
+    /**
+     * Value is either <code>NEXT</code> or <code>BACK</code> according to the recent traversal direction of the search
+     * tree.
+     */
+    private int itsDirection;
+
+    /**
+     * Index into <code>itsVariables</code>.
+     */
+    private int itsCurrentIndex;
+
+    /**
+     * Index into <code>itsVariables</code>. Variables below this index are considered to be preinstantiated and will
+     * not be touched by the solution algorithm.
+     */
+    private Variable itsCurrentVar;
 //	private Variable itsStartVar;
-	
-	private Query itsCurrentQuery;
 
-	private int itsState;
+    private Query itsCurrentQuery;
+
+    private int itsState;
 
 //	private int itsInstantiationCounter;
 //	private int itsBackstepCounter;
-	@SuppressWarnings("unused")
-	private int allInstances = 0;
-		
-	private boolean solutionFound;
-	
-	private final HashMap<Variable,WeakReference<Object>> 
-	var2subcontext = new HashMap<Variable,WeakReference<Object>>();
-	
-	// constants for csp solution state machine:
-	private final static int START = 1;
+    @SuppressWarnings("unused")
+    private int allInstances = 0;
 
-	private final static int NEXT = 2;
+    private boolean solutionFound;
 
-	private final static int INSTANTIATE = 3;
+    private final HashMap<Variable, WeakReference<Object>> var2subcontext = new HashMap<Variable, WeakReference<Object>>();
 
-	private final static int BACK = 4;
+    // constants for csp solution state machine:
+    private final static int START = 1;
 
-	private final static int SUCCESS = 5;
+    private final static int NEXT = 2;
 
-	private final static int NO_MORE_SOLUTIONS = 6;
+    private final static int INSTANTIATE = 3;
 
-	private final static int BACKJUMP = 7;
+    private final static int BACK = 4;
 
+    private final static int SUCCESS = 5;
 
-	public Solution_Backjump_PartialInj(boolean injective) {
-		this.itsInjectiveFlag = injective;
-	}
+    private final static int NO_MORE_SOLUTIONS = 6;
 
-	public void setRelatedInstanceVarMap(
-			Dictionary<Object, Variable> relatedVarIndexMap) {
-		this.otherInstanceVarMap = relatedVarIndexMap;
-	}
+    private final static int BACKJUMP = 7;
 
-	public Dictionary<Object, Variable> getInstanceVarMap() {
-		return this.itsInstanceVarMap;
-	}
+    public Solution_Backjump_PartialInj(boolean injective) {
+        this.itsInjectiveFlag = injective;
+    }
 
-	public void setSubcontextOfVariable(
-			final Enumeration<Variable> vars,
-			final Object subcontext, 
-			final List<GraphObject> objs) {
-		while (vars.hasMoreElements()) {
-			Variable var = vars.nextElement(); 
-			for (int i=0; i<objs.size(); i++) {
-				if (var.getGraphObject() == objs.get(i)) {
-					this.var2subcontext.put(var, new WeakReference<Object>(subcontext));
-				}
-			}
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	public void clear() {
-		this.itsQueries.clear();
-		((Hashtable<Object, Variable>)this. itsInstanceVarMap).clear();
-		((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
-		this.itsBackjumpTargets.clear();
-	}
-	
-	/**
-	 * Compute the search plan (variable order) and do some other initialization
-	 * stuff.
-	 * 
-	 * @return <code>false</code> iff some preinstantiated variables are
-	 *         violating some constraint.
-	 */
-	private synchronized final boolean initialize(CSP csp) {
-		this.itsCSP = csp;
-		clear();
-		
-		this.itsQueries.addAll(this.itsSearcher.execute(this.itsCSP));
-		this.itsQueries.trimToSize();
+    public void setRelatedInstanceVarMap(
+            Dictionary<Object, Variable> relatedVarIndexMap) {
+        this.otherInstanceVarMap = relatedVarIndexMap;
+    }
 
-		for (int i = 0; i < this.itsQueries.size(); i++) {
-			this.itsVarIndexMap.put(this.itsQueries.elementAt(i).getTarget(), Integer.valueOf(i));
-		}
+    public Dictionary<Object, Variable> getInstanceVarMap() {
+        return this.itsInstanceVarMap;
+    }
 
-		final Enumeration<Variable> anEnum = this.itsCSP.getVariables();
-		while (anEnum.hasMoreElements()) {
-			final Variable aVar = anEnum.nextElement();
-			if (aVar.getInstance() != null) {
-				if (aVar.checkConstraints().hasMoreElements()) {
-					return false;
-				}
-				this.itsVarIndexMap.put(aVar, Integer.valueOf(-1));
-				this.itsInstanceVarMap.put(aVar.getInstance(), aVar);
-			}
-		}
-		return true;
-	}
+    public void setSubcontextOfVariable(
+            final Enumeration<Variable> vars,
+            final Object subcontext,
+            final List<GraphObject> objs) {
+        while (vars.hasMoreElements()) {
+            Variable var = vars.nextElement();
+            for (int i = 0; i < objs.size(); i++) {
+                if (var.getGraphObject() == objs.get(i)) {
+                    this.var2subcontext.put(var, new WeakReference<Object>(subcontext));
+                }
+            }
+        }
+    }
 
-	public final boolean reinitialize(boolean doUpdateQueries) {
-		if (doUpdateQueries) {
-			this.itsQueries.clear();
-			this.itsQueries.addAll(this.itsSearcher.execute(this.itsCSP));
-			this.itsQueries.trimToSize();
-		} 
-		
-		((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
-		((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
-		this.itsBackjumpTargets.clear();
+    /**
+     *
+     */
+    public void clear() {
+        this.itsQueries.clear();
+        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
+        ((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
+        this.itsBackjumpTargets.clear();
+    }
 
-		for (int i = 0; i < this.itsQueries.size(); i++) {
-			Query q = this.itsQueries.elementAt(i);
-			this.itsVarIndexMap.put(q.getTarget(), Integer.valueOf(i));
-			if (q instanceof Query_Type) {
-				((Query_Type)q).resetObjects();
-			}
-		}
+    /**
+     * Compute the search plan (variable order) and do some other initialization stuff.
+     *
+     * @return <code>false</code> iff some preinstantiated variables are violating some constraint.
+     */
+    private synchronized final boolean initialize(CSP csp) {
+        this.itsCSP = csp;
+        clear();
 
-		final Enumeration<Variable> anEnum = this.itsCSP.getVariables();
-		while (anEnum.hasMoreElements()) {
-			final Variable aVar = anEnum.nextElement();
-			if (aVar.getInstance() != null) {
-				if (aVar.checkConstraints().hasMoreElements()) {
-					return false;
-				}
-				this.itsVarIndexMap.put(aVar, Integer.valueOf(-1));
-				this.itsInstanceVarMap.put(aVar.getInstance(), aVar);
-			}
-		}
+        this.itsQueries.addAll(this.itsSearcher.execute(this.itsCSP));
+        this.itsQueries.trimToSize();
 
-		this.itsState = START;
-		return true;
-	}
+        for (int i = 0; i < this.itsQueries.size(); i++) {
+            this.itsVarIndexMap.put(this.itsQueries.elementAt(i).getTarget(), Integer.valueOf(i));
+        }
 
-	public void reinitialize(final Variable var) {
-		if (var.getInstance() != null) {
-			this.itsInstanceVarMap.remove(var.getInstance());
-		}
-		boolean queryExists = false;
-		for (int i = 0; i < this.itsQueries.size(); i++) {
-			if (var == this.itsQueries.elementAt(i).getTarget()) {
-				this.itsVarIndexMap.put(var, Integer.valueOf(i));
-				this.itsState = START;
-				queryExists = true;
-				break;
-			}
-		}
-		
-		if (!queryExists) {
-			if (var.getTypeQuery() != null) {
-				this.itsQueries.add(0, var.getTypeQuery());
+        final Enumeration<Variable> anEnum = this.itsCSP.getVariables();
+        while (anEnum.hasMoreElements()) {
+            final Variable aVar = anEnum.nextElement();
+            if (aVar.getInstance() != null) {
+                if (aVar.checkConstraints().hasMoreElements()) {
+                    return false;
+                }
+                this.itsVarIndexMap.put(aVar, Integer.valueOf(-1));
+                this.itsInstanceVarMap.put(aVar.getInstance(), aVar);
+            }
+        }
+        return true;
+    }
 
-				for (int i = 0; i < this.itsQueries.size(); i++) {
-					final Variable v = this.itsQueries.elementAt(i).getTarget();
-					this.itsVarIndexMap.put(v, Integer.valueOf(i));
-				}
-				this.itsState = START;
-			}
-		}
-		// showQueries(itsQueries);
-	}
+    public final boolean reinitialize(boolean doUpdateQueries) {
+        if (doUpdateQueries) {
+            this.itsQueries.clear();
+            this.itsQueries.addAll(this.itsSearcher.execute(this.itsCSP));
+            this.itsQueries.trimToSize();
+        }
 
-	public Variable getStartVariable() {
-		return this.itsQueries.get(0).itsTarget;
-	}
-	
-	public Query getQuery(final Variable var) {		
-		return (!this.itsQueries.isEmpty())? this.itsQueries.get(this.itsVarIndexMap.get(var).intValue()): null;
-	}
-	
-	/**
-	 * Set my state to <code>START</code>.
-	 */
-	public final void reset() {
-		this.itsState = START;
-	}
-	
-	
-	/**
-	 * Reset the object domain of the query <code>Query_Type</code>.
-	 */
-	public void resetQuery_Type() {
-		for (int i = 0; i < this.itsQueries.size(); i++) {
-			if (this.itsQueries.elementAt(i) instanceof Query_Type) {
-				((Query_Type)this.itsQueries.elementAt(i)).resetObjects();
-			}
-		}
-	}
-	
-	/**
-	 * Search for next solution.
-	 */
-	public synchronized final boolean next(CSP csp) {
+        ((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
+        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
+        this.itsBackjumpTargets.clear();
+
+        for (int i = 0; i < this.itsQueries.size(); i++) {
+            Query q = this.itsQueries.elementAt(i);
+            this.itsVarIndexMap.put(q.getTarget(), Integer.valueOf(i));
+            if (q instanceof Query_Type) {
+                ((Query_Type) q).resetObjects();
+            }
+        }
+
+        final Enumeration<Variable> anEnum = this.itsCSP.getVariables();
+        while (anEnum.hasMoreElements()) {
+            final Variable aVar = anEnum.nextElement();
+            if (aVar.getInstance() != null) {
+                if (aVar.checkConstraints().hasMoreElements()) {
+                    return false;
+                }
+                this.itsVarIndexMap.put(aVar, Integer.valueOf(-1));
+                this.itsInstanceVarMap.put(aVar.getInstance(), aVar);
+            }
+        }
+
+        this.itsState = START;
+        return true;
+    }
+
+    public void reinitialize(final Variable var) {
+        if (var.getInstance() != null) {
+            this.itsInstanceVarMap.remove(var.getInstance());
+        }
+        boolean queryExists = false;
+        for (int i = 0; i < this.itsQueries.size(); i++) {
+            if (var == this.itsQueries.elementAt(i).getTarget()) {
+                this.itsVarIndexMap.put(var, Integer.valueOf(i));
+                this.itsState = START;
+                queryExists = true;
+                break;
+            }
+        }
+
+        if (!queryExists) {
+            if (var.getTypeQuery() != null) {
+                this.itsQueries.add(0, var.getTypeQuery());
+
+                for (int i = 0; i < this.itsQueries.size(); i++) {
+                    final Variable v = this.itsQueries.elementAt(i).getTarget();
+                    this.itsVarIndexMap.put(v, Integer.valueOf(i));
+                }
+                this.itsState = START;
+            }
+        }
+        // showQueries(itsQueries);
+    }
+
+    public Variable getStartVariable() {
+        return this.itsQueries.get(0).itsTarget;
+    }
+
+    public Query getQuery(final Variable var) {
+        return (!this.itsQueries.isEmpty()) ? this.itsQueries.get(this.itsVarIndexMap.get(var).intValue()) : null;
+    }
+
+    /**
+     * Set my state to <code>START</code>.
+     */
+    public final void reset() {
+        this.itsState = START;
+    }
+
+    /**
+     * Reset the object domain of the query <code>Query_Type</code>.
+     */
+    public void resetQuery_Type() {
+        for (int i = 0; i < this.itsQueries.size(); i++) {
+            if (this.itsQueries.elementAt(i) instanceof Query_Type) {
+                ((Query_Type) this.itsQueries.elementAt(i)).resetObjects();
+            }
+        }
+    }
+
+    /**
+     * Search for next solution.
+     */
+    public synchronized final boolean next(CSP csp) {
 //		long t = System.nanoTime();
 
-		this.solutionFound = false;
-		
-		if (!csp.equals(this.itsCSP)) {
-			if (!initialize(csp)) {
-				return false;
-			}			
-			this.itsState = START;
-		}
-		 		
-		if (this.itsState == SUCCESS) {				
-			this.itsState = BACK;
-			// we want to continue where we left off, instead of actually
-			// making a back step:
-			this.itsCurrentIndex++;				
-		}
-		
-//		showQueries(itsQueries);
+        this.solutionFound = false;
 
-		while (true) {
-			switch (this.itsState) {
-			case START:
+        if (!csp.equals(this.itsCSP)) {
+            if (!initialize(csp)) {
+                return false;
+            }
+            this.itsState = START;
+        }
+
+        if (this.itsState == SUCCESS) {
+            this.itsState = BACK;
+            // we want to continue where we left off, instead of actually
+            // making a back step:
+            this.itsCurrentIndex++;
+        }
+
+//		showQueries(itsQueries);
+        while (true) {
+            switch (this.itsState) {
+                case START:
 //				itsInstantiationCounter = 0;
 //				itsBackstepCounter = 0;
-				this.itsCurrentIndex = -1;
-				this.itsState = NEXT;
-				break;
+                    this.itsCurrentIndex = -1;
+                    this.itsState = NEXT;
+                    break;
 
-			case NEXT:
-				if (this.itsCurrentIndex >= this.itsQueries.size() - 1) {
-					this.itsState = SUCCESS;
-				} else {
-					this.itsCurrentQuery = this.itsQueries.elementAt(++this.itsCurrentIndex);
-					this.itsCurrentVar = this.itsCurrentQuery.getTarget();
-					if (this.itsCurrentQuery.isApplicable() 
-							&& !this.itsCurrentQuery.isDomainEmpty()
-							) {
-						this.itsCurrentVar.setDomainEnum(this.itsCurrentQuery.execute());
+                case NEXT:
+                    if (this.itsCurrentIndex >= this.itsQueries.size() - 1) {
+                        this.itsState = SUCCESS;
+                    } else {
+                        this.itsCurrentQuery = this.itsQueries.elementAt(++this.itsCurrentIndex);
+                        this.itsCurrentVar = this.itsCurrentQuery.getTarget();
+                        if (this.itsCurrentQuery.isApplicable()
+                                && !this.itsCurrentQuery.isDomainEmpty()) {
+                            this.itsCurrentVar.setDomainEnum(this.itsCurrentQuery.execute());
 
-						addToBackjumpTargets(this.itsCurrentQuery.getSources());
-						
-						this.itsState = INSTANTIATE;
-					} else {
-						this.itsState = NO_MORE_SOLUTIONS;
-					}
-				}
-				this.itsDirection = NEXT;
-				break;
+                            addToBackjumpTargets(this.itsCurrentQuery.getSources());
 
-			case INSTANTIATE:				
-				if (this.itsDirection == NEXT) {
-					// we will use backjumping if instantiation fails
-					this.itsState = BACKJUMP;
-				} else {
-					// we must not use backjumping because there was
-					// a consistent instantiation found for the current
-					// variable previously
-					this.itsState = BACK;
-				}
-				
-				// deactivate correspondent constraint before checking // pablo
-				this.itsCurrentQuery.deactivateCorrespondent();
-				
-				while (this.itsCurrentVar.hasNext()) {
-					Object obj = this.itsCurrentVar.getNext();
-														
-					// Node/Edge with graph context == null was destroyed,
-					// but it remains in domain of CSP variable during parallel matching,
-					// so it must be exclude as instance of a CSP variable 	
-					if (//obj == null ||
-							((GraphObject)obj).getContext() == null) {
-						continue;
-					}
-					
+                            this.itsState = INSTANTIATE;
+                        } else {
+                            this.itsState = NO_MORE_SOLUTIONS;
+                        }
+                    }
+                    this.itsDirection = NEXT;
+                    break;
+
+                case INSTANTIATE:
+                    if (this.itsDirection == NEXT) {
+                        // we will use backjumping if instantiation fails
+                        this.itsState = BACKJUMP;
+                    } else {
+                        // we must not use backjumping because there was
+                        // a consistent instantiation found for the current
+                        // variable previously
+                        this.itsState = BACK;
+                    }
+
+                    // deactivate correspondent constraint before checking // pablo
+                    this.itsCurrentQuery.deactivateCorrespondent();
+
+                    while (this.itsCurrentVar.hasNext()) {
+                        Object obj = this.itsCurrentVar.getNext();
+
+                        // Node/Edge with graph context == null was destroyed,
+                        // but it remains in domain of CSP variable during parallel matching,
+                        // so it must be exclude as instance of a CSP variable 	
+                        if (//obj == null ||
+                                ((GraphObject) obj).getContext() == null) {
+                            continue;
+                        }
+
 //					itsInstantiationCounter++;					
-					this.itsCurrentVar.setInstance(obj);									
-					this.allInstances++;
-					
-					Variable aConflictVar = checkInjection(this.itsCurrentVar);
-					if (aConflictVar != null) {
-						this.itsCurrentVar.setInstance(null);
-						this.allInstances--;
-						if (this.itsVarIndexMap.get(aConflictVar) != null) {
-							this.itsBackjumpTargets.add(aConflictVar);
-						}
-						continue;
-					}
+                        this.itsCurrentVar.setInstance(obj);
+                        this.allInstances++;
 
-					Enumeration<Variable> allConflictVars = this.itsCurrentVar.checkConstraints();
-					if (!allConflictVars.hasMoreElements()) {
-						this.itsState = NEXT;
-						addInjection(this.itsCurrentVar);	
-						break;
-						
-					} 
-					if (this.itsState == BACKJUMP) {
-						Variable conflictVar1 = getFirstOf(allConflictVars);
-						this.itsBackjumpTargets.add(conflictVar1);
-					}	
-				}
-				
-				// re-activate correspondent constraint after checking // pablo
-				this.itsCurrentQuery.activateCorrespondent();
-				
-				break;
+                        Variable aConflictVar = checkInjection(this.itsCurrentVar);
+                        if (aConflictVar != null) {
+                            this.itsCurrentVar.setInstance(null);
+                            this.allInstances--;
+                            if (this.itsVarIndexMap.get(aConflictVar) != null) {
+                                this.itsBackjumpTargets.add(aConflictVar);
+                            }
+                            continue;
+                        }
 
-			case BACK:	
+                        Enumeration<Variable> allConflictVars = this.itsCurrentVar.checkConstraints();
+                        if (!allConflictVars.hasMoreElements()) {
+                            this.itsState = NEXT;
+                            addInjection(this.itsCurrentVar);
+                            break;
+
+                        }
+                        if (this.itsState == BACKJUMP) {
+                            Variable conflictVar1 = getFirstOf(allConflictVars);
+                            this.itsBackjumpTargets.add(conflictVar1);
+                        }
+                    }
+
+                    // re-activate correspondent constraint after checking // pablo
+                    this.itsCurrentQuery.activateCorrespondent();
+
+                    break;
+
+                case BACK:
 //				System.out.println("BACK");
 //				itsBackstepCounter++;
-				if (this.itsCurrentIndex == 0) {
-					if ((this.itsCurrentVar != null)
-							&& this.itsCurrentVar.hasNext()) {
-						removeInjection(this.itsCurrentVar);
-						this.itsCurrentVar.setInstance(null);
-						this.allInstances--;
-						this.itsState = INSTANTIATE;
-						this.itsDirection = NEXT;
-					} else {
-						this.itsState = NO_MORE_SOLUTIONS;
-						this.itsDirection = BACK;
-					}
-				} else if (this.itsCurrentIndex > 0) {
-					removeInjection(this.itsCurrentVar);
-					this.itsCurrentVar.setInstance(null);					
-					this.allInstances--;							
-					this.itsCurrentVar = this.itsQueries.get(--this.itsCurrentIndex).getTarget();					
-					removeInjection(this.itsCurrentVar);					
-					
-					this.itsState = INSTANTIATE;					
-					this.itsDirection = BACK;
-				} else {
-					this.itsState = NO_MORE_SOLUTIONS;
-					this.itsDirection = BACK;
-				}
-				break;
+                    if (this.itsCurrentIndex == 0) {
+                        if ((this.itsCurrentVar != null)
+                                && this.itsCurrentVar.hasNext()) {
+                            removeInjection(this.itsCurrentVar);
+                            this.itsCurrentVar.setInstance(null);
+                            this.allInstances--;
+                            this.itsState = INSTANTIATE;
+                            this.itsDirection = NEXT;
+                        } else {
+                            this.itsState = NO_MORE_SOLUTIONS;
+                            this.itsDirection = BACK;
+                        }
+                    } else if (this.itsCurrentIndex > 0) {
+                        removeInjection(this.itsCurrentVar);
+                        this.itsCurrentVar.setInstance(null);
+                        this.allInstances--;
+                        this.itsCurrentVar = this.itsQueries.get(--this.itsCurrentIndex).getTarget();
+                        removeInjection(this.itsCurrentVar);
 
-			case BACKJUMP:
+                        this.itsState = INSTANTIATE;
+                        this.itsDirection = BACK;
+                    } else {
+                        this.itsState = NO_MORE_SOLUTIONS;
+                        this.itsDirection = BACK;
+                    }
+                    break;
+
+                case BACKJUMP:
 //				System.out.println("BACKJUMP");
 //				itsBackstepCounter++;
 //				int aStepCounter = 0;
-				this.itsState = NO_MORE_SOLUTIONS;
+                    this.itsState = NO_MORE_SOLUTIONS;
 
-				while (this.itsCurrentIndex > 0) {
+                    while (this.itsCurrentIndex > 0) {
 //					aStepCounter++;
-					removeInjection(this.itsCurrentVar);
-					this.itsCurrentVar.setInstance(null);
-					this.allInstances--;
-					this.itsCurrentVar = this.itsQueries.elementAt(--this.itsCurrentIndex)
-							.getTarget();
-					removeInjection(this.itsCurrentVar);
-					this.itsState = INSTANTIATE;
-					
-					if (this.itsBackjumpTargets.contains(this.itsCurrentVar)) {
-						this.itsBackjumpTargets.remove(this.itsCurrentVar);
-						break;
-					}
-				}
-				this.itsDirection = BACK;
-				break;
+                        removeInjection(this.itsCurrentVar);
+                        this.itsCurrentVar.setInstance(null);
+                        this.allInstances--;
+                        this.itsCurrentVar = this.itsQueries.elementAt(--this.itsCurrentIndex)
+                                .getTarget();
+                        removeInjection(this.itsCurrentVar);
+                        this.itsState = INSTANTIATE;
 
-			case SUCCESS:
+                        if (this.itsBackjumpTargets.contains(this.itsCurrentVar)) {
+                            this.itsBackjumpTargets.remove(this.itsCurrentVar);
+                            break;
+                        }
+                    }
+                    this.itsDirection = BACK;
+                    break;
+
+                case SUCCESS:
 //				System.out.println("SUCCESS");
-				if (this.parallel && this.startParallelbyFirst) {
-					removeUsedObjectFromDomain();
-				}
-				
-				this.solutionFound = true;
+                    if (this.parallel && this.startParallelbyFirst) {
+                        removeUsedObjectFromDomain();
+                    }
+
+                    this.solutionFound = true;
 //				System.out.println("solution found in : "+(System.nanoTime()-t)+" nano");
-				
-				return true;
 
-			case NO_MORE_SOLUTIONS:
+                    return true;
+
+                case NO_MORE_SOLUTIONS:
 //				System.out.println("NO_MO_SOLUTIONS");
-				return false;
+                    return false;
 
-			default:
-				System.out.println("Should have never come here " + this.itsState);
-			}
-		}
-	}
+                default:
+                    System.out.println("Should have never come here " + this.itsState);
+            }
+        }
+    }
 
-	private void removeUsedObjectFromDomain() {
-		for (int i=0; i<this.itsQueries.size(); i++) {
-			Query q = this.itsQueries.get(i);
-			if (q instanceof Query_Type) {
-				((Query_Type)q).removeObject((GraphObject) q.getTarget().getInstance());
-			}
-		}
+    private void removeUsedObjectFromDomain() {
+        for (int i = 0; i < this.itsQueries.size(); i++) {
+            Query q = this.itsQueries.get(i);
+            if (q instanceof Query_Type) {
+                ((Query_Type) q).removeObject((GraphObject) q.getTarget().getInstance());
+            }
+        }
 
-		((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
-		this.itsBackjumpTargets.clear();	
-	}
-	
-	public boolean hasSolution() {
-		return this.solutionFound;
-	}
-	
-	public boolean hasQueries() {
-		return (!this.itsQueries.isEmpty());
-	}
+        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
+        this.itsBackjumpTargets.clear();
+    }
 
-	/**
-	 * Return the Variable with the smallest index of <code>vars</code>.
-	 * <p>
-	 * <b>Pre:</b> <code>vars.hasMoreElements()</code>.
-	 */
-	private final Variable getFirstOf(Enumeration<Variable> vars) {
-		Variable aFirstVar = vars.nextElement();
-		int aFirstIndex = this.itsQueries.size();
-		Variable aCurrentVar;
-		int aCurrentIndex;
+    public boolean hasSolution() {
+        return this.solutionFound;
+    }
 
-		while (vars.hasMoreElements()) {
-			aCurrentVar = vars.nextElement();
-			if (this.itsVarIndexMap.get(aCurrentVar) != null) {
-				aCurrentIndex = this.itsVarIndexMap.get(aCurrentVar).intValue();
-				if (aCurrentIndex < aFirstIndex) {
-					aFirstIndex = aCurrentIndex;
-					aFirstVar = aCurrentVar;
-				}
-			}
-		}
-		return aFirstVar;
-	}
+    public boolean hasQueries() {
+        return (!this.itsQueries.isEmpty());
+    }
 
-	private final void addInjection(Variable var) {
-		if (this.itsInjectiveFlag && (var.getInstance() != null)) {
-			this.itsInstanceVarMap.put(var.getInstance(), var);
-		}
-	}
+    /**
+     * Return the Variable with the smallest index of <code>vars</code>.
+     * <p>
+     * <b>Pre:</b> <code>vars.hasMoreElements()</code>.
+     */
+    private final Variable getFirstOf(Enumeration<Variable> vars) {
+        Variable aFirstVar = vars.nextElement();
+        int aFirstIndex = this.itsQueries.size();
+        Variable aCurrentVar;
+        int aCurrentIndex;
 
-/*	
+        while (vars.hasMoreElements()) {
+            aCurrentVar = vars.nextElement();
+            if (this.itsVarIndexMap.get(aCurrentVar) != null) {
+                aCurrentIndex = this.itsVarIndexMap.get(aCurrentVar).intValue();
+                if (aCurrentIndex < aFirstIndex) {
+                    aFirstIndex = aCurrentIndex;
+                    aFirstVar = aCurrentVar;
+                }
+            }
+        }
+        return aFirstVar;
+    }
+
+    private final void addInjection(Variable var) {
+        if (this.itsInjectiveFlag && (var.getInstance() != null)) {
+            this.itsInstanceVarMap.put(var.getInstance(), var);
+        }
+    }
+
+    /*	
 	private final void removeInjection() {
 		for (int i=1; i<itsQueries.size(); i++) {
 			this.itsCurrentVar = itsQueries.get(i).getTarget();
@@ -719,70 +711,70 @@ public class Solution_Backjump_PartialInj implements SolutionStrategy {
 			}
 		}
 	}
-	*/
-	
-	private final void removeInjection(Variable var) {
-		if (this.itsInjectiveFlag && (var.getInstance() != null))
-			this.itsInstanceVarMap.remove(var.getInstance());			
-	}
+     */
+    private final void removeInjection(Variable var) {
+        if (this.itsInjectiveFlag && (var.getInstance() != null)) {
+            this.itsInstanceVarMap.remove(var.getInstance());
+        }
+    }
 
-	// private final Variable checkInjection(Variable var)
-	// {
-	// if(itsInjectiveFlag && (var.getInstance() != null))
-	// return (Variable) itsInstanceVarMap.get(var.getInstance());
-	// else
-	// return null;
-	// }
-
-	private final Variable checkInjection(Variable var) {
+    // private final Variable checkInjection(Variable var)
+    // {
+    // if(itsInjectiveFlag && (var.getInstance() != null))
+    // return (Variable) itsInstanceVarMap.get(var.getInstance());
+    // else
+    // return null;
+    // }
+    private final Variable checkInjection(Variable var) {
 //		if (var.getInstance() != null) 
-		{
-			if (this.otherInstanceVarMap != null) {
-				// in case of NAC / PAC
-				// this check is always injective
-				Variable other = this.otherInstanceVarMap.get(var.getInstance());
-				if (other != null) {
-					return other;
-				}
-			}
-			
-			if (this.itsInjectiveFlag) {
-				Variable v = this.itsInstanceVarMap.get(var.getInstance());
-				if (v != null) {
-					// these two variables must belong to defferent subcontext
-					if (this.var2subcontext.get(var) != this.var2subcontext.get(v)) {
-						// allow non-injection
-						return null;
-					}
-				}				
-				return v;
-			}
-		} 
-		
-		return null;
-	}
+        {
+            if (this.otherInstanceVarMap != null) {
+                // in case of NAC / PAC
+                // this check is always injective
+                Variable other = this.otherInstanceVarMap.get(var.getInstance());
+                if (other != null) {
+                    return other;
+                }
+            }
 
-	private final void addToBackjumpTargets(List<?> en) {
-		for (int i=0; i<en.size(); i++)
-			this.itsBackjumpTargets.add((Variable)en.get(i));
-	}
+            if (this.itsInjectiveFlag) {
+                Variable v = this.itsInstanceVarMap.get(var.getInstance());
+                if (v != null) {
+                    // these two variables must belong to defferent subcontext
+                    if (this.var2subcontext.get(var) != this.var2subcontext.get(v)) {
+                        // allow non-injection
+                        return null;
+                    }
+                }
+                return v;
+            }
+        }
+
+        return null;
+    }
+
+    private final void addToBackjumpTargets(List<?> en) {
+        for (int i = 0; i < en.size(); i++) {
+            this.itsBackjumpTargets.add((Variable) en.get(i));
+        }
+    }
 
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.util.csp.SolutionStrategy#parallelSearch()
-	 */
-	public boolean parallelSearch() {
-		return this.parallel;
-	}
+     */
+    public boolean parallelSearch() {
+        return this.parallel;
+    }
 
-	public void enableParallelSearch(boolean b) {
-		this.parallel = b;
-	}
+    public void enableParallelSearch(boolean b) {
+        this.parallel = b;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.util.csp.SolutionStrategy#setStartParallelSearchByFirst(boolean)
-	 */
-	public void setStartParallelSearchByFirst(boolean b) {
-		this.startParallelbyFirst = b;
-	}
+     */
+    public void setStartParallelSearchByFirst(boolean b) {
+        this.startParallelbyFirst = b;
+    }
 }

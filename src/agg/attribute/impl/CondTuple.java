@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Enumeration;
@@ -22,411 +23,444 @@ import agg.attribute.handler.impl.javaExpr.JexHandler;
 import agg.util.XMLHelper;
 
 //import agg.util.Debug;
-
 /**
- * Application conditions. Every instance of ContextCore has exactly one
- * instance of this class.
- * 
+ * Application conditions. Every instance of ContextCore has exactly one instance of this class.
+ *
  * @author $Author: olga $
  * @version $Id: CondTuple.java,v 1.16 2010/11/28 22:11:36 olga Exp $
  */
 @SuppressWarnings("serial")
 public class CondTuple extends LoneTuple implements AttrConditionTuple,
-		AttrMsgCode {
+        AttrMsgCode {
 
-	// Protected variables
+    // Protected variables
+    /**
+     * Name of the handler for the boolean type.
+     */
+    protected static String boolHandlerName = JexHandler.getLabelName();
 
-	/** Name of the handler for the boolean type. */
-	protected static String boolHandlerName = JexHandler.getLabelName();
+    /**
+     * Constant for the boolean type name.
+     */
+    final protected static String boolTypeName = "boolean";
 
-	/** Constant for the boolean type name. */
-	final protected static String boolTypeName = "boolean";
+    /**
+     * Constant for the true value.
+     */
+    final protected static String trueVal = "true";
 
-	/** Constant for the true value. */
-	final protected static String trueVal = "true";
+    /**
+     * Constant for the false value.
+     */
+    final protected static String falseVal = "false";
 
-	/** Constant for the false value. */
-	final protected static String falseVal = "false";
+    /**
+     * Constant prefix for the condition entry names.
+     */
+    final protected static String namePrefix = "c";
 
-	/** Constant prefix for the condition entry names. */
-	final protected static String namePrefix = "c";
+    /**
+     * Attribute handler for condition expressions.
+     */
+    protected AttrHandler condHandler = null;
 
-	/** Attribute handler for condition expressions. */
-	protected AttrHandler condHandler = null;
+    /**
+     * Boolean type.
+     */
+    protected HandlerType boolType = null;
 
-	/** Boolean type. */
-	protected HandlerType boolType = null;
+    /**
+     * Current condition number, is used to compose unique names within one condition tuple.
+     */
+    protected int condNum = 0;
 
-	/**
-	 * Current condition number, is used to compose unique names within one
-	 * condition tuple.
-	 */
-	protected int condNum = 0;
+    // Public Constructors.
+    public CondTuple(AttrTupleManager manager, ContextView context,
+            CondTuple parent) {
+        super(manager, context, parent);
+        getContextView().setAllowVarDeclarations(true);
+        getContextView().setAllowComplexExpr(true);
+        initClass();
 
-	// Public Constructors.
-	public CondTuple(AttrTupleManager manager, ContextView context,
-			CondTuple parent) {
-		super(manager, context, parent);
-		getContextView().setAllowVarDeclarations(true);
-		getContextView().setAllowComplexExpr(true);
-		initClass();
+        if (parent != null) {
+            if (this.getSize() == 0 && this.parent.getSize() > 0) {
+                for (int i = 0; i < this.parent.getSize(); i++) {
+                    CondMember m = (CondMember) this.parent.getMemberAt(i);
+                    CondMember mem = (CondMember) this.addCondition(m
+                            .getExprAsText());
+                    if (mem != null) {
+                        mem.setEnabled(m.isEnabled());
+                        mem.setMark(m.getMark());
+                    }
+                }
+            }
+            getContextView().setVariableContext(
+                    parent.getContextView().isVariableContext());
+        }
+    }
 
-		if (parent != null) {
-			if (this.getSize() == 0 && this.parent.getSize() > 0) {
-				for (int i = 0; i < this.parent.getSize(); i++) {
-					CondMember m = (CondMember) this.parent.getMemberAt(i);
-					CondMember mem = (CondMember) this.addCondition(m
-							.getExprAsText());
-					if (mem != null) {
-						mem.setEnabled(m.isEnabled());
-						mem.setMark(m.getMark());
-					}
-				}
-			}
-			getContextView().setVariableContext(
-					parent.getContextView().isVariableContext());
-		}
-	}
+    protected void initClass() {
+        if (this.boolType == null) {
+            String errMsg = "";
+            this.condHandler = this.manager.getHandler(boolHandlerName);
+            try {
+                this.boolType = this.condHandler.newHandlerType(boolTypeName);
+                if (this.manager.classNameLookupMap.get(boolTypeName) == null) {
+                    this.manager.classNameLookupMap.put(boolTypeName, Boolean.TRUE);
+                }
+            } catch (AttrHandlerException ex) {
+                errMsg = ex.getMessage();
+            }
+            if (this.boolType == null) {
+                errMsg += "\nFinding a boolean type for condition expressions failed!\n";
+                throw new AttrImplException(NO_SUCH_TYPE, errMsg);
+            }
+        }
+    }
 
-	protected void initClass() {
-		if (this.boolType == null) {
-			String errMsg = "";
-			this.condHandler = this.manager.getHandler(boolHandlerName);
-			try {
-				this.boolType = this.condHandler.newHandlerType(boolTypeName);
-				if (this.manager.classNameLookupMap.get(boolTypeName) == null)
-					this.manager.classNameLookupMap.put(boolTypeName, Boolean.TRUE);
-			} catch (AttrHandlerException ex) {
-				errMsg = ex.getMessage();
-			}
-			if (this.boolType == null) {
-				errMsg += "\nFinding a boolean type for condition expressions failed!\n";
-				throw new AttrImplException(NO_SUCH_TYPE, errMsg);
-			}
-		}
-	}
+    public void clear() {
+        for (int i = 0; i < getSize(); i++) {
+            this.deleteMemberAt(i);
+        }
+        this.condNum = 0;
+        this.errorMsg = "";
+    }
 
-	public void clear() {
-		for (int i = 0; i < getSize(); i++) {
-			this.deleteMemberAt(i);
-		}
-		this.condNum = 0;
-		this.errorMsg = "";
-	}
+    public void dispose() {
+        super.dispose();
+        // type.dispose();
+        // type = null;
+    }
 
-	public void dispose() {
-		super.dispose();
-		// type.dispose();
-		// type = null;
-	}
+    public void makeCopyOf(CondTuple tuple) {
+        if (this.getSize() == 0 && tuple.getSize() > 0) {
+            for (int i = 0; i < tuple.getSize(); i++) {
+                CondMember m = (CondMember) tuple.getMemberAt(i);
+                CondMember mem = (CondMember) this.addCondition(m
+                        .getExprAsText());
+                if (mem != null) {
+                    mem.setEnabled(m.isEnabled());
+                    mem.setMark(m.getMark());
+                }
+            }
+        }
+    }
 
-	public void makeCopyOf(CondTuple tuple) {
-		if (this.getSize() == 0 && tuple.getSize() > 0) {
-			for (int i = 0; i < tuple.getSize(); i++) {
-				CondMember m = (CondMember) tuple.getMemberAt(i);
-				CondMember mem = (CondMember) this.addCondition(m
-						.getExprAsText());
-				if (mem != null) {
-					mem.setEnabled(m.isEnabled());
-					mem.setMark(m.getMark());
-				}
-			}
-		}
-	}
-	
-	// /////////////////////////////////////////////
-	// Protected Methods.
+    // /////////////////////////////////////////////
+    // Protected Methods.
+    // Naming of conditions.
+    protected String getNextName() {
+        return ("" + namePrefix + this.condNum++);
+    }
 
-	// Naming of conditions.
+    protected String getNameFor(int index) {
+        return ("" + namePrefix + index);
+    }
 
-	protected String getNextName() {
-		return ("" + namePrefix + this.condNum++);
-	}
+    //
+    /**
+     * Generic component creation.
+     */
+    protected ValueMember newMember(DeclMember decl) {
+        return new CondMember(this, decl);
+    }
 
-	protected String getNameFor(int index) {
-		return ("" + namePrefix + index);
-	}
+    // /////////////////////////////////////////////
+    // Public Methods.
+    public CondMember getCondMemberAt(int index) {
+        return (CondMember) getMemberAt(index);
+    }
 
-	//
+    public AttrConditionMember addCondition(String expr) {
+        if (expr.equals("")) {
+            return null;
+        }
 
-	/** Generic component creation. */
-	protected ValueMember newMember(DeclMember decl) {
-		return new CondMember(this, decl);
-	}
+        getTupleType().addMember(this.condHandler, boolTypeName, getNextName());
+        CondMember cm = getCondMemberAt(getSize() - 1);
+        cm.setExprAsText(expr);
+        if (cm.getErrorMsg().indexOf("Parsing error") != -1) {
+            this.errorMsg = cm.getErrorMsg();
+        }
+        return cm;
+    }
 
-	// /////////////////////////////////////////////
-	// Public Methods.
+    public AttrConditionMember addCondition(int indx, String expr) {
+        if (expr.equals("")) {
+            return null;
+        }
 
-	public CondMember getCondMemberAt(int index) {
-		return (CondMember) getMemberAt(index);
-	}
+        getTupleType().addMember(indx, this.condHandler, boolTypeName, getNextName());
+        CondMember cm = getCondMemberAt(indx);
+        cm.setExprAsText(expr);
+        if (cm.getErrorMsg().indexOf("Parsing error") != -1) {
+            this.errorMsg = cm.getErrorMsg();
+        }
+        return cm;
+    }
 
-	public AttrConditionMember addCondition(String expr) {
-		if (expr.equals(""))
-			return null;
+    /**
+     * Test, if all members can yield true or false.
+     */
+    public boolean isDefinite() {
+        for (int i = 0; i < getSize(); i++) {
+            if (!getCondMemberAt(i).isDefinite()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-		getTupleType().addMember(this.condHandler, boolTypeName, getNextName());
-		CondMember cm = getCondMemberAt(getSize() - 1);
-		cm.setExprAsText(expr);
-		if (cm.getErrorMsg().indexOf("Parsing error") != -1) {
-			this.errorMsg = cm.getErrorMsg();
-		}
-		return cm;
-	}
+    /**
+     * Test, if name can yield true or false.
+     */
+    public boolean isDefinite(String name) {
+        for (int i = 0; i < getSize(); i++) {
+            CondMember cm = getCondMemberAt(i);
+            Vector<String> v = cm.getAllVariables();
+            if (v.contains(name) && !cm.isDefinite()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public AttrConditionMember addCondition(int indx, String expr) {
-		if (expr.equals(""))
-			return null;
+    /**
+     * Test, if the given <code>String expr</code> is a member of this condition tuple.
+     */
+    public boolean contains(String expr) {
+        for (int i = 0; i < getSize(); i++) {
+            CondMember cm = getCondMemberAt(i);
+            if (cm.getExprAsText().equals(expr)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-		getTupleType().addMember(indx, this.condHandler, boolTypeName, getNextName());
-		CondMember cm = getCondMemberAt(indx);
-		cm.setExprAsText(expr);
-		if (cm.getErrorMsg().indexOf("Parsing error") != -1) {
-			this.errorMsg = cm.getErrorMsg();
-		}
-		return cm;
-	}
-	
-	/** Test, if all members can yield true or false. */
-	public boolean isDefinite() {
-		for (int i = 0; i < getSize(); i++) {
-			if (!getCondMemberAt(i).isDefinite())
-				return false;
-		}
-		return true;
-	}
+    /**
+     * Check, if each enabled member is evaluable at the given <code>VarTuple vars</code>.
+     */
+    public boolean isEvaluable(VarTuple vars) {
+        for (int i = 0; i < getSize(); i++) {
+            CondMember cm = getCondMemberAt(i);
+            if (!cm.isEnabled()) {
+                continue;
+            } else if (!cm.isEvaluable(vars)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	/** Test, if name can yield true or false. */
-	public boolean isDefinite(String name) {
-		for (int i = 0; i < getSize(); i++) {
-			CondMember cm = getCondMemberAt(i);
-			Vector<String> v = cm.getAllVariables();
-			if (v.contains(name) && !cm.isDefinite())
-				return false;
-		}
-		return true;
-	}
+    String failedCondAsString;
 
-	/** Test, if the given <code>String expr</code> is a member of this condition tuple. */
-	public boolean contains(String expr) {
-		for (int i = 0; i < getSize(); i++) {
-			CondMember cm = getCondMemberAt(i);
-			if (cm.getExprAsText().equals(expr))
-				return true;
-		}
-		return false;
-	}
+    /**
+     * Check, if ANDing of all enabled members yields true.
+     */
+    public boolean isTrue() {
+        this.failedCondAsString = "";
+        for (int i = 0; i < getSize(); i++) {
+            CondMember cm = getCondMemberAt(i);
+            if (!cm.isEnabled()) {
+                continue;
+            } else if (!cm.isTrue()) {
+                this.failedCondAsString = cm.getExprAsText();
+                return false;
+            }
+        }
+        return true;
+    }
 
-	/** Check, if each enabled member is evaluable at the given <code>VarTuple vars</code>. */
-	public boolean isEvaluable(VarTuple vars) {
-		for (int i = 0; i < getSize(); i++) {
-			CondMember cm = getCondMemberAt(i);
-			if (!cm.isEnabled())
-				continue;
-			else if (!cm.isEvaluable(vars))
-				return false;
-		}
-		return true;
-	}
+    /**
+     * Check, if ANDing of all enabled members yields true.
+     */
+    public boolean isTrue(String name) {
+        this.failedCondAsString = "";
+        for (int i = 0; i < getSize(); i++) {
+            CondMember cm = getCondMemberAt(i);
+            if (cm.isEnabled()) {
+                Vector<String> v = cm.getAllVariables();
+                if (v.contains(name) && !cm.isTrue()) {
+                    this.failedCondAsString = cm.getExprAsText();
+                    // System.out.println("CondTuple.isTrue(name) :: failed: "+
+                    // this.failedCondAsString);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-	String failedCondAsString;
+    /**
+     * Returns true, if the tuple contains members which can be evaluated and yield 'false'. Otherwise - false.
+     */
+    public boolean isFalse() {
+        this.failedCondAsString = "";
+        CondMember cm;
+        for (int i = 0; i < getSize(); i++) {
+            cm = getCondMemberAt(i);
+            if (!cm.isEnabled()) {
+                continue;
+            } else if (cm.isDefinite() && !cm.isTrue()) {
+                this.failedCondAsString = cm.getExprAsText();
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/** Check, if ANDing of all enabled members yields true. */
-	public boolean isTrue() {
-		this.failedCondAsString = "";
-		for (int i = 0; i < getSize(); i++) {
-			CondMember cm = getCondMemberAt(i);
-			if (!cm.isEnabled())
-				continue;
-			else if (!cm.isTrue()) {
-				this.failedCondAsString = cm.getExprAsText();
-				return false;
-			}
-		}
-		return true;
-	}
+    /**
+     * Returns true, if the tuple contains enabled members with a variable named by the given
+     * <code>String varname</code> and which can be evaluated and yield 'false'. Otherwise returns false.
+     */
+    public boolean isFalse(String varname) {
+        this.failedCondAsString = "";
+        CondMember cm;
+        for (int i = 0; i < getSize(); i++) {
+            cm = getCondMemberAt(i);
+            if (cm.isEnabled()) {
+                Vector<String> v = cm.getAllVariables();
+                if (v.contains(varname) && cm.isDefinite() && !cm.isTrue()) {
+                    this.failedCondAsString = cm.getExprAsText();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-	/** Check, if ANDing of all enabled members yields true. */
-	public boolean isTrue(String name) {
-		this.failedCondAsString = "";
-		for (int i = 0; i < getSize(); i++) {
-			CondMember cm = getCondMemberAt(i);
-			if (cm.isEnabled()) {
-				Vector<String> v = cm.getAllVariables();
-				if (v.contains(name) && !cm.isTrue()) {
-					this.failedCondAsString = cm.getExprAsText();
-					// System.out.println("CondTuple.isTrue(name) :: failed: "+
-					// this.failedCondAsString);
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+    public String getFailedConditionAsString() {
+        String s = this.failedCondAsString;
+        this.failedCondAsString = "";
+        return s;
+    }
 
-	/**
-	 * Returns true, if the tuple contains members which can be evaluated and yield
-	 * 'false'. Otherwise - false.
-	 */
-	public boolean isFalse() {
-		this.failedCondAsString = "";
-		CondMember cm;
-		for (int i = 0; i < getSize(); i++) {
-			cm = getCondMemberAt(i);
-			if (!cm.isEnabled())
-				continue;
-			else if (cm.isDefinite() && !cm.isTrue()) {
-				this.failedCondAsString = cm.getExprAsText();
-				return true;
-			}
-		}
-		return false;
-	}
+    public void setVariableContext(boolean b) {
+        getContextView().setVariableContext(b);
+    }
 
-	/**
-	 * Returns true, if the tuple contains enabled members with a variable 
-	 * named by the given <code>String varname</code>
-	 * and which can be evaluated and yield 'false'. 
-	 * Otherwise returns false.
-	 */
-	public boolean isFalse(String varname) {
-		this.failedCondAsString = "";
-		CondMember cm;
-		for (int i = 0; i < getSize(); i++) {
-			cm = getCondMemberAt(i);
-			if (cm.isEnabled()) {
-				Vector<String> v = cm.getAllVariables();
-				if (v.contains(varname) && cm.isDefinite() && !cm.isTrue()) {
-					this.failedCondAsString = cm.getExprAsText();
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+    public Vector<String> getAllVariables() {
+        Vector<String> result = new Vector<String>();
+        for (int i = 0; i < getSize(); i++) {
+            CondMember member = getCondMemberAt(i);
+            Vector<String> names = member.getAllVariables();
+            for (int j = 0; j < names.size(); j++) {
+                String name = names.elementAt(j);
+                if (!result.contains(name)) {
+                    result.addElement(name);
+                }
+            }
+        }
+        return result;
+    }
 
-	public String getFailedConditionAsString() {
-		String s = this.failedCondAsString;
-		this.failedCondAsString = "";
-		return s;
-	}
+    public boolean usesVariable(String var) {
+        for (int i = 0; i < getSize(); i++) {
+            CondMember member = getCondMemberAt(i);
+            Vector<String> names = member.getAllVariables();
+            if (names.contains(var)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public void setVariableContext(boolean b) {
-		getContextView().setVariableContext(b);
-	}
+    public boolean compareTo(AttrInstance another) {
+        CondTuple vt = (CondTuple) another;
+        // compare tuple type
+        if (!this.type.compareTo(vt.getTupleType())) {
+            return false;
+        }
+        // compare member value
+        int length = getSize();
+        for (int i = 0; i < length; i++) {
+            CondMember v = getCondMemberAt(i);
+            CondMember v1 = vt.getCondMemberAt(i);
+            if ((v.getExpr() == null) && (v1.getExpr() == null))
+				; else if ((v.getExpr() == null) && (v1.getExpr() != null)) {
+                return false;
+            } else if ((v.getExpr() != null) && (v1.getExpr() == null)) {
+                return false;
+            } else if (!v.getExprAsText().equals(v1.getExprAsText())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public Vector<String> getAllVariables() {
-		Vector<String> result = new Vector<String>();
-		for (int i = 0; i < getSize(); i++) {
-			CondMember member = getCondMemberAt(i);
-			Vector<String> names = member.getAllVariables();
-			for (int j = 0; j < names.size(); j++) {
-				String name = names.elementAt(j);
-				if (!result.contains(name))
-					result.addElement(name);
-			}
-		}
-		return result;
-	}
+    public void showConditions() {
+        System.out.println("Attr. context conditions: ");
+        for (int i = 0; i < getSize(); i++) {
+            CondMember c = (CondMember) getMemberAt(i);
+            if (c != null) {
+                System.out.println(c.getExprAsText() + "      (" + c.getMark() + ")");
+            }
+        }
+        System.out.println("================================");
+    }
 
-	public boolean usesVariable(String var) {
-		for (int i = 0; i < getSize(); i++) {
-			CondMember member = getCondMemberAt(i);
-			Vector<String> names = member.getAllVariables();
-			if (names.contains(var))
-				return true;
-		}
-		return false;
-	}
+    public void XwriteObject(XMLHelper h) {
+        int num = getSize();
+        for (int i = 0; i < num; i++) {
+            CondMember cm = getCondMemberAt(i);
+            h.openSubTag("Condition");
+            if (!cm.isEnabled()) {
+                h.addAttr("enabled", "false");
+            }
+            h.openSubTag("Value");
+            h.addAttrValue("string", cm.getExprAsText()); //h.addAttrValue("String", cm.getExprAsText());
+            h.close();
+            h.close();
+        }
+    }
 
-	public boolean compareTo(AttrInstance another) {
-		CondTuple vt = (CondTuple) another;
-		// compare tuple type
-		if (!this.type.compareTo(vt.getTupleType()))
-			return false;
-		// compare member value
-		int length = getSize();
-		for (int i = 0; i < length; i++) {
-			CondMember v = getCondMemberAt(i);
-			CondMember v1 = vt.getCondMemberAt(i);
-			if ((v.getExpr() == null) && (v1.getExpr() == null))
-				;
-			else if ((v.getExpr() == null) && (v1.getExpr() != null))
-				return false;
-			else if ((v.getExpr() != null) && (v1.getExpr() == null))
-				return false;
-			else if (!v.getExprAsText().equals(v1.getExprAsText()))
-				return false;
-		}
-		return true;
-	}
-
-	public void showConditions() {
-		System.out.println("Attr. context conditions: ");
-		for (int i = 0; i < getSize(); i++) {
-			CondMember c = (CondMember) getMemberAt(i);
-			if (c != null)
-				System.out.println(c.getExprAsText() + "      (" + c.getMark()+")");
-		}
-		System.out.println("================================");
-	}
-
-	public void XwriteObject(XMLHelper h) {
-		int num = getSize();
-		for (int i = 0; i < num; i++) {
-			CondMember cm = getCondMemberAt(i);
-			h.openSubTag("Condition");
-			if (!cm.isEnabled())
-				h.addAttr("enabled", "false");
-			h.openSubTag("Value");
-			h.addAttrValue("string", cm.getExprAsText()); //h.addAttrValue("String", cm.getExprAsText());
-			h.close();
-			h.close();
-		}
-	}
-
-	public void XreadObject(XMLHelper h) {
-		Enumeration<?> en = h.getEnumeration("", null, true, "Condition");
-		while (en.hasMoreElements()) {
-			h.peekElement(en.nextElement());
-			if (h.getDocumentVersion().equals("1.0")) {
-				boolean enabled = true;
-				Object attr_enabled = h.readAttr("enabled");
-				if ((attr_enabled != null)
-						&& ((String) attr_enabled).equals("false"))
-					enabled = false;
-				if (h.readSubTag("Value")) {
-					Object obj = null;
-					String javaTag = h.readSubTag();
-					if (javaTag.equals("java")) {							
-						obj = h.getAttrValue("String");
-						if (obj == null)
-							obj = h.getAttrValue("string");
-					}
-					if (javaTag.equals("string") || javaTag.equals("String")) {								
-						obj = h.getElementData(h.top());
-					}
-					h.close();
+    public void XreadObject(XMLHelper h) {
+        Enumeration<?> en = h.getEnumeration("", null, true, "Condition");
+        while (en.hasMoreElements()) {
+            h.peekElement(en.nextElement());
+            if (h.getDocumentVersion().equals("1.0")) {
+                boolean enabled = true;
+                Object attr_enabled = h.readAttr("enabled");
+                if ((attr_enabled != null)
+                        && ((String) attr_enabled).equals("false")) {
+                    enabled = false;
+                }
+                if (h.readSubTag("Value")) {
+                    Object obj = null;
+                    String javaTag = h.readSubTag();
+                    if (javaTag.equals("java")) {
+                        obj = h.getAttrValue("String");
+                        if (obj == null) {
+                            obj = h.getAttrValue("string");
+                        }
+                    }
+                    if (javaTag.equals("string") || javaTag.equals("String")) {
+                        obj = h.getElementData(h.top());
+                    }
+                    h.close();
 //					obj = h.getAttrValue("String"); // old code
-					if (obj instanceof String) {
-						// loesche '\n' und mehrere Leerzeichen aus dem String
-						String objStr = (String) obj;
-						String test = objStr.replaceAll("\n", "");
-						while (test.indexOf("  ") != -1) {
-							objStr = test.replaceAll("  ", " ");
-							test = objStr.toString();
-						}
-						CondMember cond = (CondMember) addCondition(objStr);
-						if (cond != null)
-							cond.setEnabled(enabled);
-					}
-					h.close();
-				}
-			} else
-				addCondition(h.readAttr("value"));
-			h.close();
-		}
-	}
+                    if (obj instanceof String) {
+                        // loesche '\n' und mehrere Leerzeichen aus dem String
+                        String objStr = (String) obj;
+                        String test = objStr.replaceAll("\n", "");
+                        while (test.indexOf("  ") != -1) {
+                            objStr = test.replaceAll("  ", " ");
+                            test = objStr.toString();
+                        }
+                        CondMember cond = (CondMember) addCondition(objStr);
+                        if (cond != null) {
+                            cond.setEnabled(enabled);
+                        }
+                    }
+                    h.close();
+                }
+            } else {
+                addCondition(h.readAttr("value"));
+            }
+            h.close();
+        }
+    }
 
 }
 /*

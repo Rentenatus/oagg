@@ -1,16 +1,15 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 /* JJT: 0.2.2 */
-
 package agg.attribute.parser.javaExpr;
-
 
 /**
  * @version $Id: ASTNullLiteral.java,v 1.3 2010/07/29 10:09:22 olga Exp $
@@ -18,28 +17,28 @@ package agg.attribute.parser.javaExpr;
  */
 public class ASTNullLiteral extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTNullLiteral(String id) {
-		super(id);
-	}
+    ASTNullLiteral(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTNullLiteral(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTNullLiteral(id);
+    }
 
-	public void checkContext() {
-		setNodeClass(objectClass);
-	}
+    public void checkContext() {
+        setNodeClass(objectClass);
+    }
 
-	public void interpret() {
+    public void interpret() {
 //		stack[++top] = null;
-		stack.add(++top, null);
-	}
+        stack.add(++top, null);
+    }
 
-	public String getString() {
-		return "null";
-	}
+    public String getString() {
+        return "null";
+    }
 }
 /*
  * $Log: ASTNullLiteral.java,v $

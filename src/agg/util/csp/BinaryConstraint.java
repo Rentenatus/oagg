@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: BinaryConstraint.java,v 1.7 2010/08/23 07:35:26 olga Exp $
-
 // $Log: BinaryConstraint.java,v $
 // Revision 1.7  2010/08/23 07:35:26  olga
 // tuning
@@ -69,110 +69,114 @@
 // Revision 1.1  1997/09/16 15:56:18  mich
 // Initial revision
 //
-
 package agg.util.csp;
 
-/** An abstract class for binary constraints. */
+/**
+ * An abstract class for binary constraints.
+ */
 public abstract class BinaryConstraint {
-	protected Variable itsVar1;
 
-	protected Variable itsVar2;
+    protected Variable itsVar1;
 
-	protected int itsWeight;
+    protected Variable itsVar2;
 
-	/**
-	 * Construct myself to be a binary constraint between variables
-	 * <code>v1</code> and <code>v2</code>, with the specified
-	 * <code>weight</code>.
-	 */
-	public BinaryConstraint(Variable v1, Variable v2, int weight) {
-		this.itsVar1 = v1;
-		this.itsVar2 = v2;
-		this.itsWeight = weight;
-		this.itsVar1.addConstraint(this);
-		this.itsWeight++;
-		this.itsVar2.addConstraint(this);
-		this.itsWeight++;
-	}
+    protected int itsWeight;
 
-	/**
-	 * Construct myself to be a &quot;unary&quot; constraint on <code>v</code>.
-	 * Actually, this is a BinaryConstraint with both its variables being
-	 * <code>v</code>.
-	 */
-	public BinaryConstraint(Variable v, int weight) {
-		this.itsVar1 = v;
-		this.itsVar2 = v;
-		this.itsWeight = weight;
-		this.itsVar1.addConstraint(this);
-		this.itsWeight++;
-	}
+    /**
+     * Construct myself to be a binary constraint between variables <code>v1</code> and <code>v2</code>, with the
+     * specified <code>weight</code>.
+     */
+    public BinaryConstraint(Variable v1, Variable v2, int weight) {
+        this.itsVar1 = v1;
+        this.itsVar2 = v2;
+        this.itsWeight = weight;
+        this.itsVar1.addConstraint(this);
+        this.itsWeight++;
+        this.itsVar2.addConstraint(this);
+        this.itsWeight++;
+    }
 
-	public abstract void clear();
-	
-	// pablo -->
-	/**
-	 * Determines whether this constraint is active or not. 
-	 */
-	private boolean active = true;
-	
-	/**
-	 * Activate this constraint.
-	 */
-	public void activate() {
-		this.active = true;
-	}
-	
-	/**
-	 * Deactivate this constraint.
-	 */
-	public void deactivate() {
-		this.active = false;
-	}
-	// pablo >
-	
-	/** Return <code>true</code> iff all variables involved are instantiated. */
-	public boolean isApplicable() {
-		if(!this.active) // pablo
-			return false; 
-		
-		return ((this.itsVar1.getInstance() != null) && (this.itsVar2.getInstance() != null));
-	}
+    /**
+     * Construct myself to be a &quot;unary&quot; constraint on <code>v</code>. Actually, this is a BinaryConstraint
+     * with both its variables being <code>v</code>.
+     */
+    public BinaryConstraint(Variable v, int weight) {
+        this.itsVar1 = v;
+        this.itsVar2 = v;
+        this.itsWeight = weight;
+        this.itsVar1.addConstraint(this);
+        this.itsWeight++;
+    }
 
-	/**
-	 * Check if the constraint is satisfied.
-	 * <p>
-	 * Pre: <code>isApplicable()</code>.
-	 */
-	public abstract boolean execute();
+    public abstract void clear();
 
-	/**
-	 * When <code>execute()</code> failed, this returns the variable that is
-	 * supposed to have caused the failure.
-	 * 
-	 * @param rvar
-	 *            the variable (of the two involved) that has been instantiated
-	 *            most recently.
-	 */
-	public Variable getCause(Variable rvar) {
-		return (rvar.equals(this.itsVar1)) ? this.itsVar2 : this.itsVar1;
-	}
+    // pablo -->
+    /**
+     * Determines whether this constraint is active or not.
+     */
+    private boolean active = true;
 
-	/** Return my first variable. */
-	public Variable getVar1() {
-		return this.itsVar1;
-	}
+    /**
+     * Activate this constraint.
+     */
+    public void activate() {
+        this.active = true;
+    }
 
-	/** Return my second variable. */
-	public Variable getVar2() {
-		return this.itsVar2;
-	}
+    /**
+     * Deactivate this constraint.
+     */
+    public void deactivate() {
+        this.active = false;
+    }
+    // pablo >
 
-	/**
-	 * Return my weight. The higher the value, the higher the significance of
-	 * the constraint.
-	 */
-	public int getWeight() {
-		return this.itsWeight;
-	}
+    /**
+     * Return <code>true</code> iff all variables involved are instantiated.
+     */
+    public boolean isApplicable() {
+        if (!this.active) // pablo
+        {
+            return false;
+        }
+
+        return ((this.itsVar1.getInstance() != null) && (this.itsVar2.getInstance() != null));
+    }
+
+    /**
+     * Check if the constraint is satisfied.
+     * <p>
+     * Pre: <code>isApplicable()</code>.
+     */
+    public abstract boolean execute();
+
+    /**
+     * When <code>execute()</code> failed, this returns the variable that is supposed to have caused the failure.
+     *
+     * @param rvar the variable (of the two involved) that has been instantiated most recently.
+     */
+    public Variable getCause(Variable rvar) {
+        return (rvar.equals(this.itsVar1)) ? this.itsVar2 : this.itsVar1;
+    }
+
+    /**
+     * Return my first variable.
+     */
+    public Variable getVar1() {
+        return this.itsVar1;
+    }
+
+    /**
+     * Return my second variable.
+     */
+    public Variable getVar2() {
+        return this.itsVar2;
+    }
+
+    /**
+     * Return my weight. The higher the value, the higher the significance of the constraint.
+     */
+    public int getWeight() {
+        return this.itsWeight;
+    }
 }

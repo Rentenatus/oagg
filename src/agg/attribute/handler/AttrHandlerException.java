@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler;
 
 /**
@@ -14,11 +15,12 @@ package agg.attribute.handler;
  * @author $Author: olga $
  */
 public class AttrHandlerException extends Exception {
-	static final long serialVersionUID = -4225632049802939573L;
 
-	public AttrHandlerException(String msg) {
-		super(msg);
-	}
+    static final long serialVersionUID = -4225632049802939573L;
+
+    public AttrHandlerException(String msg) {
+        super(msg);
+    }
 }
 /*
  * $Log: AttrHandlerException.java,v $

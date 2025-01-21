@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -22,69 +23,66 @@ import agg.attribute.gui.AttrEditorManager;
 
 /**
  * Editor for all data of an attribute instance tuple.
- * 
+ *
  * @author $Author: olga $
- * @version $Id: FullInstanceTupleEditor.java,v 1.1 2005/08/25 11:56:58 enrico
- *          Exp $
+ * @version $Id: FullInstanceTupleEditor.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
  */
 public class FullInstanceTupleEditor extends TabMesTool_TupleEditor {
 
-	public FullInstanceTupleEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-		setViewSetting(getViewSetting().getOpenView()); // all entries visible;
-	}
+    public FullInstanceTupleEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+        setViewSetting(getViewSetting().getOpenView()); // all entries visible;
+    }
 
-	protected void arrangeMainPanel() {
-	}
+    protected void arrangeMainPanel() {
+    }
 
-	protected void genericCustomizeMainLayout() {
-		super.genericCustomizeMainLayout();
-		this.mainPanel.setPreferredSize(new Dimension(400, 300));
-	}
+    protected void genericCustomizeMainLayout() {
+        super.genericCustomizeMainLayout();
+        this.mainPanel.setPreferredSize(new Dimension(400, 300));
+    }
 
-	//
-	// Overriding...
+    //
+    // Overriding...
+    /**
+     * The heart of the matter. Columns are: [ VISIBILITY, HANDLER, TYPE, NAME, EXPR, CORRECTNESS ]. Extendable: true.
+     * Titles: default. Editable: default (all except for CORRECTNESS).
+     */
+    protected TupleTableModel createTableModel() {
+        int columns[] = {VISIBILITY, HANDLER, TYPE, NAME, EXPR, CORRECTNESS};
+        TupleTableModel tm = new TupleTableModel(this);
+        tm.setColumnArray(columns);
+        tm.setExtensible(true);
+        return tm;
+    }
 
-	/**
-	 * The heart of the matter. Columns are: [ VISIBILITY, HANDLER, TYPE, NAME,
-	 * EXPR, CORRECTNESS ]. Extendable: true. Titles: default. Editable: default
-	 * (all except for CORRECTNESS).
-	 */
-	protected TupleTableModel createTableModel() {
-		int columns[] = { VISIBILITY, HANDLER, TYPE, NAME, EXPR, CORRECTNESS };
-		TupleTableModel tm = new TupleTableModel(this);
-		tm.setColumnArray(columns);
-		tm.setExtensible(true);
-		return tm;
-	}
+    protected void createToolBar() {
+        JLabel label1 = new JLabel("Tuple:");
+        JLabel label2 = new JLabel("Member:");
 
-	protected void createToolBar() {
-		JLabel label1 = new JLabel("Tuple:");
-		JLabel label2 = new JLabel("Member:");
+        JToolBar toolBar1 = new JToolBar();
+        toolBar1.setFloatable(false);
+        toolBar1.add(getResetAction());
+        toolBar1.addSeparator();
+        toolBar1.add(getShowAllAction());
+        toolBar1.addSeparator();
+        toolBar1.add(getHideAllAction());
 
-		JToolBar toolBar1 = new JToolBar();
-		toolBar1.setFloatable(false);
-		toolBar1.add(getResetAction());
-		toolBar1.addSeparator();
-		toolBar1.add(getShowAllAction());
-		toolBar1.addSeparator();
-		toolBar1.add(getHideAllAction());
+        JToolBar toolBar2 = new JToolBar();
+        toolBar2.setFloatable(false);
+        toolBar2.add(getDeleteAction());
+        toolBar2.addSeparator();
+        toolBar2.add(getEvaluateAction());
 
-		JToolBar toolBar2 = new JToolBar();
-		toolBar2.setFloatable(false);
-		toolBar2.add(getDeleteAction());
-		toolBar2.addSeparator();
-		toolBar2.add(getEvaluateAction());
-
-		Box hBox = Box.createHorizontalBox();
-		hBox.add(label1);
-		hBox.add(toolBar1);
-		hBox.add(Box.createGlue());
-		hBox.add(label2);
-		hBox.add(toolBar2);
-		this.toolBarPanel = new JPanel(new BorderLayout());
-		this.toolBarPanel.add(hBox, BorderLayout.CENTER);
-	}
+        Box hBox = Box.createHorizontalBox();
+        hBox.add(label1);
+        hBox.add(toolBar1);
+        hBox.add(Box.createGlue());
+        hBox.add(label2);
+        hBox.add(toolBar2);
+        this.toolBarPanel = new JPanel(new BorderLayout());
+        this.toolBarPanel.add(hBox, BorderLayout.CENTER);
+    }
 }
 /*
  * $Log: FullInstanceTupleEditor.java,v $

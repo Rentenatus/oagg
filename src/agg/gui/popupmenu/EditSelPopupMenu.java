@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.popupmenu;
 
 import java.awt.Component;
@@ -43,467 +44,490 @@ import agg.xt_basis.TypeSet;
 @SuppressWarnings("serial")
 public class EditSelPopupMenu extends JPopupMenu {
 
-	public EditSelPopupMenu() {
-		super("Operations");
-		setLabel("Operations");
-		setBorderPainted(true);
+    public EditSelPopupMenu() {
+        super("Operations");
+        setLabel("Operations");
+        setBorderPainted(true);
 
-		this.deleteMenu = createDeleteMenu();
-		this.useDeleteMenu = false;
+        this.deleteMenu = createDeleteMenu();
+        this.useDeleteMenu = false;
 
-		this.mi = add(new JMenuItem("      Operations"));
-		// mi.setEnabled(false);
-		addSeparator();
+        this.mi = add(new JMenuItem("      Operations"));
+        // mi.setEnabled(false);
+        addSeparator();
 
-		this.mi = add(new JMenuItem("Attributes ..."));
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if ((EditSelPopupMenu.this.gp == null) 
-						|| (EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-						|| (EditSelPopupMenu.this.gp.getGraph() == null) 
-						|| (EditSelPopupMenu.this.ego == null))
-					return;
+        this.mi = add(new JMenuItem("Attributes ..."));
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if ((EditSelPopupMenu.this.gp == null)
+                        || (EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
+                        || (EditSelPopupMenu.this.gp.getGraph() == null)
+                        || (EditSelPopupMenu.this.ego == null)) {
+                    return;
+                }
 
-				EditSelPopupMenu.this.mapping = false;
-				// gp.getCanvas().saveScrollBarValue();
+                EditSelPopupMenu.this.mapping = false;
+                // gp.getCanvas().saveScrollBarValue();
 
-				if (EditSelPopupMenu.this.ruleEditor == null)
-					EditSelPopupMenu.this.editor.setAttrEditorOnTopForGraphObject(EditSelPopupMenu.this.ego);
-				else
-					EditSelPopupMenu.this.editor.setAttrEditorOnBottomForGraphObject(EditSelPopupMenu.this.ego);
+                if (EditSelPopupMenu.this.ruleEditor == null) {
+                    EditSelPopupMenu.this.editor.setAttrEditorOnTopForGraphObject(EditSelPopupMenu.this.ego);
+                } else {
+                    EditSelPopupMenu.this.editor.setAttrEditorOnBottomForGraphObject(EditSelPopupMenu.this.ego);
+                }
 
-				EditSelPopupMenu.this.gp.updateGraphics();
-			}
-		});
-		addSeparator();
+                EditSelPopupMenu.this.gp.updateGraphics();
+            }
+        });
+        addSeparator();
 
-		this.mi = add(new JMenuItem("Copy Selected"));
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if ((EditSelPopupMenu.this.gp == null) 
-						|| (EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-						|| (EditSelPopupMenu.this.gp.getGraph() == null))
-					return;
+        this.mi = add(new JMenuItem("Copy Selected"));
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if ((EditSelPopupMenu.this.gp == null)
+                        || (EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
+                        || (EditSelPopupMenu.this.gp.getGraph() == null)) {
+                    return;
+                }
 
-				EditSelPopupMenu.this.mapping = false;
-				if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
+                EditSelPopupMenu.this.mapping = false;
+                if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
 //					EditSelPopupMenu.this.gp.setLastEditMode(EditSelPopupMenu.this.gp.getEditMode());
 //					EditSelPopupMenu.this.gp.setLastEditCursor(EditSelPopupMenu.this.gp.getEditCursor());
 //					EditSelPopupMenu.this.gp.setEditMode(EditorConstants.COPY);
 //					if (EditSelPopupMenu.this.editor != null)
 //						EditSelPopupMenu.this.editor
 //								.setMsg("To place a copy click on the background of the panel.");
-					
-					AGGAppl.getInstance().getGraGraEditor().copyProc();
-					AGGAppl.getInstance().setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-				}
-			}
-		});
 
-		this.mi = add(new JMenuItem("Deselect"));
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				EditSelPopupMenu.this.mapping = false;
-				if (EditSelPopupMenu.this.gp != null 
-						&& EditSelPopupMenu.this.gp.getGraph() != null 
-						&& EditSelPopupMenu.this.ego != null) {
-					EditSelPopupMenu.this.gp.deselect(EditSelPopupMenu.this.ego);
-				}
-			}
-		});
+                    AGGAppl.getInstance().getGraGraEditor().copyProc();
+                    AGGAppl.getInstance().setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+                }
+            }
+        });
 
-		this.mi = add(new JMenuItem("Deselect All"));
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				EditSelPopupMenu.this.mapping = false;
-				if (EditSelPopupMenu.this.gp != null 
-						&& EditSelPopupMenu.this.gp.getGraph() != null) {
-					EditSelPopupMenu.this.gp.deselectAll();
-				}
-			}
-		});
-		addSeparator();
+        this.mi = add(new JMenuItem("Deselect"));
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                EditSelPopupMenu.this.mapping = false;
+                if (EditSelPopupMenu.this.gp != null
+                        && EditSelPopupMenu.this.gp.getGraph() != null
+                        && EditSelPopupMenu.this.ego != null) {
+                    EditSelPopupMenu.this.gp.deselect(EditSelPopupMenu.this.ego);
+                }
+            }
+        });
 
-		this.miDelete = createDeleteItem();
-		this.deleteMenu = createDeleteMenu();
-		add(this.miDelete);
-		if (this.useDeleteMenu)
-			add(this.deleteMenu);
-		addSeparator();
+        this.mi = add(new JMenuItem("Deselect All"));
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                EditSelPopupMenu.this.mapping = false;
+                if (EditSelPopupMenu.this.gp != null
+                        && EditSelPopupMenu.this.gp.getGraph() != null) {
+                    EditSelPopupMenu.this.gp.deselectAll();
+                }
+            }
+        });
+        addSeparator();
 
-		this.mi = add(new JMenuItem("Straighten Selected"));
-		this.miStraighten = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if ((EditSelPopupMenu.this.gp == null) 
-						|| (EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-						|| (EditSelPopupMenu.this.gp.getGraph() == null))
-					return;
+        this.miDelete = createDeleteItem();
+        this.deleteMenu = createDeleteMenu();
+        add(this.miDelete);
+        if (this.useDeleteMenu) {
+            add(this.deleteMenu);
+        }
+        addSeparator();
 
-				EditSelPopupMenu.this.mapping = false;
-				EditSelPopupMenu.this.gp.straightenSelectedArcs();
-			}
-		});
-		addSeparator();
+        this.mi = add(new JMenuItem("Straighten Selected"));
+        this.miStraighten = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if ((EditSelPopupMenu.this.gp == null)
+                        || (EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
+                        || (EditSelPopupMenu.this.gp.getGraph() == null)) {
+                    return;
+                }
 
-		this.addIdentic = new JMenu("Add Identic To");
-		this.add(this.addIdentic);
-		this.mi = this.addIdentic.add(new JMenuItem("Rule RHS"));
-		this.miAddIdenticToRule = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditSelPopupMenu.this.gp == null 
-						|| EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
-				if (EditSelPopupMenu.this.ruleEditor != null) {
-					if (EditSelPopupMenu.this.gp == EditSelPopupMenu.this.ruleEditor.getLeftPanel()) {
-						EditSelPopupMenu.this.ruleEditor.getRule().addIdenticToRule(
-								EditSelPopupMenu.this.ruleEditor.getRule().getLeft()
-										.getSelectedObjs());
-						EditSelPopupMenu.this.ruleEditor.getRule().updateRule();
-						EditSelPopupMenu.this.ruleEditor.updateGraphics();
-					}
-				}
-			}
-		});
-		
-		this.mi = this.addIdentic.add(new JMenuItem("NAC"));
-		this.miAddIdenticToNAC = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditSelPopupMenu.this.gp == null 
-						|| EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
-				if (EditSelPopupMenu.this.ruleEditor != null) {
-					if (EditSelPopupMenu.this.gp == EditSelPopupMenu.this.ruleEditor.getLeftPanel()) {
-						if (EditSelPopupMenu.this.ruleEditor.getNAC() == null) {
-							JOptionPane
-									.showMessageDialog(
-											null,
-											"Cannot create an identic object!"
-													+ System
-															.getProperty("line.separator")
-													+ "Please create and open an empty NAC graph first.",
-											"Identic Node/Edge",
-											JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-						EditSelPopupMenu.this.ruleEditor.getRule()
-								.addIdenticToNAC(
-										EditSelPopupMenu.this.ruleEditor.getRule().getLeft()
-												.getSelectedObjs(),
-												EditSelPopupMenu.this.ruleEditor.getNAC());
-						EditSelPopupMenu.this.ruleEditor.getRule().updateNAC(EditSelPopupMenu.this.ruleEditor.getNAC());
-						EditSelPopupMenu.this.ruleEditor.updateGraphics();
-					}
-				}
-			}
-		});
+                EditSelPopupMenu.this.mapping = false;
+                EditSelPopupMenu.this.gp.straightenSelectedArcs();
+            }
+        });
+        addSeparator();
 
-		this.mi = this.addIdentic.add(new JMenuItem("PAC"));
-		this.miAddIdenticToPAC = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditSelPopupMenu.this.gp == null 
-						|| EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
-				if (EditSelPopupMenu.this.ruleEditor != null) {
-					if (EditSelPopupMenu.this.gp == EditSelPopupMenu.this.ruleEditor.getLeftPanel()) {
-						if (EditSelPopupMenu.this.ruleEditor.getPAC() == null) {
-							JOptionPane
-									.showMessageDialog(
-											null,
-											"Cannot create an identic object!"
-													+ System
-															.getProperty("line.separator")
-													+ "Please create and open an empty PAC graph first.",
-											"Identic Node/Edge",
-											JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-						EditSelPopupMenu.this.ruleEditor.getRule()
-								.addIdenticToPAC(
-										EditSelPopupMenu.this.ruleEditor.getRule().getLeft()
-												.getSelectedObjs(),
-												EditSelPopupMenu.this.ruleEditor.getPAC());
-						EditSelPopupMenu.this.ruleEditor.getRule().updatePAC(EditSelPopupMenu.this.ruleEditor.getPAC());
-						EditSelPopupMenu.this.ruleEditor.updateGraphics();
-					}
-				}
-			}
-		});
-		
-		this.mi = this.addIdentic.add(new JMenuItem("General AC"));
-		this.miAddIdenticToGAC = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditSelPopupMenu.this.gp == null 
-						|| EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
-				if (EditSelPopupMenu.this.ruleEditor != null) {
-					if (EditSelPopupMenu.this.gp == EditSelPopupMenu.this.ruleEditor.getLeftPanel()) {
-						if (EditSelPopupMenu.this.ruleEditor.getNestedAC() == null) {
-							JOptionPane
-									.showMessageDialog(
-											null,
-											"Cannot create an identic object!"
-													+ System
-															.getProperty("line.separator")
-													+ "Please create and open an empty General AC graph first.",
-											"Identic Node/Edge",
-											JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-						EditSelPopupMenu.this.ruleEditor.getRule()
-								.addIdenticToNestedAC(
-										EditSelPopupMenu.this.ruleEditor.getRule().getLeft()
-												.getSelectedObjs(),
-												EditSelPopupMenu.this.ruleEditor.getNestedAC());
-						EditSelPopupMenu.this.ruleEditor.getRule().updateNestedAC(EditSelPopupMenu.this.ruleEditor.getNestedAC());
-						EditSelPopupMenu.this.ruleEditor.updateGraphics();
-					}
-				}
-			}
-		});
-		
-		this.mi = add(new JMenuItem("Map Selected"));
-		this.miMap = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditSelPopupMenu.this.gp == null 
-						|| EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
+        this.addIdentic = new JMenu("Add Identic To");
+        this.add(this.addIdentic);
+        this.mi = this.addIdentic.add(new JMenuItem("Rule RHS"));
+        this.miAddIdenticToRule = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditSelPopupMenu.this.gp == null
+                        || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
+                if (EditSelPopupMenu.this.ruleEditor != null) {
+                    if (EditSelPopupMenu.this.gp == EditSelPopupMenu.this.ruleEditor.getLeftPanel()) {
+                        EditSelPopupMenu.this.ruleEditor.getRule().addIdenticToRule(
+                                EditSelPopupMenu.this.ruleEditor.getRule().getLeft()
+                                        .getSelectedObjs());
+                        EditSelPopupMenu.this.ruleEditor.getRule().updateRule();
+                        EditSelPopupMenu.this.ruleEditor.updateGraphics();
+                    }
+                }
+            }
+        });
 
-				EditSelPopupMenu.this.mapping = true;
-				setLastEditModeBeforMapping(EditSelPopupMenu.this.gp);
+        this.mi = this.addIdentic.add(new JMenuItem("NAC"));
+        this.miAddIdenticToNAC = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditSelPopupMenu.this.gp == null
+                        || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
+                if (EditSelPopupMenu.this.ruleEditor != null) {
+                    if (EditSelPopupMenu.this.gp == EditSelPopupMenu.this.ruleEditor.getLeftPanel()) {
+                        if (EditSelPopupMenu.this.ruleEditor.getNAC() == null) {
+                            JOptionPane
+                                    .showMessageDialog(
+                                            null,
+                                            "Cannot create an identic object!"
+                                            + System
+                                                    .getProperty("line.separator")
+                                            + "Please create and open an empty NAC graph first.",
+                                            "Identic Node/Edge",
+                                            JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        EditSelPopupMenu.this.ruleEditor.getRule()
+                                .addIdenticToNAC(
+                                        EditSelPopupMenu.this.ruleEditor.getRule().getLeft()
+                                                .getSelectedObjs(),
+                                        EditSelPopupMenu.this.ruleEditor.getNAC());
+                        EditSelPopupMenu.this.ruleEditor.getRule().updateNAC(EditSelPopupMenu.this.ruleEditor.getNAC());
+                        EditSelPopupMenu.this.ruleEditor.updateGraphics();
+                    }
+                }
+            }
+        });
 
-				if (EditSelPopupMenu.this.editor != null) {
-					EditSelPopupMenu.this.editor.getGraphEditor().setEditMode(EditorConstants.MAPSEL);
-					EditSelPopupMenu.this.editor.getRuleEditor().setEditMode(EditorConstants.MAPSEL);
-					EditSelPopupMenu.this.editor.getRuleEditor().setObjMapping(true);
-					EditSelPopupMenu.this.editor
-							.setMsg("Click on a target object you want to map or click on the background you want to break the mapping.");
-				} else if (EditSelPopupMenu.this.ruleEditor != null) {
-					EditSelPopupMenu.this.ruleEditor.setEditMode(EditorConstants.MAPSEL);
-					EditSelPopupMenu.this.ruleEditor.setObjMapping(true);
-					EditSelPopupMenu.this.ruleEditor
-							.setMsg("Click on on a target object you want to map or click on the background you want to break the mapping.");
-				}
-			}
-		});
+        this.mi = this.addIdentic.add(new JMenuItem("PAC"));
+        this.miAddIdenticToPAC = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditSelPopupMenu.this.gp == null
+                        || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
+                if (EditSelPopupMenu.this.ruleEditor != null) {
+                    if (EditSelPopupMenu.this.gp == EditSelPopupMenu.this.ruleEditor.getLeftPanel()) {
+                        if (EditSelPopupMenu.this.ruleEditor.getPAC() == null) {
+                            JOptionPane
+                                    .showMessageDialog(
+                                            null,
+                                            "Cannot create an identic object!"
+                                            + System
+                                                    .getProperty("line.separator")
+                                            + "Please create and open an empty PAC graph first.",
+                                            "Identic Node/Edge",
+                                            JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        EditSelPopupMenu.this.ruleEditor.getRule()
+                                .addIdenticToPAC(
+                                        EditSelPopupMenu.this.ruleEditor.getRule().getLeft()
+                                                .getSelectedObjs(),
+                                        EditSelPopupMenu.this.ruleEditor.getPAC());
+                        EditSelPopupMenu.this.ruleEditor.getRule().updatePAC(EditSelPopupMenu.this.ruleEditor.getPAC());
+                        EditSelPopupMenu.this.ruleEditor.updateGraphics();
+                    }
+                }
+            }
+        });
 
-		this.mi = add(new JMenuItem("Unmap Selected"));
-		this.miUnmap = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditSelPopupMenu.this.gp == null 
-						|| EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
+        this.mi = this.addIdentic.add(new JMenuItem("General AC"));
+        this.miAddIdenticToGAC = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditSelPopupMenu.this.gp == null
+                        || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
+                if (EditSelPopupMenu.this.ruleEditor != null) {
+                    if (EditSelPopupMenu.this.gp == EditSelPopupMenu.this.ruleEditor.getLeftPanel()) {
+                        if (EditSelPopupMenu.this.ruleEditor.getNestedAC() == null) {
+                            JOptionPane
+                                    .showMessageDialog(
+                                            null,
+                                            "Cannot create an identic object!"
+                                            + System
+                                                    .getProperty("line.separator")
+                                            + "Please create and open an empty General AC graph first.",
+                                            "Identic Node/Edge",
+                                            JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        EditSelPopupMenu.this.ruleEditor.getRule()
+                                .addIdenticToNestedAC(
+                                        EditSelPopupMenu.this.ruleEditor.getRule().getLeft()
+                                                .getSelectedObjs(),
+                                        EditSelPopupMenu.this.ruleEditor.getNestedAC());
+                        EditSelPopupMenu.this.ruleEditor.getRule().updateNestedAC(EditSelPopupMenu.this.ruleEditor.getNestedAC());
+                        EditSelPopupMenu.this.ruleEditor.updateGraphics();
+                    }
+                }
+            }
+        });
 
-				EditSelPopupMenu.this.mapping = false;
-				unmapSelectedGraphObjects(false);
-			}
-		});
+        this.mi = add(new JMenuItem("Map Selected"));
+        this.miMap = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditSelPopupMenu.this.gp == null
+                        || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
 
-		addSeparator();
+                EditSelPopupMenu.this.mapping = true;
+                setLastEditModeBeforMapping(EditSelPopupMenu.this.gp);
 
-		this.mi = add(new JMenuItem("Set Parent"));
-		this.miSetParent = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditSelPopupMenu.this.gp == null 
-						|| EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
+                if (EditSelPopupMenu.this.editor != null) {
+                    EditSelPopupMenu.this.editor.getGraphEditor().setEditMode(EditorConstants.MAPSEL);
+                    EditSelPopupMenu.this.editor.getRuleEditor().setEditMode(EditorConstants.MAPSEL);
+                    EditSelPopupMenu.this.editor.getRuleEditor().setObjMapping(true);
+                    EditSelPopupMenu.this.editor
+                            .setMsg("Click on a target object you want to map or click on the background you want to break the mapping.");
+                } else if (EditSelPopupMenu.this.ruleEditor != null) {
+                    EditSelPopupMenu.this.ruleEditor.setEditMode(EditorConstants.MAPSEL);
+                    EditSelPopupMenu.this.ruleEditor.setObjMapping(true);
+                    EditSelPopupMenu.this.ruleEditor
+                            .setMsg("Click on on a target object you want to map or click on the background you want to break the mapping.");
+                }
+            }
+        });
 
-				if (EditSelPopupMenu.this.editor != null) {
-					EditSelPopupMenu.this.editor.getGraphEditor().setEditMode(
-							EditorConstants.SET_PARENT);
-					EditSelPopupMenu.this.editor.setMsg("Click on a node to add inheritance relation.");
-				}
-			}
-		});
+        this.mi = add(new JMenuItem("Unmap Selected"));
+        this.miUnmap = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditSelPopupMenu.this.gp == null
+                        || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
 
-		this.mi = add(new JMenuItem("Unset Parent"));
-		this.miUnsetParent = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if ((EditSelPopupMenu.this.gp == null) 
-						|| (EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-						|| !EditSelPopupMenu.this.gp.getGraph().isEditable())
-					return;
-				
-				if (EditSelPopupMenu.this.ego instanceof EdNode) {
-					Node bNode = EditSelPopupMenu.this.ego.getNode().getBasisNode();
-					Graph bGraph = bNode.getContext();
-					if (bGraph.isTypeGraph()) {					
-						if (EditSelPopupMenu.this.editor != null) {
-							if (EditSelPopupMenu.this.graphEditor.getGraph().getBasisGraph()
-									.getTypeSet().getLevelOfTypeGraphCheck() != TypeSet.DISABLED) {
-								if (EditSelPopupMenu.this.graphEditor.getGraph().getTypeSet()
-										.isTypeUsed(EditSelPopupMenu.this.ego.getType())) {
-									JOptionPane
-											.showMessageDialog(
-													EditSelPopupMenu.this.applFrame,
-													"Cannot unset inheritance relation."
-															+ "\nPlease disable the type graph first.",
-													"Unset Parent",
-													JOptionPane.ERROR_MESSAGE);
-									return;
-								}
-							}
+                EditSelPopupMenu.this.mapping = false;
+                unmapSelectedGraphObjects(false);
+            }
+        });
 
-							if (bNode.getType().getParents().size() == 1) {
-								EditSelPopupMenu.this.graphEditor.getGraph().addChangedParentToUndo(
-										EditSelPopupMenu.this.ego);
-								EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
-								
-								EditSelPopupMenu.this.gp.getCanvas().performDeleteInheritanceRel((EdNode) EditSelPopupMenu.this.ego);
-		
-								EditSelPopupMenu.this.graphEditor.getGraph().undoManagerEndEdit();
+        addSeparator();
 
-								EditSelPopupMenu.this.graphEditor.getGraph().updateGraph();
-								EditSelPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
-							} else {
-								EditSelPopupMenu.this.editor.getGraphEditor().setEditMode(
-										EditorConstants.UNSET_PARENT);
-								EditSelPopupMenu.this.editor.setMsg("Click on a parent node to remove inheritance relation.");
-							}
-						}
-					}
-				}
-			}
-		});
+        this.mi = add(new JMenuItem("Set Parent"));
+        this.miSetParent = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditSelPopupMenu.this.gp == null
+                        || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
 
-		pack();
-		setBorderPainted(true);
-		// setDefaultLightWeightPopupEnabled(false);
-	}
+                if (EditSelPopupMenu.this.editor != null) {
+                    EditSelPopupMenu.this.editor.getGraphEditor().setEditMode(
+                            EditorConstants.SET_PARENT);
+                    EditSelPopupMenu.this.editor.setMsg("Click on a node to add inheritance relation.");
+                }
+            }
+        });
 
-	public void showMe(Component comp, int x, int y) {
-		if (this.editor != null) {
-			if (this.editor.getRuleEditor().getRule() == null)
-				setUnmapEnabled(false);
-			if (this.gp.getGraph() != null 
-					&& this.gp.getGraph().isTypeGraph())
-				setUnmapEnabled(false);
-		}
-		if (this.useDeleteMenu) {
-			int indx = this.getComponentIndex(this.deleteMenu);
-			if (indx == -1) {
-				indx = this.getComponentIndex(this.miDelete);
-				if (indx != -1)
-					add(this.deleteMenu, indx + 1);
-			}
-		} else {
-			int indx = this.getComponentIndex(this.deleteMenu);
-			if (indx != -1)
-				remove(indx);
-		}
-		show(comp, x, y);
-	}
+        this.mi = add(new JMenuItem("Unset Parent"));
+        this.miUnsetParent = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if ((EditSelPopupMenu.this.gp == null)
+                        || (EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
+                        || !EditSelPopupMenu.this.gp.getGraph().isEditable()) {
+                    return;
+                }
 
-	boolean canDo() {
-		if ((this.gp == null) 
-				|| (this.gp.getEditMode() == EditorConstants.VIEW)
-				|| (this.gp.getGraph() == null))
-			return false;
-		
-		return true;
-	}
+                if (EditSelPopupMenu.this.ego instanceof EdNode) {
+                    Node bNode = EditSelPopupMenu.this.ego.getNode().getBasisNode();
+                    Graph bGraph = bNode.getContext();
+                    if (bGraph.isTypeGraph()) {
+                        if (EditSelPopupMenu.this.editor != null) {
+                            if (EditSelPopupMenu.this.graphEditor.getGraph().getBasisGraph()
+                                    .getTypeSet().getLevelOfTypeGraphCheck() != TypeSet.DISABLED) {
+                                if (EditSelPopupMenu.this.graphEditor.getGraph().getTypeSet()
+                                        .isTypeUsed(EditSelPopupMenu.this.ego.getType())) {
+                                    JOptionPane
+                                            .showMessageDialog(
+                                                    EditSelPopupMenu.this.applFrame,
+                                                    "Cannot unset inheritance relation."
+                                                    + "\nPlease disable the type graph first.",
+                                                    "Unset Parent",
+                                                    JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
+                            }
 
-	void doUpdateAfterDelete() {
-		if (this.gp.isMappedObjDeleted()) {
-			this.gp.setMappedObjDeleted(false);
-			if (this.editor != null) {
-				this.editor.getRuleEditor().getRule().update();
-				this.editor.getRuleEditor().getLeftPanel().updateGraphics();
-				this.editor.getRuleEditor().getRightPanel().updateGraphics();
-				this.editor.getRuleEditor().getNACPanel().updateGraphics();
-				this.editor.getGraphEditor().getGraph().update();
-				this.editor.getGraphEditor().getGraphPanel().updateGraphics();
-			} else if (this.ruleEditor != null) {
-				this.ruleEditor.getRule().update();
-				this.ruleEditor.getLeftPanel().updateGraphics();
-				this.ruleEditor.getRightPanel().updateGraphics();
-				this.ruleEditor.getNACPanel().updateGraphics();
-				if (this.graphEditor != null) {
-					this.graphEditor.getGraph().update();
-					this.graphEditor.getGraphPanel().updateGraphics();
-				}
-			} else if (this.graphEditor != null) {
-				this.graphEditor.getGraph().update();
-				this.graphEditor.getGraphPanel().updateGraphics();
-			}
-		} else {
-			this.gp.getGraph().update();
-			this.gp.updateGraphicsAfterDelete();
-		}
-	}
+                            if (bNode.getType().getParents().size() == 1) {
+                                EditSelPopupMenu.this.graphEditor.getGraph().addChangedParentToUndo(
+                                        EditSelPopupMenu.this.ego);
+                                EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
 
-	void showMessageDialog(List<String> failed, final String typename, boolean nodetype) {
-		String nt = nodetype? "node": "arc";
-		String str = "Cannot delete objects of the "+nt+" type  \""+typename+"\"  from \n";
-		for (int i = 0; i < failed.size(); i++) {
-			String s = "\t" + failed.get(i) + "\n";
-			str = str + s;
-		}
-		if (!failed.isEmpty())
-			JOptionPane.showMessageDialog(this.applFrame, str);
-	}
+                                EditSelPopupMenu.this.gp.getCanvas().performDeleteInheritanceRel((EdNode) EditSelPopupMenu.this.ego);
 
-	private JMenuItem createDeleteItem() {
-		JMenuItem m = add(new JMenuItem("Delete Selected"));
-		m.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+                                EditSelPopupMenu.this.graphEditor.getGraph().undoManagerEndEdit();
 
-				if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
-					int answer = removeWarning();
-					if (answer == JOptionPane.YES_OPTION) {
-						for (int i = 0; i < EditSelPopupMenu.this.gp.getGraph().getSelectedObjs()
-								.size(); i++) {
-							EdGraphObject go = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs()
-									.elementAt(i);
-							if (!go.getMorphismMark().equals(""))
-								EditSelPopupMenu.this.gp.setMappedObjDeleted(true);
-						}
-						unmapSelectedGraphObjects(true);
-						EditSelPopupMenu.this.gp.deleteSelected();
-						doUpdateAfterDelete();
-						EditSelPopupMenu.this.ego = null;
-					}
-				}
-			}
-		});
-		return m;
-	}
+                                EditSelPopupMenu.this.graphEditor.getGraph().updateGraph();
+                                EditSelPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
+                            } else {
+                                EditSelPopupMenu.this.editor.getGraphEditor().setEditMode(
+                                        EditorConstants.UNSET_PARENT);
+                                EditSelPopupMenu.this.editor.setMsg("Click on a parent node to remove inheritance relation.");
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-	Vector<EdType> getSelectedTypes(Vector<EdGraphObject> selectedGraphObjects) {
-		Vector<EdType> v = new Vector<EdType>(5);
-		for (int i = 0; i < selectedGraphObjects.size(); i++) {
-			EdGraphObject go = selectedGraphObjects.get(i);
-			EdType t = go.getType();
-			if (!v.contains(t))
-				v.add(t);
-		}
-		return v;
-	}
+        pack();
+        setBorderPainted(true);
+        // setDefaultLightWeightPopupEnabled(false);
+    }
 
-	private JMenu createDeleteMenu() {
-		JMenu m = new JMenu("Delete Objects of Selected Types");
-		JMenuItem jmi = m.add(new JMenuItem("Delete All Objects"));
-		jmi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
-				EditSelPopupMenu.this.mapping = false;
+    public void showMe(Component comp, int x, int y) {
+        if (this.editor != null) {
+            if (this.editor.getRuleEditor().getRule() == null) {
+                setUnmapEnabled(false);
+            }
+            if (this.gp.getGraph() != null
+                    && this.gp.getGraph().isTypeGraph()) {
+                setUnmapEnabled(false);
+            }
+        }
+        if (this.useDeleteMenu) {
+            int indx = this.getComponentIndex(this.deleteMenu);
+            if (indx == -1) {
+                indx = this.getComponentIndex(this.miDelete);
+                if (indx != -1) {
+                    add(this.deleteMenu, indx + 1);
+                }
+            }
+        } else {
+            int indx = this.getComponentIndex(this.deleteMenu);
+            if (indx != -1) {
+                remove(indx);
+            }
+        }
+        show(comp, x, y);
+    }
 
-				if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
-					List<EdGraphObject> selTypes = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs();					
-					for(int i=0; i<selTypes.size(); i++) {
-						EdGraphObject tgo = selTypes.get(i);						
-						int ok = 0;
+    boolean canDo() {
+        if ((this.gp == null)
+                || (this.gp.getEditMode() == EditorConstants.VIEW)
+                || (this.gp.getGraph() == null)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    void doUpdateAfterDelete() {
+        if (this.gp.isMappedObjDeleted()) {
+            this.gp.setMappedObjDeleted(false);
+            if (this.editor != null) {
+                this.editor.getRuleEditor().getRule().update();
+                this.editor.getRuleEditor().getLeftPanel().updateGraphics();
+                this.editor.getRuleEditor().getRightPanel().updateGraphics();
+                this.editor.getRuleEditor().getNACPanel().updateGraphics();
+                this.editor.getGraphEditor().getGraph().update();
+                this.editor.getGraphEditor().getGraphPanel().updateGraphics();
+            } else if (this.ruleEditor != null) {
+                this.ruleEditor.getRule().update();
+                this.ruleEditor.getLeftPanel().updateGraphics();
+                this.ruleEditor.getRightPanel().updateGraphics();
+                this.ruleEditor.getNACPanel().updateGraphics();
+                if (this.graphEditor != null) {
+                    this.graphEditor.getGraph().update();
+                    this.graphEditor.getGraphPanel().updateGraphics();
+                }
+            } else if (this.graphEditor != null) {
+                this.graphEditor.getGraph().update();
+                this.graphEditor.getGraphPanel().updateGraphics();
+            }
+        } else {
+            this.gp.getGraph().update();
+            this.gp.updateGraphicsAfterDelete();
+        }
+    }
+
+    void showMessageDialog(List<String> failed, final String typename, boolean nodetype) {
+        String nt = nodetype ? "node" : "arc";
+        String str = "Cannot delete objects of the " + nt + " type  \"" + typename + "\"  from \n";
+        for (int i = 0; i < failed.size(); i++) {
+            String s = "\t" + failed.get(i) + "\n";
+            str = str + s;
+        }
+        if (!failed.isEmpty()) {
+            JOptionPane.showMessageDialog(this.applFrame, str);
+        }
+    }
+
+    private JMenuItem createDeleteItem() {
+        JMenuItem m = add(new JMenuItem("Delete Selected"));
+        m.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
+
+                if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
+                    int answer = removeWarning();
+                    if (answer == JOptionPane.YES_OPTION) {
+                        for (int i = 0; i < EditSelPopupMenu.this.gp.getGraph().getSelectedObjs()
+                                .size(); i++) {
+                            EdGraphObject go = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs()
+                                    .elementAt(i);
+                            if (!go.getMorphismMark().equals("")) {
+                                EditSelPopupMenu.this.gp.setMappedObjDeleted(true);
+                            }
+                        }
+                        unmapSelectedGraphObjects(true);
+                        EditSelPopupMenu.this.gp.deleteSelected();
+                        doUpdateAfterDelete();
+                        EditSelPopupMenu.this.ego = null;
+                    }
+                }
+            }
+        });
+        return m;
+    }
+
+    Vector<EdType> getSelectedTypes(Vector<EdGraphObject> selectedGraphObjects) {
+        Vector<EdType> v = new Vector<EdType>(5);
+        for (int i = 0; i < selectedGraphObjects.size(); i++) {
+            EdGraphObject go = selectedGraphObjects.get(i);
+            EdType t = go.getType();
+            if (!v.contains(t)) {
+                v.add(t);
+            }
+        }
+        return v;
+    }
+
+    private JMenu createDeleteMenu() {
+        JMenu m = new JMenu("Delete Objects of Selected Types");
+        JMenuItem jmi = m.add(new JMenuItem("Delete All Objects"));
+        jmi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
+                EditSelPopupMenu.this.mapping = false;
+
+                if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
+                    List<EdGraphObject> selTypes = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs();
+                    for (int i = 0; i < selTypes.size(); i++) {
+                        EdGraphObject tgo = selTypes.get(i);
+                        int ok = 0;
 //						String failStr = EditSelPopupMenu.this.gp.getGraph().getGraGra()
 //											.kernelRuleContainsObjsOfType(tgo);
 //						if (failStr != null) {
@@ -515,52 +539,54 @@ public class EditSelPopupMenu extends JPopupMenu {
 //									"Delete Objects of Type", JOptionPane.WARNING_MESSAGE);
 //						}
 //						boolean addToUndo = (failStr == null);	
-						
-						boolean addToUndo = true;
-						if (ok == 0) {
-							List<String> failed = EditSelPopupMenu.this.gp.getGraph().getGraGra()
-										.deleteGraphObjectsOfType(tgo, false, addToUndo);
-							
-							showMessageDialog(failed, tgo.getType().getName(), tgo.isNode());
-						} 
-					}
-				}
 
-				doUpdateAfterDelete();
-				EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
-				EditSelPopupMenu.this.gp.getGraph().getGraGra().update();
-				if (EditSelPopupMenu.this.editor != null)
-					EditSelPopupMenu.this.editor.getRuleEditor().updateGraphics();
-			}
-		});
-		jmi = m.add(new JMenuItem("Delete Objects of Host Graph"));
-		jmi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
-				EditSelPopupMenu.this.mapping = false;
+                        boolean addToUndo = true;
+                        if (ok == 0) {
+                            List<String> failed = EditSelPopupMenu.this.gp.getGraph().getGraGra()
+                                    .deleteGraphObjectsOfType(tgo, false, addToUndo);
 
-				if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
-					List<EdGraphObject> selTypes = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs();
-					List<String> failed = new Vector<String>();
-					for(int i=0; i<selTypes.size(); i++) {
-						EdGraphObject tgo = selTypes.get(i);
-						if (!EditSelPopupMenu.this.gp.getGraph().getGraGra()
-										.deleteGraphObjectsOfTypeFromHostGraph(tgo, true)) {
-							failed.add(EditSelPopupMenu.this.gp.getGraph().getGraGra().getGraph().getName());
-						}
-						showMessageDialog(failed, tgo.getType().getName(), tgo.isNode());
-						failed.clear();
-					}
-				}
+                            showMessageDialog(failed, tgo.getType().getName(), tgo.isNode());
+                        }
+                    }
+                }
 
-				doUpdateAfterDelete();
-				EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
-				EditSelPopupMenu.this.gp.getGraph().getGraGra().getGraph().update();
-			}
-		});
-		
-		/*
+                doUpdateAfterDelete();
+                EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
+                EditSelPopupMenu.this.gp.getGraph().getGraGra().update();
+                if (EditSelPopupMenu.this.editor != null) {
+                    EditSelPopupMenu.this.editor.getRuleEditor().updateGraphics();
+                }
+            }
+        });
+        jmi = m.add(new JMenuItem("Delete Objects of Host Graph"));
+        jmi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
+                EditSelPopupMenu.this.mapping = false;
+
+                if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
+                    List<EdGraphObject> selTypes = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs();
+                    List<String> failed = new Vector<String>();
+                    for (int i = 0; i < selTypes.size(); i++) {
+                        EdGraphObject tgo = selTypes.get(i);
+                        if (!EditSelPopupMenu.this.gp.getGraph().getGraGra()
+                                .deleteGraphObjectsOfTypeFromHostGraph(tgo, true)) {
+                            failed.add(EditSelPopupMenu.this.gp.getGraph().getGraGra().getGraph().getName());
+                        }
+                        showMessageDialog(failed, tgo.getType().getName(), tgo.isNode());
+                        failed.clear();
+                    }
+                }
+
+                doUpdateAfterDelete();
+                EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
+                EditSelPopupMenu.this.gp.getGraph().getGraGra().getGraph().update();
+            }
+        });
+
+        /*
 		 * jmi = m.add(new JMenuItem("Delete Objects of Rules"));
 		 * jmi.addActionListener(new ActionListener() {public void
 		 * actionPerformed(ActionEvent e) { //System.out.println("Delete Objects
@@ -583,339 +609,357 @@ public class EditSelPopupMenu extends JPopupMenu {
 		 * 
 		 * doAfterDelete(); gp.getGraph().getGraGra().updateConstraints(); if
 		 * (editor != null) editor.getRuleEditor().updateGraphics(); }});
-		 */
-		return m;
-	}
+         */
+        return m;
+    }
 
-	public void setEditor(GraGraEditor ed) {
-		this.editor = ed;
-		this.ruleEditor = this.editor.getRuleEditor();
-		this.graphEditor = this.editor.getGraphEditor();
-	}
+    public void setEditor(GraGraEditor ed) {
+        this.editor = ed;
+        this.ruleEditor = this.editor.getRuleEditor();
+        this.graphEditor = this.editor.getGraphEditor();
+    }
 
-	public void setEditor(RuleEditor re) {
-		this.ruleEditor = re;
-		this.graphEditor = null;
-	}
+    public void setEditor(RuleEditor re) {
+        this.ruleEditor = re;
+        this.graphEditor = null;
+    }
 
-	public void setEditor(GraphEditor ge) {
-		this.graphEditor = ge;
-		this.ruleEditor = null;
-	}
+    public void setEditor(GraphEditor ge) {
+        this.graphEditor = ge;
+        this.ruleEditor = null;
+    }
 
-	public EdGraphObject getPickedObj() {
-		return this.ego;
-	}
+    public EdGraphObject getPickedObj() {
+        return this.ego;
+    }
 
-	public boolean isMapping() {
-		return this.mapping;
-	}
+    public boolean isMapping() {
+        return this.mapping;
+    }
 
-	public void setParentFrame(JFrame pf) {
-		this.applFrame = pf;
-	}
+    public void setParentFrame(JFrame pf) {
+        this.applFrame = pf;
+    }
 
-	public void setMapEnabled(boolean b) {
-		this.miMap.setEnabled(b);
-	}
+    public void setMapEnabled(boolean b) {
+        this.miMap.setEnabled(b);
+    }
 
-	public void setUnmapEnabled(boolean b) {
-		this.miUnmap.setEnabled(b);
-	}
+    public void setUnmapEnabled(boolean b) {
+        this.miUnmap.setEnabled(b);
+    }
 
-	public boolean invoked(GraphPanel p, int x, int y) {
-		this.gp = p;
-		if (this.gp.getGraph() != null
-				&& !this.gp.getCanvas().isLeftPressed()) {
-			this.ego = this.gp.getGraph().getPicked(x, y);
-			if (this.ego == null) {
-				this.ego = this.gp.getGraph().getPickedTextOfArc(x, y,
-						this.gp.getCanvas().getGraphics().getFontMetrics());
-			}
-						
-			if (this.ego != null && this.ego.isVisible() && this.ego.isSelected()) {
+    public boolean invoked(GraphPanel p, int x, int y) {
+        this.gp = p;
+        if (this.gp.getGraph() != null
+                && !this.gp.getCanvas().isLeftPressed()) {
+            this.ego = this.gp.getGraph().getPicked(x, y);
+            if (this.ego == null) {
+                this.ego = this.gp.getGraph().getPickedTextOfArc(x, y,
+                        this.gp.getCanvas().getGraphics().getFontMetrics());
+            }
+
+            if (this.ego != null && this.ego.isVisible() && this.ego.isSelected()) {
 //				if (gp.getGraph().isTargetObjOfGraphEmbedding(ego)) {
 //					return false;
 //				}
-				
-				if (this.ruleEditor != null) {
-					if (this.ruleEditor.getRule().getLeft() == this.gp.getGraph())
-						this.miAddIdenticToRule.setEnabled(true);
-					else
-						this.miAddIdenticToRule.setEnabled(false);
-					if (this.ruleEditor.getNAC() != null) {				
-						this.miAddIdenticToNAC.setEnabled(true);
-						this.miAddIdenticToPAC.setEnabled(false);
-						this.miAddIdenticToGAC.setEnabled(false);
-					} else if (this.ruleEditor.getPAC() != null) {
-						this.miAddIdenticToNAC.setEnabled(false);
-						this.miAddIdenticToPAC.setEnabled(true);
-						this.miAddIdenticToGAC.setEnabled(false);
-					} else if (this.ruleEditor.getNestedAC() != null) {
-						this.miAddIdenticToNAC.setEnabled(false);
-						this.miAddIdenticToPAC.setEnabled(false);
-						this.miAddIdenticToGAC.setEnabled(true);
-					} else {
-						this.miAddIdenticToNAC.setEnabled(false);
-						this.miAddIdenticToPAC.setEnabled(false);
-						this.miAddIdenticToGAC.setEnabled(false);
-					}
-				}
-				
-				if (this.ego.isNode()) {
-					this.miStraighten.setEnabled(false);
-					if (this.ego.isElementOfTypeGraph()) {
-						this.useDeleteMenu = true;
-						this.addIdentic.setEnabled(false);
-						this.miSetParent.setEnabled(true);
-						if (!this.ego.getNode().getBasisNode().getType()
-								.getParents().isEmpty())
-							this.miUnsetParent.setEnabled(true);
-						else
-							this.miUnsetParent.setEnabled(false);
-					} else {
-						this.useDeleteMenu = false;
-						this.addIdentic.setEnabled(false);
-						this.miSetParent.setEnabled(false);
-						this.miUnsetParent.setEnabled(false);
-					}
-					if (this.ruleEditor != null 
-							&& this.gp == this.ruleEditor.getLeftPanel())
-						this.addIdentic.setEnabled(true);
-				} else {
-					this.miStraighten.setEnabled(true);
-					this.miSetParent.setEnabled(false);
-					this.miUnsetParent.setEnabled(false);
-					if (this.ego.isElementOfTypeGraph()) {
-						this.useDeleteMenu = true;
-						this.addIdentic.setEnabled(false);
-					} else {
-						this.useDeleteMenu = false;
-						this.addIdentic.setEnabled(false);
-					}
-					if (this.ruleEditor != null 
-							&& this.gp == this.ruleEditor.getLeftPanel())
-						this.addIdentic.setEnabled(true);
-				}
-				return true;
-			} 
-			return false;
-		} 
-		return false;
-	}
 
-	void setLastEditModeBeforMapping(GraphPanel gp) {
-		if (gp.getEditMode() == EditorConstants.DRAW
-				|| gp.getEditMode() == EditorConstants.ARC
-				|| gp.getEditMode() == EditorConstants.SELECT
-				|| gp.getEditMode() == EditorConstants.MOVE
-				|| gp.getEditMode() == EditorConstants.ATTRIBUTES
-				|| gp.getEditMode() == EditorConstants.MAP
-				|| gp.getEditMode() == EditorConstants.UNMAP
-				|| gp.getEditMode() == EditorConstants.INTERACT_RULE
-				|| gp.getEditMode() == EditorConstants.INTERACT_NAC
-				|| gp.getEditMode() == EditorConstants.INTERACT_PAC
-				|| gp.getEditMode() == EditorConstants.INTERACT_AC
-				|| gp.getEditMode() == EditorConstants.INTERACT_MATCH) {
-			// System.out.println(">>> setLastEditModeBeforMapping");
-			gp.setLastEditMode(gp.getEditMode());
-			gp.setLastEditCursor(gp.getEditCursor());
-		}
-	}
+                if (this.ruleEditor != null) {
+                    if (this.ruleEditor.getRule().getLeft() == this.gp.getGraph()) {
+                        this.miAddIdenticToRule.setEnabled(true);
+                    } else {
+                        this.miAddIdenticToRule.setEnabled(false);
+                    }
+                    if (this.ruleEditor.getNAC() != null) {
+                        this.miAddIdenticToNAC.setEnabled(true);
+                        this.miAddIdenticToPAC.setEnabled(false);
+                        this.miAddIdenticToGAC.setEnabled(false);
+                    } else if (this.ruleEditor.getPAC() != null) {
+                        this.miAddIdenticToNAC.setEnabled(false);
+                        this.miAddIdenticToPAC.setEnabled(true);
+                        this.miAddIdenticToGAC.setEnabled(false);
+                    } else if (this.ruleEditor.getNestedAC() != null) {
+                        this.miAddIdenticToNAC.setEnabled(false);
+                        this.miAddIdenticToPAC.setEnabled(false);
+                        this.miAddIdenticToGAC.setEnabled(true);
+                    } else {
+                        this.miAddIdenticToNAC.setEnabled(false);
+                        this.miAddIdenticToPAC.setEnabled(false);
+                        this.miAddIdenticToGAC.setEnabled(false);
+                    }
+                }
 
-	protected void unmapSelectedGraphObjects(boolean wantDeleteGraphObject) {
-		if (this.editor != null 
-				&& this.editor.getRuleEditor().getRule() != null) {
-			EdRule rule = this.editor.getRuleEditor().getRule();
-			boolean unmapdone = false;
-			if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftPanel()) {
-				EdGraphObject lgo = null;
-				for (int i = 0; i < rule.getLeft().getSelectedObjs().size(); i++) {
-					lgo = rule.getLeft().getSelectedObjs().get(i);
+                if (this.ego.isNode()) {
+                    this.miStraighten.setEnabled(false);
+                    if (this.ego.isElementOfTypeGraph()) {
+                        this.useDeleteMenu = true;
+                        this.addIdentic.setEnabled(false);
+                        this.miSetParent.setEnabled(true);
+                        if (!this.ego.getNode().getBasisNode().getType()
+                                .getParents().isEmpty()) {
+                            this.miUnsetParent.setEnabled(true);
+                        } else {
+                            this.miUnsetParent.setEnabled(false);
+                        }
+                    } else {
+                        this.useDeleteMenu = false;
+                        this.addIdentic.setEnabled(false);
+                        this.miSetParent.setEnabled(false);
+                        this.miUnsetParent.setEnabled(false);
+                    }
+                    if (this.ruleEditor != null
+                            && this.gp == this.ruleEditor.getLeftPanel()) {
+                        this.addIdentic.setEnabled(true);
+                    }
+                } else {
+                    this.miStraighten.setEnabled(true);
+                    this.miSetParent.setEnabled(false);
+                    this.miUnsetParent.setEnabled(false);
+                    if (this.ego.isElementOfTypeGraph()) {
+                        this.useDeleteMenu = true;
+                        this.addIdentic.setEnabled(false);
+                    } else {
+                        this.useDeleteMenu = false;
+                        this.addIdentic.setEnabled(false);
+                    }
+                    if (this.ruleEditor != null
+                            && this.gp == this.ruleEditor.getLeftPanel()) {
+                        this.addIdentic.setEnabled(true);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
 
-					if (wantDeleteGraphObject) {
-						if (this.editor.getRuleEditor().removeNacMapping(lgo)
-								|| this.editor.getRuleEditor().removePacMapping(lgo)
-								|| this.editor.getRuleEditor().removeNestedACMapping(lgo))
-							unmapdone = true;
-					} else {
-						if (this.editor.getRuleEditor().removeNacMapping(lgo, true)
-								|| this.editor.getRuleEditor().removePacMapping(lgo, true)
-								|| this.editor.getRuleEditor().removeNestedACMapping(lgo, true))
-							unmapdone = true;
-					} 
+    void setLastEditModeBeforMapping(GraphPanel gp) {
+        if (gp.getEditMode() == EditorConstants.DRAW
+                || gp.getEditMode() == EditorConstants.ARC
+                || gp.getEditMode() == EditorConstants.SELECT
+                || gp.getEditMode() == EditorConstants.MOVE
+                || gp.getEditMode() == EditorConstants.ATTRIBUTES
+                || gp.getEditMode() == EditorConstants.MAP
+                || gp.getEditMode() == EditorConstants.UNMAP
+                || gp.getEditMode() == EditorConstants.INTERACT_RULE
+                || gp.getEditMode() == EditorConstants.INTERACT_NAC
+                || gp.getEditMode() == EditorConstants.INTERACT_PAC
+                || gp.getEditMode() == EditorConstants.INTERACT_AC
+                || gp.getEditMode() == EditorConstants.INTERACT_MATCH) {
+            // System.out.println(">>> setLastEditModeBeforMapping");
+            gp.setLastEditMode(gp.getEditMode());
+            gp.setLastEditCursor(gp.getEditCursor());
+        }
+    }
 
-					if (rule.getMatch() != null) {
-						if (this.editor.getRuleEditor().removeMatchMapping(lgo, true))
-							unmapdone = true;
-						if (wantDeleteGraphObject)
-							rule.getMatch().getCompletionStrategy().removeFromObjectVarMap(lgo.getBasisObject());
-					} 
-					
-					if (this.editor.getRuleEditor().removeRuleMapping(lgo, true))
-						unmapdone = true;
-				}
-				if (unmapdone) {
-					rule.update();
-					this.editor.updateGraphics();
-				}
-			} else if (this.editor.getActivePanel() == this.editor.getRuleEditor().getRightPanel()) {
-				for (int i = 0; i < rule.getRight().getSelectedObjs().size(); i++) {
-					EdGraphObject rgo = rule.getRight().getSelectedObjs().get(i);
-					if (this.editor.getRuleEditor().removeRuleMapping(rgo, false))
-						unmapdone = true;
-				}
-				if (unmapdone)
-					this.editor.getRuleEditor().updateGraphics();
-			} else if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftCondPanel()) {
-				List<EdGraphObject> l = null;
-				if (this.editor.getRuleEditor().getNAC() != null) {
-					l = this.editor.getRuleEditor().getNAC().getSelectedObjs();
-					EdGraphObject go = null;
-					for (int i = 0; i < l.size(); i++) {
-						go = l.get(i);
-						if (this.editor.getRuleEditor().removeNacMapping(go, false))
-							unmapdone = true;
-					}
-				}
-				else if (this.editor.getRuleEditor().getPAC() != null) {
-					l = this.editor.getRuleEditor().getPAC().getSelectedObjs();
-					EdGraphObject go = null;
-					for (int i = 0; i < l.size(); i++) {
-						go = l.get(i);
-						if (this.editor.getRuleEditor().removePacMapping(go, false))
-							unmapdone = true;
-					}
-				}
-				else if (this.editor.getRuleEditor().getNestedAC() != null) {
-					l = this.editor.getRuleEditor().getNestedAC().getSelectedObjs();
-					EdGraphObject go = null;
-					for (int i = 0; i < l.size(); i++) {
-						go = l.get(i);
-						if (this.editor.getRuleEditor().removeNestedACMapping(go, false)) {
-							unmapdone = true;
-						}
-					}
-					this.editor.getRuleEditor().updateNestedAC(this.editor.getRuleEditor().getNestedAC());
+    protected void unmapSelectedGraphObjects(boolean wantDeleteGraphObject) {
+        if (this.editor != null
+                && this.editor.getRuleEditor().getRule() != null) {
+            EdRule rule = this.editor.getRuleEditor().getRule();
+            boolean unmapdone = false;
+            if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftPanel()) {
+                EdGraphObject lgo = null;
+                for (int i = 0; i < rule.getLeft().getSelectedObjs().size(); i++) {
+                    lgo = rule.getLeft().getSelectedObjs().get(i);
+
+                    if (wantDeleteGraphObject) {
+                        if (this.editor.getRuleEditor().removeNacMapping(lgo)
+                                || this.editor.getRuleEditor().removePacMapping(lgo)
+                                || this.editor.getRuleEditor().removeNestedACMapping(lgo)) {
+                            unmapdone = true;
+                        }
+                    } else {
+                        if (this.editor.getRuleEditor().removeNacMapping(lgo, true)
+                                || this.editor.getRuleEditor().removePacMapping(lgo, true)
+                                || this.editor.getRuleEditor().removeNestedACMapping(lgo, true)) {
+                            unmapdone = true;
+                        }
+                    }
+
+                    if (rule.getMatch() != null) {
+                        if (this.editor.getRuleEditor().removeMatchMapping(lgo, true)) {
+                            unmapdone = true;
+                        }
+                        if (wantDeleteGraphObject) {
+                            rule.getMatch().getCompletionStrategy().removeFromObjectVarMap(lgo.getBasisObject());
+                        }
+                    }
+
+                    if (this.editor.getRuleEditor().removeRuleMapping(lgo, true)) {
+                        unmapdone = true;
+                    }
+                }
+                if (unmapdone) {
+                    rule.update();
+                    this.editor.updateGraphics();
+                }
+            } else if (this.editor.getActivePanel() == this.editor.getRuleEditor().getRightPanel()) {
+                for (int i = 0; i < rule.getRight().getSelectedObjs().size(); i++) {
+                    EdGraphObject rgo = rule.getRight().getSelectedObjs().get(i);
+                    if (this.editor.getRuleEditor().removeRuleMapping(rgo, false)) {
+                        unmapdone = true;
+                    }
+                }
+                if (unmapdone) {
+                    this.editor.getRuleEditor().updateGraphics();
+                }
+            } else if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftCondPanel()) {
+                List<EdGraphObject> l = null;
+                if (this.editor.getRuleEditor().getNAC() != null) {
+                    l = this.editor.getRuleEditor().getNAC().getSelectedObjs();
+                    EdGraphObject go = null;
+                    for (int i = 0; i < l.size(); i++) {
+                        go = l.get(i);
+                        if (this.editor.getRuleEditor().removeNacMapping(go, false)) {
+                            unmapdone = true;
+                        }
+                    }
+                } else if (this.editor.getRuleEditor().getPAC() != null) {
+                    l = this.editor.getRuleEditor().getPAC().getSelectedObjs();
+                    EdGraphObject go = null;
+                    for (int i = 0; i < l.size(); i++) {
+                        go = l.get(i);
+                        if (this.editor.getRuleEditor().removePacMapping(go, false)) {
+                            unmapdone = true;
+                        }
+                    }
+                } else if (this.editor.getRuleEditor().getNestedAC() != null) {
+                    l = this.editor.getRuleEditor().getNestedAC().getSelectedObjs();
+                    EdGraphObject go = null;
+                    for (int i = 0; i < l.size(); i++) {
+                        go = l.get(i);
+                        if (this.editor.getRuleEditor().removeNestedACMapping(go, false)) {
+                            unmapdone = true;
+                        }
+                    }
+                    this.editor.getRuleEditor().updateNestedAC(this.editor.getRuleEditor().getNestedAC());
 //					this.editor.getRuleEditor().getRule().updateNestedAC(this.editor.getRuleEditor().getNestedAC());
-				}
-				if (unmapdone) {
-					this.editor.getRuleEditor().getLeftPanel().updateGraphics();
-					this.editor.getRuleEditor().getLeftCondPanel().updateGraphics();
-				}
-			} else if (this.editor.getActivePanel() == this.editor.getGraphEditor()
-					.getGraphPanel()) {
-				if (rule.getMatch() != null) {
-					EdGraphObject ggo = null;
-					for (int i = 0; i < this.editor.getGraphEditor().getGraph()
-							.getSelectedObjs().size(); i++) {
-						ggo = this.editor.getGraphEditor().getGraph().getSelectedObjs().get(i);
-						if (this.editor.getRuleEditor().removeMatchMapping(ggo, false))
-							unmapdone = true;
-					}
-					if (unmapdone) {
-						this.editor.getRuleEditor().getLeftPanel().updateGraphics();
-						this.editor.getGraphEditor().getGraphPanel().updateGraphics();
-					}
-				}
-			}
-		} else if (this.ruleEditor != null && this.ruleEditor.getRule() != null) {
-			if (this.gp == this.ruleEditor.getLeftPanel()
-					&& this.ruleEditor.getRule().getLeft() == this.gp.getGraph()) {
-				EdGraphObject lObj = null;
-				for (int i = 0; i < this.ruleEditor.getRule().getLeft()
-						.getSelectedObjs().size(); i++) {
-					lObj = this.ruleEditor.getRule().getLeft().getSelectedObjs().get(i);
-					this.ruleEditor.getRule().removeRuleMapping(lObj);
-					if (this.ruleEditor.getNAC() != null)
-						this.ruleEditor.getRule().removeNACMapping(lObj,
-								this.ruleEditor.getNAC().getMorphism());
-					if (this.ruleEditor.getPAC() != null)
-						this.ruleEditor.getRule().removePACMapping(lObj,
-								this.ruleEditor.getPAC().getMorphism());
+                }
+                if (unmapdone) {
+                    this.editor.getRuleEditor().getLeftPanel().updateGraphics();
+                    this.editor.getRuleEditor().getLeftCondPanel().updateGraphics();
+                }
+            } else if (this.editor.getActivePanel() == this.editor.getGraphEditor()
+                    .getGraphPanel()) {
+                if (rule.getMatch() != null) {
+                    EdGraphObject ggo = null;
+                    for (int i = 0; i < this.editor.getGraphEditor().getGraph()
+                            .getSelectedObjs().size(); i++) {
+                        ggo = this.editor.getGraphEditor().getGraph().getSelectedObjs().get(i);
+                        if (this.editor.getRuleEditor().removeMatchMapping(ggo, false)) {
+                            unmapdone = true;
+                        }
+                    }
+                    if (unmapdone) {
+                        this.editor.getRuleEditor().getLeftPanel().updateGraphics();
+                        this.editor.getGraphEditor().getGraphPanel().updateGraphics();
+                    }
+                }
+            }
+        } else if (this.ruleEditor != null && this.ruleEditor.getRule() != null) {
+            if (this.gp == this.ruleEditor.getLeftPanel()
+                    && this.ruleEditor.getRule().getLeft() == this.gp.getGraph()) {
+                EdGraphObject lObj = null;
+                for (int i = 0; i < this.ruleEditor.getRule().getLeft()
+                        .getSelectedObjs().size(); i++) {
+                    lObj = this.ruleEditor.getRule().getLeft().getSelectedObjs().get(i);
+                    this.ruleEditor.getRule().removeRuleMapping(lObj);
+                    if (this.ruleEditor.getNAC() != null) {
+                        this.ruleEditor.getRule().removeNACMapping(lObj,
+                                this.ruleEditor.getNAC().getMorphism());
+                    }
+                    if (this.ruleEditor.getPAC() != null) {
+                        this.ruleEditor.getRule().removePACMapping(lObj,
+                                this.ruleEditor.getPAC().getMorphism());
+                    }
 
-					this.ruleEditor.getRule().removeMatchMapping(lObj);
-				}
-				this.ruleEditor.getRule().update();
-				this.ruleEditor.updateGraphics();
-				if (this.graphEditor != null)
-					this.graphEditor.getGraphPanel().updateGraphics();
-			} else if (this.gp == this.ruleEditor.getRightPanel()) {
-				for (int i = 0; i < this.ruleEditor.getRule().getRight()
-						.getSelectedObjs().size(); i++) {
-					EdGraphObject imageObj = this.ruleEditor.getRule().getRight()
-							.getSelectedObjs().elementAt(i);
-					this.ruleEditor.getRule().removeMapping(imageObj,
-							this.ruleEditor.getRule().getBasisRule());
-				}
-				this.ruleEditor.updateGraphics();
-			} else if (this.gp == this.ruleEditor.getLeftCondPanel()) {
-				if (this.ruleEditor.getNAC() != null) {
-					for (int i = 0; i < this.ruleEditor.getNAC().getSelectedObjs()
-							.size(); i++) {
-						EdGraphObject imageObj = this.ruleEditor.getNAC()
-								.getSelectedObjs().elementAt(i);
-						this.ruleEditor.getRule().removeMapping(imageObj,
-								this.ruleEditor.getNAC().getMorphism());
-					}
-				}
-				if (this.ruleEditor.getPAC() != null) {
-					for (int i = 0; i < this.ruleEditor.getPAC().getSelectedObjs()
-							.size(); i++) {
-						EdGraphObject imageObj = this.ruleEditor.getPAC()
-								.getSelectedObjs().elementAt(i);
-						this.ruleEditor.getRule().removeMapping(imageObj,
-								this.ruleEditor.getPAC().getMorphism());
-					}
-				}
-				this.ruleEditor.getLeftPanel().updateGraphics();
-				this.ruleEditor.getNACPanel().updateGraphics();
-			}
-		} else if (this.graphEditor != null 
-				&& this.gp == this.graphEditor.getGraphPanel()) {
-			for (int i = 0; i < this.graphEditor.getGraph().getSelectedObjs().size(); i++) {
-				EdGraphObject imageObj = this.graphEditor.getGraph()
-						.getSelectedObjs().elementAt(i);
-				if (this.ruleEditor != null)
-					this.ruleEditor.getRule().removeMapping(imageObj,
-							this.ruleEditor.getRule().getMatch());
-			}
-			if (this.ruleEditor != null)
-				this.ruleEditor.getLeftPanel().updateGraphics();
-			this.graphEditor.getGraphPanel().updateGraphics();
-		}
-	}
+                    this.ruleEditor.getRule().removeMatchMapping(lObj);
+                }
+                this.ruleEditor.getRule().update();
+                this.ruleEditor.updateGraphics();
+                if (this.graphEditor != null) {
+                    this.graphEditor.getGraphPanel().updateGraphics();
+                }
+            } else if (this.gp == this.ruleEditor.getRightPanel()) {
+                for (int i = 0; i < this.ruleEditor.getRule().getRight()
+                        .getSelectedObjs().size(); i++) {
+                    EdGraphObject imageObj = this.ruleEditor.getRule().getRight()
+                            .getSelectedObjs().elementAt(i);
+                    this.ruleEditor.getRule().removeMapping(imageObj,
+                            this.ruleEditor.getRule().getBasisRule());
+                }
+                this.ruleEditor.updateGraphics();
+            } else if (this.gp == this.ruleEditor.getLeftCondPanel()) {
+                if (this.ruleEditor.getNAC() != null) {
+                    for (int i = 0; i < this.ruleEditor.getNAC().getSelectedObjs()
+                            .size(); i++) {
+                        EdGraphObject imageObj = this.ruleEditor.getNAC()
+                                .getSelectedObjs().elementAt(i);
+                        this.ruleEditor.getRule().removeMapping(imageObj,
+                                this.ruleEditor.getNAC().getMorphism());
+                    }
+                }
+                if (this.ruleEditor.getPAC() != null) {
+                    for (int i = 0; i < this.ruleEditor.getPAC().getSelectedObjs()
+                            .size(); i++) {
+                        EdGraphObject imageObj = this.ruleEditor.getPAC()
+                                .getSelectedObjs().elementAt(i);
+                        this.ruleEditor.getRule().removeMapping(imageObj,
+                                this.ruleEditor.getPAC().getMorphism());
+                    }
+                }
+                this.ruleEditor.getLeftPanel().updateGraphics();
+                this.ruleEditor.getNACPanel().updateGraphics();
+            }
+        } else if (this.graphEditor != null
+                && this.gp == this.graphEditor.getGraphPanel()) {
+            for (int i = 0; i < this.graphEditor.getGraph().getSelectedObjs().size(); i++) {
+                EdGraphObject imageObj = this.graphEditor.getGraph()
+                        .getSelectedObjs().elementAt(i);
+                if (this.ruleEditor != null) {
+                    this.ruleEditor.getRule().removeMapping(imageObj,
+                            this.ruleEditor.getRule().getMatch());
+                }
+            }
+            if (this.ruleEditor != null) {
+                this.ruleEditor.getLeftPanel().updateGraphics();
+            }
+            this.graphEditor.getGraphPanel().updateGraphics();
+        }
+    }
 
-	int removeWarning() {
-		String msgStr = "Do you really want to delete all \nselected objects of this graph?";
-		Object[] options = { "YES", "NO" };
-		int answer = JOptionPane.showOptionDialog(null, msgStr, "Warning",
-				JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
-				options, options[1]);
-		return answer;
-	}
+    int removeWarning() {
+        String msgStr = "Do you really want to delete all \nselected objects of this graph?";
+        Object[] options = {"YES", "NO"};
+        int answer = JOptionPane.showOptionDialog(null, msgStr, "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                options, options[1]);
+        return answer;
+    }
 
-	JFrame applFrame;
+    JFrame applFrame;
 
-	JMenuItem mi, miDelete, miMap, miUnmap, miStraighten, miAddIdenticToRule,
-			miAddIdenticToNAC, miAddIdenticToPAC, miAddIdenticToGAC,
-			miSetParent, miUnsetParent;
+    JMenuItem mi, miDelete, miMap, miUnmap, miStraighten, miAddIdenticToRule,
+            miAddIdenticToNAC, miAddIdenticToPAC, miAddIdenticToGAC,
+            miSetParent, miUnsetParent;
 
-	JMenu deleteMenu, addIdentic;
+    JMenu deleteMenu, addIdentic;
 
-	boolean mapping = false;
+    boolean mapping = false;
 
-	GraGraEditor editor;
+    GraGraEditor editor;
 
-	RuleEditor ruleEditor;
+    RuleEditor ruleEditor;
 
-	GraphEditor graphEditor;
+    GraphEditor graphEditor;
 
-	GraphPanel gp;
+    GraphPanel gp;
 
-	EdGraphObject ego;
+    EdGraphObject ego;
 
-	boolean useDeleteMenu = false;;
+    boolean useDeleteMenu = false;
+    ;
 
 	Vector<Type> selectedTypes;
 }

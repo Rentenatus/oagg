@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.util;
 
 import java.awt.Cursor;
@@ -22,121 +23,121 @@ import javax.swing.JTable;
 
 /**
  * Dragging of table rows.
- * 
+ *
  * @version $Id: TableRowDragger.java,v 1.4 2010/09/23 08:15:16 olga Exp $
  * @author $Author: olga $
  */
 public class TableRowDragger {
 
-	/**
-	 * Container with observers of this instance, all of which implement the
-	 * RowDragListener interface.
-	 */
-	protected transient Vector<RowDragListener> listener = new Vector<RowDragListener>(
-			10, 10);
+    /**
+     * Container with observers of this instance, all of which implement the RowDragListener interface.
+     */
+    protected transient Vector<RowDragListener> listener = new Vector<RowDragListener>(
+            10, 10);
 
-	protected JTable tableView;
+    protected JTable tableView;
 
-	protected boolean draggingStarted = false;
+    protected boolean draggingStarted = false;
 
-	protected int draggedRow = -1;
+    protected int draggedRow = -1;
 
-	protected Cursor defaultCursor;
+    protected Cursor defaultCursor;
 
-	protected Cursor moveCursor = Cursor
-			.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    protected Cursor moveCursor = Cursor
+            .getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
 
-	public TableRowDragger(JTable table) {
-		this.tableView = table;
+    public TableRowDragger(JTable table) {
+        this.tableView = table;
 
-		MouseMotionListener dragMotionListener = new MouseMotionAdapter() {
-			public void mouseDragged(MouseEvent e) {
-				int row = TableRowDragger.this.tableView.rowAtPoint(e.getPoint());
-				if (row == -1)
-					return;
-				if (TableRowDragger.this.draggedRow != -1) {
-					if (!TableRowDragger.this.draggingStarted && row != -1) {
-						TableRowDragger.this.draggingStarted = true;
-						TableRowDragger.this.defaultCursor = TableRowDragger.this.tableView.getCursor();
-						TableRowDragger.this.tableView.setCursor(TableRowDragger.this.moveCursor);
-						fireDraggingStarted(TableRowDragger.this.draggedRow);
-					} else if (TableRowDragger.this.draggingStarted) {
-						if (row != TableRowDragger.this.draggedRow) {
-							fireDraggingMoved(TableRowDragger.this.draggedRow, row);
-							TableRowDragger.this.draggedRow = row;
-						}
-					}
-				}
-			}
-		};
+        MouseMotionListener dragMotionListener = new MouseMotionAdapter() {
+            public void mouseDragged(MouseEvent e) {
+                int row = TableRowDragger.this.tableView.rowAtPoint(e.getPoint());
+                if (row == -1) {
+                    return;
+                }
+                if (TableRowDragger.this.draggedRow != -1) {
+                    if (!TableRowDragger.this.draggingStarted && row != -1) {
+                        TableRowDragger.this.draggingStarted = true;
+                        TableRowDragger.this.defaultCursor = TableRowDragger.this.tableView.getCursor();
+                        TableRowDragger.this.tableView.setCursor(TableRowDragger.this.moveCursor);
+                        fireDraggingStarted(TableRowDragger.this.draggedRow);
+                    } else if (TableRowDragger.this.draggingStarted) {
+                        if (row != TableRowDragger.this.draggedRow) {
+                            fireDraggingMoved(TableRowDragger.this.draggedRow, row);
+                            TableRowDragger.this.draggedRow = row;
+                        }
+                    }
+                }
+            }
+        };
 
-		MouseListener dragStartStopListener = new MouseAdapter() {
+        MouseListener dragStartStopListener = new MouseAdapter() {
 
-			public void mousePressed(MouseEvent e) {
-				int row = TableRowDragger.this.tableView.rowAtPoint(e.getPoint());
-				if (row != -1) { // && row < tuple.getNumberOfEntries()){
-					// System
-					TableRowDragger.this.draggedRow = row;
-				}
-			}
+            public void mousePressed(MouseEvent e) {
+                int row = TableRowDragger.this.tableView.rowAtPoint(e.getPoint());
+                if (row != -1) { // && row < tuple.getNumberOfEntries()){
+                    // System
+                    TableRowDragger.this.draggedRow = row;
+                }
+            }
 
-			public void mouseReleased(MouseEvent e) {
-				TableRowDragger.this.draggedRow = -1;
-				if (TableRowDragger.this.draggingStarted) {
-					TableRowDragger.this.draggingStarted = false;
-					TableRowDragger.this.tableView.setCursor(TableRowDragger.this.defaultCursor);
-					fireDraggingStopped();
-				}
-			}
-		};
+            public void mouseReleased(MouseEvent e) {
+                TableRowDragger.this.draggedRow = -1;
+                if (TableRowDragger.this.draggingStarted) {
+                    TableRowDragger.this.draggingStarted = false;
+                    TableRowDragger.this.tableView.setCursor(TableRowDragger.this.defaultCursor);
+                    fireDraggingStopped();
+                }
+            }
+        };
 
-		this.tableView.addMouseListener(dragStartStopListener);
-		this.tableView.addMouseMotionListener(dragMotionListener);
-	}
+        this.tableView.addMouseListener(dragStartStopListener);
+        this.tableView.addMouseMotionListener(dragMotionListener);
+    }
 
-	public boolean isDraggingActive() {
-		return this.draggingStarted;
-	}
+    public boolean isDraggingActive() {
+        return this.draggingStarted;
+    }
 
-	public void addRowDragListener(RowDragListener li) {
-		if (!this.listener.contains(li)) {
-			this.listener.addElement(li);
-		}
-	}
+    public void addRowDragListener(RowDragListener li) {
+        if (!this.listener.contains(li)) {
+            this.listener.addElement(li);
+        }
+    }
 
-	public void removeRowDragListener(RowDragListener li) {
-		this.listener.removeElement(li);
-	}
+    public void removeRowDragListener(RowDragListener li) {
+        this.listener.removeElement(li);
+    }
 
-	protected void fireDraggingStarted(int row) {
-		RowDragListener li;
-		RowDragEvent ev = new RowDragEvent(this, RowDragEvent.STARTED, row, row);
+    protected void fireDraggingStarted(int row) {
+        RowDragListener li;
+        RowDragEvent ev = new RowDragEvent(this, RowDragEvent.STARTED, row, row);
 
-		for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
-			li = en.nextElement();
-			li.draggingStarted(ev);
-		}
-	}
+        for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
+            li = en.nextElement();
+            li.draggingStarted(ev);
+        }
+    }
 
-	protected void fireDraggingStopped() {
-		RowDragListener li;
-		RowDragEvent ev = new RowDragEvent(this, RowDragEvent.STOPPED, -1, -1);
+    protected void fireDraggingStopped() {
+        RowDragListener li;
+        RowDragEvent ev = new RowDragEvent(this, RowDragEvent.STOPPED, -1, -1);
 
-		for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
-			li = en.nextElement();
-			li.draggingStopped(ev);
-		}
-	}
+        for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
+            li = en.nextElement();
+            li.draggingStopped(ev);
+        }
+    }
 
-	protected void fireDraggingMoved(int src, int dest) {
-		RowDragListener li;
-		RowDragEvent ev = new RowDragEvent(this, RowDragEvent.MOVED, src, dest);
+    protected void fireDraggingMoved(int src, int dest) {
+        RowDragListener li;
+        RowDragEvent ev = new RowDragEvent(this, RowDragEvent.MOVED, src, dest);
 
-		for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
-			li = en.nextElement();
-			li.draggingMoved(ev);
-		}
-	}
+        for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
+            li = en.nextElement();
+            li.draggingMoved(ev);
+        }
+    }
 }
 
 /*

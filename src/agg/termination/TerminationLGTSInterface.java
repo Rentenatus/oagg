@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.termination;
 
 import java.util.HashSet;
@@ -20,143 +21,136 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.util.Pair;
 
-
 /**
  * This class implements termination conditions of Layered Graph Grammar.
- * 
+ *
  * @author $Author: olga $
  * @version $Id: TerminationLGTSInterface.java,v 1.4 2009/02/04 10:11:29 olga Exp $
  */
 public interface TerminationLGTSInterface {
 
-	/**
-	 * Initialize a termination layers of the grammar. Initially the termination
-	 * conditions are invalid.
-	 * 
-	 * @param gra
-	 *            The graph grammar.
-	 */
-	public void setGrammar(GraGra gra); 
+    /**
+     * Initialize a termination layers of the grammar. Initially the termination conditions are invalid.
+     *
+     * @param gra The graph grammar.
+     */
+    public void setGrammar(GraGra gra);
 
-	public void resetGrammar(); 
-	
-	public GraGra getGrammar();
-	
+    public void resetGrammar();
 
-	public List<Rule> getListOfEnabledRules();
-		
-	public boolean hasGrammarChanged();
-	
-	public List<Rule> getListOfRules();
-	
-	public Hashtable<Integer, HashSet<Rule>> getInvertedRuleLayer();
+    public GraGra getGrammar();
 
-	public Vector<Integer> getOrderedRuleLayer();
+    public List<Rule> getListOfEnabledRules();
 
-	public Hashtable<Integer, HashSet<Object>> getInvertedTypeDeletionLayer();
+    public boolean hasGrammarChanged();
 
-	public Hashtable<Integer, HashSet<Object>> getInvertedTypeCreationLayer();
+    public List<Rule> getListOfRules();
 
-	public Hashtable<Integer, Vector<Type>> getDeletionType();
+    public Hashtable<Integer, HashSet<Rule>> getInvertedRuleLayer();
 
-	public Hashtable<Integer, Vector<GraphObject>> getDeletionTypeObject();
-	
-	public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultTypeDeletion();
+    public Vector<Integer> getOrderedRuleLayer();
 
-	public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultDeletion();
+    public Hashtable<Integer, HashSet<Object>> getInvertedTypeDeletionLayer();
 
-	public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultNondeletion();
+    public Hashtable<Integer, HashSet<Object>> getInvertedTypeCreationLayer();
 
-	public void resetLayer();
+    public Hashtable<Integer, Vector<Type>> getDeletionType();
 
-	public void initRuleLayer(Hashtable<?, Integer> init);
+    public Hashtable<Integer, Vector<GraphObject>> getDeletionTypeObject();
 
-	public void initAll(boolean generate);
+    public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultTypeDeletion();
 
-	public Vector<Object> getCreatedTypesOnDeletionLayer(Integer layer);
+    public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultDeletion();
 
-	/**
-	 * Checks layer conditions .
-	 * 
-	 * @return true if conditions are valid.
-	 */
-	public boolean checkTermination();
+    public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultNondeletion();
 
-	/**
-	 * A fast check on validity.
-	 * 
-	 * @return true if the layer function is valid.
-	 */
-	public boolean isValid();
+    public void resetLayer();
 
-	/**
-	 * Returns an error message if the layer function is not valid.
-	 * 
-	 * @return The error message.
-	 */
-	public String getErrorMessage();
+    public void initRuleLayer(Hashtable<?, Integer> init);
 
-	/**
-	 * Returns the rule layer of the layer function.
-	 * 
-	 * @return The rule layer.
-	 */
-	public Hashtable<Rule, Integer> getRuleLayer();
+    public void initAll(boolean generate);
 
-	public int getRuleLayer(Rule r);
+    public Vector<Object> getCreatedTypesOnDeletionLayer(Integer layer);
 
-	/**
-	 * Returns the creation layer of the layer function.
-	 * 
-	 * @return The creation layer.
-	 */
-	public Hashtable<Object, Integer> getCreationLayer();
-	
-	public int getCreationLayer(Type t);
+    /**
+     * Checks layer conditions .
+     *
+     * @return true if conditions are valid.
+     */
+    public boolean checkTermination();
 
-	public int getCreationLayer(GraphObject t);
-	
-	/**
-	 * Returns the deletion layer of the layer function.
-	 * 
-	 * @return The deletion layer.
-	 */
-	public Hashtable<Object, Integer> getDeletionLayer();
-	
-	public int getDeletionLayer(Type t);
-	
-	public int getDeletionLayer(GraphObject t);
+    /**
+     * A fast check on validity.
+     *
+     * @return true if the layer function is valid.
+     */
+    public boolean isValid();
 
-	/**
-	 * Returns the smallest layer of the rule layer.
-	 * 
-	 * @return The smallest layer.
-	 */
-	public Integer getStartLayer();
+    /**
+     * Returns an error message if the layer function is not valid.
+     *
+     * @return The error message.
+     */
+    public String getErrorMessage();
 
-	/**
-	 * Inverts a layer function so that the layer is the key and the value is a
-	 * set.
-	 * 
-	 * @param layer
-	 *            The layer function will be inverted.
-	 * @return The inverted layer function.
-	 */
-	public Hashtable<Integer, HashSet<Rule>> invertLayer(
-			Hashtable<Rule, Integer> layer);
+    /**
+     * Returns the rule layer of the layer function.
+     *
+     * @return The rule layer.
+     */
+    public Hashtable<Rule, Integer> getRuleLayer();
 
-	public void saveRuleLayer();
+    public int getRuleLayer(Rule r);
 
-	public void setGenerateRuleLayer(boolean b);
+    /**
+     * Returns the creation layer of the layer function.
+     *
+     * @return The creation layer.
+     */
+    public Hashtable<Object, Integer> getCreationLayer();
 
-	public void showLayer();
+    public int getCreationLayer(Type t);
 
-	/**
-	 * Returns the layer function in a human readable way.
-	 * 
-	 * @return The text.
-	 */
-	public String toString();
+    public int getCreationLayer(GraphObject t);
 
+    /**
+     * Returns the deletion layer of the layer function.
+     *
+     * @return The deletion layer.
+     */
+    public Hashtable<Object, Integer> getDeletionLayer();
+
+    public int getDeletionLayer(Type t);
+
+    public int getDeletionLayer(GraphObject t);
+
+    /**
+     * Returns the smallest layer of the rule layer.
+     *
+     * @return The smallest layer.
+     */
+    public Integer getStartLayer();
+
+    /**
+     * Inverts a layer function so that the layer is the key and the value is a set.
+     *
+     * @param layer The layer function will be inverted.
+     * @return The inverted layer function.
+     */
+    public Hashtable<Integer, HashSet<Rule>> invertLayer(
+            Hashtable<Rule, Integer> layer);
+
+    public void saveRuleLayer();
+
+    public void setGenerateRuleLayer(boolean b);
+
+    public void showLayer();
+
+    /**
+     * Returns the layer function in a human readable way.
+     *
+     * @return The text.
+     */
+    public String toString();
 
 }

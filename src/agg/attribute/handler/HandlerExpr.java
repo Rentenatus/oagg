@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler;
 
 import java.util.Vector;
@@ -14,121 +15,109 @@ import java.util.Vector;
 import agg.attribute.parser.javaExpr.Node;
 
 /**
- * This interface is implemented by Attribute Handlers; provides services for
- * the Attribute Manager. It is used in the "SymbolTable".
- * 
+ * This interface is implemented by Attribute Handlers; provides services for the Attribute Manager. It is used in the
+ * "SymbolTable".
+ *
  * @see SymbolTable
  * @version $Id: HandlerExpr.java,v 1.2 2007/09/10 13:05:52 olga Exp $
  * @author $Author: olga $
  */
 public interface HandlerExpr extends java.io.Serializable, Cloneable {
 
-	static final long serialVersionUID = -3331713981402257236L;
+    static final long serialVersionUID = -3331713981402257236L;
 
-	public String toString();
+    public String toString();
 
-	/**
-	 * Obtaining the value.
-	 * 
-	 * @return The value as an Object instance.
-	 */
-	public Object getValue();
+    /**
+     * Obtaining the value.
+     *
+     * @return The value as an Object instance.
+     */
+    public Object getValue();
 
-	/**
-	 * Obtaining a copy of the message receiving expression.
-	 * 
-	 * @return The copy.
-	 */
-	public HandlerExpr getCopy();
+    /**
+     * Obtaining a copy of the message receiving expression.
+     *
+     * @return The copy.
+     */
+    public HandlerExpr getCopy();
 
-	/**
-	 * Type-check the expression under a given symbol table with declarations.
-	 * 
-	 * @param symTab
-	 *            the declaration Table to use for the checking
-	 * @exception AttrHandlerException
-	 *                if the checking yields an inconsitency. An exception is
-	 *                preferred over a return value as it is a ready-to-use
-	 *                propagation mechanism with specific information easily
-	 *                attached.
-	 */
-	public void check(SymbolTable symTab) throws AttrHandlerException;
+    /**
+     * Type-check the expression under a given symbol table with declarations.
+     *
+     * @param symTab the declaration Table to use for the checking
+     * @exception AttrHandlerException if the checking yields an inconsitency. An exception is preferred over a return
+     * value as it is a ready-to-use propagation mechanism with specific information easily attached.
+     */
+    public void check(SymbolTable symTab) throws AttrHandlerException;
 
-	/**
-	 * Type-check the constant expression under a given symbol table with declarations.
-	 * 
-	 * @param symtab
-	 *            the declaration Table to use for the checking
-	 * @exception AttrHandlerException
-	 *                if the checking yields an inconsistency. An exception is
-	 *                preferred over a return value as it is a ready-to-use
-	 *                propagation mechanism with specific information easily
-	 *                attached.
-	 */
-	public void checkConstant(SymbolTable symtab) throws AttrHandlerException;
-	
-	/**
-	 * Evaluate the expression under a given symbol table containing variable
-	 * declarations and (hopefully) also the assignments.
-	 * 
-	 * @param symTab
-	 *            the declaration Table to use for the evaluation
-	 * @exception AttrHandlerException
-	 *                if the evaluation yields an error (a missing value for a
-	 *                variable etc.)
-	 */
-	public void evaluate(SymbolTable symTab) throws AttrHandlerException;
+    /**
+     * Type-check the constant expression under a given symbol table with declarations.
+     *
+     * @param symtab the declaration Table to use for the checking
+     * @exception AttrHandlerException if the checking yields an inconsistency. An exception is preferred over a return
+     * value as it is a ready-to-use propagation mechanism with specific information easily attached.
+     */
+    public void checkConstant(SymbolTable symtab) throws AttrHandlerException;
 
-	/** returns the string representation of an expression */
-	public String getString();
+    /**
+     * Evaluate the expression under a given symbol table containing variable declarations and (hopefully) also the
+     * assignments.
+     *
+     * @param symTab the declaration Table to use for the evaluation
+     * @exception AttrHandlerException if the evaluation yields an error (a missing value for a variable etc.)
+     */
+    public void evaluate(SymbolTable symTab) throws AttrHandlerException;
 
-	/**
-	 * Checks if the expression is constant. Needed for keeping users from
-	 * giving expressions that are not allowed in a context.
-	 * 
-	 * @return 'true' if constant, 'false' sonst.
-	 */
-	public boolean isConstant();
+    /**
+     * returns the string representation of an expression
+     */
+    public String getString();
 
-	/**
-	 * Checks if the expression is a single Variable. Needed for keeping users
-	 * from giving expressions that are not allowed in a context.
-	 * 
-	 * @return 'true' if a variable, 'false' sonst.
-	 */
-	public boolean isVariable();
+    /**
+     * Checks if the expression is constant. Needed for keeping users from giving expressions that are not allowed in a
+     * context.
+     *
+     * @return 'true' if constant, 'false' sonst.
+     */
+    public boolean isConstant();
 
-	/**
-	 * Checks if the expression is a complex one (like x+1). Needed for keeping
-	 * users from giving expressions that are not allowed in a context.
-	 * 
-	 * @return 'true' if is complex, 'false' sonst.
-	 */
-	public boolean isComplex();
+    /**
+     * Checks if the expression is a single Variable. Needed for keeping users from giving expressions that are not
+     * allowed in a context.
+     *
+     * @return 'true' if a variable, 'false' sonst.
+     */
+    public boolean isVariable();
 
-	public boolean equals(HandlerExpr testObject);
+    /**
+     * Checks if the expression is a complex one (like x+1). Needed for keeping users from giving expressions that are
+     * not allowed in a context.
+     *
+     * @return 'true' if is complex, 'false' sonst.
+     */
+    public boolean isComplex();
 
-	/**
-	 * Checks if the recipient can be "matched", "unified" with the first
-	 * parameter under a certain variable assignment.
-	 * 
-	 * @param expr
-	 *            The expression to check if unifiable with;
-	 * @param symTab
-	 *            Contains the variable assignments under which to perform the
-	 *            test.
-	 * @return 'true' if the two expressions ar matching, 'false' sonst.
-	 */
-	public boolean isUnifiableWith(HandlerExpr expr, SymbolTable symTab);
+    public boolean equals(HandlerExpr testObject);
 
-	/** Returns the abstract syntax tree which represents the expression */
-	public Node getAST();
+    /**
+     * Checks if the recipient can be "matched", "unified" with the first parameter under a certain variable assignment.
+     *
+     * @param expr The expression to check if unifiable with;
+     * @param symTab Contains the variable assignments under which to perform the test.
+     * @return 'true' if the two expressions ar matching, 'false' sonst.
+     */
+    public boolean isUnifiableWith(HandlerExpr expr, SymbolTable symTab);
 
-	/**
-	 * fills the vector with the names of all variables which occur in this
-	 * expression
-	 */
-	public void getAllVariables(Vector<String> v);
+    /**
+     * Returns the abstract syntax tree which represents the expression
+     */
+    public Node getAST();
+
+    /**
+     * fills the vector with the names of all variables which occur in this expression
+     */
+    public void getAllVariables(Vector<String> v);
 }
 /*
  * $Log: HandlerExpr.java,v $

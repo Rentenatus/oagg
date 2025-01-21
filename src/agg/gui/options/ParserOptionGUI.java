@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.options;
 
 import java.awt.Dimension;
@@ -36,472 +37,470 @@ import agg.parser.OptionEventListener;
 import agg.parser.ParserOption;
 
 /**
- * A gui is provided for parser setting. The user can change the critical pair
- * algorithm, the parser algorithm and some display setttings.
- * 
+ * A gui is provided for parser setting. The user can change the critical pair algorithm, the parser algorithm and some
+ * display setttings.
+ *
  * @version $Id: ParserOptionGUI.java,v 1.3 2010/09/23 08:20:39 olga Exp $
  * @author $Author: olga $
  */
 @SuppressWarnings("serial")
 public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
-		ActionListener, OptionEventListener {
+        ActionListener, OptionEventListener {
 
-	/**
-	 * The choice of the critical pair algorithms.
-	 */
-	@SuppressWarnings("rawtypes")
-	JComboBox algorithms;
+    /**
+     * The choice of the critical pair algorithms.
+     */
+    @SuppressWarnings("rawtypes")
+    JComboBox algorithms;
 
-	/**
-	 * The choice of the parser algorithms.
-	 */
-	@SuppressWarnings("rawtypes")
-	JComboBox parserAlgorithms;
+    /**
+     * The choice of the parser algorithms.
+     */
+    @SuppressWarnings("rawtypes")
+    JComboBox parserAlgorithms;
 
-	/**
-	 * The choice if the stop graph shall be shown.
-	 */
-	JCheckBox stopGraphButton;
+    /**
+     * The choice if the stop graph shall be shown.
+     */
+    JCheckBox stopGraphButton;
 
-	/**
-	 * The choice if the parsing process is hidden.
-	 */
-	JCheckBox invisibleButton;
+    /**
+     * The choice if the parsing process is hidden.
+     */
+    JCheckBox invisibleButton;
 
-	/**
-	 * The choice if the host graph is shown.
-	 */
-	JCheckBox hostGraphButton;
+    /**
+     * The choice if the host graph is shown.
+     */
+    JCheckBox hostGraphButton;
 
-	/**
-	 * The delay time of the graph parsing.
-	 */
-	JTextField delayField;
+    /**
+     * The delay time of the graph parsing.
+     */
+    JTextField delayField;
 
-	/**
-	 * The choice of a layered parser.
-	 */
-	JCheckBox layered;
+    /**
+     * The choice of a layered parser.
+     */
+    JCheckBox layered;
 
-	/**
-	 * This panel holds all the option.
-	 */
-	JPanel firstPriorityOption;
+    /**
+     * This panel holds all the option.
+     */
+    JPanel firstPriorityOption;
 
-	JButton displaySwitch;
+    JButton displaySwitch;
 
-	/**
-	 * Text for the critical pair choice.
-	 */
-	public static final String EXCLUDEONLY = " conflicts ";
+    /**
+     * Text for the critical pair choice.
+     */
+    public static final String EXCLUDEONLY = " conflicts ";
 
-	/**
-	 * Text for the critical pair choice.
-	 */
-	public static final String EXCLUDEANDBEFORE = "exclude and befor";
+    /**
+     * Text for the critical pair choice.
+     */
+    public static final String EXCLUDEANDBEFORE = "exclude and befor";
 
-	/**
-	 * Text for the additional critical pair choice.
-	 */
-	public static final String DEPENDONLY = " dependencies ";
-	public static final String TRIGGER_DEPEND = " trigger dependency ";
-	public static final String SWITCH_DEPEND = " switch dependency ";
-	public static final String TRIGGER_SWITCH_DEPEND = " trigger & switch dependencies ";
+    /**
+     * Text for the additional critical pair choice.
+     */
+    public static final String DEPENDONLY = " dependencies ";
+    public static final String TRIGGER_DEPEND = " trigger dependency ";
+    public static final String SWITCH_DEPEND = " switch dependency ";
+    public static final String TRIGGER_SWITCH_DEPEND = " trigger & switch dependencies ";
 
-	/**
-	 * Text for the additional critical pair choice.
-	 */
-	protected static final String INDEPENDING = "before independing on exclude";
+    /**
+     * Text for the additional critical pair choice.
+     */
+    protected static final String INDEPENDING = "before independing on exclude";
 
-	public static final String DISPLAYSETTINGS = "Display Settings...";
+    public static final String DISPLAYSETTINGS = "Display Settings...";
 
-	/**
-	 * the text for a label
-	 */
-	public static final String GENERALSETTINGS = " General Settings...";
+    /**
+     * the text for a label
+     */
+    public static final String GENERALSETTINGS = " General Settings...";
 
-	private static final String EXCLUDEPARSER = " Critical Pair Analysis";
+    private static final String EXCLUDEPARSER = " Critical Pair Analysis";
 
-	private static final String SIMPLEEXCLUDEPARSER = " Semi optimized backtracking";
+    private static final String SIMPLEEXCLUDEPARSER = " Semi optimized backtracking";
 
-	private static final String SIMPLEPARSER = " Backtracking without optimization";
+    private static final String SIMPLEPARSER = " Backtracking without optimization";
 
-	/**
-	 * the option for the display settings
-	 * 
-	 * @serial A super class is serializable
-	 */
-	private ParserGUIOption guiOption;
+    /**
+     * the option for the display settings
+     *
+     * @serial A super class is serializable
+     */
+    private ParserGUIOption guiOption;
 
-	/**
-	 * the option for the parser
-	 * 
-	 * @serial A super class is serializable
-	 */
-	private ParserOption pOption;
+    /**
+     * the option for the parser
+     *
+     * @serial A super class is serializable
+     */
+    private ParserOption pOption;
 
-	/**
-	 * The option for the critical pairs. They are needed for the settings of
-	 * the algorithm.
-	 */
-	CriticalPairOption cpOption;
+    /**
+     * The option for the critical pairs. They are needed for the settings of the algorithm.
+     */
+    CriticalPairOption cpOption;
 
-	/**
-	 * Creates a new gui with the given option.
-	 * 
-	 * @param guiOption
-	 *            the option for the display settings.
-	 * @param option
-	 *            the settings for the parser.
-	 * @param cpOption
-	 *            the option for the critical pairs.
-	 */
-	public ParserOptionGUI(ParserGUIOption guiOption, ParserOption option,
-			CriticalPairOption cpOption) {
-		super();
-		this.pOption = option;
-		this.guiOption = guiOption;
-		this.cpOption = cpOption;
-		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
+    /**
+     * Creates a new gui with the given option.
+     *
+     * @param guiOption the option for the display settings.
+     * @param option the settings for the parser.
+     * @param cpOption the option for the critical pairs.
+     */
+    public ParserOptionGUI(ParserGUIOption guiOption, ParserOption option,
+            CriticalPairOption cpOption) {
+        super();
+        this.pOption = option;
+        this.guiOption = guiOption;
+        this.cpOption = cpOption;
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
 
-		setLayout(gridbag);
+        setLayout(gridbag);
 
-		this.firstPriorityOption = makeFirstPriorityOption();
-		c.fill = GridBagConstraints.BOTH;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.weighty = 1.0;
-		c.weightx = 1.0;
-		add(this.firstPriorityOption, c);
-		validate();
-	}
+        this.firstPriorityOption = makeFirstPriorityOption();
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.weighty = 1.0;
+        c.weightx = 1.0;
+        add(this.firstPriorityOption, c);
+        validate();
+    }
 
-	public Dimension getPreferredSize() {
-		return new Dimension(400, 690);
-	}
+    public Dimension getPreferredSize() {
+        return new Dimension(400, 690);
+    }
 
-	public void setCriticalPairOption(CriticalPairOption cpOption) {
-		this.cpOption = cpOption;
-	}
+    public void setCriticalPairOption(CriticalPairOption cpOption) {
+        this.cpOption = cpOption;
+    }
 
-	private void addIcon(JPanel optionPanel) {
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.NONE;
-		c.gridwidth = 1;
-		c.gridheight = 2;
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.insets = new Insets(1, 1, 1, 1);
-		ImageIcon optionImage = IconResource.getIconFromURL(IconResource
-				.getOptionIcon());
-		JLabel optionLabel = new JLabel(optionImage);
-		optionLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		optionLabel.setVerticalAlignment(SwingConstants.CENTER);
-		optionLabel.setHorizontalTextPosition(SwingConstants.CENTER);
-		optionLabel.setVerticalTextPosition(SwingConstants.CENTER);
-		optionPanel.add(optionLabel, c);
-	}
+    private void addIcon(JPanel optionPanel) {
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.NONE;
+        c.gridwidth = 1;
+        c.gridheight = 2;
+        c.weightx = 0.0;
+        c.weighty = 0.0;
+        c.insets = new Insets(1, 1, 1, 1);
+        ImageIcon optionImage = IconResource.getIconFromURL(IconResource
+                .getOptionIcon());
+        JLabel optionLabel = new JLabel(optionImage);
+        optionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        optionLabel.setVerticalAlignment(SwingConstants.CENTER);
+        optionLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        optionLabel.setVerticalTextPosition(SwingConstants.CENTER);
+        optionPanel.add(optionLabel, c);
+    }
 
-	private JPanel makeFirstPriorityOption() {
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		JPanel optionPanel = makeInitialOptionPanel(true, "", c);
+    private JPanel makeFirstPriorityOption() {
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        JPanel optionPanel = makeInitialOptionPanel(true, "", c);
 //		optionPanel.setBorder(new TitledBorder(" General Settings "));
 
-		addIcon(optionPanel);
+        addIcon(optionPanel);
 
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.gridheight = 1;
-		c.insets = new Insets(5, 0, 5, 0);
-		c.weightx = 1.0;
-		c.weighty = 0.0;
-		JPanel placeHolder3 = new JPanel();
-		// placeHolder3.setBackground(java.awt.Color.green);
-		placeHolder3.setPreferredSize(new Dimension(200, 2));
-		optionPanel.add(placeHolder3, c);
+        c.fill = GridBagConstraints.BOTH;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        c.insets = new Insets(5, 0, 5, 0);
+        c.weightx = 1.0;
+        c.weighty = 0.0;
+        JPanel placeHolder3 = new JPanel();
+        // placeHolder3.setBackground(java.awt.Color.green);
+        placeHolder3.setPreferredSize(new Dimension(200, 2));
+        optionPanel.add(placeHolder3, c);
 
-		c.weighty = 0.0;
-		JPanel parserOptionPanel = makeParserPanelOption();
-		optionPanel.add(parserOptionPanel, c);
+        c.weighty = 0.0;
+        JPanel parserOptionPanel = makeParserPanelOption();
+        optionPanel.add(parserOptionPanel, c);
 
-		c.weighty = 0.0;
-		JPanel algorithmParser = makeParserAlgorithm();
-		optionPanel.add(algorithmParser, c);
+        c.weighty = 0.0;
+        JPanel algorithmParser = makeParserAlgorithm();
+        optionPanel.add(algorithmParser, c);
 
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		JPanel placeHolder1 = new JPanel();
-		// placeHolder1.setBackground(java.awt.Color.magenta);
-		placeHolder1.setPreferredSize(new Dimension(200, 200));
-		optionPanel.add(placeHolder1, c);
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        JPanel placeHolder1 = new JPanel();
+        // placeHolder1.setBackground(java.awt.Color.magenta);
+        placeHolder1.setPreferredSize(new Dimension(200, 200));
+        optionPanel.add(placeHolder1, c);
 
-		c.weightx = 0.0;
-		c.weighty = 0.0;
-		c.gridwidth = 1;
-		JPanel placeHolder = new JPanel();
-		// placeHolder.setBackground(java.awt.Color.blue);
-		placeHolder.setPreferredSize(new Dimension(200, 200));
-		optionPanel.add(placeHolder, c);
+        c.weightx = 0.0;
+        c.weighty = 0.0;
+        c.gridwidth = 1;
+        JPanel placeHolder = new JPanel();
+        // placeHolder.setBackground(java.awt.Color.blue);
+        placeHolder.setPreferredSize(new Dimension(200, 200));
+        optionPanel.add(placeHolder, c);
 
-		c.weightx = 1.0;
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		JPanel placeHolder2 = new JPanel();
-		// placeHolder2.setBackground(java.awt.Color.yellow);
-		placeHolder2.setPreferredSize(new Dimension(200, 200));
-		optionPanel.add(placeHolder2, c);
+        c.weightx = 1.0;
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        JPanel placeHolder2 = new JPanel();
+        // placeHolder2.setBackground(java.awt.Color.yellow);
+        placeHolder2.setPreferredSize(new Dimension(200, 200));
+        optionPanel.add(placeHolder2, c);
 
-		return optionPanel;
-	}
+        return optionPanel;
+    }
 
-	private JPanel makeParserPanelOption() {
-		JPanel optionPanel = makeInitialOptionPanel("");
-		optionPanel.setBorder(new TitledBorder(" Parser Display Option "));
+    private JPanel makeParserPanelOption() {
+        JPanel optionPanel = makeInitialOptionPanel("");
+        optionPanel.setBorder(new TitledBorder(" Parser Display Option "));
 
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.gridheight = 1;
-		JLabel show = new JLabel(" show...");
-		optionPanel.add(show, c);
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        JLabel show = new JLabel(" show...");
+        optionPanel.add(show, c);
 
-		this.stopGraphButton = new JCheckBox("Stop Graph");
-		this.stopGraphButton.setFocusPainted(false);
-		this.stopGraphButton.addActionListener(this);
-		this.stopGraphButton
-				.setSelected(this.guiOption.getParserDisplay()
-						- ParserGUIOption.SHOWHOSTGRAPH == ParserGUIOption.SHOWSTOPGRAPH);
-		this.invisibleButton = new JCheckBox("Invisible");
-		this.invisibleButton.setFocusPainted(false);
-		this.invisibleButton.addActionListener(this);
-		this.invisibleButton
-				.setSelected(this.guiOption.getParserDisplay() == ParserGUIOption.PARSINGINVISIBLE);
-		this.hostGraphButton = new JCheckBox("Host Graph");
-		this.hostGraphButton.setFocusPainted(false);
-		this.hostGraphButton.addActionListener(this);
-		this.hostGraphButton
-				.setSelected(this.guiOption.getParserDisplay()
-						- ParserGUIOption.SHOWSTOPGRAPH == ParserGUIOption.SHOWHOSTGRAPH);
+        this.stopGraphButton = new JCheckBox("Stop Graph");
+        this.stopGraphButton.setFocusPainted(false);
+        this.stopGraphButton.addActionListener(this);
+        this.stopGraphButton
+                .setSelected(this.guiOption.getParserDisplay()
+                        - ParserGUIOption.SHOWHOSTGRAPH == ParserGUIOption.SHOWSTOPGRAPH);
+        this.invisibleButton = new JCheckBox("Invisible");
+        this.invisibleButton.setFocusPainted(false);
+        this.invisibleButton.addActionListener(this);
+        this.invisibleButton
+                .setSelected(this.guiOption.getParserDisplay() == ParserGUIOption.PARSINGINVISIBLE);
+        this.hostGraphButton = new JCheckBox("Host Graph");
+        this.hostGraphButton.setFocusPainted(false);
+        this.hostGraphButton.addActionListener(this);
+        this.hostGraphButton
+                .setSelected(this.guiOption.getParserDisplay()
+                        - ParserGUIOption.SHOWSTOPGRAPH == ParserGUIOption.SHOWHOSTGRAPH);
 
-		/* Group the radio buttons. */
-		ButtonGroup group = new ButtonGroup();
-		group.add(this.invisibleButton);
-		group.add(this.hostGraphButton);
+        /* Group the radio buttons. */
+        ButtonGroup group = new ButtonGroup();
+        group.add(this.invisibleButton);
+        group.add(this.hostGraphButton);
 
-		optionPanel.add(this.invisibleButton, c);
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		optionPanel.add(this.hostGraphButton, c);
-		c.weightx = 1.0;
-		optionPanel.add(this.stopGraphButton, c);
+        optionPanel.add(this.invisibleButton, c);
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        optionPanel.add(this.hostGraphButton, c);
+        c.weightx = 1.0;
+        optionPanel.add(this.stopGraphButton, c);
 
-		JLabel delay = new JLabel(" Delay Time (ms) ");
-		this.delayField = new JTextField();
-		this.delayField.addActionListener(this);
-		this.delayField.setText(String.valueOf(this.guiOption.getDelayAfterApplyRule()));
+        JLabel delay = new JLabel(" Delay Time (ms) ");
+        this.delayField = new JTextField();
+        this.delayField.addActionListener(this);
+        this.delayField.setText(String.valueOf(this.guiOption.getDelayAfterApplyRule()));
 
-		c.weightx = 1.0;
-		c.gridx = 1;
-		optionPanel.add(delay, c);
-		c.gridx = 2;
-		optionPanel.add(this.delayField, c);
+        c.weightx = 1.0;
+        c.gridx = 1;
+        optionPanel.add(delay, c);
+        c.gridx = 2;
+        optionPanel.add(this.delayField, c);
 
-		return optionPanel;
-	}
+        return optionPanel;
+    }
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private JPanel makeParserAlgorithm() {
-		GridBagConstraints c = new GridBagConstraints();
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private JPanel makeParserAlgorithm() {
+        GridBagConstraints c = new GridBagConstraints();
 
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		c.gridheight = 1;
-		c.weightx = 0.0;
-		c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.BOTH;
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        c.gridheight = 1;
+        c.weightx = 0.0;
+        c.anchor = GridBagConstraints.WEST;
 
-		JPanel optionPanel = makeInitialOptionPanel(true, "", c);
-		optionPanel.setBorder(new TitledBorder(" Select algorithm for parser "));
-		/* optionPanel.setBackground(Color.red); */
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.weightx = 1.0;
-		optionPanel.add(new JPanel(), c);
+        JPanel optionPanel = makeInitialOptionPanel(true, "", c);
+        optionPanel.setBorder(new TitledBorder(" Select algorithm for parser "));
+        /* optionPanel.setBackground(Color.red); */
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.weightx = 1.0;
+        optionPanel.add(new JPanel(), c);
 
-		c.gridwidth = 1;
-		c.weightx = 0.0;
-		c.anchor = GridBagConstraints.WEST;
-		this.parserAlgorithms = new JComboBox();
-		this.parserAlgorithms.addItem(EXCLUDEPARSER);
-		this.parserAlgorithms.addItem(SIMPLEEXCLUDEPARSER);
-		this.parserAlgorithms.addItem(SIMPLEPARSER);
-		this.parserAlgorithms.addItemListener(this);
-		optionPanel.add(this.parserAlgorithms, c);
+        c.gridwidth = 1;
+        c.weightx = 0.0;
+        c.anchor = GridBagConstraints.WEST;
+        this.parserAlgorithms = new JComboBox();
+        this.parserAlgorithms.addItem(EXCLUDEPARSER);
+        this.parserAlgorithms.addItem(SIMPLEEXCLUDEPARSER);
+        this.parserAlgorithms.addItem(SIMPLEPARSER);
+        this.parserAlgorithms.addItemListener(this);
+        optionPanel.add(this.parserAlgorithms, c);
 
-		this.layered = new JCheckBox("layered", false);
-		this.layered.setFocusPainted(false);
-		this.layered.addActionListener(this);
-		c.insets = new Insets(0, 20, 0, 0);
-		optionPanel.add(this.layered, c);
+        this.layered = new JCheckBox("layered", false);
+        this.layered.setFocusPainted(false);
+        this.layered.addActionListener(this);
+        c.insets = new Insets(0, 20, 0, 0);
+        optionPanel.add(this.layered, c);
 
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.weightx = 1.0;
-		optionPanel.add(new JPanel(), c);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.weightx = 1.0;
+        optionPanel.add(new JPanel(), c);
 
-		return optionPanel;
-	}
+        return optionPanel;
+    }
 
-	/**
-	 * Changes the settings of a algorithm.
-	 * 
-	 * @param e
-	 *            the event for the event.
-	 */
-	public void itemStateChanged(ItemEvent e) {
-		Object source = e.getSource();
-		if (source == this.parserAlgorithms) {
-			if (this.parserAlgorithms.getSelectedItem().equals(EXCLUDEPARSER)) {
-				this.pOption.setSelectedParser(ParserOption.EXCLUDEPARSER);
-			} else if (this.parserAlgorithms.getSelectedItem().equals(
-					SIMPLEEXCLUDEPARSER)) {
-				this.pOption.setSelectedParser(ParserOption.SIMPLEEXCLUDEPARSER);
-			} else if (this.parserAlgorithms.getSelectedItem().equals(SIMPLEPARSER)) {
-				this.pOption.setSelectedParser(ParserOption.SIMPLEPARSER);
-			}
-		}
-	}
+    /**
+     * Changes the settings of a algorithm.
+     *
+     * @param e the event for the event.
+     */
+    public void itemStateChanged(ItemEvent e) {
+        Object source = e.getSource();
+        if (source == this.parserAlgorithms) {
+            if (this.parserAlgorithms.getSelectedItem().equals(EXCLUDEPARSER)) {
+                this.pOption.setSelectedParser(ParserOption.EXCLUDEPARSER);
+            } else if (this.parserAlgorithms.getSelectedItem().equals(
+                    SIMPLEEXCLUDEPARSER)) {
+                this.pOption.setSelectedParser(ParserOption.SIMPLEEXCLUDEPARSER);
+            } else if (this.parserAlgorithms.getSelectedItem().equals(SIMPLEPARSER)) {
+                this.pOption.setSelectedParser(ParserOption.SIMPLEPARSER);
+            }
+        }
+    }
 
-	/**
-	 * Evaluates a click at the display options.
-	 * 
-	 * @param e
-	 *            The event for the display settings.
-	 */
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		// System.out.println("ParserOptionGUI.actionParformd: "+source);
-		if (source.equals(this.displaySwitch)) {
-		} else if (source.equals(this.invisibleButton)
-				|| source.equals(this.hostGraphButton)) {
-			if (source.equals(this.invisibleButton)) {
-				this.stopGraphButton.setEnabled(false);
-				this.guiOption.setParserDisplay(ParserGUIOption.PARSINGINVISIBLE);
-			} else if (source.equals(this.hostGraphButton)) {
-				this.stopGraphButton.setEnabled(true);
-				int op = ParserGUIOption.SHOWHOSTGRAPH;
-				if (this.stopGraphButton.isSelected())
-					op = op + ParserGUIOption.SHOWSTOPGRAPH;
-				this.guiOption.setParserDisplay(op);
-			}
-		} else if (source.equals(this.stopGraphButton)) {
-			if (this.stopGraphButton.isSelected())
-				this.guiOption.setParserDisplay(ParserGUIOption.SHOWSTOPGRAPH
-						+ ParserGUIOption.SHOWHOSTGRAPH);
-			else
-				this.guiOption.setParserDisplay(ParserGUIOption.SHOWHOSTGRAPH);
-		} else if (source.equals(this.layered)) {
-			this.pOption.enableLayer(this.layered.isSelected());
-			this.cpOption.enableLayered(this.layered.isSelected());
-		} else if (source.equals(this.delayField)) {
-			if (!this.delayField.getText().equals("")) {
-				try {
-					Integer nb = Integer.valueOf(this.delayField.getText());
-					this.guiOption.setDelayAfterApplyRule(nb.intValue());
-				} catch (NumberFormatException ex) {
-					this.delayField.setText("100");
-				}
-			}
-		}
-		update();
-	}
+    /**
+     * Evaluates a click at the display options.
+     *
+     * @param e The event for the display settings.
+     */
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        // System.out.println("ParserOptionGUI.actionParformd: "+source);
+        if (source.equals(this.displaySwitch)) {
+        } else if (source.equals(this.invisibleButton)
+                || source.equals(this.hostGraphButton)) {
+            if (source.equals(this.invisibleButton)) {
+                this.stopGraphButton.setEnabled(false);
+                this.guiOption.setParserDisplay(ParserGUIOption.PARSINGINVISIBLE);
+            } else if (source.equals(this.hostGraphButton)) {
+                this.stopGraphButton.setEnabled(true);
+                int op = ParserGUIOption.SHOWHOSTGRAPH;
+                if (this.stopGraphButton.isSelected()) {
+                    op = op + ParserGUIOption.SHOWSTOPGRAPH;
+                }
+                this.guiOption.setParserDisplay(op);
+            }
+        } else if (source.equals(this.stopGraphButton)) {
+            if (this.stopGraphButton.isSelected()) {
+                this.guiOption.setParserDisplay(ParserGUIOption.SHOWSTOPGRAPH
+                        + ParserGUIOption.SHOWHOSTGRAPH);
+            } else {
+                this.guiOption.setParserDisplay(ParserGUIOption.SHOWHOSTGRAPH);
+            }
+        } else if (source.equals(this.layered)) {
+            this.pOption.enableLayer(this.layered.isSelected());
+            this.cpOption.enableLayered(this.layered.isSelected());
+        } else if (source.equals(this.delayField)) {
+            if (!this.delayField.getText().equals("")) {
+                try {
+                    Integer nb = Integer.valueOf(this.delayField.getText());
+                    this.guiOption.setDelayAfterApplyRule(nb.intValue());
+                } catch (NumberFormatException ex) {
+                    this.delayField.setText("100");
+                }
+            }
+        }
+        update();
+    }
 
-	/* Implements java.util.EventListener */
-	public void optionEventOccurred(EventObject e) {
-		// System.out.println("ParserOptionGUI.optionEventOccurred:
-		// "+e.getSource());
-		if (e.getSource() instanceof JCheckBox) {
-			JCheckBox cb = (JCheckBox) e.getSource();
-			if (cb.getText().equals("layered")) {
-				this.pOption.enableLayer(cb.isSelected());
-				this.layered.doClick();
-			}
-		} else if (e.getSource() instanceof CriticalPairOption) {
-			boolean b = ((CriticalPairOption) e.getSource()).layeredEnabled();
-			this.pOption.enableLayer(b);
-			if (b && !this.layered.isSelected())
-				this.layered.doClick();
-			else if (!b && this.layered.isSelected())
-				this.layered.doClick();
-		}
-	}
+    /* Implements java.util.EventListener */
+    public void optionEventOccurred(EventObject e) {
+        // System.out.println("ParserOptionGUI.optionEventOccurred:
+        // "+e.getSource());
+        if (e.getSource() instanceof JCheckBox) {
+            JCheckBox cb = (JCheckBox) e.getSource();
+            if (cb.getText().equals("layered")) {
+                this.pOption.enableLayer(cb.isSelected());
+                this.layered.doClick();
+            }
+        } else if (e.getSource() instanceof CriticalPairOption) {
+            boolean b = ((CriticalPairOption) e.getSource()).layeredEnabled();
+            this.pOption.enableLayer(b);
+            if (b && !this.layered.isSelected()) {
+                this.layered.doClick();
+            } else if (!b && this.layered.isSelected()) {
+                this.layered.doClick();
+            }
+        }
+    }
 
-	/**
-	 * Returns a icon for the tab. Pacman is returned.
-	 * 
-	 * @return <I>PacMan</I> is returned.
-	 */
-	public Icon getIcon() {
-		java.net.URL url = ClassLoader.getSystemClassLoader()
-								.getResource("agg/lib/icons/pacman.gif");
-		if (url != null) {
-		return new ImageIcon(ClassLoader
-				.getSystemResource("agg/lib/icons/pacman.gif"));
-		} 
-		return null;
-	}
+    /**
+     * Returns a icon for the tab. Pacman is returned.
+     *
+     * @return <I>PacMan</I> is returned.
+     */
+    public Icon getIcon() {
+        java.net.URL url = ClassLoader.getSystemClassLoader()
+                .getResource("agg/lib/icons/pacman.gif");
+        if (url != null) {
+            return new ImageIcon(ClassLoader
+                    .getSystemResource("agg/lib/icons/pacman.gif"));
+        }
+        return null;
+    }
 
-	/**
-	 * Returns the text for the tab title.
-	 * 
-	 * @return <I>Parser</I> is returned.
-	 */
-	public String getTabTitle() {
-		return "Parser";
-	}
+    /**
+     * Returns the text for the tab title.
+     *
+     * @return <I>Parser</I> is returned.
+     */
+    public String getTabTitle() {
+        return "Parser";
+    }
 
-	/**
-	 * Returns the text for the tab tip.
-	 * 
-	 * @return <I>Parser Option</I> is returned.
-	 */
-	public String getTabTip() {
-		return "Parser Options";
-	}
+    /**
+     * Returns the text for the tab tip.
+     *
+     * @return <I>Parser Option</I> is returned.
+     */
+    public String getTabTip() {
+        return "Parser Options";
+    }
 
-	/**
-	 * Updates the gui to the settings.
-	 */
-	public void update() {
-		if (this.pOption.getSelectedParser() == ParserOption.SIMPLEPARSER)
-			this.parserAlgorithms.setSelectedItem(SIMPLEPARSER);
-		else if (this.pOption.getSelectedParser() == ParserOption.EXCLUDEPARSER)
-			this.parserAlgorithms.setSelectedItem(EXCLUDEPARSER);
-		else if (this.pOption.getSelectedParser() == ParserOption.SIMPLEEXCLUDEPARSER)
-			this.parserAlgorithms.setSelectedItem(SIMPLEEXCLUDEPARSER);
+    /**
+     * Updates the gui to the settings.
+     */
+    public void update() {
+        if (this.pOption.getSelectedParser() == ParserOption.SIMPLEPARSER) {
+            this.parserAlgorithms.setSelectedItem(SIMPLEPARSER);
+        } else if (this.pOption.getSelectedParser() == ParserOption.EXCLUDEPARSER) {
+            this.parserAlgorithms.setSelectedItem(EXCLUDEPARSER);
+        } else if (this.pOption.getSelectedParser() == ParserOption.SIMPLEEXCLUDEPARSER) {
+            this.parserAlgorithms.setSelectedItem(SIMPLEEXCLUDEPARSER);
+        }
 
-		if (this.guiOption.getParserDisplay() == ParserGUIOption.PARSINGINVISIBLE) {
-			this.stopGraphButton.setEnabled(false);
-			this.stopGraphButton.setSelected(false);
-			this.invisibleButton.setSelected(true);
-			this.hostGraphButton.setSelected(false);
-		} else if (this.guiOption.getParserDisplay() == ParserGUIOption.SHOWHOSTGRAPH) {
-			this.stopGraphButton.setEnabled(true);
-			this.stopGraphButton.setSelected(false);
-			this.invisibleButton.setSelected(false);
-			this.hostGraphButton.setSelected(true);
-		} else if (this.guiOption.getParserDisplay() == ParserGUIOption.SHOWHOSTGRAPH
-				+ ParserGUIOption.SHOWSTOPGRAPH) {
-			this.stopGraphButton.setEnabled(true);
-			this.stopGraphButton.setSelected(true);
-			this.invisibleButton.setSelected(false);
-			this.hostGraphButton.setSelected(true);
-		}
+        if (this.guiOption.getParserDisplay() == ParserGUIOption.PARSINGINVISIBLE) {
+            this.stopGraphButton.setEnabled(false);
+            this.stopGraphButton.setSelected(false);
+            this.invisibleButton.setSelected(true);
+            this.hostGraphButton.setSelected(false);
+        } else if (this.guiOption.getParserDisplay() == ParserGUIOption.SHOWHOSTGRAPH) {
+            this.stopGraphButton.setEnabled(true);
+            this.stopGraphButton.setSelected(false);
+            this.invisibleButton.setSelected(false);
+            this.hostGraphButton.setSelected(true);
+        } else if (this.guiOption.getParserDisplay() == ParserGUIOption.SHOWHOSTGRAPH
+                + ParserGUIOption.SHOWSTOPGRAPH) {
+            this.stopGraphButton.setEnabled(true);
+            this.stopGraphButton.setSelected(true);
+            this.invisibleButton.setSelected(false);
+            this.hostGraphButton.setSelected(true);
+        }
 
-		this.layered.setSelected(this.pOption.layerEnabled());
-		// System.out.println("ParserOptionGUI.layered: "+layered.isSelected());
-	}
+        this.layered.setSelected(this.pOption.layerEnabled());
+        // System.out.println("ParserOptionGUI.layered: "+layered.isSelected());
+    }
 
-	public void executeOnClose() {}
-	
+    public void executeOnClose() {
+    }
 
 }
 /*

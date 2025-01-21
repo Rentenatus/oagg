@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.gui.impl;
 
 import java.util.Enumeration;
@@ -18,58 +19,57 @@ import agg.attribute.handler.gui.HandlerEditorObserver;
 
 /**
  * Facilitates observer handling.
- * 
+ *
  * @version $Id: AbstractHandlerEditor.java,v 1.4 2010/08/18 09:25:16 olga Exp $
  * @author $Author: olga $
  */
 public class AbstractHandlerEditor extends Object implements HandlerEditor {
 
-	/**
-	 * Container with observers of this instance, all of which implement the
-	 * HandlerEditorObserver interface.
-	 */
-	final protected transient Vector<HandlerEditorObserver> observers = new Vector<HandlerEditorObserver>(
-			10, 10);
+    /**
+     * Container with observers of this instance, all of which implement the HandlerEditorObserver interface.
+     */
+    final protected transient Vector<HandlerEditorObserver> observers = new Vector<HandlerEditorObserver>(
+            10, 10);
 
-	public AbstractHandlerEditor() {
-		super();
-	}
+    public AbstractHandlerEditor() {
+        super();
+    }
 
-	public void addEditorObserver(HandlerEditorObserver obs) {
-		if (!this.observers.contains(obs)) {
-			this.observers.addElement(obs);
-		}
-	}
+    public void addEditorObserver(HandlerEditorObserver obs) {
+        if (!this.observers.contains(obs)) {
+            this.observers.addElement(obs);
+        }
+    }
 
-	public void removeEditorObserver(HandlerEditorObserver obs) {
-		this.observers.removeElement(obs);
-	}
+    public void removeEditorObserver(HandlerEditorObserver obs) {
+        this.observers.removeElement(obs);
+    }
 
-	protected void fireEditingCancelled() {
-		fireEditingCancelled(new DefaultHandlerChangeEvent(this));
-	}
+    protected void fireEditingCancelled() {
+        fireEditingCancelled(new DefaultHandlerChangeEvent(this));
+    }
 
-	protected void fireEditingCancelled(HandlerChangeEvent evt) {
-		HandlerEditorObserver obs;
+    protected void fireEditingCancelled(HandlerChangeEvent evt) {
+        HandlerEditorObserver obs;
 
-		for (Enumeration<HandlerEditorObserver> en = this.observers.elements(); en.hasMoreElements();) {
-			obs = en.nextElement();
-			obs.editingCancelled(evt);
-		}
-	}
+        for (Enumeration<HandlerEditorObserver> en = this.observers.elements(); en.hasMoreElements();) {
+            obs = en.nextElement();
+            obs.editingCancelled(evt);
+        }
+    }
 
-	protected void fireEditingStopped() {
-		fireEditingStopped(new DefaultHandlerChangeEvent(this));
-	}
+    protected void fireEditingStopped() {
+        fireEditingStopped(new DefaultHandlerChangeEvent(this));
+    }
 
-	protected void fireEditingStopped(HandlerChangeEvent evt) {
-		HandlerEditorObserver obs;
+    protected void fireEditingStopped(HandlerChangeEvent evt) {
+        HandlerEditorObserver obs;
 
-		for (Enumeration<HandlerEditorObserver> en = this.observers.elements(); en.hasMoreElements();) {
-			obs = en.nextElement();
-			obs.editingStopped(evt);
-		}
-	}
+        for (Enumeration<HandlerEditorObserver> en = this.observers.elements(); en.hasMoreElements();) {
+            obs = en.nextElement();
+            obs.editingStopped(evt);
+        }
+    }
 
 }
 /*

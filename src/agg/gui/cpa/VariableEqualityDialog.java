@@ -1,14 +1,14 @@
-/*******************************************************************************
- * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- *******************************************************************************/
 /**
- * 
+ **
+ * ***************************************************************************
+ * <copyright>
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * </copyright> *****************************************************************************
+ */
+/**
+ *
  */
 package agg.gui.cpa;
 
@@ -37,78 +37,78 @@ import agg.editor.impl.EdGraph;
 @SuppressWarnings("serial")
 public class VariableEqualityDialog extends JDialog {
 
-	final protected EdGraph graph;
-	
-	public VariableEqualityDialog(final EdGraph graph, final Point location) {
-		super(new JFrame(), "Variable Equalities", false);
-		
-		this.graph = graph;
-		String text = graph.getBasisGraph().getHelpInfoAboutVariableEquality();
-		
+    final protected EdGraph graph;
+
+    public VariableEqualityDialog(final EdGraph graph, final Point location) {
+        super(new JFrame(), "Variable Equalities", false);
+
+        this.graph = graph;
+        String text = graph.getBasisGraph().getHelpInfoAboutVariableEquality();
+
 //		text = text.substring(1,text.length()-1).replaceAll(",", "\n").replaceAll(" ", "");
-		text = text.substring(1,text.length()-1).replaceAll(" ", "");
-		String [] array = text.split(",");
-				
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent evt) {
-				setVisible(false);
-			}
-		});
-		
-		final JPanel content = new JPanel(new BorderLayout());
-		content.add(new JLabel("                    "), BorderLayout.NORTH);
-		
-		final JPanel panel = new JPanel(new BorderLayout());
-		panel.add(new JLabel("  "+graph.getName()+"  "), BorderLayout.NORTH);
-		
-		final JPanel p = new JPanel(new GridLayout(array.length+3, 1));	
-		p.add(new JLabel("        "));
-		for (int i=0; i<array.length; i++) {
-			String s = array[i];
-			final JLabel l = new JLabel("    "+s+"    ");
-			l.setForeground(Color.RED);
-			p.add(l);
-		}
-		p.add(new JLabel("        "));		
-		panel.add(p, BorderLayout.CENTER);
-		
-		final JButton close = new JButton("OK");
-		close.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-			}
-		});		
-		final JPanel pb = new JPanel();
-		pb.add(new JLabel("  "));
-		pb.add(close);
-		pb.add(new JLabel("  "));		
-		panel.add(pb, BorderLayout.SOUTH);
-		
-		content.add(panel, BorderLayout.CENTER);
-		content.add(new JLabel("                    "), BorderLayout.SOUTH);
-		
-		setContentPane(content);
-		setLocation(location.x, location.y);
-		pack();
-		
-		setAlwaysOnTop(true);
-		setVisible(true);
-	}
-	
-	public EdGraph getGraph() {
-		return this.graph;
-	}
-	
-	public static Hashtable<String,String> getVarNameEquality(String varsEquality) {
-		String [] array = varsEquality.split(",");	
-		Hashtable<String,String> map = new Hashtable<String,String>(array.length);	
-		for (int i=0; i<array.length; i++) {
-			String s = array[i];
-			String [] vars = s.split("=");
-			if (vars.length == 2) {
-				map.put(vars[0], vars[1]);
-			}
-		}
-		return map;
-	}
+        text = text.substring(1, text.length() - 1).replaceAll(" ", "");
+        String[] array = text.split(",");
+
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent evt) {
+                setVisible(false);
+            }
+        });
+
+        final JPanel content = new JPanel(new BorderLayout());
+        content.add(new JLabel("                    "), BorderLayout.NORTH);
+
+        final JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel("  " + graph.getName() + "  "), BorderLayout.NORTH);
+
+        final JPanel p = new JPanel(new GridLayout(array.length + 3, 1));
+        p.add(new JLabel("        "));
+        for (int i = 0; i < array.length; i++) {
+            String s = array[i];
+            final JLabel l = new JLabel("    " + s + "    ");
+            l.setForeground(Color.RED);
+            p.add(l);
+        }
+        p.add(new JLabel("        "));
+        panel.add(p, BorderLayout.CENTER);
+
+        final JButton close = new JButton("OK");
+        close.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        });
+        final JPanel pb = new JPanel();
+        pb.add(new JLabel("  "));
+        pb.add(close);
+        pb.add(new JLabel("  "));
+        panel.add(pb, BorderLayout.SOUTH);
+
+        content.add(panel, BorderLayout.CENTER);
+        content.add(new JLabel("                    "), BorderLayout.SOUTH);
+
+        setContentPane(content);
+        setLocation(location.x, location.y);
+        pack();
+
+        setAlwaysOnTop(true);
+        setVisible(true);
+    }
+
+    public EdGraph getGraph() {
+        return this.graph;
+    }
+
+    public static Hashtable<String, String> getVarNameEquality(String varsEquality) {
+        String[] array = varsEquality.split(",");
+        Hashtable<String, String> map = new Hashtable<String, String>(array.length);
+        for (int i = 0; i < array.length; i++) {
+            String s = array[i];
+            String[] vars = s.split("=");
+            if (vars.length == 2) {
+                map.put(vars[0], vars[1]);
+            }
+        }
+        return map;
+    }
 }

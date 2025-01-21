@@ -1,15 +1,15 @@
 package agg.xt_basis.csp;
 
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
-
+ ******************************************************************************
+ */
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,91 +40,91 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Type;
 
 /**
- * An implementation of morphism completion as a Constraint Satisfaction Problem
- * (CSP).
- * 
- * Please note: This class is only for internal use of the 
- * critical pair analysis for grammars with node type inheritance.
- * Do not use it for any kind of implementations.
+ * An implementation of morphism completion as a Constraint Satisfaction Problem (CSP).
+ *
+ * Please note: This class is only for internal use of the critical pair analysis for grammars with node type
+ * inheritance. Do not use it for any kind of implementations.
  */
 public class Completion_InheritCSP extends MorphCompletionStrategy {
-	private ALR_InheritCSP itsCSP;
 
-	private Morphism itsMorph;
+    private ALR_InheritCSP itsCSP;
 
-	private Dictionary<Object, Variable> relatedVarMap;
+    private Morphism itsMorph;
 
-	// private boolean allowRestrictedDomain;
-	private HashMap<String, String> 
-	mapInputParameter = new HashMap<String, String>(1);
+    private Dictionary<Object, Variable> relatedVarMap;
 
-	private String errorMsg;
+    // private boolean allowRestrictedDomain;
+    private HashMap<String, String> mapInputParameter = new HashMap<String, String>(1);
 
-	private static final BitSet itsSupportedProperties = new BitSet(6);
-	static {
-		itsSupportedProperties.set(CompletionPropertyBits.INJECTIVE);
-		itsSupportedProperties.set(CompletionPropertyBits.DANGLING);
-		itsSupportedProperties.set(CompletionPropertyBits.IDENTIFICATION);
-	}
+    private String errorMsg;
 
-	public Completion_InheritCSP() {
-		super(itsSupportedProperties);
-		this.randomDomain = true;
-		super.itsName = "CSP NTI"; // Node Type Inheritance
-	}
-	
-	public void dispose() {
-		super.dispose();
-		itsSupportedProperties.clear();
-		this.mapInputParameter.clear();
-		this.relatedVarMap = null;
-		this.itsMorph = null;
-		this.itsCSP = null;
-	}
-	
-	public void setProperties(MorphCompletionStrategy fromStrategy) {
-		initialize(itsSupportedProperties, 
-					(BitSet) fromStrategy.getProperties().clone());
-	}
+    private static final BitSet itsSupportedProperties = new BitSet(6);
 
-	/**
-	 * Initialize the CSP by the specified morphism. The CSP variables are
-	 * created for each node and edge of the source graph of this morphism.
-	 */
-	public final void initialize(OrdinaryMorphism morph)
-			throws BadMappingException {
-		this.itsMorph = morph;
-		AttrContext aContext = initializeAttrContext(morph);
+    static {
+        itsSupportedProperties.set(CompletionPropertyBits.INJECTIVE);
+        itsSupportedProperties.set(CompletionPropertyBits.DANGLING);
+        itsSupportedProperties.set(CompletionPropertyBits.IDENTIFICATION);
+    }
 
-		// create CSP
-		this.itsCSP = new ALR_InheritCSP(morph.getOriginal(), aContext);
-		
-		if (morph.getImage().getTypeObjectsMap().isEmpty())
-			morph.getImage().fillTypeObjectsMap();
+    public Completion_InheritCSP() {
+        super(itsSupportedProperties);
+        this.randomDomain = true;
+        super.itsName = "CSP NTI"; // Node Type Inheritance
+    }
 
-		this.itsCSP.setRequester(morph);
-		this.itsCSP.setDomain(morph.getImage());
-	}
-	
+    public void dispose() {
+        super.dispose();
+        itsSupportedProperties.clear();
+        this.mapInputParameter.clear();
+        this.relatedVarMap = null;
+        this.itsMorph = null;
+        this.itsCSP = null;
+    }
 
-	private AttrContext initializeAttrContext(OrdinaryMorphism morph) {
-		if (morph instanceof Match) {
-			ContextView c = (ContextView) morph.getAttrManager().newContext(
-					((ContextView)morph.getAttrContext()).getAllowedMapping(),
-					((Match) morph).getRule().getAttrContext());
-			c.setIgnoreOfConstContext(((ContextView)morph.getAttrContext()).isIgnoreConstContext());
-			return c;
-			
+    public void setProperties(MorphCompletionStrategy fromStrategy) {
+        initialize(itsSupportedProperties,
+                (BitSet) fromStrategy.getProperties().clone());
+    }
+
+    /**
+     * Initialize the CSP by the specified morphism. The CSP variables are created for each node and edge of the source
+     * graph of this morphism.
+     */
+    public final void initialize(OrdinaryMorphism morph)
+            throws BadMappingException {
+        this.itsMorph = morph;
+        AttrContext aContext = initializeAttrContext(morph);
+
+        // create CSP
+        this.itsCSP = new ALR_InheritCSP(morph.getOriginal(), aContext);
+
+        if (morph.getImage().getTypeObjectsMap().isEmpty()) {
+            morph.getImage().fillTypeObjectsMap();
+        }
+
+        this.itsCSP.setRequester(morph);
+        this.itsCSP.setDomain(morph.getImage());
+    }
+
+    private AttrContext initializeAttrContext(OrdinaryMorphism morph) {
+        if (morph instanceof Match) {
+            ContextView c = (ContextView) morph.getAttrManager().newContext(
+                    ((ContextView) morph.getAttrContext()).getAllowedMapping(),
+                    ((Match) morph).getRule().getAttrContext());
+            c.setIgnoreOfConstContext(((ContextView) morph.getAttrContext()).isIgnoreConstContext());
+            return c;
+
 //			return morph.getAttrManager().newContext(
-////					agg.attribute.AttrMapping.MATCH_MAP,
+        
+        ////					agg.attribute.AttrMapping.MATCH_MAP,
 //					((ContextView)morph.getAttrContext()).getAllowedMapping(),
 //					((Match) morph).getRule().getAttrContext());
 		} 
 		return morph.getAttrManager().newContext(
-					agg.attribute.AttrMapping.PLAIN_MAP);
-	}
+                agg.attribute.AttrMapping.PLAIN_MAP);
+    }
 
-	/*
+    /*
 	private void unsetUsedVariable(GraphObject go, OrdinaryMorphism morph) {
 		if (go.getAttribute() == null)
 			return;
@@ -138,282 +138,292 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
 				vm.setExpr(null);
 		}
 	}
-*/
-	
-	/**
-	 * Template method to enable creation of CSPs with varying solution
-	 * strategies by subclasses.
-	 */
-	protected SolutionStrategy createSolutionStrategy() {
-		return new Solution_Backjump(getProperties().get(CompletionPropertyBits.INJECTIVE));
-	}
+     */
+    /**
+     * Template method to enable creation of CSPs with varying solution strategies by subclasses.
+     */
+    protected SolutionStrategy createSolutionStrategy() {
+        return new Solution_Backjump(getProperties().get(CompletionPropertyBits.INJECTIVE));
+    }
 
-	public final void reset() {
-		if (this.itsCSP != null)
-			this.itsCSP.reset();
-	}
+    public final void reset() {
+        if (this.itsCSP != null) {
+            this.itsCSP.reset();
+        }
+    }
 
-	public void resetSolverQuery_Type() {
-		if (this.itsCSP != null)
-			this.itsCSP.resetQuery_Type();
-	}
-	
-	public void enableParallelSearch(boolean b) {
-		this.parallel = b;
-		if (this.itsCSP != null)
-			this.itsCSP.getSolutionSolver().enableParallelSearch(b);
-	}
-	
-	public void setStartParallelSearchByFirst(boolean b) {
-		this.startParallelMatchByFirstCSPVar = b;
-		if (this.itsCSP != null) {
-			this.itsCSP.getSolutionSolver().setStartParallelSearchByFirst(b);
-		}
-	}
-	
-	public AttrContext getAttrContext() {
-		return (this.itsCSP != null)? this.itsCSP.getAttrContext(): null;
-	}
+    public void resetSolverQuery_Type() {
+        if (this.itsCSP != null) {
+            this.itsCSP.resetQuery_Type();
+        }
+    }
 
-	public void resetSolver(boolean doUpdateQueries) {
-		if (this.itsCSP != null)
-			this.itsCSP.resetSolver(doUpdateQueries);
-	}
+    public void enableParallelSearch(boolean b) {
+        this.parallel = b;
+        if (this.itsCSP != null) {
+            this.itsCSP.getSolutionSolver().enableParallelSearch(b);
+        }
+    }
 
-	public void reinitializeSolver(boolean doUpdateQueries) {
-		if (this.itsCSP != null)
-			this.itsCSP.reinitializeSolver(doUpdateQueries);
-	}
+    public void setStartParallelSearchByFirst(boolean b) {
+        this.startParallelMatchByFirstCSPVar = b;
+        if (this.itsCSP != null) {
+            this.itsCSP.getSolutionSolver().setStartParallelSearchByFirst(b);
+        }
+    }
 
-	public void resetSolverVariables() {
-		if (this.itsCSP != null)
-			this.itsCSP.resetSolverVariables();
-	}
+    public AttrContext getAttrContext() {
+        return (this.itsCSP != null) ? this.itsCSP.getAttrContext() : null;
+    }
 
-	public boolean isDomainOfTypeEmpty(Type t) {
-		return this.itsCSP.isDomainOfTypeEmpty(t);
-	}
+    public void resetSolver(boolean doUpdateQueries) {
+        if (this.itsCSP != null) {
+            this.itsCSP.resetSolver(doUpdateQueries);
+        }
+    }
 
-	public boolean isDomainOfTypeEmpty(Type t, Type src, Type tar) {
-		return this.itsCSP.isDomainOfTypeEmpty(t, src, tar);
-	}
+    public void reinitializeSolver(boolean doUpdateQueries) {
+        if (this.itsCSP != null) {
+            this.itsCSP.reinitializeSolver(doUpdateQueries);
+        }
+    }
 
-	public void setRelatedInstanceVarMap(
-			Dictionary<Object, Variable> relVarMap) {
-		this.relatedVarMap = relVarMap;
-	}
+    public void resetSolverVariables() {
+        if (this.itsCSP != null) {
+            this.itsCSP.resetSolverVariables();
+        }
+    }
 
-	public boolean hasRelatedInstanceVarMap() {
-		if (this.relatedVarMap != null)
-			return true;
-		
-		return false;
-	}
+    public boolean isDomainOfTypeEmpty(Type t) {
+        return this.itsCSP.isDomainOfTypeEmpty(t);
+    }
 
-	public Dictionary<Object, Variable> getInstanceVarMap() {
-		if (this.itsCSP != null)
-			return this.itsCSP.getInstanceVarMap();
-		
-		return null;
-	}
+    public boolean isDomainOfTypeEmpty(Type t, Type src, Type tar) {
+        return this.itsCSP.isDomainOfTypeEmpty(t, src, tar);
+    }
 
-	public void resetTypeMap(Hashtable<String, HashSet<GraphObject>> typeMap) {
-		if (this.itsCSP != null)
-			this.itsCSP.resetTypeMap(typeMap);
-	}
+    public void setRelatedInstanceVarMap(
+            Dictionary<Object, Variable> relVarMap) {
+        this.relatedVarMap = relVarMap;
+    }
 
-	public void resetTypeMap(Graph g) {
-		if (this.itsCSP != null)
-			this.itsCSP.resetTypeMap(g);
-	}
+    public boolean hasRelatedInstanceVarMap() {
+        if (this.relatedVarMap != null) {
+            return true;
+        }
 
-	public void resetVariableDomain(boolean initInstanceByNull) {
-		if (this.itsCSP != null) {
-			this.itsCSP.resetVariableDomain(initInstanceByNull);
-		}
-	}
+        return false;
+    }
 
-	public void resetVariableDomain(GraphObject go) {
-		if (this.itsCSP != null)
-			this.itsCSP.resetVariableDomain(go);
-	}
+    public Dictionary<Object, Variable> getInstanceVarMap() {
+        if (this.itsCSP != null) {
+            return this.itsCSP.getInstanceVarMap();
+        }
 
-	protected void unsetAttrContextVariable() {
-		this.itsCSP.unsetAttrContextVariable();
-	}
+        return null;
+    }
 
-	public final boolean next(OrdinaryMorphism morph) {
-		if (morph != this.itsMorph) {
-			try {
-				initialize(morph);
-			} catch (BadMappingException ex) {
-				return false;
-			}
-		}
+    public void resetTypeMap(Hashtable<String, HashSet<GraphObject>> typeMap) {
+        if (this.itsCSP != null) {
+            this.itsCSP.resetTypeMap(typeMap);
+        }
+    }
 
-		return doNext((OrdinaryMorphism) this.itsMorph);
-	}
+    public void resetTypeMap(Graph g) {
+        if (this.itsCSP != null) {
+            this.itsCSP.resetTypeMap(g);
+        }
+    }
 
-	private boolean doNext(OrdinaryMorphism morph) {
-		this.itsCSP.setRelatedInstanceVarMap(this.relatedVarMap);
-		boolean flag = false;
-		this.errorMsg = "";
+    public void resetVariableDomain(boolean initInstanceByNull) {
+        if (this.itsCSP != null) {
+            this.itsCSP.resetVariableDomain(initInstanceByNull);
+        }
+    }
 
-		if (morph.getAttrContext() != null) {
-			((VarTuple) morph.getAttrContext().getVariables())
-									.unsetNotInputVariables();
-		}
-		
-		while (this.itsCSP.nextSolution()) {
-			flag = true;
-			this.errorMsg = "";
-			// try add morph. mapping after CSP success
-			GraphObject anOrig, anImage;
-			Iterator<Node> anNodeIter = morph.getOriginal().getNodesSet().iterator();
-			while (flag && anNodeIter.hasNext()) {
-				anOrig = anNodeIter.next();
-				Variable lhsVariable = this.itsCSP.getVariable(anOrig);
-				if (lhsVariable != null) {
-					anImage = (GraphObject) lhsVariable.getInstance();
-					if (anImage != null) {
-						try {
-							morph.addChild2ParentMapping(anOrig, anImage);
-							if (morph.getImage(anOrig) == null) {
-								flag = false;
-							}
-						} catch (BadMappingException ex) {
-							flag = false;
-						}
-					}
-				}
-			}
-			Iterator<Arc> anArcIter = morph.getOriginal().getArcsSet().iterator();
-			while (flag && anArcIter.hasNext()) {
-				anOrig = anArcIter.next();
-				Variable lhsVariable = this.itsCSP.getVariable(anOrig);
-				if (lhsVariable != null) {
-					anImage = (GraphObject) lhsVariable.getInstance();
-					if (anImage != null) {
-						try {
-							morph.addChild2ParentMapping(anOrig, anImage);
-							if (morph.getImage(anOrig) == null) {
-								flag = false;
-							}
-						} catch (BadMappingException ex) {
-							flag = false;
-						}
-					}
-				}
-			}
-			if (!flag)
-				continue;
+    public void resetVariableDomain(GraphObject go) {
+        if (this.itsCSP != null) {
+            this.itsCSP.resetVariableDomain(go);
+        }
+    }
 
-			if (morph.getAttrContext() != null) {
-				flag = flag && checkObjectsWithSameVariable(morph);
-			}
-			
-			if (flag) {
-				break;
-			} 
-			morph.setErrorMsg(this.errorMsg);
-		}
-		return flag;
-	}
+    protected void unsetAttrContextVariable() {
+        this.itsCSP.unsetAttrContextVariable();
+    }
 
+    public final boolean next(OrdinaryMorphism morph) {
+        if (morph != this.itsMorph) {
+            try {
+                initialize(morph);
+            } catch (BadMappingException ex) {
+                return false;
+            }
+        }
 
-	private boolean checkObjectsWithSameVariable(OrdinaryMorphism morph) {
-		VarTuple variables = (VarTuple) morph.getAttrContext().getVariables();
-		for (int i = 0; i < variables.getSize(); i++) {
-			VarMember var = variables.getVarMemberAt(i);
-			Vector<Pair<GraphObject, String>> v = new Vector<Pair<GraphObject, String>>();
-			Iterator<?> iter = morph.getOriginal().getNodesSet().iterator();
-			while (iter.hasNext()) {
-				GraphObject orig = (GraphObject) iter.next();
-				if (orig.getAttribute() == null)
-					continue;
-				ValueTuple origVal = (ValueTuple) orig.getAttribute();
-				for (int k = 0; k < origVal.getSize(); k++) {
-					ValueMember mem = origVal.getValueMemberAt(k);
-					if (mem.isSet()
-							&& mem.getExpr().isVariable()
-							&& mem.getExprAsText().equals(var.getName())
-							&& mem.getDeclaration().getTypeName().equals(
-									var.getDeclaration().getTypeName())) {
-						v.add(new Pair<GraphObject, String>(
-										orig, mem.getName()));
-					}
-				}
-			}
-			iter = morph.getOriginal().getArcsSet().iterator();
-			while (iter.hasNext()) {
-				GraphObject orig = (GraphObject) iter.next();
-				if (orig.getAttribute() == null)
-					continue;
-				ValueTuple origVal = (ValueTuple) orig.getAttribute();
-				for (int k = 0; k < origVal.getSize(); k++) {
-					ValueMember mem = origVal.getValueMemberAt(k);
-					if (mem.isSet()
-							&& mem.getExpr().isVariable()
-							&& mem.getExprAsText().equals(var.getName())
-							&& mem.getDeclaration().getTypeName().equals(
-									var.getDeclaration().getTypeName())) {
-						v.add(new Pair<GraphObject, String>(
-										orig, mem.getName()));
-					}
-				}
-			}
+        return doNext((OrdinaryMorphism) this.itsMorph);
+    }
 
-			if (v.size() > 1) {
-				Pair<GraphObject, String> p = v.elementAt(0);
-				GraphObject img = morph.getImage(p.first);
+    private boolean doNext(OrdinaryMorphism morph) {
+        this.itsCSP.setRelatedInstanceVarMap(this.relatedVarMap);
+        boolean flag = false;
+        this.errorMsg = "";
+
+        if (morph.getAttrContext() != null) {
+            ((VarTuple) morph.getAttrContext().getVariables())
+                    .unsetNotInputVariables();
+        }
+
+        while (this.itsCSP.nextSolution()) {
+            flag = true;
+            this.errorMsg = "";
+            // try add morph. mapping after CSP success
+            GraphObject anOrig, anImage;
+            Iterator<Node> anNodeIter = morph.getOriginal().getNodesSet().iterator();
+            while (flag && anNodeIter.hasNext()) {
+                anOrig = anNodeIter.next();
+                Variable lhsVariable = this.itsCSP.getVariable(anOrig);
+                if (lhsVariable != null) {
+                    anImage = (GraphObject) lhsVariable.getInstance();
+                    if (anImage != null) {
+                        try {
+                            morph.addChild2ParentMapping(anOrig, anImage);
+                            if (morph.getImage(anOrig) == null) {
+                                flag = false;
+                            }
+                        } catch (BadMappingException ex) {
+                            flag = false;
+                        }
+                    }
+                }
+            }
+            Iterator<Arc> anArcIter = morph.getOriginal().getArcsSet().iterator();
+            while (flag && anArcIter.hasNext()) {
+                anOrig = anArcIter.next();
+                Variable lhsVariable = this.itsCSP.getVariable(anOrig);
+                if (lhsVariable != null) {
+                    anImage = (GraphObject) lhsVariable.getInstance();
+                    if (anImage != null) {
+                        try {
+                            morph.addChild2ParentMapping(anOrig, anImage);
+                            if (morph.getImage(anOrig) == null) {
+                                flag = false;
+                            }
+                        } catch (BadMappingException ex) {
+                            flag = false;
+                        }
+                    }
+                }
+            }
+            if (!flag) {
+                continue;
+            }
+
+            if (morph.getAttrContext() != null) {
+                flag = flag && checkObjectsWithSameVariable(morph);
+            }
+
+            if (flag) {
+                break;
+            }
+            morph.setErrorMsg(this.errorMsg);
+        }
+        return flag;
+    }
+
+    private boolean checkObjectsWithSameVariable(OrdinaryMorphism morph) {
+        VarTuple variables = (VarTuple) morph.getAttrContext().getVariables();
+        for (int i = 0; i < variables.getSize(); i++) {
+            VarMember var = variables.getVarMemberAt(i);
+            Vector<Pair<GraphObject, String>> v = new Vector<Pair<GraphObject, String>>();
+            Iterator<?> iter = morph.getOriginal().getNodesSet().iterator();
+            while (iter.hasNext()) {
+                GraphObject orig = (GraphObject) iter.next();
+                if (orig.getAttribute() == null) {
+                    continue;
+                }
+                ValueTuple origVal = (ValueTuple) orig.getAttribute();
+                for (int k = 0; k < origVal.getSize(); k++) {
+                    ValueMember mem = origVal.getValueMemberAt(k);
+                    if (mem.isSet()
+                            && mem.getExpr().isVariable()
+                            && mem.getExprAsText().equals(var.getName())
+                            && mem.getDeclaration().getTypeName().equals(
+                                    var.getDeclaration().getTypeName())) {
+                        v.add(new Pair<GraphObject, String>(
+                                orig, mem.getName()));
+                    }
+                }
+            }
+            iter = morph.getOriginal().getArcsSet().iterator();
+            while (iter.hasNext()) {
+                GraphObject orig = (GraphObject) iter.next();
+                if (orig.getAttribute() == null) {
+                    continue;
+                }
+                ValueTuple origVal = (ValueTuple) orig.getAttribute();
+                for (int k = 0; k < origVal.getSize(); k++) {
+                    ValueMember mem = origVal.getValueMemberAt(k);
+                    if (mem.isSet()
+                            && mem.getExpr().isVariable()
+                            && mem.getExprAsText().equals(var.getName())
+                            && mem.getDeclaration().getTypeName().equals(
+                                    var.getDeclaration().getTypeName())) {
+                        v.add(new Pair<GraphObject, String>(
+                                orig, mem.getName()));
+                    }
+                }
+            }
+
+            if (v.size() > 1) {
+                Pair<GraphObject, String> p = v.elementAt(0);
+                GraphObject img = morph.getImage(p.first);
 //				if (img == null) {
 //					System.out.println(img+"   "+p.first.getType().getName());
 //				}
-				ValueTuple val = (ValueTuple) img.getAttribute();
-				ValueMember mem = val.getValueMemberAt(p.second);
-				for (int j = 1; j < v.size(); j++) {
-					Pair<GraphObject, String> pj = v.elementAt(j);
-					GraphObject imgj = morph.getImage(pj.first);
-					ValueTuple valj = (ValueTuple) imgj.getAttribute();
-					ValueMember memj = valj.getValueMemberAt(pj.second);
-					if (mem.isSet() && memj.isSet()) {
-						if (mem.getExpr().isConstant() 
-								&& memj.getExpr().isConstant()) {
-							if (!mem.getExprAsText().equals(memj.getExprAsText())) {
-								this.errorMsg = "Attribute check: equal value by equal variable - failed!.";
-								return false;
-							}
-						} else if (mem.getExpr().isVariable()
-								&& memj.getExpr().isVariable()) {
-							if (!mem.getExprAsText().equals(
-									memj.getExprAsText())) {
-								this.errorMsg = "Attribute check: equal value by equal variable - failed!.";
-								return false;
-							}
-						} else {
-							this.errorMsg = "Attribute check: equal value by equal variable - failed!";
-							return false;
-						}						
-					}
-				}
-			}
-		}
-		return true;
-	}
+                ValueTuple val = (ValueTuple) img.getAttribute();
+                ValueMember mem = val.getValueMemberAt(p.second);
+                for (int j = 1; j < v.size(); j++) {
+                    Pair<GraphObject, String> pj = v.elementAt(j);
+                    GraphObject imgj = morph.getImage(pj.first);
+                    ValueTuple valj = (ValueTuple) imgj.getAttribute();
+                    ValueMember memj = valj.getValueMemberAt(pj.second);
+                    if (mem.isSet() && memj.isSet()) {
+                        if (mem.getExpr().isConstant()
+                                && memj.getExpr().isConstant()) {
+                            if (!mem.getExprAsText().equals(memj.getExprAsText())) {
+                                this.errorMsg = "Attribute check: equal value by equal variable - failed!.";
+                                return false;
+                            }
+                        } else if (mem.getExpr().isVariable()
+                                && memj.getExpr().isVariable()) {
+                            if (!mem.getExprAsText().equals(
+                                    memj.getExprAsText())) {
+                                this.errorMsg = "Attribute check: equal value by equal variable - failed!.";
+                                return false;
+                            }
+                        } else {
+                            this.errorMsg = "Attribute check: equal value by equal variable - failed!";
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * An additional object name constraint will be added for the CSP variable
-	 * of the given GraphObject anObj. This constraint requires equality of the object names.<br> 
-	 */
-	public void addObjectNameConstraint(GraphObject anObj) {
-		this.itsCSP.addObjectNameConstraint(anObj);
-	}
-	
-	/**
-	 * Removes the object name constraint for the CSP variable
-	 * of the given GraphObject anObj.
-	 */
-	public void removeObjectNameConstraint(GraphObject anObj) {
-		this.itsCSP.removeObjectNameConstraint(anObj);
-	}
+    /**
+     * An additional object name constraint will be added for the CSP variable of the given GraphObject anObj. This
+     * constraint requires equality of the object names.<br>
+     */
+    public void addObjectNameConstraint(GraphObject anObj) {
+        this.itsCSP.addObjectNameConstraint(anObj);
+    }
+
+    /**
+     * Removes the object name constraint for the CSP variable of the given GraphObject anObj.
+     */
+    public void removeObjectNameConstraint(GraphObject anObj) {
+        this.itsCSP.removeObjectNameConstraint(anObj);
+    }
 }

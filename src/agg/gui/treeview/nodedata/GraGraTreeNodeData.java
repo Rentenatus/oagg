@@ -1,17 +1,17 @@
-/*******************************************************************************
- * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- *******************************************************************************/
 /**
- * 
+ **
+ * ***************************************************************************
+ * <copyright>
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * </copyright>
+ ******************************************************************************
+ */
+/**
+ *
  */
 package agg.gui.treeview.nodedata;
-
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -35,64 +35,106 @@ import agg.util.Pair;
  *
  */
 public interface GraGraTreeNodeData {
-	
-	public boolean isGraGra();
-	public boolean isTypeGraph();
-	public boolean isGraph();
-	public boolean isRule();
-	public boolean isRuleScheme();
-	public boolean isKernelRule();
-	public boolean isMultiRule();
-	public boolean isAmalgamatedRule();
-	public boolean isNAC();
-	public boolean isPAC();
-	public boolean isNestedAC();
-	public boolean isApplFormula();
-	public boolean isAttrCondition();
-	public boolean isAtomic();
-	public boolean isConclusion();
-	public boolean isConstraint();
-	public boolean isRuleConstraint();
-	public boolean isAtomApplCond();
-	public boolean isRuleSequence();
-	
-	public Object getData();
 
-	/**
-	 * Returns the string to display for this object.
-	 */
-	public String string();
-	public String toString();
-	public void update();
+    public boolean isGraGra();
 
-	public EdGraGra getGraGra();
-	public EdGraph getGraph();
-	public EdRule getRule();
-	public EdRuleScheme getRuleScheme();	
-	public EdRule getKernelRule();	
-	public EdRule getMultiRule();	
-	public EdRule getAmalgamatedRule();	
-	public EdAtomic getAtomic();
-	public EdAtomic getConclusion();
-	public EdConstraint getConstraint();
-	public EdNAC getNAC();
-	public EdPAC getPAC();
-	public EdNestedApplCond getNestedAC();
-	public Pair<CondMember, EdRule> getAttrCondition();
-	public EdRuleConstraint getRuleConstraint();
-	public EdAtomApplCond getAtomApplCond();
-	public RuleSequence getRuleSequence();	
-	public DefaultMutableTreeNode getTreeNode();
-	public String getToolTipText();
-	public boolean isTreeTextEditable();
-	
-	public void setData(Object obj);	
-	public void setString(String tag, String tag1, String newString);	
-	public void setString(String tag, String newString);	
-	public void setString(String str);	
-	public void setTreeNode(DefaultMutableTreeNode node);
-	
-	public void dispose();
-	
+    public boolean isTypeGraph();
+
+    public boolean isGraph();
+
+    public boolean isRule();
+
+    public boolean isRuleScheme();
+
+    public boolean isKernelRule();
+
+    public boolean isMultiRule();
+
+    public boolean isAmalgamatedRule();
+
+    public boolean isNAC();
+
+    public boolean isPAC();
+
+    public boolean isNestedAC();
+
+    public boolean isApplFormula();
+
+    public boolean isAttrCondition();
+
+    public boolean isAtomic();
+
+    public boolean isConclusion();
+
+    public boolean isConstraint();
+
+    public boolean isRuleConstraint();
+
+    public boolean isAtomApplCond();
+
+    public boolean isRuleSequence();
+
+    public Object getData();
+
+    /**
+     * Returns the string to display for this object.
+     */
+    public String string();
+
+    public String toString();
+
+    public void update();
+
+    public EdGraGra getGraGra();
+
+    public EdGraph getGraph();
+
+    public EdRule getRule();
+
+    public EdRuleScheme getRuleScheme();
+
+    public EdRule getKernelRule();
+
+    public EdRule getMultiRule();
+
+    public EdRule getAmalgamatedRule();
+
+    public EdAtomic getAtomic();
+
+    public EdAtomic getConclusion();
+
+    public EdConstraint getConstraint();
+
+    public EdNAC getNAC();
+
+    public EdPAC getPAC();
+
+    public EdNestedApplCond getNestedAC();
+
+    public Pair<CondMember, EdRule> getAttrCondition();
+
+    public EdRuleConstraint getRuleConstraint();
+
+    public EdAtomApplCond getAtomApplCond();
+
+    public RuleSequence getRuleSequence();
+
+    public DefaultMutableTreeNode getTreeNode();
+
+    public String getToolTipText();
+
+    public boolean isTreeTextEditable();
+
+    public void setData(Object obj);
+
+    public void setString(String tag, String tag1, String newString);
+
+    public void setString(String tag, String newString);
+
+    public void setString(String str);
+
+    public void setTreeNode(DefaultMutableTreeNode node);
+
+    public void dispose();
 
 }

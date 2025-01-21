@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import agg.attribute.handler.impl.javaExpr.JexExpr;
@@ -17,88 +18,122 @@ import agg.attribute.handler.impl.javaExpr.JexExpr;
  */
 public class VerboseControl {
 
-	//
-	// Additional Views
+    //
+    // Additional Views
+    public static boolean logShowLogWindow = false;
 
-	public static boolean logShowLogWindow = false;
+    public static boolean logShowContextView = false;
 
-	public static boolean logShowContextView = false;
+    //
+    // Log topics (filtering of GUI log messages).
+    /**
+     * Errors and Warnings - should always be set!
+     */
+    public static boolean logWarning = true;
 
-	//
-	// Log topics (filtering of GUI log messages).
+    //
+    // For The Developer (temporary debugging issues)
+    /**
+     * Serialization of objects.
+     */
+    public static boolean logFileIO = false;
 
-	/** Errors and Warnings - should always be set! */
-	public static boolean logWarning = true;
+    /**
+     * Each creation of any subclass of AttrObject
+     */
+    public static boolean logCreation = false;
 
-	//
-	// For The Developer (temporary debugging issues)
+    /**
+     * Context of AttrInstance (impl by ValueTuple)
+     */
+    public static boolean logContextOfInstances = false;
 
-	/** Serialization of objects. */
-	public static boolean logFileIO = false;
+    /**
+     * Mapping in an AttrContext (impl by ContextView / ContextCore )
+     */
+    public static boolean logMapping = false;
 
-	/** Each creation of any subclass of AttrObject */
-	public static boolean logCreation = false;
+    /**
+     * Handling of AttrContext (impl by ContextView / ContextCore )
+     */
+    public static boolean logContext = false;
 
-	/** Context of AttrInstance (impl by ValueTuple) */
-	public static boolean logContextOfInstances = false;
+    /**
+     * Context (rule) conditions AttrCond (impl by CondTuple)
+     */
+    public static boolean logCond = false;
 
-	/** Mapping in an AttrContext (impl by ContextView / ContextCore ) */
-	public static boolean logMapping = false;
+    /**
+     * Context (rule) variables AttrVar (impl by VarTuple)
+     */
+    public static boolean logVar = false;
 
-	/** Handling of AttrContext (impl by ContextView / ContextCore ) */
-	public static boolean logContext = false;
+    /**
+     * Setting of variables.
+     */
+    public static boolean logSetValue = false;
 
-	/** Context (rule) conditions AttrCond (impl by CondTuple) */
-	public static boolean logCond = false;
+    /**
+     * Removing of variables
+     */
+    public static boolean logRemoveValue = false;
 
-	/** Context (rule) variables AttrVar (impl by VarTuple) */
-	public static boolean logVar = false;
+    /**
+     * Events
+     */
+    public static boolean logEvent = false;
 
-	/** Setting of variables. */
-	public static boolean logSetValue = false;
+    /**
+     * Syntax trees of Java expressions.
+     */
+    public static boolean logParseTree = false;
 
-	/** Removing of variables */
-	public static boolean logRemoveValue = false;
+    /**
+     * Java expression parser calls
+     */
+    public static boolean logJexParser = false;
 
-	/** Events */
-	public static boolean logEvent = false;
+    /**
+     * Traces method calls
+     */
+    public static boolean logTrace = false;
 
-	/** Syntax trees of Java expressions. */
-	public static boolean logParseTree = false;
+    /**
+     * Debug topic: context handling.
+     */
+    public static void setDebugContext(boolean b) {
+        logContext = logCond = logVar = logSetValue = logRemoveValue = b;
+    }
 
-	/** Java expression parser calls */
-	public static boolean logJexParser = false;
+    /**
+     * Debug topic: context handling.
+     */
+    public static void setDebugExpr(boolean b) {
+        logParseTree = b;
+    }
 
-	/** Traces method calls */
-	public static boolean logTrace = false;
+    /**
+     * Debug topic: event handling.
+     */
+    public static void setDebugEvent(boolean b) {
+        logEvent = b;
+    }
 
-	/** Debug topic: context handling. */
-	public static void setDebugContext(boolean b) {
-		logContext = logCond = logVar = logSetValue = logRemoveValue = b;
-	}
-
-	/** Debug topic: context handling. */
-	public static void setDebugExpr(boolean b) {
-		logParseTree = b;
-	}
-
-	/** Debug topic: event handling. */
-	public static void setDebugEvent(boolean b) {
-		logEvent = b;
-	}
-
-	/** Enabling / Disabling debug topics. */
-	public static void setDebug(boolean b) {
-		// setDebugContext( b );
-		// setDebugExpr( b );
-		// logMapping = b;
-		setDebugEvent(b);
-		// Don't append after this:
-		if (logParseTree)
-			JexExpr.getParser().parseOutputOn();
-		else
-			JexExpr.getParser().parseOutputOff();
-	}
+    /**
+     * Enabling / Disabling debug topics.
+     */
+    public static void setDebug(boolean b) {
+        // setDebugContext( b );
+        // setDebugExpr( b );
+        // logMapping = b;
+        setDebugEvent(b);
+        // Don't append after this:
+        if (logParseTree) {
+            JexExpr.getParser().parseOutputOn();
+        } else {
+            JexExpr.getParser().parseOutputOff();
+        }
+    }
 }
 /*
  * $Log: VerboseControl.java,v $

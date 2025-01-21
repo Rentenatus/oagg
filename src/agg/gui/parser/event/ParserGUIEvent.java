@@ -1,65 +1,64 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser.event;
 
 import java.util.EventObject;
 
 /**
  * Receives all events from the parser gui
- * 
+ *
  * @version $Id: ParserGUIEvent.java,v 1.3 2010/09/23 08:21:12 olga Exp $
  * @author $Author: olga $
  */
 @SuppressWarnings("serial")
 public class ParserGUIEvent extends EventObject {
 
-	/**
-	 * The data of this event.
-	 * 
-	 * @serial All events are serializable.
-	 */
-	private Object data;
+    /**
+     * The data of this event.
+     *
+     * @serial All events are serializable.
+     */
+    private Object data;
 
-	int msg = -1;
-	
-	/**
-	 * Manages all events which occure in the parser gui
-	 * 
-	 * @param source
-	 *            source of the event
-	 * @param data
-	 *            the data which has changed
-	 */
-	public ParserGUIEvent(Object source, Object data) {
-		super(source);
-		this.data = data;
-	}
+    int msg = -1;
 
-	public ParserGUIEvent(Object source, Object data, int msg) {
-		super(source);
-		this.data = data;
-		this.msg = msg;
-	}
-	
-	/**
-	 * gets the data which are important for this event
-	 * 
-	 * @return the data
-	 */
-	public Object getData() {
-		return this.data;
-	}
-	
-	public int getMsg() {
-		return this.msg;
-	}
+    /**
+     * Manages all events which occure in the parser gui
+     *
+     * @param source source of the event
+     * @param data the data which has changed
+     */
+    public ParserGUIEvent(Object source, Object data) {
+        super(source);
+        this.data = data;
+    }
+
+    public ParserGUIEvent(Object source, Object data, int msg) {
+        super(source);
+        this.data = data;
+        this.msg = msg;
+    }
+
+    /**
+     * gets the data which are important for this event
+     *
+     * @return the data
+     */
+    public Object getData() {
+        return this.data;
+    }
+
+    public int getMsg() {
+        return this.msg;
+    }
 }
 /*
  * $Log: ParserGUIEvent.java,v $

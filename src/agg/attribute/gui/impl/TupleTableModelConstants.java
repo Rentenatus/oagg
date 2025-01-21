@@ -1,46 +1,45 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 /**
  * Table model for tuple editors of type and value.
- * 
- * @version $Id: TupleTableModelConstants.java,v 1.1 2005/08/25 11:56:58 enrico
- *          Exp $
+ *
+ * @version $Id: TupleTableModelConstants.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
  * @author $Author: olga $
  */
 public interface TupleTableModelConstants {
 
-	// Column keys. Must be [0,1,2,...]
+    // Column keys. Must be [0,1,2,...]
+    public static final int UNKNOWN = 0;
 
-	public static final int UNKNOWN = 0;
+    public static final int HANDLER = 1;
 
-	public static final int HANDLER = 1;
+    public static final int TYPE = 2;
 
-	public static final int TYPE = 2;
+    public static final int NAME = 3;
 
-	public static final int NAME = 3;
+    public static final int EXPR = 4;
 
-	public static final int EXPR = 4;
+    public static final int VISIBILITY = 5;
 
-	public static final int VISIBILITY = 5;
+    public static final int IS_INPUT_PARAMETER = 6;
 
-	public static final int IS_INPUT_PARAMETER = 6;
+    public static final int IS_OUTPUT_PARAMETER = 7;
 
-	public static final int IS_OUTPUT_PARAMETER = 7;
+    public static final int CORRECTNESS = 8;
 
-	public static final int CORRECTNESS = 8;
+    public static final int YIELDS = 9;
 
-	public static final int YIELDS = 9;
-
-	public static final int N_TUPLE_KEYS = 10;
+    public static final int N_TUPLE_KEYS = 10;
 }
 /*
  * $Log: TupleTableModelConstants.java,v $

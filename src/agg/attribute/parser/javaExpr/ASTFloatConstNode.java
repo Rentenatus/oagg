@@ -1,16 +1,15 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 /* JJT: 0.2.2 */
-
 package agg.attribute.parser.javaExpr;
-
 
 /**
  * @version $Id: ASTFloatConstNode.java,v 1.4 2010/08/23 07:31:26 olga Exp $
@@ -18,36 +17,36 @@ package agg.attribute.parser.javaExpr;
  */
 public class ASTFloatConstNode extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	double val;
+    double val;
 
-	ASTFloatConstNode(String id) {
-		super(id);
-	}
+    ASTFloatConstNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTFloatConstNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTFloatConstNode(id);
+    }
 
-	public void checkContext() {
-		setNodeClass(Double.TYPE);
-	}
+    public void checkContext() {
+        setNodeClass(Double.TYPE);
+    }
 
-	public void interpret() {
+    public void interpret() {
 //		stack[++top] = new Double(val);
-		stack.add(++top, new Double(this.val));
-	}
+        stack.add(++top, new Double(this.val));
+    }
 
-	public String getString() {
-		return "" + this.val;
-	}
+    public String getString() {
+        return "" + this.val;
+    }
 
-	public Node copy() {
-		Node copy = super.copy();
-		((ASTFloatConstNode) copy).val = this.val;
-		return copy;
-	}
+    public Node copy() {
+        Node copy = super.copy();
+        ((ASTFloatConstNode) copy).val = this.val;
+        return copy;
+    }
 }
 /*
  * $Log: ASTFloatConstNode.java,v $

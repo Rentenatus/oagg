@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.icons;
 
 import java.awt.Color;
@@ -18,66 +19,69 @@ import javax.swing.Icon;
 
 public class TextIcon implements Icon {
 
-	String name = "";
-	double rotate = 0;
-	boolean isEnabled;
+    String name = "";
+    double rotate = 0;
+    boolean isEnabled;
 
-	Color col;
+    Color col;
 
-	public TextIcon(String name, boolean enabled) {
-		this.name = name;
-		this.isEnabled = enabled;
-	}
+    public TextIcon(String name, boolean enabled) {
+        this.name = name;
+        this.isEnabled = enabled;
+    }
 
-	public TextIcon(String name, double rotate, boolean enabled) {
-		this.name = name;
-		this.rotate = rotate;
-		this.isEnabled = enabled;
-	}
-	
-	public void paintIcon(Component comp, Graphics grs, int xp, int yp) {
-		if (comp == null || grs == null)
-			return;
-		
-		if (this.isEnabled) {
-			if (this.col == null)
-				grs.setColor(Color.black);
-			else
-				grs.setColor(this.col);
-		} else
-			grs.setColor(Color.gray.darker());
-		// g.setFont(new Font("Helvetica-Bold", Font.ITALIC, 14));
-		// Font: [family=dialog.bold,name=Dialog,style=bold,size=12]
-		
-		grs.drawString(this.name, xp, yp + 13);
-		
-		if (this.rotate != 0) {
-			((Graphics2D)grs).rotate(this.rotate);
-		}
-	}
-	
-	public int getIconWidth() {
-		return 16;
-	}
+    public TextIcon(String name, double rotate, boolean enabled) {
+        this.name = name;
+        this.rotate = rotate;
+        this.isEnabled = enabled;
+    }
 
-	public int getIconHeight() {
-		return 16;
-	}
+    public void paintIcon(Component comp, Graphics grs, int xp, int yp) {
+        if (comp == null || grs == null) {
+            return;
+        }
 
-	public void setEnabled(boolean enabled) {
-		this.isEnabled = enabled;
-	}
+        if (this.isEnabled) {
+            if (this.col == null) {
+                grs.setColor(Color.black);
+            } else {
+                grs.setColor(this.col);
+            }
+        } else {
+            grs.setColor(Color.gray.darker());
+        }
+        // g.setFont(new Font("Helvetica-Bold", Font.ITALIC, 14));
+        // Font: [family=dialog.bold,name=Dialog,style=bold,size=12]
 
-	public void setText(String t) {
-		this.name = t;
-		// paintIcon(c, g, x, y);
-	}
+        grs.drawString(this.name, xp, yp + 13);
 
-	public String getText() {
-		return this.name;
-	}
+        if (this.rotate != 0) {
+            ((Graphics2D) grs).rotate(this.rotate);
+        }
+    }
 
-	public void setColor(Color c) {
-		this.col = c;
-	}
+    public int getIconWidth() {
+        return 16;
+    }
+
+    public int getIconHeight() {
+        return 16;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.isEnabled = enabled;
+    }
+
+    public void setText(String t) {
+        this.name = t;
+        // paintIcon(c, g, x, y);
+    }
+
+    public String getText() {
+        return this.name;
+    }
+
+    public void setColor(Color c) {
+        this.col = c;
+    }
 }

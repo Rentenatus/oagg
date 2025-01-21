@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.facade.impl;
 
 import agg.attribute.AttrContext;
@@ -27,58 +28,59 @@ import agg.attribute.view.AttrViewSetting;
  */
 public class DefaultEditorFacade implements EditorFacade {
 
-	protected static DefaultEditorFacade myOnlyInstance = new DefaultEditorFacade();
+    protected static DefaultEditorFacade myOnlyInstance = new DefaultEditorFacade();
 
-	protected AttrEditorManager factory = EditorManager.self();
+    protected AttrEditorManager factory = EditorManager.self();
 
-	protected DefaultEditorFacade() {
-		super();
-	}
+    protected DefaultEditorFacade() {
+        super();
+    }
 
-	public static EditorFacade self() {
-		return myOnlyInstance;
-	}
+    public static EditorFacade self() {
+        return myOnlyInstance;
+    }
 
-	public AttrManager getAttrManager() {
-		return AttrTupleManager.getDefaultManager();
-	}
+    public AttrManager getAttrManager() {
+        return AttrTupleManager.getDefaultManager();
+    }
 
-	protected AttrViewSetting getDefaultIfNull(AttrViewSetting v) {
-		if (v == null) 
-			return getAttrManager().getDefaultOpenView();
-		return v;
-	}
+    protected AttrViewSetting getDefaultIfNull(AttrViewSetting v) {
+        if (v == null) {
+            return getAttrManager().getDefaultOpenView();
+        }
+        return v;
+    }
 
-	public AttrTopEditor getTopEditor() {
-		return getTopEditor(null);
-	}
+    public AttrTopEditor getTopEditor() {
+        return getTopEditor(null);
+    }
 
-	public AttrTopEditor getTopEditor(AttrViewSetting v) {
-		return this.factory.getTopEditor(getAttrManager(), getDefaultIfNull(v)
-				.getOpenView());
-	}
+    public AttrTopEditor getTopEditor(AttrViewSetting v) {
+        return this.factory.getTopEditor(getAttrManager(), getDefaultIfNull(v)
+                .getOpenView());
+    }
 
-	public AttrTupleEditor getSmallEditorForInstance(AttrInstance inst) {
-		return getSmallEditorForInstance(inst, null);
-	}
+    public AttrTupleEditor getSmallEditorForInstance(AttrInstance inst) {
+        return getSmallEditorForInstance(inst, null);
+    }
 
-	public AttrTupleEditor getSmallEditorForInstance(AttrInstance inst,
-			AttrViewSetting v) {
-		return this.factory.getSmallEditorForInstance(getAttrManager(),
-				getDefaultIfNull(v).getMaskedView(), inst);
-	}
+    public AttrTupleEditor getSmallEditorForInstance(AttrInstance inst,
+            AttrViewSetting v) {
+        return this.factory.getSmallEditorForInstance(getAttrManager(),
+                getDefaultIfNull(v).getMaskedView(), inst);
+    }
 
-	public void editInstance(AttrTupleEditor ed, AttrInstance inst) {
-		ed.setTuple(inst);
-	}
+    public void editInstance(AttrTupleEditor ed, AttrInstance inst) {
+        ed.setTuple(inst);
+    }
 
-	public void editContext(AttrContextEditor ed, AttrContext ctx) {
-		ed.setContext(ctx);
-	}
+    public void editContext(AttrContextEditor ed, AttrContext ctx) {
+        ed.setContext(ctx);
+    }
 
-	public AttrTupleEditor getInputParameterEditor() {
-		return this.factory.getInputParameterEditor(getAttrManager());
-	}
+    public AttrTupleEditor getInputParameterEditor() {
+        return this.factory.getInputParameterEditor(getAttrManager());
+    }
 }
 /*
  * $Log: DefaultEditorFacade.java,v $

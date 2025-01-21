@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.Component;
@@ -26,65 +27,65 @@ import agg.attribute.handler.gui.HandlerExprEditor;
 
 /**
  * Calls the appropriate editors for table cells.
- * 
- * @version $Id: MemberEditorDispatcher.java,v 1.1 2005/08/25 11:56:58 enrico
- *          Exp $
+ *
+ * @version $Id: MemberEditorDispatcher.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
  * @author $Author: olga $
  */
 public class MemberEditorDispatcher extends DefaultCellEditor implements
-		TableCellEditor, TupleTableModelConstants {
+        TableCellEditor, TupleTableModelConstants {
 
-	static final long serialVersionUID = -8476624634642847534L;
+    static final long serialVersionUID = -8476624634642847534L;
 
-	/**
-	 * Owning editor, serves e.g. for accessing of the edited tuple, the view
-	 * setting and the table.
-	 */
-	protected BasicTupleEditor editor = null;
+    /**
+     * Owning editor, serves e.g. for accessing of the edited tuple, the view setting and the table.
+     */
+    protected BasicTupleEditor editor = null;
 
-	public MemberEditorDispatcher(BasicTupleEditor editor) {
-		super(new JTextField("test", 10));
-		// Temporarily disabled.
-		// this.editor = editor;
-		// editor.getTableView().setCellEditor( this );
-	}
+    public MemberEditorDispatcher(BasicTupleEditor editor) {
+        super(new JTextField("test", 10));
+        // Temporarily disabled.
+        // this.editor = editor;
+        // editor.getTableView().setCellEditor( this );
+    }
 
-	/** Dispatches to the appropriate cell editor. */
-	public Component getTableCellEditorComponent(JTable table, Object value,
-			boolean isSelected, int row, int column) {
-		TupleTableModel tableModel = this.editor.getTableModel();
-		int key = tableModel.getItemKeyAt(column);
-		TableCellEditor defaultEditor = this.editor.getTableView().getDefaultEditor(
-				tableModel.getItemClass(key));
+    /**
+     * Dispatches to the appropriate cell editor.
+     */
+    public Component getTableCellEditorComponent(JTable table, Object value,
+            boolean isSelected, int row, int column) {
+        TupleTableModel tableModel = this.editor.getTableModel();
+        int key = tableModel.getItemKeyAt(column);
+        TableCellEditor defaultEditor = this.editor.getTableView().getDefaultEditor(
+                tableModel.getItemClass(key));
 
-		if (key == HANDLER) {
-			return (this.editor.getHandlerSelectionEditor().getComponent());
-		} else if (key == EXPR) {
-			AttrTuple tuple = this.editor.getTuple();
-			if ((tuple != null && row >= tuple.getNumberOfEntries())
-					|| !(tuple instanceof AttrInstance)) {
-				return defaultEditor.getTableCellEditorComponent(table, value,
-						isSelected, row, column);
-			}
-			AttrInstance inst = (AttrInstance) tuple;
-			AttrInstanceMember member = (AttrInstanceMember) inst.getMemberAt(
-					this.editor.getViewSetting(), row);
-			AttrTypeMember decl = member.getDeclaration();
+        if (key == HANDLER) {
+            return (this.editor.getHandlerSelectionEditor().getComponent());
+        } else if (key == EXPR) {
+            AttrTuple tuple = this.editor.getTuple();
+            if ((tuple != null && row >= tuple.getNumberOfEntries())
+                    || !(tuple instanceof AttrInstance)) {
+                return defaultEditor.getTableCellEditorComponent(table, value,
+                        isSelected, row, column);
+            }
+            AttrInstance inst = (AttrInstance) tuple;
+            AttrInstanceMember member = (AttrInstanceMember) inst.getMemberAt(
+                    this.editor.getViewSetting(), row);
+            AttrTypeMember decl = member.getDeclaration();
 //			HandlerExpr expr = member.getExpr();
-			HandlerExprEditor hee = this.editor.getHandlerEditorManager()
-					.getExprEditor(decl.getHandler(), decl.getType(),
-							member.getExpr());
-			if (hee == null) {
-				return defaultEditor.getTableCellEditorComponent(table, value,
-						isSelected, row, column);
-			}
-			return hee.getEditorComponent(decl.getType(), member.getExpr(),
-					new Dimension(100, 10));
-		} else {
-			return defaultEditor.getTableCellEditorComponent(table, value,
-					isSelected, row, column);
-		}
-	}
+            HandlerExprEditor hee = this.editor.getHandlerEditorManager()
+                    .getExprEditor(decl.getHandler(), decl.getType(),
+                            member.getExpr());
+            if (hee == null) {
+                return defaultEditor.getTableCellEditorComponent(table, value,
+                        isSelected, row, column);
+            }
+            return hee.getEditorComponent(decl.getType(), member.getExpr(),
+                    new Dimension(100, 10));
+        } else {
+            return defaultEditor.getTableCellEditorComponent(table, value,
+                    isSelected, row, column);
+        }
+    }
 
 }
 /*

@@ -1,48 +1,60 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 import java.io.Serializable;
 
 /**
- * Mediator interface for distribution purposes. Provides services for creating
- * and maintaining of interface/local-relations between attribute tuples and
- * contexts.
- * 
- * @version $Id: AttrDistributionBroker.java,v 1.1 2005/08/25 11:56:55 enrico
- *          Exp $
+ * Mediator interface for distribution purposes. Provides services for creating and maintaining of
+ * interface/local-relations between attribute tuples and contexts.
+ *
+ * @version $Id: AttrDistributionBroker.java,v 1.1 2005/08/25 11:56:55 enrico Exp $
  * @author $Author: olga $
  */
 public interface AttrDistributionBroker extends Serializable {
-	static final long serialVersionUID = 8823872469661905068L;
 
-	/** Makes a type tuple into an interface of another type tuple. */
-	public void connect(AttrType interfaceType, AttrType localType);
+    static final long serialVersionUID = 8823872469661905068L;
 
-	/** Ends a type tuple's role as an interface of another type tuple. */
-	public void disconnect(AttrType interfaceType, AttrType localType);
+    /**
+     * Makes a type tuple into an interface of another type tuple.
+     */
+    public void connect(AttrType interfaceType, AttrType localType);
 
-	/** Makes an instance tuple into an interface of another interface tuple. */
-	public void connect(AttrInstance interfaceInstance,
-			AttrInstance localInstance);
+    /**
+     * Ends a type tuple's role as an interface of another type tuple.
+     */
+    public void disconnect(AttrType interfaceType, AttrType localType);
 
-	/** Ends an instance tuple's role as an interface of another interface tuple. */
-	public void disconnect(AttrInstance interfaceInstance,
-			AttrInstance localInstance);
+    /**
+     * Makes an instance tuple into an interface of another interface tuple.
+     */
+    public void connect(AttrInstance interfaceInstance,
+            AttrInstance localInstance);
 
-	/** Makes a context into an interface of another context. */
-	public void connect(AttrContext interfaceContext, AttrContext localContext);
+    /**
+     * Ends an instance tuple's role as an interface of another interface tuple.
+     */
+    public void disconnect(AttrInstance interfaceInstance,
+            AttrInstance localInstance);
 
-	/** Ends a context's role as an interface of another context. */
-	public void disconnect(AttrContext interfaceContext,
-			AttrContext localContext);
+    /**
+     * Makes a context into an interface of another context.
+     */
+    public void connect(AttrContext interfaceContext, AttrContext localContext);
+
+    /**
+     * Ends a context's role as an interface of another context.
+     */
+    public void disconnect(AttrContext interfaceContext,
+            AttrContext localContext);
 }
 
 /*

@@ -1,72 +1,71 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: TYPE1xTYPE1toBOOL.java,v 1.4 2010/03/31 21:10:49 olga Exp $
  * @author $Author: olga $
  */
 public class TYPE1xTYPE1toBOOL extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	TYPE1xTYPE1toBOOL(String id) {
-		super(id);
-	}
+    TYPE1xTYPE1toBOOL(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new TYPE1xTYPE1toBOOL(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new TYPE1xTYPE1toBOOL(id);
+    }
 
-	public void checkContext() throws ASTWrongTypeException {
-		Node child1 = jjtGetChild(0), child2 = jjtGetChild(1);
+    public void checkContext() throws ASTWrongTypeException {
+        Node child1 = jjtGetChild(0), child2 = jjtGetChild(1);
 
-		// System.out.println("TYPE1xTYPE1toBOOL.checkContext:: child1:
-		// "+child1);
-		// System.out.println("TYPE1xTYPE1toBOOL.checkContext:: child2:
-		// "+child2);
+        // System.out.println("TYPE1xTYPE1toBOOL.checkContext:: child1:
+        // "+child1);
+        // System.out.println("TYPE1xTYPE1toBOOL.checkContext:: child2:
+        // "+child2);
+        child1.checkContext();
+        child2.checkContext();
 
-		child1.checkContext();
-		child2.checkContext();
+        if (((SimpleNode) child1).hasNumberType()
+                && ((SimpleNode) child2).hasNumberType()) {
+            setNodeClass(Boolean.TYPE);
 
-		if (((SimpleNode)child1).hasNumberType() 
-				&& ((SimpleNode)child2).hasNumberType()) {
-			setNodeClass(Boolean.TYPE);
+        } else if (((SimpleNode) child1).getNodeClass() == ((SimpleNode) child2).getNodeClass()) {
+            setNodeClass(Boolean.TYPE);
+        } else {
+            // xxx!=null or xxx==null
+            // System.out.println("TYPE1xTYPE1toBOOL.checkContext::
+            // "+child1.getNodeClass());
+            // System.out.println("TYPE1xTYPE1toBOOL.checkContext::
+            // "+child2.getNodeClass());
+            // System.out.println("TYPE1xTYPE1toBOOL.checkContext::
+            // "+child2.toString()+" "+child2.getString());
+            if (((SimpleNode) child1).getNodeClass() != null
+                    && ((SimpleNode) child2).getNodeClass().getName().equals(
+                            "java.lang.Object")
+                    && child2.getString().equals("null")) {
+                // System.out.println("TYPE1xTYPE1toBOOL.checkContext::
+                // "+child1.getString()+ " ?= "+child2.getString()+" DONE");
+                setNodeClass(Boolean.TYPE);
+                return;
+            }
 
-		} else if (((SimpleNode)child1).getNodeClass() == ((SimpleNode)child2).getNodeClass()) {
-			setNodeClass(Boolean.TYPE);
-		} else {
-			// xxx!=null or xxx==null
-			// System.out.println("TYPE1xTYPE1toBOOL.checkContext::
-			// "+child1.getNodeClass());
-			// System.out.println("TYPE1xTYPE1toBOOL.checkContext::
-			// "+child2.getNodeClass());
-			// System.out.println("TYPE1xTYPE1toBOOL.checkContext::
-			// "+child2.toString()+" "+child2.getString());
-			if (((SimpleNode)child1).getNodeClass() != null
-					&& ((SimpleNode)child2).getNodeClass().getName().equals(
-							"java.lang.Object")
-					&& child2.getString().equals("null")) {
-				// System.out.println("TYPE1xTYPE1toBOOL.checkContext::
-				// "+child1.getString()+ " ?= "+child2.getString()+" DONE");
-				setNodeClass(Boolean.TYPE);
-				return;
-			}
-
-			throw new ASTWrongTypeException("[TYPE_1 x TYPE_1 -> boolean]", "["
-					+ ((SimpleNode)child1).getNodeClass().getName() + " x "
-					+ ((SimpleNode)child2).getNodeClass().getName() + "]");
-		}
-	}
+            throw new ASTWrongTypeException("[TYPE_1 x TYPE_1 -> boolean]", "["
+                    + ((SimpleNode) child1).getNodeClass().getName() + " x "
+                    + ((SimpleNode) child2).getNodeClass().getName() + "]");
+        }
+    }
 }
 /*
  * $Log: TYPE1xTYPE1toBOOL.java,v $

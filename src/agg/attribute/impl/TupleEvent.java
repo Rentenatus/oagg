@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import agg.attribute.AttrEvent;
@@ -15,110 +16,109 @@ import agg.attribute.AttrTuple;
 
 public class TupleEvent extends AttrObject implements AttrEvent {
 
-	protected int id;
+    protected int id;
 
-	protected int index0, index1;
+    protected int index0, index1;
 
-	protected AttrTuple src;
-	
-	protected AttrMember member;
-	
-	public TupleEvent(AttrTuple attr, int id, int index0, int index1) {
-		super();
-		this.src = attr;
-		this.id = id;
-		this.index0 = index0;
-		this.index1 = index1;	
-		
-		if (this.index0 == this.index1) {
-			this.member = attr.getMemberAt(index0);
-		}
-	}
+    protected AttrTuple src;
 
-	public TupleEvent(AttrTuple attr, int id, int index) {
-		super();
-		this.src = attr;
-		this.id = id;
-		this.index0 = index;
-		this.index1 = index;
-		
-		this.member = attr.getMemberAt(index);
-	}
+    protected AttrMember member;
 
-	public TupleEvent cloneWithNewSource(AttrTuple tup) {
-		return new TupleEvent(tup, this.id, this.index0, this.index1);
-	}
+    public TupleEvent(AttrTuple attr, int id, int index0, int index1) {
+        super();
+        this.src = attr;
+        this.id = id;
+        this.index0 = index0;
+        this.index1 = index1;
 
-	public AttrTuple getSource() {
-		return this.src;
-	}
+        if (this.index0 == this.index1) {
+            this.member = attr.getMemberAt(index0);
+        }
+    }
 
-	public int getID() {
-		return this.id;
-	}
+    public TupleEvent(AttrTuple attr, int id, int index) {
+        super();
+        this.src = attr;
+        this.id = id;
+        this.index0 = index;
+        this.index1 = index;
 
-	public int getIndex() {
-		return getIndex0();
-	}
+        this.member = attr.getMemberAt(index);
+    }
 
-	public int getIndex0() {
-		return this.index0;
-	}
+    public TupleEvent cloneWithNewSource(AttrTuple tup) {
+        return new TupleEvent(tup, this.id, this.index0, this.index1);
+    }
 
-	public int getIndex1() {
-		return this.index1;
-	}
+    public AttrTuple getSource() {
+        return this.src;
+    }
 
-	public AttrMember getAttrMember() {		
-		return this.member;
-	}
-	
-	public String toString() {
-		return ("<-" + super.toString() + "- [" + this.src + ", id="
-				+ idToString(this.id) + ", range=(" + this.index0 + "," + this.index1 + ")]");
-	}
+    public int getID() {
+        return this.id;
+    }
 
-	public String toLongString() {
-		return (super.toString() + "\n  Source: " + this.src + "\n  ID: "
-				+ idToString(this.id) + "\n  Index0=" + this.index0 + "\n  Index1=" + this.index1);
-	}
+    public int getIndex() {
+        return getIndex0();
+    }
 
-	//
-	// Internal
+    public int getIndex0() {
+        return this.index0;
+    }
 
-	protected String idToString(int anID) {
-		String r;
-		switch (anID) {
-		case GENERAL_CHANGE:
-			r = "GENERAL_CHANGE";
-			break;
-		case MEMBER_ADDED:
-			r = "MEMBER_ADDED";
-			break;
-		case MEMBER_DELETED:
-			r = "MEMBER_DELETED";
-			break;
-		case MEMBER_MODIFIED:
-			r = "MEMBER_MODIFIED";
-			break;
-		case MEMBER_RENAMED:
-			r = "MEMBER_RENAMED";
-			break;
-		case MEMBER_RETYPED:
-			r = "MEMBER_RETYPED";
-			break;
-		case MEMBER_VALUE_MODIFIED:
-			r = "MEMBER_VALUE_MODIFIED";
-			break;
-		case MEMBER_VALUE_CORRECTNESS:
-			r = "MEMBER_VALUE_CORRECTNESS";
-			break;
-		default:
-			r = "Invalid";
-			break;
-		}
-		return r;
-	}
+    public int getIndex1() {
+        return this.index1;
+    }
+
+    public AttrMember getAttrMember() {
+        return this.member;
+    }
+
+    public String toString() {
+        return ("<-" + super.toString() + "- [" + this.src + ", id="
+                + idToString(this.id) + ", range=(" + this.index0 + "," + this.index1 + ")]");
+    }
+
+    public String toLongString() {
+        return (super.toString() + "\n  Source: " + this.src + "\n  ID: "
+                + idToString(this.id) + "\n  Index0=" + this.index0 + "\n  Index1=" + this.index1);
+    }
+
+    //
+    // Internal
+    protected String idToString(int anID) {
+        String r;
+        switch (anID) {
+            case GENERAL_CHANGE:
+                r = "GENERAL_CHANGE";
+                break;
+            case MEMBER_ADDED:
+                r = "MEMBER_ADDED";
+                break;
+            case MEMBER_DELETED:
+                r = "MEMBER_DELETED";
+                break;
+            case MEMBER_MODIFIED:
+                r = "MEMBER_MODIFIED";
+                break;
+            case MEMBER_RENAMED:
+                r = "MEMBER_RENAMED";
+                break;
+            case MEMBER_RETYPED:
+                r = "MEMBER_RETYPED";
+                break;
+            case MEMBER_VALUE_MODIFIED:
+                r = "MEMBER_VALUE_MODIFIED";
+                break;
+            case MEMBER_VALUE_CORRECTNESS:
+                r = "MEMBER_VALUE_CORRECTNESS";
+                break;
+            default:
+                r = "Invalid";
+                break;
+        }
+        return r;
+    }
 }
 /*
  * $Log: TupleEvent.java,v $

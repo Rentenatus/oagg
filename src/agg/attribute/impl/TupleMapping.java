@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Vector;
@@ -15,89 +16,94 @@ import agg.attribute.AttrMapping;
 
 /**
  * Representation of a mapping between two attribute instances.
- * 
+ *
  * @author $Author: olga $
  * @version $Id: TupleMapping.java,v 1.8 2010/09/23 08:14:08 olga Exp $
  */
 public class TupleMapping extends AttrObject implements AttrMapping,
-		AttrMsgCode {
+        AttrMsgCode {
 
-	static final long serialVersionUID = 5592548875776404533L;
+    static final long serialVersionUID = 5592548875776404533L;
 
-	/** The source and target objects of this mapping. */
-	protected ValueTuple source, target;
+    /**
+     * The source and target objects of this mapping.
+     */
+    protected ValueTuple source, target;
 
-	/** The context this mapping is contained in. */
-	protected ContextView context;
+    /**
+     * The context this mapping is contained in.
+     */
+    protected ContextView context;
 
-	/**
-	 * References to value settings done due to this mapping. (Vector of Object)
-	 */
-	protected String assignedVariables[];
+    /**
+     * References to value settings done due to this mapping. (Vector of Object)
+     */
+    protected String assignedVariables[];
 
-	/**
-	 * All or nothing: tries to create a mapping right away, with matching if
-	 * it's in a match context. If it fails, an 'AttrImplException' is thrown.
-	 */
-	public TupleMapping(ContextView mappingContext, ValueTuple src,
-			ValueTuple tar) {
+    /**
+     * All or nothing: tries to create a mapping right away, with matching if it's in a match context. If it fails, an
+     * 'AttrImplException' is thrown.
+     */
+    public TupleMapping(ContextView mappingContext, ValueTuple src,
+            ValueTuple tar) {
 //		logPrintln(VerboseControl.logTrace, "TupleMapping:\n->new TupleMapping");
-		boolean child2parentMapping = false;
-		
-		if (mappingContext.getAllowedMapping() == AttrMapping.PLAIN_MAP) {
+        boolean child2parentMapping = false;
+
+        if (mappingContext.getAllowedMapping() == AttrMapping.PLAIN_MAP) {
 //			logPrintln(VerboseControl.logMapping,
 //					"creating TupleMapping for a plain mapping");
-			if (!src.getType().compareTo(tar.getType())
-					&& !((DeclTuple)src.getType()).weakcompareTo(tar.getType())) {
-				throw new AttrImplException(ATTR_DONT_MATCH,
-						"Types must be equal.");
-			}
-		} else if (mappingContext.getAllowedMapping() == AttrMapping.MATCH_MAP) {
+            if (!src.getType().compareTo(tar.getType())
+                    && !((DeclTuple) src.getType()).weakcompareTo(tar.getType())) {
+                throw new AttrImplException(ATTR_DONT_MATCH,
+                        "Types must be equal.");
+            }
+        } else if (mappingContext.getAllowedMapping() == AttrMapping.MATCH_MAP) {
 //			logPrintln(VerboseControl.logMapping,
 //					"creating TupleMapping for a match mapping");
-			if (!src.getType().compareTo(tar.getType())
-					&& !((DeclTuple)src.getType()).weakcompareTo(tar.getType())
-					&& !tar.getTupleType().isSubclassOf(src.getTupleType())) {
-				if (src.getTupleType().isSubclassOf(tar.getTupleType())) {
-					child2parentMapping = true;
-				} else {
-					System.out.println("Target type must be subtype of source or equal.");
-					throw new AttrImplException(
-						"Target type must be subtype of source or equal.");
-				}
-			}
-		}
+            if (!src.getType().compareTo(tar.getType())
+                    && !((DeclTuple) src.getType()).weakcompareTo(tar.getType())
+                    && !tar.getTupleType().isSubclassOf(src.getTupleType())) {
+                if (src.getTupleType().isSubclassOf(tar.getTupleType())) {
+                    child2parentMapping = true;
+                } else {
+                    System.out.println("Target type must be subtype of source or equal.");
+                    throw new AttrImplException(
+                            "Target type must be subtype of source or equal.");
+                }
+            }
+        }
 
-		String variables[] = null;
-		this.context = mappingContext;
+        String variables[] = null;
+        this.context = mappingContext;
 
-		// logPrintln( VerboseControl.logContextOfInstances,
-		// "mappingContext = " +
-		// getAllowedMappingAsString( mappingContext ) +
-		// " " + mappingContext );
-		// logPrintln( VerboseControl.logContextOfInstances,
-		// "src.context = " +
-		// getAllowedMappingAsString( src.getContextView() ) +
-		// " " + src.getContextView() );
-		// logPrintln( VerboseControl.logContextOfInstances,
-		// "tar.context = " +
-		// getAllowedMappingAsString( tar.getContextView() ) +
-		// " " + tar.getContextView() );
+        // logPrintln( VerboseControl.logContextOfInstances,
+        // "mappingContext = " +
+        // getAllowedMappingAsString( mappingContext ) +
+        // " " + mappingContext );
+        // logPrintln( VerboseControl.logContextOfInstances,
+        // "src.context = " +
+        // getAllowedMappingAsString( src.getContextView() ) +
+        // " " + src.getContextView() );
+        // logPrintln( VerboseControl.logContextOfInstances,
+        // "tar.context = " +
+        // getAllowedMappingAsString( tar.getContextView() ) +
+        // " " + tar.getContextView() );
+        if (this.context == null) {
+            this.context = src.getContextView();
+        }
 
-		if (this.context == null)
-			this.context = src.getContextView();
-
-		try {
-			if (this.context.getAllowedMapping() == AttrMapping.MATCH_MAP) {
-				if (child2parentMapping) {
-					variables = src.matchChild2Parent(tar, this.context);
-				} else {
-					variables = src.matchTo(tar, this.context);
-				}
-			} 
-//			else if (this.context.getAllowedMapping() == AttrMapping.PLAIN_MAP) { // test
-//				if (child2parentMapping) {
-////					variables = src.matchChild2Parent(tar, this.context);
+        try {
+            if (this.context.getAllowedMapping() == AttrMapping.MATCH_MAP) {
+                if (child2parentMapping) {
+                    variables = src.matchChild2Parent(tar, this.context);
+                } else {
+                    variables = src.matchTo(tar, this.context);
+                }
+            } //			else if (this.context.getAllowedMapping() == AttrMapping.PLAIN_MAP) { // test
+            //				if (child2parentMapping) {
+             
+            
+         ////					variables = src.matchChild2Parent(tar, this.context);
 //				} 
 //				else {
 //					variables = src.matchTo(tar, this.context);
@@ -117,99 +123,106 @@ public class TupleMapping extends AttrObject implements AttrMapping,
 				// tar.adoptEntriesWhereEmpty( src );
 			}
 		} catch (AttrImplException ex1) {
-			// System.out.println("TuppleMapping: Constructor - catch
-			// exception\n"+ex1.getMessage());
-			// System.out.println("src: "+src);
-			// System.out.println("tar: "+tar);
-			// throw ex1;
-			throw new AttrImplException("TupleMapping: attribute exception\n"
-					+ ex1.getMessage());
-		}
-		this.source = src;
-		this.target = tar;
-		this.assignedVariables = variables;
-		this.context.addMapping(this);
+            // System.out.println("TuppleMapping: Constructor - catch
+            // exception\n"+ex1.getMessage());
+            // System.out.println("src: "+src);
+            // System.out.println("tar: "+tar);
+            // throw ex1;
+            throw new AttrImplException("TupleMapping: attribute exception\n"
+                    + ex1.getMessage());
+        }
+        this.source = src;
+        this.target = tar;
+        this.assignedVariables = variables;
+        this.context.addMapping(this);
 //		logPrintln(VerboseControl.logTrace,
 //				"TuppleMapping:\n<-new TuppleMapping");
-	}
+    }
 
-	/** This method accepts AttrMapping.PLAIN_MAP only. */
-	public void adoptEntriesWhereEmpty(ValueTuple src, ValueTuple tar) {
-		try {
-			if (this.context.getAllowedMapping() == AttrMapping.PLAIN_MAP) {
-				tar.adoptEntriesWhereEmpty(src);
-				// System.out.println("TupleMapping.adoptEntriesWhereEmpty ...
-				// done");
-			}
-		} catch (AttrImplException ex1) {
-			// System.out.println("TuppleMapping: Constructor - catch
-			// exception\n"+ex1.getMessage());
-			// System.out.println("src: "+src);
-			// System.out.println("tar: "+tar);
-			// throw ex1;
-			throw new AttrImplException("TupleMapping: attribute exception\n"
-					+ ex1.getMessage());
-		}
-	}
+    /**
+     * This method accepts AttrMapping.PLAIN_MAP only.
+     */
+    public void adoptEntriesWhereEmpty(ValueTuple src, ValueTuple tar) {
+        try {
+            if (this.context.getAllowedMapping() == AttrMapping.PLAIN_MAP) {
+                tar.adoptEntriesWhereEmpty(src);
+                // System.out.println("TupleMapping.adoptEntriesWhereEmpty ...
+                // done");
+            }
+        } catch (AttrImplException ex1) {
+            // System.out.println("TuppleMapping: Constructor - catch
+            // exception\n"+ex1.getMessage());
+            // System.out.println("src: "+src);
+            // System.out.println("tar: "+tar);
+            // throw ex1;
+            throw new AttrImplException("TupleMapping: attribute exception\n"
+                    + ex1.getMessage());
+        }
+    }
 
-	public Vector<String> getAssignedVariables() {
-		int nn = (this.assignedVariables == null) ? -1 : this.assignedVariables.length;
-		Vector<String> v = new Vector<String>(1);
-		for (int i = 0; i < nn; i++) {
-			v.add(this.assignedVariables[i]);
-		}
-		// System.out.println("TupleMapping.getAssignedVariables: "+v);
-		return v;
-	}
+    public Vector<String> getAssignedVariables() {
+        int nn = (this.assignedVariables == null) ? -1 : this.assignedVariables.length;
+        Vector<String> v = new Vector<String>(1);
+        for (int i = 0; i < nn; i++) {
+            v.add(this.assignedVariables[i]);
+        }
+        // System.out.println("TupleMapping.getAssignedVariables: "+v);
+        return v;
+    }
 
-	/**
-	 * Use the next possible mapping;
-	 * 
-	 * @return "true" if more subsequent mappings exist, "false" otherwise.
-	 */
-	public boolean next() {
-		return false;
-	}
+    /**
+     * Use the next possible mapping;
+     *
+     * @return "true" if more subsequent mappings exist, "false" otherwise.
+     */
+    public boolean next() {
+        return false;
+    }
 
-	/**
-	 * Implementation of agg.attribute.AttrMapping#remove(). Called by a client.
-	 * Discards mapping; Actually only telling the context that this mapping
-	 * shall be removed; The context chooses when exactly this occurs and then
-	 * calls #removeNow .
-	 */
-	public void remove() {
-		this.context.removeMapping(this);
-	}
+    /**
+     * Implementation of agg.attribute.AttrMapping#remove(). Called by a client. Discards mapping; Actually only telling
+     * the context that this mapping shall be removed; The context chooses when exactly this occurs and then calls
+     * #removeNow .
+     */
+    public void remove() {
+        this.context.removeMapping(this);
+    }
 
-	/**
-	 * Called from this mapping's context; Discard mapping; Removes assignments
-	 * made by it from its context.
-	 */
-	public void removeNow() {
-		if (this.assignedVariables != null) {
-			for (int i = 0; i < this.assignedVariables.length; i++) {
-				this.context.removeValue(this.assignedVariables[i]);
-			}
-		}
-	}
+    /**
+     * Called from this mapping's context; Discard mapping; Removes assignments made by it from its context.
+     */
+    public void removeNow() {
+        if (this.assignedVariables != null) {
+            for (int i = 0; i < this.assignedVariables.length; i++) {
+                this.context.removeValue(this.assignedVariables[i]);
+            }
+        }
+    }
 
-	/** Getting the source attribute instance. */
-	public ValueTuple getSource() {
-		return this.source;
-	}
+    /**
+     * Getting the source attribute instance.
+     */
+    public ValueTuple getSource() {
+        return this.source;
+    }
 
-	/** Getting the target attribute instance. */
-	public ValueTuple getTarget() {
-		return this.target;
-	}
+    /**
+     * Getting the target attribute instance.
+     */
+    public ValueTuple getTarget() {
+        return this.target;
+    }
 
-	/** For debugging output. */
-	protected String getAllowedMappingAsString(ContextView contextview) {
-		if (contextview == null)
-			return "";
-		return contextview.getAllowedMapping() == AttrMapping.MATCH_MAP ? " (match)"
-				: " (plain)";
-	}
+    /**
+     * For debugging output.
+     */
+    protected String getAllowedMappingAsString(ContextView contextview) {
+        if (contextview == null) {
+            return "";
+        }
+        return contextview.getAllowedMapping() == AttrMapping.MATCH_MAP ? " (match)"
+                : " (plain)";
+    }
 }
 
 /*

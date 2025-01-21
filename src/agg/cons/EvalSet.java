@@ -1,111 +1,117 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.cons;
 
 import java.util.Vector;
 
-
 public class EvalSet implements Evaluable {
-	private Vector<java.lang.Object> set;
 
-	private int old_tick;
+    private Vector<java.lang.Object> set;
 
-	private boolean old_val;
+    private int old_tick;
 
-	private boolean negation;
+    private boolean old_val;
 
-	public EvalSet() {
-		this(null);
-	}
+    private boolean negation;
 
-	public EvalSet(Vector<java.lang.Object> s) {
-		setSet(s);
-		this.old_tick = -1;
-		this.old_val = false;
-	}
+    public EvalSet() {
+        this(null);
+    }
 
-	public void setSet(Vector<java.lang.Object> s) {
-		if (s == null)
-			this.set = new Vector<java.lang.Object>();
-		else
-			this.set = s;
-	}
+    public EvalSet(Vector<java.lang.Object> s) {
+        setSet(s);
+        this.old_tick = -1;
+        this.old_val = false;
+    }
 
-	public Vector<java.lang.Object> getSet() {
-		return this.set;
-	}
+    public void setSet(Vector<java.lang.Object> s) {
+        if (s == null) {
+            this.set = new Vector<java.lang.Object>();
+        } else {
+            this.set = s;
+        }
+    }
 
-	public boolean eval(java.lang.Object o) {
-		return eval(o, -1);
-	}
+    public Vector<java.lang.Object> getSet() {
+        return this.set;
+    }
 
-	/* set.eval(o) := \forall s\in set. s.eval(o) */
-	public boolean eval(java.lang.Object o, int tick) {
-		if (tick != -1 && tick == this.old_tick)
-			return this.old_val;
-		this.old_tick = tick;
-		this.old_val = false;
-		boolean result = true;
-		for (int i = 0; i < this.set.size(); i++) {
-			Evaluable e = (Evaluable) this.set.get(i);
-			result = ((AtomApplConstraint) e).eval(o, tick);
-			if (!result)
-				return false;
-		}
-		this.old_val = true;
-		return true;
-	}
+    public boolean eval(java.lang.Object o) {
+        return eval(o, -1);
+    }
 
-	public boolean eval(java.lang.Object o, boolean negate) {
-		return eval(o, -1, negate);
-	}
+    /* set.eval(o) := \forall s\in set. s.eval(o) */
+    public boolean eval(java.lang.Object o, int tick) {
+        if (tick != -1 && tick == this.old_tick) {
+            return this.old_val;
+        }
+        this.old_tick = tick;
+        this.old_val = false;
+        boolean result = true;
+        for (int i = 0; i < this.set.size(); i++) {
+            Evaluable e = (Evaluable) this.set.get(i);
+            result = ((AtomApplConstraint) e).eval(o, tick);
+            if (!result) {
+                return false;
+            }
+        }
+        this.old_val = true;
+        return true;
+    }
 
-	/* set.eval(o) := \forall s\in set. s.eval(o) */
-	public boolean eval(java.lang.Object o, int tick, boolean negate) {
-		if (tick != -1 && tick == this.old_tick)
-			return this.old_val;
-		this.old_tick = tick;
-		this.old_val = false;
-		boolean result = true;
-		for (int i = 0; i < this.set.size(); i++) {
-			Evaluable e = (Evaluable) this.set.get(i);
-			result = ((AtomApplConstraint) e).eval(o, tick, negate);
-			if (!result)
-				return false;
-		}
-		this.old_val = true;
-		return true;
-	}
+    public boolean eval(java.lang.Object o, boolean negate) {
+        return eval(o, -1, negate);
+    }
 
-	public String getAsString() {
-		return new String("");
-	}
+    /* set.eval(o) := \forall s\in set. s.eval(o) */
+    public boolean eval(java.lang.Object o, int tick, boolean negate) {
+        if (tick != -1 && tick == this.old_tick) {
+            return this.old_val;
+        }
+        this.old_tick = tick;
+        this.old_val = false;
+        boolean result = true;
+        for (int i = 0; i < this.set.size(); i++) {
+            Evaluable e = (Evaluable) this.set.get(i);
+            result = ((AtomApplConstraint) e).eval(o, tick, negate);
+            if (!result) {
+                return false;
+            }
+        }
+        this.old_val = true;
+        return true;
+    }
 
-	public void setNegation(boolean b) {
-		this.negation = b;
-	}
+    public String getAsString() {
+        return new String("");
+    }
 
-	public boolean getNegation() {
-		return this.negation;
-	}
+    public void setNegation(boolean b) {
+        this.negation = b;
+    }
 
-	/* (non-Javadoc)
+    public boolean getNegation() {
+        return this.negation;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.cons.Evaluable#evalForall(java.lang.Object, int, boolean)
-	 */
-	public boolean evalForall(Object o, int tick) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+     */
+    public boolean evalForall(Object o, int tick) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
-	public String getName() {
-		return "EvalSet";
-	}
+    public String getName() {
+        return "EvalSet";
+    }
 
 }

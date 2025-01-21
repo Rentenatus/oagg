@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: Variable.java,v 1.25 2010/09/23 08:26:52 olga Exp $
-
 // $Log: Variable.java,v $
 // Revision 1.25  2010/09/23 08:26:52  olga
 // tuning
@@ -154,7 +154,6 @@
 // Revision 1.1  1997/09/16 15:56:18  mich
 // Initial revision
 //
-
 package agg.util.csp;
 
 import java.util.Enumeration;
@@ -169,316 +168,321 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
 import agg.xt_basis.csp.Query_Type;
 
-
-/** Implements a variable of the CSP algorithm. */
+/**
+ * Implements a variable of the CSP algorithm.
+ */
 public class Variable {
-	public final static int NODE = 0;
-	public final static int ARC = 1;
-	
-	private final static BinaryPredicate theirQueryOrder = new QueryOrder();
-	
-	final private OrderedSet<Object> itsConstraints;
-	final private OrderedSet<Query> itsOutgoingQueries;
-	final private OrderedSet<Query> itsIncomingQueries;
-	
-	private Object itsInstance;
 
-	private Iterator<?> itsDomain;
-	
+    public final static int NODE = 0;
+    public final static int ARC = 1;
+
+    private final static BinaryPredicate theirQueryOrder = new QueryOrder();
+
+    final private OrderedSet<Object> itsConstraints;
+    final private OrderedSet<Query> itsOutgoingQueries;
+    final private OrderedSet<Query> itsIncomingQueries;
+
+    private Object itsInstance;
+
+    private Iterator<?> itsDomain;
+
 //	private boolean randomizedDomain;
-	private boolean enabled;
+    private boolean enabled;
 
-	final private Vector<InstantiationHook> itsInstantiationHooks;
+    final private Vector<InstantiationHook> itsInstantiationHooks;
 
-	private Object LHSgo; // node or arc from LHS of a rule
+    private Object LHSgo; // node or arc from LHS of a rule
 //	private boolean isEdge;
-	private String convertedTypeString;
-	
-	private int kind=-1; // 0 is Node, 1 is Arc, otherwise is -1;
-	private int domainsize;
-	private int itsWeight;
-	
-	private Query_Type itsTypeQuery;
+    private String convertedTypeString;
 
-	public Variable() {
+    private int kind = -1; // 0 is Node, 1 is Arc, otherwise is -1;
+    private int domainsize;
+    private int itsWeight;
+
+    private Query_Type itsTypeQuery;
+
+    public Variable() {
 //		randomizedDomain = true;
-		this.enabled = true;
-		
-		this.itsConstraints = new OrderedSet<Object>();
-		this.itsOutgoingQueries = new OrderedSet<Query>(theirQueryOrder);
-		this.itsIncomingQueries = new OrderedSet<Query>(theirQueryOrder);
-		this.itsInstantiationHooks = new Vector<InstantiationHook>(2, 2);
-	}
+        this.enabled = true;
 
-	public void clear() {
-		this.LHSgo = null;
-		this.itsTypeQuery = null;
-		this.itsIncomingQueries.clear();
-		this.itsOutgoingQueries.clear();
-                Iterator<?> iterator = this.itsConstraints.iterator(); 
-                while (iterator.hasNext()) {  
-			((BinaryConstraint) iterator.next()).clear();	
-		}
-		this.itsConstraints.clear();
-		this.itsInstantiationHooks.clear();
-	}
-	
+        this.itsConstraints = new OrderedSet<Object>();
+        this.itsOutgoingQueries = new OrderedSet<Query>(theirQueryOrder);
+        this.itsIncomingQueries = new OrderedSet<Query>(theirQueryOrder);
+        this.itsInstantiationHooks = new Vector<InstantiationHook>(2, 2);
+    }
 
-	/**
-	 * Return my current value, <code>null</code> if uninstantiated.
-	 */
-	public final Object getInstance() {
-		return this.itsInstance;
-	}
+    public void clear() {
+        this.LHSgo = null;
+        this.itsTypeQuery = null;
+        this.itsIncomingQueries.clear();
+        this.itsOutgoingQueries.clear();
+        Iterator<?> iterator = this.itsConstraints.iterator();
+        while (iterator.hasNext()) {
+            ((BinaryConstraint) iterator.next()).clear();
+        }
+        this.itsConstraints.clear();
+        this.itsInstantiationHooks.clear();
+    }
 
-	/**
-	 * Instantiate me by given value. 
-	 */
-	public final void setInstance(Object value) {
-		Enumeration<InstantiationHook> en;
-		if (this.itsInstance != null) {
-			en = this.itsInstantiationHooks.elements();
-			while (en.hasMoreElements())
-				en.nextElement().uninstantiate(this);
-		}
+    /**
+     * Return my current value, <code>null</code> if uninstantiated.
+     */
+    public final Object getInstance() {
+        return this.itsInstance;
+    }
 
-		this.itsInstance = value;
+    /**
+     * Instantiate me by given value.
+     */
+    public final void setInstance(Object value) {
+        Enumeration<InstantiationHook> en;
+        if (this.itsInstance != null) {
+            en = this.itsInstantiationHooks.elements();
+            while (en.hasMoreElements()) {
+                en.nextElement().uninstantiate(this);
+            }
+        }
 
-		if (this.itsInstance != null) {
-			en = this.itsInstantiationHooks.elements();
-			while (en.hasMoreElements())
-				en.nextElement().instantiate(this);
-		}
-	}
+        this.itsInstance = value;
 
-	/**
-	 * Check all my applicable constraints, i.e., check the consistency of my
-	 * current instantiation with all previously instantiated variables.
-	 * <p>
-	 * <b>Pre:</b> <code>getInstance() != null</code>.
-	 * 
-	 * @return An Enumeration of all the Variables whose instantiations conflict
-	 *         with my current instantiation. If all applicable constraints are
-	 *         satisfied, the Enumeration is empty. Enumeration elements are of
-	 *         type <code>Variable</code>.
-	 */
-	public final Enumeration<Variable> checkConstraints() {
-		Vector<Variable> allConflictVars = new Vector<Variable>(5);
-		                Iterator<?> iterator = this.itsConstraints.iterator(); 
-                while (iterator.hasNext()) {  
-			BinaryConstraint aConstraint = (BinaryConstraint) iterator.next();
-			if (aConstraint.isApplicable() && !aConstraint.execute()) {
-				allConflictVars.addElement(aConstraint.getCause(this));
-			}
-		}
-		return allConflictVars.elements();
-	}
+        if (this.itsInstance != null) {
+            en = this.itsInstantiationHooks.elements();
+            while (en.hasMoreElements()) {
+                en.nextElement().instantiate(this);
+            }
+        }
+    }
 
-	/**
-	 * Add <code>hook</code> to the set of my InstantiationHooks. I will call
-	 * the encapsulated operations at the respective times of
-	 * instantiation/uninstantiation, with myself as an argument.
-	 * 
-	 * @see agg.util.csp.InstantiationHook
-	 */
-	public final void addInstantiationHook(InstantiationHook hook) {
-		this.itsInstantiationHooks.addElement(hook);
-	}
-	
-	/**
-	 * Return next object of the enumeration of my domain. This enumeration continues at the
-	 * position where a previous access left off. The type of enumeration elements
-	 * is dependent on the concrete domain.
-	 */
-	public final Object getNext() {
+    /**
+     * Check all my applicable constraints, i.e., check the consistency of my current instantiation with all previously
+     * instantiated variables.
+     * <p>
+     * <b>Pre:</b> <code>getInstance() != null</code>.
+     *
+     * @return An Enumeration of all the Variables whose instantiations conflict with my current instantiation. If all
+     * applicable constraints are satisfied, the Enumeration is empty. Enumeration elements are of type
+     * <code>Variable</code>.
+     */
+    public final Enumeration<Variable> checkConstraints() {
+        Vector<Variable> allConflictVars = new Vector<Variable>(5);
+        Iterator<?> iterator = this.itsConstraints.iterator();
+        while (iterator.hasNext()) {
+            BinaryConstraint aConstraint = (BinaryConstraint) iterator.next();
+            if (aConstraint.isApplicable() && !aConstraint.execute()) {
+                allConflictVars.addElement(aConstraint.getCause(this));
+            }
+        }
+        return allConflictVars.elements();
+    }
+
+    /**
+     * Add <code>hook</code> to the set of my InstantiationHooks. I will call the encapsulated operations at the
+     * respective times of instantiation/uninstantiation, with myself as an argument.
+     *
+     * @see agg.util.csp.InstantiationHook
+     */
+    public final void addInstantiationHook(InstantiationHook hook) {
+        this.itsInstantiationHooks.addElement(hook);
+    }
+
+    /**
+     * Return next object of the enumeration of my domain. This enumeration continues at the position where a previous
+     * access left off. The type of enumeration elements is dependent on the concrete domain.
+     */
+    public final Object getNext() {
 //		try {
-		return this.itsDomain.next();
+        return this.itsDomain.next();
 //		} catch (java.util.ConcurrentModificationException ex) {
 //			return null;
 //		}
-	}
-	
-	public boolean hasNext() {
-		return this.itsDomain.hasNext();
-	}
-	
-	/**
-	 * Set my domain in an enumeration representation. This very same enumeration is
-	 * returned from a subsequent call of <code>getDomainEnum()</code>.
-	 */
-	public final void setDomainEnum(final HashSet<?> dom) {
-		// NOTE: randomization will be done in Query_Type.setObjects(List<GraphObject> objects)
-		
-		this.itsDomain = dom.iterator();
-	}
-	
-	
+    }
+
+    public boolean hasNext() {
+        return this.itsDomain.hasNext();
+    }
+
+    /**
+     * Set my domain in an enumeration representation. This very same enumeration is returned from a subsequent call of
+     * <code>getDomainEnum()</code>.
+     */
+    public final void setDomainEnum(final HashSet<?> dom) {
+        // NOTE: randomization will be done in Query_Type.setObjects(List<GraphObject> objects)
+
+        this.itsDomain = dom.iterator();
+    }
+
 //	public void setRandomizedDomain(boolean randomized) {
 //		this.randomizedDomain = randomized;
 //	}
-	
-	public int getDomainSize() {
-		return this.domainsize;
-	}
-		
-	/**
-	 * Return my weight. It is computed as the sum of the weights of all
-	 * constraints attached and of all outgoing queries.
-	 */
-	public final int getWeight() {
-		return this.itsWeight;
-	}
+    public int getDomainSize() {
+        return this.domainsize;
+    }
 
-	public final void addWeight(int w) {
-		this.itsWeight += w;
-	}
+    /**
+     * Return my weight. It is computed as the sum of the weights of all constraints attached and of all outgoing
+     * queries.
+     */
+    public final int getWeight() {
+        return this.itsWeight;
+    }
 
-	/**
-	 * Return an enumeration of all the constraints I'm involved in. Enumeration
-	 * elements are of type <code>BinaryConstraint</code>.
-	 * 
-	 * @see agg.util.csp.BinaryConstraint
-	 */
-	public final Iterator<Object> getConstraints() {
-		return this.itsConstraints.iterator();
-	}
+    public final void addWeight(int w) {
+        this.itsWeight += w;
+    }
 
-	public void setDomainSize(int size) {
-		this.domainsize = size;
-	}
+    /**
+     * Return an enumeration of all the constraints I'm involved in. Enumeration elements are of type
+     * <code>BinaryConstraint</code>.
+     *
+     * @see agg.util.csp.BinaryConstraint
+     */
+    public final Iterator<Object> getConstraints() {
+        return this.itsConstraints.iterator();
+    }
 
-	/**
-	 * Return an anumeration of all my outgoing queries. Elements are
-	 * of type <code>Query</code>.
-	 * 
-	 * @see agg.util.csp.Query
-	 */
-	public final Iterator<Query> getOutgoingQueries() {
-		return this.itsOutgoingQueries.iterator();
-	}
+    public void setDomainSize(int size) {
+        this.domainsize = size;
+    }
 
-	public final int getOutgoingQueriesCount() {
-		return this.itsOutgoingQueries.size();
-	}
+    /**
+     * Return an anumeration of all my outgoing queries. Elements are of type <code>Query</code>.
+     *
+     * @see agg.util.csp.Query
+     */
+    public final Iterator<Query> getOutgoingQueries() {
+        return this.itsOutgoingQueries.iterator();
+    }
 
-	/**
-	 * Return an enumeration of all my incoming queries. Enumeration elements
-	 * are of type <code>Query</code>.
-	 * 
-	 * @see agg.util.csp.Query
-	 */
-	public final Iterator<Query> getIncomingQueries() {
-		return this.itsIncomingQueries.iterator();
-	}
+    public final int getOutgoingQueriesCount() {
+        return this.itsOutgoingQueries.size();
+    }
 
-	public final int getIncomingQueriesCount() {
-		return this.itsIncomingQueries.size();
-	}
+    /**
+     * Return an enumeration of all my incoming queries. Enumeration elements are of type <code>Query</code>.
+     *
+     * @see agg.util.csp.Query
+     */
+    public final Iterator<Query> getIncomingQueries() {
+        return this.itsIncomingQueries.iterator();
+    }
 
-	public final Vector<Variable> getIncomingVariables() {
-		Vector<Variable> vec = new Vector<Variable>(2);
-                Iterator<?> iterator = getIncomingQueries(); 
-                while (iterator.hasNext()) { 
-			((BinaryConstraint) iterator.next()).clear();	
-			Variable v = ((Query) iterator.next()).getTarget();
-			if (this != v)
-				vec.add(v);
-		}
-		return vec;
-	}
+    public final int getIncomingQueriesCount() {
+        return this.itsIncomingQueries.size();
+    }
 
-	public final Vector<Variable> getOutgoingVariables() {
-		Vector<Variable> vec = new Vector<Variable>(2);
-		Iterator<Query> iterator = getOutgoingQueries();
-		while (iterator.hasNext()) {
-			Variable v = ((Query) iterator.next()).getTarget();
-			if (this != v)
-				vec.add(v);
-		}
-		return vec;
-	}
+    public final Vector<Variable> getIncomingVariables() {
+        Vector<Variable> vec = new Vector<Variable>(2);
+        Iterator<?> iterator = getIncomingQueries();
+        while (iterator.hasNext()) {
+            ((BinaryConstraint) iterator.next()).clear();
+            Variable v = ((Query) iterator.next()).getTarget();
+            if (this != v) {
+                vec.add(v);
+            }
+        }
+        return vec;
+    }
 
-	/** Let me know of a new constraint which I'm involved in. */
-	protected final void addConstraint(BinaryConstraint c) {
-		this.itsConstraints.add(c);
-		this.itsWeight += c.getWeight();
-	}
+    public final Vector<Variable> getOutgoingVariables() {
+        Vector<Variable> vec = new Vector<Variable>(2);
+        Iterator<Query> iterator = getOutgoingQueries();
+        while (iterator.hasNext()) {
+            Variable v = ((Query) iterator.next()).getTarget();
+            if (this != v) {
+                vec.add(v);
+            }
+        }
+        return vec;
+    }
 
-	public final void removeConstraint(BinaryConstraint c) {
-		this.itsWeight -= c.getWeight();
-		this.itsConstraints.remove(c);
-	}
-	
-	/** Let me know of a query for which I am a source variable. */
-	protected final void addOutgoingQuery(Query q) {
-		this.itsOutgoingQueries.add(q);
-		this.itsWeight += q.getWeight();
-	}
+    /**
+     * Let me know of a new constraint which I'm involved in.
+     */
+    protected final void addConstraint(BinaryConstraint c) {
+        this.itsConstraints.add(c);
+        this.itsWeight += c.getWeight();
+    }
 
-	/** Let me know of a query for which I am the target variable. */
-	protected final void addIncomingQuery(Query q) {
-		if (q instanceof Query_Type) {
-			this.itsTypeQuery = (Query_Type) q;
-		}
-		this.itsIncomingQueries.add(q);
-	}
+    public final void removeConstraint(BinaryConstraint c) {
+        this.itsWeight -= c.getWeight();
+        this.itsConstraints.remove(c);
+    }
 
-	public Query_Type getTypeQuery() {
-		return this.itsTypeQuery;
-	}
+    /**
+     * Let me know of a query for which I am a source variable.
+     */
+    protected final void addOutgoingQuery(Query q) {
+        this.itsOutgoingQueries.add(q);
+        this.itsWeight += q.getWeight();
+    }
 
-	/**
-	 * Set the object for which this variable is defined.
-	 */
-	public void setGraphObject(final Object go) {
-		this.LHSgo = go;
-		if (this.LHSgo != null) { 
-			if (((GraphObject)this.LHSgo).isArc()) { 		
+    /**
+     * Let me know of a query for which I am the target variable.
+     */
+    protected final void addIncomingQuery(Query q) {
+        if (q instanceof Query_Type) {
+            this.itsTypeQuery = (Query_Type) q;
+        }
+        this.itsIncomingQueries.add(q);
+    }
+
+    public Query_Type getTypeQuery() {
+        return this.itsTypeQuery;
+    }
+
+    /**
+     * Set the object for which this variable is defined.
+     */
+    public void setGraphObject(final Object go) {
+        this.LHSgo = go;
+        if (this.LHSgo != null) {
+            if (((GraphObject) this.LHSgo).isArc()) {
 //				isEdge = true;
-				this.convertedTypeString = ((Arc) this.LHSgo).convertToKey();
-			} else {
-				this.convertedTypeString = ((Node) this.LHSgo).convertToKey();
-			}		
-		}
-	}
+                this.convertedTypeString = ((Arc) this.LHSgo).convertToKey();
+            } else {
+                this.convertedTypeString = ((Node) this.LHSgo).convertToKey();
+            }
+        }
+    }
 
-	public String getConvertedTypeString() {
-		return this.convertedTypeString;
-	}
-	
-	/**
-	 * Get the object for which this variable defined.
-	 */
-	public Object getGraphObject() {
-		return this.LHSgo;
-	}
+    public String getConvertedTypeString() {
+        return this.convertedTypeString;
+    }
 
-	/**
-	 * Set 0, if an object behind this variable is of type Node, set 1, if an
-	 * object behind this variable is of type Arc, otherwise -1. Default is -1.
-	 */
-	public void setKind(int kind) {
-		this.kind = kind;
-	}
+    /**
+     * Get the object for which this variable defined.
+     */
+    public Object getGraphObject() {
+        return this.LHSgo;
+    }
 
-	/**
-	 * Returns 0, if the object behind this variable is a Node, <br>
-	 * returns 1, if the object behind this variable is an Arc, <br>
-	 * otherwise -1.
-	 */
-	public int getKind() {
-		if (this.kind == 0 || this.kind == 1)
-			return this.kind;
-		
-		return -1;
-	}
+    /**
+     * Set 0, if an object behind this variable is of type Node, set 1, if an object behind this variable is of type
+     * Arc, otherwise -1. Default is -1.
+     */
+    public void setKind(int kind) {
+        this.kind = kind;
+    }
 
-	public void setEnabled(boolean e) {
-		this.enabled = e;
-	}
+    /**
+     * Returns 0, if the object behind this variable is a Node, <br>
+     * returns 1, if the object behind this variable is an Arc, <br>
+     * otherwise -1.
+     */
+    public int getKind() {
+        if (this.kind == 0 || this.kind == 1) {
+            return this.kind;
+        }
 
-	public boolean isEnabled() {
-		return this.enabled;
-	}
+        return -1;
+    }
+
+    public void setEnabled(boolean e) {
+        this.enabled = e;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
 }

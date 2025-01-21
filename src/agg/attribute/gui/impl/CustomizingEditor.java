@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -22,60 +23,59 @@ import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.gui.HandlerCustomizingEditor;
 
 /**
- * Customizing of an attribute manager as well as his handlers. The
- * implementation uses a tabbed view.
- * 
+ * Customizing of an attribute manager as well as his handlers. The implementation uses a tabbed view.
+ *
  * @author $Author: olga $
  * @version $Id: CustomizingEditor.java,v 1.4 2010/08/18 09:24:53 olga Exp $
  */
 public class CustomizingEditor extends AbstractEditor implements
-		AttrCustomizingEditor {
+        AttrCustomizingEditor {
 
-	protected ManagerCustomizingEditor managerCustomizingEditor = null;
+    protected ManagerCustomizingEditor managerCustomizingEditor = null;
 
-	protected JTabbedPane mainTab, handlerTab;
+    protected JTabbedPane mainTab, handlerTab;
 
-	protected JPanel handlerPanel;
+    protected JPanel handlerPanel;
 
-	public CustomizingEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-	}
+    public CustomizingEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+    }
 
-	protected void arrangeMainPanel() {
-	}
+    protected void arrangeMainPanel() {
+    }
 
-	protected void genericCreateAllViews() {
-		this.managerCustomizingEditor = new ManagerCustomizingEditor(
-				getAttrManager(), getEditorManager());
-		this.handlerTab = new JTabbedPane(SwingConstants.LEFT);
+    protected void genericCreateAllViews() {
+        this.managerCustomizingEditor = new ManagerCustomizingEditor(
+                getAttrManager(), getEditorManager());
+        this.handlerTab = new JTabbedPane(SwingConstants.LEFT);
 
-		AttrHandler handlers[] = getAttrManager().getHandlers();
-		AttrHandler tmpHandler;
-		HandlerCustomizingEditor hce;
+        AttrHandler handlers[] = getAttrManager().getHandlers();
+        AttrHandler tmpHandler;
+        HandlerCustomizingEditor hce;
 
-		for (int i = 0; i < handlers.length; i++) {
-			tmpHandler = handlers[i];
-			hce = getHandlerEditorManager().getCustomizingEditor(tmpHandler);
-			if (hce != null) {
-				this.handlerTab.addTab(tmpHandler.getName(), hce.getComponent());
-			}
-		}
+        for (int i = 0; i < handlers.length; i++) {
+            tmpHandler = handlers[i];
+            hce = getHandlerEditorManager().getCustomizingEditor(tmpHandler);
+            if (hce != null) {
+                this.handlerTab.addTab(tmpHandler.getName(), hce.getComponent());
+            }
+        }
 
-		this.handlerPanel = new JPanel(new BorderLayout());
-		this.handlerPanel.add(this.handlerTab, BorderLayout.CENTER);
-	}
+        this.handlerPanel = new JPanel(new BorderLayout());
+        this.handlerPanel.add(this.handlerTab, BorderLayout.CENTER);
+    }
 
-	protected void genericCustomizeMainLayout() {
-		this.mainTab = new JTabbedPane(SwingConstants.TOP);
-		this.mainTab.addTab("Manager", this.managerCustomizingEditor.getComponent());
-		this.mainTab.addTab("Handler", this.handlerPanel);
-		this.handlerTab.setPreferredSize(new Dimension(200, 100));
-		this.handlerPanel.setPreferredSize(new Dimension(200, 100));
-		// mainTab.setPreferredSize( new Dimension( 320, 220 ));
+    protected void genericCustomizeMainLayout() {
+        this.mainTab = new JTabbedPane(SwingConstants.TOP);
+        this.mainTab.addTab("Manager", this.managerCustomizingEditor.getComponent());
+        this.mainTab.addTab("Handler", this.handlerPanel);
+        this.handlerTab.setPreferredSize(new Dimension(200, 100));
+        this.handlerPanel.setPreferredSize(new Dimension(200, 100));
+        // mainTab.setPreferredSize( new Dimension( 320, 220 ));
 
-		this.mainPanel = new JPanel(new BorderLayout());
-		this.mainPanel.add(this.mainTab, BorderLayout.CENTER);
-	}
+        this.mainPanel = new JPanel(new BorderLayout());
+        this.mainPanel.add(this.mainTab, BorderLayout.CENTER);
+    }
 }
 
 /*

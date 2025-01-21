@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.io.ByteArrayInputStream;
@@ -31,554 +32,576 @@ import agg.attribute.parser.javaExpr.SimpleNode;
 import agg.util.XMLHelper;
 
 /**
- * Holds an attribute handler expression, its type and the functionality for
- * matching and transforming thereof.
- * 
+ * Holds an attribute handler expression, its type and the functionality for matching and transforming thereof.
+ *
  * @author $Author: olga $
  * @version $Id: ValueMember.java,v 1.45 2010/11/29 08:42:25 olga Exp $
  */
 @SuppressWarnings("serial")
 public class ValueMember extends Member implements AttrInstanceMember,
-		AttrMsgCode {
+        AttrMsgCode {
 
-	/** This string is shown for an empty value. */
-	static public final String EMPTY_VALUE_SYMBOL = "";
+    /**
+     * This string is shown for an empty value.
+     */
+    static public final String EMPTY_VALUE_SYMBOL = "";
 
-	// Protected instance variables.
+    // Protected instance variables.
+    /**
+     * Declaration
+     */
+    protected DeclMember decl;
 
-	/** Declaration */
-	protected DeclMember decl;
+    /**
+     * Instance tuple that this value is a member of.
+     */
+    protected ValueTuple tuple;
 
-	/** Instance tuple that this value is a member of. */
-	protected ValueTuple tuple;
+    /**
+     * Attribute handler expression.
+     */
+    protected HandlerExpr expression;
 
-	/** Attribute handler expression. */
-	protected HandlerExpr expression;
+    protected String expressionText;
 
-	protected String expressionText;
+    protected Object expressionObject;
 
-	protected Object expressionObject;
+    transient protected Exception currentException;
 
-	transient protected Exception currentException;
+    transient protected String errorMsg;
 
-	transient protected String errorMsg;
+    protected boolean isTransient;
 
-	protected boolean isTransient;
+    // Public constructors.
+    /**
+     * Creating a new instance with the specified type.
+     *
+     * @param tuple Instance tuple that this value is a member of.
+     * @param decl Declaration for this member.
+     */
+    public ValueMember(ValueTuple tuple, DeclMember decl) {
+        this.tuple = tuple;
+        this.decl = decl;
+        rawSetExpr(null);
+        checkValidity();
+        this.errorMsg = "";
+        this.isTransient = false;
 
-	// Public constructors.
-
-	/**
-	 * Creating a new instance with the specified type.
-	 * 
-	 * @param tuple
-	 *            Instance tuple that this value is a member of.
-	 * @param decl
-	 *            Declaration for this member.
-	 */
-	public ValueMember(ValueTuple tuple, DeclMember decl) {
-		this.tuple = tuple;
-		this.decl = decl;
-		rawSetExpr(null);
-		checkValidity();
-		this.errorMsg = "";
-		this.isTransient = false;
-		
 //		logPrintln(VerboseControl.logContextOfInstances,
 //				"Member created for Tuple:" + tuple);
-	}
+    }
 
-	public String getErrorMsg() {
-		return this.errorMsg;
-	}
+    public String getErrorMsg() {
+        return this.errorMsg;
+    }
 
-	public boolean isValid() {
-		return this.currentException == null;
-	}
+    public boolean isValid() {
+        return this.currentException == null;
+    }
 
-	public String getValidityReport() {
-		if (isValid() && getDeclaration().isValid())
-			return null;
-		String report = getDeclaration().getValidityReport();
-		if (isValid())
-			return report;
-		if (report == null)
-			report = "";
-		// report += "-------- VALUE : --------\n";
-		if (this.currentException != null)
-			report += this.currentException.getMessage();
-		return report;
-	}
+    public String getValidityReport() {
+        if (isValid() && getDeclaration().isValid()) {
+            return null;
+        }
+        String report = getDeclaration().getValidityReport();
+        if (isValid()) {
+            return report;
+        }
+        if (report == null) {
+            report = "";
+        }
+        // report += "-------- VALUE : --------\n";
+        if (this.currentException != null) {
+            report += this.currentException.getMessage();
+        }
+        return report;
+    }
 
-	public AttrTypeMember getDeclaration() {
-		return getDecl();
-	}
+    public AttrTypeMember getDeclaration() {
+        return getDecl();
+    }
 
-	public Object getExprAsObject() {
-		if (getExpr() != null)
-			return getExpr().getValue();
-	
-		return null;
-	}
+    public Object getExprAsObject() {
+        if (getExpr() != null) {
+            return getExpr().getValue();
+        }
 
-	public HandlerExpr getExpr() {
-		return rawGetExpr();
-	}
+        return null;
+    }
 
-	public String getExprAsText() {
-		if (getExpr() == null)
-			return this.expressionText;
-		
-		return getExpr().toString();
-	}
+    public HandlerExpr getExpr() {
+        return rawGetExpr();
+    }
 
-	/** Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>. */
-	public void setExpr(HandlerExpr expr) {
-		if (expr == null) {
-			this.expressionText = null;
-			this.expressionObject = null;
-			this.expression = null;
-			this.errorMsg = "";
-			this.currentException = null;
-		}
-		else
-			setCheckedExpr(expr);
-		fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
-	}
+    public String getExprAsText() {
+        if (getExpr() == null) {
+            return this.expressionText;
+        }
 
-	/** Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>. */
-	public void setExprAsObject(Object obj) {
-		rawSetExprAsObject(obj);
-		fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
-	}
+        return getExpr().toString();
+    }
 
-	protected void rawSetExprAsObject(Object obj) {
-		// System.out.println("ValueMember.rawSetExprAsObject:: "+obj );
-		try {
-			this.expressionText = null;
-			this.expressionObject = obj;
-			if ((getType() != null) && (obj != null))
-				this.expression = getHandler().newHandlerValue(getType(), obj);
-			checkValidity();
-		} catch (AttrHandlerException ex) {
-			this.currentException = ex;
-		}
-	}
+    /**
+     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
+     */
+    public void setExpr(HandlerExpr expr) {
+        if (expr == null) {
+            this.expressionText = null;
+            this.expressionObject = null;
+            this.expression = null;
+            this.errorMsg = "";
+            this.currentException = null;
+        } else {
+            setCheckedExpr(expr);
+        }
+        fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
+    }
 
-	/**
-	 * Set expression and try to initialize it if it should be a new instance of a Class.
-	 * Exmpl: "new Integer(x)"
-	 */
-	public void setExprAsText(String exprText, boolean initialize) throws AttrImplException {
-		setExprAsText(exprText);
-		// try initialize variable of attr. context
-		if (initialize
-				&& getExpr() != null 
-				&& getExpr().isComplex()
-				&& (exprText.indexOf("new ") == 0)) {
-			apply(getExpr());
-		}
-	}
-	
-	/** Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>. */
-	public void setExprAsText(String exprText) {
-		String s = exprText;
-		if (exprText == null)
-			s = new String();
+    /**
+     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
+     */
+    public void setExprAsObject(Object obj) {
+        rawSetExprAsObject(obj);
+        fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
+    }
 
-		if (s.length() == 0) {
-			ContextView context = getContext();
-			if (context == null || context.doesAllowEmptyValues()) {
-				setExpr(null);
-				return;
-			}
-		}
-		
-		if ((s.length() != 0) && (s.charAt(0) == '(')) {
+    protected void rawSetExprAsObject(Object obj) {
+        // System.out.println("ValueMember.rawSetExprAsObject:: "+obj );
+        try {
+            this.expressionText = null;
+            this.expressionObject = obj;
+            if ((getType() != null) && (obj != null)) {
+                this.expression = getHandler().newHandlerValue(getType(), obj);
+            }
+            checkValidity();
+        } catch (AttrHandlerException ex) {
+            this.currentException = ex;
+        }
+    }
+
+    /**
+     * Set expression and try to initialize it if it should be a new instance of a Class. Exmpl: "new Integer(x)"
+     */
+    public void setExprAsText(String exprText, boolean initialize) throws AttrImplException {
+        setExprAsText(exprText);
+        // try initialize variable of attr. context
+        if (initialize
+                && getExpr() != null
+                && getExpr().isComplex()
+                && (exprText.indexOf("new ") == 0)) {
+            apply(getExpr());
+        }
+    }
+
+    /**
+     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
+     */
+    public void setExprAsText(String exprText) {
+        String s = exprText;
+        if (exprText == null) {
+            s = new String();
+        }
+
+        if (s.length() == 0) {
+            ContextView context = getContext();
+            if (context == null || context.doesAllowEmptyValues()) {
+                setExpr(null);
+                return;
+            }
+        }
+
+        if ((s.length() != 0) && (s.charAt(0) == '(')) {
 //			char ch = 
-			s.charAt(0);
-			for (int i = 1; i < s.length(); i++) {
-				if (s.charAt(i) == ')') {
-					if (i == (s.length() - 1)) {
-						String ss = s.substring(1, s.length() - 1);
-						s = ss;
-						i = s.length() + 1;
-					} else
-						i = s.length() + 1;
-				}
-			}
-		}
-		if (!s.equals(exprText))
-			rawSetExprAsText(s);
-		else
-			rawSetExprAsText(exprText);
+            s.charAt(0);
+            for (int i = 1; i < s.length(); i++) {
+                if (s.charAt(i) == ')') {
+                    if (i == (s.length() - 1)) {
+                        String ss = s.substring(1, s.length() - 1);
+                        s = ss;
+                        i = s.length() + 1;
+                    } else {
+                        i = s.length() + 1;
+                    }
+                }
+            }
+        }
+        if (!s.equals(exprText)) {
+            rawSetExprAsText(s);
+        } else {
+            rawSetExprAsText(exprText);
+        }
 
-		if (this.currentException == null)
-			fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
-	}
+        if (this.currentException == null) {
+            fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
+        }
+    }
 
-	/** Setting the value. */
-	protected void rawSetExprAsText(String exprText) {
-		String lastExpressionText = this.expressionText;
-		HandlerExpr lastExpression = this.expression;
-		Object lastExpressionObject = this.expressionObject;
-		this.currentException = null;
-		try {
-			this.expressionText = exprText;
-			this.expressionObject = null;
-			HandlerExpr test = null;
-			
-			if (exprText != null) {
-				if (exprText.length() != 0) {
-					test = getHandler().newHandlerExpr(getType(), exprText);
-					checkValidity(test);
+    /**
+     * Setting the value.
+     */
+    protected void rawSetExprAsText(String exprText) {
+        String lastExpressionText = this.expressionText;
+        HandlerExpr lastExpression = this.expression;
+        Object lastExpressionObject = this.expressionObject;
+        this.currentException = null;
+        try {
+            this.expressionText = exprText;
+            this.expressionObject = null;
+            HandlerExpr test = null;
 
-					if (this.currentException == null) {
-						this.expression = test;
-						this.expressionText = exprText;
-					} else {
-						fireChanged(AttrEvent.MEMBER_VALUE_CORRECTNESS);
-						this.expression = test;
-						return;
-					}
-				}
-			}
-			
-			checkValidity();
-			// try to initialize attr. member in a graph (host graph)
-			if (this.currentException == null
-					&& getContext().getAllowedMapping() == AttrMapping.GRAPH_MAP) {
-				if (test != null) {
-					apply(test);															
-					if (this.currentException != null) {
-						this.expression = null;
-						this.expressionText = "";
-						this.expressionObject = null;
-						fireChanged(AttrEvent.MEMBER_VALUE_CORRECTNESS);
-					}
-				}
-			}
-			
-		} catch (AttrImplException aiex) {
-			this.currentException = aiex;
-			this.errorMsg = aiex.getMessage();
-			this.expressionText = lastExpressionText;
-			this.expressionObject = lastExpressionObject;
-			this.expression = lastExpression;
-		} catch (AttrHandlerException ex) {
-			this.currentException = ex;
-			this.errorMsg = ex.getMessage();
-			this.expressionText = lastExpressionText;
-			this.expressionObject = lastExpressionObject;
-			this.expression = lastExpression;
-		}
-	}
+            if (exprText != null) {
+                if (exprText.length() != 0) {
+                    test = getHandler().newHandlerExpr(getType(), exprText);
+                    checkValidity(test);
 
-	/** Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>. */
-	public void setExprAsEvaluatedText(String exprText) {
-		try {
-			this.expressionText = exprText;
-			this.expressionObject = null;
-			this.expression = getHandler().newHandlerExpr(getType(), exprText);
-			this.expression.evaluate(getContext());
-			// After evaluation the string representation is not reliable
-			// anymore. Switching to object storing.
-			this.expressionText = null;
-			this.expressionObject = this.expression.getValue();
-			checkValidity();
-			fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
-		} catch (AttrHandlerException ex) {
-			this.currentException = ex;
-			this.expression = null;
-		}
-	}
+                    if (this.currentException == null) {
+                        this.expression = test;
+                        this.expressionText = exprText;
+                    } else {
+                        fireChanged(AttrEvent.MEMBER_VALUE_CORRECTNESS);
+                        this.expression = test;
+                        return;
+                    }
+                }
+            }
 
-	/** 
-	 * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>. 
-	 * This method is recommended when using AGG engine  
-	 * and the attribute value of an object of RHS of a rule is a complex expression
-	 * containing calls of class methods. 
-	 */
-	public void trySetExprAsText(String exprText) throws AttrHandlerException {
-		try {
-			String newText = AttrTupleManager.getDefaultManager()
-										.getStaticMethodCall(exprText);	
-			HandlerExpr exprssn = this.getHandler().newHandlerExpr(
-								this.getDeclaration().getType(), newText);
-			this.checkValidity(exprssn);			
-			if (this.isValid()) {
-				this.setExprAsText(newText);
-			} else if (this.currentException != null) {
-				throw new AttrHandlerException(this.currentException.getLocalizedMessage());
-			}
-			else {
-				throw new AttrHandlerException("Not valid expression: "+exprText);
-			}
-		} catch (AttrHandlerException ex) {
-			throw ex;
-		}
-	}
-	
-	public void typeChanged() {
-		boolean prevValidity = isValid();
+            checkValidity();
+            // try to initialize attr. member in a graph (host graph)
+            if (this.currentException == null
+                    && getContext().getAllowedMapping() == AttrMapping.GRAPH_MAP) {
+                if (test != null) {
+                    apply(test);
+                    if (this.currentException != null) {
+                        this.expression = null;
+                        this.expressionText = "";
+                        this.expressionObject = null;
+                        fireChanged(AttrEvent.MEMBER_VALUE_CORRECTNESS);
+                    }
+                }
+            }
 
-		this.expression = null;
-		try {
-			if (this.expressionText != null) {
-				this.expression = getHandler().newHandlerExpr(getType(),
-						this.expressionText);
-			} else if (this.expressionObject != null) {
-				this.expression = getHandler().newHandlerValue(getType(),
-						this.expressionObject);
-			}
-		} catch (Exception ex) {
-			this.currentException = ex;
-			this.expressionText = null;
-			this.expressionObject = null;
-		}
+        } catch (AttrImplException aiex) {
+            this.currentException = aiex;
+            this.errorMsg = aiex.getMessage();
+            this.expressionText = lastExpressionText;
+            this.expressionObject = lastExpressionObject;
+            this.expression = lastExpression;
+        } catch (AttrHandlerException ex) {
+            this.currentException = ex;
+            this.errorMsg = ex.getMessage();
+            this.expressionText = lastExpressionText;
+            this.expressionObject = lastExpressionObject;
+            this.expression = lastExpression;
+        }
+    }
 
-		checkValidity();
-		if (prevValidity != isValid())
-			fireChanged(AttrEvent.MEMBER_VALUE_CORRECTNESS);
-	}
+    /**
+     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
+     */
+    public void setExprAsEvaluatedText(String exprText) {
+        try {
+            this.expressionText = exprText;
+            this.expressionObject = null;
+            this.expression = getHandler().newHandlerExpr(getType(), exprText);
+            this.expression.evaluate(getContext());
+            // After evaluation the string representation is not reliable
+            // anymore. Switching to object storing.
+            this.expressionText = null;
+            this.expressionObject = this.expression.getValue();
+            checkValidity();
+            fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
+        } catch (AttrHandlerException ex) {
+            this.currentException = ex;
+            this.expression = null;
+        }
+    }
 
-	/** Check if no expression yet. */
-	public boolean isEmpty() {
-		return this.getExpr() == null;
-	}
+    /**
+     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>. This method is recommended when
+     * using AGG engine and the attribute value of an object of RHS of a rule is a complex expression containing calls
+     * of class methods.
+     */
+    public void trySetExprAsText(String exprText) throws AttrHandlerException {
+        try {
+            String newText = AttrTupleManager.getDefaultManager()
+                    .getStaticMethodCall(exprText);
+            HandlerExpr exprssn = this.getHandler().newHandlerExpr(
+                    this.getDeclaration().getType(), newText);
+            this.checkValidity(exprssn);
+            if (this.isValid()) {
+                this.setExprAsText(newText);
+            } else if (this.currentException != null) {
+                throw new AttrHandlerException(this.currentException.getLocalizedMessage());
+            } else {
+                throw new AttrHandlerException("Not valid expression: " + exprText);
+            }
+        } catch (AttrHandlerException ex) {
+            throw ex;
+        }
+    }
 
-	/** Check if set. */
-	public boolean isSet() {
-		return !(this.getExpr() == null);
-	}
+    public void typeChanged() {
+        boolean prevValidity = isValid();
 
-	/**
-	 * This method is used inside of the method rawSetExprAsText(String text) to
-	 * initialize the attribute members with type of Java class. For example,
-	 * an expression like  "new Integer(7)"  will be  initialized to 7.
-	 * 
-	 * @param expr
-	 */
-	protected void apply(HandlerExpr expr) {
-		if (expr != null && !expr.toString().equals("null")) {
-			HandlerExpr oldExpr = getExpr();
-			this.expression = expr.getCopy();
-			HandlerExpr exp = null;
-			try {
-				exp = this.getExpr();
-				if (exp != null) {	
-					exp.evaluate(getContext());
-					if (exp.getValue() == null) {
-						this.expressionText = "";
-						this.expression = null;
-						this.expressionObject = null;
-					} else {
-						fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
-					}
-				}
-			} catch (AttrHandlerException ex1) {
-				this.currentException = ex1;
-				this.expression = oldExpr;
-				
-				throw new AttrImplException(EXPR_EVAL_ERR, ex1.getMessage()
-						+ "\n" + expr + "  don't match to  " + this.expression);
-			} catch (Exception ex) {
-				this.currentException = ex;
-				this.expression = oldExpr;
-				throw new AttrImplException(EXPR_EVAL_ERR, ex.getMessage()
-						+ "\n" + expr + "  don't match to  " + this.expression);
-			}
-		}
-	}
+        this.expression = null;
+        try {
+            if (this.expressionText != null) {
+                this.expression = getHandler().newHandlerExpr(getType(),
+                        this.expressionText);
+            } else if (this.expressionObject != null) {
+                this.expression = getHandler().newHandlerValue(getType(),
+                        this.expressionObject);
+            }
+        } catch (Exception ex) {
+            this.currentException = ex;
+            this.expressionText = null;
+            this.expressionObject = null;
+        }
 
-	/**
-	 * Transformation application
-	 * 
-	 * @param rightSide
-	 *            The expression from the right rule side
-	 * @param context
-	 *            The match context.
-	 */
-	public void apply(ValueMember rightSide, AttrContext context) {
+        checkValidity();
+        if (prevValidity != isValid()) {
+            fireChanged(AttrEvent.MEMBER_VALUE_CORRECTNESS);
+        }
+    }
+
+    /**
+     * Check if no expression yet.
+     */
+    public boolean isEmpty() {
+        return this.getExpr() == null;
+    }
+
+    /**
+     * Check if set.
+     */
+    public boolean isSet() {
+        return !(this.getExpr() == null);
+    }
+
+    /**
+     * This method is used inside of the method rawSetExprAsText(String text) to initialize the attribute members with
+     * type of Java class. For example, an expression like "new Integer(7)" will be initialized to 7.
+     *
+     * @param expr
+     */
+    protected void apply(HandlerExpr expr) {
+        if (expr != null && !expr.toString().equals("null")) {
+            HandlerExpr oldExpr = getExpr();
+            this.expression = expr.getCopy();
+            HandlerExpr exp = null;
+            try {
+                exp = this.getExpr();
+                if (exp != null) {
+                    exp.evaluate(getContext());
+                    if (exp.getValue() == null) {
+                        this.expressionText = "";
+                        this.expression = null;
+                        this.expressionObject = null;
+                    } else {
+                        fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
+                    }
+                }
+            } catch (AttrHandlerException ex1) {
+                this.currentException = ex1;
+                this.expression = oldExpr;
+
+                throw new AttrImplException(EXPR_EVAL_ERR, ex1.getMessage()
+                        + "\n" + expr + "  don't match to  " + this.expression);
+            } catch (Exception ex) {
+                this.currentException = ex;
+                this.expression = oldExpr;
+                throw new AttrImplException(EXPR_EVAL_ERR, ex.getMessage()
+                        + "\n" + expr + "  don't match to  " + this.expression);
+            }
+        }
+    }
+
+    /**
+     * Transformation application
+     *
+     * @param rightSide The expression from the right rule side
+     * @param context The match context.
+     */
+    public void apply(ValueMember rightSide, AttrContext context) {
 //		if (this.getName().equals("HASHCODE")) return;
 
-		if ((rightSide != null) && (rightSide.getExpr() != null)) {
-			HandlerExpr oldExpr = getExpr();
-			this.expression = rightSide.getExpr().getCopy();
-			HandlerExpr exp = null;
-			try {				
-				exp = this.getExpr();
-				if (exp != null) {		
-					exp.evaluate(context);	
-					if (exp.getValue() == null) {
-						setExprAsText(exp.getString());
-					} else {
-						fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
-					}
-				}
-			} catch (AttrHandlerException ex1) {
-				this.expression = oldExpr;
-				throw new AttrImplException(EXPR_EVAL_ERR, ex1.getMessage()
-						+ "\n" + rightSide.getExpr() + "  don't match to  "
-						+ this.expression);
-			} catch (Exception ex) {
-				this.expression = oldExpr;				
-				throw new AttrImplException(EXPR_EVAL_ERR, ex.getMessage()
-						+ "\n" + rightSide.getExpr() + "  don't match to  "
-						+ this.expression);
-			}
-		}
-	}
+        if ((rightSide != null) && (rightSide.getExpr() != null)) {
+            HandlerExpr oldExpr = getExpr();
+            this.expression = rightSide.getExpr().getCopy();
+            HandlerExpr exp = null;
+            try {
+                exp = this.getExpr();
+                if (exp != null) {
+                    exp.evaluate(context);
+                    if (exp.getValue() == null) {
+                        setExprAsText(exp.getString());
+                    } else {
+                        fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
+                    }
+                }
+            } catch (AttrHandlerException ex1) {
+                this.expression = oldExpr;
+                throw new AttrImplException(EXPR_EVAL_ERR, ex1.getMessage()
+                        + "\n" + rightSide.getExpr() + "  don't match to  "
+                        + this.expression);
+            } catch (Exception ex) {
+                this.expression = oldExpr;
+                throw new AttrImplException(EXPR_EVAL_ERR, ex.getMessage()
+                        + "\n" + rightSide.getExpr() + "  don't match to  "
+                        + this.expression);
+            }
+        }
+    }
 
-	/**
-	 * Transform application like apply( ValueMember, AttrContext), 
-	 * additionally do allow using variables without value as
-	 * value of attribute member.
-	 */
-	public void apply(final ValueMember rightSide, 
-			final AttrContext context,
-			boolean allowVariableWithoutValue) {
-		apply(rightSide, context, allowVariableWithoutValue , false);
-	}
-	
-	/**
-	 * Transform application like apply( ValueMember, AttrContext), 
-	 * additionally do allow using variables without value as
-	 * value of attribute member. 
-	 * If equalVariableName is TRUE, then the name of the variable from rightSide
-	 * must be equal to the name of the current variable.
-	 * The equalVariableName option is only used when allowVariableWithoutValue is TRUE.
-	 */
-	public void apply(final ValueMember rightSide, 
-			final AttrContext context,
-			boolean allowVarWithoutValue, 
-			boolean equalVarName) {
+    /**
+     * Transform application like apply( ValueMember, AttrContext), additionally do allow using variables without value
+     * as value of attribute member.
+     */
+    public void apply(final ValueMember rightSide,
+            final AttrContext context,
+            boolean allowVariableWithoutValue) {
+        apply(rightSide, context, allowVariableWithoutValue, false);
+    }
+
+    /**
+     * Transform application like apply( ValueMember, AttrContext), additionally do allow using variables without value
+     * as value of attribute member. If equalVariableName is TRUE, then the name of the variable from rightSide must be
+     * equal to the name of the current variable. The equalVariableName option is only used when
+     * allowVariableWithoutValue is TRUE.
+     */
+    public void apply(final ValueMember rightSide,
+            final AttrContext context,
+            boolean allowVarWithoutValue,
+            boolean equalVarName) {
 //		if (this.getName().equals("HASHCODE"))	return;
 
-		if (!allowVarWithoutValue) {
-			apply(rightSide, context);
-			return;
-		} 
-		
-		if ((rightSide != null) && (rightSide.getExpr() != null)) {
-		
-			if (equalVarName
-					&& this.getExpr() != null
-					&& this.getExpr().isVariable() 
-					&& rightSide.getExpr().isVariable()) {
-				
-				if (this.getExprAsText().equals(rightSide.getExprAsText())) {
-					return;
-				}
-				
-				if (!this.isTransient && !rightSide.isTransient()) {										
-					throw new AttrImplException(EXPR_EVAL_ERR, 
-							rightSide.getExpr() + "  don't match to  "
-							+ this.expression);
-				}			
-			}
-			
+        if (!allowVarWithoutValue) {
+            apply(rightSide, context);
+            return;
+        }
+
+        if ((rightSide != null) && (rightSide.getExpr() != null)) {
+
+            if (equalVarName
+                    && this.getExpr() != null
+                    && this.getExpr().isVariable()
+                    && rightSide.getExpr().isVariable()) {
+
+                if (this.getExprAsText().equals(rightSide.getExprAsText())) {
+                    return;
+                }
+
+                if (!this.isTransient && !rightSide.isTransient()) {
+                    throw new AttrImplException(EXPR_EVAL_ERR,
+                            rightSide.getExpr() + "  don't match to  "
+                            + this.expression);
+                }
+            }
+
 //			System.out.println(this.isTransient+"   "+this.getExpr()+"    "+rightSide.getExprAsText()
 //					+"   "+rightSide.getExpr().isVariable()+"   "+rightSide.isTransient()
 //					+"   "+context.getExpr(rightSide.getExprAsText()));
-			
-			if (rightSide.getExpr().isVariable() 
-					&& (rightSide.isTransient() 
-							|| context.getExpr(rightSide.getExprAsText()) != null)) {
-				if (getExpr() == null) {
-					this.expression = rightSide.getExpr().getCopy();
-					this.isTransient = rightSide.isTransient();  //TODO  test!!!
-				}
-				return;
-			}
-			
-			if (getExpr() == null 
-					|| (this.getExpr().isConstant() && rightSide.getExpr().isConstant())
-					|| this.isTransient ) {
-								
-				HandlerExpr oldExpr = getExpr();
-				HandlerExpr exp = null;
-				this.expression = rightSide.getExpr().getCopy();				
-				try {				
-					exp = this.getExpr();
-					if (exp != null) {
-						exp.evaluate(context);												
-						if (exp.getValue() == null) {							
-							setExprAsText(exp.getString());
-							if (!this.isTransient) {
-								setTransient(rightSide.isTransient());
-							}
-						} else if (exp.getValue() != null) {
-							fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
-						}
-					}
-				} catch (AttrHandlerException ex1) {
-					if (exp != null && exp.getValue() == null) {
-						setExprAsText(exp.getString());
-						if (!this.isTransient)
-							setTransient(rightSide.isTransient());
-					}
-				} catch (Exception ex) {
-					if (exp != null && exp.getValue() == null) {
-						setExprAsText(exp.getString());
-						if (!this.isTransient)
-							setTransient(rightSide.isTransient());
-					} else {
-						this.expression = oldExpr;
-					}
-				}
-			}
-		}
-	}
+            if (rightSide.getExpr().isVariable()
+                    && (rightSide.isTransient()
+                    || context.getExpr(rightSide.getExprAsText()) != null)) {
+                if (getExpr() == null) {
+                    this.expression = rightSide.getExpr().getCopy();
+                    this.isTransient = rightSide.isTransient();  //TODO  test!!!
+                }
+                return;
+            }
 
-	/**
-	 * Check if matching is possible into 'target' within the match context
-	 * 'context'.
-	 * 
-	 * @return 'true' if possible, 'false' otherwise.
-	 */
-	public boolean canMatchTo(ValueMember target, ContextView context) {
-		this.errorMsg = "";
-		HandlerExpr tar = null;
-		if (target != null) 
-			tar = target.getExpr();
-		if (tar != null) {
-			HandlerExpr src = this.getExpr();
-			if (src == null)
-				return true;
-				
-			boolean result = false;
-			result = result || tar.isVariable(); // auf Variable matchen
-			result = result || tar.isComplex();
-			if (!result) {								
-				boolean r2, r3, r4=true;
-				r3 = !src.isVariable();
-				r3 = r3 || context.canSetValue(src.toString(), target);				
-				if (r3) {
-					r4 = src.isUnifiableWith(tar, context);						
-					if (!r4) {
-						if (src.getString().equals(tar.getString())
-								&& context.isVariableContext()) {
-							r4 = true;
-						}
-						else if (src.isConstant() && tar.isConstant()
-								&& context.isIgnoreConstContext()) {
-							r4 = true;
-						}
+            if (getExpr() == null
+                    || (this.getExpr().isConstant() && rightSide.getExpr().isConstant())
+                    || this.isTransient) {
+
+                HandlerExpr oldExpr = getExpr();
+                HandlerExpr exp = null;
+                this.expression = rightSide.getExpr().getCopy();
+                try {
+                    exp = this.getExpr();
+                    if (exp != null) {
+                        exp.evaluate(context);
+                        if (exp.getValue() == null) {
+                            setExprAsText(exp.getString());
+                            if (!this.isTransient) {
+                                setTransient(rightSide.isTransient());
+                            }
+                        } else if (exp.getValue() != null) {
+                            fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
+                        }
+                    }
+                } catch (AttrHandlerException ex1) {
+                    if (exp != null && exp.getValue() == null) {
+                        setExprAsText(exp.getString());
+                        if (!this.isTransient) {
+                            setTransient(rightSide.isTransient());
+                        }
+                    }
+                } catch (Exception ex) {
+                    if (exp != null && exp.getValue() == null) {
+                        setExprAsText(exp.getString());
+                        if (!this.isTransient) {
+                            setTransient(rightSide.isTransient());
+                        }
+                    } else {
+                        this.expression = oldExpr;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if matching is possible into 'target' within the match context 'context'.
+     *
+     * @return 'true' if possible, 'false' otherwise.
+     */
+    public boolean canMatchTo(ValueMember target, ContextView context) {
+        this.errorMsg = "";
+        HandlerExpr tar = null;
+        if (target != null) {
+            tar = target.getExpr();
+        }
+        if (tar != null) {
+            HandlerExpr src = this.getExpr();
+            if (src == null) {
+                return true;
+            }
+
+            boolean result = false;
+            result = result || tar.isVariable(); // auf Variable matchen
+            result = result || tar.isComplex();
+            if (!result) {
+                boolean r2, r3, r4 = true;
+                r3 = !src.isVariable();
+                r3 = r3 || context.canSetValue(src.toString(), target);
+                if (r3) {
+                    r4 = src.isUnifiableWith(tar, context);
+                    if (!r4) {
+                        if (src.getString().equals(tar.getString())
+                                && context.isVariableContext()) {
+                            r4 = true;
+                        } else if (src.isConstant() && tar.isConstant()
+                                && context.isIgnoreConstContext()) {
+                            r4 = true;
+                        }
 //						else if (((src.isVariable() && tar.isConstant())
 //								|| (tar.isVariable() && src.isConstant()))
 //								&& context.isVariableContext()) {
 //							r4 = true;
 //						}
-					}
-				}				
-				r2 = r3 && r4;	
-				result = result || r2;				
-			}			
-			if (result)
-				return true;
-			
-			this.errorMsg = this.errorMsg.concat(context.getErrorMsg());
-			/*
+                    }
+                }
+                r2 = r3 && r4;
+                result = result || r2;
+            }
+            if (result) {
+                return true;
+            }
+
+            this.errorMsg = this.errorMsg.concat(context.getErrorMsg());
+            /*
 				if (!src.isUnifiableWith(tar, context)) {
 					if (!errorMsg.equals(""))
 						errorMsg = errorMsg + "\nSource attribute "
@@ -606,547 +629,583 @@ public class ValueMember extends Member implements AttrInstanceMember,
 								+ target.getName();
 				} else 
 					errorMsg = this.getName() + " cannot match ";
-		 */
-			return false;				
-		} 
-		else if (context.getAllowedMapping() == AttrMapping.MATCH_MAP) {
-			this.errorMsg = "Source attribute: <" + this.getName()
-					+ "> cannot match to its target attribute because it is not set!";
-			return false;
-		} else {
+             */
+            return false;
+        } else if (context.getAllowedMapping() == AttrMapping.MATCH_MAP) {
+            this.errorMsg = "Source attribute: <" + this.getName()
+                    + "> cannot match to its target attribute because it is not set!";
+            return false;
+        } else {
 //			if (context.getAllowedMapping() == AttrMapping.PLAIN_MAP
 //				|| context.getAllowedMapping() == AttrMapping.OBJECT_FLOW_MAP) {
-			return true;
-		} 
-	}
+            return true;
+        }
+    }
 
-	/**
-	 * Performs matching with 'target' in the match context 'context'.
-	 * 
-	 * @return The name of the variable that this match has affected, i.e.
-	 *         assigned value to. If no variable is concerned, returns null.
-	 */
-	public String matchTo(ValueMember target, ContextView context) {
+    /**
+     * Performs matching with 'target' in the match context 'context'.
+     *
+     * @return The name of the variable that this match has affected, i.e. assigned value to. If no variable is
+     * concerned, returns null.
+     */
+    public String matchTo(ValueMember target, ContextView context) {
 //		if (this.getName().equals("HASHCODE")) return null;
-		
-		HandlerExpr srcExpr = this.getExpr();
-		String varName = null;
 
-		if (srcExpr != null && srcExpr.isVariable()) {
-			varName = srcExpr.toString();			
-			try {
-				context.setValue(varName, target);
-			} catch (NoSuchVariableException e) {
-			}
-		}
-		return varName;
-	}
+        HandlerExpr srcExpr = this.getExpr();
+        String varName = null;
 
-	/** Copies the contents of the specified entry instance into this instance. */
-	public void copy(ValueMember fromInstance) {
-		HandlerExpr srcExpr = fromInstance.getExpr();
-		HandlerExpr tarExpr = null;
-		if (srcExpr != null) {
-			tarExpr = srcExpr.getCopy();
-			if (tarExpr != null) {
-				this.expression = tarExpr;
-				if (fromInstance.expressionText != null)
-					this.expressionText = fromInstance.expressionText.toString();
-				else
-					this.expressionText = null;
-				this.expressionObject = this.expression.getValue();
-				checkValidity();
-				setTransient(fromInstance.isTransient());
-				fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
-			}
-		} else {
-			this.setExpr(null);
-		}
-	}
+        if (srcExpr != null && srcExpr.isVariable()) {
+            varName = srcExpr.toString();
+            try {
+                context.setValue(varName, target);
+            } catch (NoSuchVariableException e) {
+            }
+        }
+        return varName;
+    }
 
-	/** Tests if the handler expressions are equal. */
-	public boolean equals(ValueMember testObject) {
+    /**
+     * Copies the contents of the specified entry instance into this instance.
+     */
+    public void copy(ValueMember fromInstance) {
+        HandlerExpr srcExpr = fromInstance.getExpr();
+        HandlerExpr tarExpr = null;
+        if (srcExpr != null) {
+            tarExpr = srcExpr.getCopy();
+            if (tarExpr != null) {
+                this.expression = tarExpr;
+                if (fromInstance.expressionText != null) {
+                    this.expressionText = fromInstance.expressionText.toString();
+                } else {
+                    this.expressionText = null;
+                }
+                this.expressionObject = this.expression.getValue();
+                checkValidity();
+                setTransient(fromInstance.isTransient());
+                fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
+            }
+        } else {
+            this.setExpr(null);
+        }
+    }
 
-		if (this.getName().equals("HASHCODE"))
-			return true;
+    /**
+     * Tests if the handler expressions are equal.
+     */
+    public boolean equals(ValueMember testObject) {
 
-		if (testObject == null)
-			return false;
+        if (this.getName().equals("HASHCODE")) {
+            return true;
+        }
 
-		if (getExpr() != null)
-			return getExpr().equals(testObject.getExpr());
-		if (this.expressionText != null)
-			return this.expressionText.equals(testObject.expressionText);
-		if (this.expressionObject != null)
-			return this.expressionObject.equals(testObject.expressionObject);
-		return (testObject.expressionText == null
-				&& testObject.expressionObject == null && testObject.getExpr() == null);
-	}
+        if (testObject == null) {
+            return false;
+        }
 
-	public boolean compareTo(ValueMember member) {
-		if (this.getName().equals("HASHCODE"))
-			return true;
-		
-		if (member == null)
-			return false;
+        if (getExpr() != null) {
+            return getExpr().equals(testObject.getExpr());
+        }
+        if (this.expressionText != null) {
+            return this.expressionText.equals(testObject.expressionText);
+        }
+        if (this.expressionObject != null) {
+            return this.expressionObject.equals(testObject.expressionObject);
+        }
+        return (testObject.expressionText == null
+                && testObject.expressionObject == null && testObject.getExpr() == null);
+    }
 
-		if (getExpr() != null) {
-			if (member.getExpr() != null)
-				return getExpr().toString().equals(member.getExpr().toString());
-			
-			return false;
-		}
-		
-		if (this.expressionText != null)
-			return this.expressionText.equals(member.expressionText);
-		
-		return false;
-	}
+    public boolean compareTo(ValueMember member) {
+        if (this.getName().equals("HASHCODE")) {
+            return true;
+        }
 
-	/**
-	 * @return The textual representation of the expression or
-	 *         'EMPTY_VALUE_SYMBOL' if that is null.
-	 */
-	public String toString() {
-		if (this.getExpr() != null)
-			return this.getExpr().toString();
-		if (this.expressionText != null)
-			return this.expressionText;
-		if (this.expressionObject != null)
-			return this.expressionObject.toString();
-		return EMPTY_VALUE_SYMBOL;
-	}
+        if (member == null) {
+            return false;
+        }
 
-	/**
-	 * @return The instance tuple that contains this value as a member.
-	 */
-	public AttrTuple getHoldingTuple() {
-		return this.tuple;
-	}
+        if (getExpr() != null) {
+            if (member.getExpr() != null) {
+                return getExpr().toString().equals(member.getExpr().toString());
+            }
 
-	// Internal access.
-	//
+            return false;
+        }
 
-	/**
-	 * Getting the instance tuple that contains this value as a member.
-	 */
-	protected ValueTuple getTuple() {
-		return this.tuple;
-	}
+        if (this.expressionText != null) {
+            return this.expressionText.equals(member.expressionText);
+        }
 
-	/** Getting the context of this value. */
-	protected ContextView getContext() {
-		return (ContextView) getTuple().getContext();
-	}
+        return false;
+    }
 
-	/** Getting the declaration for this value */
-	protected DeclMember getDecl() {
-		return this.decl;
-	}
+    /**
+     * @return The textual representation of the expression or 'EMPTY_VALUE_SYMBOL' if that is null.
+     */
+    public String toString() {
+        if (this.getExpr() != null) {
+            return this.getExpr().toString();
+        }
+        if (this.expressionText != null) {
+            return this.expressionText;
+        }
+        if (this.expressionObject != null) {
+            return this.expressionObject.toString();
+        }
+        return EMPTY_VALUE_SYMBOL;
+    }
 
-	/** Getting the handler of this value. */
-	public AttrHandler getHandler() {
-		return getDecl().getHandler();
-	}
+    /**
+     * @return The instance tuple that contains this value as a member.
+     */
+    public AttrTuple getHoldingTuple() {
+        return this.tuple;
+    }
 
-	/** Getting the type of this value. */
-	protected HandlerType getType() {
-		return getDecl().getType();
-	}
+    // Internal access.
+    //
+    /**
+     * Getting the instance tuple that contains this value as a member.
+     */
+    protected ValueTuple getTuple() {
+        return this.tuple;
+    }
 
-	/** Getting the name of this value member. */
-	public String getName() {
-		return getDecl().getName();
-	}
+    /**
+     * Getting the context of this value.
+     */
+    protected ContextView getContext() {
+        return (ContextView) getTuple().getContext();
+    }
 
-	public Vector<String> getAllVariableNamesOfExpression() {
-		Vector<String> resultVector = new Vector<String>();
-		if (getExpr() != null)
-			getExpr().getAllVariables(resultVector);
-		return resultVector;
-	}
-	
-	public Vector<Node> getChildrenOfExpression() {
-		Vector<Node> resultVector = new Vector<Node>();
-		if (getExpr() != null) {
-			if (getExpr().getAST() != null) {
-				SimpleNode node = (SimpleNode) getExpr().getAST();
-				for (int i = 0; i < node.jjtGetNumChildren(); i++) {
-					// System.out.println("ValueMember.getChildrenOfExpression()
-					// :: "+node.jjtGetChild(i));
-					resultVector.addElement(node.jjtGetChild(i));
-				}
-			}
-		}
-		return resultVector;
-	}
+    /**
+     * Getting the declaration for this value
+     */
+    protected DeclMember getDecl() {
+        return this.decl;
+    }
 
-	protected HandlerExpr rawGetExpr() {
-		return this.expression;
-	}
+    /**
+     * Getting the handler of this value.
+     */
+    public AttrHandler getHandler() {
+        return getDecl().getHandler();
+    }
 
-	protected void rawSetExpr(HandlerExpr expr) {
-		this.expression = expr;
-	}
+    /**
+     * Getting the type of this value.
+     */
+    protected HandlerType getType() {
+        return getDecl().getType();
+    }
 
-	/** Setting the value and checking validity. */
-	protected void setCheckedExpr(HandlerExpr expr) {
-		rawSetExpr(expr);
-		checkValidity();
-	}
+    /**
+     * Getting the name of this value member.
+     */
+    public String getName() {
+        return getDecl().getName();
+    }
 
-	/** Checking its own expression validity with respect to the context. */
-	// protected void checkValidity(){
-	public void checkValidity() {
-		try {
-			checkInContext(getExpr(), getContext());
-			this.currentException = null;
-		} catch (Exception ex) {
-			this.currentException = ex;
-			this.errorMsg = ex.getMessage();
-		}
-	}
+    public Vector<String> getAllVariableNamesOfExpression() {
+        Vector<String> resultVector = new Vector<String>();
+        if (getExpr() != null) {
+            getExpr().getAllVariables(resultVector);
+        }
+        return resultVector;
+    }
 
-	/** Checking the specified expression validity with respect to the context. */
-	public void checkValidity(HandlerExpr hExpr) {
-		try {
-			checkInContext(hExpr, getContext());
-			this.errorMsg = "";
-			this.currentException = null;
-		} catch (Exception ex) {
-			this.currentException = ex;
-			this.errorMsg = ex.getMessage();
-		}
-	}
+    public Vector<Node> getChildrenOfExpression() {
+        Vector<Node> resultVector = new Vector<Node>();
+        if (getExpr() != null) {
+            if (getExpr().getAST() != null) {
+                SimpleNode node = (SimpleNode) getExpr().getAST();
+                for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+                    // System.out.println("ValueMember.getChildrenOfExpression()
+                    // :: "+node.jjtGetChild(i));
+                    resultVector.addElement(node.jjtGetChild(i));
+                }
+            }
+        }
+        return resultVector;
+    }
 
-	/**
-	 * Checking the validity of the expression 'hExpr' relative to the context
-	 * 'ctx'.
-	 */
-	protected void checkInContext(HandlerExpr hExpr, AttrContext ctx) {
-		ContextView context = (ContextView) ctx;
-		if (hExpr == null) {
-			if (context == null || !context.doesAllowEmptyValues()) {
-				throw new AttrImplException(EXPR_REQUIRED);
-			} 
-			return;	
-		}
-		
-		String exprText = hExpr.toString();
-		AttrHandler handler = getHandler();
-		HandlerType type = getType();
-		if (context == null) {
-			if (!hExpr.isConstant()) {
+    protected HandlerExpr rawGetExpr() {
+        return this.expression;
+    }
+
+    protected void rawSetExpr(HandlerExpr expr) {
+        this.expression = expr;
+    }
+
+    /**
+     * Setting the value and checking validity.
+     */
+    protected void setCheckedExpr(HandlerExpr expr) {
+        rawSetExpr(expr);
+        checkValidity();
+    }
+
+    /**
+     * Checking its own expression validity with respect to the context.
+     */
+    // protected void checkValidity(){
+    public void checkValidity() {
+        try {
+            checkInContext(getExpr(), getContext());
+            this.currentException = null;
+        } catch (Exception ex) {
+            this.currentException = ex;
+            this.errorMsg = ex.getMessage();
+        }
+    }
+
+    /**
+     * Checking the specified expression validity with respect to the context.
+     */
+    public void checkValidity(HandlerExpr hExpr) {
+        try {
+            checkInContext(hExpr, getContext());
+            this.errorMsg = "";
+            this.currentException = null;
+        } catch (Exception ex) {
+            this.currentException = ex;
+            this.errorMsg = ex.getMessage();
+        }
+    }
+
+    /**
+     * Checking the validity of the expression 'hExpr' relative to the context 'ctx'.
+     */
+    protected void checkInContext(HandlerExpr hExpr, AttrContext ctx) {
+        ContextView context = (ContextView) ctx;
+        if (hExpr == null) {
+            if (context == null || !context.doesAllowEmptyValues()) {
+                throw new AttrImplException(EXPR_REQUIRED);
+            }
+            return;
+        }
+
+        String exprText = hExpr.toString();
+        AttrHandler handler = getHandler();
+        HandlerType type = getType();
+        if (context == null) {
+            if (!hExpr.isConstant()) {
 //				throw new AttrImplException(EXPR_MUST_BE_CONST);
-				this.errorMsg = "Expression must be a constant: ".concat(hExpr.toString());
-				this.currentException = new AttrImplException(EXPR_MUST_BE_CONST, this.errorMsg);
-				throw (AttrImplException)this.currentException;
-			}
-		} else if (!context.doesAllowComplexExpressions()) {
-			if (hExpr.isComplex()) {
+                this.errorMsg = "Expression must be a constant: ".concat(hExpr.toString());
+                this.currentException = new AttrImplException(EXPR_MUST_BE_CONST, this.errorMsg);
+                throw (AttrImplException) this.currentException;
+            }
+        } else if (!context.doesAllowComplexExpressions()) {
+            if (hExpr.isComplex()) {
 //				throw new AttrImplException(EXPR_MUST_BE_CONST_OR_VAR);
-				this.errorMsg = "Complex expression is not allowed: ".concat(hExpr.toString());
-				this.currentException = new AttrImplException(EXPR_MUST_BE_CONST_OR_VAR, this.errorMsg);
-				throw (AttrImplException)this.currentException;
-			}
-		} else if (context.getAllowedMapping() == AttrMapping.GRAPH_MAP) {
-			
-		}
-		
-		if (hExpr.isConstant()) {
-			try {
-				hExpr.checkConstant(context);
-			} catch (AttrHandlerException ex) {
-				this.errorMsg = ex.getMessage();
-				this.currentException = ex;
-				throw new AttrImplException(EXPR_PARSE_ERR, this.errorMsg);
-			}
-		}
-		else if (hExpr.isVariable()) {
-			if(context != null) {
-				if (context.isDeclared(exprText)) {
-					try {
-						hExpr.check(context);
-					} catch (AttrHandlerException ex) {
-						this.errorMsg = ex.getMessage();
-						this.currentException = ex;
-						throw new AttrImplException(EXPR_PARSE_ERR, ex.getMessage());
-					}
-				} else { // New variable, not yet declared
-					if (context.doesAllowNewVariables()) {
-						context.addDecl(handler, type.toString(), exprText);
-					} else { // New variable declarations not allowed in this context
-						this.errorMsg = "undeclared variable found: ".concat(hExpr.toString());
-						this.currentException = new AttrImplException(VAR_NOT_DECLARED, this.errorMsg);
-						throw (AttrImplException) this.currentException;
-					}
-				}
-			}
-		} else if (hExpr.isComplex()) {
-			// new: to test!
-			if (context.isVariableContext()
-					&& this.expressionObject == null) {
-				return;
-			}
-				
-			try {
-				hExpr.check(context);
-			} catch (AttrHandlerException ex) {
-				this.errorMsg = ex.getMessage();
-				this.currentException = ex;
-				throw new AttrImplException(EXPR_PARSE_ERR, this.errorMsg);
-			}
-		}
-	}
+                this.errorMsg = "Complex expression is not allowed: ".concat(hExpr.toString());
+                this.currentException = new AttrImplException(EXPR_MUST_BE_CONST_OR_VAR, this.errorMsg);
+                throw (AttrImplException) this.currentException;
+            }
+        } else if (context.getAllowedMapping() == AttrMapping.GRAPH_MAP) {
 
-	public String getAttrHandlerExceptionMsg() {
-		if (this.currentException != null) {
-			return  this.currentException.getMessage();
-		} 
-		return "";
-	}
+        }
 
-	public void setTransient(boolean trans) {
-		this.isTransient = trans;
-	}
+        if (hExpr.isConstant()) {
+            try {
+                hExpr.checkConstant(context);
+            } catch (AttrHandlerException ex) {
+                this.errorMsg = ex.getMessage();
+                this.currentException = ex;
+                throw new AttrImplException(EXPR_PARSE_ERR, this.errorMsg);
+            }
+        } else if (hExpr.isVariable()) {
+            if (context != null) {
+                if (context.isDeclared(exprText)) {
+                    try {
+                        hExpr.check(context);
+                    } catch (AttrHandlerException ex) {
+                        this.errorMsg = ex.getMessage();
+                        this.currentException = ex;
+                        throw new AttrImplException(EXPR_PARSE_ERR, ex.getMessage());
+                    }
+                } else { // New variable, not yet declared
+                    if (context.doesAllowNewVariables()) {
+                        context.addDecl(handler, type.toString(), exprText);
+                    } else { // New variable declarations not allowed in this context
+                        this.errorMsg = "undeclared variable found: ".concat(hExpr.toString());
+                        this.currentException = new AttrImplException(VAR_NOT_DECLARED, this.errorMsg);
+                        throw (AttrImplException) this.currentException;
+                    }
+                }
+            }
+        } else if (hExpr.isComplex()) {
+            // new: to test!
+            if (context.isVariableContext()
+                    && this.expressionObject == null) {
+                return;
+            }
 
-	public boolean isTransient() {
-		return this.isTransient;
-	}
+            try {
+                hExpr.check(context);
+            } catch (AttrHandlerException ex) {
+                this.errorMsg = ex.getMessage();
+                this.currentException = ex;
+                throw new AttrImplException(EXPR_PARSE_ERR, this.errorMsg);
+            }
+        }
+    }
 
-	public void XwriteObject(XMLHelper h) {
-		if ((this.decl == null) || (this.decl.getType() == null))
-			return;
+    public String getAttrHandlerExceptionMsg() {
+        if (this.currentException != null) {
+            return this.currentException.getMessage();
+        }
+        return "";
+    }
 
-		h.openSubTag("Attribute");
-		h.addObject("type", this.decl, false);
-		HandlerExpr ex = getExpr();
-		if (h.getDocumentVersion().equals("1.0")) {
-			if (ex.isConstant()) {
-				Object v = ex.getValue();
-				h.openSubTag("Value");
-				if (this.decl.getType().toString().equals("String")) {
-					// handle site effect of CPA
-					while (v instanceof HandlerExpr) {
-						v = ((HandlerExpr)v).getValue();
-					}
-					if (v instanceof String)
-						h.addAttrValue("string", v); 
-				} else
-					h.addAttrValue(this.decl.getType().toString(), v);
-				h.close();
-				h.addAttr("constant", "true");
-			} else if (ex.isVariable()) {
-				Object v = ex.getString();
-				h.openSubTag("Value");
-				h.addAttrValue("string", v);
-				h.close();
-				h.addAttr("variable", "true");
-			} else { // expression
-				Object v = ex.getString();
-				h.openSubTag("Value");
-				h.addAttrValue("string", v); //h.addAttrValue("String", v);
-				h.close();
-			}
-		} else {
-			if (ex.isConstant()) {
-				Object v = ex.getValue();
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				try {
-					ObjectOutputStream oos = new ObjectOutputStream(os);
-					oos.writeObject(v);
-					h.addAttr("value", h.escapeString(os.toString()));
-				} catch (IOException e) {
-					h.addAttr("value", h.escapeString(v.toString()));
-				}
-				h.addAttr("constant", "true");
-			} else {
-				h.addAttr("value", ex.getString());
-			}
-		}
-		h.close();
-	}
+    public void setTransient(boolean trans) {
+        this.isTransient = trans;
+    }
 
-	public void XreadObject(XMLHelper h) {
-		/*
+    public boolean isTransient() {
+        return this.isTransient;
+    }
+
+    public void XwriteObject(XMLHelper h) {
+        if ((this.decl == null) || (this.decl.getType() == null)) {
+            return;
+        }
+
+        h.openSubTag("Attribute");
+        h.addObject("type", this.decl, false);
+        HandlerExpr ex = getExpr();
+        if (h.getDocumentVersion().equals("1.0")) {
+            if (ex.isConstant()) {
+                Object v = ex.getValue();
+                h.openSubTag("Value");
+                if (this.decl.getType().toString().equals("String")) {
+                    // handle site effect of CPA
+                    while (v instanceof HandlerExpr) {
+                        v = ((HandlerExpr) v).getValue();
+                    }
+                    if (v instanceof String) {
+                        h.addAttrValue("string", v);
+                    }
+                } else {
+                    h.addAttrValue(this.decl.getType().toString(), v);
+                }
+                h.close();
+                h.addAttr("constant", "true");
+            } else if (ex.isVariable()) {
+                Object v = ex.getString();
+                h.openSubTag("Value");
+                h.addAttrValue("string", v);
+                h.close();
+                h.addAttr("variable", "true");
+            } else { // expression
+                Object v = ex.getString();
+                h.openSubTag("Value");
+                h.addAttrValue("string", v); //h.addAttrValue("String", v);
+                h.close();
+            }
+        } else {
+            if (ex.isConstant()) {
+                Object v = ex.getValue();
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                try {
+                    ObjectOutputStream oos = new ObjectOutputStream(os);
+                    oos.writeObject(v);
+                    h.addAttr("value", h.escapeString(os.toString()));
+                } catch (IOException e) {
+                    h.addAttr("value", h.escapeString(v.toString()));
+                }
+                h.addAttr("constant", "true");
+            } else {
+                h.addAttr("value", ex.getString());
+            }
+        }
+        h.close();
+    }
+
+    public void XreadObject(XMLHelper h) {
+        /*
 		 * when reading we are already filled out from ValueTuple, and as we
 		 * ourself are no entity (with an ID), we don't even call isTag(), so
 		 * this is empty.
-		 */
-		if ((this.decl == null) || (this.decl.getType() == null)) {
-			System.out
-					.println("ValueMember.XreadObject: WARNING!\n\t Attribute  \""
-							+ this.decl.getName()
-							+ "\" :  type declaration of attribute value is null.");
-			return;
-		}
+         */
+        if ((this.decl == null) || (this.decl.getType() == null)) {
+            System.out
+                    .println("ValueMember.XreadObject: WARNING!\n\t Attribute  \""
+                            + this.decl.getName()
+                            + "\" :  type declaration of attribute value is null.");
+            return;
+        }
 
 //		String readError = null;
-		if (h.getDocumentVersion().equals("1.0")) {
-			if (h.readAttr("constant") != "") {
-				if (h.readSubTag("Value")) {
-					Object obj = null;
-					if (this.decl.getType().toString().equals("String")) {
-						String javaTag = h.readSubTag();
-						if (javaTag.equals("java")) {							
-							obj = h.getAttrValue("String");
-							if (obj == null)
-								obj = h.getAttrValue("string");
-						}
-						if (javaTag.equals("string") || javaTag.equals("String")) {								
-							obj = h.getElementData(h.top());
-						}
-						h.close();
+        if (h.getDocumentVersion().equals("1.0")) {
+            if (h.readAttr("constant") != "") {
+                if (h.readSubTag("Value")) {
+                    Object obj = null;
+                    if (this.decl.getType().toString().equals("String")) {
+                        String javaTag = h.readSubTag();
+                        if (javaTag.equals("java")) {
+                            obj = h.getAttrValue("String");
+                            if (obj == null) {
+                                obj = h.getAttrValue("string");
+                            }
+                        }
+                        if (javaTag.equals("string") || javaTag.equals("String")) {
+                            obj = h.getElementData(h.top());
+                        }
+                        h.close();
 
-						if (obj == null)
-							obj = new String();
-						else if (obj instanceof String) {
-							// loesche '\n' und mehrere Leerzeichen 
-							String objStr = formString((String) obj);
-							obj = objStr;
-						}
-					} else {
-						obj = h.getAttrValue(this.decl.getType().toString());
-					}
-					if (obj == null) {
-						h.close();
-						return;
-					}
+                        if (obj == null) {
+                            obj = new String();
+                        } else if (obj instanceof String) {
+                            // loesche '\n' und mehrere Leerzeichen 
+                            String objStr = formString((String) obj);
+                            obj = objStr;
+                        }
+                    } else {
+                        obj = h.getAttrValue(this.decl.getType().toString());
+                    }
+                    if (obj == null) {
+                        h.close();
+                        return;
+                    }
 
-					if (obj instanceof String) {
-						// test if value is null
-						if (((String) obj).equals("null")) {
-							setExprAsText((String) obj);
-							// readError = getValidityReport();
-							h.close();
-							return;
-						}
-					}
+                    if (obj instanceof String) {
+                        // test if value is null
+                        if (((String) obj).equals("null")) {
+                            setExprAsText((String) obj);
+                            // readError = getValidityReport();
+                            h.close();
+                            return;
+                        }
+                    }
 
-					String valueAsString = "";
-					if (this.decl.getType().toString().equals("String")) {
-						setExprAsObject(obj);
-					} else if (this.decl.getType().toString().equals("int")) {
-						valueAsString = ((Integer) obj).toString();
-						setExprAsEvaluatedText(valueAsString);
-					} else if (this.decl.getType().toString().equals("boolean")) {
-						valueAsString = ((Boolean) obj).toString();
-						setExprAsEvaluatedText(valueAsString);
-					} else if (this.decl.getType().toString().equals("float")) {
-						valueAsString = ((Float) obj).toString();
-						setExprAsEvaluatedText(valueAsString);
-					} else if (this.decl.getType().toString().equals("double")) {
-						valueAsString = ((Double) obj).toString();
-						setExprAsEvaluatedText(valueAsString);
-					} else if (this.decl.getType().toString().equals("long")) {
-						valueAsString = ((Long) obj).toString();
-						setExprAsEvaluatedText(valueAsString);
-					} else if (this.decl.getType().toString().equals("short")) {
-						valueAsString = ((Short) obj).toString();
-						setExprAsEvaluatedText(valueAsString);
-					} else if (this.decl.getType().toString().equals("byte")) {
-						valueAsString = ((Byte) obj).toString();
-						setExprAsEvaluatedText(valueAsString);
-					} else if (this.decl.getType().toString().equals("char")) {
-						valueAsString = ((Character) obj).toString();
-						setExprAsText("\'" + valueAsString.charAt(0) + "\'");
-					} else {
-						setExprAsObject(obj);
-					}
-					// readError = getValidityReport();
-					h.close();
-				} else
-					System.out
-							.println("ValueMember.XreadObject:  Tag  <Value>  of  '"
-									+ getName() + "'  not found");
-			} else if (h.readAttr("variable") != "") {
-				if (h.readSubTag("Value")) {
-					Object obj = h.getAttrValue("String");
-					if (obj == null)
-						obj = h.getAttrValue("string");
-					if (obj == null) {
-						h.close();
-						return;
-					}
-					if (obj instanceof String) {
-						setExprAsText((String) obj);
-						// readError = getValidityReport();
-					}
-					h.close();
-				}
-			} else {
-				if (h.readSubTag("Value")) {
-					Object obj = null;
-					String javaTag = h.readSubTag();
-					if (javaTag.equals("java")) {							
-						obj = h.getAttrValue("String");
-						if (obj == null)
-							obj = h.getAttrValue("string");
-					}
-					if (javaTag.equals("string") || javaTag.equals("String")) {								
-						obj = h.getElementData(h.top());
-					}
-					h.close();					
+                    String valueAsString = "";
+                    if (this.decl.getType().toString().equals("String")) {
+                        setExprAsObject(obj);
+                    } else if (this.decl.getType().toString().equals("int")) {
+                        valueAsString = ((Integer) obj).toString();
+                        setExprAsEvaluatedText(valueAsString);
+                    } else if (this.decl.getType().toString().equals("boolean")) {
+                        valueAsString = ((Boolean) obj).toString();
+                        setExprAsEvaluatedText(valueAsString);
+                    } else if (this.decl.getType().toString().equals("float")) {
+                        valueAsString = ((Float) obj).toString();
+                        setExprAsEvaluatedText(valueAsString);
+                    } else if (this.decl.getType().toString().equals("double")) {
+                        valueAsString = ((Double) obj).toString();
+                        setExprAsEvaluatedText(valueAsString);
+                    } else if (this.decl.getType().toString().equals("long")) {
+                        valueAsString = ((Long) obj).toString();
+                        setExprAsEvaluatedText(valueAsString);
+                    } else if (this.decl.getType().toString().equals("short")) {
+                        valueAsString = ((Short) obj).toString();
+                        setExprAsEvaluatedText(valueAsString);
+                    } else if (this.decl.getType().toString().equals("byte")) {
+                        valueAsString = ((Byte) obj).toString();
+                        setExprAsEvaluatedText(valueAsString);
+                    } else if (this.decl.getType().toString().equals("char")) {
+                        valueAsString = ((Character) obj).toString();
+                        setExprAsText("\'" + valueAsString.charAt(0) + "\'");
+                    } else {
+                        setExprAsObject(obj);
+                    }
+                    // readError = getValidityReport();
+                    h.close();
+                } else {
+                    System.out
+                            .println("ValueMember.XreadObject:  Tag  <Value>  of  '"
+                                    + getName() + "'  not found");
+                }
+            } else if (h.readAttr("variable") != "") {
+                if (h.readSubTag("Value")) {
+                    Object obj = h.getAttrValue("String");
+                    if (obj == null) {
+                        obj = h.getAttrValue("string");
+                    }
+                    if (obj == null) {
+                        h.close();
+                        return;
+                    }
+                    if (obj instanceof String) {
+                        setExprAsText((String) obj);
+                        // readError = getValidityReport();
+                    }
+                    h.close();
+                }
+            } else {
+                if (h.readSubTag("Value")) {
+                    Object obj = null;
+                    String javaTag = h.readSubTag();
+                    if (javaTag.equals("java")) {
+                        obj = h.getAttrValue("String");
+                        if (obj == null) {
+                            obj = h.getAttrValue("string");
+                        }
+                    }
+                    if (javaTag.equals("string") || javaTag.equals("String")) {
+                        obj = h.getElementData(h.top());
+                    }
+                    h.close();
 //					obj = h.getAttrValue("String"); // old code, before Java7
-					if (obj == null) {
-						h.close();
-						return;
-					}
-					if (obj instanceof String) {
-						// loesche '\n' und mehrere Leerzeichen aus dem object-String
-						String objStr = formString((String) obj);
-						setExprAsText(objStr);
-					}
-					h.close();
-				}
-			}
-		} else { // lese altes XML Fileformat
-			// System.out.println("ValueMember.XreadObject: Version before 1.0");
-			String val = h.readAttr("value");
-			if (h.readAttr("constant") != "") {
-				String v = h.unescapeString(val);
-				byte[] buf = v.getBytes();
-				ByteArrayInputStream is = new ByteArrayInputStream(buf);
-				try {
-					ObjectInputStream ois = new ObjectInputStream(is);
-					Object vo = ois.readObject();
-					if (this.decl.getType().toString().equals("int")
-							|| this.decl.getType().toString().equals("boolean")
-							|| this.decl.getType().toString().equals("float")
-							|| this.decl.getType().toString().equals("double")
-							|| this.decl.getType().toString().equals("long")
-							|| this.decl.getType().toString().equals("short")) {
-						setExprAsEvaluatedText(vo.toString());
-					} else {
-						setExprAsObject(vo);
-					}
-					// readError = getValidityReport();
+                    if (obj == null) {
+                        h.close();
+                        return;
+                    }
+                    if (obj instanceof String) {
+                        // loesche '\n' und mehrere Leerzeichen aus dem object-String
+                        String objStr = formString((String) obj);
+                        setExprAsText(objStr);
+                    }
+                    h.close();
+                }
+            }
+        } else { // lese altes XML Fileformat
+            // System.out.println("ValueMember.XreadObject: Version before 1.0");
+            String val = h.readAttr("value");
+            if (h.readAttr("constant") != "") {
+                String v = h.unescapeString(val);
+                byte[] buf = v.getBytes();
+                ByteArrayInputStream is = new ByteArrayInputStream(buf);
+                try {
+                    ObjectInputStream ois = new ObjectInputStream(is);
+                    Object vo = ois.readObject();
+                    if (this.decl.getType().toString().equals("int")
+                            || this.decl.getType().toString().equals("boolean")
+                            || this.decl.getType().toString().equals("float")
+                            || this.decl.getType().toString().equals("double")
+                            || this.decl.getType().toString().equals("long")
+                            || this.decl.getType().toString().equals("short")) {
+                        setExprAsEvaluatedText(vo.toString());
+                    } else {
+                        setExprAsObject(vo);
+                    }
+                    // readError = getValidityReport();
 
-				} catch (Exception e) {
-				}
-			} else {
-				setExprAsText(val);
-				// readError = getValidityReport();
-			}
-		}
-	}
+                } catch (Exception e) {
+                }
+            } else {
+                setExprAsText(val);
+                // readError = getValidityReport();
+            }
+        }
+    }
 
-	// loesche '\n' und mehrere Leerzeichen aus dem s
-	private String formString(String s) {
-		String s1 = s.toString();
-		String s2 = s1.replaceAll("\n", "");
-		while (s2.indexOf("  ") != -1) {
-			s1 = s2.replaceAll("  ", " ");
-			s2 = s1.toString();
-		}
+    // loesche '\n' und mehrere Leerzeichen aus dem s
+    private String formString(String s) {
+        String s1 = s.toString();
+        String s2 = s1.replaceAll("\n", "");
+        while (s2.indexOf("  ") != -1) {
+            s1 = s2.replaceAll("  ", " ");
+            s2 = s1.toString();
+        }
 
-		return s1;
-	}
+        return s1;
+    }
 
-	public void removeErrorMsg() {
-		this.errorMsg = "";
-		this.currentException = null;
-	}
+    public void removeErrorMsg() {
+        this.errorMsg = "";
+        this.currentException = null;
+    }
 }
 /*
  * ============================================================================

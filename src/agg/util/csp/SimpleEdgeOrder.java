@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: SimpleEdgeOrder.java,v 1.4 2010/03/08 15:50:34 olga Exp $
-
 // $Log: SimpleEdgeOrder.java,v $
 // Revision 1.4  2010/03/08 15:50:34  olga
 // code optimizing
@@ -63,37 +63,36 @@
 // Revision 1.1  1997/09/16 15:56:55  mich
 // Initial revision
 //
-
 package agg.util.csp;
 
 import agg.xt_basis.Arc;
 import agg.xt_basis.Node;
 
-
 public class SimpleEdgeOrder implements BinaryPredicate {
-	Object varObj;
 
-	public SimpleEdgeOrder(Object varObj) {
-		this.varObj = varObj;
-	}
+    Object varObj;
 
-	/**
-	 * Return true iff the sum of arcs of the source and target nodes of <code>o1</code> 
-	 * is greater the sum of arcs of the source and target nodes of <code>o2</code> .
-	 * <p>
-	 * <b>Pre:</b> <code>o1,o2 instance of Arc</code>.
-	 */
-	public final boolean execute(Object o1, Object o2) {
-		Arc a1 = (Arc) o1;
-		Arc a2 = (Arc) o2;
-		int nn1 = ((Node) a1.getSource()).getNumberOfArcs()
-				+ ((Node) a1.getTarget()).getNumberOfArcs();			
-		int nn2 = ((Node) a2.getSource()).getNumberOfArcs()
-				+ ((Node) a2.getTarget()).getNumberOfArcs();
+    public SimpleEdgeOrder(Object varObj) {
+        this.varObj = varObj;
+    }
 
-		if (nn1 > nn2) {
-			return true;
-		} 
-		return false;
-	}
+    /**
+     * Return true iff the sum of arcs of the source and target nodes of <code>o1</code> is greater the sum of arcs of
+     * the source and target nodes of <code>o2</code> .
+     * <p>
+     * <b>Pre:</b> <code>o1,o2 instance of Arc</code>.
+     */
+    public final boolean execute(Object o1, Object o2) {
+        Arc a1 = (Arc) o1;
+        Arc a2 = (Arc) o2;
+        int nn1 = ((Node) a1.getSource()).getNumberOfArcs()
+                + ((Node) a1.getTarget()).getNumberOfArcs();
+        int nn2 = ((Node) a2.getSource()).getNumberOfArcs()
+                + ((Node) a2.getTarget()).getNumberOfArcs();
+
+        if (nn1 > nn2) {
+            return true;
+        }
+        return false;
+    }
 }

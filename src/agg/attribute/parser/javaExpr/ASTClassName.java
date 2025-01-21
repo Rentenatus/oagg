@@ -1,90 +1,89 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTClassName.java,v 1.6 2010/11/28 22:12:22 olga Exp $
  * @author $Author: olga $
  */
 public class ASTClassName extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	String name;
+    String name;
 
-	ASTClassName(String id) {
-		super(id);
-	}
+    ASTClassName(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTClassName(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTClassName(id);
+    }
 
-	/*
+    /*
 	 * You can override these two methods in subclasses of SimpleNode to
 	 * customize the way the node appears when the tree is dumped. If your
 	 * output uses more than one line you should override toString(String),
 	 * otherwise overriding toString() is probably all you need to do.
-	 */
+     */
+    public String toString() {
+        Class<?> clazz = getNodeClass();
+        String cname;
+        if (clazz == null) {
+            cname = "\"" + this.name + "\"";
+        } else {
+            cname = clazz.toString();
+        }
+        return this.identifier + " " + cname;
+    }
 
-	public String toString() {
-		Class<?> clazz = getNodeClass();
-		String cname;
-		if (clazz == null) {
-			cname = "\"" + this.name + "\"";
-		} else {
-			cname = clazz.toString();
-		}
-		return this.identifier + " " + cname;
-	}
+    public void checkContext() {
+        Class<?> clazz;
 
-	public void checkContext() {
-		Class<?> clazz;
-
-		if (classResolver == null) {
-			try {
-				clazz = Class.forName(this.name);
-				setNodeClass(clazz);
-			} catch (ClassNotFoundException e) {
-				System.out.println(e.getMessage() + "Class<?> " + this.name
-						+ " not found: ");
-			}
-		} else {
-			clazz = classResolver.forName(this.name);
-			if (clazz == null) {
-				System.out.println("Class " + this.name + " not found: ");
-			} else {
-				setNodeClass(clazz);
+        if (classResolver == null) {
+            try {
+                clazz = Class.forName(this.name);
+                setNodeClass(clazz);
+            } catch (ClassNotFoundException e) {
+                System.out.println(e.getMessage() + "Class<?> " + this.name
+                        + " not found: ");
+            }
+        } else {
+            clazz = classResolver.forName(this.name);
+            if (clazz == null) {
+                System.out.println("Class " + this.name + " not found: ");
+            } else {
+                setNodeClass(clazz);
 //				System.out.println(this.getClass().getName()+" ::   "+this.name);
-			}
-		}
-	}
+            }
+        }
+    }
 
-	public void interpret() {
-		checkContext();
+    public void interpret() {
+        checkContext();
 //		stack[++top] = getNodeClass();
-		stack.add(++top, getNodeClass());
-	}
+        stack.add(++top, getNodeClass());
+    }
 
-	public String getString() {
-		return this.name;
-	}
+    public String getString() {
+        return this.name;
+    }
 
-	public Node copy() {
-		Node copy = super.copy();
-		((ASTClassName) copy).name = new String(this.name);
-		return copy;
-	}
+    public Node copy() {
+        Node copy = super.copy();
+        ((ASTClassName) copy).name = new String(this.name);
+        return copy;
+    }
 }
 /*
  * $Log: ASTClassName.java,v $

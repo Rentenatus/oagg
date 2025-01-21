@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.Vector;
@@ -16,71 +17,70 @@ import agg.xt_basis.Match;
 
 //****************************************************************************+
 /**
- * This a a container for matches. This container can check if a certain match
- * is in the container.
- * 
+ * This a a container for matches. This container can check if a certain match is in the container.
+ *
  * @author $Author: olga $ Parser Group
  * @version $Id: RuleInstances.java,v 1.3 2010/09/23 08:25:00 olga Exp $
  */
 public class RuleInstances {
 
-	/**
-	 * set to store the rules and matches
-	 */
-	private Vector<Match> matches;
+    /**
+     * set to store the rules and matches
+     */
+    private Vector<Match> matches;
 
-	/**
-	 * Creates a new empty container.
-	 */
-	protected RuleInstances() {
-		this.matches = new Vector<Match>();
-	}
+    /**
+     * Creates a new empty container.
+     */
+    protected RuleInstances() {
+        this.matches = new Vector<Match>();
+    }
 
-	// ----------------------------------------------------------------------+
-	/**
-	 * Adds a match to the container.
-	 * 
-	 * @param m
-	 *            A match.
-	 */
-	protected void add(Match m) {
-		if (!isIn(m))
-			this.matches.addElement(m);
-	}
+    // ----------------------------------------------------------------------+
+    /**
+     * Adds a match to the container.
+     *
+     * @param m A match.
+     */
+    protected void add(Match m) {
+        if (!isIn(m)) {
+            this.matches.addElement(m);
+        }
+    }
 
-	// ----------------------------------------------------------------------+
-	/**
-	 * Checks if a given match is in this container.
-	 * 
-	 * @param m
-	 *            The match of this rule
-	 * @return true if the match is in this container.
-	 */
-	protected boolean isIn(Match m) {
-		for (int i = 0; i < this.matches.size(); i++) {
-			Match n = this.matches.elementAt(i);
-			if (m.getRule().equals(n.getRule())) {
-				/*
+    // ----------------------------------------------------------------------+
+    /**
+     * Checks if a given match is in this container.
+     *
+     * @param m The match of this rule
+     * @return true if the match is in this container.
+     */
+    protected boolean isIn(Match m) {
+        for (int i = 0; i < this.matches.size(); i++) {
+            Match n = this.matches.elementAt(i);
+            if (m.getRule().equals(n.getRule())) {
+                /*
 				 * MorphismUtility mu = new MorphismUtility(bf,m);
 				 * if(mu.isIsomorphicTo(n)) return true;
-				 */
-				if (m.isIsomorphicTo(n))
-					return true;
-			}
-		}
-		return false;
-	}
+                 */
+                if (m.isIsomorphicTo(n)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Clears some internal stuff.
-	 */
-	protected void finalize() {
-		for (int i = 0; i < this.matches.size(); i++) {
-			Match m = this.matches.elementAt(i);
-			// System.out.println("RuleInstance: kille match "+m);
-			BaseFactory.theFactory().destroyMatch(m);
-		}
-	}
+    /**
+     * Clears some internal stuff.
+     */
+    protected void finalize() {
+        for (int i = 0; i < this.matches.size(); i++) {
+            Match m = this.matches.elementAt(i);
+            // System.out.println("RuleInstance: kille match "+m);
+            BaseFactory.theFactory().destroyMatch(m);
+        }
+    }
 }
 
 /*

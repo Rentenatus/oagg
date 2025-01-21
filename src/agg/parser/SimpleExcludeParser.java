@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // This class belongs to the following package:
 package agg.parser;
 
@@ -25,166 +26,167 @@ import agg.util.Pair;
 
 //****************************************************************************+
 /**
- * This class provides a parser which needs critical pairs. The critical pair
- * must be <code>ExcludePair</code>. So objects has to be instanciated with
- * <code>ExcludePairContainer</code>. To be independent of a grammar it is
- * necessary to instanciate an object with a host graph and stop graph
- * seperately.
- * 
+ * This class provides a parser which needs critical pairs. The critical pair must be <code>ExcludePair</code>. So
+ * objects has to be instanciated with <code>ExcludePairContainer</code>. To be independent of a grammar it is necessary
+ * to instanciate an object with a host graph and stop graph seperately.
+ *
  * @author $Author: olga $
  * @version $Id: SimpleExcludeParser.java,v 1.11 2010/08/18 09:26:52 olga Exp $
  */
 public class SimpleExcludeParser extends ExcludeParser {
 
-	/**
-	 * Creates a new parser that is a little bit simpler than a <CODE>ExcludeParser</CODE>.
-	 * 
-	 * @param grammar
-	 *            The graph grammar.
-	 * @param hostGraph
-	 *            The host graph.
-	 * @param stopGraph
-	 *            The stop graph.
-	 * @param excludeContainer
-	 *            The critical pairs.
-	 */
-	public SimpleExcludeParser(GraGra grammar, Graph hostGraph,
-			Graph stopGraph, ExcludePairContainer excludeContainer) {
-		super(grammar, hostGraph, stopGraph, excludeContainer);
-	}
+    /**
+     * Creates a new parser that is a little bit simpler than a <CODE>ExcludeParser</CODE>.
+     *
+     * @param grammar The graph grammar.
+     * @param hostGraph The host graph.
+     * @param stopGraph The stop graph.
+     * @param excludeContainer The critical pairs.
+     */
+    public SimpleExcludeParser(GraGra grammar, Graph hostGraph,
+            Graph stopGraph, ExcludePairContainer excludeContainer) {
+        super(grammar, hostGraph, stopGraph, excludeContainer);
+    }
 
-	// ****************************************************************************+
-	/**
-	 * Starts the parser.
-	 * 
-	 * @return true if the graph can be parsed.
-	 */
-	@SuppressWarnings("rawtypes")
-	public boolean parse() {
+    // ****************************************************************************+
+    /**
+     * Starts the parser.
+     *
+     * @return true if the graph can be parsed.
+     */
+    @SuppressWarnings("rawtypes")
+    public boolean parse() {
 //		System.out.println("Starting simple exclude parser ...");
-		this.correct = true;
-		fireParserEvent(new ParserMessageEvent(this,
-				"Starting simple exclude parser ..."));
+        this.correct = true;
+        fireParserEvent(new ParserMessageEvent(this,
+                "Starting simple exclude parser ..."));
 
-		Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
-		if (this.stop)
-			return false;
-		try {
-			conflictFree = this.pairContainer
-					.getContainer(CriticalPair.CONFLICTFREE);
-		} catch (InvalidAlgorithmException iae) {
-			fireParserEvent(new ParserErrorEvent(iae, "ERROR: "
-					+ iae.getMessage()));
-			return false;
-		}
-		Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
-		if (this.stop)
-			return false;
-		try {
-			exclude = this.pairContainer.getContainer(CriticalPair.EXCLUDE);
-		} catch (InvalidAlgorithmException iae) {
-			fireParserEvent(new ParserErrorEvent(iae, "ERROR: "
-					+ iae.getMessage()));
-			return false;
-		}
-		if (this.stop)
-			return false;
-		Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = null;
-		Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
-		excludeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-		conflictFreeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
+        if (this.stop) {
+            return false;
+        }
+        try {
+            conflictFree = this.pairContainer
+                    .getContainer(CriticalPair.CONFLICTFREE);
+        } catch (InvalidAlgorithmException iae) {
+            fireParserEvent(new ParserErrorEvent(iae, "ERROR: "
+                    + iae.getMessage()));
+            return false;
+        }
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
+        if (this.stop) {
+            return false;
+        }
+        try {
+            exclude = this.pairContainer.getContainer(CriticalPair.EXCLUDE);
+        } catch (InvalidAlgorithmException iae) {
+            fireParserEvent(new ParserErrorEvent(iae, "ERROR: "
+                    + iae.getMessage()));
+            return false;
+        }
+        if (this.stop) {
+            return false;
+        }
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = null;
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
+        excludeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        conflictFreeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
 
-		if (this.stop)
-			return false;
+        if (this.stop) {
+            return false;
+        }
 
-		makeLightContainer(exclude, excludeLight);
+        makeLightContainer(exclude, excludeLight);
 
-		if (this.stop)
-			return false;
+        if (this.stop) {
+            return false;
+        }
 
-		makeLightContainer(conflictFree, conflictFreeLight);
+        makeLightContainer(conflictFree, conflictFreeLight);
 
-		if (this.stop)
-			return false;
-		for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
-				.hasMoreElements();) {
-			Object key = keys.nextElement();
-			if (excludeLight.containsKey(key)) {
-				conflictFreeLight.remove(key);
-			}
-		}
-		/*
+        if (this.stop) {
+            return false;
+        }
+        for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
+                .hasMoreElements();) {
+            Object key = keys.nextElement();
+            if (excludeLight.containsKey(key)) {
+                conflictFreeLight.remove(key);
+            }
+        }
+        /*
 		 * haelt alle Matche, die kritisch sind, damit nicht an einer Stelle
 		 * immer wieder angesetzt wird
-		 */
-		RuleInstances eri = new RuleInstances();
+         */
+        RuleInstances eri = new RuleInstances();
 
-		fireParserEvent(new ParserMessageEvent(this, "Parser initialized"));
-		if (this.stop)
-			return false;
-		boolean ruleApplied = false;
-		while (!this.stop && !this.graph.isIsomorphicTo(this.stopGraph) && this.correct) {
-			ruleApplied = false;
+        fireParserEvent(new ParserMessageEvent(this, "Parser initialized"));
+        if (this.stop) {
+            return false;
+        }
+        boolean ruleApplied = false;
+        while (!this.stop && !this.graph.isIsomorphicTo(this.stopGraph) && this.correct) {
+            ruleApplied = false;
 
-			/* zuerst sollen alle konfliktfreien Regeln probiert werden. */
-			for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
-					.hasMoreElements()
-					&& !ruleApplied;) {
-				Rule r = keys.nextElement();
+            /* zuerst sollen alle konfliktfreien Regeln probiert werden. */
+            for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
+                    .hasMoreElements()
+                    && !ruleApplied;) {
+                Rule r = keys.nextElement();
 
 //				Report.println("versuche konfliktfreie Regel " + r.getName(),
 //						Report.PARSER);
+                fireParserEvent(new ParserMessageEvent(this,
+                        "Searching for easy match"));
+                Match m = BaseFactory.theFactory().createMatch(r,
+                        getHostGraph());
+                m.setCompletionStrategy((MorphCompletionStrategy) this.grammar
+                        .getMorphismCompletionStrategy().clone(), true);
+                // m.getCompletionStrategy().showProperties();
+                while (!this.stop && !ruleApplied && m.nextCompletion()) {
+                    // TODO ATTRIBUTE CHECKEN machen hier Inputparameter Sinn??
+                    if (m.isValid()) {
+                        if (applyRule(m)) {
+                            ruleApplied = true;
+                            try {
+                                Thread.sleep(this.delay);
+                            } catch (InterruptedException ex1) {
+                            }
+                        }
+                    }
+                }
+            }
+            /* Die konfliktfreien Regeln sind abgearbeitet */
 
-				fireParserEvent(new ParserMessageEvent(this,
-						"Searching for easy match"));
-				Match m = BaseFactory.theFactory().createMatch(r,
-						getHostGraph());
-				m.setCompletionStrategy((MorphCompletionStrategy) this.grammar
-						.getMorphismCompletionStrategy().clone(), true);
-				// m.getCompletionStrategy().showProperties();
-				while (!this.stop && !ruleApplied && m.nextCompletion()) {
-					// TODO ATTRIBUTE CHECKEN machen hier Inputparameter Sinn??
-					if (m.isValid()) {
-						if (applyRule(m)) {
-							ruleApplied = true;
-							try {
-								Thread.sleep(this.delay);
-							} catch (InterruptedException ex1) {
-							}
-						}
-					}
-				}
-			}
-			/* Die konfliktfreien Regeln sind abgearbeitet */
-
-			/* Die Excluderegeln muessen ueberprueft werden */
-			if (!this.stop && !ruleApplied) {
-				/*
+ /* Die Excluderegeln muessen ueberprueft werden */
+            if (!this.stop && !ruleApplied) {
+                /*
 				 * Zuerst wird ein beliebiger Ansatz einer Regel gesucht.
-				 */
-				for (Enumeration<Rule> keys = excludeLight.keys(); keys
-						.hasMoreElements()
-						&& !ruleApplied;) {
-					Rule r = keys.nextElement();
-					fireParserEvent(new ParserMessageEvent(this,
-							"Searching for difficult match"));
-					Match m = BaseFactory.theFactory().createMatch(r,
-							getHostGraph());
-					m.setCompletionStrategy((MorphCompletionStrategy) this.grammar
-							.getMorphismCompletionStrategy().clone(), true);
+                 */
+                for (Enumeration<Rule> keys = excludeLight.keys(); keys
+                        .hasMoreElements()
+                        && !ruleApplied;) {
+                    Rule r = keys.nextElement();
+                    fireParserEvent(new ParserMessageEvent(this,
+                            "Searching for difficult match"));
+                    Match m = BaseFactory.theFactory().createMatch(r,
+                            getHostGraph());
+                    m.setCompletionStrategy((MorphCompletionStrategy) this.grammar
+                            .getMorphismCompletionStrategy().clone(), true);
 
-					boolean found = false;
-					while (!found && m.nextCompletion()) {
-						if (!eri.isIn(m) && m.isValid())
-							found = true;
-					}
-					if (!this.stop && found) {
-						OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
-						if (copyMorph != null) {
-							fireParserEvent(new ParserMessageEvent(copyMorph,
-									"IsoCopy"));
-							eri.add(m);
-							/*
+                    boolean found = false;
+                    while (!found && m.nextCompletion()) {
+                        if (!eri.isIn(m) && m.isValid()) {
+                            found = true;
+                        }
+                    }
+                    if (!this.stop && found) {
+                        OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
+                        if (copyMorph != null) {
+                            fireParserEvent(new ParserMessageEvent(copyMorph,
+                                    "IsoCopy"));
+                            eri.add(m);
+                            /*
 							 * ERI muss nicht kopiert werden, da nur an
 							 * Entscheidungsstellen der Match/die Matches gemerkt
 							 * werden mssen, die uns m�licherweise auf einen Holzweg
@@ -193,75 +195,76 @@ public class SimpleExcludeParser extends ExcludeParser {
 							 * mehr verfgbar. Dadurch kann ein neues ERI erzeugt
 							 * werden. Auf dem Stack liegen dann nur die
 							 * Ableitungen, die uns in eine Sackgasse gefhrt haben.
-							 */
-							Pair<Graph, RuleInstances> tmpPair = new Pair<Graph, RuleInstances>(
-									getHostGraph(), eri);
-							this.stack.push(tmpPair);
-							eri = new RuleInstances();
-							/*
+                             */
+                            Pair<Graph, RuleInstances> tmpPair = new Pair<Graph, RuleInstances>(
+                                    getHostGraph(), eri);
+                            this.stack.push(tmpPair);
+                            eri = new RuleInstances();
+                            /*
 							 * Die Regel muss auf den kopierten Graphen mit
 							 * DEMSELBEN kopierten Match angewendet werden.
-							 */
-							setHostGraph(copyMorph.getImage());
-							OrdinaryMorphism tmpMorph = m.compose(copyMorph);
-							Match n = tmpMorph.makeMatch(m.getRule());
-							n.setCompletionStrategy(
-									(MorphCompletionStrategy) this.grammar
-											.getMorphismCompletionStrategy()
-											.clone(), true);
-	
-							boolean notFound = false;
-							while (!this.stop && !n.isValid() && !notFound) {
-								if (!n.nextCompletion())
-									notFound = true;
-							}
-							if (!this.stop && !notFound) {
-								if (applyRule(n)) {
-									ruleApplied = true;
-									try {
-										Thread.sleep(this.delay);
-									} catch (InterruptedException ex1) {
-									}
-								}
-							}
-						}
-					} else {
-						BaseFactory.theFactory().destroyMatch(m);
-						m = null;
-					}
-				}
-				if (!this.stop && !ruleApplied) {
-					try {
-						Pair<?,?> tmpPair = (Pair) this.stack.pop();
-						/* backtrack */
-						setHostGraph((Graph)tmpPair.first);
-						eri = (RuleInstances)tmpPair.second;
-					} catch (Exception ioe) {
-						/* Stack ist leer */
-						fireParserEvent(new ParserErrorEvent(this,
-								"ERROR: This graph is not part of the language"));
-						this.correct = false;
-					}
-				}
-			}
-		}
+                             */
+                            setHostGraph(copyMorph.getImage());
+                            OrdinaryMorphism tmpMorph = m.compose(copyMorph);
+                            Match n = tmpMorph.makeMatch(m.getRule());
+                            n.setCompletionStrategy(
+                                    (MorphCompletionStrategy) this.grammar
+                                            .getMorphismCompletionStrategy()
+                                            .clone(), true);
 
-		/* Fertig mit den Excluderegeln */
-		while (!this.stack.empty()) {
-			try {
-				fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
-				Pair<?,?> tmpPair = (Pair) this.stack.pop();
-				
-				Graph g = (Graph)tmpPair.first;
-				BaseFactory.theFactory().destroyGraph(g);
-				tmpPair.second = null;
-			} catch (Exception ioe) {
-			}
-		}
-		fireParserEvent(new ParserMessageEvent(this,
-				"Stopping parser. Result is " + this.correct + "."));
-		return this.correct;
-	}
+                            boolean notFound = false;
+                            while (!this.stop && !n.isValid() && !notFound) {
+                                if (!n.nextCompletion()) {
+                                    notFound = true;
+                                }
+                            }
+                            if (!this.stop && !notFound) {
+                                if (applyRule(n)) {
+                                    ruleApplied = true;
+                                    try {
+                                        Thread.sleep(this.delay);
+                                    } catch (InterruptedException ex1) {
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        BaseFactory.theFactory().destroyMatch(m);
+                        m = null;
+                    }
+                }
+                if (!this.stop && !ruleApplied) {
+                    try {
+                        Pair<?, ?> tmpPair = (Pair) this.stack.pop();
+                        /* backtrack */
+                        setHostGraph((Graph) tmpPair.first);
+                        eri = (RuleInstances) tmpPair.second;
+                    } catch (Exception ioe) {
+                        /* Stack ist leer */
+                        fireParserEvent(new ParserErrorEvent(this,
+                                "ERROR: This graph is not part of the language"));
+                        this.correct = false;
+                    }
+                }
+            }
+        }
+
+        /* Fertig mit den Excluderegeln */
+        while (!this.stack.empty()) {
+            try {
+                fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
+                Pair<?, ?> tmpPair = (Pair) this.stack.pop();
+
+                Graph g = (Graph) tmpPair.first;
+                BaseFactory.theFactory().destroyGraph(g);
+                tmpPair.second = null;
+            } catch (Exception ioe) {
+            }
+        }
+        fireParserEvent(new ParserMessageEvent(this,
+                "Stopping parser. Result is " + this.correct + "."));
+        return this.correct;
+    }
 
 }
 

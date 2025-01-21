@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.Enumeration;
@@ -22,128 +23,113 @@ import agg.xt_basis.Type;
 
 /**
  * Extends the layer function for a NAC check.
+ *
  * @deprecated
  * @author $Author: olga $
- * @version $Id: WeakExtendedLayerFunction.java,v 1.1 2005/08/25 11:56:57 enrico
- *          Exp $
+ * @version $Id: WeakExtendedLayerFunction.java,v 1.1 2005/08/25 11:56:57 enrico Exp $
  */
 public class WeakExtendedLayerFunction extends WeakLayerFunction {
 
-	/**
-	 * Creates a new layer function.
-	 * 
-	 * @param gragra
-	 *            The graph grammar.
-	 */
-	public WeakExtendedLayerFunction(GraGra gragra) {
-		super(gragra);
-	}
+    /**
+     * Creates a new layer function.
+     *
+     * @param gragra The graph grammar.
+     */
+    public WeakExtendedLayerFunction(GraGra gragra) {
+        super(gragra);
+    }
 
-	/**
-	 * Checks the layer function.
-	 * 
-	 * @return true if the layer function is valid.
-	 * 
-	 * public boolean checkLayer(){ Report.trace("starte ckeckLayer()",2);
-	 * boolean result = true; // 0<= cl(l)<=dl(l)<=n for(Enumeration enum =
-	 * getDeletionLayer().keys(); enum.hasMoreElements() && result;){ Object key =
-	 * enum.nextElement(); Integer dl = (Integer)getDeletionLayer().get(key);
-	 * Integer cl = (Integer)getCreationLayer().get(key); // layerfunktion muss
-	 * total sein if(cl == null || dl == null){ result = false; errMsg = "Type
-	 * name : "+((Type) key).getStringRepr()+"\n"+ " The condition that\n "+ "
-	 * cl, dl are total functions \n "+ " is not satisfied."; break; } if(!(0<=cl.intValue()) ||
-	 * !(cl.intValue()<=dl.intValue())) { result = false; errMsg = "Type name :
-	 * "+((Type) key).getStringRepr()+"\n"+ " Condition \n "+ " 0 <= cl(l) <=
-	 * dl(l) <= n \n "+ " is not satisfied."; } } // for
-	 * 
-	 * HashSet deletionSet = new HashSet(); HashSet creationSet = new HashSet();
-	 * Enumeration rules = getRuleLayer().keys(); while(result &&
-	 * rules.hasMoreElements()){ deletionSet.clear(); creationSet.clear(); Rule
-	 * rule = (Rule) rules.nextElement(); Integer layerRule = (Integer)
-	 * getRuleLayer().get(rule); // gibt es keinen Layer fuer eine Regel, // so
-	 * ist die Layerfunktion nicht korrekt if(layerRule == null){ result =
-	 * false; errMsg = "Rule name : "+rule.getName()+"\n"+ " The condition
-	 * that\n"+ " rl is a total function \n"+ " is not satisfied."; break; }
-	 * Graph leftGraph = rule.getLeft(); Graph rightGraph = rule.getRight(); //
-	 * alle geloeschten Objekte suchen for(Enumeration enum =
-	 * leftGraph.getElements(); enum.hasMoreElements();){ GraphObject grob =
-	 * (GraphObject) enum.nextElement(); if(rule.getImage(grob) == null)
-	 * deletionSet.add(grob); } Report.println("deletionSet ist
-	 * "+deletionSet,Report.LAYER); // dl(l) <= k for(Enumeration enum =
-	 * deletionSet.elements(); enum.hasMoreElements() && result;){ GraphObject
-	 * grob = (GraphObject) enum.nextElement(); Type t = grob.getType(); Integer
-	 * dl = (Integer) getDeletionLayer().get(t); Report.println("dl("+t+") =
-	 * "+dl+" <= rl("+rule+") = "+layerRule,Report.LAYER);
-	 * if(dl.intValue()>layerRule.intValue()) { result = false; errMsg = "Rule
-	 * name : "+rule.getName()+"\n"+ "Type name : "+t.getStringRepr()+"\n"+ "
-	 * The condition that \n"+ " r deletes only nodes and edges with labels \n"+ "
-	 * l such that dl(l) <= rl(r) \n"+ " is not satisfied."; } } if(!result)
-	 * break; // alle erzeugten Objekte suchen for(Enumeration enum =
-	 * rightGraph.getElements(); enum.hasMoreElements();)
-	 * creationSet.add(enum.nextElement()); Report.println("creationSet ist
-	 * "+creationSet,Report.LAYER); for(Enumeration enum =
-	 * leftGraph.getElements(); enum.hasMoreElements();){ try{
-	 * creationSet.remove(rule.getImage((GraphObject)enum.nextElement())); }
-	 * catch (NullPointerException npe){} } Report.println("creationSet
-	 * reduziert auf "+creationSet,Report.LAYER); // cl > k for(Enumeration enum =
-	 * creationSet.elements(); enum.hasMoreElements() && result;){ GraphObject
-	 * grob = (GraphObject) enum.nextElement(); Type t = grob.getType(); Integer
-	 * cl = (Integer) getCreationLayer().get(t); Report.println("cl("+t+") =
-	 * "+cl+" > rl("+rule+") = "+layerRule,Report.LAYER); if(cl.intValue()<=layerRule.intValue()) {
-	 * result = false; errMsg = "Rule name : "+rule.getName()+"\n"+ "Type name :
-	 * "+t.getStringRepr()+"\n"+ " The condition that\n "+ " r creates only
-	 * nodes and edges with labels \n"+ " l such that cl(l) > rl(r) \n"+ " is
-	 * not satisfied."; } } } // test: cl(l) <= rl(k) result = result &&
-	 * checkLayerNAC();
-	 * 
-	 * valid = result; Report.trace("beende checkLayer mit result =
-	 * "+result,-2); return result; }
-	 */
-
-	/**
-	 * Checks the layer function.
-	 * 
-	 * @return true if the layer function is valid.
-	 */
-	public boolean checkLayer() {
-		Report.trace("starte extended ckeckLayer()", 2);
-		boolean result = super.checkLayer();
-		// boolean result = true;
-		for (Iterator<Rule> rules = this.grammar.getListOfRules().iterator(); rules.hasNext()
-				&& result;) {
-			Rule r = rules.next();
-			final List<OrdinaryMorphism> nacs = r.getNACsList();
-			for (int l=0; l<nacs.size(); l++) {
-				final OrdinaryMorphism nac = nacs.get(l);			
-				Graph nacGraph = nac.getImage();
-				for (Enumeration<GraphObject> grobs = nacGraph.getElements(); grobs
-						.hasMoreElements()
-						&& result;) {
-					GraphObject grob = grobs.nextElement();
-					Type t = grob.getType();
-					Integer rl = getRuleLayer().get(r);
-					Integer cl = getCreationLayer().get(t);
-					if (!(cl.intValue() <= rl.intValue())) {
-						result = false;
-						this.errMsg = "Rule name :  "
-								+ r.getName()
-								+ "\n"
-								+ "Type name :  "
-								+ t.getStringRepr()
-								+ "\n"
-								+ " The condition that\n"
-								+ " r  uses only complex negative predicates \n"
-								+ " over nodes and edges with labels \n"
-								+ " l  such that  cl(l) <= rl(r) \n"
-								+ " is not satisfied.";
-					}
-				}
-			}
-		}
-		this.valid = result;
-		Report.trace("beende extended checkLayer mit result = " + result, -2);
-		return result;
-	}
+    /**
+     * Checks the layer function.
+     *
+     * @return true if the layer function is valid.
+     *
+     * public boolean checkLayer(){ Report.trace("starte ckeckLayer()",2); boolean result = true; // 0<= cl(l)<=dl(l)<=n
+     * for(Enumeration enum = getDeletionLayer().keys(); enum.hasMoreElements() && result;){ Object key =
+     * enum.nextElement(); Integer dl = (Integer)getDeletionLayer().get(key); Integer cl =
+     * (Integer)getCreationLayer().get(key); // layerfunktion muss total sein if(cl == null || dl == null){ result =
+     * false; errMsg = "Type name : "+((Type) key).getStringRepr()+"\n"+ " The condition that\n "+ " cl, dl are total
+     * functions \n "+ " is not satisfied."; break; } if(!(0<=cl.intValue()) || !(cl.intValue()<=dl.intValue())) {
+     * result = false; errMsg = "Type name : "+((Type) key).getStringRepr()+"\n"+ " Condition \n "+ " 0 <= cl(l) <=
+     * dl(l) <= n \n "+ " is not satisfied."; } } // for
+     *
+     * HashSet deletionSet = new HashSet(); HashSet creationSet = new HashSet(); Enumeration rules =
+     * getRuleLayer().keys(); while(result && rules.hasMoreElements()){ deletionSet.clear(); creationSet.clear(); Rule
+     * rule = (Rule) rules.nextElement(); Integer layerRule = (Integer) getRuleLayer().get(rule); // gibt es keinen
+     * Layer fuer eine Regel, // so ist die Layerfunktion nicht korrekt if(layerRule == null){ result = false; errMsg =
+     * "Rule name : "+rule.getName()+"\n"+ " The condition that\n"+ " rl is a total function \n"+ " is not satisfied.";
+     * break; } Graph leftGraph = rule.getLeft(); Graph rightGraph = rule.getRight(); // alle geloeschten Objekte suchen
+     * for(Enumeration enum = leftGraph.getElements(); enum.hasMoreElements();){ GraphObject grob = (GraphObject)
+     * enum.nextElement(); if(rule.getImage(grob) == null) deletionSet.add(grob); } Report.println("deletionSet ist
+     * "+deletionSet,Report.LAYER); // dl(l) <= k for(Enumeration enum = deletionSet.elements(); enum.hasMoreElements()
+     * && result;){ GraphObject grob = (GraphObject) enum.nextElement(); Type t = grob.getType(); Integer dl = (Integer)
+     * getDeletionLayer().get(t); Report.println("dl("+t+") = "+dl+" <= rl("+rule+") = "+layerRule,Report.LAYER);
+     * if(dl.intValue()>layerRule.intValue()) { result = false; errMsg = "Rule name : "+rule.getName()+"\n"+ "Type name
+     * : "+t.getStringRepr()+"\n"+ " The condition that \n"+ " r deletes only nodes and edges with labels \n"+ " l such
+     * that dl(l)
+     * <= rl(r) \n"+ " is not satisfied."; } } if(!result)
+     * break; // alle erzeugten Objekte suchen for(Enumeration enum =
+     * rightGraph.getElements(); enum.hasMoreElements();)
+     * creationSet.add(enum.nextElement()); Report.println("creationSet ist
+     * "+creationSet,Report.LAYER); for(Enumeration enum =
+     * leftGraph.getElements(); enum.hasMoreElements();){ try{
+     * creationSet.remove(rule.getImage((GraphObject)enum.nextElement())); }
+     * catch (NullPointerException npe){} } Report.println("creationSet
+     * reduziert auf "+creationSet,Report.LAYER); // cl > k for(Enumeration enum = creationSet.elements();
+     * enum.hasMoreElements() && result;){ GraphObject grob = (GraphObject) enum.nextElement(); Type t = grob.getType();
+     * Integer cl = (Integer) getCreationLayer().get(t); Report.println("cl("+t+") = "+cl+" > rl("+rule+") =
+     * "+layerRule,Report.LAYER); if(cl.intValue()<=layerRule.intValue()) {
+     * result = false; errMsg = "Rule name : "+rule.getName()+"\n"+ "Type name :
+     * "+t.getStringRepr()+"\n"+ " The condition that\n "+ " r creates only
+     * nodes and edges with labels \n"+ " l such that cl(l) > rl(r) \n"+ " is not satisfied."; } } } // test: cl(l) <=
+     * rl(k) result = result && checkLayerNAC();
+     *
+     * valid = result; Report.trace("beende checkLayer mit result = "+result,-2); return result; }
+     */
+    /**
+     * Checks the layer function.
+     *
+     * @return true if the layer function is valid.
+     */
+    public boolean checkLayer() {
+        Report.trace("starte extended ckeckLayer()", 2);
+        boolean result = super.checkLayer();
+        // boolean result = true;
+        for (Iterator<Rule> rules = this.grammar.getListOfRules().iterator(); rules.hasNext()
+                && result;) {
+            Rule r = rules.next();
+            final List<OrdinaryMorphism> nacs = r.getNACsList();
+            for (int l = 0; l < nacs.size(); l++) {
+                final OrdinaryMorphism nac = nacs.get(l);
+                Graph nacGraph = nac.getImage();
+                for (Enumeration<GraphObject> grobs = nacGraph.getElements(); grobs
+                        .hasMoreElements()
+                        && result;) {
+                    GraphObject grob = grobs.nextElement();
+                    Type t = grob.getType();
+                    Integer rl = getRuleLayer().get(r);
+                    Integer cl = getCreationLayer().get(t);
+                    if (!(cl.intValue() <= rl.intValue())) {
+                        result = false;
+                        this.errMsg = "Rule name :  "
+                                + r.getName()
+                                + "\n"
+                                + "Type name :  "
+                                + t.getStringRepr()
+                                + "\n"
+                                + " The condition that\n"
+                                + " r  uses only complex negative predicates \n"
+                                + " over nodes and edges with labels \n"
+                                + " l  such that  cl(l) <= rl(r) \n"
+                                + " is not satisfied.";
+                    }
+                }
+            }
+        }
+        this.valid = result;
+        Report.trace("beende extended checkLayer mit result = " + result, -2);
+        return result;
+    }
 
 }
 /*

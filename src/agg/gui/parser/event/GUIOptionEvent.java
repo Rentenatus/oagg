@@ -1,72 +1,70 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser.event;
 
 import java.util.EventObject;
 
 /**
- * This class covers all events which occure when something happens to the GUI
- * option
- * 
+ * This class covers all events which occure when something happens to the GUI option
+ *
  * @version $Id: GUIOptionEvent.java,v 1.3 2010/09/23 08:21:12 olga Exp $
  * @author $Author: olga $
  */
 @SuppressWarnings("serial")
 public class GUIOptionEvent extends EventObject {
 
-	/**
-	 * specifies the size of the window of critical pairs
-	 */
-	public final static String CRITICALPAIRWINDOWSIZE = "CriticalPairWindowSize";
+    /**
+     * specifies the size of the window of critical pairs
+     */
+    public final static String CRITICALPAIRWINDOWSIZE = "CriticalPairWindowSize";
 
-	/**
-	 * specify what to display when parsing
-	 */
-	public final static String PARSERDISPLAY = "ParserDisplay";
+    /**
+     * specify what to display when parsing
+     */
+    public final static String PARSERDISPLAY = "ParserDisplay";
 
-	/**
-	 * for don't get cluttered set how many critical pairs shall be displayed
-	 */
-	public final static String NUMBEROFCRITICALPAIR = "NumberOfCriticalPair";
+    /**
+     * for don't get cluttered set how many critical pairs shall be displayed
+     */
+    public final static String NUMBEROFCRITICALPAIR = "NumberOfCriticalPair";
 
-	/**
-	 * The option of this event.
-	 * 
-	 * @serial All events a serializable.
-	 */
-	private String option;
+    /**
+     * The option of this event.
+     *
+     * @serial All events a serializable.
+     */
+    private String option;
 
-	/**
-	 * creates a new event
-	 * 
-	 * @param source
-	 *            it is usefull to use the option object here
-	 * @param option
-	 *            specify which option has changed
-	 * @see agg.gui.parser.event.GUIOptionEvent#CRITICALPAIRWINDOWSIZE
-	 * @see agg.gui.parser.event.GUIOptionEvent#PARSERDISPLAY
-	 * @see agg.gui.parser.event.GUIOptionEvent#NUMBEROFCRITICALPAIR
-	 */
-	public GUIOptionEvent(Object source, String option) {
-		super(source);
-		this.option = option;
-	}
+    /**
+     * creates a new event
+     *
+     * @param source it is usefull to use the option object here
+     * @param option specify which option has changed
+     * @see agg.gui.parser.event.GUIOptionEvent#CRITICALPAIRWINDOWSIZE
+     * @see agg.gui.parser.event.GUIOptionEvent#PARSERDISPLAY
+     * @see agg.gui.parser.event.GUIOptionEvent#NUMBEROFCRITICALPAIR
+     */
+    public GUIOptionEvent(Object source, String option) {
+        super(source);
+        this.option = option;
+    }
 
-	/**
-	 * evaluates which option has changed
-	 * 
-	 * @return the changed option
-	 */
-	public String getChangedOption() {
-		return this.option;
-	}
+    /**
+     * evaluates which option has changed
+     *
+     * @return the changed option
+     */
+    public String getChangedOption() {
+        return this.option;
+    }
 
 }
 /*

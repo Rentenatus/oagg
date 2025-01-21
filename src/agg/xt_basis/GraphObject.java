@@ -2,12 +2,10 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 package agg.xt_basis;
 
@@ -24,8 +22,7 @@ import agg.util.XMLHelper;
 import agg.util.XMLObject;
 
 /**
- * GraphObject defines the common interface and implementations for Nodes and
- * Arcs.
+ * GraphObject defines the common interface and implementations for Nodes and Arcs.
  *
  * @version $Id: GraphObject.java,v 1.51 2010/11/14 23:51:48 olga Exp $
  * @author $Author: olga $
@@ -59,7 +56,7 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
     }
 
     public NNVector copyInputVector() {
-        return inputVector == null ? null : inputVector.copyNNVector(); 
+        return inputVector == null ? null : inputVector.copyNNVector();
     }
 
     public final void createAttributeInstance() {
@@ -137,10 +134,9 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
     }
 
     /**
-     * Converts my type to a type key string that can be used for search
-     * operations. For a node it is similar to
+     * Converts my type to a type key string that can be used for search operations. For a node it is similar to
 	 * <code> ((Node) this).getType().convertToKey() </code>, for an edge to      <code> ((Arc) this).getSource().getType().convertToKey()
-	 * + ((Arc) this).getType().convertToKey()
+     * + ((Arc) this).getType().convertToKey()
      * + ((Arc) this).getTarget().getType().convertToKey()
      * </code>
      */
@@ -182,8 +178,7 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
     }
 
     /**
-     * Implements the AttrObserver and propagates attribute changes to the
-     * attribute observers.
+     * Implements the AttrObserver and propagates attribute changes to the attribute observers.
      *
      * @param ev
      */
@@ -302,8 +297,7 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
     public abstract void XreadObject(XMLHelper h);
 
     /**
-     * Checks whether the attribute observer wants a persistent connection to
-     * the given attribute.
+     * Checks whether the attribute observer wants a persistent connection to the given attribute.
      */
     public boolean isPersistentFor(AttrTuple at) {
         return false;

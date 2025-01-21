@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Observable;
@@ -17,233 +18,253 @@ import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerExpr;
 
 /**
- * Class for members of attribute instance tuples that are used as variables in
- * a context. This is an extension of ValueMember; it adds reference counting.
- * 
+ * Class for members of attribute instance tuples that are used as variables in a context. This is an extension of
+ * ValueMember; it adds reference counting.
+ *
  * @author Boris Melamed
  * @version $Id: VarMember.java,v 1.17 2010/11/28 22:11:36 olga Exp $
  */
 public class VarMember extends ValueMember implements AttrVariableMember {
 
-	
-	/** Marking left hand side (LHS) of a rule */
-	public static final int LHS = 0;
+    /**
+     * Marking left hand side (LHS) of a rule
+     */
+    public static final int LHS = 0;
 
-	/** Marking right hand side (RHS) of a rule */
-	public static final int RHS = 1;
+    /**
+     * Marking right hand side (RHS) of a rule
+     */
+    public static final int RHS = 1;
 
-	/** Marking NAC variable of a rule */
-	public static final int NAC = 2;
+    /**
+     * Marking NAC variable of a rule
+     */
+    public static final int NAC = 2;
 
-	/** Marking PAC variable of a rule */
-	public static final int PAC = 3;
-	
-	/** Marking GAC variable of a rule */
-	public static final int GAC = 4;
-	
-	protected int refCnt = 0;
+    /**
+     * Marking PAC variable of a rule
+     */
+    public static final int PAC = 3;
 
-	protected boolean isIn;
+    /**
+     * Marking GAC variable of a rule
+     */
+    public static final int GAC = 4;
 
-	protected boolean isOut;
+    protected int refCnt = 0;
 
-	private int mark; // LHS | RHS | NAC | PAC |GAC
+    protected boolean isIn;
 
-	private boolean enabled = true;
-	
-	public static final long serialVersionUID = 3905403576345689583L;
+    protected boolean isOut;
 
-	/**
-	 * Creating a new instance with the specified type.
-	 * 
-	 * @param tuple
-	 *            Instance tuple that this value is a member of.
-	 * @param decl
-	 *            Declaration for this member.
-	 */
-	public VarMember(VarTuple tuple, DeclMember decl) {
-		super(tuple, decl);
-		this.isIn = false;
-		this.isOut = false;
-		this.errorMsg = "";
-		this.isTransient = false;
-	}
+    private int mark; // LHS | RHS | NAC | PAC |GAC
 
-	public String getErrorMsg() {
-		return this.errorMsg;
-	}
+    private boolean enabled = true;
 
-	/** Removes this member from its tuple. */
-	public void delete() {
-		getDeclaration().delete();
-	}
+    public static final long serialVersionUID = 3905403576345689583L;
 
-	public void setEnabled(boolean b) {
-		this.enabled = b;
-		fireChanged(AttrEvent.MEMBER_DISABLED);
-	}
+    /**
+     * Creating a new instance with the specified type.
+     *
+     * @param tuple Instance tuple that this value is a member of.
+     * @param decl Declaration for this member.
+     */
+    public VarMember(VarTuple tuple, DeclMember decl) {
+        super(tuple, decl);
+        this.isIn = false;
+        this.isOut = false;
+        this.errorMsg = "";
+        this.isTransient = false;
+    }
 
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-	
-	public boolean isInputParameter() {
-		return this.isIn;
-	}
+    public String getErrorMsg() {
+        return this.errorMsg;
+    }
 
-	public void setInputParameter(boolean in) {
-		this.isIn = in;
-	}
+    /**
+     * Removes this member from its tuple.
+     */
+    public void delete() {
+        getDeclaration().delete();
+    }
 
-	public boolean isOutputParameter() {
-		return this.isOut;
-	}
+    public void setEnabled(boolean b) {
+        this.enabled = b;
+        fireChanged(AttrEvent.MEMBER_DISABLED);
+    }
 
-	public void setOutputParameter(boolean out) {
-		this.isOut = out;
-	}
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
-	public int getReferenceCount() {
-		return this.refCnt;
-	}
+    public boolean isInputParameter() {
+        return this.isIn;
+    }
 
-	public boolean isUnifiableWith(HandlerExpr srcExpr) {
-		if (isEmpty() || getExpr().equals(srcExpr))
-			return true;
-		
-		this.errorMsg = getExpr() + "  is not unifiable with  " + srcExpr;
-		return false;
-	}
+    public void setInputParameter(boolean in) {
+        this.isIn = in;
+    }
 
-	public boolean unifyWith(HandlerExpr srcExpr) {
-		if (!isUnifiableWith(srcExpr)) 
-			return false;
-		
-		if (isEmpty()) {
-			if (srcExpr != null) {
-				this.setExpr(srcExpr.getCopy());
-				incrementCount();
-			}
-		}
-		return true;
-	}
+    public boolean isOutputParameter() {
+        return this.isOut;
+    }
 
-	/** copy the contents of a single entry instance into another. */
-	public void copy(ValueMember fromInstance) {
-		super.copy(fromInstance);
-		VarMember fromVar = (VarMember) fromInstance;
-		this.refCnt = fromVar.refCnt;
-		this.isIn = fromVar.isIn;
-		this.isOut = fromVar.isOut;
-		setTransient(fromVar.isTransient());
-		setMark(fromVar.getMark());
-	}
+    public void setOutputParameter(boolean out) {
+        this.isOut = out;
+    }
 
-	public void undoUnification() {
-		decrementCount();
-	}
+    public int getReferenceCount() {
+        return this.refCnt;
+    }
 
-	public void setExpr(HandlerExpr expr) throws AttrImplException {
-		super.setExpr(expr);
-		if (this.expression == null)
-			this.refCnt = 0;
-		else
-			this.refCnt = 1;
-	}
-	
-	public void setExprAsObject(Object value) throws AttrImplException {
-		super.setExprAsObject(value);
-		startCount();
-	}
+    public boolean isUnifiableWith(HandlerExpr srcExpr) {
+        if (isEmpty() || getExpr().equals(srcExpr)) {
+            return true;
+        }
 
-	public void setExprAsText(String exprText) throws AttrImplException {
-		super.setExprAsText(exprText);
-		startCount();
-		// try initialize variable of attr. context
-		if (getExpr() != null && getExpr().isComplex()
-				&& (exprText.indexOf("new ") == 0)) {
-			apply(getExpr());
-		}
-	}
+        this.errorMsg = getExpr() + "  is not unifiable with  " + srcExpr;
+        return false;
+    }
 
-	public void setExprAsText(String exprText, boolean initialize) throws AttrImplException {
-		super.setExprAsText(exprText);
-		startCount();
-		// try initialize variable of attr. context
-		if (getExpr() != null && getExpr().isComplex()
-				&& initialize && (exprText.indexOf("new ") == 0)) {
-			apply(getExpr());
-		}
-	}
-	
-	public void setExprAsEvaluatedText(String exprText) {
-		super.setExprAsEvaluatedText(exprText);
-		startCount();
-	}
+    public boolean unifyWith(HandlerExpr srcExpr) {
+        if (!isUnifiableWith(srcExpr)) {
+            return false;
+        }
 
-	public HandlerExpr getExpr() {
-		return super.getExpr();
-	}
+        if (isEmpty()) {
+            if (srcExpr != null) {
+                this.setExpr(srcExpr.getCopy());
+                incrementCount();
+            }
+        }
+        return true;
+    }
 
-	/** Test, if the expression evaluates to a constant. */
-	public boolean isDefinite() {
-		return (getEvaluationResult() != null);
-	}
+    /**
+     * copy the contents of a single entry instance into another.
+     */
+    public void copy(ValueMember fromInstance) {
+        super.copy(fromInstance);
+        VarMember fromVar = (VarMember) fromInstance;
+        this.refCnt = fromVar.refCnt;
+        this.isIn = fromVar.isIn;
+        this.isOut = fromVar.isOut;
+        setTransient(fromVar.isTransient());
+        setMark(fromVar.getMark());
+    }
 
-	/**
-	 * The mark m defines a graph context of this variable . The graph context
-	 * can be LHS, RHS, PAC, NAC.
-	 */
-	public void setMark(int m) {
-		this.mark = m;
-	}
+    public void undoUnification() {
+        decrementCount();
+    }
 
-	public int getMark() {
-		return this.mark;
-	}
+    public void setExpr(HandlerExpr expr) throws AttrImplException {
+        super.setExpr(expr);
+        if (this.expression == null) {
+            this.refCnt = 0;
+        } else {
+            this.refCnt = 1;
+        }
+    }
 
-	/** Implementation of the only Observer interface method. */
-	public void update(Observable o, Object arg) {
-	}
+    public void setExprAsObject(Object value) throws AttrImplException {
+        super.setExprAsObject(value);
+        startCount();
+    }
 
+    public void setExprAsText(String exprText) throws AttrImplException {
+        super.setExprAsText(exprText);
+        startCount();
+        // try initialize variable of attr. context
+        if (getExpr() != null && getExpr().isComplex()
+                && (exprText.indexOf("new ") == 0)) {
+            apply(getExpr());
+        }
+    }
 
-	protected HandlerExpr getEvaluationResult() {
+    public void setExprAsText(String exprText, boolean initialize) throws AttrImplException {
+        super.setExprAsText(exprText);
+        startCount();
+        // try initialize variable of attr. context
+        if (getExpr() != null && getExpr().isComplex()
+                && initialize && (exprText.indexOf("new ") == 0)) {
+            apply(getExpr());
+        }
+    }
+
+    public void setExprAsEvaluatedText(String exprText) {
+        super.setExprAsEvaluatedText(exprText);
+        startCount();
+    }
+
+    public HandlerExpr getExpr() {
+        return super.getExpr();
+    }
+
+    /**
+     * Test, if the expression evaluates to a constant.
+     */
+    public boolean isDefinite() {
+        return (getEvaluationResult() != null);
+    }
+
+    /**
+     * The mark m defines a graph context of this variable . The graph context can be LHS, RHS, PAC, NAC.
+     */
+    public void setMark(int m) {
+        this.mark = m;
+    }
+
+    public int getMark() {
+        return this.mark;
+    }
+
+    /**
+     * Implementation of the only Observer interface method.
+     */
+    public void update(Observable o, Object arg) {
+    }
+
+    protected HandlerExpr getEvaluationResult() {
 //		logPrintln(VerboseControl.logTrace,
 //				"VarMember:\n->getEvaluationResult()");
-		if (!isValid() || getExpr() == null)
-			return null;
-		HandlerExpr ex = getExpr().getCopy();
-		try {
-			if (ex.isConstant())
-				ex.evaluate(getContext());
-			return ex;
-		} catch (AttrHandlerException ex1) {
-			return null;
-		} finally {
+        if (!isValid() || getExpr() == null) {
+            return null;
+        }
+        HandlerExpr ex = getExpr().getCopy();
+        try {
+            if (ex.isConstant()) {
+                ex.evaluate(getContext());
+            }
+            return ex;
+        } catch (AttrHandlerException ex1) {
+            return null;
+        } finally {
 //			logPrintln(VerboseControl.logTrace,
 //					"VarMember:\n<-getEvaluationResult()");
-		}
-	}
+        }
+    }
 
-	protected void startCount() {
-		this.refCnt = 1;
-	}
+    protected void startCount() {
+        this.refCnt = 1;
+    }
 
-	protected void incrementCount() {
-		this.refCnt++;
-	}
+    protected void incrementCount() {
+        this.refCnt++;
+    }
 
-	protected void decrementCount() {
-		if (this.refCnt > 0)
-			this.refCnt--;
-		if (this.refCnt == 0) 
-			this.expression = null;	
-	}
+    protected void decrementCount() {
+        if (this.refCnt > 0) {
+            this.refCnt--;
+        }
+        if (this.refCnt == 0) {
+            this.expression = null;
+        }
+    }
 
-	public String toString() {
-		return "VarMember " + getExprAsText() + " refCnt: " + this.refCnt + " IN: "
-				+ this.isIn + " OUT: " + this.isOut + " hash: " + hashCode();
-	}
+    public String toString() {
+        return "VarMember " + getExprAsText() + " refCnt: " + this.refCnt + " IN: "
+                + this.isIn + " OUT: " + this.isOut + " hash: " + hashCode();
+    }
 }
 /*
  * $Log: VarMember.java,v $

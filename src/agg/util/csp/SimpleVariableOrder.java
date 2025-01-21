@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: SimpleVariableOrder.java,v 1.7 2009/10/05 08:53:25 olga Exp $
-
 // $Log: SimpleVariableOrder.java,v $
 // Revision 1.7  2009/10/05 08:53:25  olga
 // RSA check - bug fixed
@@ -66,36 +66,33 @@
 // Revision 1.1  1997/09/16 15:56:55  mich
 // Initial revision
 //
-
 package agg.util.csp;
 
-
 public class SimpleVariableOrder implements BinaryPredicate {
-	public SimpleVariableOrder() {
-	}
 
-	/**
-	 * Return true iff the object domain of <code>var1</code> is smaller than the
-	 * object domain of <code>var2</code>.
-	 * <p>
-	 * <b>Pre:</b> <code>var1,var2 instance of Variable</code>.
-	 */
-	public final boolean execute(Object var1, Object var2) {
-		
-		boolean result = (((Variable) var1).getDomainSize() 
-	 						!= ((Variable) var2).getDomainSize())?
-	 					((Variable) var1).getDomainSize() 
-	 						< ((Variable) var2).getDomainSize()
-//	 						: var1.hashCode() < var2.hashCode();
-	 						: true;
-	 						
+    public SimpleVariableOrder() {
+    }
+
+    /**
+     * Return true iff the object domain of <code>var1</code> is smaller than the object domain of <code>var2</code>.
+     * <p>
+     * <b>Pre:</b> <code>var1,var2 instance of Variable</code>.
+     */
+    public final boolean execute(Object var1, Object var2) {
+
+        boolean result = (((Variable) var1).getDomainSize()
+                != ((Variable) var2).getDomainSize())
+                ? ((Variable) var1).getDomainSize()
+                < ((Variable) var2).getDomainSize()
+                //	 						: var1.hashCode() < var2.hashCode();
+                : true;
+
 //		boolean result = (((Variable) var1).getWeight() 
 //				 			!= ((Variable) var2).getWeight())?
 //				 					((Variable) var1).getWeight() 
 //				 						< ((Variable) var2).getWeight()
 //				 						: var1.hashCode() < var2.hashCode();
-	 						
-		return result;
+        return result;
 
-	}
+    }
 }

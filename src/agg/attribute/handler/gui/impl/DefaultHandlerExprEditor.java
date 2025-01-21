@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.gui.impl;
 
 import java.awt.Component;
@@ -17,46 +18,43 @@ import agg.attribute.handler.HandlerType;
 import agg.attribute.handler.gui.HandlerExprEditor;
 
 // import java.util.EventObject;
-
 /**
- * @version $Id: DefaultHandlerExprEditor.java,v 1.1 2005/08/25 11:56:58 enrico
- *          Exp $
+ * @version $Id: DefaultHandlerExprEditor.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
  * @author $Author: olga $
  */
 public class DefaultHandlerExprEditor extends DefaultHandlerEditorSupport
-		implements HandlerExprEditor {
+        implements HandlerExprEditor {
 
-	public DefaultHandlerExprEditor() {
-		super();
-	}
+    public DefaultHandlerExprEditor() {
+        super();
+    }
 
-	/**
-	 * Returns a graphical component for displaying the specified expr. The
-	 * 'availableSpace' limit should be honoured, since this is a service for
-	 * displaying the expr in a table cell. However, the renderer can contain
-	 * tools (e.g. buttons) for invoking its larger custom renderer. Either
-	 * 'type' or 'exprToRender' cannot be null.
-	 */
-	public Component getRendererComponent(HandlerType type,
-			HandlerExpr exprToRender, Dimension availableSpace) {
-		return getRendererComponent(exprToRender, availableSpace);
-	}
+    /**
+     * Returns a graphical component for displaying the specified expr. The 'availableSpace' limit should be honoured,
+     * since this is a service for displaying the expr in a table cell. However, the renderer can contain tools (e.g.
+     * buttons) for invoking its larger custom renderer. Either 'type' or 'exprToRender' cannot be null.
+     */
+    public Component getRendererComponent(HandlerType type,
+            HandlerExpr exprToRender, Dimension availableSpace) {
+        return getRendererComponent(exprToRender, availableSpace);
+    }
 
-	/**
-	 * Returns a graphical component for editing the specified expr. The
-	 * 'availableSpace' is a recommendation when the editor wishes to be
-	 * operatable in a compact table cell and needs not be taken into account.
-	 * Either 'type' or 'exprToEdit' cannot be null.
-	 */
-	public Component getEditorComponent(HandlerType type,
-			HandlerExpr exprToEdit, Dimension availableSpace) {
-		return getEditorComponent(exprToEdit, availableSpace);
-	}
+    /**
+     * Returns a graphical component for editing the specified expr. The 'availableSpace' is a recommendation when the
+     * editor wishes to be operatable in a compact table cell and needs not be taken into account. Either 'type' or
+     * 'exprToEdit' cannot be null.
+     */
+    public Component getEditorComponent(HandlerType type,
+            HandlerExpr exprToEdit, Dimension availableSpace) {
+        return getEditorComponent(exprToEdit, availableSpace);
+    }
 
-	/** Returns the edited expression. */
-	public HandlerExpr getEditedExpr() {
-		return (HandlerExpr) this.editedObject;
-	}
+    /**
+     * Returns the edited expression.
+     */
+    public HandlerExpr getEditedExpr() {
+        return (HandlerExpr) this.editedObject;
+    }
 }
 /*
  * $Log: DefaultHandlerExprEditor.java,v $

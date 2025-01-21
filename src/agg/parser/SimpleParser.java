@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.EmptyStackException;
@@ -20,96 +21,93 @@ import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.util.Pair;
 
-
 // ---------------------------------------------------------------------------+
 /**
- * This class provides a parser which works without critical pair analysis. So a
- * simple backtracking algorithm is implemented.
- * 
+ * This class provides a parser which works without critical pair analysis. So a simple backtracking algorithm is
+ * implemented.
+ *
  * @see ParserFactory#createParser createParser(...)
  * @author $Author: olga $ Parser Group
  * @version $Id: SimpleParser.java,v 1.10 2010/08/18 09:26:52 olga Exp $
  */
 public class SimpleParser extends AbstractParser implements Runnable {
 
-	protected boolean stop;
+    protected boolean stop;
 
-	protected boolean correct;
+    protected boolean correct;
 
-	/**
-	 * Created a new parser.
-	 * 
-	 * @param grammar
-	 *            The graph grammar.
-	 * @param hostGraph
-	 *            The host graph.
-	 * @param stopGraph
-	 *            The stop graph.
-	 */
-	public SimpleParser(GraGra grammar, Graph hostGraph, Graph stopGraph) {
-		super(grammar, hostGraph, stopGraph, null);
-		this.stop = false;
-	}
+    /**
+     * Created a new parser.
+     *
+     * @param grammar The graph grammar.
+     * @param hostGraph The host graph.
+     * @param stopGraph The stop graph.
+     */
+    public SimpleParser(GraGra grammar, Graph hostGraph, Graph stopGraph) {
+        super(grammar, hostGraph, stopGraph, null);
+        this.stop = false;
+    }
 
-	/**
-	 * Usually this method is invoked by the start method from the class <CODE>Thread</CODE>.
-	 * This method starts the parser.
-	 */
-	public void run() {
-		fireParserEvent(new ParserMessageEvent(this,
-				"Starting parser. Please wait ..."));
-		parse();
-		if (this.stop)
-			fireParserEvent(new ParserMessageEvent(this, "Stopping parser."));
-		else
-			fireParserEvent(new ParserMessageEvent(this,
-					"Finishing parser. Result is " + this.correct + "."));
-	}
+    /**
+     * Usually this method is invoked by the start method from the class <CODE>Thread</CODE>. This method starts the
+     * parser.
+     */
+    public void run() {
+        fireParserEvent(new ParserMessageEvent(this,
+                "Starting parser. Please wait ..."));
+        parse();
+        if (this.stop) {
+            fireParserEvent(new ParserMessageEvent(this, "Stopping parser."));
+        } else {
+            fireParserEvent(new ParserMessageEvent(this,
+                    "Finishing parser. Result is " + this.correct + "."));
+        }
+    }
 
-	/**
-	 * Stops the running.
-	 */
-	public void stop() {
-		this.stop = true;
-	}
+    /**
+     * Stops the running.
+     */
+    public void stop() {
+        this.stop = true;
+    }
 
-	public boolean wasStopped() {
-		return this.stop;
-	}
+    public boolean wasStopped() {
+        return this.stop;
+    }
 
-	// -----------------------------------------------------------------------+
-	/**
-	 * Starts the parser.
-	 * 
-	 * @return true if the graph can be parsed.
-	 */
-	public boolean parse() {
+    // -----------------------------------------------------------------------+
+    /**
+     * Starts the parser.
+     *
+     * @return true if the graph can be parsed.
+     */
+    public boolean parse() {
 //		System.out.println("Starting simple parser ...");
-		Stack<Pair<Graph, RuleInstances>> stack = new Stack<Pair<Graph, RuleInstances>>();
-		this.correct = true;
-		/*
+        Stack<Pair<Graph, RuleInstances>> stack = new Stack<Pair<Graph, RuleInstances>>();
+        this.correct = true;
+        /*
 		 * haelt alle Matche, die kritisch sind, damit nicht an einer Stelle
 		 * immer wieder angesetzt wird
-		 */
-		RuleInstances eri = new RuleInstances();
-		fireParserEvent(new ParserMessageEvent(this,
-				"Starting simple parser ..."));
-		boolean ruleApplied = false;
-		while (!this.stop && !getHostGraph().isIsomorphicTo(this.stopGraph) && this.correct) {
-			fireParserEvent(new ParserMessageEvent(this, "Searching for match!"));
-			Match m = findMatch(getHostGraph(), this.grammar.getRuleIterator(), eri);
-			if (m != null) {
-				ruleApplied = false;
-				/* auf Stack pushen */
-				OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
-				if (copyMorph != null) {
-					/*
+         */
+        RuleInstances eri = new RuleInstances();
+        fireParserEvent(new ParserMessageEvent(this,
+                "Starting simple parser ..."));
+        boolean ruleApplied = false;
+        while (!this.stop && !getHostGraph().isIsomorphicTo(this.stopGraph) && this.correct) {
+            fireParserEvent(new ParserMessageEvent(this, "Searching for match!"));
+            Match m = findMatch(getHostGraph(), this.grammar.getRuleIterator(), eri);
+            if (m != null) {
+                ruleApplied = false;
+                /* auf Stack pushen */
+                OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
+                if (copyMorph != null) {
+                    /*
 					 * sendet den copierten Graphen durch den Morphismus damit das
 					 * Layout upgedated werden kann
-					 */
-					fireParserEvent(new ParserMessageEvent(copyMorph, "IsoCopy"));
-					eri.add(m);
-					/*
+                     */
+                    fireParserEvent(new ParserMessageEvent(copyMorph, "IsoCopy"));
+                    eri.add(m);
+                    /*
 					 * ERI muss nicht kopiert werden, da nur an Entscheidungsstellen
 					 * der Match/die Matches gemerkt werden mssen, die uns
 					 * moeglicherweise auf einen Holzweg fhren. Der Match in ERI ist
@@ -117,68 +115,69 @@ public class SimpleParser extends AbstractParser implements Runnable {
 					 * loeschen) nicht mehr verfuegbar. Dadurch kann ein neues ERI
 					 * erzeugt werden. Auf dem Stack liegen dann nur die
 					 * Ableitungen, die uns in eine Sackgasse gefuehrt haben.
-					 */
-					Pair<Graph, RuleInstances> tmpPair = new Pair<Graph, RuleInstances>(
-							getHostGraph(), eri);
-					stack.push(tmpPair);
-					eri = new RuleInstances();
-					/*
+                     */
+                    Pair<Graph, RuleInstances> tmpPair = new Pair<Graph, RuleInstances>(
+                            getHostGraph(), eri);
+                    stack.push(tmpPair);
+                    eri = new RuleInstances();
+                    /*
 					 * Die Regel muss auf den kopierten Graphen mit DEMSELBEN
 					 * kopierten Match angewendet werden.
-					 */
-					setHostGraph(copyMorph.getImage());
-					OrdinaryMorphism tmpMorph = m.compose(copyMorph);
-					Match n = tmpMorph.makeMatch(m.getRule());
-					n.setCompletionStrategy((MorphCompletionStrategy) this.grammar
-							.getMorphismCompletionStrategy().clone(), true);
-					// n.getCompletionStrategy().showProperties();
-	
-					boolean found = true;
-					while (!n.isValid() && found) {
-						if (!n.nextCompletion())
-							found = false;
-					}
-					if (found) {
-						if (applyRule(n)) {
-							ruleApplied = true;
-							try {
-								Thread.sleep(this.delay);
-							} catch (InterruptedException ex1) {
-							}
-						}
-					}
-				}
-			}
-			if (m == null || !ruleApplied) {
-				/* backtracking, wenn moeglich poppen */
-				try {
-					Pair<Graph, RuleInstances> tmpPair = stack.pop();
-					/* backtrack */
-					setHostGraph(tmpPair.first);
-					eri = tmpPair.second;
-				} catch (EmptyStackException ioe) {
-					/* Stack ist leer */
-					fireParserEvent(new ParserErrorEvent(this,
-							"ERROR: This graph is not part of the language"));
-					this.correct = false;
-				}
-			}
-		}
-		while (!stack.empty()) {
-			try {
-				fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
-				Pair<Graph, RuleInstances> tmpPair = stack.pop();
-				Graph g = tmpPair.first;
-				BaseFactory.theFactory().destroyGraph(g);
-				tmpPair.second.finalize();
-				// tmpPair.second = null;
-			} catch (EmptyStackException ioe) {
-			}
-		}
-		fireParserEvent(new ParserMessageEvent(this,
-				"Stopping parser. Result is " + this.correct + "."));
-		return this.correct;
-	}
+                     */
+                    setHostGraph(copyMorph.getImage());
+                    OrdinaryMorphism tmpMorph = m.compose(copyMorph);
+                    Match n = tmpMorph.makeMatch(m.getRule());
+                    n.setCompletionStrategy((MorphCompletionStrategy) this.grammar
+                            .getMorphismCompletionStrategy().clone(), true);
+                    // n.getCompletionStrategy().showProperties();
+
+                    boolean found = true;
+                    while (!n.isValid() && found) {
+                        if (!n.nextCompletion()) {
+                            found = false;
+                        }
+                    }
+                    if (found) {
+                        if (applyRule(n)) {
+                            ruleApplied = true;
+                            try {
+                                Thread.sleep(this.delay);
+                            } catch (InterruptedException ex1) {
+                            }
+                        }
+                    }
+                }
+            }
+            if (m == null || !ruleApplied) {
+                /* backtracking, wenn moeglich poppen */
+                try {
+                    Pair<Graph, RuleInstances> tmpPair = stack.pop();
+                    /* backtrack */
+                    setHostGraph(tmpPair.first);
+                    eri = tmpPair.second;
+                } catch (EmptyStackException ioe) {
+                    /* Stack ist leer */
+                    fireParserEvent(new ParserErrorEvent(this,
+                            "ERROR: This graph is not part of the language"));
+                    this.correct = false;
+                }
+            }
+        }
+        while (!stack.empty()) {
+            try {
+                fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
+                Pair<Graph, RuleInstances> tmpPair = stack.pop();
+                Graph g = tmpPair.first;
+                BaseFactory.theFactory().destroyGraph(g);
+                tmpPair.second.finalize();
+                // tmpPair.second = null;
+            } catch (EmptyStackException ioe) {
+            }
+        }
+        fireParserEvent(new ParserMessageEvent(this,
+                "Stopping parser. Result is " + this.correct + "."));
+        return this.correct;
+    }
 }
 
 /*

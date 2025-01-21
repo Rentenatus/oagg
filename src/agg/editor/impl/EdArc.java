@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.editor.impl;
 
 import java.awt.BasicStroke;
@@ -48,1947 +49,2056 @@ import agg.layout.evolutionary.LayoutArc;
 
 /**
  * EdArc specifies an arc layout of an agg.xt_basis.Arc object
- * 
+ *
  * @author $Author: olga $
  * @version $Id: EdArc.java,v 1.60 2010/11/14 12:59:11 olga Exp $
  */
-
 public class EdArc extends EdGraphObject implements AttrViewObserver,
-		XMLObject, StateEditable {
+        XMLObject, StateEditable {
 
-	
-	private Arc bArc;
+    private Arc bArc;
 
-	private EdGraphObject from;
+    private EdGraphObject from;
 
-	private EdGraphObject to;
+    private EdGraphObject to;
 
-	private boolean directed = true;
+    private boolean directed = true;
 
-	private Point anchor;
+    private Point anchor;
 
-	transient private int anchorID = 0; // only for loop
+    transient private int anchorID = 0; // only for loop
 
-	transient private boolean hasDefaultAnchor;
+    transient private boolean hasDefaultAnchor;
 
-	transient private Point arrowPoint;
-	transient private Point tailPoint;
-	
-	transient private Point textLocation;
+    transient private Point arrowPoint;
+    transient private Point tailPoint;
 
-	protected Point textOffset, origTextOffset;
+    transient private Point textLocation;
 
-	transient private Dimension textSize;
+    protected Point textOffset, origTextOffset;
 
-	transient private Point srcMultiplicityLocation;
+    transient private Dimension textSize;
 
-	transient private Dimension srcMultiplicitySize;
+    transient private Point srcMultiplicityLocation;
 
-	transient private Point srcMultiplicityOffset;
+    transient private Dimension srcMultiplicitySize;
 
-	transient private Point trgMultiplicityLocation;
+    transient private Point srcMultiplicityOffset;
 
-	transient private Dimension trgMultiplicitySize;
+    transient private Point trgMultiplicityLocation;
 
-	transient private Point trgMultiplicityOffset;
+    transient private Dimension trgMultiplicitySize;
 
-	transient private int partOfText; // 0 attrText, 1/2 src/trg
+    transient private Point trgMultiplicityOffset;
 
-	private LayoutArc lArc;
+    transient private int partOfText; // 0 attrText, 1/2 src/trg
 
-	
-	/**
-	 * Creates an arc layout specified by the EdType eType for an used object
-	 * specified by the Arc bArc, EdGraphObject from, EdGraphObject to
-	 */
-	public EdArc(Arc bArc, EdType eType, EdGraphObject from, EdGraphObject to) throws TypeException {
-		super(eType);
-		
-		if (bArc == null || bArc.getSource() == null || bArc.getTarget() == null) {
-			throw new TypeException("Basic node is null");
-		}
-		
-		this.bArc = bArc;
-		this.from = from;
-		this.to = to;
-		this.directed = bArc.isDirected();
-		this.anchor = null;
-		this.hasDefaultAnchor = true;
-		this.x = 0;
-		this.y = 0;
-		this.w = 0;
-		this.h = 0;
-		this.textOffset = new Point(0, -22);
-		this.textLocation = new Point();
-		this.textSize = new Dimension();
-		
-		if (this.bArc != null) {
-			this.contextUsage = String.valueOf(this.hashCode());
-			if (this.bArc.getAttribute() != null) {
-				addToAttributeViewObserver();
-			}
-		}
+    private LayoutArc lArc;
 
-		this.lArc = new LayoutArc(this);
-	}
+    /**
+     * Creates an arc layout specified by the EdType eType for an used object specified by the Arc bArc, EdGraphObject
+     * from, EdGraphObject to
+     */
+    public EdArc(Arc bArc, EdType eType, EdGraphObject from, EdGraphObject to) throws TypeException {
+        super(eType);
 
-	/**
-	 * Creates an arc layout specified by the EdType eType, EdGraphObject from,
-	 * EdGraphObject to for an used object of the class agg.xt_basis.Arc that
-	 * would be created from the graph specified by the Graph bGraph
-	 */
-	public EdArc(Graph bGraph, EdType eType, EdGraphObject from,
-			EdGraphObject to) throws TypeException {
-		this(bGraph, eType, from, to, null);
-	}
+        if (bArc == null || bArc.getSource() == null || bArc.getTarget() == null) {
+            throw new TypeException("Basic node is null");
+        }
 
-	/**
-	 * Creates an arc layout specified by the EdType eType, EdGraphObject from,
-	 * EdGraphObject to, Point anchor ( bend ) for an used object of the class
-	 * agg.xt_basis.Arc that would be created from the graph specified by the
-	 * Graph bGraph
-	 */
-	public EdArc(Graph bGraph, EdType eType, EdGraphObject from,
-			EdGraphObject to, Point anchor) throws TypeException {
+        this.bArc = bArc;
+        this.from = from;
+        this.to = to;
+        this.directed = bArc.isDirected();
+        this.anchor = null;
+        this.hasDefaultAnchor = true;
+        this.x = 0;
+        this.y = 0;
+        this.w = 0;
+        this.h = 0;
+        this.textOffset = new Point(0, -22);
+        this.textLocation = new Point();
+        this.textSize = new Dimension();
 
-		this((bGraph != null) ? bGraph.createArc(eType.bType, (Node) from
-				.getBasisObject(), (Node) to.getBasisObject()) : null, eType,
-				from, to);
-		setAnchor(anchor);
-	}
+        if (this.bArc != null) {
+            this.contextUsage = String.valueOf(this.hashCode());
+            if (this.bArc.getAttribute() != null) {
+                addToAttributeViewObserver();
+            }
+        }
 
-	/** Marks this as element of a type graph */
-	public void markElementOfTypeGraph(boolean val) {
-		this.elemOfTG = val;
-		if (this.elemOfTG && !this.getContext().isInheritanceType(this.eType)) {
-			createMultiplicityVars();
-		}
-	}
-	
-	private void createMultiplicityVars() {
-		if (this.srcMultiplicityLocation == null)
-			this.srcMultiplicityLocation = new Point();	
-		if (this.srcMultiplicitySize == null)
-			this.srcMultiplicitySize = new Dimension();
-		if (this.srcMultiplicityOffset == null)
-			this.srcMultiplicityOffset = new Point();
-		if (this.trgMultiplicityLocation == null)
-			this.trgMultiplicityLocation = new Point();
-		if (this.trgMultiplicitySize == null)
-			this.trgMultiplicitySize = new Dimension();
-		if (this.trgMultiplicityOffset == null)
-			this.trgMultiplicityOffset = new Point();
-	}
-	
-	/** Disposes myself */
-	public void dispose() {
-		if (this.attrObserver) {
-			removeFromAttributeViewObserver();
-		}
-		this.view = null;
-		if (this.lArc != null)
-			this.lArc.dispose(); 
-		this.lArc = null;
-		this.eGraph = null;
-		this.eType = null;
-		this.from = null;
-		this.to = null;
-		this.bArc = null;
-		this.myGraphPanel = null;
-	}
+        this.lArc = new LayoutArc(this);
+    }
 
-	public void finalize() { }
-	
-	public void storeState(Hashtable<Object, Object> state) {
-		ArcReprData data = new ArcReprData(this);
-		state.put(Integer.valueOf(this.hashCode()), data);
-		state.put(Integer.valueOf(data.hashCode()), data);
-		this.itsUndoReprDataHC = Integer.valueOf(data.hashCode());
-	}
+    /**
+     * Creates an arc layout specified by the EdType eType, EdGraphObject from, EdGraphObject to for an used object of
+     * the class agg.xt_basis.Arc that would be created from the graph specified by the Graph bGraph
+     */
+    public EdArc(Graph bGraph, EdType eType, EdGraphObject from,
+            EdGraphObject to) throws TypeException {
+        this(bGraph, eType, from, to, null);
+    }
 
-	public void restoreState(Hashtable<?, ?> state) {	
+    /**
+     * Creates an arc layout specified by the EdType eType, EdGraphObject from, EdGraphObject to, Point anchor ( bend )
+     * for an used object of the class agg.xt_basis.Arc that would be created from the graph specified by the Graph
+     * bGraph
+     */
+    public EdArc(Graph bGraph, EdType eType, EdGraphObject from,
+            EdGraphObject to, Point anchor) throws TypeException {
+
+        this((bGraph != null) ? bGraph.createArc(eType.bType, (Node) from
+                .getBasisObject(), (Node) to.getBasisObject()) : null, eType,
+                from, to);
+        setAnchor(anchor);
+    }
+
+    /**
+     * Marks this as element of a type graph
+     */
+    public void markElementOfTypeGraph(boolean val) {
+        this.elemOfTG = val;
+        if (this.elemOfTG && !this.getContext().isInheritanceType(this.eType)) {
+            createMultiplicityVars();
+        }
+    }
+
+    private void createMultiplicityVars() {
+        if (this.srcMultiplicityLocation == null) {
+            this.srcMultiplicityLocation = new Point();
+        }
+        if (this.srcMultiplicitySize == null) {
+            this.srcMultiplicitySize = new Dimension();
+        }
+        if (this.srcMultiplicityOffset == null) {
+            this.srcMultiplicityOffset = new Point();
+        }
+        if (this.trgMultiplicityLocation == null) {
+            this.trgMultiplicityLocation = new Point();
+        }
+        if (this.trgMultiplicitySize == null) {
+            this.trgMultiplicitySize = new Dimension();
+        }
+        if (this.trgMultiplicityOffset == null) {
+            this.trgMultiplicityOffset = new Point();
+        }
+    }
+
+    /**
+     * Disposes myself
+     */
+    public void dispose() {
+        if (this.attrObserver) {
+            removeFromAttributeViewObserver();
+        }
+        this.view = null;
+        if (this.lArc != null) {
+            this.lArc.dispose();
+        }
+        this.lArc = null;
+        this.eGraph = null;
+        this.eType = null;
+        this.from = null;
+        this.to = null;
+        this.bArc = null;
+        this.myGraphPanel = null;
+    }
+
+    public void finalize() {
+    }
+
+    public void storeState(Hashtable<Object, Object> state) {
+        ArcReprData data = new ArcReprData(this);
+        state.put(Integer.valueOf(this.hashCode()), data);
+        state.put(Integer.valueOf(data.hashCode()), data);
+        this.itsUndoReprDataHC = Integer.valueOf(data.hashCode());
+    }
+
+    public void restoreState(Hashtable<?, ?> state) {
 //		System.out.println("EdArc.restoreState:: "+state.get(Integer.valueOf(this.hashCode()))+"   "+state.get(this.itsUndoReprDataHC));
 
-		ArcReprData data = (ArcReprData) state.get(Integer.valueOf(this.hashCode()));
-		if (data == null) {
-			data = (ArcReprData) state.get(this.itsUndoReprDataHC);	
-		}
-		if (data != null) {
-			data.restoreArcFromArcRepr(this);
-			this.attrChanged = false;
-		}
-	}
+        ArcReprData data = (ArcReprData) state.get(Integer.valueOf(this.hashCode()));
+        if (data == null) {
+            data = (ArcReprData) state.get(this.itsUndoReprDataHC);
+        }
+        if (data != null) {
+            data.restoreArcFromArcRepr(this);
+            this.attrChanged = false;
+        }
+    }
 
-	public void restoreState(Hashtable<?, ?> state, String hashCode) {
+    public void restoreState(Hashtable<?, ?> state, String hashCode) {
 //		System.out.println("### EdArc.restoreState:: "+state.get(Integer.valueOf(hashCode))+"   "+state.get(this.itsUndoReprDataHC));
-		
-		ArcReprData data = (ArcReprData) state.get(Integer.valueOf(hashCode));
-		if (data == null) {
-			data = (ArcReprData) state.get(this.itsUndoReprDataHC);
-		}
-		if (data == null) {
-			data = (ArcReprData) state.get(Integer.valueOf(this.hashCode()));
-		}
-		
-		if (data != null) {
-			data.restoreArcFromArcRepr(this);
-			this.attrChanged = false;
-		}
-	}
-	
-	public void restoreState(ArcReprData data) {
-		data.restoreArcFromArcRepr(this);
-		this.attrChanged = false;
-	}
-	
-	/** Returns an open view of my attribute */
-	protected AttrViewSetting getView() {
-		if (!this.init || this.view == null) {
-			this.view = ((AttrTupleManager)AttrTupleManager.getDefaultManager()).getDefaultOpenView();
-			this.view.setAllVisible(this.bArc.getAttribute(), true);
-			
-			this.init = true;
-		}
-		return this.view;
-	}
-	
-	public void setAttrViewSetting(AttrViewSetting aView) {
-		this.view = aView;
-		if (!this.attrObserver) {
-			this.view.addObserver(this, this.bArc.getAttribute());
-			this.attrObserver = true;
-		}
-		this.init = true;
-	}
-	
-	public void addToAttributeViewObserver() {
-		getView().addObserver(this, this.bArc.getAttribute());
-		this.attrObserver = true;
-	}
-	
-	
-	public void removeFromAttributeViewObserver() {
-		if (this.bArc != null 
-				&& this.bArc.getAttribute() != null
-				&& this.view != null) {
-			this.view.removeObserver(this, this.bArc.getAttribute());
-			this.view.getMaskedView()
-					.removeObserver(this, this.bArc.getAttribute());
-		}
-	}
-	public void createAttributeInstance() {
-		if (this.bArc != null && this.bArc.getAttribute() == null) {
-			this.bArc.createAttributeInstance();
-			addToAttributeViewObserver();
-		}
-	}
 
-	public void refreshAttributeInstance() {
-		if (this.bArc != null && this.bArc.getAttribute() != null) {
-			((ValueTuple) this.bArc.getAttribute()).getTupleType().refreshParents();
-			addToAttributeViewObserver();
-		}
-	}
+        ArcReprData data = (ArcReprData) state.get(Integer.valueOf(hashCode));
+        if (data == null) {
+            data = (ArcReprData) state.get(this.itsUndoReprDataHC);
+        }
+        if (data == null) {
+            data = (ArcReprData) state.get(Integer.valueOf(this.hashCode()));
+        }
 
-	/** Returns the layout arc of this arc. */
-	public LayoutArc getLArc() {
-		return this.lArc;
-	}
+        if (data != null) {
+            data.restoreArcFromArcRepr(this);
+            this.attrChanged = false;
+        }
+    }
 
-	/** Returns the used object */
-	public final Arc getBasisArc() {
-		return this.bArc;
-	}
+    public void restoreState(ArcReprData data) {
+        data.restoreArcFromArcRepr(this);
+        this.attrChanged = false;
+    }
 
-	/** Returns the used object of this arc. */
-	public final GraphObject getBasisObject() {
-		return this.bArc;
-	}
+    /**
+     * Returns an open view of my attribute
+     */
+    protected AttrViewSetting getView() {
+        if (!this.init || this.view == null) {
+            this.view = ((AttrTupleManager) AttrTupleManager.getDefaultManager()).getDefaultOpenView();
+            this.view.setAllVisible(this.bArc.getAttribute(), true);
 
-	/** Returns FALSE */
-	public final boolean isNode() {
-		return false;
-	}
+            this.init = true;
+        }
+        return this.view;
+    }
 
-	/** Returns TRUE */
-	public final boolean isArc() {
-		return true;
-	}
+    public void setAttrViewSetting(AttrViewSetting aView) {
+        this.view = aView;
+        if (!this.attrObserver) {
+            this.view.addObserver(this, this.bArc.getAttribute());
+            this.attrObserver = true;
+        }
+        this.init = true;
+    }
 
-	/** Returns NULL */
-	public final EdNode getNode() {
-		return null;
-	}
+    public void addToAttributeViewObserver() {
+        getView().addObserver(this, this.bArc.getAttribute());
+        this.attrObserver = true;
+    }
 
-	/** Returns this arc */
-	public final EdArc getArc() {
-		return this;
-	}
-	
-	public void setCritical(boolean b) {
-		this.bArc.setCritical(b);
-	}
+    public void removeFromAttributeViewObserver() {
+        if (this.bArc != null
+                && this.bArc.getAttribute() != null
+                && this.view != null) {
+            this.view.removeObserver(this, this.bArc.getAttribute());
+            this.view.getMaskedView()
+                    .removeObserver(this, this.bArc.getAttribute());
+        }
+    }
 
-	public boolean isCritical() {
-		return this.bArc.isCritical();
-	}
+    public void createAttributeInstance() {
+        if (this.bArc != null && this.bArc.getAttribute() == null) {
+            this.bArc.createAttributeInstance();
+            addToAttributeViewObserver();
+        }
+    }
 
-	/**
-	 * States how to draw critical objects of CPA critical overlapping graphs:
-	 * <code>EdGraphObject.CRITICAL_GREEN</code> or
-	 * <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
-	 */
-	public void setDrawingStyleOfCriticalObject(int criticalStyle) {
-		this.criticalStyle = criticalStyle;
-	}
-	
-	/** Returns TRUE if this uses a line for the graphic */
-	public final boolean isLine() {
-		if (!this.from.equals(this.to))
-			return true;
-		
-		return false;
-	}
+    public void refreshAttributeInstance() {
+        if (this.bArc != null && this.bArc.getAttribute() != null) {
+            ((ValueTuple) this.bArc.getAttribute()).getTupleType().refreshParents();
+            addToAttributeViewObserver();
+        }
+    }
 
-	/** Returns TRUE if <code>this</code> has a bend */
-	public boolean hasAnchor() {
-		return (((this.anchor != null) && !this.hasDefaultAnchor) ? true : false);
-	}
+    /**
+     * Returns the layout arc of this arc.
+     */
+    public LayoutArc getLArc() {
+        return this.lArc;
+    }
 
-	/** Returns the point of my bend (I am a line) */
-	public Point getAnchor() {
-		if (this.anchor != null)
-			return this.anchor;
-		if (isLine())
-			return new Point(getX(), getY());
-		
-		return null;
-	}
+    /**
+     * Returns the used object
+     */
+    public final Arc getBasisArc() {
+        return this.bArc;
+    }
 
-	/** Returns the point of my bend specified by the int id (I am a loop) */
-	public Point getAnchor(int id) {
-		if (this.anchor != null)
-			return this.anchor;
-		if (!isLine()) {
-			Loop loop = toLoop();
-			return loop.getAnchor(id);
-		} 
-		return null;
-	}
+    /**
+     * Returns the used object of this arc.
+     */
+    public final GraphObject getBasisObject() {
+        return this.bArc;
+    }
 
-	/** Returns the id of my bend */
-	public int getAnchorID() {
-		return this.anchorID;
-	}
+    /**
+     * Returns FALSE
+     */
+    public final boolean isNode() {
+        return false;
+    }
 
-	/** Returns TRUE if <code>this</code> has only one direction */
-	public boolean isDirected() {
-		if (this.bArc != null) {
-			this.directed = this.bArc.isDirected();
-		} 
-		return this.directed;
+    /**
+     * Returns TRUE
+     */
+    public final boolean isArc() {
+        return true;
+    }
 
-	}
+    /**
+     * Returns NULL
+     */
+    public final EdNode getNode() {
+        return null;
+    }
 
-	public boolean isVisible() {
-		if (this.bArc != null) {
-			this.visible = this.bArc.isVisible() && this.from.isVisible() && this.to.isVisible();
-			
-			if (this.getContext().getBasisGraph().isCompleteGraph()) {
-				this.visible = this.visible
-					&& this.getType().getBasisType().isObjectOfTypeGraphArcVisible(
-											this.getSource().getType().getBasisType(), 
-											this.getTarget().getType().getBasisType());
-			}
-		} 
-		return this.visible;
-	}
+    /**
+     * Returns this arc
+     */
+    public final EdArc getArc() {
+        return this;
+    }
 
-	/**
-	 * Returns the attributes which are shown
-	 */
-	public Vector<Vector<String>> getAttributes() {
-		// maybe this method can be moved to EdGraphObjec
-		Vector<Vector<String>> attrs = new Vector<Vector<String>>();
-		if (this.bArc != null && this.bArc.getAttribute() != null) {
-			AttrInstance attributes = this.bArc.getAttribute();
+    public void setCritical(boolean b) {
+        this.bArc.setCritical(b);
+    }
 
-			if (attributes != null && getView() != null) {
-				AttrViewSetting mvs = this.view.getMaskedView();
+    public boolean isCritical() {
+        return this.bArc.isCritical();
+    }
 
-				int number = mvs.getSize(attributes);
-				for (int i = 0; i < number; i++) {
-					Vector<String> tmpAttrVector = new Vector<String>();
-					int index = mvs.convertSlotToIndex(attributes, i);
-					tmpAttrVector.addElement(attributes.getTypeAsString(index));
-					tmpAttrVector.addElement(attributes.getNameAsString(index));
-					tmpAttrVector
-							.addElement(attributes.getValueAsString(index));
-					attrs.addElement(tmpAttrVector);
-				}
-			} else
-				attrs = setAttributes(this.bArc);
-		}
-		return attrs;
-	}
+    /**
+     * States how to draw critical objects of CPA critical overlapping graphs: <code>EdGraphObject.CRITICAL_GREEN</code>
+     * or <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
+     */
+    public void setDrawingStyleOfCriticalObject(int criticalStyle) {
+        this.criticalStyle = criticalStyle;
+    }
 
-	/** Sets my attributes to the attributes specified by the Arc bArc */
-	public Vector<Vector<String>> setAttributes(Arc bArc) {
-		Vector<Vector<String>> attrs = new Vector<Vector<String>>();
-		if (bArc == null)
-			return attrs;
-		if (bArc.getAttribute() == null)
-			return attrs;
+    /**
+     * Returns TRUE if this uses a line for the graphic
+     */
+    public final boolean isLine() {
+        if (!this.from.equals(this.to)) {
+            return true;
+        }
 
-		int nattrs = bArc.getAttribute().getNumberOfEntries();
-		if (nattrs != 0) {
-			for (int i = 0; i < nattrs; i++) {
-				Vector<String> attr = new Vector<String>();
-				attr.addElement(bArc.getAttribute().getTypeAsString(i));
-				attr.addElement(bArc.getAttribute().getNameAsString(i));
-				attr.addElement(bArc.getAttribute().getValueAsString(i));
-				attrs.addElement(attr);
-			}
-		}
-		return attrs;
-	}
+        return false;
+    }
 
-	/** Sets my attributes to the attributes specified by the GraphObject obj */
-	public Vector<Vector<String>> setAttributes(GraphObject obj) {
-		return setAttributes((Arc) obj);
-	}
+    /**
+     * Returns TRUE if <code>this</code> has a bend
+     */
+    public boolean hasAnchor() {
+        return (((this.anchor != null) && !this.hasDefaultAnchor) ? true : false);
+    }
 
-	/** Sets my used object specified by the Arc bArc */
-	public void setBasisArc(Arc bArc) {
-		this.bArc = bArc;
-	}
+    /**
+     * Returns the point of my bend (I am a line)
+     */
+    public Point getAnchor() {
+        if (this.anchor != null) {
+            return this.anchor;
+        }
+        if (isLine()) {
+            return new Point(getX(), getY());
+        }
 
-	/** Gets my source object */
-	public EdGraphObject getSource() {
-		return this.from;
-	}
+        return null;
+    }
 
-	/** Sets my source object */
-	public void setSource(EdGraphObject en) {
-		this.from = en;
-	}
+    /**
+     * Returns the point of my bend specified by the int id (I am a loop)
+     */
+    public Point getAnchor(int id) {
+        if (this.anchor != null) {
+            return this.anchor;
+        }
+        if (!isLine()) {
+            Loop loop = toLoop();
+            return loop.getAnchor(id);
+        }
+        return null;
+    }
 
-	/** Gets my target object */
-	public EdGraphObject getTarget() {
-		return this.to;
-	}
+    /**
+     * Returns the id of my bend
+     */
+    public int getAnchorID() {
+        return this.anchorID;
+    }
 
-	/** Sets my target object */
-	public void setTarget(EdGraphObject en) {
-		this.to = en;
-	}
+    /**
+     * Returns TRUE if <code>this</code> has only one direction
+     */
+    public boolean isDirected() {
+        if (this.bArc != null) {
+            this.directed = this.bArc.isDirected();
+        }
+        return this.directed;
 
-	/** Sets my direction */
-	public void setDirected(boolean direct) {
-		this.directed = direct;
-		if (this.bArc != null)
-			this.bArc.setDirected(direct);
-	}
+    }
 
-	/**
-	 * Sets my bend (I am a line) to the position specified by the Point
-	 * newAnchor
-	 */
-	public void setAnchor(Point newAnchor) {
-		this.anchor = newAnchor;
-		if (this.anchor == null) {
-			this.hasDefaultAnchor = true;
-		} else if (isLine()) {
-			setXY(this.anchor.x, this.anchor.y);
-			this.hasDefaultAnchor = false;
-		} else { // Loop
-			setAnchor(Loop.UPPER_LEFT, newAnchor);
-		}
-	}
+    public boolean isVisible() {
+        if (this.bArc != null) {
+            this.visible = this.bArc.isVisible() && this.from.isVisible() && this.to.isVisible();
 
-	/**
-	 * Sets my bend (I am a loop) specified by the int id to the position
-	 * specified by the Point newAnchor
-	 */
-	public void setAnchor(int id, Point newAnchor) {
-		this.anchor = newAnchor;
-		if (this.anchor == null) {
-			this.hasDefaultAnchor = true;
-		} else if (!isLine() && id == Loop.UPPER_LEFT) { /*
+            if (this.getContext().getBasisGraph().isCompleteGraph()) {
+                this.visible = this.visible
+                        && this.getType().getBasisType().isObjectOfTypeGraphArcVisible(
+                                this.getSource().getType().getBasisType(),
+                                this.getTarget().getType().getBasisType());
+            }
+        }
+        return this.visible;
+    }
+
+    /**
+     * Returns the attributes which are shown
+     */
+    public Vector<Vector<String>> getAttributes() {
+        // maybe this method can be moved to EdGraphObjec
+        Vector<Vector<String>> attrs = new Vector<Vector<String>>();
+        if (this.bArc != null && this.bArc.getAttribute() != null) {
+            AttrInstance attributes = this.bArc.getAttribute();
+
+            if (attributes != null && getView() != null) {
+                AttrViewSetting mvs = this.view.getMaskedView();
+
+                int number = mvs.getSize(attributes);
+                for (int i = 0; i < number; i++) {
+                    Vector<String> tmpAttrVector = new Vector<String>();
+                    int index = mvs.convertSlotToIndex(attributes, i);
+                    tmpAttrVector.addElement(attributes.getTypeAsString(index));
+                    tmpAttrVector.addElement(attributes.getNameAsString(index));
+                    tmpAttrVector
+                            .addElement(attributes.getValueAsString(index));
+                    attrs.addElement(tmpAttrVector);
+                }
+            } else {
+                attrs = setAttributes(this.bArc);
+            }
+        }
+        return attrs;
+    }
+
+    /**
+     * Sets my attributes to the attributes specified by the Arc bArc
+     */
+    public Vector<Vector<String>> setAttributes(Arc bArc) {
+        Vector<Vector<String>> attrs = new Vector<Vector<String>>();
+        if (bArc == null) {
+            return attrs;
+        }
+        if (bArc.getAttribute() == null) {
+            return attrs;
+        }
+
+        int nattrs = bArc.getAttribute().getNumberOfEntries();
+        if (nattrs != 0) {
+            for (int i = 0; i < nattrs; i++) {
+                Vector<String> attr = new Vector<String>();
+                attr.addElement(bArc.getAttribute().getTypeAsString(i));
+                attr.addElement(bArc.getAttribute().getNameAsString(i));
+                attr.addElement(bArc.getAttribute().getValueAsString(i));
+                attrs.addElement(attr);
+            }
+        }
+        return attrs;
+    }
+
+    /**
+     * Sets my attributes to the attributes specified by the GraphObject obj
+     */
+    public Vector<Vector<String>> setAttributes(GraphObject obj) {
+        return setAttributes((Arc) obj);
+    }
+
+    /**
+     * Sets my used object specified by the Arc bArc
+     */
+    public void setBasisArc(Arc bArc) {
+        this.bArc = bArc;
+    }
+
+    /**
+     * Gets my source object
+     */
+    public EdGraphObject getSource() {
+        return this.from;
+    }
+
+    /**
+     * Sets my source object
+     */
+    public void setSource(EdGraphObject en) {
+        this.from = en;
+    }
+
+    /**
+     * Gets my target object
+     */
+    public EdGraphObject getTarget() {
+        return this.to;
+    }
+
+    /**
+     * Sets my target object
+     */
+    public void setTarget(EdGraphObject en) {
+        this.to = en;
+    }
+
+    /**
+     * Sets my direction
+     */
+    public void setDirected(boolean direct) {
+        this.directed = direct;
+        if (this.bArc != null) {
+            this.bArc.setDirected(direct);
+        }
+    }
+
+    /**
+     * Sets my bend (I am a line) to the position specified by the Point newAnchor
+     */
+    public void setAnchor(Point newAnchor) {
+        this.anchor = newAnchor;
+        if (this.anchor == null) {
+            this.hasDefaultAnchor = true;
+        } else if (isLine()) {
+            setXY(this.anchor.x, this.anchor.y);
+            this.hasDefaultAnchor = false;
+        } else { // Loop
+            setAnchor(Loop.UPPER_LEFT, newAnchor);
+        }
+    }
+
+    /**
+     * Sets my bend (I am a loop) specified by the int id to the position specified by the Point newAnchor
+     */
+    public void setAnchor(int id, Point newAnchor) {
+        this.anchor = newAnchor;
+        if (this.anchor == null) {
+            this.hasDefaultAnchor = true;
+        } else if (!isLine() && id == Loop.UPPER_LEFT) {
+            /*
 															 * 1 : anchor of
 															 * loop
-															 */
-			setXY(this.anchor.x, this.anchor.y);
-			this.hasDefaultAnchor = false;
-		}
-	}
+             */
+            setXY(this.anchor.x, this.anchor.y);
+            this.hasDefaultAnchor = false;
+        }
+    }
 
-	/** Sets my representation features: directed, visible, selected */
-	public void setReps(boolean direct, boolean vis, boolean sel) {
-		setDirected(direct);
-		setVisible(vis);
-		setSelected(sel);
-	}
+    /**
+     * Sets my representation features: directed, visible, selected
+     */
+    public void setReps(boolean direct, boolean vis, boolean sel) {
+        setDirected(direct);
+        setVisible(vis);
+        setSelected(sel);
+    }
 
-	/**
-	 * Makes an exact copy. Only the basis arc is the same.
-	 */
-	public EdArc copy() {
-		try {
-			EdArc newArc = new EdArc(this.bArc, this.eType, this.from, this.to);
-			newArc.setAnchor(getAnchor());
-			return newArc;
-		} catch (TypeException ex) {
-			return null;
-		}
-	}
+    /**
+     * Makes an exact copy. Only the basis arc is the same.
+     */
+    public EdArc copy() {
+        try {
+            EdArc newArc = new EdArc(this.bArc, this.eType, this.from, this.to);
+            newArc.setAnchor(getAnchor());
+            return newArc;
+        } catch (TypeException ex) {
+            return null;
+        }
+    }
 
-	/** Gets myself as a line representation */
-	public final Line toLine() {
-		Line line = new Line(this.from.getX(), this.from.getY(), this.to.getX(), this.to.getY());
-		if ((this.anchor != null))
-			line.setAnchor(new Point(this.anchor.x, this.anchor.y));
-		return line;
-	}
+    /**
+     * Gets myself as a line representation
+     */
+    public final Line toLine() {
+        Line line = new Line(this.from.getX(), this.from.getY(), this.to.getX(), this.to.getY());
+        if ((this.anchor != null)) {
+            line.setAnchor(new Point(this.anchor.x, this.anchor.y));
+        }
+        return line;
+    }
 
-	/** Gets myself as a loop (rectangle) representation */
-	public final Loop toLoop() {
-		Loop loop = new Loop(this.x, this.y, this.w, this.h);
-		return loop;
-	}
+    /**
+     * Gets myself as a loop (rectangle) representation
+     */
+    public final Loop toLoop() {
+        Loop loop = new Loop(this.x, this.y, this.w, this.h);
+        return loop;
+    }
 
-	/** Returns the size of the text */
-	public Dimension getTextSize(FontMetrics fm) {
-		this.textSize.setSize(new Dimension(super.getTextWidth(fm), super
-				.getTextHeight(fm)));
-		return this.textSize;
-	}
+    /**
+     * Returns the size of the text
+     */
+    public Dimension getTextSize(FontMetrics fm) {
+        this.textSize.setSize(new Dimension(super.getTextWidth(fm), super
+                .getTextHeight(fm)));
+        return this.textSize;
+    }
 
-	/** Updates the size of the text */
-	public void updateTextSize(FontMetrics fm) {
-		this.textSize.setSize(new Dimension(super.getTextWidth(fm), super
-				.getTextHeight(fm)));
-	}
-	
-	/** Returns the text offset */
-	public Point getTextOffset() {
-		return this.textOffset;
-	}
+    /**
+     * Updates the size of the text
+     */
+    public void updateTextSize(FontMetrics fm) {
+        this.textSize.setSize(new Dimension(super.getTextWidth(fm), super
+                .getTextHeight(fm)));
+    }
 
-	/** Sets the text offset */
-	public void setTextOffset(int xOffset, int yOffset) {
-		this.textOffset.x = xOffset;
-		this.textOffset.y = yOffset;
-	}
+    /**
+     * Returns the text offset
+     */
+    public Point getTextOffset() {
+        return this.textOffset;
+    }
 
-	/**
-	 * Translates offset of an edge text to a new value specified by the dx and
-	 * dy, if the text will be moved. The text can be an attribute text or a
-	 * source multiplicity text or a target multiplicity text.
-	 */
-	public void translateTextOffset(int dx, int dy) {
-		if (this.partOfText == 0) {
-			this.textOffset.translate(dx, dy);
-		} else if (this.partOfText == 1) {
-			this.srcMultiplicityOffset.translate(dx, dy);
-		} else if (this.partOfText == 2) {
-			this.trgMultiplicityOffset.translate(dx, dy);
-		}
-	}
+    /**
+     * Sets the text offset
+     */
+    public void setTextOffset(int xOffset, int yOffset) {
+        this.textOffset.x = xOffset;
+        this.textOffset.y = yOffset;
+    }
 
-	/**
-	 * Returns TRUE if the point specified by the int X, int Y is inside of
-	 * myself
-	 */
-	int in_offset = 10;
-	public boolean inside(int X, int Y) {
-		this.anchorID = 0;
-		Rectangle r = null;
-		if (isLine()) {
+    /**
+     * Translates offset of an edge text to a new value specified by the dx and dy, if the text will be moved. The text
+     * can be an attribute text or a source multiplicity text or a target multiplicity text.
+     */
+    public void translateTextOffset(int dx, int dy) {
+        if (this.partOfText == 0) {
+            this.textOffset.translate(dx, dy);
+        } else if (this.partOfText == 1) {
+            this.srcMultiplicityOffset.translate(dx, dy);
+        } else if (this.partOfText == 2) {
+            this.trgMultiplicityOffset.translate(dx, dy);
+        }
+    }
+
+    /**
+     * Returns TRUE if the point specified by the int X, int Y is inside of myself
+     */
+    int in_offset = 10;
+
+    public boolean inside(int X, int Y) {
+        this.anchorID = 0;
+        Rectangle r = null;
+        if (isLine()) {
 //			check rectangle around the middle 
-			r = new Rectangle(this.x - this.w/2 -in_offset, 
-						this.y - this.h/2 -in_offset, 
-						this.w +in_offset*2, this.h +in_offset*2);
-			if (r.contains(X, Y)) {
-				return true;
-			}
-			Point p = new Point(this.x, this.y);
-			if (this.anchor != null)
-				p = this.anchor;
+            r = new Rectangle(this.x - this.w / 2 - in_offset,
+                    this.y - this.h / 2 - in_offset,
+                    this.w + in_offset * 2, this.h + in_offset * 2);
+            if (r.contains(X, Y)) {
+                return true;
+            }
+            Point p = new Point(this.x, this.y);
+            if (this.anchor != null) {
+                p = this.anchor;
+            }
 
-			if (this.arrowPoint != null) {
-				if (Line.inside(X, Y, p, this.arrowPoint, this.w +(in_offset*2)))
-					return true;										
-			}
-			if (this.tailPoint != null) {
-				if (Line.inside(X, Y, this.tailPoint, p, this.w +(in_offset*2)))
-					return true;
-			}
-			
-			return false;
-		} 
-		
-		/* Loop */
-		Loop loop = toLoop();
-		if (loop.contains(new Point(X, Y))) {
-			if (loop.anchorID == Loop.UPPER_LEFT) {
-				this.anchor = loop.anchor;
-				this.anchorID = loop.anchorID;
-			}
-			return true;
-		} 
-		return false;		
-	}
+            if (this.arrowPoint != null) {
+                if (Line.inside(X, Y, p, this.arrowPoint, this.w + (in_offset * 2))) {
+                    return true;
+                }
+            }
+            if (this.tailPoint != null) {
+                if (Line.inside(X, Y, this.tailPoint, p, this.w + (in_offset * 2))) {
+                    return true;
+                }
+            }
 
-	/**
-	 * Returns TRUE if the point specified by the int X, int Y is inside of my
-	 * text part
-	 */
-	public boolean insideTextOfArc(int X, int Y, FontMetrics fm) {
-		Rectangle r = getTextRectangle(fm);
-		if ((r != null) && (r.contains(X, Y))) {
-			this.partOfText = 0;
-			return true;
-		} else if (this.elemOfTG && !this.getContext().isInheritanceType(this.eType)) {
-			if (insideTextOfMultiplicity(X, Y, "source")) {
-				this.partOfText = 1;
-				return true;
-			} else if (insideTextOfMultiplicity(X, Y, "target")) {
-				this.partOfText = 2;
-				return true;
-			} else
-				return false;
-		} else
-			return false;
-	}
+            return false;
+        }
 
-	private Rectangle getTextRectangle(FontMetrics fm) {
-		Dimension d = getTextSize(fm);
-		// System.out.println(d);
-		int tw = (int) d.getWidth();
-		int th = (int) d.getHeight();
-		if (isLine()) {
-			int tx = 0, ty = 0;
+        /* Loop */
+        Loop loop = toLoop();
+        if (loop.contains(new Point(X, Y))) {
+            if (loop.anchorID == Loop.UPPER_LEFT) {
+                this.anchor = loop.anchor;
+                this.anchorID = loop.anchorID;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns TRUE if the point specified by the int X, int Y is inside of my text part
+     */
+    public boolean insideTextOfArc(int X, int Y, FontMetrics fm) {
+        Rectangle r = getTextRectangle(fm);
+        if ((r != null) && (r.contains(X, Y))) {
+            this.partOfText = 0;
+            return true;
+        } else if (this.elemOfTG && !this.getContext().isInheritanceType(this.eType)) {
+            if (insideTextOfMultiplicity(X, Y, "source")) {
+                this.partOfText = 1;
+                return true;
+            } else if (insideTextOfMultiplicity(X, Y, "target")) {
+                this.partOfText = 2;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private Rectangle getTextRectangle(FontMetrics fm) {
+        Dimension d = getTextSize(fm);
+        // System.out.println(d);
+        int tw = (int) d.getWidth();
+        int th = (int) d.getHeight();
+        if (isLine()) {
+            int tx = 0, ty = 0;
 //			int x1 = from.getX();
 //			int y1 = from.getY();
 //			int x2 = to.getX();
 //			int y2 = to.getY();
-			if (this.anchor != null) {
-				tx = this.anchor.x;
-				ty = this.anchor.y;
-			} else {
-				tx = this.x;
-				ty = this.y;
-			}
-			tx = tx - tw/2;
-			this.textLocation.x = tx + this.textOffset.x;
-			this.textLocation.y = ty + this.textOffset.y;
-			return new Rectangle(this.textLocation.x, this.textLocation.y, tw, th);
-		} 
-		// loop
-		this.textLocation.x = this.x + this.textOffset.x;
-		this.textLocation.y = this.y + this.textOffset.y;
-		return new Rectangle(this.textLocation.x, this.textLocation.y, tw, th);
-	}
+            if (this.anchor != null) {
+                tx = this.anchor.x;
+                ty = this.anchor.y;
+            } else {
+                tx = this.x;
+                ty = this.y;
+            }
+            tx = tx - tw / 2;
+            this.textLocation.x = tx + this.textOffset.x;
+            this.textLocation.y = ty + this.textOffset.y;
+            return new Rectangle(this.textLocation.x, this.textLocation.y, tw, th);
+        }
+        // loop
+        this.textLocation.x = this.x + this.textOffset.x;
+        this.textLocation.y = this.y + this.textOffset.y;
+        return new Rectangle(this.textLocation.x, this.textLocation.y, tw, th);
+    }
 
-	/**
-	 * Returns TRUE if the point specified by the int X, int Y is inside of my
-	 * source or target multiplicity part
-	 */
-	private boolean insideTextOfMultiplicity(int X, int Y, String key) {
-		if (key.equals("target")) {
-			Rectangle r = new Rectangle(
-					this.trgMultiplicityLocation.x + this.trgMultiplicityOffset.x, 
-					this.trgMultiplicityLocation.y + this.trgMultiplicityOffset.y - (int) this.trgMultiplicitySize.getHeight(),
-					(int) this.trgMultiplicitySize.getWidth(),
-					(int) this.trgMultiplicitySize.getHeight());
-			if (r.contains(X, Y)) {
-				return true;
-			} 
-			return false;
-		} else if (key.equals("source")) {
-			Rectangle r = new Rectangle(
-					this.srcMultiplicityLocation.x + this.srcMultiplicityOffset.x, 
-					this.srcMultiplicityLocation.y + this.srcMultiplicityOffset.y - (int) this.srcMultiplicitySize.getHeight(),
-					(int) this.srcMultiplicitySize.getWidth(),
-					(int) this.srcMultiplicitySize.getHeight());
-			if (r.contains(X, Y)) {
-				return true;
-			} 
-			return false;
-		} else
-			return false;
-	}
+    /**
+     * Returns TRUE if the point specified by the int X, int Y is inside of my source or target multiplicity part
+     */
+    private boolean insideTextOfMultiplicity(int X, int Y, String key) {
+        if (key.equals("target")) {
+            Rectangle r = new Rectangle(
+                    this.trgMultiplicityLocation.x + this.trgMultiplicityOffset.x,
+                    this.trgMultiplicityLocation.y + this.trgMultiplicityOffset.y - (int) this.trgMultiplicitySize.getHeight(),
+                    (int) this.trgMultiplicitySize.getWidth(),
+                    (int) this.trgMultiplicitySize.getHeight());
+            if (r.contains(X, Y)) {
+                return true;
+            }
+            return false;
+        } else if (key.equals("source")) {
+            Rectangle r = new Rectangle(
+                    this.srcMultiplicityLocation.x + this.srcMultiplicityOffset.x,
+                    this.srcMultiplicityLocation.y + this.srcMultiplicityOffset.y - (int) this.srcMultiplicitySize.getHeight(),
+                    (int) this.srcMultiplicitySize.getWidth(),
+                    (int) this.srcMultiplicitySize.getHeight());
+            if (r.contains(X, Y)) {
+                return true;
+            }
+            return false;
+        } else {
+            return false;
+        }
+    }
 
+    public void applyScale(double scale) {
+        if (scale != this.itsScale) {
+            setX((int) (this.x * (scale / this.itsScale)));
+            setY((int) (this.x * (scale / this.itsScale)));
+            if (this.anchor != null) {
+                this.anchor.x = (int) (this.anchor.x * (scale / this.itsScale));
+                this.anchor.y = (int) (this.anchor.y * (scale / this.itsScale));
+            }
+            if (this.textOffset != null) {
+                this.textOffset.x = (int) (this.textOffset.x * (scale / this.itsScale));
+                this.textOffset.y = (int) (this.textOffset.y * (scale / this.itsScale));
+            }
+            if (!this.isLine()) {
+                this.w = (int) (this.w * (scale / this.itsScale));
+                this.h = (int) (this.h * (scale / this.itsScale));
+            }
+            this.itsScale = scale;
+        }
+    }
 
-	public void applyScale(double scale) {
-		if (scale != this.itsScale) {
-			setX((int) (this.x * (scale / this.itsScale)));
-			setY((int) (this.x * (scale / this.itsScale)));
-			if (this.anchor != null) {
-				this.anchor.x = (int) (this.anchor.x * (scale / this.itsScale));
-				this.anchor.y = (int) (this.anchor.y * (scale / this.itsScale));
-			}
-			if (this.textOffset != null) {
-				this.textOffset.x = (int) (this.textOffset.x * (scale / this.itsScale));
-				this.textOffset.y = (int) (this.textOffset.y * (scale / this.itsScale));
-			}
-			if (!this.isLine()) {
-				this.w = (int) (this.w * (scale / this.itsScale));
-				this.h = (int) (this.h * (scale / this.itsScale));
-			}
-			this.itsScale = scale;
-		}
-	}
+    public void drawShadowGraphic(Graphics grs) {
+        if (this.visible) {
+            Graphics2D g = (Graphics2D) grs;
+            // save color, font style
+            Color lastColor = g.getColor();
 
-	public void drawShadowGraphic(Graphics grs) {
-		if (this.visible) {
-			Graphics2D g = (Graphics2D) grs;
-			// save color, font style
-			Color lastColor = g.getColor();
-			
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);			
-			g.setPaint(Color.LIGHT_GRAY);
-			g.setStroke(EditorConstants.defaultStroke);
-			
-			if (this.isLine()) {
-				g.draw(new Rectangle2D.Double(this.anchor.x-10, this.anchor.y-10, 20, 20));
-			}
-			else {
-				g.draw(new Rectangle2D.Double(this.anchor.x-10, this.anchor.y-10, 20, 20));
-			}
-			// reset font style, color
-			g.setFont(EditorConstants.defaultFont);
-			g.setPaint(lastColor);
-		}
-	}
-	
-	public void drawTextShadowGraphic(Graphics grs, int px, int py) {
-		if (this.visible) {
-			Graphics2D g = (Graphics2D) grs;
-			// save color, font style
-			Color lastColor = g.getColor();
-			int fontstyle = g.getFont().getStyle();
-			
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);			
-			g.setPaint(Color.LIGHT_GRAY);
-			g.setStroke(EditorConstants.defaultStroke);			
-			g.draw(new Rectangle2D.Double(px-10, py-10, 20, 20));
-			
-			// reset font style, color
-			g.setFont(new Font("Dialog", fontstyle, g.getFont().getSize()));
-			g.setPaint(lastColor);
-		}
-	}
-	
-	/** Draws myself in the graphics specified by the Graphics g */
-	public void drawGraphic(Graphics grs) {	
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setPaint(Color.LIGHT_GRAY);
+            g.setStroke(EditorConstants.defaultStroke);
+
+            if (this.isLine()) {
+                g.draw(new Rectangle2D.Double(this.anchor.x - 10, this.anchor.y - 10, 20, 20));
+            } else {
+                g.draw(new Rectangle2D.Double(this.anchor.x - 10, this.anchor.y - 10, 20, 20));
+            }
+            // reset font style, color
+            g.setFont(EditorConstants.defaultFont);
+            g.setPaint(lastColor);
+        }
+    }
+
+    public void drawTextShadowGraphic(Graphics grs, int px, int py) {
+        if (this.visible) {
+            Graphics2D g = (Graphics2D) grs;
+            // save color, font style
+            Color lastColor = g.getColor();
+            int fontstyle = g.getFont().getStyle();
+
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setPaint(Color.LIGHT_GRAY);
+            g.setStroke(EditorConstants.defaultStroke);
+            g.draw(new Rectangle2D.Double(px - 10, py - 10, 20, 20));
+
+            // reset font style, color
+            g.setFont(new Font("Dialog", fontstyle, g.getFont().getSize()));
+            g.setPaint(lastColor);
+        }
+    }
+
+    /**
+     * Draws myself in the graphics specified by the Graphics g
+     */
+    public void drawGraphic(Graphics grs) {
 //		synchronized (this) 
-		{
-		if (!this.visible) {
-			return;
-		}
-		
-		this.criticalStyle = this.eGraph.criticalStyle;
-		
-		Graphics2D g = (Graphics2D) grs;
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		if (this.eType.filled) {
-			g.setStroke(EditorConstants.boldStroke);
-		} else {
-			g.setStroke(EditorConstants.defaultStroke);
-		}
+        {
+            if (!this.visible) {
+                return;
+            }
 
-		// save the old color
-		Color lastColor = g.getColor();
-				
-		if (this.backgroundColor != null && this.backgroundColor != Color.white) {
-			g.setPaint(this.backgroundColor);
-			if (this.from != this.to)
-				drawBackgroundLine(g);
-			else
-				drawBackgroundLoop(g);
-		}
+            this.criticalStyle = this.eGraph.criticalStyle;
 
-		boolean hiddenObjOfType = this.eGraph.isTypeGraph() 
-						&& !this.eType.getBasisType().isObjectOfTypeGraphArcVisible(
-								this.from.getType().getBasisType(),
-								this.to.getType().getBasisType());
-		
-		if (selected) {
-			g.setPaint(EditorConstants.selectColor);
-		} else if (hiddenObjOfType) {
-			g.setPaint(EditorConstants.hideColor);
-		} else if (isCritical()) {
-			if (this.criticalStyle == 0) {
-				g.setStroke(EditorConstants.criticalColorStroke);
-				g.setFont(EditorConstants.criticalFont);
-				g.setPaint(EditorConstants.criticalColor);
-			}
-			else {//if (this.criticalStyle == 1) {
-				g.setStroke(EditorConstants.criticalStroke);
-				g.setPaint(Color.BLACK);
-			} 
-		} else {			
-			g.setPaint(this.getColor());
-		}
-		
-		if (this.from != this.to) {
-			drawArcAsLine(g, true);
-		} else {
-			drawArcAsLoop(g, true);			
-		}
-				
-		if (this.errorMode) {
-			showErrorAnchor(g);
-		} 		
-		g.setStroke(EditorConstants.defaultStroke);
-		g.setFont(EditorConstants.defaultFont);
-		g.setPaint(lastColor);
-		}
-	}
+            Graphics2D g = (Graphics2D) grs;
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            if (this.eType.filled) {
+                g.setStroke(EditorConstants.boldStroke);
+            } else {
+                g.setStroke(EditorConstants.defaultStroke);
+            }
 
-	/** Draws text of my graphics */
-	public void drawText(Graphics grs, double scale) {
-		Graphics2D g = (Graphics2D) grs;		
-		g.setPaint(this.getColor());
-		int tx, ty;
-		if (isLine()) {
-			int tw = (int) getTextSize(g.getFontMetrics()).getWidth();
-			// int tw = getTextWidth(g.getFontMetrics());
-			if (this.anchor != null) {
-				tx = this.anchor.x;
-				ty = this.anchor.y;
-			} else {
-				tx = getX();
-				ty = getY();
-			}
-			tx = tx - tw/2;
-			this.textLocation.x = tx + this.textOffset.x;
-			this.textLocation.y = ty + this.textOffset.y;
-		} else {
-			this.textLocation.x = this.x + this.textOffset.x;
-			this.textLocation.y = this.y + this.textOffset.y;
-		}
-		drawText(g, this.textLocation.x, this.textLocation.y);
-	}
+            // save the old color
+            Color lastColor = g.getColor();
 
-	/** Erases text of my graphics */
-	public void eraseText(Graphics grs) {
-		Graphics2D g = (Graphics2D) grs;
-		g.setPaint(Color.white);
-		Rectangle r;
-		if (isLine()) {
-			r = getTextRectangle(g.getFontMetrics());
-			g.fillRect(r.x, r.y, r.width, r.height);
-		} else {
-			r = getTextRectangle(g.getFontMetrics());
-			g.fillRect(r.x, r.y, r.width, r.height);
-		}
-	}
+            if (this.backgroundColor != null && this.backgroundColor != Color.white) {
+                g.setPaint(this.backgroundColor);
+                if (this.from != this.to) {
+                    drawBackgroundLine(g);
+                } else {
+                    drawBackgroundLoop(g);
+                }
+            }
 
-	/** Erases my graphic */
-	public void eraseGraphic(Graphics grs) {
-		// System.out.println("EdArc.eraseGraphic");
-		Graphics2D g = (Graphics2D) grs;
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		// g.setStroke(EditorConstants.basicStroke);
-		g.setPaint(Color.white);
-		eraseMoveAnchor(g);
-		if (isLine()) {
-			eraseArcAsLine(g, true);
-			/*
+            boolean hiddenObjOfType = this.eGraph.isTypeGraph()
+                    && !this.eType.getBasisType().isObjectOfTypeGraphArcVisible(
+                            this.from.getType().getBasisType(),
+                            this.to.getType().getBasisType());
+
+            if (selected) {
+                g.setPaint(EditorConstants.selectColor);
+            } else if (hiddenObjOfType) {
+                g.setPaint(EditorConstants.hideColor);
+            } else if (isCritical()) {
+                if (this.criticalStyle == 0) {
+                    g.setStroke(EditorConstants.criticalColorStroke);
+                    g.setFont(EditorConstants.criticalFont);
+                    g.setPaint(EditorConstants.criticalColor);
+                } else {//if (this.criticalStyle == 1) {
+                    g.setStroke(EditorConstants.criticalStroke);
+                    g.setPaint(Color.BLACK);
+                }
+            } else {
+                g.setPaint(this.getColor());
+            }
+
+            if (this.from != this.to) {
+                drawArcAsLine(g, true);
+            } else {
+                drawArcAsLoop(g, true);
+            }
+
+            if (this.errorMode) {
+                showErrorAnchor(g);
+            }
+            g.setStroke(EditorConstants.defaultStroke);
+            g.setFont(EditorConstants.defaultFont);
+            g.setPaint(lastColor);
+        }
+    }
+
+    /**
+     * Draws text of my graphics
+     */
+    public void drawText(Graphics grs, double scale) {
+        Graphics2D g = (Graphics2D) grs;
+        g.setPaint(this.getColor());
+        int tx, ty;
+        if (isLine()) {
+            int tw = (int) getTextSize(g.getFontMetrics()).getWidth();
+            // int tw = getTextWidth(g.getFontMetrics());
+            if (this.anchor != null) {
+                tx = this.anchor.x;
+                ty = this.anchor.y;
+            } else {
+                tx = getX();
+                ty = getY();
+            }
+            tx = tx - tw / 2;
+            this.textLocation.x = tx + this.textOffset.x;
+            this.textLocation.y = ty + this.textOffset.y;
+        } else {
+            this.textLocation.x = this.x + this.textOffset.x;
+            this.textLocation.y = this.y + this.textOffset.y;
+        }
+        drawText(g, this.textLocation.x, this.textLocation.y);
+    }
+
+    /**
+     * Erases text of my graphics
+     */
+    public void eraseText(Graphics grs) {
+        Graphics2D g = (Graphics2D) grs;
+        g.setPaint(Color.white);
+        Rectangle r;
+        if (isLine()) {
+            r = getTextRectangle(g.getFontMetrics());
+            g.fillRect(r.x, r.y, r.width, r.height);
+        } else {
+            r = getTextRectangle(g.getFontMetrics());
+            g.fillRect(r.x, r.y, r.width, r.height);
+        }
+    }
+
+    /**
+     * Erases my graphic
+     */
+    public void eraseGraphic(Graphics grs) {
+        // System.out.println("EdArc.eraseGraphic");
+        Graphics2D g = (Graphics2D) grs;
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        // g.setStroke(EditorConstants.basicStroke);
+        g.setPaint(Color.white);
+        eraseMoveAnchor(g);
+        if (isLine()) {
+            eraseArcAsLine(g, true);
+            /*
 			 * Rectangle r = getTextRectangle(g.getFontMetrics());
 			 * g.fillRect(r.x, r.y, r.width, r.height); drawArcAsLine(g, scale,
 			 * false);
-			 */
-		} else {
-			eraseArcAsLoop(g, true);
-			/*
+             */
+        } else {
+            eraseArcAsLoop(g, true);
+            /*
 			 * Rectangle r = getTextRectangle(g.getFontMetrics());
 			 * g.fillRect(r.x, r.y, r.width, r.height); drawArcAsLoop(g, scale,
 			 * false);
-			 */
-		}
-		// g.setStroke(stroke);
-	}
+             */
+        }
+        // g.setStroke(stroke);
+    }
 
-	/** Gets the width of my representation like loop */
-	public int getWidthOfLoop() {
-		if (getWidth() == 0)
-			return Loop.DEFAULT_SIZE;
-		
-		return getWidth();
-	}
+    /**
+     * Gets the width of my representation like loop
+     */
+    public int getWidthOfLoop() {
+        if (getWidth() == 0) {
+            return Loop.DEFAULT_SIZE;
+        }
 
-	/** Gets the height of my representation like loop */
-	public int getHeightOfLoop() {
-		if (getHeight() == 0)
-			return Loop.DEFAULT_SIZE;
-		
-		return getHeight();
-	}
+        return getWidth();
+    }
 
-	/** Shows the bend which will be moved */
-	public void showMoveAnchor(Graphics g) {
-		if (!this.from.equals(this.to))
-			showMoveAnchorOfLine(g);
-		else
-			showMoveAnchorOfLoop(g);
-	}
+    /**
+     * Gets the height of my representation like loop
+     */
+    public int getHeightOfLoop() {
+        if (getHeight() == 0) {
+            return Loop.DEFAULT_SIZE;
+        }
 
-	/** Erases the anchor marking of the bend */
-	public void eraseMoveAnchor(Graphics g) {
-		if (!this.from.equals(this.to))
-			eraseMoveAnchorOfLine(g);
-		else
-			eraseMoveAnchorOfLoop(g);
-	}
+        return getHeight();
+    }
 
-	/**
-	 * Implements the AttrViewObserver. Makes update graphics if the attributes
-	 * of my used object are changed.
-	 */
-	public void attributeChanged(AttrViewEvent ev) {
-		if (ev.getID() == AttrEvent.GENERAL_CHANGE // 0
-				// || ev.getID() == AttrEvent.MEMBER_ADDED // 10
-				|| ev.getID() == AttrEvent.MEMBER_DELETED // 20
-				|| ev.getID() == AttrEvent.MEMBER_RETYPED // 60
-				|| ev.getID() == AttrEvent.MEMBER_RENAMED // 50
-				|| ev.getID() == AttrViewEvent.MEMBER_VISIBILITY // 220
-				|| ev.getID() == AttrViewEvent.MEMBER_MOVED ) { // 210
-		
-			if (ev.getSource().getTupleType().isValid()) {
-				this.attrChanged = true;
-			}
-			
-		} else if (ev.getID() == AttrEvent.MEMBER_VALUE_CORRECTNESS // 70
-				|| ev.getID() == AttrEvent.MEMBER_VALUE_MODIFIED) { // 80
-		
-			if (ev.getSource().isValid()) {
-				this.attrChanged = true;
-				if (this.myGraphPanel != null) {
-					if (this.myGraphPanel.isAttrEditorActivated()) {
-						if (this.bArc.getContext().getAttrContext() != null) {
-							ValueMember val = ((ValueTuple) this.bArc.getAttribute())
-									.getValueMemberAt(ev.getIndex());
-							if (val.isSet() && val.getExpr().isVariable()) {
-								ContextView viewContext = (ContextView) ((ValueTuple) val
-										.getHoldingTuple()).getContext();
-								VarTuple variable = (VarTuple) viewContext
-										.getVariables();
-								VarMember var = variable.getVarMemberAt(val
-										.getExprAsText());
-								if (var == null)
-									return;
-							
-								if (this.bArc.getContext().isNacGraph())
-									var.setMark(VarMember.NAC);
-								else if (this.bArc.getContext().isPacGraph())
-									var.setMark(VarMember.PAC);
-								else if (viewContext
-										.doesAllowComplexExpressions())
-									var.setMark(VarMember.RHS);
-								else
-									var.setMark(VarMember.LHS);
-							}
-						}
-					}
-				}
-			} else {
-				ValueTuple attr = (ValueTuple) this.bArc.getAttribute();
-				for (int i = 0; i < attr.getSize(); i++) {
-					ValueMember am = (ValueMember) attr.getMemberAt(i);
-					if (!am.isValid())
-						break;
-				}
-			}
-		}
-	}
+    /**
+     * Shows the bend which will be moved
+     */
+    public void showMoveAnchor(Graphics g) {
+        if (!this.from.equals(this.to)) {
+            showMoveAnchorOfLine(g);
+        } else {
+            showMoveAnchorOfLoop(g);
+        }
+    }
 
-	public void setGraphPanel(GraphPanel gp) {
-		this.myGraphPanel = gp;
-	}
-	
-	private void showMoveAnchorOfLine(Graphics grs) {
-		// System.out.println("showMoveAnchorOfLine");
-		Graphics2D g = (Graphics2D) grs;
-		Color lastColor = g.getColor();
-		g.setPaint(Line.MOVE_ANCHOR_COLOR); 
-		
-		g.fillRect(this.x - Line.MOVE_ANCHOR_OFFSET, 
-						this.y - Line.MOVE_ANCHOR_OFFSET, 
-						Line.MOVE_ANCHOR_SIZE,
-						Line.MOVE_ANCHOR_SIZE);
-		
+    /**
+     * Erases the anchor marking of the bend
+     */
+    public void eraseMoveAnchor(Graphics g) {
+        if (!this.from.equals(this.to)) {
+            eraseMoveAnchorOfLine(g);
+        } else {
+            eraseMoveAnchorOfLoop(g);
+        }
+    }
+
+    /**
+     * Implements the AttrViewObserver. Makes update graphics if the attributes of my used object are changed.
+     */
+    public void attributeChanged(AttrViewEvent ev) {
+        if (ev.getID() == AttrEvent.GENERAL_CHANGE // 0
+                // || ev.getID() == AttrEvent.MEMBER_ADDED // 10
+                || ev.getID() == AttrEvent.MEMBER_DELETED // 20
+                || ev.getID() == AttrEvent.MEMBER_RETYPED // 60
+                || ev.getID() == AttrEvent.MEMBER_RENAMED // 50
+                || ev.getID() == AttrViewEvent.MEMBER_VISIBILITY // 220
+                || ev.getID() == AttrViewEvent.MEMBER_MOVED) { // 210
+
+            if (ev.getSource().getTupleType().isValid()) {
+                this.attrChanged = true;
+            }
+
+        } else if (ev.getID() == AttrEvent.MEMBER_VALUE_CORRECTNESS // 70
+                || ev.getID() == AttrEvent.MEMBER_VALUE_MODIFIED) { // 80
+
+            if (ev.getSource().isValid()) {
+                this.attrChanged = true;
+                if (this.myGraphPanel != null) {
+                    if (this.myGraphPanel.isAttrEditorActivated()) {
+                        if (this.bArc.getContext().getAttrContext() != null) {
+                            ValueMember val = ((ValueTuple) this.bArc.getAttribute())
+                                    .getValueMemberAt(ev.getIndex());
+                            if (val.isSet() && val.getExpr().isVariable()) {
+                                ContextView viewContext = (ContextView) ((ValueTuple) val
+                                        .getHoldingTuple()).getContext();
+                                VarTuple variable = (VarTuple) viewContext
+                                        .getVariables();
+                                VarMember var = variable.getVarMemberAt(val
+                                        .getExprAsText());
+                                if (var == null) {
+                                    return;
+                                }
+
+                                if (this.bArc.getContext().isNacGraph()) {
+                                    var.setMark(VarMember.NAC);
+                                } else if (this.bArc.getContext().isPacGraph()) {
+                                    var.setMark(VarMember.PAC);
+                                } else if (viewContext
+                                        .doesAllowComplexExpressions()) {
+                                    var.setMark(VarMember.RHS);
+                                } else {
+                                    var.setMark(VarMember.LHS);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                ValueTuple attr = (ValueTuple) this.bArc.getAttribute();
+                for (int i = 0; i < attr.getSize(); i++) {
+                    ValueMember am = (ValueMember) attr.getMemberAt(i);
+                    if (!am.isValid()) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void setGraphPanel(GraphPanel gp) {
+        this.myGraphPanel = gp;
+    }
+
+    private void showMoveAnchorOfLine(Graphics grs) {
+        // System.out.println("showMoveAnchorOfLine");
+        Graphics2D g = (Graphics2D) grs;
+        Color lastColor = g.getColor();
+        g.setPaint(Line.MOVE_ANCHOR_COLOR);
+
+        g.fillRect(this.x - Line.MOVE_ANCHOR_OFFSET,
+                this.y - Line.MOVE_ANCHOR_OFFSET,
+                Line.MOVE_ANCHOR_SIZE,
+                Line.MOVE_ANCHOR_SIZE);
+
 //		g.fillOval(this.x - Line.MOVE_ANCHOR_SIZE/2, 
 //					this.y - Line.MOVE_ANCHOR_SIZE/2, 
 //					Line.MOVE_ANCHOR_SIZE,
 //					Line.MOVE_ANCHOR_SIZE);
-		g.setPaint(lastColor);
-	}
+        g.setPaint(lastColor);
+    }
 
-	private void showMoveAnchorOfLoop(Graphics grs) {
-		Loop loop = new Loop(getX(), getY(), getWidth(), getHeight());
-		loop.drawMoveAnchor(grs, this.anchorID);
-	}
+    private void showMoveAnchorOfLoop(Graphics grs) {
+        Loop loop = new Loop(getX(), getY(), getWidth(), getHeight());
+        loop.drawMoveAnchor(grs, this.anchorID);
+    }
 
-	/**
-	 * Draws a sign to mark wrong arcs. If {@link EdGraphObject#errorMode} is
-	 * true, a green box will be shown.
-	 */
-	protected void showErrorAnchor(Graphics g) {
-		if (!this.from.equals(this.to))
-			showErrorAnchorOfLine(g);
-		else
-			showErrorAnchorOfLoop(g);
-	}// showErrorAnchor
+    /**
+     * Draws a sign to mark wrong arcs. If {@link EdGraphObject#errorMode} is true, a green box will be shown.
+     */
+    protected void showErrorAnchor(Graphics g) {
+        if (!this.from.equals(this.to)) {
+            showErrorAnchorOfLine(g);
+        } else {
+            showErrorAnchorOfLoop(g);
+        }
+    }// showErrorAnchor
 
-	/**
-	 * Draws a sign to mark wrong arcs between different nodes. If
-	 * {@link EdGraphObject#errorMode} is true, a green box will be shown.
-	 */
-	private void showErrorAnchorOfLine(Graphics grs) {
-		Graphics2D g = (Graphics2D) grs;
-		Color lastColor = g.getColor();
-		g.setPaint(Color.green);
-		g.fill(new Rectangle2D.Double(this.x - 6, this.y - 6, 12, 12));
-		g.setPaint(lastColor);
-	}// showErrorAnchorOfLine
+    /**
+     * Draws a sign to mark wrong arcs between different nodes. If {@link EdGraphObject#errorMode} is true, a green box
+     * will be shown.
+     */
+    private void showErrorAnchorOfLine(Graphics grs) {
+        Graphics2D g = (Graphics2D) grs;
+        Color lastColor = g.getColor();
+        g.setPaint(Color.green);
+        g.fill(new Rectangle2D.Double(this.x - 6, this.y - 6, 12, 12));
+        g.setPaint(lastColor);
+    }// showErrorAnchorOfLine
 
-	/**
-	 * Draws a sign to mark wrong arcs between the same node. If
-	 * {@link EdGraphObject#errorMode} is true, a green box will be shown.
-	 */
-	private void showErrorAnchorOfLoop(Graphics grs) {
-		Graphics2D g = (Graphics2D) grs;
-		Color lastColor = g.getColor();
-		g.setPaint(Color.green);
-		Loop loop = new Loop(getX(), getY(), getWidth(), getHeight());
-		if (this.anchorID == Loop.UPPER_LEFT)
-			g.fill(new Rectangle2D.Double(loop.anch1.x - 6, loop.anch1.y - 6,
-					12, 12));
-		g.setPaint(lastColor);
-	}// showErrorAnchorOfLoop
+    /**
+     * Draws a sign to mark wrong arcs between the same node. If {@link EdGraphObject#errorMode} is true, a green box
+     * will be shown.
+     */
+    private void showErrorAnchorOfLoop(Graphics grs) {
+        Graphics2D g = (Graphics2D) grs;
+        Color lastColor = g.getColor();
+        g.setPaint(Color.green);
+        Loop loop = new Loop(getX(), getY(), getWidth(), getHeight());
+        if (this.anchorID == Loop.UPPER_LEFT) {
+            g.fill(new Rectangle2D.Double(loop.anch1.x - 6, loop.anch1.y - 6,
+                    12, 12));
+        }
+        g.setPaint(lastColor);
+    }// showErrorAnchorOfLoop
 
-	private void eraseMoveAnchorOfLine(Graphics grs) {
-		Graphics2D g = (Graphics2D) grs;
-		Color lastColor = g.getColor();
-		g.setPaint(Color.white);
-		g.fill(new Rectangle2D.Double(this.x - 5, this.y - 5, 10, 10));
-		g.setPaint(lastColor);
-	}
+    private void eraseMoveAnchorOfLine(Graphics grs) {
+        Graphics2D g = (Graphics2D) grs;
+        Color lastColor = g.getColor();
+        g.setPaint(Color.white);
+        g.fill(new Rectangle2D.Double(this.x - 5, this.y - 5, 10, 10));
+        g.setPaint(lastColor);
+    }
 
-	private void eraseMoveAnchorOfLoop(Graphics grs) {
-		Graphics2D g = (Graphics2D) grs;
-		Color lastColor = g.getColor();
-		g.setPaint(Color.white);
-		Loop loop = new Loop(getX(), getY(), getWidth(), getHeight());
-		if (this.anchorID == Loop.UPPER_LEFT)
-			g.fill(new Rectangle2D.Double(loop.anch1.x - 5, loop.anch1.y - 5,
-					10, 10));
-		g.setPaint(lastColor);
-	}
+    private void eraseMoveAnchorOfLoop(Graphics grs) {
+        Graphics2D g = (Graphics2D) grs;
+        Color lastColor = g.getColor();
+        g.setPaint(Color.white);
+        Loop loop = new Loop(getX(), getY(), getWidth(), getHeight());
+        if (this.anchorID == Loop.UPPER_LEFT) {
+            g.fill(new Rectangle2D.Double(loop.anch1.x - 5, loop.anch1.y - 5,
+                    10, 10));
+        }
+        g.setPaint(lastColor);
+    }
 
-	private void drawArcAsLine(Graphics grs, boolean withText) {
-		Graphics2D g = (Graphics2D) grs;
-		boolean needAnchorTuning = true;
-		/* set the edge data */
-		int x1 = this.from.getX();
-		int y1 = this.from.getY();
-		int x2 = this.to.getX();
-		int y2 = this.to.getY();
-		int srcW = this.to.getWidth();
-		int srcH = this.to.getHeight();
-		int tarW = this.from.getWidth();
-		int tarH = this.from.getHeight();
-		
-		Line line = this.toLine();
-		if (this.anchor != null) {
-			line.setAnchor(new Point(this.anchor.x, this.anchor.y));
-			needAnchorTuning = false;
-		}
-		/* set XY of move position of arc */
-		setXY(line.getAnchor().x, line.getAnchor().y);
-		/* set width, height */
-		if (getWidth() == getHeight() && getHeight() == 0) {
-			setWidth(14);
-			setHeight(14);
-		}
-				
-		/* show arc */
-		line.setColor(g.getColor());
-		int sh = getShape();
-		switch (sh) {
-		case EditorConstants.SOLID:
-			line.drawColorSolidLine(g);
-			break;
-		case EditorConstants.DOT:
-			line.drawColorDotLine(g);
-			break;
-		case EditorConstants.DASH:
-			line.drawColorDashLine(g);
-			break;
-		default:
-			break;
-		}
+    private void drawArcAsLine(Graphics grs, boolean withText) {
+        Graphics2D g = (Graphics2D) grs;
+        boolean needAnchorTuning = true;
+        /* set the edge data */
+        int x1 = this.from.getX();
+        int y1 = this.from.getY();
+        int x2 = this.to.getX();
+        int y2 = this.to.getY();
+        int srcW = this.to.getWidth();
+        int srcH = this.to.getHeight();
+        int tarW = this.from.getWidth();
+        int tarH = this.from.getHeight();
 
-		if (weakselected) { 
-			line.drawWeakselectedLine(g);
-			g.setColor(this.getColor());
-		}
-		
-		if (this.elemOfTG) {
-			// Edges arrow and Multiplicity of edge target
-			// Head of edge
-			Arrow arrow = new Arrow(this.itsScale, 
-					line.getAnchor().x, line.getAnchor().y,
-					x2, y2, srcW, srcH, 0);					
-			this.arrowPoint = arrow.getHeadEnd();
-			if (this.bArc.isInheritance())
-				arrow.draw(g, false);
-			else if (this.directed)
-				arrow.draw(g);
-					
-			Arrow backArrow = new Arrow(this.itsScale, 
-					line.getAnchor().x, line.getAnchor().y, 
-					x1, y1, tarW, tarH, 0);
-			this.tailPoint = backArrow.getHeadEnd();
-			if (this.directed && needAnchorTuning) {
-				Point beg = backArrow.getHeadEnd();
-				Point end = arrow.getHeadEnd();
-				if (beg != null && end != null) {
-					int anchX = beg.x + (end.x - beg.x) / 2;
-					int anchY = beg.y + (end.y - beg.y) / 2;
-					line.setAnchor(new Point(anchX, anchY));
-					setXY(anchX, anchY);
-				}
-			}
-						
-			if (!this.bArc.isInheritance()) {
-				Point p = new Point();
-				// draw target multiplicity
-				if ((arrow.getRightEnd() != null) && (y2 > line.getAnchor().y)) {
-					p.y = arrow.getRightEnd().y - 5;
-					p.x = arrow.getRightEnd().x;
-				} else if (arrow.getLeftEnd() != null) {
-					p.y = arrow.getLeftEnd().y + 5;
-					p.x = arrow.getLeftEnd().x;
-				}
-				drawMultiplicity(g, "target", p, this.eType.getBasisType()
-						.getTargetMin(this.bArc.getSource().getType(),
-								this.bArc.getTarget().getType()), 
-								this.eType.getBasisType().getTargetMax(
-								this.bArc.getSource().getType(),
-								this.bArc.getTarget().getType()));
-				
-				// draw source multiplicity
-				if ((backArrow.getRightEnd() != null)
-						&& (y1 > line.getAnchor().y)) {
-					p.y = backArrow.getRightEnd().y - 5;
-					p.x = backArrow.getRightEnd().x;
-				} else if (backArrow.getLeftEnd() != null) {
-					p.y = backArrow.getLeftEnd().y + 5;
-					p.x = backArrow.getLeftEnd().x;
-				}
-				drawMultiplicity(g, "source", p, this.eType.getBasisType()
-						.getSourceMin(this.bArc.getSource().getType(),
-								this.bArc.getTarget().getType()), 
-								this.eType.getBasisType().getSourceMax(
-								this.bArc.getSource().getType(),
-								this.bArc.getTarget().getType()));
-			}
-		}
-		else { // plain graph
-			if (this.directed) {
-				int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17: 0;
-				Arrow arrow = new Arrow(this.itsScale, line.getAnchor().x, line.getAnchor().y,
-						x2, y2, srcW, srcH, headsize);
-				this.arrowPoint = arrow.getHeadEnd();
-				arrow.draw(g);
-					
-				if (needAnchorTuning) {
-					Arrow backArrow = new Arrow(this.itsScale, line.getAnchor().x, line
-							.getAnchor().y, x1, y1, tarW, tarH, headsize);
-					this.tailPoint = backArrow.getHeadEnd();
-					Point beg = backArrow.getHeadEnd();
-					Point end = arrow.getHeadEnd();
-					if (beg != null && end != null) {
-						int anchX = beg.x + (end.x - beg.x) / 2;
-						int anchY = beg.y + (end.y - beg.y) / 2;
-						line.setAnchor(new Point(anchX, anchY));
-						setXY(anchX, anchY);
-					}
-				}
-			}
-		}
-		
-		/* Text */
-		if (withText) {
-			g.setStroke(EditorConstants.defaultStroke);
-			
-			this.textLocation.x = getX() + this.textOffset.x;
-			this.textLocation.y = getY() + this.textOffset.y;
-			drawText(g, this.textLocation.x, this.textLocation.y);
-		}
-	}
+        Line line = this.toLine();
+        if (this.anchor != null) {
+            line.setAnchor(new Point(this.anchor.x, this.anchor.y));
+            needAnchorTuning = false;
+        }
+        /* set XY of move position of arc */
+        setXY(line.getAnchor().x, line.getAnchor().y);
+        /* set width, height */
+        if (getWidth() == getHeight() && getHeight() == 0) {
+            setWidth(14);
+            setHeight(14);
+        }
 
-	public void refreshTextLocation() {
-		Line line = this.toLine();
-		if (this.anchor != null) {
-			line.setAnchor(new Point(this.anchor.x, this.anchor.y));
-		}
-		/* set XY of move position of arc */
-		setXY(line.getAnchor().x, line.getAnchor().y);
-		this.textLocation.x = getX() + this.textOffset.x;
-		this.textLocation.y = getY() + this.textOffset.y;
-	}
-	
-	
-	private void drawBackgroundLine(Graphics grs) {
-		Graphics2D g = (Graphics2D) grs;
-		g.setStroke(new BasicStroke(5.0f));
-		Line line = toLine();
-		if ((this.anchor != null)) {
-			line.setAnchor(new Point(this.anchor.x, this.anchor.y));
-		}
-		/* set width, height */
-		if (getWidth() == getHeight() && getHeight() == 0) {
-			setWidth(14);
-			setHeight(14);
-		}
-		/* draw arc */
-		line.setColor(g.getColor());
-		line.drawColorSolidLine(g);
-		g.setStroke(EditorConstants.defaultStroke);
-	}
+        /* show arc */
+        line.setColor(g.getColor());
+        int sh = getShape();
+        switch (sh) {
+            case EditorConstants.SOLID:
+                line.drawColorSolidLine(g);
+                break;
+            case EditorConstants.DOT:
+                line.drawColorDotLine(g);
+                break;
+            case EditorConstants.DASH:
+                line.drawColorDashLine(g);
+                break;
+            default:
+                break;
+        }
 
-	private void eraseArcAsLine(Graphics grs, boolean withText) {
-		Graphics2D g = (Graphics2D) grs;
-		int nX[] = new int[6];
-		int nY[] = new int[6];
-		int nP, n = 5, n1 = 5;
-		nX[0] = this.from.getX();
-		nY[0] = this.from.getY() - n;
-		nX[1] = getX();
-		nY[1] = getY() - n;
-		nX[2] = this.to.getX();
-		nY[2] = this.to.getY() - (n + n1);
-		nX[3] = this.to.getX();
-		nY[3] = this.to.getY() + (n + n1);
-		nX[4] = getX();
-		nY[4] = getY() + n;
-		nX[5] = this.from.getX();
-		nY[5] = this.from.getY() + n;
-		nP = 6;
-		g.fillPolygon(nX, nY, nP);
-		if (withText) {
-			Rectangle r = getTextRectangle(g.getFontMetrics());
-			g.fillRect(r.x, r.y, r.width, r.height);
-		}
-	}
+        if (weakselected) {
+            line.drawWeakselectedLine(g);
+            g.setColor(this.getColor());
+        }
 
-	private void drawArcAsLoop(Graphics grs, boolean withText) {		
-		Graphics2D g = (Graphics2D) grs;
-		
-		int fromX = this.from.getX();
-		int fromY = this.from.getY();
-		int fromW = this.from.getWidth();
-		int fromH = this.from.getHeight();
-		
-		// rechne width und height um, wenn source node ist CIRCLE
-		if (((EdNode) this.from).getShape() == EditorConstants.CIRCLE) {
-			fromW = (int) (Math.acos(1/2) * (this.from.getWidth()/2));
-			fromH = fromW;
-		}
-		// rechne width und height um, wenn source node ist OVAL
-		else if (((EdNode) this.from).getShape() == EditorConstants.OVAL) {
-			int nn = 0;
-			if (fromW < fromH)
-				nn = fromW - (fromH - fromW)/2;
-			else
-				nn = fromH - (fromW - fromH)/2;
-			fromW = nn;
-			fromH = nn;
-		}
-		/* set the edge data for first time */
-		int w1 = 0, h1 = 0, x1 = 0, y1 = 0;
+        if (this.elemOfTG) {
+            // Edges arrow and Multiplicity of edge target
+            // Head of edge
+            Arrow arrow = new Arrow(this.itsScale,
+                    line.getAnchor().x, line.getAnchor().y,
+                    x2, y2, srcW, srcH, 0);
+            this.arrowPoint = arrow.getHeadEnd();
+            if (this.bArc.isInheritance()) {
+                arrow.draw(g, false);
+            } else if (this.directed) {
+                arrow.draw(g);
+            }
+
+            Arrow backArrow = new Arrow(this.itsScale,
+                    line.getAnchor().x, line.getAnchor().y,
+                    x1, y1, tarW, tarH, 0);
+            this.tailPoint = backArrow.getHeadEnd();
+            if (this.directed && needAnchorTuning) {
+                Point beg = backArrow.getHeadEnd();
+                Point end = arrow.getHeadEnd();
+                if (beg != null && end != null) {
+                    int anchX = beg.x + (end.x - beg.x) / 2;
+                    int anchY = beg.y + (end.y - beg.y) / 2;
+                    line.setAnchor(new Point(anchX, anchY));
+                    setXY(anchX, anchY);
+                }
+            }
+
+            if (!this.bArc.isInheritance()) {
+                Point p = new Point();
+                // draw target multiplicity
+                if ((arrow.getRightEnd() != null) && (y2 > line.getAnchor().y)) {
+                    p.y = arrow.getRightEnd().y - 5;
+                    p.x = arrow.getRightEnd().x;
+                } else if (arrow.getLeftEnd() != null) {
+                    p.y = arrow.getLeftEnd().y + 5;
+                    p.x = arrow.getLeftEnd().x;
+                }
+                drawMultiplicity(g, "target", p, this.eType.getBasisType()
+                        .getTargetMin(this.bArc.getSource().getType(),
+                                this.bArc.getTarget().getType()),
+                        this.eType.getBasisType().getTargetMax(
+                                this.bArc.getSource().getType(),
+                                this.bArc.getTarget().getType()));
+
+                // draw source multiplicity
+                if ((backArrow.getRightEnd() != null)
+                        && (y1 > line.getAnchor().y)) {
+                    p.y = backArrow.getRightEnd().y - 5;
+                    p.x = backArrow.getRightEnd().x;
+                } else if (backArrow.getLeftEnd() != null) {
+                    p.y = backArrow.getLeftEnd().y + 5;
+                    p.x = backArrow.getLeftEnd().x;
+                }
+                drawMultiplicity(g, "source", p, this.eType.getBasisType()
+                        .getSourceMin(this.bArc.getSource().getType(),
+                                this.bArc.getTarget().getType()),
+                        this.eType.getBasisType().getSourceMax(
+                                this.bArc.getSource().getType(),
+                                this.bArc.getTarget().getType()));
+            }
+        } else { // plain graph
+            if (this.directed) {
+                int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17 : 0;
+                Arrow arrow = new Arrow(this.itsScale, line.getAnchor().x, line.getAnchor().y,
+                        x2, y2, srcW, srcH, headsize);
+                this.arrowPoint = arrow.getHeadEnd();
+                arrow.draw(g);
+
+                if (needAnchorTuning) {
+                    Arrow backArrow = new Arrow(this.itsScale, line.getAnchor().x, line
+                            .getAnchor().y, x1, y1, tarW, tarH, headsize);
+                    this.tailPoint = backArrow.getHeadEnd();
+                    Point beg = backArrow.getHeadEnd();
+                    Point end = arrow.getHeadEnd();
+                    if (beg != null && end != null) {
+                        int anchX = beg.x + (end.x - beg.x) / 2;
+                        int anchY = beg.y + (end.y - beg.y) / 2;
+                        line.setAnchor(new Point(anchX, anchY));
+                        setXY(anchX, anchY);
+                    }
+                }
+            }
+        }
+
+        /* Text */
+        if (withText) {
+            g.setStroke(EditorConstants.defaultStroke);
+
+            this.textLocation.x = getX() + this.textOffset.x;
+            this.textLocation.y = getY() + this.textOffset.y;
+            drawText(g, this.textLocation.x, this.textLocation.y);
+        }
+    }
+
+    public void refreshTextLocation() {
+        Line line = this.toLine();
+        if (this.anchor != null) {
+            line.setAnchor(new Point(this.anchor.x, this.anchor.y));
+        }
+        /* set XY of move position of arc */
+        setXY(line.getAnchor().x, line.getAnchor().y);
+        this.textLocation.x = getX() + this.textOffset.x;
+        this.textLocation.y = getY() + this.textOffset.y;
+    }
+
+    private void drawBackgroundLine(Graphics grs) {
+        Graphics2D g = (Graphics2D) grs;
+        g.setStroke(new BasicStroke(5.0f));
+        Line line = toLine();
+        if ((this.anchor != null)) {
+            line.setAnchor(new Point(this.anchor.x, this.anchor.y));
+        }
+        /* set width, height */
+        if (getWidth() == getHeight() && getHeight() == 0) {
+            setWidth(14);
+            setHeight(14);
+        }
+        /* draw arc */
+        line.setColor(g.getColor());
+        line.drawColorSolidLine(g);
+        g.setStroke(EditorConstants.defaultStroke);
+    }
+
+    private void eraseArcAsLine(Graphics grs, boolean withText) {
+        Graphics2D g = (Graphics2D) grs;
+        int nX[] = new int[6];
+        int nY[] = new int[6];
+        int nP, n = 5, n1 = 5;
+        nX[0] = this.from.getX();
+        nY[0] = this.from.getY() - n;
+        nX[1] = getX();
+        nY[1] = getY() - n;
+        nX[2] = this.to.getX();
+        nY[2] = this.to.getY() - (n + n1);
+        nX[3] = this.to.getX();
+        nY[3] = this.to.getY() + (n + n1);
+        nX[4] = getX();
+        nY[4] = getY() + n;
+        nX[5] = this.from.getX();
+        nY[5] = this.from.getY() + n;
+        nP = 6;
+        g.fillPolygon(nX, nY, nP);
+        if (withText) {
+            Rectangle r = getTextRectangle(g.getFontMetrics());
+            g.fillRect(r.x, r.y, r.width, r.height);
+        }
+    }
+
+    private void drawArcAsLoop(Graphics grs, boolean withText) {
+        Graphics2D g = (Graphics2D) grs;
+
+        int fromX = this.from.getX();
+        int fromY = this.from.getY();
+        int fromW = this.from.getWidth();
+        int fromH = this.from.getHeight();
+
+        // rechne width und height um, wenn source node ist CIRCLE
+        if (((EdNode) this.from).getShape() == EditorConstants.CIRCLE) {
+            fromW = (int) (Math.acos(1 / 2) * (this.from.getWidth() / 2));
+            fromH = fromW;
+        } // rechne width und height um, wenn source node ist OVAL
+        else if (((EdNode) this.from).getShape() == EditorConstants.OVAL) {
+            int nn = 0;
+            if (fromW < fromH) {
+                nn = fromW - (fromH - fromW) / 2;
+            } else {
+                nn = fromH - (fromW - fromH) / 2;
+            }
+            fromW = nn;
+            fromH = nn;
+        }
+        /* set the edge data for first time */
+        int w1 = 0, h1 = 0, x1 = 0, y1 = 0;
 //		int w2 = 0, h2 = 0, x2 = 0, y2 = 0;
-		int offsetX = 0, offsetY = 0;
-		if (getWidth() == getHeight() && getHeight() == 0) {
-			w1 = getWidthOfLoop();
-			h1 = w1;
-			offsetX = fromW/2 + w1/2 + w1/4;
-			offsetY = fromH/2 + h1/2 + h1/4;
-			x1 = fromX - offsetX;
-			y1 = fromY - offsetY;
-			/* set position of arc */
-			setXY(x1, y1);
-			/* set width, height */
-			setWidth(w1);
-			setHeight(h1);
-		} else {
-			/* use the edge data */
-			w1 = getWidth();
-			h1 = getHeight();
-			offsetX = fromW/2 + w1/2 + w1/4;
-			offsetY = fromH/2 + h1/2 + h1/4;
-			x1 = fromX - offsetX;
-			y1 = fromY - offsetY;
-			/* Teste ob die Loop haengt */
-			int difX = 0;
-			int difY = 0;
-			if ((x1 + w1) <= (fromX - fromW/2)) {
-				difX = (fromX - fromW/2) - (x1 + w1);
-				x1 = x1 + difX + 5;
-			} else if (x1 >= (fromX + fromW/2)) {
-				difX = x1 - (fromX + fromW/2);
-				x1 = x1 - difX - 5;
-			}
-			if ((y1 + h1) <= (fromY - fromH/2)) {
-				difY = (fromY - fromH/2) - (y1 + h1);
-				y1 = y1 + difY + 5;
-			} else if (y1 >= (fromY + fromH/2)) {
-				difY = y1 - (fromY + fromH/2);
-				y1 = y1 - difY - 5;
-			}
-			/* Teste ob die Loop ueberdeckt ist */
-			Loop tLoop = new Loop(x1, y1, w1, h1);
-			if (!tLoop.outside(((EdNode) this.from).toRectangle(), tLoop.anch1,
-					tLoop.anch2, tLoop.anch3, tLoop.anch4)) {
-				x1 = fromX - fromW/2 - w1/2 - w1/4;
-				y1 = fromY - fromH/2 - h1/2 - h1/4;
-			}
-		}
-		/* create a new loop of this */
-		Loop loop = new Loop(x1, y1, w1, h1);
-		/* set position of arc */
-		setXY(x1, y1);
-		/* set width, height */
-		setWidth(w1);
-		setHeight(h1);
-		loop.setColor(g.getColor());
-		int sh = getShape();
-		switch (sh) {
-		case EditorConstants.SOLID:
-			loop.drawColorSolidLoop(g);
-			break;
-		case EditorConstants.DOT:
-			loop.drawColorDotLoop(g);
-			break;
-		case EditorConstants.DASH:
-			loop.drawColorDashLoop(g);
-			break;
-		default:
-			break;
-		}
+        int offsetX = 0, offsetY = 0;
+        if (getWidth() == getHeight() && getHeight() == 0) {
+            w1 = getWidthOfLoop();
+            h1 = w1;
+            offsetX = fromW / 2 + w1 / 2 + w1 / 4;
+            offsetY = fromH / 2 + h1 / 2 + h1 / 4;
+            x1 = fromX - offsetX;
+            y1 = fromY - offsetY;
+            /* set position of arc */
+            setXY(x1, y1);
+            /* set width, height */
+            setWidth(w1);
+            setHeight(h1);
+        } else {
+            /* use the edge data */
+            w1 = getWidth();
+            h1 = getHeight();
+            offsetX = fromW / 2 + w1 / 2 + w1 / 4;
+            offsetY = fromH / 2 + h1 / 2 + h1 / 4;
+            x1 = fromX - offsetX;
+            y1 = fromY - offsetY;
+            /* Teste ob die Loop haengt */
+            int difX = 0;
+            int difY = 0;
+            if ((x1 + w1) <= (fromX - fromW / 2)) {
+                difX = (fromX - fromW / 2) - (x1 + w1);
+                x1 = x1 + difX + 5;
+            } else if (x1 >= (fromX + fromW / 2)) {
+                difX = x1 - (fromX + fromW / 2);
+                x1 = x1 - difX - 5;
+            }
+            if ((y1 + h1) <= (fromY - fromH / 2)) {
+                difY = (fromY - fromH / 2) - (y1 + h1);
+                y1 = y1 + difY + 5;
+            } else if (y1 >= (fromY + fromH / 2)) {
+                difY = y1 - (fromY + fromH / 2);
+                y1 = y1 - difY - 5;
+            }
+            /* Teste ob die Loop ueberdeckt ist */
+            Loop tLoop = new Loop(x1, y1, w1, h1);
+            if (!tLoop.outside(((EdNode) this.from).toRectangle(), tLoop.anch1,
+                    tLoop.anch2, tLoop.anch3, tLoop.anch4)) {
+                x1 = fromX - fromW / 2 - w1 / 2 - w1 / 4;
+                y1 = fromY - fromH / 2 - h1 / 2 - h1 / 4;
+            }
+        }
+        /* create a new loop of this */
+        Loop loop = new Loop(x1, y1, w1, h1);
+        /* set position of arc */
+        setXY(x1, y1);
+        /* set width, height */
+        setWidth(w1);
+        setHeight(h1);
+        loop.setColor(g.getColor());
+        int sh = getShape();
+        switch (sh) {
+            case EditorConstants.SOLID:
+                loop.drawColorSolidLoop(g);
+                break;
+            case EditorConstants.DOT:
+                loop.drawColorDotLoop(g);
+                break;
+            case EditorConstants.DASH:
+                loop.drawColorDashLoop(g);
+                break;
+            default:
+                break;
+        }
 
-		if (weakselected) { 
-			loop.drawWeakselectedLoop(g);
-			g.setColor(this.getColor());
-		}
-		if (this.elemOfTG) {
-			// Edges arrow and Multiplicity of edge target
-			Arrow arrow = new Arrow(this.itsScale, loop.anch4.x, loop.anch4.y,
-						loop.anch3.x, loop.anch3.y,
-						(loop.anch3.x - (fromX - fromW/2)) * 2,
-						(loop.anch3.y - (fromY - fromH/2)) * 2,
-						0);				
-			if (this.directed) { 
-				arrow.draw(g);
-			}
-			if (arrow.getRightEnd() != null) {
-				drawMultiplicity(g, "target", arrow.getRightEnd(), this.eType
-						.getBasisType().getTargetMin(
-								this.bArc.getSource().getType(),
-								this.bArc.getTarget().getType()), 
-								this.eType.getBasisType().getTargetMax(
-										this.bArc.getSource().getType(),
-										this.bArc.getTarget().getType()));
-			}
-			Arrow backArrow = new Arrow(this.itsScale, loop.anch2.x, loop.anch2.y,
-					loop.anch3.x, loop.anch3.y,
-					(loop.anch3.x - (fromX - fromW/2)) * 2,
-					(loop.anch3.y - (fromY - fromH/2)) * 2,
-					0);
-			if (backArrow.getLeftEnd() != null) {
-				Point p = new Point(backArrow.getLeftEnd().x, backArrow.getLeftEnd().y - 10);
-				drawMultiplicity(g, "source", p, this.eType.getBasisType()
-						.getSourceMin(this.bArc.getSource().getType(),
-								this.bArc.getTarget().getType()), 
-								this.eType.getBasisType().getSourceMax(
-										this.bArc.getSource().getType(),
-										this.bArc.getTarget().getType()));
-			}
-		}
-		else { // plain graph
-			if (this.directed) {
-				int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17: 0;
-				Arrow arrow = new Arrow(this.itsScale, loop.anch4.x, loop.anch4.y,
-							loop.anch3.x, loop.anch3.y,
-							(loop.anch3.x - (fromX - fromW/2)) * 2,
-							(loop.anch3.y - (fromY - fromH/2)) * 2,
-							headsize);
-				arrow.draw(g);
-			}
-		}
+        if (weakselected) {
+            loop.drawWeakselectedLoop(g);
+            g.setColor(this.getColor());
+        }
+        if (this.elemOfTG) {
+            // Edges arrow and Multiplicity of edge target
+            Arrow arrow = new Arrow(this.itsScale, loop.anch4.x, loop.anch4.y,
+                    loop.anch3.x, loop.anch3.y,
+                    (loop.anch3.x - (fromX - fromW / 2)) * 2,
+                    (loop.anch3.y - (fromY - fromH / 2)) * 2,
+                    0);
+            if (this.directed) {
+                arrow.draw(g);
+            }
+            if (arrow.getRightEnd() != null) {
+                drawMultiplicity(g, "target", arrow.getRightEnd(), this.eType
+                        .getBasisType().getTargetMin(
+                                this.bArc.getSource().getType(),
+                                this.bArc.getTarget().getType()),
+                        this.eType.getBasisType().getTargetMax(
+                                this.bArc.getSource().getType(),
+                                this.bArc.getTarget().getType()));
+            }
+            Arrow backArrow = new Arrow(this.itsScale, loop.anch2.x, loop.anch2.y,
+                    loop.anch3.x, loop.anch3.y,
+                    (loop.anch3.x - (fromX - fromW / 2)) * 2,
+                    (loop.anch3.y - (fromY - fromH / 2)) * 2,
+                    0);
+            if (backArrow.getLeftEnd() != null) {
+                Point p = new Point(backArrow.getLeftEnd().x, backArrow.getLeftEnd().y - 10);
+                drawMultiplicity(g, "source", p, this.eType.getBasisType()
+                        .getSourceMin(this.bArc.getSource().getType(),
+                                this.bArc.getTarget().getType()),
+                        this.eType.getBasisType().getSourceMax(
+                                this.bArc.getSource().getType(),
+                                this.bArc.getTarget().getType()));
+            }
+        } else { // plain graph
+            if (this.directed) {
+                int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17 : 0;
+                Arrow arrow = new Arrow(this.itsScale, loop.anch4.x, loop.anch4.y,
+                        loop.anch3.x, loop.anch3.y,
+                        (loop.anch3.x - (fromX - fromW / 2)) * 2,
+                        (loop.anch3.y - (fromY - fromH / 2)) * 2,
+                        headsize);
+                arrow.draw(g);
+            }
+        }
 
-		/* Attribute Text */
-		if (withText) {
-			g.setStroke(EditorConstants.defaultStroke);
-			
-			this.textLocation.x = x1 + this.textOffset.x;
-			this.textLocation.y = y1 + this.textOffset.y;
-			drawText(g, this.textLocation.x, this.textLocation.y);
-		}
-	}
+        /* Attribute Text */
+        if (withText) {
+            g.setStroke(EditorConstants.defaultStroke);
 
-	private void drawBackgroundLoop(Graphics grs) {
-		Graphics2D g = (Graphics2D) grs;
-		g.setStroke(new BasicStroke(5.0f));
-		int fromWidth = this.from.getWidth();
-		int fromHeight = this.from.getHeight();
-		/* set the edge data for first time */
-		int w1 = 0, h1 = 0, x1 = 0, y1 = 0;
-		if (getWidth() == getHeight() && getHeight() == 0) {
-			w1 = getWidthOfLoop();
-			h1 = w1;
-			x1 = this.from.getX() - (fromWidth/2 + w1);
-			y1 = this.from.getY() - (fromHeight/2 + h1);
-		} else {
-			/* use the edge data */
-			w1 = getWidth();
-			h1 = getHeight();
-			x1 = this.from.getX() - (fromWidth/2 + w1);
-			y1 = this.from.getY() - (fromHeight/2 + h1);
-		}
-		/* create a new loop of this */
-		Loop loop = new Loop(x1, y1, w1, h1);
-		loop.setColor(g.getColor());
-		loop.drawColorSolidLoop(g);
-		g.setStroke(EditorConstants.defaultStroke);
-	}
+            this.textLocation.x = x1 + this.textOffset.x;
+            this.textLocation.y = y1 + this.textOffset.y;
+            drawText(g, this.textLocation.x, this.textLocation.y);
+        }
+    }
 
-	private void eraseArcAsLoop(Graphics grs, boolean withText) {
-		// bilde Poligon mit Color.white
-		Graphics2D g = (Graphics2D) grs;
-		g.fillRect(getX(), getY(), getWidth() + 2, getHeight() + 5);
-		if (withText) {
-			Rectangle r = getTextRectangle(g.getFontMetrics());
-			g.fillRect(r.x, r.y, r.width, r.height);
-		}
-	}
+    private void drawBackgroundLoop(Graphics grs) {
+        Graphics2D g = (Graphics2D) grs;
+        g.setStroke(new BasicStroke(5.0f));
+        int fromWidth = this.from.getWidth();
+        int fromHeight = this.from.getHeight();
+        /* set the edge data for first time */
+        int w1 = 0, h1 = 0, x1 = 0, y1 = 0;
+        if (getWidth() == getHeight() && getHeight() == 0) {
+            w1 = getWidthOfLoop();
+            h1 = w1;
+            x1 = this.from.getX() - (fromWidth / 2 + w1);
+            y1 = this.from.getY() - (fromHeight / 2 + h1);
+        } else {
+            /* use the edge data */
+            w1 = getWidth();
+            h1 = getHeight();
+            x1 = this.from.getX() - (fromWidth / 2 + w1);
+            y1 = this.from.getY() - (fromHeight / 2 + h1);
+        }
+        /* create a new loop of this */
+        Loop loop = new Loop(x1, y1, w1, h1);
+        loop.setColor(g.getColor());
+        loop.drawColorSolidLoop(g);
+        g.setStroke(EditorConstants.defaultStroke);
+    }
 
-	private void drawText(Graphics grs, int X, int Y) {
-		if (X > 0 && Y > 0) {		
-			Graphics2D g = (Graphics2D) grs;
-			boolean underlined = false;
-			int tx = X;
-			int ty = Y;
-			
-	//		if (tx <= 0) tx = 2;
-	//		if (ty <= 0) ty = 2;
-	
-			FontMetrics fm = g.getFontMetrics();
-			// Type name
-			int tw = getTextWidth(fm); // (int)textSize.getWidth();
-			String typeStr = getTypeString();
-			int ty1 = ty + fm.getAscent();
-			g.drawString(typeStr, tx, ty1);
-	
-			if ((g.getFont().getSize() < 8)
-					|| !this.attrVisible)
-				return;
-	
-			/* Attribute anzeigen */
-			Vector<Vector<String>> attrs = getAttributes();
-			if (attrs != null && !attrs.isEmpty()) {
-				for (int i = 0; i < attrs.size(); i++) {
-					Vector<String> attr = attrs.elementAt(i);
-					if (!this.elemOfTG && (attr.elementAt(2).length() != 0)) {
-						String attrStr = attr.elementAt(1);
-						attrStr = attr.elementAt(1) + "=";
-						attrStr = attrStr + attr.elementAt(2);
-						if (!underlined) {
-							ty = ty + fm.getHeight();
-							g.drawLine(tx, ty, tx + tw, ty);
-							ty = ty + 2;
-							underlined = true;
-						}
-						ty1 = ty + fm.getAscent();
-						g.drawString(attrStr, tx, ty1);
-						ty = ty + fm.getHeight();
-					} else if (this.elemOfTG && (attr.elementAt(1) != null)) {					
-						String attrStr = attr.elementAt(0);
-						attrStr = attrStr + "  ";
-						attrStr = attrStr + attr.elementAt(1);
-	//					 Type graph: default attr value 
-						if (attr.elementAt(2).length() != 0) {
-							attrStr = attrStr + "=" + attr.elementAt(2);
-						}
-						if (!underlined) {
-							ty = ty + fm.getHeight();
-							g.drawLine(tx, ty, tx + tw, ty);
-							ty = ty + 2;
-							underlined = true;
-						}
-						ty1 = ty + fm.getAscent();
-						g.drawString(attrStr, tx, ty1);
-						ty = ty + fm.getHeight();
-					}
-				}
-			}
-		}
-	}
+    private void eraseArcAsLoop(Graphics grs, boolean withText) {
+        // bilde Poligon mit Color.white
+        Graphics2D g = (Graphics2D) grs;
+        g.fillRect(getX(), getY(), getWidth() + 2, getHeight() + 5);
+        if (withText) {
+            Rectangle r = getTextRectangle(g.getFontMetrics());
+            g.fillRect(r.x, r.y, r.width, r.height);
+        }
+    }
 
-	private void drawMultiplicity(Graphics grs, String key, Point p, int min,
-			int max) {
-		Graphics2D g = (Graphics2D) grs;
-		String s = "";
-		if (min != -1) {
-			s = s.concat(String.valueOf(min));
-			s = s.concat("..");
-			if (max == -1)
-				s = s.concat("*");
-		} else { // min == -1
-			if (max != -1)
-				s = s.concat("0..");
-			else
-				s = "*";
-		}
-		if (max != -1) {
-			if (min != max)
-				s = s.concat(String.valueOf(max));
-			else
-				s = String.valueOf(max);
-		}
-		int w1 = g.getFontMetrics().stringWidth(s);
-		int h1 = g.getFontMetrics().getHeight();
-		if (key.equals("source")) {
-			if (this.srcMultiplicityOffset.x == 0 && this.srcMultiplicityOffset.y == 0) {
-				if (isLine())
-					this.srcMultiplicityOffset.x = -w1;
-				else
-					this.srcMultiplicityOffset.x = +5;
-				this.srcMultiplicityOffset.y = h1;
-			}
-			this.srcMultiplicityLocation.x = p.x;
-			this.srcMultiplicityLocation.y = p.y;
-			this.srcMultiplicitySize.setSize(new Dimension(w1, h1));
-			g.drawString(s,
-					this.srcMultiplicityLocation.x + this.srcMultiplicityOffset.x,
-					this.srcMultiplicityLocation.y + this.srcMultiplicityOffset.y);
-		} else if (key.equals("target")) {
-			if (this.trgMultiplicityOffset.x == 0 && this.trgMultiplicityOffset.y == 0) {
-				this.trgMultiplicityOffset.x = -w1;
-				this.trgMultiplicityOffset.y = h1/2;
-			}
-			this.trgMultiplicityLocation.x = p.x;
-			this.trgMultiplicityLocation.y = p.y;
-			this.trgMultiplicitySize.setSize(new Dimension(w1, h1));
-			g.drawString(s,
-					this.trgMultiplicityLocation.x + this.trgMultiplicityOffset.x,
-					this.trgMultiplicityLocation.y + this.trgMultiplicityOffset.y);
-		}
+    private void drawText(Graphics grs, int X, int Y) {
+        if (X > 0 && Y > 0) {
+            Graphics2D g = (Graphics2D) grs;
+            boolean underlined = false;
+            int tx = X;
+            int ty = Y;
 
-	}
+            //		if (tx <= 0) tx = 2;
+            //		if (ty <= 0) ty = 2;
+            FontMetrics fm = g.getFontMetrics();
+            // Type name
+            int tw = getTextWidth(fm); // (int)textSize.getWidth();
+            String typeStr = getTypeString();
+            int ty1 = ty + fm.getAscent();
+            g.drawString(typeStr, tx, ty1);
 
-	public void drawNameAttrOnly(Graphics grs) {
+            if ((g.getFont().getSize() < 8)
+                    || !this.attrVisible) {
+                return;
+            }
+
+            /* Attribute anzeigen */
+            Vector<Vector<String>> attrs = getAttributes();
+            if (attrs != null && !attrs.isEmpty()) {
+                for (int i = 0; i < attrs.size(); i++) {
+                    Vector<String> attr = attrs.elementAt(i);
+                    if (!this.elemOfTG && (attr.elementAt(2).length() != 0)) {
+                        String attrStr = attr.elementAt(1);
+                        attrStr = attr.elementAt(1) + "=";
+                        attrStr = attrStr + attr.elementAt(2);
+                        if (!underlined) {
+                            ty = ty + fm.getHeight();
+                            g.drawLine(tx, ty, tx + tw, ty);
+                            ty = ty + 2;
+                            underlined = true;
+                        }
+                        ty1 = ty + fm.getAscent();
+                        g.drawString(attrStr, tx, ty1);
+                        ty = ty + fm.getHeight();
+                    } else if (this.elemOfTG && (attr.elementAt(1) != null)) {
+                        String attrStr = attr.elementAt(0);
+                        attrStr = attrStr + "  ";
+                        attrStr = attrStr + attr.elementAt(1);
+                        //					 Type graph: default attr value 
+                        if (attr.elementAt(2).length() != 0) {
+                            attrStr = attrStr + "=" + attr.elementAt(2);
+                        }
+                        if (!underlined) {
+                            ty = ty + fm.getHeight();
+                            g.drawLine(tx, ty, tx + tw, ty);
+                            ty = ty + 2;
+                            underlined = true;
+                        }
+                        ty1 = ty + fm.getAscent();
+                        g.drawString(attrStr, tx, ty1);
+                        ty = ty + fm.getHeight();
+                    }
+                }
+            }
+        }
+    }
+
+    private void drawMultiplicity(Graphics grs, String key, Point p, int min,
+            int max) {
+        Graphics2D g = (Graphics2D) grs;
+        String s = "";
+        if (min != -1) {
+            s = s.concat(String.valueOf(min));
+            s = s.concat("..");
+            if (max == -1) {
+                s = s.concat("*");
+            }
+        } else { // min == -1
+            if (max != -1) {
+                s = s.concat("0..");
+            } else {
+                s = "*";
+            }
+        }
+        if (max != -1) {
+            if (min != max) {
+                s = s.concat(String.valueOf(max));
+            } else {
+                s = String.valueOf(max);
+            }
+        }
+        int w1 = g.getFontMetrics().stringWidth(s);
+        int h1 = g.getFontMetrics().getHeight();
+        if (key.equals("source")) {
+            if (this.srcMultiplicityOffset.x == 0 && this.srcMultiplicityOffset.y == 0) {
+                if (isLine()) {
+                    this.srcMultiplicityOffset.x = -w1;
+                } else {
+                    this.srcMultiplicityOffset.x = +5;
+                }
+                this.srcMultiplicityOffset.y = h1;
+            }
+            this.srcMultiplicityLocation.x = p.x;
+            this.srcMultiplicityLocation.y = p.y;
+            this.srcMultiplicitySize.setSize(new Dimension(w1, h1));
+            g.drawString(s,
+                    this.srcMultiplicityLocation.x + this.srcMultiplicityOffset.x,
+                    this.srcMultiplicityLocation.y + this.srcMultiplicityOffset.y);
+        } else if (key.equals("target")) {
+            if (this.trgMultiplicityOffset.x == 0 && this.trgMultiplicityOffset.y == 0) {
+                this.trgMultiplicityOffset.x = -w1;
+                this.trgMultiplicityOffset.y = h1 / 2;
+            }
+            this.trgMultiplicityLocation.x = p.x;
+            this.trgMultiplicityLocation.y = p.y;
+            this.trgMultiplicitySize.setSize(new Dimension(w1, h1));
+            g.drawString(s,
+                    this.trgMultiplicityLocation.x + this.trgMultiplicityOffset.x,
+                    this.trgMultiplicityLocation.y + this.trgMultiplicityOffset.y);
+        }
+
+    }
+
+    public void drawNameAttrOnly(Graphics grs) {
 //		if (!this.isVisible()) {
-		if (!this.visible) {
-			return;
-		}
-		
-		this.criticalStyle = this.eGraph.criticalStyle;
-		
-		Graphics2D g = (Graphics2D) grs;
-		
-		if (this.eType.filled) {
-			g.setStroke(EditorConstants.boldStroke);
-		} else {
-			g.setStroke(EditorConstants.defaultStroke);
-		}
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setPaint(this.getColor());
-		if (!this.from.equals(this.to)) {
-			// drawArcAsLine(g, scale, true);
-			boolean needAnchorTuning = true;
-			/* set the edge data */
-			int x1 = this.from.getX();
-			int y1 = this.from.getY();
-			int x2 = this.to.getX();
-			int y2 = this.to.getY();
-			Line line = toLine();
-			if ((this.anchor != null)) {
-				line.setAnchor(new Point(this.anchor.x, this.anchor.y));
-				needAnchorTuning = false;
-			}
-			/* set XY of move position of arc */
-			setXY(line.getAnchor().x, line.getAnchor().y);
-			/* set width, height */
-			if (getWidth() == getHeight() && getHeight() == 0) {
-				setWidth(14);
-				setHeight(14);
-			}
-			/*
+        if (!this.visible) {
+            return;
+        }
+
+        this.criticalStyle = this.eGraph.criticalStyle;
+
+        Graphics2D g = (Graphics2D) grs;
+
+        if (this.eType.filled) {
+            g.setStroke(EditorConstants.boldStroke);
+        } else {
+            g.setStroke(EditorConstants.defaultStroke);
+        }
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setPaint(this.getColor());
+        if (!this.from.equals(this.to)) {
+            // drawArcAsLine(g, scale, true);
+            boolean needAnchorTuning = true;
+            /* set the edge data */
+            int x1 = this.from.getX();
+            int y1 = this.from.getY();
+            int x2 = this.to.getX();
+            int y2 = this.to.getY();
+            Line line = toLine();
+            if ((this.anchor != null)) {
+                line.setAnchor(new Point(this.anchor.x, this.anchor.y));
+                needAnchorTuning = false;
+            }
+            /* set XY of move position of arc */
+            setXY(line.getAnchor().x, line.getAnchor().y);
+            /* set width, height */
+            if (getWidth() == getHeight() && getHeight() == 0) {
+                setWidth(14);
+                setHeight(14);
+            }
+            /*
 			 * if(getType().getBasisType().getName().equals("c"))
 			 * line.setColor(conflictColor); else
 			 * if(getType().getBasisType().getName().equals("d"))
 			 * line.setColor(dependencyColor);
-			 */
-			line.setColor(this.getColor());
+             */
+            line.setColor(this.getColor());
 
-			int sh = getShape();
-			switch (sh) {
-			case EditorConstants.SOLID:
-				line.drawColorSolidLine(g);
-				break;
-			case EditorConstants.DOT:
-				line.drawColorDotLine(g);
-				break;
-			case EditorConstants.DASH:
-				line.drawColorDashLine(g);
-				break;
-			default:
-				break;
-			}
-			/* Head of edge */
-			int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17: 0;
-			Arrow arrow = new Arrow(this.itsScale, line.getAnchor().x,
-					line.getAnchor().y, x2, y2, this.to.getWidth(), this.to.getHeight(), headsize);
-			if (isDirected())
-				arrow.draw(g);
+            int sh = getShape();
+            switch (sh) {
+                case EditorConstants.SOLID:
+                    line.drawColorSolidLine(g);
+                    break;
+                case EditorConstants.DOT:
+                    line.drawColorDotLine(g);
+                    break;
+                case EditorConstants.DASH:
+                    line.drawColorDashLine(g);
+                    break;
+                default:
+                    break;
+            }
+            /* Head of edge */
+            int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17 : 0;
+            Arrow arrow = new Arrow(this.itsScale, line.getAnchor().x,
+                    line.getAnchor().y, x2, y2, this.to.getWidth(), this.to.getHeight(), headsize);
+            if (isDirected()) {
+                arrow.draw(g);
+            }
 
-			Arrow tmpBackArrow = new Arrow(this.itsScale, line.getAnchor().x, line
-					.getAnchor().y, x1, y1, this.from.getWidth(), this.from.getHeight(), headsize);
-			if (needAnchorTuning) {
-				// System.out.println("EdArc: do arc tuning");
-				Point beg = tmpBackArrow.getHeadEnd();
-				Point end = arrow.getHeadEnd();
-				if (beg != null && end != null) {
-					int anchX = beg.x + (end.x - beg.x)/2;
-					int anchY = beg.y + (end.y - beg.y)/2;
-					line.setAnchor(new Point(anchX, anchY));
-					setXY(anchX, anchY);
-				}
-			}
+            Arrow tmpBackArrow = new Arrow(this.itsScale, line.getAnchor().x, line
+                    .getAnchor().y, x1, y1, this.from.getWidth(), this.from.getHeight(), headsize);
+            if (needAnchorTuning) {
+                // System.out.println("EdArc: do arc tuning");
+                Point beg = tmpBackArrow.getHeadEnd();
+                Point end = arrow.getHeadEnd();
+                if (beg != null && end != null) {
+                    int anchX = beg.x + (end.x - beg.x) / 2;
+                    int anchY = beg.y + (end.y - beg.y) / 2;
+                    line.setAnchor(new Point(anchX, anchY));
+                    setXY(anchX, anchY);
+                }
+            }
 
-			// g.setPaint(this.getColor());
-			this.textLocation.x = getX() + this.textOffset.x;
-			this.textLocation.y = getY() + this.textOffset.y;
-			showNameAttrOnly(g, this.textLocation.x, this.textLocation.y);
-		} else {
-			// drawArcAsLoop(g, scale, true);
-			int fromWidth = this.from.getWidth();
-			int fromHeight = this.from.getHeight();
-			/* set the edge data for first time */
-			int w1 = 0, h1 = 0, x1 = 0, y1 = 0;
+            // g.setPaint(this.getColor());
+            this.textLocation.x = getX() + this.textOffset.x;
+            this.textLocation.y = getY() + this.textOffset.y;
+            showNameAttrOnly(g, this.textLocation.x, this.textLocation.y);
+        } else {
+            // drawArcAsLoop(g, scale, true);
+            int fromWidth = this.from.getWidth();
+            int fromHeight = this.from.getHeight();
+            /* set the edge data for first time */
+            int w1 = 0, h1 = 0, x1 = 0, y1 = 0;
 //			int w2 = 0, h2 = 0, x2 = 0, y2 = 0;
-			int offsetX = 0, offsetY = 0;
-			if (getWidth() == getHeight() && getHeight() == 0) {
-				w1 = getWidthOfLoop();
-				h1 = w1;
-				offsetX = fromWidth/2 + w1/2 + w1/4;
-				offsetY = fromHeight/2 + h1/2 + h1/4;
-				x1 = this.from.getX() - offsetX;
-				y1 = this.from.getY() - offsetY;
-				/* set position of arc */
-				setXY(x1, y1);
-				/* set width, height */
-				setWidth(w1);
-				setHeight(h1);
-			} else {
-				/* use the edge data */
-				w1 = getWidth();
-				h1 = getHeight();
-				offsetX = fromWidth/2 + w1/2 + w1/4;
-				offsetY = fromHeight/2 + h1/2 + h1/4;
-				x1 = this.from.getX() - offsetX;
-				y1 = this.from.getY() - offsetY;
-				/* Teste ob die Schlinge haengt */
-				int difX = 0;
-				int difY = 0;
-				if ((x1 + w1) <= (this.from.getX() - fromWidth/2)) {
-					difX = (this.from.getX() - fromWidth/2) - (x1 + w1);
-					x1 = x1 + difX + 5;
-				} else if (x1 >= (this.from.getX() + fromWidth/2)) {
-					difX = x1 - (this.from.getX() + fromWidth/2);
-					x1 = x1 - difX - 5;
-				}
-				if ((y1 + h1) <= (this.from.getY() - fromHeight/2)) {
-					difY = (this.from.getY() - fromHeight/2) - (y1 + h1);
-					y1 = y1 + difY + 5;
-				} else if (y1 >= (this.from.getY() + fromHeight/2)) {
-					difY = y1 - (this.from.getY() + fromHeight/2);
-					y1 = y1 - difY - 5;
-				}
-				/* Teste ob die Schlinge ueberdeckt ist */
-				Loop tLoop = new Loop(x1, y1, w1, h1);
-				if (!tLoop.outside(((EdNode) this.from).toRectangle(), tLoop.anch1,
-						tLoop.anch2, tLoop.anch3, tLoop.anch4)) {
-					x1 = this.from.getX() - fromWidth/2 - w1/2 - w1/4;
-					y1 = this.from.getY() - fromHeight/2 - h1/2 - h1/4;
-				}
-			}
-			/* create a new loop of this */
-			Loop loop = new Loop(x1, y1, w1, h1);
-			/* set position of arc */
-			setXY(x1, y1);
-			/* set width, height */
-			setWidth(w1);
-			setHeight(h1);
-			/*
+            int offsetX = 0, offsetY = 0;
+            if (getWidth() == getHeight() && getHeight() == 0) {
+                w1 = getWidthOfLoop();
+                h1 = w1;
+                offsetX = fromWidth / 2 + w1 / 2 + w1 / 4;
+                offsetY = fromHeight / 2 + h1 / 2 + h1 / 4;
+                x1 = this.from.getX() - offsetX;
+                y1 = this.from.getY() - offsetY;
+                /* set position of arc */
+                setXY(x1, y1);
+                /* set width, height */
+                setWidth(w1);
+                setHeight(h1);
+            } else {
+                /* use the edge data */
+                w1 = getWidth();
+                h1 = getHeight();
+                offsetX = fromWidth / 2 + w1 / 2 + w1 / 4;
+                offsetY = fromHeight / 2 + h1 / 2 + h1 / 4;
+                x1 = this.from.getX() - offsetX;
+                y1 = this.from.getY() - offsetY;
+                /* Teste ob die Schlinge haengt */
+                int difX = 0;
+                int difY = 0;
+                if ((x1 + w1) <= (this.from.getX() - fromWidth / 2)) {
+                    difX = (this.from.getX() - fromWidth / 2) - (x1 + w1);
+                    x1 = x1 + difX + 5;
+                } else if (x1 >= (this.from.getX() + fromWidth / 2)) {
+                    difX = x1 - (this.from.getX() + fromWidth / 2);
+                    x1 = x1 - difX - 5;
+                }
+                if ((y1 + h1) <= (this.from.getY() - fromHeight / 2)) {
+                    difY = (this.from.getY() - fromHeight / 2) - (y1 + h1);
+                    y1 = y1 + difY + 5;
+                } else if (y1 >= (this.from.getY() + fromHeight / 2)) {
+                    difY = y1 - (this.from.getY() + fromHeight / 2);
+                    y1 = y1 - difY - 5;
+                }
+                /* Teste ob die Schlinge ueberdeckt ist */
+                Loop tLoop = new Loop(x1, y1, w1, h1);
+                if (!tLoop.outside(((EdNode) this.from).toRectangle(), tLoop.anch1,
+                        tLoop.anch2, tLoop.anch3, tLoop.anch4)) {
+                    x1 = this.from.getX() - fromWidth / 2 - w1 / 2 - w1 / 4;
+                    y1 = this.from.getY() - fromHeight / 2 - h1 / 2 - h1 / 4;
+                }
+            }
+            /* create a new loop of this */
+            Loop loop = new Loop(x1, y1, w1, h1);
+            /* set position of arc */
+            setXY(x1, y1);
+            /* set width, height */
+            setWidth(w1);
+            setHeight(h1);
+            /*
 			 * if(getType().getBasisType().getName().equals("c"))
 			 * loop.setColor(conflictColor); else
 			 * if(getType().getBasisType().getName().equals("d"))
 			 * loop.setColor(dependencyColor);
-			 */
-			loop.setColor(this.getColor());
-			int sh = getShape();
-			switch (sh) {
-			case EditorConstants.SOLID:
-				loop.drawColorSolidLoop(g);
-				break;
-			case EditorConstants.DOT:
-				loop.drawColorDotLoop(g);
-				break;
-			case EditorConstants.DASH:
-				loop.drawColorDashLoop(g);
-				break;
-			default:
-				break;
-			}
+             */
+            loop.setColor(this.getColor());
+            int sh = getShape();
+            switch (sh) {
+                case EditorConstants.SOLID:
+                    loop.drawColorSolidLoop(g);
+                    break;
+                case EditorConstants.DOT:
+                    loop.drawColorDotLoop(g);
+                    break;
+                case EditorConstants.DASH:
+                    loop.drawColorDashLoop(g);
+                    break;
+                default:
+                    break;
+            }
 
-			/* Head of edge */
-			int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17: 0;
-			Arrow arrow = new Arrow(this.itsScale, loop.anch4.x, loop.anch4.y,
-					loop.anch3.x, loop.anch3.y,
-					(loop.anch3.x - (this.from.getX() - fromWidth/2)) * 2,
-					(loop.anch3.y - (this.from.getY() - fromHeight/2)) * 2,
-					headsize);
-			arrow.draw(g);
+            /* Head of edge */
+            int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17 : 0;
+            Arrow arrow = new Arrow(this.itsScale, loop.anch4.x, loop.anch4.y,
+                    loop.anch3.x, loop.anch3.y,
+                    (loop.anch3.x - (this.from.getX() - fromWidth / 2)) * 2,
+                    (loop.anch3.y - (this.from.getY() - fromHeight / 2)) * 2,
+                    headsize);
+            arrow.draw(g);
 
-			// g.setPaint(this.getColor());
-			this.textLocation.x = x1 + this.textOffset.x;
-			this.textLocation.y = y1 + this.textOffset.y;
-			showNameAttrOnly(g, this.textLocation.x, this.textLocation.y);
-		}
-		g.setPaint(this.getColor());
-		g.setStroke(EditorConstants.defaultStroke);
-	}
+            // g.setPaint(this.getColor());
+            this.textLocation.x = x1 + this.textOffset.x;
+            this.textLocation.y = y1 + this.textOffset.y;
+            showNameAttrOnly(g, this.textLocation.x, this.textLocation.y);
+        }
+        g.setPaint(this.getColor());
+        g.setStroke(EditorConstants.defaultStroke);
+    }
 
-	private void showNameAttrOnly(Graphics grs, int X, int Y) {
-		Graphics2D g = (Graphics2D) grs;
-		int tx = X;
-		if (tx <= 0)
-			tx = 2;
-		int ty = Y;
-		if (ty <= 0)
-			ty = 2;
-		FontMetrics fm = g.getFontMetrics();
-		/* Attribute anzeigen */
-		Vector<Vector<String>> attrs = getAttributes();
-		if (attrs != null && !attrs.isEmpty()) {
-			for (int i = 0; i < attrs.size(); i++) {
-				Vector<String> attr =attrs.elementAt(i);
-				if (attr.elementAt(2).length() != 0) {
-					if (attr.elementAt(1).equals("name")) {
-						String attrStr = attr.elementAt(2);
-						if (!attrStr.equals("\"\"")) {
-							int ty1 = ty + fm.getAscent();
-							g.drawString(attrStr, tx, ty1);
-						}
-						return;
-					}
-				}
+    private void showNameAttrOnly(Graphics grs, int X, int Y) {
+        Graphics2D g = (Graphics2D) grs;
+        int tx = X;
+        if (tx <= 0) {
+            tx = 2;
+        }
+        int ty = Y;
+        if (ty <= 0) {
+            ty = 2;
+        }
+        FontMetrics fm = g.getFontMetrics();
+        /* Attribute anzeigen */
+        Vector<Vector<String>> attrs = getAttributes();
+        if (attrs != null && !attrs.isEmpty()) {
+            for (int i = 0; i < attrs.size(); i++) {
+                Vector<String> attr = attrs.elementAt(i);
+                if (attr.elementAt(2).length() != 0) {
+                    if (attr.elementAt(1).equals("name")) {
+                        String attrStr = attr.elementAt(2);
+                        if (!attrStr.equals("\"\"")) {
+                            int ty1 = ty + fm.getAscent();
+                            g.drawString(attrStr, tx, ty1);
+                        }
+                        return;
+                    }
+                }
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	public void XwriteObject(XMLHelper xmlh) {
-		// wegen zooming statt x,y, textOffset origX ... nehmen
-		// was ist mit Loop???
-		if (xmlh.openObject(this.bArc, this)) {
-			xmlh.openSubTag("EdgeLayout");
-			
-			int outX = (int) (this.textOffset.x / this.itsScale);
-			int outY = (int) (this.textOffset.y / this.itsScale);
-			xmlh.addAttr("textOffsetX", outX);
-			xmlh.addAttr("textOffsetY", outY);
-			if (isLine()) {
-				if (this.hasDefaultAnchor) {
-					xmlh.addAttr("bendX", 0);
-					xmlh.addAttr("bendY", 0);
-				} else {
-					outX = (int) (this.x / this.itsScale);
-					outY = (int) (this.y / this.itsScale);
-					xmlh.addAttr("bendX", outX);
-					xmlh.addAttr("bendY", outY);
-				}
-			} else { // is Loop
-				outX = (int) (this.x / this.itsScale);
-				outY = (int) (this.y / this.itsScale);
-				xmlh.addAttr("bendX", outX);
-				xmlh.addAttr("bendY", outY);
-				outX = (int) (this.w / this.itsScale);
-				outY = (int) (this.h / this.itsScale);
-				xmlh.addAttr("loopW", outX);
-				xmlh.addAttr("loopH", outY);
-			}
-			if (isElementOfTypeGraph()) {
-				outX = (int) (this.srcMultiplicityOffset.x / this.itsScale);
-				outY = (int) (this.srcMultiplicityOffset.y / this.itsScale);
-				xmlh.addAttr("sourceMultiplicityOffsetX", outX);
-				xmlh.addAttr("sourceMultiplicityOffsetY", outY);
-				outX = (int) (this.trgMultiplicityOffset.x / this.itsScale);
-				outY = (int) (this.trgMultiplicityOffset.y / this.itsScale);
-				xmlh.addAttr("targetMultiplicityOffsetX", outX);
-				xmlh.addAttr("targetMultiplicityOffsetY", outY);
-			}
-			
-			xmlh.close();
-			// LayoutArc speichern:
-			if (this.lArc != null) {
-				xmlh.addObject("", this.lArc, true);
-			}
+    public void XwriteObject(XMLHelper xmlh) {
+        // wegen zooming statt x,y, textOffset origX ... nehmen
+        // was ist mit Loop???
+        if (xmlh.openObject(this.bArc, this)) {
+            xmlh.openSubTag("EdgeLayout");
 
-			xmlh.close();
-		}
-	}
+            int outX = (int) (this.textOffset.x / this.itsScale);
+            int outY = (int) (this.textOffset.y / this.itsScale);
+            xmlh.addAttr("textOffsetX", outX);
+            xmlh.addAttr("textOffsetY", outY);
+            if (isLine()) {
+                if (this.hasDefaultAnchor) {
+                    xmlh.addAttr("bendX", 0);
+                    xmlh.addAttr("bendY", 0);
+                } else {
+                    outX = (int) (this.x / this.itsScale);
+                    outY = (int) (this.y / this.itsScale);
+                    xmlh.addAttr("bendX", outX);
+                    xmlh.addAttr("bendY", outY);
+                }
+            } else { // is Loop
+                outX = (int) (this.x / this.itsScale);
+                outY = (int) (this.y / this.itsScale);
+                xmlh.addAttr("bendX", outX);
+                xmlh.addAttr("bendY", outY);
+                outX = (int) (this.w / this.itsScale);
+                outY = (int) (this.h / this.itsScale);
+                xmlh.addAttr("loopW", outX);
+                xmlh.addAttr("loopH", outY);
+            }
+            if (isElementOfTypeGraph()) {
+                outX = (int) (this.srcMultiplicityOffset.x / this.itsScale);
+                outY = (int) (this.srcMultiplicityOffset.y / this.itsScale);
+                xmlh.addAttr("sourceMultiplicityOffsetX", outX);
+                xmlh.addAttr("sourceMultiplicityOffsetY", outY);
+                outX = (int) (this.trgMultiplicityOffset.x / this.itsScale);
+                outY = (int) (this.trgMultiplicityOffset.y / this.itsScale);
+                xmlh.addAttr("targetMultiplicityOffsetX", outX);
+                xmlh.addAttr("targetMultiplicityOffsetY", outY);
+            }
 
-	public void XreadObject(XMLHelper xmlh) {
-		int loopW = 0;
-		int loopH = 0;
-		xmlh.peekObject(this.bArc, this);
-		if (xmlh.readSubTag("EdgeLayout")) {
-			this.textOffset = new Point();
-			String s = xmlh.readAttr("textOffsetX");
-			if (s.length() == 0)
-				this.textOffset.x = 0;
-			else
-				this.textOffset.x = (new Integer(s)).intValue();
+            xmlh.close();
+            // LayoutArc speichern:
+            if (this.lArc != null) {
+                xmlh.addObject("", this.lArc, true);
+            }
 
-			s = xmlh.readAttr("textOffsetY");
-			if (s.length() == 0)
-				this.textOffset.y = 0;
-			else
-				this.textOffset.y = (new Integer(s)).intValue();
+            xmlh.close();
+        }
+    }
 
-			s = xmlh.readAttr("bendX");
-			if ((s.length() == 0) || (s.equals("0"))) {
-				this.x = 0;
-			}
-			else {
-				this.x = (new Integer(s)).intValue();
-				if (this.x < 0) {
-					this.x = 0;
-				}
+    public void XreadObject(XMLHelper xmlh) {
+        int loopW = 0;
+        int loopH = 0;
+        xmlh.peekObject(this.bArc, this);
+        if (xmlh.readSubTag("EdgeLayout")) {
+            this.textOffset = new Point();
+            String s = xmlh.readAttr("textOffsetX");
+            if (s.length() == 0) {
+                this.textOffset.x = 0;
+            } else {
+                this.textOffset.x = (new Integer(s)).intValue();
+            }
+
+            s = xmlh.readAttr("textOffsetY");
+            if (s.length() == 0) {
+                this.textOffset.y = 0;
+            } else {
+                this.textOffset.y = (new Integer(s)).intValue();
+            }
+
+            s = xmlh.readAttr("bendX");
+            if ((s.length() == 0) || (s.equals("0"))) {
+                this.x = 0;
+            } else {
+                this.x = (new Integer(s)).intValue();
+                if (this.x < 0) {
+                    this.x = 0;
+                }
 //				else if (x > 1600) {
 //					x = (int) (Math.random()*1000);
 //				} 
-			}
+            }
 
-			s = xmlh.readAttr("bendY");
-			if ((s.length() == 0) || (s.equals("0"))) {
-				this.y = 0;
-			}
-			else {
-				this.y = (new Integer(s)).intValue();
-				if (this.y < 0) {
-					this.y = 0;
-				}
+            s = xmlh.readAttr("bendY");
+            if ((s.length() == 0) || (s.equals("0"))) {
+                this.y = 0;
+            } else {
+                this.y = (new Integer(s)).intValue();
+                if (this.y < 0) {
+                    this.y = 0;
+                }
 //				else if (y > 1000) {
 //					y = (int) (Math.random()*1000);
 //				} 
-			}
+            }
 
-			if (!isLine()) { // is Loop
-				s = xmlh.readAttr("loopW");
-				if (s.length() == 0)
-					loopW = 0;
-				else
-					loopW = (new Integer(s)).intValue();
+            if (!isLine()) { // is Loop
+                s = xmlh.readAttr("loopW");
+                if (s.length() == 0) {
+                    loopW = 0;
+                } else {
+                    loopW = (new Integer(s)).intValue();
+                }
 
-				s = xmlh.readAttr("loopH");
-				if (s.length() == 0)
-					loopH = 0;
-				else
-					loopH = (new Integer(s)).intValue();
-			}
+                s = xmlh.readAttr("loopH");
+                if (s.length() == 0) {
+                    loopH = 0;
+                } else {
+                    loopH = (new Integer(s)).intValue();
+                }
+            }
 
-			if (this.elemOfTG) {
-				createMultiplicityVars();
-				s = xmlh.readAttr("sourceMultiplicityOffsetX");
-				if (s.length() == 0) 
-					this.srcMultiplicityOffset.x = 0;
-				else
-					this.srcMultiplicityOffset.x = (new Integer(s)).intValue();
-	
-				s = xmlh.readAttr("sourceMultiplicityOffsetY");
-				if (s.length() == 0)
-					this.srcMultiplicityOffset.y = 0;
-				else
-					this.srcMultiplicityOffset.y = (new Integer(s)).intValue();
-	
-				s = xmlh.readAttr("targetMultiplicityOffsetX");
-				if (s.length() == 0)
-					this.trgMultiplicityOffset.x = 0;
-				else
-					this.trgMultiplicityOffset.x = (new Integer(s)).intValue();
-	
-				s = xmlh.readAttr("targetMultiplicityOffsetY");
-				if (s.length() == 0)
-					this.trgMultiplicityOffset.y = 0;
-				else
-					this.trgMultiplicityOffset.y = (new Integer(s)).intValue();
-			}
-			
-			xmlh.close();
+            if (this.elemOfTG) {
+                createMultiplicityVars();
+                s = xmlh.readAttr("sourceMultiplicityOffsetX");
+                if (s.length() == 0) {
+                    this.srcMultiplicityOffset.x = 0;
+                } else {
+                    this.srcMultiplicityOffset.x = (new Integer(s)).intValue();
+                }
 
-			// set anchor of edge
-			if (isLine()) {
-				Line line = toLine();
-				Point p = line.getAnchor();
-				if (((this.x == 0) && (this.y == 0)) 
-						|| ((p.x == this.x) && (p.y == this.y))) {
-					this.hasDefaultAnchor = true;
-				} else {
-					this.hasDefaultAnchor = false;
-					setAnchor(new Point(this.x, this.y));
-				}
-			} else { /* a loop */
-				if (xmlh.getDocumentVersion().equals("1.0")) {
-					if ((loopW != 0) && (loopH != 0)) {
-						this.anchor = new Point(this.x, this.y);
-						this.anchorID = Loop.UPPER_LEFT;
-						this.hasDefaultAnchor = false;
-						setXY(this.x, this.y);
-						setWidth(loopW);
-						setHeight(loopH);
-					} else {
-						setAnchor(new Point(this.x, this.y));
-						this.hasDefaultAnchor = true;
-					}
-				} else {
-					setAnchor(new Point(this.x, this.y));
-					this.hasDefaultAnchor = true;
-				}
-			}
-		}
-		// layoutArc einlesen:
-		xmlh.enrichObject(this.lArc);
+                s = xmlh.readAttr("sourceMultiplicityOffsetY");
+                if (s.length() == 0) {
+                    this.srcMultiplicityOffset.y = 0;
+                } else {
+                    this.srcMultiplicityOffset.y = (new Integer(s)).intValue();
+                }
 
-		xmlh.close();
+                s = xmlh.readAttr("targetMultiplicityOffsetX");
+                if (s.length() == 0) {
+                    this.trgMultiplicityOffset.x = 0;
+                } else {
+                    this.trgMultiplicityOffset.x = (new Integer(s)).intValue();
+                }
 
-		this.attrVisible = true;
-		this.attrChanged = false;
-	}
+                s = xmlh.readAttr("targetMultiplicityOffsetY");
+                if (s.length() == 0) {
+                    this.trgMultiplicityOffset.y = 0;
+                } else {
+                    this.trgMultiplicityOffset.y = (new Integer(s)).intValue();
+                }
+            }
+
+            xmlh.close();
+
+            // set anchor of edge
+            if (isLine()) {
+                Line line = toLine();
+                Point p = line.getAnchor();
+                if (((this.x == 0) && (this.y == 0))
+                        || ((p.x == this.x) && (p.y == this.y))) {
+                    this.hasDefaultAnchor = true;
+                } else {
+                    this.hasDefaultAnchor = false;
+                    setAnchor(new Point(this.x, this.y));
+                }
+            } else {
+                /* a loop */
+                if (xmlh.getDocumentVersion().equals("1.0")) {
+                    if ((loopW != 0) && (loopH != 0)) {
+                        this.anchor = new Point(this.x, this.y);
+                        this.anchorID = Loop.UPPER_LEFT;
+                        this.hasDefaultAnchor = false;
+                        setXY(this.x, this.y);
+                        setWidth(loopW);
+                        setHeight(loopH);
+                    } else {
+                        setAnchor(new Point(this.x, this.y));
+                        this.hasDefaultAnchor = true;
+                    }
+                } else {
+                    setAnchor(new Point(this.x, this.y));
+                    this.hasDefaultAnchor = true;
+                }
+            }
+        }
+        // layoutArc einlesen:
+        xmlh.enrichObject(this.lArc);
+
+        xmlh.close();
+
+        this.attrVisible = true;
+        this.attrChanged = false;
+    }
 
 }
 // $Log: EdArc.java,v $

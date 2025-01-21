@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 import java.io.Serializable;
@@ -19,21 +20,22 @@ import java.io.Serializable;
  *@author $Author: olga $
  */
 public interface AttrObserver extends Serializable {
-	static final long serialVersionUID = 2902379059221186917L;
 
-	/*
+    static final long serialVersionUID = 2902379059221186917L;
+
+    /*
 	 * Called when the observed attribute was changed. @param event Attribute
 	 * event object with information about the change.
-	 */
-	public void attributeChanged(AttrEvent event);
+     */
+    public void attributeChanged(AttrEvent event);
 
-	/*
+    /*
 	 * This is a test whether the attribute observer wants its connection with
 	 * an attribute tuple to be persistent. If the result is true, the observer
 	 * is included in the serialization of its attribute tuple and must then
 	 * implement the java.io.Serializable interface.
-	 */
-	public boolean isPersistentFor(AttrTuple at);
+     */
+    public boolean isPersistentFor(AttrTuple at);
 }
 /*
  * $Log: AttrObserver.java,v $

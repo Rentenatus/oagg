@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -18,62 +19,63 @@ import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrEditorManager;
 
 /**
- * Editor for all data of an attribute instance tuple. However, it does not
- * complain if a type tuple is edited instead.
- * 
+ * Editor for all data of an attribute instance tuple. However, it does not complain if a type tuple is edited instead.
+ *
  * @version $Id: LightInstanceEditor.java,v 1.3 2010/08/18 09:24:53 olga Exp $
  * @author $Author: olga $
  */
 public class LightInstanceEditor extends BasicTupleEditor {
 
-	public LightInstanceEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-		setViewSetting(getViewSetting().getMaskedView()); // Apply tuple mask;
-	}
+    public LightInstanceEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+        setViewSetting(getViewSetting().getMaskedView()); // Apply tuple mask;
+    }
 
-	// Overriding...
+    // Overriding...
+    /**
+     * The heart of the matter. Columns are: [NAME, EXPR, CORRECTNESS] Extendable: false Titles: None. Editable: Only
+     * EXPR.
+     */
+    protected TupleTableModel createTableModel() {
+        int columns[] = {NAME, EXPR, CORRECTNESS};
 
-	/**
-	 * The heart of the matter. Columns are: [NAME, EXPR, CORRECTNESS]
-	 * Extendable: false Titles: None. Editable: Only EXPR.
-	 */
-	protected TupleTableModel createTableModel() {
-		int columns[] = { NAME, EXPR, CORRECTNESS };
+        TupleTableModel tm = new TupleTableModel(this);
+        tm.setColumnArray(columns);
+        tm.setExtensible(false);
 
-		TupleTableModel tm = new TupleTableModel(this);
-		tm.setColumnArray(columns);
-		tm.setExtensible(false);
+        tm.setColumnTitle(NAME, null);
+        tm.setColumnTitle(EXPR, null);
+        tm.setColumnTitle(CORRECTNESS, null);
 
-		tm.setColumnTitle(NAME, null);
-		tm.setColumnTitle(EXPR, null);
-		tm.setColumnTitle(CORRECTNESS, null);
+        tm.setColumnEditable(NAME, false);
+        tm.setColumnEditable(EXPR, true);
+        tm.setColumnEditable(CORRECTNESS, false);
 
-		tm.setColumnEditable(NAME, false);
-		tm.setColumnEditable(EXPR, true);
-		tm.setColumnEditable(CORRECTNESS, false);
+        return tm;
+    }
 
-		return tm;
-	}
+    // Taking genericCreateAllViews() from parent class.
+    /**
+     * Simply put the table onto my main panel.
+     */
+    protected void genericCustomizeMainLayout() {
+        this.mainPanel = new JPanel(new BorderLayout());
+        this.mainPanel.add(this.tableScrollPane, BorderLayout.CENTER);
+        this.mainPanel.setPreferredSize(new Dimension(100, 100));
+    }
 
-	// Taking genericCreateAllViews() from parent class.
+    /**
+     * @override AbstractTupleEditor
+     */
+    protected void createTableView() {
+        super.createTableView();
 
-	/** Simply put the table onto my main panel. */
-	protected void genericCustomizeMainLayout() {
-		this.mainPanel = new JPanel(new BorderLayout());
-		this.mainPanel.add(this.tableScrollPane, BorderLayout.CENTER);
-		this.mainPanel.setPreferredSize(new Dimension(100, 100));
-	}
-
-	/** @override AbstractTupleEditor */
-	protected void createTableView() {
-		super.createTableView();
-
-		// No reordering, since header titles are not shown,
-		// the user might be confused.
-		this.tableView.getTableHeader().setReorderingAllowed(false);
-		this.tableView.setRowSelectionAllowed(false);
-		this.tableView.setColumnSelectionAllowed(false);
-	}
+        // No reordering, since header titles are not shown,
+        // the user might be confused.
+        this.tableView.getTableHeader().setReorderingAllowed(false);
+        this.tableView.setRowSelectionAllowed(false);
+        this.tableView.setColumnSelectionAllowed(false);
+    }
 }
 /*
  * $Log: LightInstanceEditor.java,v $

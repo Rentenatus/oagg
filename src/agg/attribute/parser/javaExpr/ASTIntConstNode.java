@@ -1,52 +1,52 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTIntConstNode.java,v 1.4 2010/08/23 07:31:25 olga Exp $
  * @author $Author: olga $
  */
 public class ASTIntConstNode extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	int val;
+    int val;
 
-	ASTIntConstNode(String id) {
-		super(id);
-	}
+    ASTIntConstNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTIntConstNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTIntConstNode(id);
+    }
 
-	public void checkContext() {
-		setNodeClass(Integer.TYPE);
-	}
+    public void checkContext() {
+        setNodeClass(Integer.TYPE);
+    }
 
-	public void interpret() {
-		stack.add(++top, new Integer(this.val));
-	}
+    public void interpret() {
+        stack.add(++top, new Integer(this.val));
+    }
 
-	public String getString() {
-		return "" + this.val;
-	}
+    public String getString() {
+        return "" + this.val;
+    }
 
-	public Node copy() {
-		Node copy = super.copy();
-		((ASTIntConstNode) copy).val = this.val;
-		return copy;
-	}
+    public Node copy() {
+        Node copy = super.copy();
+        ((ASTIntConstNode) copy).val = this.val;
+        return copy;
+    }
 
 }
 

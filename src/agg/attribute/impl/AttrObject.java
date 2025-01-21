@@ -1,198 +1,204 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Observable;
 import java.util.Observer;
 
 /**
- * Provides some convenience operations for its subclasses. Very useful for
- * debugging.
- * 
+ * Provides some convenience operations for its subclasses. Very useful for debugging.
+ *
  * @version $Id: AttrObject.java,v 1.4 2007/11/01 09:58:13 olga Exp $
  * @author $Author: olga $
  */
 public abstract class AttrObject extends Object implements Observer {
 
-	protected static Class<?> classHandlerExpr;
+    protected static Class<?> classHandlerExpr;
 
-	protected static Class<?> classObject;
+    protected static Class<?> classObject;
 
-	protected static Class<?> classString;
+    protected static Class<?> classString;
 
-	protected static boolean initialized = false;
+    protected static boolean initialized = false;
 
-	/**
-	 * A message is printed in the logging window whenever an instance of it is
-	 * created.
-	 */
-	public AttrObject() {
-		super();
-		if (!initialized) {
-			try {
-				classHandlerExpr = Class
-						.forName("agg.attribute.handler.HandlerExpr");
-				classObject = Class.forName("java.lang.Object");
-				classString = Class.forName("java.lang.String");
-				initialized = true;
-			} catch (Exception ex) {
-				throw (RuntimeException) ex;
-			}
-		}
-		logPrintln(VerboseControl.logCreation, "New instance.");
-	}
+    /**
+     * A message is printed in the logging window whenever an instance of it is created.
+     */
+    public AttrObject() {
+        super();
+        if (!initialized) {
+            try {
+                classHandlerExpr = Class
+                        .forName("agg.attribute.handler.HandlerExpr");
+                classObject = Class.forName("java.lang.Object");
+                classString = Class.forName("java.lang.String");
+                initialized = true;
+            } catch (Exception ex) {
+                throw (RuntimeException) ex;
+            }
+        }
+        logPrintln(VerboseControl.logCreation, "New instance.");
+    }
 
-	public String toString() {
-		return defaultToString();
-	}
+    public String toString() {
+        return defaultToString();
+    }
 
-	/**
-	 * Even if a class has defined its own 'toString()' method, we want to see
-	 * the long name and the funny code (virtual address) that makes it unique
-	 * and traceable.
-	 * 
-	 * @return A string of the form "java.lang.reflect.Method: 7643ef8a"
-	 */
-	protected String defaultToString() {
-		String tmp;
-		String clazz = getClass().getName();
-		int i1 = clazz.lastIndexOf('.');
-		if (i1 != -1) {
-			tmp = clazz.substring(i1 + 1);
-			clazz = tmp;
-		}
-		return clazz + "@" + hashCode();
-	}
+    /**
+     * Even if a class has defined its own 'toString()' method, we want to see the long name and the funny code (virtual
+     * address) that makes it unique and traceable.
+     *
+     * @return A string of the form "java.lang.reflect.Method: 7643ef8a"
+     */
+    protected String defaultToString() {
+        String tmp;
+        String clazz = getClass().getName();
+        int i1 = clazz.lastIndexOf('.');
+        if (i1 != -1) {
+            tmp = clazz.substring(i1 + 1);
+            clazz = tmp;
+        }
+        return clazz + "@" + hashCode();
+    }
 
-	/**
-	 * Default (empty) implementation of the only Observer interface method.
-	 * Subclasses that want to become observers have to override this.
-	 */
-	public void update(Observable o, Object arg) {
-		throw new RuntimeException("Observer Interface not implemented for "
-				+ this.getClass().getName());
-	}
+    /**
+     * Default (empty) implementation of the only Observer interface method. Subclasses that want to become observers
+     * have to override this.
+     */
+    public void update(Observable o, Object arg) {
+        throw new RuntimeException("Observer Interface not implemented for "
+                + this.getClass().getName());
+    }
 
-	/**
-	 * Combines the default instance representation with a specific one, if
-	 * given.
-	 */
-	protected String getInstRepr() {
-		String stdRepr = defaultToString();
-		String actRepr = toString();
-		String result;
-		if (stdRepr.equals(actRepr)) {
-			result = actRepr;
-		} else {
-			result = stdRepr + " " + actRepr;
-		}
-		return result;
-	}
+    /**
+     * Combines the default instance representation with a specific one, if given.
+     */
+    protected String getInstRepr() {
+        String stdRepr = defaultToString();
+        String actRepr = toString();
+        String result;
+        if (stdRepr.equals(actRepr)) {
+            result = actRepr;
+        } else {
+            result = stdRepr + " " + actRepr;
+        }
+        return result;
+    }
 
-	/** Display itself. Empty by default. */
-	public void log() {
-	}
+    /**
+     * Display itself. Empty by default.
+     */
+    public void log() {
+    }
 
-	/** Print itself and a message to logging view. */
-	public void log(String msg) {
-		log(true, msg);
-	}
+    /**
+     * Print itself and a message to logging view.
+     */
+    public void log(String msg) {
+        log(true, msg);
+    }
 
-	/**
-	 * Print itself and a message to logging view, if 'logTopic' == 'true'.
-	 */
-	public void log(boolean logTopic, String msg) {
-		AttrSession.logPrintln(logTopic, getInstRepr() + ":\t " + msg);
-	}
+    /**
+     * Print itself and a message to logging view, if 'logTopic' == 'true'.
+     */
+    public void log(boolean logTopic, String msg) {
+        AttrSession.logPrintln(logTopic, getInstRepr() + ":\t " + msg);
+    }
 
-	/** Print itself and a message to error view. */
-	public void err(String msg) {
-		err(true, msg);
-	}
+    /**
+     * Print itself and a message to error view.
+     */
+    public void err(String msg) {
+        err(true, msg);
+    }
 
-	/**
-	 * Print itself and a message to error view, if 'logTopic' == 'true'.
-	 */
-	public void err(boolean logTopic, String msg) {
-		if (logTopic) {
-			AttrSession.errPrintln(getInstRepr() + ":\t " + msg);
-		}
-	}
+    /**
+     * Print itself and a message to error view, if 'logTopic' == 'true'.
+     */
+    public void err(boolean logTopic, String msg) {
+        if (logTopic) {
+            AttrSession.errPrintln(getInstRepr() + ":\t " + msg);
+        }
+    }
 
-	public void warn(String msg) {
-		AttrSession.warn(this, msg, null, false);
-	}
+    public void warn(String msg) {
+        AttrSession.warn(this, msg, null, false);
+    }
 
-	public void warn(String msg, boolean showStack) {
-		AttrSession.warn(this, msg, null, showStack);
-	}
+    public void warn(String msg, boolean showStack) {
+        AttrSession.warn(this, msg, null, showStack);
+    }
 
-	public void warn(String msg, Exception ex) {
-		AttrSession.warn(this, msg, ex, true);
-	}
+    public void warn(String msg, Exception ex) {
+        AttrSession.warn(this, msg, ex, true);
+    }
 
-	public void warn(String msg, Exception ex, boolean showStack) {
-		AttrSession.warn(this, msg, ex, showStack);
-	}
+    public void warn(String msg, Exception ex, boolean showStack) {
+        AttrSession.warn(this, msg, ex, showStack);
+    }
 
-	/** Print itself and a message. */
-	public void logPrintln(String msg) {
-		AttrSession.logPrintln(getInstRepr() + ":\t " + msg);
-	}
+    /**
+     * Print itself and a message.
+     */
+    public void logPrintln(String msg) {
+        AttrSession.logPrintln(getInstRepr() + ":\t " + msg);
+    }
 
-	/** Print itself and a message if 'logTopic' == 'true'. */
-	public void logPrintln(boolean logTopic, String msg) {
-		if (logTopic) {
-			logPrintln(msg);
-		}
-	}
+    /**
+     * Print itself and a message if 'logTopic' == 'true'.
+     */
+    public void logPrintln(boolean logTopic, String msg) {
+        if (logTopic) {
+            logPrintln(msg);
+        }
+    }
 
-	/**
-	 * Print information about entering the method 'name' with the arguments
-	 * 'args' if 'debugTopic' == 'true'.
-	 */
-	protected void logEnteredMethod(boolean debugTopic, String name,
-			Object[] args) {
-		String line, arg;
-		int i;
-		line = name + "( ";
-		for (i = 0; i < args.length; i++) {
-			if (args[i] instanceof AttrObject)
-				arg = ((AttrObject) args[i]).getInstRepr();
-			else
-				arg = args[i].toString();
-			line += arg;
-			if (i < args.length - 1)
-				line += ",\n\t";
-		}
-		line += " )\n";
-		AttrSession.stdoutPrintOnEnter(debugTopic, getInstRepr() + ":\n\t"
-				+ line);
-	}
+    /**
+     * Print information about entering the method 'name' with the arguments 'args' if 'debugTopic' == 'true'.
+     */
+    protected void logEnteredMethod(boolean debugTopic, String name,
+            Object[] args) {
+        String line, arg;
+        int i;
+        line = name + "( ";
+        for (i = 0; i < args.length; i++) {
+            if (args[i] instanceof AttrObject) {
+                arg = ((AttrObject) args[i]).getInstRepr();
+            } else {
+                arg = args[i].toString();
+            }
+            line += arg;
+            if (i < args.length - 1) {
+                line += ",\n\t";
+            }
+        }
+        line += " )\n";
+        AttrSession.stdoutPrintOnEnter(debugTopic, getInstRepr() + ":\n\t"
+                + line);
+    }
 
-	/**
-	 * Print to stdout when entered a method, useful when synchronizing with
-	 * other components.
-	 */
-	protected void stdoutPrintOnEnter(boolean debugTopic, String msg) {
-		AttrSession
-				.stdoutPrintOnEnter(debugTopic, getInstRepr() + ":\t " + msg);
-	}
+    /**
+     * Print to stdout when entered a method, useful when synchronizing with other components.
+     */
+    protected void stdoutPrintOnEnter(boolean debugTopic, String msg) {
+        AttrSession
+                .stdoutPrintOnEnter(debugTopic, getInstRepr() + ":\t " + msg);
+    }
 
-	/**
-	 * Print to stdout when leaving a method, useful when synchronizing with
-	 * other components.
-	 */
-	protected void stdoutPrintOnExit(boolean debugTopic, String msg) {
-		AttrSession.stdoutPrintOnExit(debugTopic, getInstRepr() + ":\t " + msg);
-	}
+    /**
+     * Print to stdout when leaving a method, useful when synchronizing with other components.
+     */
+    protected void stdoutPrintOnExit(boolean debugTopic, String msg) {
+        AttrSession.stdoutPrintOnExit(debugTopic, getInstRepr() + ":\t " + msg);
+    }
 
 }
 

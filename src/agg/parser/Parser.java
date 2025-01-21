@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import agg.xt_basis.GraGra;
@@ -14,98 +15,89 @@ import agg.xt_basis.Graph;
 
 // ---------------------------------------------------------------------------+
 /**
- * This parser eats graphs which are created by AGG. A parser needs a host graph
- * and a stop graph. The graph grammar for parsing must contain reducing rules.
- * 
+ * This parser eats graphs which are created by AGG. A parser needs a host graph and a stop graph. The graph grammar for
+ * parsing must contain reducing rules.
+ *
  * @see ParserFactory#createParser createParser(...)
  * @author $Author: olga $ Parser Group
  * @version $Id: Parser.java,v 1.3 2007/09/10 13:05:41 olga Exp $
  */
 public interface Parser {
 
-	/**
-	 * Sets the host graph for the parser.
-	 * 
-	 * @param hostGraph
-	 *            The host graph.
-	 */
-	public void setHostGraph(Graph hostGraph);
+    /**
+     * Sets the host graph for the parser.
+     *
+     * @param hostGraph The host graph.
+     */
+    public void setHostGraph(Graph hostGraph);
 
-	/**
-	 * Sets the stop graph for the parser.
-	 * 
-	 * @param stopGraph
-	 *            The stop graph.
-	 */
-	public void setStopGraph(Graph stopGraph);
+    /**
+     * Sets the stop graph for the parser.
+     *
+     * @param stopGraph The stop graph.
+     */
+    public void setStopGraph(Graph stopGraph);
 
-	/**
-	 * Sets the critical pairs for the parser.
-	 * 
-	 * @param pairs
-	 *            The critical pairs are holded in a container.
-	 */
-	public void setCriticalPairs(PairContainer pairs);
+    /**
+     * Sets the critical pairs for the parser.
+     *
+     * @param pairs The critical pairs are holded in a container.
+     */
+    public void setCriticalPairs(PairContainer pairs);
 
-	/**
-	 * Sets the grammar for the parser. This grammar must contain reducing
-	 * rules.
-	 * 
-	 * @param grammar
-	 *            The grammar for the parser.
-	 */
-	public void setGrammar(GraGra grammar);
+    /**
+     * Sets the grammar for the parser. This grammar must contain reducing rules.
+     *
+     * @param grammar The grammar for the parser.
+     */
+    public void setGrammar(GraGra grammar);
 
-	/**
-	 * Returns the host graph from the parser. This method is important to get
-	 * the current state of parsing process.
-	 * 
-	 * @return The current host graph.
-	 */
-	public Graph getHostGraph();
+    /**
+     * Returns the host graph from the parser. This method is important to get the current state of parsing process.
+     *
+     * @return The current host graph.
+     */
+    public Graph getHostGraph();
 
-	/**
-	 * Returns the current stop graph of the parser.
-	 * 
-	 * @return The stop graph.
-	 */
-	public Graph getStopGraph();
+    /**
+     * Returns the current stop graph of the parser.
+     *
+     * @return The stop graph.
+     */
+    public Graph getStopGraph();
 
-	// -----------------------------------------------------------------------+
-	/**
-	 * Starts the parser. The result is true if the parser can parse the graph
-	 * 
-	 * @return true if the graph can be parsed.
-	 */
-	public boolean parse();
+    // -----------------------------------------------------------------------+
+    /**
+     * Starts the parser. The result is true if the parser can parse the graph
+     *
+     * @return true if the graph can be parsed.
+     */
+    public boolean parse();
 
-	/**
-	 * Returns the host graph from the parser. This method is important to get
-	 * the current state of parsing process.
-	 * 
-	 * @return The current host graph.
-	 */
-	public Graph getGraph();
+    /**
+     * Returns the host graph from the parser. This method is important to get the current state of parsing process.
+     *
+     * @return The current host graph.
+     */
+    public Graph getGraph();
 
-	// -----------------------------------------------------------------------+
-	/**
-	 * Register a ParserEventListener.
-	 * 
-	 * @param l
-	 *            The listener
-	 */
-	public void addParserEventListener(ParserEventListener l);
+    // -----------------------------------------------------------------------+
+    /**
+     * Register a ParserEventListener.
+     *
+     * @param l The listener
+     */
+    public void addParserEventListener(ParserEventListener l);
 
-	// -----------------------------------------------------------------------+
-	/**
-	 * Removes a ParserEventListener.
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void removeParserEventListener(ParserEventListener l);
+    // -----------------------------------------------------------------------+
+    /**
+     * Removes a ParserEventListener.
+     *
+     * @param l The listener.
+     */
+    public void removeParserEventListener(ParserEventListener l);
 
-	public void setDelayAfterApplyRule(int miliseconds);
+    public void setDelayAfterApplyRule(int miliseconds);
 }
 
 /*

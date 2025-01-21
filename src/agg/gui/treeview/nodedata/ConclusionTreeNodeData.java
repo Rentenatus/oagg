@@ -1,135 +1,136 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: ConclusionTreeNodeData.java,v 1.3 2010/08/24 21:35:50 olga Exp $
-
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import agg.editor.impl.EdAtomic;
 
-
 /**
- * The ConclusionTreeNodeData implements an user object of a tree node in the
- * GraGraTreeModel.
- * 
+ * The ConclusionTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ *
  * @author $Author: olga $
  * @version $Id: ConclusionTreeNodeData.java,v 1.3 2010/08/24 21:35:50 olga Exp $
  */
 public class ConclusionTreeNodeData extends GraGraTreeNodeDataAdapter {
-	
-	private Object data;
-	
-	private EdAtomic eAtomic;
 
-	/** Value to display. */
-	private String string = "";
+    private Object data;
 
-	/** My tree node in a tree */
-	private DefaultMutableTreeNode treeNode;
+    private EdAtomic eAtomic;
 
+    /**
+     * Value to display.
+     */
+    private String string = "";
 
-	public ConclusionTreeNodeData(final EdAtomic a) {
-		setConclusion(a);
-	}
+    /**
+     * My tree node in a tree
+     */
+    private DefaultMutableTreeNode treeNode;
 
-	private void setConclusion(final EdAtomic a) {
-		this.data = a;
-		this.string = a.getBasisAtomic().getName();
-		this.eAtomic = a;
-	}
-	
-	public ConclusionTreeNodeData(String s) {
-		this.data = s;
-		this.string = s;
-	}
+    public ConclusionTreeNodeData(final EdAtomic a) {
+        setConclusion(a);
+    }
 
-	public ConclusionTreeNodeData(Object obj) {
-		if (obj instanceof EdAtomic)
-			setConclusion((EdAtomic) obj);
-		else if (obj instanceof String)
-			new ConclusionTreeNodeData((String) obj);
-	}
+    private void setConclusion(final EdAtomic a) {
+        this.data = a;
+        this.string = a.getBasisAtomic().getName();
+        this.eAtomic = a;
+    }
 
-	public void dispose() {
-		this.data = null;
-		this.eAtomic = null;
-		this.string = null;
-		this.treeNode = null;
-	}
-	
-	/* Set this.data object of this tree node data */
-	public void setData(Object obj) {
-		if (obj instanceof EdAtomic)
-			setConclusion((EdAtomic) obj);
-		else if (obj instanceof String) {
-			this.string = (String) obj;
-			this.data = obj;
-		}
-		else {
-			this.data = null;
-			this.eAtomic = null;
-			this.string = null;			
-		}
-	}
+    public ConclusionTreeNodeData(String s) {
+        this.data = s;
+        this.string = s;
+    }
 
-	public Object getData() {
-		return this.data;
-	}
-	
-	/**
-	 * Sets the string to display for this object.
-	 */
-	public void setString(String str) {
-		if (str == null) {
-			return;
-		}
-		String newString = str.replaceAll(" ", "");
-		this.string = newString;
-		if (!this.eAtomic.getBasisAtomic().getName().equals(newString)) {
-			this.eAtomic.getBasisAtomic().setName(newString);
-			this.eAtomic.getGraGra().setChanged(true);
-		} 
-	}
+    public ConclusionTreeNodeData(Object obj) {
+        if (obj instanceof EdAtomic) {
+            setConclusion((EdAtomic) obj);
+        } else if (obj instanceof String) {
+            new ConclusionTreeNodeData((String) obj);
+        }
+    }
 
-	/**
-	 * Returns the this.string to display for this object.
-	 */
-	public String string() {
-		return this.string;
-	}
+    public void dispose() {
+        this.data = null;
+        this.eAtomic = null;
+        this.string = null;
+        this.treeNode = null;
+    }
 
-	public String toString() {
-		return this.string();
-	}
+    /* Set this.data object of this tree node data */
+    public void setData(Object obj) {
+        if (obj instanceof EdAtomic) {
+            setConclusion((EdAtomic) obj);
+        } else if (obj instanceof String) {
+            this.string = (String) obj;
+            this.data = obj;
+        } else {
+            this.data = null;
+            this.eAtomic = null;
+            this.string = null;
+        }
+    }
 
-	public EdAtomic getConclusion() {
-		return this.eAtomic;
-	}
+    public Object getData() {
+        return this.data;
+    }
 
-	public void setTreeNode(DefaultMutableTreeNode node) {
-		this.treeNode = node;
-	}
+    /**
+     * Sets the string to display for this object.
+     */
+    public void setString(String str) {
+        if (str == null) {
+            return;
+        }
+        String newString = str.replaceAll(" ", "");
+        this.string = newString;
+        if (!this.eAtomic.getBasisAtomic().getName().equals(newString)) {
+            this.eAtomic.getBasisAtomic().setName(newString);
+            this.eAtomic.getGraGra().setChanged(true);
+        }
+    }
 
-	public DefaultMutableTreeNode getTreeNode() {
-		return this.treeNode;
-	}
+    /**
+     * Returns the this.string to display for this object.
+     */
+    public String string() {
+        return this.string;
+    }
 
-	/* (non-Javadoc)
+    public String toString() {
+        return this.string();
+    }
+
+    public EdAtomic getConclusion() {
+        return this.eAtomic;
+    }
+
+    public void setTreeNode(DefaultMutableTreeNode node) {
+        this.treeNode = node;
+    }
+
+    public DefaultMutableTreeNode getTreeNode() {
+        return this.treeNode;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isConclusion()
-	 */
-	public boolean isConclusion() {
-		return true;
-	}
+     */
+    public boolean isConclusion() {
+        return true;
+    }
 
-	public String getToolTipText() {
-		return " Conclusion of atomic graph constraint ";
-	}
+    public String getToolTipText() {
+        return " Conclusion of atomic graph constraint ";
+    }
 }

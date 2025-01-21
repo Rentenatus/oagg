@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.lang.ref.WeakReference;
@@ -19,306 +20,294 @@ import agg.attribute.AttrTuple;
 
 /**
  * Handling of attribute observers.
- * 
+ *
  * @see agg.attribute.AttrObserver
  * @author $Author: olga $
  * @version $Id: ChainedObserver.java,v 1.12 2010/08/23 07:30:49 olga Exp $
  */
 @SuppressWarnings("serial")
 public abstract class ChainedObserver extends ManagedObject implements
-		AttrObserver, AttrTuple {
+        AttrObserver, AttrTuple {
 
-	//
-	// Static variables and constants.
+    //
+    // Static variables and constants.
+    protected static final int MAX_SIZE_OF_EVENT_STACK = 100;
 
-	protected static final int MAX_SIZE_OF_EVENT_STACK = 100;
+    protected static int sizeOfEventStack = 0;
 
-	protected static int sizeOfEventStack = 0;
+    //
+    // Protected instance variables.
+    /**
+     * Container with observers of this instance, all of which implement the AttrObserver interface.
+     *
+     * @see agg.attribute.AttrObserver
+     */
+    protected transient final Vector<WeakReference<AttrObserver>> observers;
 
-	//
-	// Protected instance variables.
+    public ChainedObserver(AttrTupleManager m) {
+        super(m);
 
-	/**
-	 * Container with observers of this instance, all of which implement the
-	 * AttrObserver interface.
-	 * 
-	 * @see agg.attribute.AttrObserver
-	 */
-	protected transient final Vector<WeakReference<AttrObserver>> observers;
+        this.observers = new Vector<WeakReference<AttrObserver>>();
+    }
 
+    /**
+     * removes all observer which are null
+     */
+    private synchronized void removeNullObserver() {
+        for (int i = 0; i < this.observers.size(); i++) {
+            if (this.observers.get(i).get() == null) {
+                this.observers.remove(i);
+                i--;
+            }
+        }
+    }
 
-	public ChainedObserver(AttrTupleManager m) {
-		super(m);
-		
-		this.observers = new Vector<WeakReference<AttrObserver>>();
-	}
-
-	/**
-	 * removes all observer which are null
-	 */
-	private synchronized void removeNullObserver() {
-		for (int i = 0; i < this.observers.size(); i++) {
-			if (this.observers.get(i).get() == null) {
-				this.observers.remove(i);
-				i--;
-			}
-		}
-	}
-
-	//
-	// Handling of this.observers. Part of the implementation of
-	// agg.attribute.AttrTuple
-	//
-
-	public synchronized Enumeration<AttrObserver> getObservers() {
-		final Vector<AttrObserver> tmp = new Vector<AttrObserver>();
+    //
+    // Handling of this.observers. Part of the implementation of
+    // agg.attribute.AttrTuple
+    //
+    public synchronized Enumeration<AttrObserver> getObservers() {
+        final Vector<AttrObserver> tmp = new Vector<AttrObserver>();
 //		System.out.println("ChangedObserver.getObservers   "+this.observers.size());
-		for (int i = 0; i < this.observers.size(); i++) {
-			WeakReference<AttrObserver> wr = this.observers.get(i);
-			if (wr.get() != null) {
-				tmp.addElement(wr.get());
-			} else {
+        for (int i = 0; i < this.observers.size(); i++) {
+            WeakReference<AttrObserver> wr = this.observers.get(i);
+            if (wr.get() != null) {
+                tmp.addElement(wr.get());
+            } else {
 //				System.out.println("ChangedObserver.getObservers:  remove null at  "+i);
-				this.observers.remove(i);
-				i--;
-			}
-		}
-		return tmp.elements();
-	}
+                this.observers.remove(i);
+                i--;
+            }
+        }
+        return tmp.elements();
+    }
 
-	public void addObserver(AttrObserver attrObs) {
-		if (attrObs != null) {
+    public void addObserver(AttrObserver attrObs) {
+        if (attrObs != null) {
 //			removeNullObserver();
-			boolean found = false;
-			for (int i = 0; i < this.observers.size() && !found; i++) {
-				try {
-					found = attrObs == this.observers.get(i).get();
-				}
-				catch (ArrayIndexOutOfBoundsException ex) {
-					return;
-				}
-			}
-			if (!found) {
+            boolean found = false;
+            for (int i = 0; i < this.observers.size() && !found; i++) {
+                try {
+                    found = attrObs == this.observers.get(i).get();
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    return;
+                }
+            }
+            if (!found) {
 //				System.out.println(this.observers.size()+"  ChangedObserver.addObserver:  "+attrObs+"   "+this.observers.hashCode());
-				this.observers.addElement(new WeakReference<AttrObserver>(attrObs));
-			}
-		} 
-	}
+                this.observers.addElement(new WeakReference<AttrObserver>(attrObs));
+            }
+        }
+    }
 
-	public void addObserverAtPos(AttrObserver attrObs, int pos) {
-		if (attrObs != null) {
+    public void addObserverAtPos(AttrObserver attrObs, int pos) {
+        if (attrObs != null) {
 //			removeNullObserver();
-			boolean found = false;
-			for (int i = 0; i < this.observers.size() && !found; i++) {
-				found = attrObs == this.observers.elementAt(i).get();
-			}
-			if (!found) {
+            boolean found = false;
+            for (int i = 0; i < this.observers.size() && !found; i++) {
+                found = attrObs == this.observers.elementAt(i).get();
+            }
+            if (!found) {
 //				System.out.println(this.observers.size()+"  ChangedObserver.addObserverAtPos:  "+attrObs+"   "+this.observers.hashCode());
-				this.observers.insertElementAt(new WeakReference<AttrObserver>(attrObs), pos);
-			}
-		}
-	}
-	
-	public boolean contains(AttrObserver attrObs) {
-		if ((attrObs == null) || (this.observers.isEmpty()))
-			return false;
-		
-		for (int i = 0; i < this.observers.size(); i++) {
-			WeakReference<AttrObserver> wr = this.observers.elementAt(i);
-			if ((wr.get() != null) && wr.get() == attrObs)
-				return true;
-		}
-		
-		return false;
-	}
+                this.observers.insertElementAt(new WeakReference<AttrObserver>(attrObs), pos);
+            }
+        }
+    }
 
-	
+    public boolean contains(AttrObserver attrObs) {
+        if ((attrObs == null) || (this.observers.isEmpty())) {
+            return false;
+        }
 
-	@SuppressWarnings("unused")
-	private int findObserver(AttrObserver obj) {
-		if ((obj == null) || (this.observers.isEmpty()))
-			return -1;
-		removeNullObserver();
-		for (int i = 0; i < this.observers.size(); i++) {
-			WeakReference<AttrObserver> wr = this.observers.elementAt(i);
-			if ((wr.get() != null) && wr.get() == obj)
-				return i;
-		}
-		return -1;
-	}
+        for (int i = 0; i < this.observers.size(); i++) {
+            WeakReference<AttrObserver> wr = this.observers.elementAt(i);
+            if ((wr.get() != null) && wr.get() == attrObs) {
+                return true;
+            }
+        }
 
-	public synchronized void removeObserver(AttrObserver attrObs) {
-		if (attrObs == null || this.observers.isEmpty())
-			return;
-		
-		for (int i = 0; i < this.observers.size(); i++) {
-			WeakReference<AttrObserver> wr = this.observers.elementAt(i);
-			if (wr.get() == attrObs) {
-				this.observers.remove(i);
-				break;
-			}
-		}
-	}
+        return false;
+    }
 
-	protected void fireAttrChanged(int id, int index) {
-		fireAttrChanged(id, index, index);
-	}
+    @SuppressWarnings("unused")
+    private int findObserver(AttrObserver obj) {
+        if ((obj == null) || (this.observers.isEmpty())) {
+            return -1;
+        }
+        removeNullObserver();
+        for (int i = 0; i < this.observers.size(); i++) {
+            WeakReference<AttrObserver> wr = this.observers.elementAt(i);
+            if ((wr.get() != null) && wr.get() == obj) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
-	protected void fireAttrChanged(int id, int index0, int index1) {
-		fireAttrChanged(new TupleEvent(this, id, index0, index1));
-	}
+    public synchronized void removeObserver(AttrObserver attrObs) {
+        if (attrObs == null || this.observers.isEmpty()) {
+            return;
+        }
 
-	protected void fireAttrChanged(TupleEvent evt) {
-		if (evt == null)
-			return;
+        for (int i = 0; i < this.observers.size(); i++) {
+            WeakReference<AttrObserver> wr = this.observers.elementAt(i);
+            if (wr.get() == attrObs) {
+                this.observers.remove(i);
+                break;
+            }
+        }
+    }
 
-		for (Enumeration<WeakReference<AttrObserver>> en = this.observers.elements(); en.hasMoreElements();) {
-			WeakReference<AttrObserver> wr = en.nextElement();
-			if (wr.get() != null) {
-				TupleEvent childEvt = filterEvent(wr.get(), evt);
-				if (childEvt != null)
-					wr.get().attributeChanged(childEvt);
-			}
-		}
-	}
+    protected void fireAttrChanged(int id, int index) {
+        fireAttrChanged(id, index, index);
+    }
 
-	/** Propagates the event to the this.observers, pretending to be the source. */
-	protected abstract void propagateEvent(TupleEvent e);
+    protected void fireAttrChanged(int id, int index0, int index1) {
+        fireAttrChanged(new TupleEvent(this, id, index0, index1));
+    }
 
-	/**
-	 * This method should be overridden by classes that wish to customize or
-	 * filter the actual event depending on the respective observer and/or its
-	 * own framework (index transformation, id change). If [null] is returned,
-	 * the specified observer will not get any notification this time.
-	 */
-	protected TupleEvent filterEvent(AttrObserver obs, TupleEvent e) {
-		return e;
-	}
+    protected void fireAttrChanged(TupleEvent evt) {
+        if (evt == null) {
+            return;
+        }
 
-	//
-	// Being an observer oneself. Implementation of
-	// agg.attribute.AttrObserver.
+        for (Enumeration<WeakReference<AttrObserver>> en = this.observers.elements(); en.hasMoreElements();) {
+            WeakReference<AttrObserver> wr = en.nextElement();
+            if (wr.get() != null) {
+                TupleEvent childEvt = filterEvent(wr.get(), evt);
+                if (childEvt != null) {
+                    wr.get().attributeChanged(childEvt);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Per default, always save observer dependencies within the attribute
-	 * component.
-	 */
-	public boolean isPersistentFor(AttrTuple at) {
-		return true;
-	}
+    /**
+     * Propagates the event to the this.observers, pretending to be the source.
+     */
+    protected abstract void propagateEvent(TupleEvent e);
 
-	/**
-	 * Checks if an endless event recursion took place. If so, a runtime
-	 * exception with a warning text is thrown, as this indicates an error in
-	 * the implementation. Otherwise, it calls the one of the respective
-	 * updating methods which can be overridden by subclasses .
-	 */
+    /**
+     * This method should be overridden by classes that wish to customize or filter the actual event depending on the
+     * respective observer and/or its own framework (index transformation, id change). If [null] is returned, the
+     * specified observer will not get any notification this time.
+     */
+    protected TupleEvent filterEvent(AttrObserver obs, TupleEvent e) {
+        return e;
+    }
 
-	public void attributeChanged(AttrEvent evt) {
-		if (++sizeOfEventStack > MAX_SIZE_OF_EVENT_STACK) {
-			throw new RuntimeException("Infinite event recursion occured.");
-		}
-		TupleEvent event = (TupleEvent) evt;
-		int msg = event.getID();
-		if (msg == AttrEvent.GENERAL_CHANGE)
-			updateGeneralChange(event);
-		else if (msg == AttrEvent.MEMBER_ADDED)
-			updateMemberAdded(event);
-		else if (msg == AttrEvent.MEMBER_DELETED)
-			updateMemberDeleted(event);
-		else if (msg == AttrEvent.MEMBER_MODIFIED)
-			updateMemberModified(event);
-		else if (msg == AttrEvent.MEMBER_RENAMED)
-			updateMemberRenamed(event);
-		else if (msg == AttrEvent.MEMBER_RETYPED)
-			updateMemberRetyped(event);
-		else if (msg == AttrEvent.MEMBER_VALUE_MODIFIED)
-			updateValueModified(event);
-		else if (msg == AttrEvent.MEMBER_VALUE_CORRECTNESS)
-			updateValueCorrectness(event);
-		else
-			updateUnknownChange(event);
+    //
+    // Being an observer oneself. Implementation of
+    // agg.attribute.AttrObserver.
+    /**
+     * Per default, always save observer dependencies within the attribute component.
+     */
+    public boolean isPersistentFor(AttrTuple at) {
+        return true;
+    }
 
-		sizeOfEventStack--;
-	}
+    /**
+     * Checks if an endless event recursion took place. If so, a runtime exception with a warning text is thrown, as
+     * this indicates an error in the implementation. Otherwise, it calls the one of the respective updating methods
+     * which can be overridden by subclasses .
+     */
+    public void attributeChanged(AttrEvent evt) {
+        if (++sizeOfEventStack > MAX_SIZE_OF_EVENT_STACK) {
+            throw new RuntimeException("Infinite event recursion occured.");
+        }
+        TupleEvent event = (TupleEvent) evt;
+        int msg = event.getID();
+        if (msg == AttrEvent.GENERAL_CHANGE) {
+            updateGeneralChange(event);
+        } else if (msg == AttrEvent.MEMBER_ADDED) {
+            updateMemberAdded(event);
+        } else if (msg == AttrEvent.MEMBER_DELETED) {
+            updateMemberDeleted(event);
+        } else if (msg == AttrEvent.MEMBER_MODIFIED) {
+            updateMemberModified(event);
+        } else if (msg == AttrEvent.MEMBER_RENAMED) {
+            updateMemberRenamed(event);
+        } else if (msg == AttrEvent.MEMBER_RETYPED) {
+            updateMemberRetyped(event);
+        } else if (msg == AttrEvent.MEMBER_VALUE_MODIFIED) {
+            updateValueModified(event);
+        } else if (msg == AttrEvent.MEMBER_VALUE_CORRECTNESS) {
+            updateValueCorrectness(event);
+        } else {
+            updateUnknownChange(event);
+        }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateGeneralChange(TupleEvent event) {
-		propagateEvent(event);
-	}
+        sizeOfEventStack--;
+    }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateMemberAdded(TupleEvent event) {
-		propagateEvent(event);
-	}
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateGeneralChange(TupleEvent event) {
+        propagateEvent(event);
+    }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateMemberDeleted(TupleEvent event) {
-		propagateEvent(event);
-	}
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateMemberAdded(TupleEvent event) {
+        propagateEvent(event);
+    }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateMemberModified(TupleEvent event) {
-		propagateEvent(event);
-	}
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateMemberDeleted(TupleEvent event) {
+        propagateEvent(event);
+    }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateMemberRenamed(TupleEvent event) {
-		propagateEvent(event);
-	}
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateMemberModified(TupleEvent event) {
+        propagateEvent(event);
+    }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateMemberRetyped(TupleEvent event) {
-		propagateEvent(event);
-	}
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateMemberRenamed(TupleEvent event) {
+        propagateEvent(event);
+    }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateValueModified(TupleEvent event) {
-		propagateEvent(event);
-	}
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateMemberRetyped(TupleEvent event) {
+        propagateEvent(event);
+    }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateValueCorrectness(TupleEvent event) {
-		propagateEvent(event);
-	}
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateValueModified(TupleEvent event) {
+        propagateEvent(event);
+    }
 
-	/**
-	 * Fires the same event. Subclasses should override this method for
-	 * customized behaviour.
-	 */
-	protected void updateUnknownChange(TupleEvent event) {
-		propagateEvent(event);
-	}
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateValueCorrectness(TupleEvent event) {
+        propagateEvent(event);
+    }
 
-	/*
+    /**
+     * Fires the same event. Subclasses should override this method for customized behaviour.
+     */
+    protected void updateUnknownChange(TupleEvent event) {
+        propagateEvent(event);
+    }
+
+    /*
 	 * sets a vector of AttrObserver. This is only needed for reading objects.
 	 * The old this.observers will be replaced.
-	 */
-	/*
+     */
+ /*
 	private void setObservers(Vector<AttrObserver> observer) {
 		// System.out.println("ChainedObserver.setObservers ");
 		// System.out.println("observer : "+observer);
@@ -336,7 +325,7 @@ public abstract class ChainedObserver extends ManagedObject implements
 		}
 		// System.out.println("ChainedObserver.setObservers END ");
 	}
-*/
+     */
 }
 /*
  * $Log: ChainedObserver.java,v $

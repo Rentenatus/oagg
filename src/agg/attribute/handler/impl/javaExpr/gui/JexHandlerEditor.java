@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.impl.javaExpr.gui;
 
 //import agg.attribute.gui.TextField;
@@ -43,257 +44,268 @@ import agg.attribute.util.TableRowDragger;
 
 /**
  * Old awt-widgets, should be translated to swing.
- * 
+ *
  * @version $Id: JexHandlerEditor.java,v 1.4 2010/09/23 08:13:48 olga Exp $
  * @author $Author: olga $
  */
 public class JexHandlerEditor extends AbstractHandlerEditor implements
-		HandlerCustomizingEditor, ScrollPaneConstants, ListSelectionListener,
-		RowDragListener {
+        HandlerCustomizingEditor, ScrollPaneConstants, ListSelectionListener,
+        RowDragListener {
 
-	protected JexHandler handler;
+    protected JexHandler handler;
 
-	protected ClassResolver classResolver;
+    protected ClassResolver classResolver;
 
-	protected Vector<String> packages;
+    protected Vector<String> packages;
 
-	protected PackageTableModel tableModel;
+    protected PackageTableModel tableModel;
 
-	protected JPanel mainPanel;
+    protected JPanel mainPanel;
 
-	protected JPanel packageP, buttonP, entriesP, inputP;
+    protected JPanel packageP, buttonP, entriesP, inputP;
 
-	protected JTable entriesL;
+    protected JTable entriesL;
 
-	protected JTextField inputTF;
+    protected JTextField inputTF;
 
-	protected Action insertAction, appendAction, deleteAction;
+    protected Action insertAction, appendAction, deleteAction;
 
-	@SuppressWarnings("serial")
-	public JexHandlerEditor(AttrHandler h) {
-		super();
-		this.handler = (JexHandler) h;
-		this.classResolver = this.handler.getClassResolver();
+    @SuppressWarnings("serial")
+    public JexHandlerEditor(AttrHandler h) {
+        super();
+        this.handler = (JexHandler) h;
+        this.classResolver = this.handler.getClassResolver();
 
-		// Package list
+        // Package list
+        this.tableModel = new PackageTableModel();
+        this.entriesL = new JTable(this.tableModel);
+        this.entriesL.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.entriesL.setRowSelectionAllowed(true);
+        this.entriesL.setColumnSelectionAllowed(false);
+        this.entriesL.getSelectionModel().addListSelectionListener(this);
+        // this.entriesL.setMaximumSize(new Dimension( 100, 5 ));
+        this.entriesL.setPreferredScrollableViewportSize(new Dimension(200, 100));
 
-		this.tableModel = new PackageTableModel();
-		this.entriesL = new JTable(this.tableModel);
-		this.entriesL.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.entriesL.setRowSelectionAllowed(true);
-		this.entriesL.setColumnSelectionAllowed(false);
-		this.entriesL.getSelectionModel().addListSelectionListener(this);
-		// this.entriesL.setMaximumSize(new Dimension( 100, 5 ));
-		this.entriesL.setPreferredScrollableViewportSize(new Dimension(200, 100));
+        TableRowDragger rowDragger = new TableRowDragger(this.entriesL);
+        rowDragger.addRowDragListener(this);
 
-		TableRowDragger rowDragger = new TableRowDragger(this.entriesL);
-		rowDragger.addRowDragListener(this);
-
-		// Package list decoration
-
-		JScrollPane listScrollPane = new JScrollPane(this.entriesL);
-		/*
+        // Package list decoration
+        JScrollPane listScrollPane = new JScrollPane(this.entriesL);
+        /*
 		 * JScrollPane listScrollPane = new JScrollPane( listScrollPane1,
 		 * VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED );
 		 * listScrollPane.setBorder( new BevelBorder( BevelBorder.LOWERED ));
-		 */
-		listScrollPane.setPreferredSize(new Dimension(200, 100));
+         */
+        listScrollPane.setPreferredSize(new Dimension(200, 100));
 
-		this.entriesP = new JPanel();
-		this.entriesP.setLayout(new BorderLayout());
-		this.entriesP.add(listScrollPane, "Center");
-		this.entriesP.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(),
-				"Searched Packages", TitledBorder.CENTER, TitledBorder.TOP));
+        this.entriesP = new JPanel();
+        this.entriesP.setLayout(new BorderLayout());
+        this.entriesP.add(listScrollPane, "Center");
+        this.entriesP.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(),
+                "Searched Packages", TitledBorder.CENTER, TitledBorder.TOP));
 
-		this.entriesP.setPreferredSize(new Dimension(200, 100));
-		// Tool bar
+        this.entriesP.setPreferredSize(new Dimension(200, 100));
+        // Tool bar
 
-		JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
 
-		this.insertAction = new AbstractAction("Insert") {
-			public void actionPerformed(ActionEvent ev) {
-				int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
-				if (sel == -1)
-					sel = 0;
-				JexHandlerEditor.this.packages.insertElementAt("", sel);
-				JexHandlerEditor.this.tableModel.update();
-				JexHandlerEditor.this.entriesL.editCellAt(sel, 0);
-			}
-		};
-		toolBar.add(this.insertAction);
-		toolBar.addSeparator();
+        this.insertAction = new AbstractAction("Insert") {
+            public void actionPerformed(ActionEvent ev) {
+                int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
+                if (sel == -1) {
+                    sel = 0;
+                }
+                JexHandlerEditor.this.packages.insertElementAt("", sel);
+                JexHandlerEditor.this.tableModel.update();
+                JexHandlerEditor.this.entriesL.editCellAt(sel, 0);
+            }
+        };
+        toolBar.add(this.insertAction);
+        toolBar.addSeparator();
 
-		this.appendAction = new AbstractAction("Append") {
-			public void actionPerformed(ActionEvent ev) {
-				int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
-				if (sel == -1)
-					sel = JexHandlerEditor.this.packages.size() - 1;
-				appendPackageAt("", sel);
-				JexHandlerEditor.this.tableModel.update();
-				JexHandlerEditor.this.entriesL.editCellAt(sel + 1, 0);
-			}
-		};
-		toolBar.add(this.appendAction);
-		toolBar.addSeparator();
+        this.appendAction = new AbstractAction("Append") {
+            public void actionPerformed(ActionEvent ev) {
+                int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
+                if (sel == -1) {
+                    sel = JexHandlerEditor.this.packages.size() - 1;
+                }
+                appendPackageAt("", sel);
+                JexHandlerEditor.this.tableModel.update();
+                JexHandlerEditor.this.entriesL.editCellAt(sel + 1, 0);
+            }
+        };
+        toolBar.add(this.appendAction);
+        toolBar.addSeparator();
 
-		this.deleteAction = new AbstractAction("Remove") {
-			public void actionPerformed(ActionEvent ev) {
-				int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
-				if (sel != -1) {
-					JexHandlerEditor.this.packages.removeElementAt(sel);
-					JexHandlerEditor.this.tableModel.update();
-					updateResolver();
-				}
-			}
-		};
-		toolBar.add(this.deleteAction);
+        this.deleteAction = new AbstractAction("Remove") {
+            public void actionPerformed(ActionEvent ev) {
+                int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
+                if (sel != -1) {
+                    JexHandlerEditor.this.packages.removeElementAt(sel);
+                    JexHandlerEditor.this.tableModel.update();
+                    updateResolver();
+                }
+            }
+        };
+        toolBar.add(this.deleteAction);
 
-		// Tool bar decoration
-		JPanel toolPanel = new JPanel();
-		toolPanel.add(toolBar);
-		// toolPanel.setPreferredSize( new Dimension( 300, 20 ));
-		// buttonP.setBorder( new BevelBorder( BevelBorder.RAISED ));
+        // Tool bar decoration
+        JPanel toolPanel = new JPanel();
+        toolPanel.add(toolBar);
+        // toolPanel.setPreferredSize( new Dimension( 300, 20 ));
+        // buttonP.setBorder( new BevelBorder( BevelBorder.RAISED ));
 
-		this.packageP = new JPanel();
-		this.packageP.setLayout(new BorderLayout());
-		this.packageP.add(this.entriesP, "Center");
-		this.packageP.add(toolPanel, "South");
-		this.packageP.setPreferredSize(new Dimension(200, 200));
+        this.packageP = new JPanel();
+        this.packageP.setLayout(new BorderLayout());
+        this.packageP.add(this.entriesP, "Center");
+        this.packageP.add(toolPanel, "South");
+        this.packageP.setPreferredSize(new Dimension(200, 200));
 
-		this.mainPanel = this.packageP; // new JPanel( new BorderLayout());
-		// this.mainPanel.add( this.packageP, "Center" );
-		this.mainPanel.setPreferredSize(new Dimension(200, 200));
-		// this.mainPanel.setBorder( new BevelBorder( BevelBorder.LOWERED ));
+        this.mainPanel = this.packageP; // new JPanel( new BorderLayout());
+        // this.mainPanel.add( this.packageP, "Center" );
+        this.mainPanel.setPreferredSize(new Dimension(200, 200));
+        // this.mainPanel.setBorder( new BevelBorder( BevelBorder.LOWERED ));
 
-		updateList();
-	}
+        updateList();
+    }
 
-	protected void appendPackageAt(String p, int pos) {
-		if (pos == this.packages.size() - 1) {
-			this.packages.addElement(p);
-		} else {
-			this.packages.insertElementAt(p, pos + 1);
-		}
-	}
+    protected void appendPackageAt(String p, int pos) {
+        if (pos == this.packages.size() - 1) {
+            this.packages.addElement(p);
+        } else {
+            this.packages.insertElementAt(p, pos + 1);
+        }
+    }
 
-	//
-	// Implementing the RowDragListener interface
-	//
-
-	/** Just acknowledge the fact. */
-	public void draggingStarted(RowDragEvent ev) {
+    //
+    // Implementing the RowDragListener interface
+    //
+    /**
+     * Just acknowledge the fact.
+     */
+    public void draggingStarted(RowDragEvent ev) {
 //		int src = 
-		ev.getSourceRow();
-		// System.out.println("Started dragging row "+src);
-	}
+        ev.getSourceRow();
+        // System.out.println("Started dragging row "+src);
+    }
 
-	/** Updates the class resolver. */
-	public void draggingStopped(RowDragEvent ev) {
+    /**
+     * Updates the class resolver.
+     */
+    public void draggingStopped(RowDragEvent ev) {
 //		int src = 
-		ev.getSourceRow();
-		// System.out.println("Stopped dragging row "+src);
-		updateResolver();
-	}
+        ev.getSourceRow();
+        // System.out.println("Stopped dragging row "+src);
+        updateResolver();
+    }
 
-	/** Moving a package name within the local list. */
-	public void draggingMoved(RowDragEvent ev) {
-		/*
+    /**
+     * Moving a package name within the local list.
+     */
+    public void draggingMoved(RowDragEvent ev) {
+        /*
 		 * System.out.println ("draggingMoved("+ev.getSourceRow()+", "+
 		 * ev.getTargetRow()+")");
-		 */
-		int src = ev.getSourceRow();
-		int dest = ev.getTargetRow();
-		if (dest == -1 || src == -1)
-			return;
-		if (dest == src)
-			return;
-		// System.out.println("Source row="+src+"; dest. row="+dest);
-		String p = this.packages.elementAt(src);
+         */
+        int src = ev.getSourceRow();
+        int dest = ev.getTargetRow();
+        if (dest == -1 || src == -1) {
+            return;
+        }
+        if (dest == src) {
+            return;
+        }
+        // System.out.println("Source row="+src+"; dest. row="+dest);
+        String p = this.packages.elementAt(src);
 
-		if (src < dest) {
-			appendPackageAt(p, dest);
-			this.packages.removeElementAt(src);
-		} else {
-			this.packages.insertElementAt(p, dest);
-			this.packages.removeElementAt(src + 1);
-		}
-		this.tableModel.update();
-	}
+        if (src < dest) {
+            appendPackageAt(p, dest);
+            this.packages.removeElementAt(src);
+        } else {
+            this.packages.insertElementAt(p, dest);
+            this.packages.removeElementAt(src + 1);
+        }
+        this.tableModel.update();
+    }
 
-	/** ListSelectionListener interface implementation. */
-	public void valueChanged(ListSelectionEvent ev) {
-		int row = ev.getFirstIndex();
-		this.deleteAction.setEnabled(row != -1);
-	}
+    /**
+     * ListSelectionListener interface implementation.
+     */
+    public void valueChanged(ListSelectionEvent ev) {
+        int row = ev.getFirstIndex();
+        this.deleteAction.setEnabled(row != -1);
+    }
 
-	public Component getComponent() {
-		return this.mainPanel;
-	}
+    public Component getComponent() {
+        return this.mainPanel;
+    }
 
-	public AttrHandler getAttrHandler() {
-		return this.handler;
-	}
+    public AttrHandler getAttrHandler() {
+        return this.handler;
+    }
 
-	public void setAttrHandler(AttrHandler h) {
-		this.handler = (JexHandler) h;
-		this.classResolver = this.handler.getClassResolver();
-		this.packages = this.classResolver.getPackages();
-		updateList();
-	}
+    public void setAttrHandler(AttrHandler h) {
+        this.handler = (JexHandler) h;
+        this.classResolver = this.handler.getClassResolver();
+        this.packages = this.classResolver.getPackages();
+        updateList();
+    }
 
-	protected void updateList() {
-		this.packages = this.classResolver.getPackages();
-		this.tableModel.update();
-	}
+    protected void updateList() {
+        this.packages = this.classResolver.getPackages();
+        this.tableModel.update();
+    }
 
-	protected void updateResolver() {
-		this.classResolver.setPackages(this.packages);
-	}
+    protected void updateResolver() {
+        this.classResolver.setPackages(this.packages);
+    }
 
-	@SuppressWarnings("serial")
-	class PackageTableModel extends AbstractTableModel {
-		public int getRowCount() {
-			if (JexHandlerEditor.this.packages == null)
-				updateList();
-			return JexHandlerEditor.this.packages.size();
-		}
+    @SuppressWarnings("serial")
+    class PackageTableModel extends AbstractTableModel {
 
-		public int getColumnCount() {
-			return 1;
-		}
+        public int getRowCount() {
+            if (JexHandlerEditor.this.packages == null) {
+                updateList();
+            }
+            return JexHandlerEditor.this.packages.size();
+        }
 
-		public Class<?> getColumnClass(int column) {
-			return "".getClass();
-		}
+        public int getColumnCount() {
+            return 1;
+        }
 
-		public String getColumnName(int column) {
-			return null; // "Package Name";
-		}
+        public Class<?> getColumnClass(int column) {
+            return "".getClass();
+        }
 
-		public boolean isCellEditable(int row, int column) {
-			return true;
-		}
+        public String getColumnName(int column) {
+            return null; // "Package Name";
+        }
 
-		public Object getValueAt(int row, int column) {
-			return JexHandlerEditor.this.packages.elementAt(row);
-		}
+        public boolean isCellEditable(int row, int column) {
+            return true;
+        }
 
-		public void setValueAt(Object value, int row, int column) {
-			String text = (String) value;
-			if (text == null || text.trim().length() == 0) {
-				JexHandlerEditor.this.packages.removeElementAt(row);
-				update();
-			} else {
-				JexHandlerEditor.this.packages.setElementAt(text, row);
-			}
-			updateResolver();
-		}
+        public Object getValueAt(int row, int column) {
+            return JexHandlerEditor.this.packages.elementAt(row);
+        }
 
-		public void update() {
-			fireTableDataChanged();
-		}
-	}
+        public void setValueAt(Object value, int row, int column) {
+            String text = (String) value;
+            if (text == null || text.trim().length() == 0) {
+                JexHandlerEditor.this.packages.removeElementAt(row);
+                update();
+            } else {
+                JexHandlerEditor.this.packages.setElementAt(text, row);
+            }
+            updateResolver();
+        }
+
+        public void update() {
+            fireTableDataChanged();
+        }
+    }
 }
 
 /*

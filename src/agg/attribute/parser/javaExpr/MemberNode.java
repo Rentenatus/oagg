@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /**
@@ -15,23 +16,25 @@ package agg.attribute.parser.javaExpr;
  */
 public class MemberNode extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	MemberNode(String id) {
-		super(id);
-	}
+    MemberNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new MemberNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new MemberNode(id);
+    }
 
-	public void checkContext(SimpleNode recipient) {
-		throw new Error(); /* It better not come here. */
-	}
+    public void checkContext(SimpleNode recipient) {
+        throw new Error();
+        /* It better not come here. */
+    }
 
-	public void interpret(SimpleNode recipient) {
-		throw new Error(); /* It better not come here. */
-	}
+    public void interpret(SimpleNode recipient) {
+        throw new Error();
+        /* It better not come here. */
+    }
 }
 /*
  * $Log: MemberNode.java,v $

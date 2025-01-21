@@ -1,81 +1,81 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTCondExpr.java,v 1.5 2010/07/29 10:09:24 olga Exp $
  * @author $Author: olga $
  */
 public class ASTCondExpr extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTCondExpr(String id) {
-		super(id);
-	}
+    ASTCondExpr(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTCondExpr(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTCondExpr(id);
+    }
 
-	public void checkContext() throws ASTWrongTypeException {
-		// System.out.println("ASTCondExpr.checkContext()...");
-		Node condition = jjtGetChild(0);
-		Node expr1 = jjtGetChild(1);
-		Node expr2 = jjtGetChild(2);
-		/*
+    public void checkContext() throws ASTWrongTypeException {
+        // System.out.println("ASTCondExpr.checkContext()...");
+        Node condition = jjtGetChild(0);
+        Node expr1 = jjtGetChild(1);
+        Node expr2 = jjtGetChild(2);
+        /*
 		 * System.out.println("condition: "+condition.toString());
 		 * System.out.println("expr1: "+expr1.toString());
 		 * System.out.println("expr2: "+expr2.toString());
-		 */
-		condition.checkContext();
+         */
+        condition.checkContext();
 
-		if (((SimpleNode)condition).getNodeClass() != Boolean.TYPE) {
-			throw new ASTWrongTypeException("[boolean ? TYPE_1 : TYPE_1]", "["
-					+ ((SimpleNode)condition).getNodeClass().getName() + " ? ... : ...]");
-		}
-		expr1.checkContext();
-		expr2.checkContext();
+        if (((SimpleNode) condition).getNodeClass() != Boolean.TYPE) {
+            throw new ASTWrongTypeException("[boolean ? TYPE_1 : TYPE_1]", "["
+                    + ((SimpleNode) condition).getNodeClass().getName() + " ? ... : ...]");
+        }
+        expr1.checkContext();
+        expr2.checkContext();
 
-		if (((SimpleNode)expr1).getNodeClass() == ((SimpleNode)expr2).getNodeClass()) {
-			setNodeClass(((SimpleNode)expr1).getNodeClass());
-		} else {
-			throw new ASTWrongTypeException("[boolean ? TYPE_1 : TYPE_1]", "["
-					+ ((SimpleNode)condition).getNodeClass().getName() + " ? "
-					+ ((SimpleNode)expr1).getNodeClass().getName() + " : "
-					+ ((SimpleNode)expr2).getNodeClass().getName() + "]");
-		}
-	}
+        if (((SimpleNode) expr1).getNodeClass() == ((SimpleNode) expr2).getNodeClass()) {
+            setNodeClass(((SimpleNode) expr1).getNodeClass());
+        } else {
+            throw new ASTWrongTypeException("[boolean ? TYPE_1 : TYPE_1]", "["
+                    + ((SimpleNode) condition).getNodeClass().getName() + " ? "
+                    + ((SimpleNode) expr1).getNodeClass().getName() + " : "
+                    + ((SimpleNode) expr2).getNodeClass().getName() + "]");
+        }
+    }
 
-	public void interpret() {
-		jjtGetChild(0).interpret();
+    public void interpret() {
+        jjtGetChild(0).interpret();
 
-		if (((Boolean) stack.get(top--)).booleanValue()) {
-			jjtGetChild(1).interpret();
-		} else {
-			jjtGetChild(2).interpret();
-		}
-	}
+        if (((Boolean) stack.get(top--)).booleanValue()) {
+            jjtGetChild(1).interpret();
+        } else {
+            jjtGetChild(2).interpret();
+        }
+    }
 
-	public String getString() {
-		String result;
-		Node cond = jjtGetChild(0);
-		Node iff = jjtGetChild(1);
-		Node thenn = jjtGetChild(2);
-		result = cond.getString() + "?" + iff.getString() + ":"
-				+ thenn.getString();
-		return result;
-	}
+    public String getString() {
+        String result;
+        Node cond = jjtGetChild(0);
+        Node iff = jjtGetChild(1);
+        Node thenn = jjtGetChild(2);
+        result = cond.getString() + "?" + iff.getString() + ":"
+                + thenn.getString();
+        return result;
+    }
 }
 /*
  * $Log: ASTCondExpr.java,v $

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.EventObject;
@@ -14,52 +15,50 @@ import java.util.EventObject;
 //****************************************************************************+
 /**
  * This event is a generall message from a parser.
- * 
+ *
  * @author $Author: olga $ Parser Group
  * @version $Id: ParserEvent.java,v 1.5 2010/09/23 08:25:00 olga Exp $
  */
 @SuppressWarnings("serial")
 public abstract class ParserEvent extends EventObject {
 
-	public final static int PAIR_FINISHED = -1;
+    public final static int PAIR_FINISHED = -1;
 
-	public final static int FINISHED = -2;
+    public final static int FINISHED = -2;
 
-	/**
-	 * The message text from a event.
-	 */
-	protected String message;
+    /**
+     * The message text from a event.
+     */
+    protected String message;
 
-	/**
-	 * This constructor is inherited from <CODE>EventObject</CODE>.
-	 * 
-	 * @param source
-	 *            The source of the event.
-	 */
-	public ParserEvent(Object source) {
-		super(source);
-	}
+    /**
+     * This constructor is inherited from <CODE>EventObject</CODE>.
+     *
+     * @param source The source of the event.
+     */
+    public ParserEvent(Object source) {
+        super(source);
+    }
 
-	// ************************************************************************+
-	/**
-	 * Returns the message of the event.
-	 * 
-	 * @return The message.
-	 */
-	public String getMessage() {
-		return this.message;
-	}
+    // ************************************************************************+
+    /**
+     * Returns the message of the event.
+     *
+     * @return The message.
+     */
+    public String getMessage() {
+        return this.message;
+    }
 
-	// ************************************************************************+
-	/**
-	 * Sets the message for the event.
-	 * 
-	 * @param _message
-	 *            The message.
-	 */
-	protected void setMessage(String _message) {
-		this.message = _message;
-	}
+    // ************************************************************************+
+    /**
+     * Sets the message for the event.
+     *
+     * @param _message The message.
+     */
+    protected void setMessage(String _message) {
+        this.message = _message;
+    }
 }
 
 /*

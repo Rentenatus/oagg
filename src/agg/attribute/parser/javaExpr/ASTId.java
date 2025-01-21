@@ -1,16 +1,16 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
-
 import java.util.Vector;
 
 import agg.attribute.handler.HandlerExpr;
@@ -22,101 +22,99 @@ import agg.attribute.handler.HandlerType;
  */
 public class ASTId extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	String name;
+    String name;
 
-	boolean isClass = false;
+    boolean isClass = false;
 
-	ASTId(String id) {
-		super(id);
-	}
+    ASTId(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTId(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTId(id);
+    }
 
-	protected boolean isConstantExpr() {
-		return false;
-	}
+    protected boolean isConstantExpr() {
+        return false;
+    }
 
-	/*
+    /*
 	 * You can override these two methods in subclasses of SimpleNode to
 	 * customize the way the node appears when the tree is dumped. If your
 	 * output uses more than one line you should override toString(String),
 	 * otherwise overriding toString() is probably all you need to do.
-	 */
+     */
+    public String toString() {
+        Class<?> clazz = getNodeClass();
+        String cname = "";
 
-	public String toString() {
-		Class<?> clazz = getNodeClass();
-		String cname = "";
+        if (this.isClass) {
+            cname += "(Class name) ";
+        }
+        cname += "\"" + this.name + "\"";
+        if (clazz != null) {
+            cname += " [" + clazz.toString() + "]";
+        }
+        return this.identifier + " " + cname;
+    }
 
-		if (this.isClass) {
-			cname += "(Class name) ";
-		}
-		cname += "\"" + this.name + "\"";
-		if (clazz != null) {
-			cname += " [" + clazz.toString() + "]";
-		}
-		return this.identifier + " " + cname;
-	}
+    public void checkContext() {
+        Class<?> clazz = null;
+        HandlerType tabEntry = null;
 
-	public void checkContext() {
-		Class<?> clazz = null;
-		HandlerType tabEntry = null;
-
-		if (classResolver != null) {
-			clazz = classResolver.forName(this.name);
-		} else {
-			try {
-				clazz = Class.forName(this.name);
-			} catch (ClassNotFoundException e) {
-				/*
+        if (classResolver != null) {
+            clazz = classResolver.forName(this.name);
+        } else {
+            try {
+                clazz = Class.forName(this.name);
+            } catch (ClassNotFoundException e) {
+                /*
 				 * Do nothing, it's just a sign that the name belongs to a
 				 * variable, not a class.
-				 */
-			}
-		}
+                 */
+            }
+        }
 
-		if (clazz == null) {
-			this.isClass = false;
-			if (symtab == null) {
+        if (clazz == null) {
+            this.isClass = false;
+            if (symtab == null) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"ASTId: symtab is null.");
-				throw new ASTIdNotDeclaredException(this.name);
-			}
-			
-			if ((tabEntry = symtab.getType(this.name)) == null) {
+                throw new ASTIdNotDeclaredException(this.name);
+            }
+
+            if ((tabEntry = symtab.getType(this.name)) == null) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"ASTId: symtab.getType(" + this.name + ") is null.");
-				throw new ASTIdNotDeclaredException(this.name);
-			}
-			if ((clazz = tabEntry.getClazz()) == null) {
+                throw new ASTIdNotDeclaredException(this.name);
+            }
+            if ((clazz = tabEntry.getClazz()) == null) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"ASTId: symtab.getType(" + this.name
 //								+ ").getClazz() is null.");
-				throw new ASTIdNotDeclaredException(this.name);
-			}
-		} else {
-			this.isClass = true;
-		}
-		setNodeClass(clazz);
-	}
+                throw new ASTIdNotDeclaredException(this.name);
+            }
+        } else {
+            this.isClass = true;
+        }
+        setNodeClass(clazz);
+    }
 
-	public void interpret() {
-		Object value = null;
-		HandlerExpr tabEntry = null;
+    public void interpret() {
+        Object value = null;
+        HandlerExpr tabEntry = null;
 
-		checkContext();
+        checkContext();
 
-		if (this.isClass) {
-			value = getNodeClass();
-		} 
-		else {
-			if (symtab == null
-					|| ((tabEntry = symtab.getExpr(this.name)) == null)
-					|| ((value = tabEntry.getValue()) == null)) {
-				
+        if (this.isClass) {
+            value = getNodeClass();
+        } else {
+            if (symtab == null
+                    || ((tabEntry = symtab.getExpr(this.name)) == null)
+                    || ((value = tabEntry.getValue()) == null)) {
+
 //				if (symtab == null) {
 //						AttrSession.logPrintln(VerboseControl.logJexParser,
 //								"ASTId: symtab is null.");
@@ -128,71 +126,70 @@ public class ASTId extends SimpleNode {
 //										"ASTId: symtab.getExpr(" + this.name
 //												+ ").getValue() is null.");
 //				} 
-				
-				throw new ASTMissingValueException("Missing value exception for: "+this.name);
-			}
-		}
-				
-		top++;
-		Node obj = ObjectConstNode
-				.jjtCreate(this.identifier + " to ObjectConstNode");				
-		((ObjectConstNode) obj).obj = value;
-		obj.jjtSetParent(jjtGetParent());
-		((ObjectConstNode) obj).setNodeClass(getNodeClass());
-		jjtGetParent().replaceChild(this, obj);
-		jjtSetParent(null);
-		if (value != null)
-			obj.interpret();
-	}
+                throw new ASTMissingValueException("Missing value exception for: " + this.name);
+            }
+        }
 
-	/**
-	 * Rewrites a single id.
-	 */
-	public void rewrite() {
-		// System.out.println( "ASTId.rewrite(): ...");
-		checkContext();
-		HandlerExpr newExpr = symtab.getExpr(this.name);
-		if (newExpr == null) {
+        top++;
+        Node obj = ObjectConstNode
+                .jjtCreate(this.identifier + " to ObjectConstNode");
+        ((ObjectConstNode) obj).obj = value;
+        obj.jjtSetParent(jjtGetParent());
+        ((ObjectConstNode) obj).setNodeClass(getNodeClass());
+        jjtGetParent().replaceChild(this, obj);
+        jjtSetParent(null);
+        if (value != null) {
+            obj.interpret();
+        }
+    }
+
+    /**
+     * Rewrites a single id.
+     */
+    public void rewrite() {
+        // System.out.println( "ASTId.rewrite(): ...");
+        checkContext();
+        HandlerExpr newExpr = symtab.getExpr(this.name);
+        if (newExpr == null) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"ASTId: symtab.getExpr(" + this.name + ") is null.");
-			throw new ASTMissingValueException("Missing value exception for: "+this.name);
-		}
-		Node newTree = newExpr.getAST();
-		/*
+            throw new ASTMissingValueException("Missing value exception for: " + this.name);
+        }
+        Node newTree = newExpr.getAST();
+        /*
 		 * Falls im AST zwei Expression aufeinander folgen, kann einen geloescht
 		 * werden. beide auf selben parent zeigen, im parent child ersetzen im
 		 * alten knoten parent abhaengen
-		 */
-		if ((newTree instanceof ASTExpression)
-				&& (jjtGetParent() instanceof ASTExpression)) {
-			Node tmp = newTree.jjtGetChild(0);
-			((ASTExpression) newTree).children.removeElement(tmp);
-			tmp.jjtSetParent(null);
-			newTree = tmp;
-		}
-		newTree.jjtSetParent(jjtGetParent());
-		jjtGetParent().replaceChild(this, newTree);
-		jjtSetParent(null);
-	}
+         */
+        if ((newTree instanceof ASTExpression)
+                && (jjtGetParent() instanceof ASTExpression)) {
+            Node tmp = newTree.jjtGetChild(0);
+            ((ASTExpression) newTree).children.removeElement(tmp);
+            tmp.jjtSetParent(null);
+            newTree = tmp;
+        }
+        newTree.jjtSetParent(jjtGetParent());
+        jjtGetParent().replaceChild(this, newTree);
+        jjtSetParent(null);
+    }
 
-	public String getString() {
-		return this.name;
-	}
+    public String getString() {
+        return this.name;
+    }
 
-	/**
-	 * fills the vector with the names of all variables which occur in this
-	 * abstract syntax tree
-	 */
-	public void getAllVariablesinExpression(Vector<String> v) {
-		v.addElement(this.name);
-	}
+    /**
+     * fills the vector with the names of all variables which occur in this abstract syntax tree
+     */
+    public void getAllVariablesinExpression(Vector<String> v) {
+        v.addElement(this.name);
+    }
 
-	public Node copy() {
-		Node copy = super.copy();
-		((ASTId) copy).name = new String(this.name);
-		((ASTId) copy).isClass = this.isClass;
-		return copy;
-	}
+    public Node copy() {
+        Node copy = super.copy();
+        ((ASTId) copy).name = new String(this.name);
+        ((ASTId) copy).isClass = this.isClass;
+        return copy;
+    }
 }
 /*
  * $Log: ASTId.java,v $

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 import java.io.Serializable;
@@ -37,132 +38,116 @@ import agg.attribute.view.AttrViewSetting;
  *@author $Author: olga $
  */
 public interface AttrTuple extends Serializable {
-	/**
-	 * Getting the attribute manager.
-	 */
-	public AttrManager getAttrManager();
 
-	/**
-	 * Testing if the tuple is consistent and complete.
-	 */
-	public boolean isValid();
+    /**
+     * Getting the attribute manager.
+     */
+    public AttrManager getAttrManager();
 
-	public DeclTuple getTupleType();
-	/**
-	 * Getting a tuple member by its absolute (view-independent) index.
-	 */
-	public AttrMember getMemberAt(int index);
+    /**
+     * Testing if the tuple is consistent and complete.
+     */
+    public boolean isValid();
 
-	/**
-	 * Getting a tuple member by its view-dependent index.
-	 */
-	public AttrMember getMemberAt(AttrViewSetting view, int index);
+    public DeclTuple getTupleType();
 
-	/**
-	 * Getting a tuple member by its declaration name.
-	 */
-	public AttrMember getMemberAt(String name);
+    /**
+     * Getting a tuple member by its absolute (view-independent) index.
+     */
+    public AttrMember getMemberAt(int index);
 
-	/**
-	 * Translation between address- and number-oriented access.
-	 * 
-	 * @return The corresponding index if the member is within the tuple, -1
-	 *         otherwise.
-	 */
-	public int getIndexForMember(AttrMember m);
+    /**
+     * Getting a tuple member by its view-dependent index.
+     */
+    public AttrMember getMemberAt(AttrViewSetting view, int index);
 
-	/**
-	 * Getting the absolute (view-independent) total number of entries (lines);
-	 * The retrieval index range is [0 .. (getNumberOfEntries() - 1)].
-	 */
-	public int getNumberOfEntries();
+    /**
+     * Getting a tuple member by its declaration name.
+     */
+    public AttrMember getMemberAt(String name);
 
-	/**
-	 * Getting a view-independent representation of a type as String.
-	 * 
-	 * @param entryIndex
-	 *            Index of entry.
-	 */
-	public String getTypeAsString(int entryIndex);
+    /**
+     * Translation between address- and number-oriented access.
+     *
+     * @return The corresponding index if the member is within the tuple, -1 otherwise.
+     */
+    public int getIndexForMember(AttrMember m);
 
-	/**
-	 * Getting a view-independent representation of a name as String.
-	 * 
-	 * @param entryIndex
-	 *            Index of entry.
-	 */
-	public String getNameAsString(int entryIndex);
+    /**
+     * Getting the absolute (view-independent) total number of entries (lines); The retrieval index range is [0 ..
+     * (getNumberOfEntries() - 1)].
+     */
+    public int getNumberOfEntries();
 
-	/**
-	 * Getting a view-independent representation of a value as String.
-	 * 
-	 * @param entryIndex
-	 *            Index of entry.
-	 */
-	public String getValueAsString(int entryIndex);
+    /**
+     * Getting a view-independent representation of a type as String.
+     *
+     * @param entryIndex Index of entry.
+     */
+    public String getTypeAsString(int entryIndex);
 
-	/**
-	 * Getting the view-dependent number of attribute entries (lines). The
-	 * retrieval index range is [0 .. (getNumberOfEntries() - 1)].
-	 * 
-	 * @param viewSetting
-	 *            The view context which mandates how attribute tuples have to
-	 *            be represented.
-	 */
-	public int getNumberOfEntries(AttrViewSetting viewSetting);
+    /**
+     * Getting a view-independent representation of a name as String.
+     *
+     * @param entryIndex Index of entry.
+     */
+    public String getNameAsString(int entryIndex);
 
-	/**
-	 * Getting a view-dependent representation of a type as String.
-	 * 
-	 * @param viewSetting
-	 *            The view context which mandates how attribute tuples have to
-	 *            be represented.
-	 * @param entryIndex
-	 *            Index of entry.
-	 */
-	public String getTypeAsString(AttrViewSetting viewSetting, int entryIndex);
+    /**
+     * Getting a view-independent representation of a value as String.
+     *
+     * @param entryIndex Index of entry.
+     */
+    public String getValueAsString(int entryIndex);
 
-	/**
-	 * Getting a view-dependent representation of a type as String.
-	 * 
-	 * @param viewSetting
-	 *            The view context which mandates how attribute tuples have to
-	 *            be represented.
-	 * @param entryIndex
-	 *            Index of entry.
-	 */
-	public String getNameAsString(AttrViewSetting viewSetting, int entryIndex);
+    /**
+     * Getting the view-dependent number of attribute entries (lines). The retrieval index range is [0 ..
+     * (getNumberOfEntries() - 1)].
+     *
+     * @param viewSetting The view context which mandates how attribute tuples have to be represented.
+     */
+    public int getNumberOfEntries(AttrViewSetting viewSetting);
 
-	/**
-	 * Getting a view-dependent representation of a type as String.
-	 * 
-	 * @param viewSetting
-	 *            The view context which mandates how attribute tuples have to
-	 *            be represented.
-	 * @param entryIndex
-	 *            Index of entry.
-	 */
-	public String getValueAsString(AttrViewSetting viewSetting, int entryIndex);
+    /**
+     * Getting a view-dependent representation of a type as String.
+     *
+     * @param viewSetting The view context which mandates how attribute tuples have to be represented.
+     * @param entryIndex Index of entry.
+     */
+    public String getTypeAsString(AttrViewSetting viewSetting, int entryIndex);
 
-	//
-	// Observable Interface:
-	//
+    /**
+     * Getting a view-dependent representation of a type as String.
+     *
+     * @param viewSetting The view context which mandates how attribute tuples have to be represented.
+     * @param entryIndex Index of entry.
+     */
+    public String getNameAsString(AttrViewSetting viewSetting, int entryIndex);
 
-	/**
-	 * Adding a new attribute observer.
-	 * 
-	 * @param attrObs
-	 *            The attribute observer to be registered.
-	 */
-	public void addObserver(AttrObserver attrObs);
+    /**
+     * Getting a view-dependent representation of a type as String.
+     *
+     * @param viewSetting The view context which mandates how attribute tuples have to be represented.
+     * @param entryIndex Index of entry.
+     */
+    public String getValueAsString(AttrViewSetting viewSetting, int entryIndex);
 
-	/**
-	 * Removing an attribute observer from the list of observers.
-	 * 
-	 * @param attrObs
-	 *            The attribute observer to be registered.
-	 */
-	public void removeObserver(AttrObserver attrObs);
+    //
+    // Observable Interface:
+    //
+    /**
+     * Adding a new attribute observer.
+     *
+     * @param attrObs The attribute observer to be registered.
+     */
+    public void addObserver(AttrObserver attrObs);
+
+    /**
+     * Removing an attribute observer from the list of observers.
+     *
+     * @param attrObs The attribute observer to be registered.
+     */
+    public void removeObserver(AttrObserver attrObs);
 }
 /*
  * $Log: AttrTuple.java,v $

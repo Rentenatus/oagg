@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.editor.impl;
 
 import java.awt.Color;
@@ -22,10 +23,9 @@ import agg.gui.editor.GraphPanel;
 import agg.xt_basis.GraphObject;
 
 /**
- * An EdGraphObject specifies the common layout interface and implementations
- * for nodes and arcs. This abstract class is the superclass of EdNode and
- * EdArc.
- * 
+ * An EdGraphObject specifies the common layout interface and implementations for nodes and arcs. This abstract class is
+ * the superclass of EdNode and EdArc.
+ *
  * @author $Author: olga $
  * @version $Id: EdGraphObject.java,v 1.35 2010/11/13 02:25:16 olga Exp $
  */
@@ -33,535 +33,636 @@ public abstract class EdGraphObject {
 
 //	public final static int CRITICAL_GREEN = 0;	
 //	public final static int CRITICAL_BLACK_BOLD = 1;
-	
-	protected int criticalStyle = 0;
-	
-	protected Integer itsUndoReprDataHC;
-	
-	protected EdType eType;
+    protected int criticalStyle = 0;
 
-	protected EdGraph eGraph;
+    protected Integer itsUndoReprDataHC;
 
-	protected int x;
+    protected EdType eType;
 
-	protected int y;
+    protected EdGraph eGraph;
 
-	protected int w;
+    protected int x;
 
-	protected int h;
+    protected int y;
 
-	double itsScale = 1.0;
-	
-	// contextUsage is used for undo and stores its hashcode(s)
-	// as string like this - ":hashcode:hashcode:hashcode:"
-	// it used from NodeReprData and ArcReprDate to store/restore node, edge
-	// DO NOT REWRITE THIS!
-	protected String contextUsage = "";
+    protected int w;
 
-	protected boolean hasDefaultLayout;
+    protected int h;
 
-	protected boolean elemOfTG; // is element of a TypeGraph
+    double itsScale = 1.0;
 
-	/**
-	 * true, if the graph object has (type) errors. if true the object will be
-	 * marked.
-	 */
-	protected boolean errorMode;
+    // contextUsage is used for undo and stores its hashcode(s)
+    // as string like this - ":hashcode:hashcode:hashcode:"
+    // it used from NodeReprData and ArcReprDate to store/restore node, edge
+    // DO NOT REWRITE THIS!
+    protected String contextUsage = "";
 
-	protected boolean visible = true;
-	
-	protected boolean attrVisible = true;
+    protected boolean hasDefaultLayout;
 
-	protected Color backgroundColor = null; //Color.white;
-	
-	protected int myKey = 0;
+    protected boolean elemOfTG; // is element of a TypeGraph
 
-	transient protected final Vector<String> marks;
+    /**
+     * true, if the graph object has (type) errors. if true the object will be marked.
+     */
+    protected boolean errorMode;
 
-	transient protected EdGraphObject myCopy;
+    protected boolean visible = true;
 
-	transient protected boolean selected, weakselected;
-	
-	transient protected boolean moved;
+    protected boolean attrVisible = true;
 
-	transient protected GraphPanel myGraphPanel;
+    protected Color backgroundColor = null; //Color.white;
 
-	transient protected boolean attrObserver;
+    protected int myKey = 0;
 
-	transient protected boolean attrChanged;
+    transient protected final Vector<String> marks;
 
-	protected AttrViewSetting view;
+    transient protected EdGraphObject myCopy;
 
-	transient protected boolean init;
+    transient protected boolean selected, weakselected;
 
-	
-	/** Creates a layout specified by the EdType eType */
-	public EdGraphObject(EdType eType) {
-		this.contextUsage = "";
-		this.x = 0;
-		this.y = 0;
-		this.eType = eType;
+    transient protected boolean moved;
+
+    transient protected GraphPanel myGraphPanel;
+
+    transient protected boolean attrObserver;
+
+    transient protected boolean attrChanged;
+
+    protected AttrViewSetting view;
+
+    transient protected boolean init;
+
+    /**
+     * Creates a layout specified by the EdType eType
+     */
+    public EdGraphObject(EdType eType) {
+        this.contextUsage = "";
+        this.x = 0;
+        this.y = 0;
+        this.eType = eType;
 //		if (this.eType != null) {
 //			this.eType.addUser(this);
 //		}
-		this.marks = new Vector<String>();
-	}
+        this.marks = new Vector<String>();
+    }
 
-	public abstract void dispose();
-	
-	public EdGraph getContext() {
-		return this.eGraph;
-	}
+    public abstract void dispose();
 
-	public void setContext(EdGraph g) {
-		this.eGraph = g;
-	}
+    public EdGraph getContext() {
+        return this.eGraph;
+    }
 
-	/** Returns the used object */
-	public abstract GraphObject getBasisObject();
+    public void setContext(EdGraph g) {
+        this.eGraph = g;
+    }
 
-	/** Returns TRUE if the used object is a node */
-	public abstract boolean isNode();
+    /**
+     * Returns the used object
+     */
+    public abstract GraphObject getBasisObject();
 
-	/** Returns TRUE if the used object is a n arc */
-	public abstract boolean isArc();
+    /**
+     * Returns TRUE if the used object is a node
+     */
+    public abstract boolean isNode();
 
-	/** Returns the parent object */
-	public abstract EdNode getNode();
+    /**
+     * Returns TRUE if the used object is a n arc
+     */
+    public abstract boolean isArc();
 
-	/** Returns the parent object */
-	public abstract EdArc getArc();
+    /**
+     * Returns the parent object
+     */
+    public abstract EdNode getNode();
 
-	public abstract void setCritical(boolean b);
-	
-	public abstract void setDrawingStyleOfCriticalObject(int criticalStyle);
-	
-	public abstract boolean isCritical();
+    /**
+     * Returns the parent object
+     */
+    public abstract EdArc getArc();
 
-	/** Returns the attributes */
-	public abstract Vector<Vector<String>> getAttributes();
+    public abstract void setCritical(boolean b);
 
-	public abstract void refreshAttributeInstance();
+    public abstract void setDrawingStyleOfCriticalObject(int criticalStyle);
 
-	public abstract void removeFromAttributeViewObserver();
-	
-	/** Sets a graph panel */
-	public abstract void setGraphPanel(GraphPanel gp);
+    public abstract boolean isCritical();
 
-	/** Sets the attributes */
-	public abstract Vector<Vector<String>> setAttributes(GraphObject obj);
+    /**
+     * Returns the attributes
+     */
+    public abstract Vector<Vector<String>> getAttributes();
 
-	public abstract void drawGraphic(Graphics grs);
-	
-	
-	/** Returns TRUE if this is attribute observer */
-	public boolean isAttrObserver() {
-		return this.attrObserver;
-	}
+    public abstract void refreshAttributeInstance();
 
-	/** Sets this to attribute observer */
-	public void setAttrObserver(boolean obs) {
-		this.attrObserver = obs;
-		this.init = true;
-	}
+    public abstract void removeFromAttributeViewObserver();
 
-	/** Returns my copy */
-	public EdGraphObject getCopy() {
-		return this.myCopy;
-	}
+    /**
+     * Sets a graph panel
+     */
+    public abstract void setGraphPanel(GraphPanel gp);
 
-	/** Returns my X position */
-	public int getX() {
-		return this.x;
-	}
+    /**
+     * Sets the attributes
+     */
+    public abstract Vector<Vector<String>> setAttributes(GraphObject obj);
 
-	/** Returns my Y position */
-	public int getY() {
-		return this.y;
-	}
+    public abstract void drawGraphic(Graphics grs);
 
-	/** Returns my width */
-	public int getWidth() {
-		return this.w;
-	}
+    /**
+     * Returns TRUE if this is attribute observer
+     */
+    public boolean isAttrObserver() {
+        return this.attrObserver;
+    }
 
-	/** Returns my height */
-	public int getHeight() {
-		return this.h;
-	}
+    /**
+     * Sets this to attribute observer
+     */
+    public void setAttrObserver(boolean obs) {
+        this.attrObserver = obs;
+        this.init = true;
+    }
 
-	/** Returns my layout type */
-	public EdType getType() {
-		return this.eType;
-	}
+    /**
+     * Returns my copy
+     */
+    public EdGraphObject getCopy() {
+        return this.myCopy;
+    }
 
-	/** Returns the name of my layout type */
-	public String getTypeName() {
-		return this.eType.getTypeName();
-	}
+    /**
+     * Returns my X position
+     */
+    public int getX() {
+        return this.x;
+    }
 
-	/** Returns my key used by the morphism marking */
-	public int getMyKey() {
-		return this.myKey;
-	}
+    /**
+     * Returns my Y position
+     */
+    public int getY() {
+        return this.y;
+    }
 
-	/** Returns my morphism mark */
-	public String getMorphismMark() {
-		StringBuffer markBuf = new StringBuffer();
-		for (int i = 0; i < this.marks.size(); i++) {
-			if (i > 0)
-				markBuf.append(',');
-			markBuf.append(this.marks.elementAt(i));
-		}
-		return markBuf.toString();
-	}
+    /**
+     * Returns my width
+     */
+    public int getWidth() {
+        return this.w;
+    }
 
-	/** Returns the text height */
-	public int getTextHeight(FontMetrics fm) {
-		Vector<Vector<String>> attrs = getAttributes();
-		int nn = 0;
-		int h1 = 0;
-		// die Hoehe einer Zeile
-		if (fm == null)
-			h1 = 17; // default
-		else
-			h1 = fm.getHeight();
+    /**
+     * Returns my height
+     */
+    public int getHeight() {
+        return this.h;
+    }
 
-		if ((fm != null && fm.getFont().getSize() < 8)
-				|| !this.attrVisible)
-			return h1;
+    /**
+     * Returns my layout type
+     */
+    public EdType getType() {
+        return this.eType;
+    }
 
-		if (attrs != null) {
-			nn = attrs.size();
-			for (int i = 0; i < attrs.size(); i++) {
-				Vector<String> attr = attrs.elementAt(i);
-				if (!this.elemOfTG && (attr.elementAt(2).length() == 0))
-					nn--;
-				else if (this.elemOfTG && (attr.elementAt(1) == null))
-					nn--;
-			}
-		}
-		// die Hoehe aller Attribute
-		int hght = h1 * nn;
-		// gesamte Hoehe
-		// if((getTypeString().length() != 0) || (isNode() && this.elemOfTG))
-		hght = hght + h1;
-		return hght;
-	}
+    /**
+     * Returns the name of my layout type
+     */
+    public String getTypeName() {
+        return this.eType.getTypeName();
+    }
 
-	/** Returns the text width */
-	public int getTextWidth(FontMetrics fm) {
-		int nn = 6; // default char width
-		String typeStr = "";
-		typeStr = getTypeString();
-		if (isNode()) {
-			if (getType().getBasisType().isAbstract()) {
-				if (!typeStr.equals(""))
-					typeStr = "{" + typeStr + "}";
-				else
-					typeStr = "{ }";
-			}
-			if (this.elemOfTG) 
-				typeStr = typeStr + " " + ((EdNode) this).getMultiplicityString();
-		}
-		int wdth = 0;
-		if (fm == null)
-			wdth = nn * typeStr.length();
-		else
-			wdth = fm.stringWidth(typeStr);
+    /**
+     * Returns my key used by the morphism marking
+     */
+    public int getMyKey() {
+        return this.myKey;
+    }
 
-		if ((fm != null && fm.getFont().getSize() < 8)
-				|| !this.attrVisible)
-			return wdth;
+    /**
+     * Returns my morphism mark
+     */
+    public String getMorphismMark() {
+        StringBuffer markBuf = new StringBuffer();
+        for (int i = 0; i < this.marks.size(); i++) {
+            if (i > 0) {
+                markBuf.append(',');
+            }
+            markBuf.append(this.marks.elementAt(i));
+        }
+        return markBuf.toString();
+    }
 
-		Vector<Vector<String>> attrs = getAttributes();
-		if (attrs != null) {
-			for (int i = 0; i < attrs.size(); i++) {
-				Vector<String> attr = attrs.elementAt(i);
-				if (this.elemOfTG) {
-					if (attr.elementAt(1) != null) {
-						String tstStr = attr.elementAt(0) + "  " + attr.elementAt(1);						
+    /**
+     * Returns the text height
+     */
+    public int getTextHeight(FontMetrics fm) {
+        Vector<Vector<String>> attrs = getAttributes();
+        int nn = 0;
+        int h1 = 0;
+        // die Hoehe einer Zeile
+        if (fm == null) {
+            h1 = 17; // default
+        } else {
+            h1 = fm.getHeight();
+        }
+
+        if ((fm != null && fm.getFont().getSize() < 8)
+                || !this.attrVisible) {
+            return h1;
+        }
+
+        if (attrs != null) {
+            nn = attrs.size();
+            for (int i = 0; i < attrs.size(); i++) {
+                Vector<String> attr = attrs.elementAt(i);
+                if (!this.elemOfTG && (attr.elementAt(2).length() == 0)) {
+                    nn--;
+                } else if (this.elemOfTG && (attr.elementAt(1) == null)) {
+                    nn--;
+                }
+            }
+        }
+        // die Hoehe aller Attribute
+        int hght = h1 * nn;
+        // gesamte Hoehe
+        // if((getTypeString().length() != 0) || (isNode() && this.elemOfTG))
+        hght = hght + h1;
+        return hght;
+    }
+
+    /**
+     * Returns the text width
+     */
+    public int getTextWidth(FontMetrics fm) {
+        int nn = 6; // default char width
+        String typeStr = "";
+        typeStr = getTypeString();
+        if (isNode()) {
+            if (getType().getBasisType().isAbstract()) {
+                if (!typeStr.equals("")) {
+                    typeStr = "{" + typeStr + "}";
+                } else {
+                    typeStr = "{ }";
+                }
+            }
+            if (this.elemOfTG) {
+                typeStr = typeStr + " " + ((EdNode) this).getMultiplicityString();
+            }
+        }
+        int wdth = 0;
+        if (fm == null) {
+            wdth = nn * typeStr.length();
+        } else {
+            wdth = fm.stringWidth(typeStr);
+        }
+
+        if ((fm != null && fm.getFont().getSize() < 8)
+                || !this.attrVisible) {
+            return wdth;
+        }
+
+        Vector<Vector<String>> attrs = getAttributes();
+        if (attrs != null) {
+            for (int i = 0; i < attrs.size(); i++) {
+                Vector<String> attr = attrs.elementAt(i);
+                if (this.elemOfTG) {
+                    if (attr.elementAt(1) != null) {
+                        String tstStr = attr.elementAt(0) + "  " + attr.elementAt(1);
 //						 Type graph: default attr value 
-						if (attr.elementAt(2).length() != 0) {
-							tstStr = tstStr + "="  + attr.elementAt(2);
-						}						
-						if (fm == null) {
-							if ((nn * tstStr.length()) > wdth)
-								wdth = nn * tstStr.length();
-						} else if (fm.stringWidth(tstStr) > wdth)
-							wdth = fm.stringWidth(tstStr);
-					}
-				}
-				else if (attr.elementAt(2).length() != 0) {
-					String tstStr = attr.elementAt(1) + "=" + attr.elementAt(2);
-					if (fm == null) {
-						if ((nn * tstStr.length()) > wdth)
-							wdth = nn * tstStr.length();
-					} else if (fm.stringWidth(tstStr) > wdth)
-						wdth = fm.stringWidth(tstStr);
-				}				
-			}
-		}
-		return wdth;
-	}
+                        if (attr.elementAt(2).length() != 0) {
+                            tstStr = tstStr + "=" + attr.elementAt(2);
+                        }
+                        if (fm == null) {
+                            if ((nn * tstStr.length()) > wdth) {
+                                wdth = nn * tstStr.length();
+                            }
+                        } else if (fm.stringWidth(tstStr) > wdth) {
+                            wdth = fm.stringWidth(tstStr);
+                        }
+                    }
+                } else if (attr.elementAt(2).length() != 0) {
+                    String tstStr = attr.elementAt(1) + "=" + attr.elementAt(2);
+                    if (fm == null) {
+                        if ((nn * tstStr.length()) > wdth) {
+                            wdth = nn * tstStr.length();
+                        }
+                    } else if (fm.stringWidth(tstStr) > wdth) {
+                        wdth = fm.stringWidth(tstStr);
+                    }
+                }
+            }
+        }
+        return wdth;
+    }
 
-	/** Returns the type name with mapping mark if it exists. */
-	protected String getTypeString() {
-		String typeStr = this.eType.getBasisType().getStringRepr();
-		if (!this.getBasisObject().getObjectName().equals("")) {
-			typeStr = this.getBasisObject().getObjectName().concat(":").concat(typeStr);
-		}
-		
-		if (getMorphismMark().length() != 0) {
-			typeStr = getMorphismMark().concat(":").concat(typeStr);
-		}
-		return typeStr;
-	}
+    /**
+     * Returns the type name with mapping mark if it exists.
+     */
+    protected String getTypeString() {
+        String typeStr = this.eType.getBasisType().getStringRepr();
+        if (!this.getBasisObject().getObjectName().equals("")) {
+            typeStr = this.getBasisObject().getObjectName().concat(":").concat(typeStr);
+        }
 
-	/** Returns my shape */
-	public int getShape() {
-		return this.eType.shape;
-	}
+        if (getMorphismMark().length() != 0) {
+            typeStr = getMorphismMark().concat(":").concat(typeStr);
+        }
+        return typeStr;
+    }
 
-	/** Returns my color */
-	public Color getColor() {
-		return this.eType.color;
-	}
+    /**
+     * Returns my shape
+     */
+    public int getShape() {
+        return this.eType.shape;
+    }
 
-	/** Returns the color used by selecting */
-	public Color getSelectColor() {
-		return EditorConstants.selectColor;
-	}
+    /**
+     * Returns my color
+     */
+    public Color getColor() {
+        return this.eType.color;
+    }
 
-	/** Returns TRUE if i am selected */
-	public boolean isSelected() {
-		return this.selected;
-	}
-	
-	/** Returns TRUE if i'm visible */
-	public boolean isVisible() {
-		return this.visible;
-	}
+    /**
+     * Returns the color used by selecting
+     */
+    public Color getSelectColor() {
+        return EditorConstants.selectColor;
+    }
 
-	/** Returns TRUE if my attribute is visible */
-	public boolean isAttributeVisible() {
-		return this.visible;
-	}
-	
-	/** Returns TRUE if i am an element of a type graph */
-	public boolean isElementOfTypeGraph() {
-		return this.elemOfTG;
-	}
+    /**
+     * Returns TRUE if i am selected
+     */
+    public boolean isSelected() {
+        return this.selected;
+    }
 
-	/**
-	 * Returns TRUE if my type is the same as the type specified by the
-	 * EdGraphObject eObj
-	 */
-	public boolean hasSimilarType(EdGraphObject eObj) {
-		if (this.eType.isParentOf(eObj.getType()))
-			return true;
-		
-		return false;
-	}
+    /**
+     * Returns TRUE if i'm visible
+     */
+    public boolean isVisible() {
+        return this.visible;
+    }
 
-	/**
-	 * Returns TRUE if the point specified by the int X, int Y is inside of
-	 * myself
-	 */
-	public abstract boolean inside(int X, int Y);
+    /**
+     * Returns TRUE if my attribute is visible
+     */
+    public boolean isAttributeVisible() {
+        return this.visible;
+    }
 
-	/**
-	 * Returns the dimension of the overlapping from another layout specified by
-	 * the EdGraphObject eObj
-	 */
-	public Dimension ifOverlapFrom(EdGraphObject eObj) {
-		Point p1 = new Point(this.x - this.w / 2, this.y - this.h / 2);
-		Point p2 = new Point(this.x + this.w / 2, this.y - this.h / 2);
-		Point p3 = new Point(this.x + this.w / 2, this.y + this.h / 2);
-		Point p4 = new Point(this.x - this.w / 2, this.y + this.h / 2);
+    /**
+     * Returns TRUE if i am an element of a type graph
+     */
+    public boolean isElementOfTypeGraph() {
+        return this.elemOfTG;
+    }
 
-		Point p11 = new Point(eObj.getX() - eObj.getWidth() / 2, eObj.getY()
-				- eObj.getHeight() / 2);
-		Point p12 = new Point(eObj.getX() + eObj.getWidth() / 2, eObj.getY()
-				- eObj.getHeight() / 2);
-		Point p13 = new Point(eObj.getX() + eObj.getWidth() / 2, eObj.getY()
-				+ eObj.getHeight() / 2);
-		Point p14 = new Point(eObj.getX() - eObj.getWidth() / 2, eObj.getY()
-				+ eObj.getHeight() / 2);
+    /**
+     * Returns TRUE if my type is the same as the type specified by the EdGraphObject eObj
+     */
+    public boolean hasSimilarType(EdGraphObject eObj) {
+        if (this.eType.isParentOf(eObj.getType())) {
+            return true;
+        }
 
-		int minDist = 10;
-		Dimension overlapSize = new Dimension(
-				((p3.x + eObj.getWidth() / 2 + minDist) - this.x), ((p3.y
-						+ eObj.getHeight() / 2 + minDist) - this.y));
-		boolean overlap = false;
-		if (p1.equals(p11) && p2.equals(p12) && p3.equals(p13)
-				&& p4.equals(p14)) {
-			overlap = true;
-		} else if (inside(eObj.getX(), eObj.getY()) || inside(p11.x, p11.y)
-				|| inside(p12.x, p12.y) || inside(p13.x, p13.y)
-				|| inside(p14.x, p14.y) || eObj.inside(getX(), getY())
-				|| eObj.inside(p1.x, p1.y) || eObj.inside(p2.x, p2.y)
-				|| eObj.inside(p3.x, p3.y) || eObj.inside(p4.x, p4.y)) {
-			overlap = true;
-		}
+        return false;
+    }
 
-		if (overlap) {
-			return overlapSize;
-		} 
+    /**
+     * Returns TRUE if the point specified by the int X, int Y is inside of myself
+     */
+    public abstract boolean inside(int X, int Y);
 
-		return new Dimension(0, 0);		
-	}
+    /**
+     * Returns the dimension of the overlapping from another layout specified by the EdGraphObject eObj
+     */
+    public Dimension ifOverlapFrom(EdGraphObject eObj) {
+        Point p1 = new Point(this.x - this.w / 2, this.y - this.h / 2);
+        Point p2 = new Point(this.x + this.w / 2, this.y - this.h / 2);
+        Point p3 = new Point(this.x + this.w / 2, this.y + this.h / 2);
+        Point p4 = new Point(this.x - this.w / 2, this.y + this.h / 2);
 
-	/** Marks this as element of a type graph */
-	public void markElementOfTypeGraph(boolean val) {
-		this.elemOfTG = val;
-	}
+        Point p11 = new Point(eObj.getX() - eObj.getWidth() / 2, eObj.getY()
+                - eObj.getHeight() / 2);
+        Point p12 = new Point(eObj.getX() + eObj.getWidth() / 2, eObj.getY()
+                - eObj.getHeight() / 2);
+        Point p13 = new Point(eObj.getX() + eObj.getWidth() / 2, eObj.getY()
+                + eObj.getHeight() / 2);
+        Point p14 = new Point(eObj.getX() - eObj.getWidth() / 2, eObj.getY()
+                + eObj.getHeight() / 2);
 
-	/** Sets x, y positions */
-	public void setXY(int X, int Y) {
-		this.x = X;
-		this.y = Y;
-	}
+        int minDist = 10;
+        Dimension overlapSize = new Dimension(
+                ((p3.x + eObj.getWidth() / 2 + minDist) - this.x), ((p3.y
+                + eObj.getHeight() / 2 + minDist) - this.y));
+        boolean overlap = false;
+        if (p1.equals(p11) && p2.equals(p12) && p3.equals(p13)
+                && p4.equals(p14)) {
+            overlap = true;
+        } else if (inside(eObj.getX(), eObj.getY()) || inside(p11.x, p11.y)
+                || inside(p12.x, p12.y) || inside(p13.x, p13.y)
+                || inside(p14.x, p14.y) || eObj.inside(getX(), getY())
+                || eObj.inside(p1.x, p1.y) || eObj.inside(p2.x, p2.y)
+                || eObj.inside(p3.x, p3.y) || eObj.inside(p4.x, p4.y)) {
+            overlap = true;
+        }
 
-	/** Sets x positions */
-	public void setX(int X) {
-		this.x = X;
-	}
+        if (overlap) {
+            return overlapSize;
+        }
 
-	/** Sets y positions */
-	public void setY(int Y) {
-		this.y = Y;
-	}
+        return new Dimension(0, 0);
+    }
 
-	/** Sets the width */
-	public void setWidth(int W) {
-		this.w = W;
-	}
+    /**
+     * Marks this as element of a type graph
+     */
+    public void markElementOfTypeGraph(boolean val) {
+        this.elemOfTG = val;
+    }
 
-	/** Sets the height */
-	public void setHeight(int H) {
-		this.h = H;
-	}
+    /**
+     * Sets x, y positions
+     */
+    public void setXY(int X, int Y) {
+        this.x = X;
+        this.y = Y;
+    }
 
-	/** Selects/deselects this object */
-	public void setSelected(boolean sel) {
-		if (!this.selected && sel) {
-			this.selected = true;
-		} else {
-			this.selected = false;
-		}
-		this.weakselected = false;
-	}
+    /**
+     * Sets x positions
+     */
+    public void setX(int X) {
+        this.x = X;
+    }
 
-	/** Selects this object */
-	public void select() {
-		this.selected = true;
-	}
+    /**
+     * Sets y positions
+     */
+    public void setY(int Y) {
+        this.y = Y;
+    }
 
-	/** Deselects this object */
-	public void deselect() {
-		this.selected = false;
-	}
+    /**
+     * Sets the width
+     */
+    public void setWidth(int W) {
+        this.w = W;
+    }
 
-	/** Selects/deselects this object as weak selected (using gray color)*/
-	public void setWeakselected(boolean weaksel) {
-		this.weakselected = weaksel;
-	}
-	
-	public boolean isWeakselected() {
-		return this.weakselected;
-	}
-	
-	public void setBackground(Color c) {
-		this.backgroundColor = c;
-	}
+    /**
+     * Sets the height
+     */
+    public void setHeight(int H) {
+        this.h = H;
+    }
 
-	/** Sets my layout type to the EdType t */
-	public void setType(EdType t) {
-		this.eType = t;
-	}
+    /**
+     * Selects/deselects this object
+     */
+    public void setSelected(boolean sel) {
+        if (!this.selected && sel) {
+            this.selected = true;
+        } else {
+            this.selected = false;
+        }
+        this.weakselected = false;
+    }
 
-	/** Sets my key to int m */
-	public void setMorphismMark(int m) {
-		this.myKey = m;
-	}
+    /**
+     * Selects this object
+     */
+    public void select() {
+        this.selected = true;
+    }
 
-	/**
-	 * Adds the morphism mark specified by the int m to my morphism mark
-	 */
-	public void addMorphismMark(int m) {
-		this.marks.addElement(String.valueOf(m));
-	}
+    /**
+     * Deselects this object
+     */
+    public void deselect() {
+        this.selected = false;
+    }
 
-	/**
-	 * Adds the morphism mark specified by the String m to my morphism mark
-	 */
-	public void addMorphismMark(String m) {
-		this.marks.addElement(m);
-	}
+    /**
+     * Selects/deselects this object as weak selected (using gray color)
+     */
+    public void setWeakselected(boolean weaksel) {
+        this.weakselected = weaksel;
+    }
 
-	/** Returns TRUE if my morphism mark is empty */
-	public boolean isMorphismMarkEmpty() {
-		if (this.marks.isEmpty())
-			return true;
-		
-		return false;
-	}
+    public boolean isWeakselected() {
+        return this.weakselected;
+    }
 
-	/* Makes my morphism mark empty */
-	public void clearMorphismMark() {
-		this.marks.clear();
-	}
+    public void setBackground(Color c) {
+        this.backgroundColor = c;
+    }
 
-	protected void setContextUsage(String context) {
-		this.contextUsage = context;
-	}
+    /**
+     * Sets my layout type to the EdType t
+     */
+    public void setType(EdType t) {
+        this.eType = t;
+    }
 
-	protected void addContextUsage(String context) {
-		this.contextUsage = this.contextUsage.concat(":");
-		this.contextUsage = this.contextUsage.concat(context);
-	}
-	
-	protected String getContextUsage() {
-		return this.contextUsage;
-	}
+    /**
+     * Sets my key to int m
+     */
+    public void setMorphismMark(int m) {
+        this.myKey = m;
+    }
 
-	/** Sets my visibility to value specified by the boolean vis */
-	public void setVisible(boolean vis) {
-		this.visible = vis;
-	}
+    /**
+     * Adds the morphism mark specified by the int m to my morphism mark
+     */
+    public void addMorphismMark(int m) {
+        this.marks.addElement(String.valueOf(m));
+    }
 
-	/** Sets visibility of my attribute to value specified by the boolean vis */
-	public void setAttributeVisible(boolean vis) {
-		this.attrVisible = vis;
-	}
-	
-	/** Sets my copy to the object specified by the EdGraphObject ec */
-	public void setCopy(EdGraphObject ec) {
-		this.myCopy = ec;
-	}
+    /**
+     * Adds the morphism mark specified by the String m to my morphism mark
+     */
+    public void addMorphismMark(String m) {
+        this.marks.addElement(m);
+    }
 
-	/** Sets my attribute view to the view specified by the AttrViewSetting aView */
-	public void setAttrViewSetting(AttrViewSetting aView) {
-		this.view = aView;
-		this.init = true;
-	}
+    /**
+     * Returns TRUE if my morphism mark is empty
+     */
+    public boolean isMorphismMarkEmpty() {
+        if (this.marks.isEmpty()) {
+            return true;
+        }
 
-	/** Returns an open view of my attribute */
-	protected AttrViewSetting getView() {
-		return this.view;
-	}
+        return false;
+    }
 
-	/**
-	 * sets if the current graph object has an error or not. If called with
-	 * true, the object will be marked in the display and unmarked, if called
-	 * with false as parameter.
-	 * 
-	 * @author Joerg <komm>
-	 */
-	public void setErrorMode(boolean errorMode) {
-		this.errorMode = errorMode;
-	}// setErrorMode
+    /* Makes my morphism mark empty */
+    public void clearMorphismMark() {
+        this.marks.clear();
+    }
+
+    protected void setContextUsage(String context) {
+        this.contextUsage = context;
+    }
+
+    protected void addContextUsage(String context) {
+        this.contextUsage = this.contextUsage.concat(":");
+        this.contextUsage = this.contextUsage.concat(context);
+    }
+
+    protected String getContextUsage() {
+        return this.contextUsage;
+    }
+
+    /**
+     * Sets my visibility to value specified by the boolean vis
+     */
+    public void setVisible(boolean vis) {
+        this.visible = vis;
+    }
+
+    /**
+     * Sets visibility of my attribute to value specified by the boolean vis
+     */
+    public void setAttributeVisible(boolean vis) {
+        this.attrVisible = vis;
+    }
+
+    /**
+     * Sets my copy to the object specified by the EdGraphObject ec
+     */
+    public void setCopy(EdGraphObject ec) {
+        this.myCopy = ec;
+    }
+
+    /**
+     * Sets my attribute view to the view specified by the AttrViewSetting aView
+     */
+    public void setAttrViewSetting(AttrViewSetting aView) {
+        this.view = aView;
+        this.init = true;
+    }
+
+    /**
+     * Returns an open view of my attribute
+     */
+    protected AttrViewSetting getView() {
+        return this.view;
+    }
+
+    /**
+     * sets if the current graph object has an error or not. If called with true, the object will be marked in the
+     * display and unmarked, if called with false as parameter.
+     *
+     * @author Joerg <komm>
+     */
+    public void setErrorMode(boolean errorMode) {
+        this.errorMode = errorMode;
+    }// setErrorMode
 
 }
 // $Log: EdGraphObject.java,v $

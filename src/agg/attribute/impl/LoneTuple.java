@@ -1,39 +1,38 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 /**
- * A tuple whose type is not shared by others. Provides functionality for
- * reordering of its members with the help of FormForcingTuple. To be extended
- * by VarTuple and CondTuple.
- * 
+ * A tuple whose type is not shared by others. Provides functionality for reordering of its members with the help of
+ * FormForcingTuple. To be extended by VarTuple and CondTuple.
+ *
  * @author $Author: olga $
  * @version $Id: LoneTuple.java,v 1.4 2007/09/24 09:42:34 olga Exp $
  */
-
 @SuppressWarnings("serial")
 public class LoneTuple extends ValueTuple {
 
-	public LoneTuple(AttrTupleManager manager, ContextView context,
-			ValueTuple parent) {
-		super(manager, null, context, null);
+    public LoneTuple(AttrTupleManager manager, ContextView context,
+            ValueTuple parent) {
+        super(manager, null, context, null);
 
-		DeclTuple parentType = (parent == null ? null : parent.getTupleType());
-		DeclTuple t = new DeclTuple(manager, parentType);
-		t.loneDeclaration = true;
-		setType(t);
-		assignParent(parent);
+        DeclTuple parentType = (parent == null ? null : parent.getTupleType());
+        DeclTuple t = new DeclTuple(manager, parentType);
+        t.loneDeclaration = true;
+        setType(t);
+        assignParent(parent);
 
-		setForm(manager.getFixedViewSetting());
+        setForm(manager.getFixedViewSetting());
 
-	}
+    }
 }
 /*
  * $Log: LoneTuple.java,v $

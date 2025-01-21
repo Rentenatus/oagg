@@ -1,36 +1,36 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser;
 
 import agg.gui.saveload.ExtensionFileFilter;
 
 /**
- * This is a filter for file names. If this filter is set in a load or save
- * dialog only files with a special extension are displayed. This filter only
- * shows files with <CODE>.cpx</CODE> extension.
- * 
+ * This is a filter for file names. If this filter is set in a load or save dialog only files with a special extension
+ * are displayed. This filter only shows files with <CODE>.cpx</CODE> extension.
+ *
  * @version $Id: PairFileFilter.java,v 1.4 2008/10/29 09:04:12 olga Exp $
  * @author $Author: olga $
  */
 public class PairFileFilter extends ExtensionFileFilter {
 
-	/**
-	 * Creates a new filter.
-	 */
-	public PairFileFilter() {
-		super(".cpx", "Critical Pairs XML (.cpx)");
-	}
+    /**
+     * Creates a new filter.
+     */
+    public PairFileFilter() {
+        super(".cpx", "Critical Pairs XML (.cpx)");
+    }
 
-	public PairFileFilter(String filter, String description) {
-		super(filter, description);
-	}
+    public PairFileFilter(String filter, String description) {
+        super(filter, description);
+    }
 }
 /*
  * $Log: PairFileFilter.java,v $

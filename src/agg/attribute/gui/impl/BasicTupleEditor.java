@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -34,238 +35,269 @@ import agg.attribute.view.AttrViewObserver;
 import agg.attribute.view.AttrViewSetting;
 
 /**
- * Provides all necessary functionality for a lightweight editor of an attribute
- * tuple. Extending classes just need to redefine createTableModel() to set up a
- * simple editor with desired columns, headers etc. For row dragging, tool bar
+ * Provides all necessary functionality for a lightweight editor of an attribute tuple. Extending classes just need to
+ * redefine createTableModel() to set up a simple editor with desired columns, headers etc. For row dragging, tool bar
  * actions etc. consider extending
- * 
+ *
  * @author $Author: olga $
  * @version $Id: BasicTupleEditor.java,v 1.5 2010/08/18 09:24:52 olga Exp $
  */
 public class BasicTupleEditor extends AbstractEditor implements
-		AttrTupleEditor, AttrViewObserver, TupleTableModelConstants,
-		ScrollPaneConstants {
+        AttrTupleEditor, AttrViewObserver, TupleTableModelConstants,
+        ScrollPaneConstants {
 
-	/** Edited attribute tuple. */
-	protected AttrTuple tuple;
+    /**
+     * Edited attribute tuple.
+     */
+    protected AttrTuple tuple;
 
-	/** View to utilize when accessing members. */
-	protected AttrViewSetting viewSetting;
+    /**
+     * View to utilize when accessing members.
+     */
+    protected AttrViewSetting viewSetting;
 
-	/** Table model, defines which columns to show, edit, their headers etc. */
-	protected TupleTableModel tableModel;
+    /**
+     * Table model, defines which columns to show, edit, their headers etc.
+     */
+    protected TupleTableModel tableModel;
 
-	/** The handler selection editor for the current tuple's attribute manager. */
-	protected HandlerSelectionEditor handlerSelectionEditor;
+    /**
+     * The handler selection editor for the current tuple's attribute manager.
+     */
+    protected HandlerSelectionEditor handlerSelectionEditor;
 
-	/** Table widget. */
-	protected JTable tableView;
+    /**
+     * Table widget.
+     */
+    protected JTable tableView;
 
-	/** Scroll pane containing the table widget. */
-	protected JScrollPane tableScrollPane;
+    /**
+     * Scroll pane containing the table widget.
+     */
+    protected JScrollPane tableScrollPane;
 
-	/** Creating the tuple editor. */
-	public BasicTupleEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-		setViewSetting(m.getDefaultOpenView()); // ensure viewSetting is not
-		// null;
-	}
+    /**
+     * Creating the tuple editor.
+     */
+    public BasicTupleEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+        setViewSetting(m.getDefaultOpenView()); // ensure viewSetting is not
+        // null;
+    }
 
-	/**
-	 * This decides about the table properties: columns to display, expandable
-	 * or not etc.
-	 * 
-	 * @see TupleTableModel
-	 */
-	protected TupleTableModel createTableModel() {
-		int columns[] = { NAME, EXPR };
-		TupleTableModel tm = new TupleTableModel(this);
-		tm.setColumnArray(columns);
-		tm.setExtensible(false);
-		return tm;
-	}
+    /**
+     * This decides about the table properties: columns to display, expandable or not etc.
+     *
+     * @see TupleTableModel
+     */
+    protected TupleTableModel createTableModel() {
+        int columns[] = {NAME, EXPR};
+        TupleTableModel tm = new TupleTableModel(this);
+        tm.setColumnArray(columns);
+        tm.setExtensible(false);
+        return tm;
+    }
 
-	protected void arrangeMainPanel() {
-	}
+    protected void arrangeMainPanel() {
+    }
 
-	/**
-	 * This is called automatically by the parent (AbstractEditor) constructor.
-	 */
-	protected void genericCreateAllViews() {
-		createTableView();
-	}
+    /**
+     * This is called automatically by the parent (AbstractEditor) constructor.
+     */
+    protected void genericCreateAllViews() {
+        createTableView();
+    }
 
-	/**
-	 * Every tuple editor class has its own version of this method. Is called
-	 * automatically by the parent (AbstractEditor) constructor.
-	 */
-	protected void genericCustomizeMainLayout() {
-		this.mainPanel = new JPanel(new BorderLayout());
-		this.mainPanel.add(this.tableScrollPane, BorderLayout.CENTER);
-	}
+    /**
+     * Every tuple editor class has its own version of this method. Is called automatically by the parent
+     * (AbstractEditor) constructor.
+     */
+    protected void genericCustomizeMainLayout() {
+        this.mainPanel = new JPanel(new BorderLayout());
+        this.mainPanel.add(this.tableScrollPane, BorderLayout.CENTER);
+    }
 
-	/** Default implementation of table creation. The heart of the editor. */
-	protected void createTableView() {
-		// Generic; override, please, to define your own table column layout.
-		this.tableModel = createTableModel();
+    /**
+     * Default implementation of table creation. The heart of the editor.
+     */
+    protected void createTableView() {
+        // Generic; override, please, to define your own table column layout.
+        this.tableModel = createTableModel();
 
-		this.tableView = new JTable(this.tableModel);
-		this.tableView.setRowHeight(this.tableView.getRowHeight() + 2);
-		String[] names = new String[this.tableModel.getColumnCount()];
-		for (int i = 0; i < this.tableModel.getColumnCount(); i++) {
-			names[i] = this.tableModel.getColumnName(i);
-		}
-		Enumeration<TableColumn> columns = this.tableView.getColumnModel().getColumns();
-		for (; columns.hasMoreElements();) {
-			TableColumn tc = columns.nextElement();
-			String name = this.tableModel.getColumnName(tc.getModelIndex());
-			if (name == "OK" || name == "In" || name == "Out") {
-				tc.setMinWidth(30);
-				tc.setMaxWidth(70);
-			} else if (name == "Shown") {
-				tc.setMinWidth(30);
-				tc.setMaxWidth(60);
-				tc.setPreferredWidth(60);
-			} else if (name == "Handler") {
-				tc.setMinWidth(50);
-				tc.setMaxWidth(100);
-				tc.setPreferredWidth(80);
-			} else if (name == "Type" || name == "Name") {
-				tc.setMinWidth(40);
-				tc.setPreferredWidth(70);
-			} else if (name == "Expression") {
-				tc.setMinWidth(60);
-				tc.setPreferredWidth(300);
-			} else if (name == "Yields") {
-				tc.setMinWidth(80);
-				tc.setPreferredWidth(100);
-			} else {
-				tc.setPreferredWidth(100);
-			}
-		}
-		new MemberEditorDispatcher(this);
-		// Decorating.
-		this.tableScrollPane = new JScrollPane(this.tableView);
-		this.tableScrollPane.setMinimumSize(new Dimension(100, 50));
-	}
+        this.tableView = new JTable(this.tableModel);
+        this.tableView.setRowHeight(this.tableView.getRowHeight() + 2);
+        String[] names = new String[this.tableModel.getColumnCount()];
+        for (int i = 0; i < this.tableModel.getColumnCount(); i++) {
+            names[i] = this.tableModel.getColumnName(i);
+        }
+        Enumeration<TableColumn> columns = this.tableView.getColumnModel().getColumns();
+        for (; columns.hasMoreElements();) {
+            TableColumn tc = columns.nextElement();
+            String name = this.tableModel.getColumnName(tc.getModelIndex());
+            if (name == "OK" || name == "In" || name == "Out") {
+                tc.setMinWidth(30);
+                tc.setMaxWidth(70);
+            } else if (name == "Shown") {
+                tc.setMinWidth(30);
+                tc.setMaxWidth(60);
+                tc.setPreferredWidth(60);
+            } else if (name == "Handler") {
+                tc.setMinWidth(50);
+                tc.setMaxWidth(100);
+                tc.setPreferredWidth(80);
+            } else if (name == "Type" || name == "Name") {
+                tc.setMinWidth(40);
+                tc.setPreferredWidth(70);
+            } else if (name == "Expression") {
+                tc.setMinWidth(60);
+                tc.setPreferredWidth(300);
+            } else if (name == "Yields") {
+                tc.setMinWidth(80);
+                tc.setPreferredWidth(100);
+            } else {
+                tc.setPreferredWidth(100);
+            }
+        }
+        new MemberEditorDispatcher(this);
+        // Decorating.
+        this.tableScrollPane = new JScrollPane(this.tableView);
+        this.tableScrollPane.setMinimumSize(new Dimension(100, 50));
+    }
 
-	/** Start observing an attribute tuple relative to a view. */
-	protected void registerAsObserver() {
-		if (this.tuple != null) {
-			this.viewSetting.addObserver(this, this.tuple);
-		}
-	}
+    /**
+     * Start observing an attribute tuple relative to a view.
+     */
+    protected void registerAsObserver() {
+        if (this.tuple != null) {
+            this.viewSetting.addObserver(this, this.tuple);
+        }
+    }
 
-	/** Stop observing an attribute tuple relative to a view. */
-	protected void deregisterAsObserver() {
-		if (this.tuple != null) {
-			this.viewSetting.removeObserver(this, this.tuple);
-		}
-	}
+    /**
+     * Stop observing an attribute tuple relative to a view.
+     */
+    protected void deregisterAsObserver() {
+        if (this.tuple != null) {
+            this.viewSetting.removeObserver(this, this.tuple);
+        }
+    }
 
-	/**
-	 * If the edited tuple is an AttrInstance, its currently selected member is
-	 * returned.
-	 */
-	public AttrInstanceMember getSelectedMember() {
-		if (this.tuple == null || !(this.tuple instanceof AttrInstance)) {
-			return null;
-		}
-		int selectedRow = this.tableView.getSelectedRow();
-		if (selectedRow >= this.tuple.getNumberOfEntries(this.viewSetting)) {
-			return null;
-		}
-		AttrInstanceMember member = (AttrInstanceMember) this.tableModel.getMember(
-				this.tuple, selectedRow);
-		return member;
-	}
+    /**
+     * If the edited tuple is an AttrInstance, its currently selected member is returned.
+     */
+    public AttrInstanceMember getSelectedMember() {
+        if (this.tuple == null || !(this.tuple instanceof AttrInstance)) {
+            return null;
+        }
+        int selectedRow = this.tableView.getSelectedRow();
+        if (selectedRow >= this.tuple.getNumberOfEntries(this.viewSetting)) {
+            return null;
+        }
+        AttrInstanceMember member = (AttrInstanceMember) this.tableModel.getMember(
+                this.tuple, selectedRow);
+        return member;
+    }
 
-	//
-	// Public methods.
-	//
+    //
+    // Public methods.
+    //
+    /**
+     * Called by MemberEditorDispatcher.
+     */
+    public JTable getTableView() {
+        return this.tableView;
+    }
 
-	/** Called by MemberEditorDispatcher. */
-	public JTable getTableView() {
-		return this.tableView;
-	}
+    /**
+     * Called by MemberEditorDispatcher.
+     */
+    public TupleTableModel getTableModel() {
+        return this.tableModel;
+    }
 
-	/** Called by MemberEditorDispatcher. */
-	public TupleTableModel getTableModel() {
-		return this.tableModel;
-	}
+    /**
+     * Called by MemberEditorDispatcher.
+     */
+    public HandlerSelectionEditor getHandlerSelectionEditor() {
+        return this.handlerSelectionEditor;
+    }
 
-	/** Called by MemberEditorDispatcher. */
-	public HandlerSelectionEditor getHandlerSelectionEditor() {
-		return this.handlerSelectionEditor;
-	}
+    // Implementation of the AttrTupleEditor interface
+    /**
+     * Setting the tuple to display and edit.
+     */
+    public void setTuple(AttrTuple anAttrTuple) {
+        deregisterAsObserver();
+        this.tuple = anAttrTuple;
+        registerAsObserver();
+        this.handlerSelectionEditor = HandlerSelectionEditor
+                .getHandlerSelectionEditor(getAttrManager());
+        attributeChanged(null);
+    } // setTuple()
 
-	// Implementation of the AttrTupleEditor interface
+    /**
+     * Returns the tuple to display and edit.
+     */
+    public AttrTuple getTuple() {
+        return this.tuple;
+    } // getTuple()
 
-	/** Setting the tuple to display and edit. */
-	public void setTuple(AttrTuple anAttrTuple) {
-		deregisterAsObserver();
-		this.tuple = anAttrTuple;
-		registerAsObserver();
-		this.handlerSelectionEditor = HandlerSelectionEditor
-				.getHandlerSelectionEditor(getAttrManager());
-		attributeChanged(null);
-	} // setTuple()
+    public void setViewSetting(AttrViewSetting anAttrViewSetting) {
+        if (anAttrViewSetting == null) {
+            AttrSession.warn(this, "Tried to set a null view setting!", true);
+            return;
+        }
+        deregisterAsObserver();
+        this.viewSetting = anAttrViewSetting;
+        // System.out.println("BasicTupleEditor: setze den View "+this.tuple+"
+        // "+this.viewSetting);
+        registerAsObserver();
+        attributeChanged(null);
+    } // setViewSetting()
 
-	/** Returns the tuple to display and edit. */
-	public AttrTuple getTuple() {
-		return this.tuple;
-	} // getTuple()
+    public AttrViewSetting getViewSetting() {
+        return this.viewSetting;
+    } // getViewSetting()
 
-	public void setViewSetting(AttrViewSetting anAttrViewSetting) {
-		if (anAttrViewSetting == null) {
-			AttrSession.warn(this, "Tried to set a null view setting!", true);
-			return;
-		}
-		deregisterAsObserver();
-		this.viewSetting = anAttrViewSetting;
-		// System.out.println("BasicTupleEditor: setze den View "+this.tuple+"
-		// "+this.viewSetting);
-		registerAsObserver();
-		attributeChanged(null);
-	} // setViewSetting()
-
-	public AttrViewSetting getViewSetting() {
-		return this.viewSetting;
-	} // getViewSetting()
-
-	// AttrViewObserver interface
-
-	/** React to attribute changes. */
-	public void attributeChanged(AttrViewEvent event) {
+    // AttrViewObserver interface
+    /**
+     * React to attribute changes.
+     */
+    public void attributeChanged(AttrViewEvent event) {
 //		if (event == null) {
 //			 System.out.println("BasicTupleEditor.attributeChanged "+this+"   "+event);			
 //		}
-		if (this.tableModel != null && event != null) {
-			this.tableModel.attributeChanged(event);
-			firePropertyChange();
-		}
-	}
+        if (this.tableModel != null && event != null) {
+            this.tableModel.attributeChanged(event);
+            firePropertyChange();
+        }
+    }
 
-	/** Implemented: no, don't save me. */
-	public boolean isPersistentFor(AttrTuple at) {
-		return false;
-	}
+    /**
+     * Implemented: no, don't save me.
+     */
+    public boolean isPersistentFor(AttrTuple at) {
+        return false;
+    }
 
-	// PropertyEditor
+    // PropertyEditor
+    /**
+     * Same as #getComponent().
+     */
+    public Component getCustomEditor() {
+        return getComponent();
+    }
 
-	/** Same as #getComponent(). */
-	public Component getCustomEditor() {
-		return getComponent();
-	}
+    /**
+     * Same as #setTuple( Object ).
+     */
+    public void setValue(Object val) {
+        setTuple((AttrTuple) val);
+    }
 
-	/** Same as #setTuple( Object ). */
-	public void setValue(Object val) {
-		setTuple((AttrTuple) val);
-	}
-
-	public void paintValue(Graphics gfx, Rectangle box) {
-		getComponent().paintAll(gfx);
-	}
+    public void paintValue(Graphics gfx, Rectangle box) {
+        getComponent().paintAll(gfx);
+    }
 
 }
 /*

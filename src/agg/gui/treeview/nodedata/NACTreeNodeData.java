@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: NACTreeNodeData.java,v 1.3 2010/09/23 08:23:33 olga Exp $
-
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -16,144 +16,151 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import agg.editor.impl.EdNAC;
 
 /**
- * The NACTreeNodeData implements an user object of a tree node in the
- * GraGraTreeModel.
- * 
+ * The NACTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ *
  * @author $Author: olga $
  * @version $Id: NACTreeNodeData.java,v 1.3 2010/09/23 08:23:33 olga Exp $
  */
 public class NACTreeNodeData extends GraGraTreeNodeDataAdapter {
-	
-	private Object data;
-	
-	private EdNAC eNAC;
 
-	/** Value to display. */
-	private String string = "";
+    private Object data;
 
-	/** My tree node in a tree */
-	private DefaultMutableTreeNode treeNode;
+    private EdNAC eNAC;
 
+    /**
+     * Value to display.
+     */
+    private String string = "";
 
-	public NACTreeNodeData(final EdNAC nac) {
-		setNAC(nac);
-	}
+    /**
+     * My tree node in a tree
+     */
+    private DefaultMutableTreeNode treeNode;
 
-	private void setNAC(final EdNAC nac) {
-		this.data = nac;
-		if (!nac.getMorphism().isEnabled())
-			this.string = "[D]" + nac.getName();
-		else
-			this.string = nac.getName();
-		this.eNAC = nac;
-	}
-	
-	public NACTreeNodeData(final String s) {
-		this.data = s;
-		this.string = s;
-	}
+    public NACTreeNodeData(final EdNAC nac) {
+        setNAC(nac);
+    }
 
-	public NACTreeNodeData(final Object obj) {
-		if (obj instanceof EdNAC)
-			setNAC((EdNAC) obj);		
-		else if (obj instanceof String)
-			new NACTreeNodeData((String) obj);
-	}
+    private void setNAC(final EdNAC nac) {
+        this.data = nac;
+        if (!nac.getMorphism().isEnabled()) {
+            this.string = "[D]" + nac.getName();
+        } else {
+            this.string = nac.getName();
+        }
+        this.eNAC = nac;
+    }
 
-	public void dispose() {
-		this.data = null;
-		this.eNAC = null;
-		this.string = null;
-		this.treeNode = null;
-	}
-	
-	/* Set data object of this tree node data */
-	public void setData(final Object obj) {
-		if (obj instanceof EdNAC)
-			setNAC((EdNAC) obj);
-		else if (obj instanceof String) {
-			this.string = (String) obj;
-			this.data = obj;
-		}
-		else {
-			this.data = null;
-			this.eNAC = null;
-			this.string = null;		
-		}
-	}
+    public NACTreeNodeData(final String s) {
+        this.data = s;
+        this.string = s;
+    }
 
-	public Object getData() {
-		return this.data;
-	}
-		
-	/**
-	 * Sets the string to display for this object.
-	 */
-	public void setString(String str) {
-		if (str == null) {
-			return;
-		}
-		String newString = str.replaceAll(" ", "");
-		this.string = newString;
+    public NACTreeNodeData(final Object obj) {
+        if (obj instanceof EdNAC) {
+            setNAC((EdNAC) obj);
+        } else if (obj instanceof String) {
+            new NACTreeNodeData((String) obj);
+        }
+    }
 
-			String newNacName = "";
-			String sD = "";
-			if (!this.eNAC.getMorphism().isEnabled())
-				sD = "[D]";
-			if (newString.indexOf("[D]") != -1)
-				newString = newString.substring(3, newString.length());
-			newNacName = newString;
-			if (!this.eNAC.getName().equals(newNacName)) {
-				this.eNAC.setName(newNacName);
-				this.eNAC.getGraGra().setChanged(true);
-			}
-			this.string = sD + this.eNAC.getBasisGraph().getName();
-	}
+    public void dispose() {
+        this.data = null;
+        this.eNAC = null;
+        this.string = null;
+        this.treeNode = null;
+    }
 
-	public void setString(String tag, String newString) {
-		if (tag.equals("[]"))
-			tag = "";
-		this.string = tag + newString;
-		if (!this.eNAC.getName().equals(newString)) {
-			this.eNAC.setName(newString);
-			this.eNAC.getGraGra().setChanged(true);
-		} 
-	}
+    /* Set data object of this tree node data */
+    public void setData(final Object obj) {
+        if (obj instanceof EdNAC) {
+            setNAC((EdNAC) obj);
+        } else if (obj instanceof String) {
+            this.string = (String) obj;
+            this.data = obj;
+        } else {
+            this.data = null;
+            this.eNAC = null;
+            this.string = null;
+        }
+    }
 
-	/**
-	 * Returns the string to display for this object.
-	 */
-	public String string() {
-		return this.string;
-	}
+    public Object getData() {
+        return this.data;
+    }
 
-	public String toString() {
-		return string();
-	}
+    /**
+     * Sets the string to display for this object.
+     */
+    public void setString(String str) {
+        if (str == null) {
+            return;
+        }
+        String newString = str.replaceAll(" ", "");
+        this.string = newString;
 
-	public EdNAC getNAC() {
-		return this.eNAC;
-	}
+        String newNacName = "";
+        String sD = "";
+        if (!this.eNAC.getMorphism().isEnabled()) {
+            sD = "[D]";
+        }
+        if (newString.indexOf("[D]") != -1) {
+            newString = newString.substring(3, newString.length());
+        }
+        newNacName = newString;
+        if (!this.eNAC.getName().equals(newNacName)) {
+            this.eNAC.setName(newNacName);
+            this.eNAC.getGraGra().setChanged(true);
+        }
+        this.string = sD + this.eNAC.getBasisGraph().getName();
+    }
 
-	public void setTreeNode(DefaultMutableTreeNode node) {
-		this.treeNode = node;
-	}
+    public void setString(String tag, String newString) {
+        if (tag.equals("[]")) {
+            tag = "";
+        }
+        this.string = tag + newString;
+        if (!this.eNAC.getName().equals(newString)) {
+            this.eNAC.setName(newString);
+            this.eNAC.getGraGra().setChanged(true);
+        }
+    }
 
-	public DefaultMutableTreeNode getTreeNode() {
-		return this.treeNode;
-	}
+    /**
+     * Returns the string to display for this object.
+     */
+    public String string() {
+        return this.string;
+    }
 
-	/* (non-Javadoc)
+    public String toString() {
+        return string();
+    }
+
+    public EdNAC getNAC() {
+        return this.eNAC;
+    }
+
+    public void setTreeNode(DefaultMutableTreeNode node) {
+        this.treeNode = node;
+    }
+
+    public DefaultMutableTreeNode getTreeNode() {
+        return this.treeNode;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isNAC()
-	 */
-	public boolean isNAC() {
-		return true;
-	}
+     */
+    public boolean isNAC() {
+        return true;
+    }
 
-	public String getToolTipText() {
-		String toolTipText = " Negative application condition ";
-		if (!this.eNAC.getMorphism().getTextualComment().equals(""))
-			toolTipText = " "+ this.eNAC.getMorphism().getTextualComment();
-		return toolTipText;
-	}
+    public String getToolTipText() {
+        String toolTipText = " Negative application condition ";
+        if (!this.eNAC.getMorphism().getTextualComment().equals("")) {
+            toolTipText = " " + this.eNAC.getMorphism().getTextualComment();
+        }
+        return toolTipText;
+    }
 }

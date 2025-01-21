@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Vector;
@@ -18,299 +19,305 @@ import agg.attribute.AttrEvent;
 import agg.util.XMLHelper;
 
 /**
- * Class for members of condition tuples that are used as application conditions
- * in a context. This is an extension of ValueMember.
- * 
+ * Class for members of condition tuples that are used as application conditions in a context. This is an extension of
+ * ValueMember.
+ *
  * @author Boris Melamed (bm) + $Author: olga $
  * @version $Id: CondMember.java,v 1.22 2010/08/23 07:30:49 olga Exp $
- * 
+ *
  */
 public class CondMember extends ValueMember implements AttrConditionMember {
 
-	static final long serialVersionUID = 1922931197917082378L;
+    static final long serialVersionUID = 1922931197917082378L;
 
-	/* possible mark of a condition */
-	public static final int LHS = 0;
+    /* possible mark of a condition */
+    public static final int LHS = 0;
 
-	public static final int RHS = 1;
-	
-	public static final int NAC = 20;
-	
-	public static final int NAC_LHS = 21;
-	
-	public static final int NAC_PAC = 22;
+    public static final int RHS = 1;
 
-	public static final int NAC_PAC_LHS = 23;
-	
-	public static final int PAC = 30;
+    public static final int NAC = 20;
 
-	public static final int PAC_LHS = 31;
+    public static final int NAC_LHS = 21;
 
+    public static final int NAC_PAC = 22;
 
-	private int mark;
+    public static final int NAC_PAC_LHS = 23;
 
-	private boolean enabled = true;
+    public static final int PAC = 30;
 
-	private boolean shifted;
-	
-	//
-	// Public Constructors:
-	//
+    public static final int PAC_LHS = 31;
 
-	/**
-	 * Creating a new instance with the specified type.
-	 * 
-	 * @param tuple
-	 *            Instance tuple that this value is a member of.
-	 * @param decl
-	 *            Declaration for this member.
-	 */
-	public CondMember(CondTuple tuple, DeclMember decl) {
-		super(tuple, decl);
-		this.enabled = true;
-	}
+    private int mark;
 
-	//
-	// Public Methods:
-	//
+    private boolean enabled = true;
 
-	/** copy the contents of a single entry instance into another. */
-	public void copy(ValueMember fromInstance) {
-		super.copy(fromInstance);
-		setMark(((CondMember) fromInstance).getMark());
-	}
+    private boolean shifted;
 
-	/** Removes this member from its tuple. */
-	public void delete() {
-		getDeclaration().delete();
-	}
+    //
+    // Public Constructors:
+    //
+    /**
+     * Creating a new instance with the specified type.
+     *
+     * @param tuple Instance tuple that this value is a member of.
+     * @param decl Declaration for this member.
+     */
+    public CondMember(CondTuple tuple, DeclMember decl) {
+        super(tuple, decl);
+        this.enabled = true;
+    }
 
-	public boolean areVariablesSet() {
-		if (getContext() != null) {
-			VarTuple varTuple = (VarTuple) getContext().getVariables();
-			
-			HandlerExpr ex = getExpr();
-			Vector<String> v = new Vector<String>();
-			ex.getAllVariables(v);
-			for (int i = 0; i < v.size(); i++) {
-				String s = v.elementAt(i);
-				HandlerExpr he = getContext().getExpr(s);
-				if (he == null) {
-					VarMember var = (VarMember) varTuple.getEntryAt(s);
-					if ((var != null) 
-							&& (var.getExprAsText() != null)
-							&& var.getExprAsText().equals("null")) {
-						continue;
-					} 
-					return false;
-				}
-			}			
-			return true;
-		}
-		
-		return false;		
-	}
+    //
+    // Public Methods:
+    //
+    /**
+     * copy the contents of a single entry instance into another.
+     */
+    public void copy(ValueMember fromInstance) {
+        super.copy(fromInstance);
+        setMark(((CondMember) fromInstance).getMark());
+    }
 
-	/** Test, if the expression can yield true or false. */
-	public boolean isDefinite() {
+    /**
+     * Removes this member from its tuple.
+     */
+    public void delete() {
+        getDeclaration().delete();
+    }
+
+    public boolean areVariablesSet() {
+        if (getContext() != null) {
+            VarTuple varTuple = (VarTuple) getContext().getVariables();
+
+            HandlerExpr ex = getExpr();
+            Vector<String> v = new Vector<String>();
+            ex.getAllVariables(v);
+            for (int i = 0; i < v.size(); i++) {
+                String s = v.elementAt(i);
+                HandlerExpr he = getContext().getExpr(s);
+                if (he == null) {
+                    VarMember var = (VarMember) varTuple.getEntryAt(s);
+                    if ((var != null)
+                            && (var.getExprAsText() != null)
+                            && var.getExprAsText().equals("null")) {
+                        continue;
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Test, if the expression can yield true or false.
+     */
+    public boolean isDefinite() {
 //		System.out.println("CondMember.isDefinite:: "+ getExpr()+" mark: "
 //				+mark+" this.enabled "+this.enabled);
-		if (!isValid() || getExpr() == null)// || !this.enabled)
-			return false;
+        if (!isValid() || getExpr() == null)// || !this.enabled)
+        {
+            return false;
+        }
 
-		boolean result = true;
-		try {
-			HandlerExpr ex = getExpr().getCopy();
-			if ((this.mark == LHS) && !getContext().isVariableContext()) {
-				// in this case the condition is fully defined by LHS
-				// so it has to be evaluable
-				ex.evaluate(getContext());
-			}
-			else if(getContext().isVariableContext()) {
-				// here is VARIABLE context graph (CPA overlap.graph),
-				// so it is always defined
-				return true;
-			}
-			else if (areVariablesSet()) {
-				// here it is of NAC||NAC_LHS||PAC||PAC_LHS
-				// and all used variables are set for exmpl.
-				// by NACStar or PACStar next completion
-				return true;
-			}
-			else {
-				// otherwise it is not defined
-				result = false;
-			}
-		} catch (AttrHandlerException ex1) {
-			if (areVariablesSet())
-				return true;
-			
-			result = false;
-		}
-		return result;
-	}
+        boolean result = true;
+        try {
+            HandlerExpr ex = getExpr().getCopy();
+            if ((this.mark == LHS) && !getContext().isVariableContext()) {
+                // in this case the condition is fully defined by LHS
+                // so it has to be evaluable
+                ex.evaluate(getContext());
+            } else if (getContext().isVariableContext()) {
+                // here is VARIABLE context graph (CPA overlap.graph),
+                // so it is always defined
+                return true;
+            } else if (areVariablesSet()) {
+                // here it is of NAC||NAC_LHS||PAC||PAC_LHS
+                // and all used variables are set for exmpl.
+                // by NACStar or PACStar next completion
+                return true;
+            } else {
+                // otherwise it is not defined
+                result = false;
+            }
+        } catch (AttrHandlerException ex1) {
+            if (areVariablesSet()) {
+                return true;
+            }
 
-	/** Test, if the expression yields true. */
-	public boolean isTrue() {
-		if (!isDefinite()) {
-			return false;
-		}
+            result = false;
+        }
+        return result;
+    }
 
-		HandlerExpr ex = getExpr().getCopy();
-		/*
+    /**
+     * Test, if the expression yields true.
+     */
+    public boolean isTrue() {
+        if (!isDefinite()) {
+            return false;
+        }
+
+        HandlerExpr ex = getExpr().getCopy();
+        /*
 		 * Falls in der Expression eine Variable vorkommt, die ersetzt werden
 		 * muss, ist jegliche Bedingung erfuellt.
-		 */
-		Vector<String> v = new Vector<String>();
-		ex.getAllVariables(v);
-		for (int i = 0; i < v.size(); i++) {
-			String s = v.elementAt(i);
-			HandlerExpr he = getContext().getExpr(s);
-			if (he == null) {
-				// a variable has no value
+         */
+        Vector<String> v = new Vector<String>();
+        ex.getAllVariables(v);
+        for (int i = 0; i < v.size(); i++) {
+            String s = v.elementAt(i);
+            HandlerExpr he = getContext().getExpr(s);
+            if (he == null) {
+                // a variable has no value
 //				if (getContext().isVariableContext()) {
 //					return false; //true;
 //				}
-			} else if (!he.isConstant()) {
+            } else if (!he.isConstant()) {
 //				 a value is a variable
-				return true;
-			} 			
-			// a value is a constant
-		}
-		try {
-			ex.evaluate(getContext());
-			return ex.toString().equals("true");
-		} catch (AttrHandlerException ex1) {
-			return false;
-		}
-	}
+                return true;
+            }
+            // a value is a constant
+        }
+        try {
+            ex.evaluate(getContext());
+            return ex.toString().equals("true");
+        } catch (AttrHandlerException ex1) {
+            return false;
+        }
+    }
 
-	public void setEnabled(boolean b) {
-		this.enabled = b;
-	}
+    public void setEnabled(boolean b) {
+        this.enabled = b;
+    }
 
-	public boolean isEnabled() {
-		return this.enabled;
-	}
+    public boolean isEnabled() {
+        return this.enabled;
+    }
 
-	/**
-	 * Test, if this condition can be evaluated and yield 'false'.
-	 */
-	public boolean isFalse() {
-		if (isDefinite() && !isTrue())
-			return true;
-		
-		return false;
-	}
+    /**
+     * Test, if this condition can be evaluated and yield 'false'.
+     */
+    public boolean isFalse() {
+        if (isDefinite() && !isTrue()) {
+            return true;
+        }
 
-	public boolean isEvaluable(VarTuple vars) {
-		// System.out.println("CondMember.isEvaluable :: ...");
-		String testVarName = null;
-		String testVarType = null;
-		Vector<String> names = getAllVariables();
-		for (int k = 0; k < names.size(); k++) {
-			String name = names.elementAt(k);
-			VarMember var = vars.getVarMemberAt(name);
-			if (var != null) {
-				// System.out.println("CondMember.isEvaluable :: Variable :
-				// "+var.getName()+" : "+var);
-				if (var.getExpr() == null) {
-					if ((var.getExprAsText() != null)
-							&& var.getExprAsText().equals("null"))
+        return false;
+    }
+
+    public boolean isEvaluable(VarTuple vars) {
+        // System.out.println("CondMember.isEvaluable :: ...");
+        String testVarName = null;
+        String testVarType = null;
+        Vector<String> names = getAllVariables();
+        for (int k = 0; k < names.size(); k++) {
+            String name = names.elementAt(k);
+            VarMember var = vars.getVarMemberAt(name);
+            if (var != null) {
+                // System.out.println("CondMember.isEvaluable :: Variable :
+                // "+var.getName()+" : "+var);
+                if (var.getExpr() == null) {
+                    if ((var.getExprAsText() != null)
+                            && var.getExprAsText().equals("null"))
 						;// System.out.println("CondMember.isEvaluable ::
-					// Variable : "+var.getName()+" exprAsText:
-					// "+var.getExprAsText());
-					else
-						return false;
-				} else if (var.getExpr().isVariable()) {
-					testVarType = var.getDeclaration().getTypeName();
-					if (testVarName == null) {
-						// System.out.println(var.getExprAsText());
-						if (var.getExprAsText().length() > 1)
-							testVarName = var.getExprAsText().substring(1,
-									(var.getExprAsText().length() - 1));
-						else if (var.getExprAsText().length() == 1)
-							testVarName = var.getExprAsText();
-						// System.out.println("testVar name: "+testVarName+"
-						// type: "+testVarType);
-					} else if (testVarName.equals(var.getExprAsText())
-							&& testVarType.equals(var.getDeclaration()
-									.getTypeName())) {
-						// System.out.println("CondMember.isEvaluable ::
-						// Variable : "+testVarName+" -- OK");
-					} else {
-						// System.out.println("CondMember.isEvaluable :: name or
-						// type failed! : name: "+var.getExprAsText()+" type:
-						// "+var.getDeclaration().getTypeName());
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
+                    // Variable : "+var.getName()+" exprAsText:
+                    // "+var.getExprAsText());
+                    else {
+                        return false;
+                    }
+                } else if (var.getExpr().isVariable()) {
+                    testVarType = var.getDeclaration().getTypeName();
+                    if (testVarName == null) {
+                        // System.out.println(var.getExprAsText());
+                        if (var.getExprAsText().length() > 1) {
+                            testVarName = var.getExprAsText().substring(1,
+                                    (var.getExprAsText().length() - 1));
+                        } else if (var.getExprAsText().length() == 1) {
+                            testVarName = var.getExprAsText();
+                        }
+                        // System.out.println("testVar name: "+testVarName+"
+                        // type: "+testVarType);
+                    } else if (testVarName.equals(var.getExprAsText())
+                            && testVarType.equals(var.getDeclaration()
+                                    .getTypeName())) {
+                        // System.out.println("CondMember.isEvaluable ::
+                        // Variable : "+testVarName+" -- OK");
+                    } else {
+                        // System.out.println("CondMember.isEvaluable :: name or
+                        // type failed! : name: "+var.getExprAsText()+" type:
+                        // "+var.getDeclaration().getTypeName());
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * Return a vector with names of used declared variables.
-	 */
-	public Vector<String> getAllVariables() {
-		Vector<String> resultVector = new Vector<String>();
-		if (getExpr() != null)
-			getExpr().getAllVariables(resultVector);
-		// remove static class name from result vector
-		for (int i=0; i<resultVector.size(); i++) {
-			String n = resultVector.get(i);
-			if (AttrTupleManager.getDefaultManager().isClassName(n) != null) {				
-				resultVector.remove(i);
-				i--;
-			}
-		}
-		return resultVector;
-	}
+    /**
+     * Return a vector with names of used declared variables.
+     */
+    public Vector<String> getAllVariables() {
+        Vector<String> resultVector = new Vector<String>();
+        if (getExpr() != null) {
+            getExpr().getAllVariables(resultVector);
+        }
+        // remove static class name from result vector
+        for (int i = 0; i < resultVector.size(); i++) {
+            String n = resultVector.get(i);
+            if (AttrTupleManager.getDefaultManager().isClassName(n) != null) {
+                resultVector.remove(i);
+                i--;
+            }
+        }
+        return resultVector;
+    }
 
 //	private Class<?> getClass(String name) {
 //		ClassResolver classResolver = new ClassResolver();
 //		Class<?> c = classResolver.forName(name);
 //		return c;
 //	}
-	
-	/**
-	 * A mark describes the reference of this condition member, for example, to a NAC.<br>
-	 * The possible marks are: CondMember.LHS, CondMember.NAC, CondMember.PAC, 
-	 * CondMember.NAC_LHS, CondMember.PAC_LHS, CondMember.NAC_PAC, CondMember.NAC_PAC_LHS.
-	 * @see CondMember 
-	 */
-	public void setMark(int m) {
-		this.mark = m;
-		fireChanged(AttrEvent.MEMBER_MARK);
-	}
+    /**
+     * A mark describes the reference of this condition member, for example, to a NAC.<br>
+     * The possible marks are: CondMember.LHS, CondMember.NAC, CondMember.PAC, CondMember.NAC_LHS, CondMember.PAC_LHS,
+     * CondMember.NAC_PAC, CondMember.NAC_PAC_LHS.
+     *
+     * @see CondMember
+     */
+    public void setMark(int m) {
+        this.mark = m;
+        fireChanged(AttrEvent.MEMBER_MARK);
+    }
 
-	public int getMark() {
-		return this.mark;
-	}
+    public int getMark() {
+        return this.mark;
+    }
 
-	public void setName(String n) {
-		getDeclaration().setName(n);
-	}
+    public void setName(String n) {
+        getDeclaration().setName(n);
+    }
 
-	public void setShifted(boolean b) {
-		this.shifted = b;
-	}
-	
-	public boolean isShifted() {
-		return this.shifted;
-	}
-	
-	
-	public void XwriteObject(XMLHelper h) {
-		throw new RuntimeException(
-				"CondMember.XwriteObject called, but it shouldn't");
-	}
+    public void setShifted(boolean b) {
+        this.shifted = b;
+    }
 
-	public void XreadObject(XMLHelper h) {
-		throw new RuntimeException(
-				"CondMember.XreadObject called, but it shouldn't");
-	}
+    public boolean isShifted() {
+        return this.shifted;
+    }
+
+    public void XwriteObject(XMLHelper h) {
+        throw new RuntimeException(
+                "CondMember.XwriteObject called, but it shouldn't");
+    }
+
+    public void XreadObject(XMLHelper h) {
+        throw new RuntimeException(
+                "CondMember.XreadObject called, but it shouldn't");
+    }
 }
 /*
  * $Log: CondMember.java,v $

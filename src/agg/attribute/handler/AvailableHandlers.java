@@ -1,63 +1,61 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler;
 
 import java.util.Vector;
 
 /**
- * The purpose of this class, being the only class in a package of interfaces,
- * is that an attribute manager knows where to find its handlers. Whenever a new
- * handler is installed, its fully qualified pathname has to be added to the
- * static array 'nameList'. That's all a new Handler has to do besides, of
- * course, implementing those methods. All an attribute manager has to do is
- * (besides implementing the SymbolTable interface) calling 'newInstances()'. It
- * then gets an array of attribute handler instances, one for every handler in
- * the mentioned list.
- * 
+ * The purpose of this class, being the only class in a package of interfaces, is that an attribute manager knows where
+ * to find its handlers. Whenever a new handler is installed, its fully qualified pathname has to be added to the static
+ * array 'nameList'. That's all a new Handler has to do besides, of course, implementing those methods. All an attribute
+ * manager has to do is (besides implementing the SymbolTable interface) calling 'newInstances()'. It then gets an array
+ * of attribute handler instances, one for every handler in the mentioned list.
+ *
  * @version $Id: AvailableHandlers.java,v 1.3 2007/11/01 09:58:20 olga Exp $
  * @author $Author: olga $
  */
 public class AvailableHandlers {
 
-	/** This is the list to extend by new Handlers. */
-	protected static String nameList[] = { "agg.attribute.handler.impl.javaExpr.JexHandler",
-	// "agg.attribute.handler.impl.jex.JexHandler",
-	// , AnotherHandler, ...
-	};
+    /**
+     * This is the list to extend by new Handlers.
+     */
+    protected static String nameList[] = {"agg.attribute.handler.impl.javaExpr.JexHandler", // "agg.attribute.handler.impl.jex.JexHandler",
+// , AnotherHandler, ...
+};
 
-	/**
-	 * This is the method to call by an attribute manager.
-	 * 
-	 * @return an array of attribute handler instances, one for every handler in
-	 *         the mentioned list.
-	 */
-	static public AttrHandler[] newInstances() {
-		Vector<Object> instList = new Vector<Object>(10, 10);
-		AttrHandler result[];
-		Class<?> handlerClass;
+    /**
+     * This is the method to call by an attribute manager.
+     *
+     * @return an array of attribute handler instances, one for every handler in the mentioned list.
+     */
+    static public AttrHandler[] newInstances() {
+        Vector<Object> instList = new Vector<Object>(10, 10);
+        AttrHandler result[];
+        Class<?> handlerClass;
 
-		for (int i = 0; i < nameList.length; i++) {
-			try {
-				handlerClass = Class.forName(nameList[i]);
-				instList.addElement(handlerClass.newInstance());
-			} catch (ClassNotFoundException ex) {
-				throw new RuntimeException("Class " + nameList[i]
-						+ " not found.\n" + ex.getMessage());
-			} catch (Exception ex) {
-				throw new RuntimeException(ex.getMessage());
-			}
-		}
-		result = new AttrHandler[instList.size()];
-		instList.copyInto(result);
-		return result;
-	}
+        for (int i = 0; i < nameList.length; i++) {
+            try {
+                handlerClass = Class.forName(nameList[i]);
+                instList.addElement(handlerClass.newInstance());
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException("Class " + nameList[i]
+                        + " not found.\n" + ex.getMessage());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex.getMessage());
+            }
+        }
+        result = new AttrHandler[instList.size()];
+        instList.copyInto(result);
+        return result;
+    }
 }
 /*
  * $Log: AvailableHandlers.java,v $

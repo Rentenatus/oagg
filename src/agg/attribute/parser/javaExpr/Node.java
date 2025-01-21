@@ -1,18 +1,18 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* All AST nodes must implement this interface.  It provides basic
  machinery for constructing the parent and child relationships
  between nodes. */
-
 import java.io.Serializable;
 import java.util.Vector;
 
@@ -22,73 +22,84 @@ import java.util.Vector;
  */
 public interface Node extends Serializable {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	/**
-	 * This method is called after the node has been made the current node. It
-	 * indicates that child nodes can now be added to it.
-	 */
-	public void jjtOpen();
+    /**
+     * This method is called after the node has been made the current node. It indicates that child nodes can now be
+     * added to it.
+     */
+    public void jjtOpen();
 
-	/**
-	 * This method is called after all the child nodes have been added.
-	 */
-	public void jjtClose();
+    /**
+     * This method is called after all the child nodes have been added.
+     */
+    public void jjtClose();
 
-	/**
-	 * This pair of methods are used to inform the node of its parent.
-	 */
-	public void jjtSetParent(Node n);
+    /**
+     * This pair of methods are used to inform the node of its parent.
+     */
+    public void jjtSetParent(Node n);
 
-	public Node jjtGetParent();
+    public Node jjtGetParent();
 
-	/**
-	 * This method tells the node to add its argument to the node's list of
-	 * children.
-	 */
-	public void jjtAddChild(Node n);
+    /**
+     * This method tells the node to add its argument to the node's list of children.
+     */
+    public void jjtAddChild(Node n);
 
-	/**
-	 * This method returns a child node. The children are numbered from zero,
-	 * left to right.
-	 */
-	public Node jjtGetChild(int i);
+    /**
+     * This method returns a child node. The children are numbered from zero, left to right.
+     */
+    public Node jjtGetChild(int i);
 
-	/** Return the number of children the node has. */
-	int jjtGetNumChildren();
+    /**
+     * Return the number of children the node has.
+     */
+    int jjtGetNumChildren();
 
-	/** *********************** Added by Sreeni. ****************** */
+    /**
+     * *********************** Added by Sreeni. ******************
+     */
+    /**
+     * Interpret method
+     */
+    public void interpret();
 
-	/** Interpret method */
-	public void interpret();
+    /**
+     * This method returns an error string, if interpretting is failed
+     */
+    public String getError();
 
-	/** This method returns an error string, if interpretting is failed */
-	public String getError();
+    /**
+     * *********************** Added by BM. ******************
+     */
+    /**
+     * Finding the type and checking for consistency.
+     */
+    public void checkContext();
 
-	/** *********************** Added by BM. ****************** */
+    public Object getRootResult();
 
-	/** Finding the type and checking for consistency. */
-	public void checkContext();
+    public void dump(String prefix);
 
-	public Object getRootResult();
+    public void rewrite();
 
-	public void dump(String prefix);
+    public void replaceChild(Node oldChild, Node newChild);
 
-	public void rewrite();
+    /**
+     * returns this node as a string with all children.
+     */
+    public String getString();
 
-	public void replaceChild(Node oldChild, Node newChild);
+    /**
+     * fills the vector with the names of all variables which occur in this abstract syntax tree
+     */
+    public void getAllVariablesinExpression(Vector<String> v);
 
-	/** returns this node as a string with all children. */
-	public String getString();
-
-	/**
-	 * fills the vector with the names of all variables which occur in this
-	 * abstract syntax tree
-	 */
-	public void getAllVariablesinExpression(Vector<String> v) ;
-
-	/** Copy the abstract syntax tree */
-	public Node copy();
+    /**
+     * Copy the abstract syntax tree
+     */
+    public Node copy();
 }
 /*
  * $Log: Node.java,v $

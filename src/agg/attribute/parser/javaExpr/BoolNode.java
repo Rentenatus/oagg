@@ -1,35 +1,35 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: BoolNode.java,v 1.2 2007/09/10 13:05:47 olga Exp $
  * @author $Author: olga $
  */
 public class BoolNode extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	BoolNode(String id) {
-		super(id);
-	}
+    BoolNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new BoolNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new BoolNode(id);
+    }
 
-	public void checkContext() throws ASTWrongTypeException {
-		setNodeClass(Boolean.TYPE);
-	}
+    public void checkContext() throws ASTWrongTypeException {
+        setNodeClass(Boolean.TYPE);
+    }
 }
 /*
  * $Log: BoolNode.java,v $

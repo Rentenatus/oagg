@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.xt_basis;
 
 import java.io.BufferedReader;
@@ -15,43 +16,43 @@ import java.io.InputStreamReader;
 
 /**
  * This class provides the current version number
- * 
+ *
  * @author $Author: olga $
  * @version $Id: Version.java,v 1.5 2010/03/08 15:51:41 olga Exp $
  */
 public final class Version {
 
-	private static String ID = ">>Version file is corrupt<<";
+    private static String ID = ">>Version file is corrupt<<";
 
-	private static String FILENAME = "Version.id";
+    private static String FILENAME = "Version.id";
 
-	private static boolean READ = false;
+    private static boolean READ = false;
 
-	/**
-	 * get the number of the current version as a string
-	 */
-	public static String getID() {
-		if (!READ) {
-			Version own = new Version();
-			Class<?> clazz = own.getClass();
-			InputStream resource = clazz.getResourceAsStream(FILENAME);
-			if (resource == null) {
-				System.out.println("File " + FILENAME + " not found...");
-				return ID;
-			} 
-			// System.out.println(resource);
-			try {
-				BufferedReader file = new BufferedReader(
-						new InputStreamReader(resource));
-				ID = file.readLine();
-				READ = true;
-			} catch (Exception ioe) {
-				System.out.println("exception while reading version number");
-			}
-		}
-		return ID;
-		// return ID.substring(0).replace('_', '.');
-	}
+    /**
+     * get the number of the current version as a string
+     */
+    public static String getID() {
+        if (!READ) {
+            Version own = new Version();
+            Class<?> clazz = own.getClass();
+            InputStream resource = clazz.getResourceAsStream(FILENAME);
+            if (resource == null) {
+                System.out.println("File " + FILENAME + " not found...");
+                return ID;
+            }
+            // System.out.println(resource);
+            try {
+                BufferedReader file = new BufferedReader(
+                        new InputStreamReader(resource));
+                ID = file.readLine();
+                READ = true;
+            } catch (Exception ioe) {
+                System.out.println("exception while reading version number");
+            }
+        }
+        return ID;
+        // return ID.substring(0).replace('_', '.');
+    }
 }
 // $Log: Version.java,v $
 // Revision 1.5  2010/03/08 15:51:41  olga

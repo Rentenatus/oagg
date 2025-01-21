@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.EventObject;
@@ -14,116 +15,112 @@ import java.util.Vector;
 
 /**
  * This class provides some option for the layer function.
- * 
+ *
  * @version $Id: LayerOption.java,v 1.3 2010/09/23 08:24:59 olga Exp $
  * @author $Author: olga $
  */
 public class LayerOption {
 
-	/**
-	 * Layer for rules, creation, deletion and negative application condition,
-	 * Rule must delete
-	 */
-	public static final int RCDN_LAYER = 0;
+    /**
+     * Layer for rules, creation, deletion and negative application condition, Rule must delete
+     */
+    public static final int RCDN_LAYER = 0;
 
-	/**
-	 * Layer for rules, creation and deletio, Rule must delete
-	 */
-	public static final int RCD_LAYER = 1;
+    /**
+     * Layer for rules, creation and deletio, Rule must delete
+     */
+    public static final int RCD_LAYER = 1;
 
-	/**
-	 * Layer for rules, creation, deletion and negative application condition
-	 * and Rule must not delete
-	 */
-	public static final int WEAK_RCDN_LAYER = 2;
+    /**
+     * Layer for rules, creation, deletion and negative application condition and Rule must not delete
+     */
+    public static final int WEAK_RCDN_LAYER = 2;
 
-	/**
-	 * Layer for rules, creation and deletion and Rule must not delete
-	 */
-	public static final int WEAK_RCD_LAYER = 3;
+    /**
+     * Layer for rules, creation and deletion and Rule must not delete
+     */
+    public static final int WEAK_RCD_LAYER = 3;
 
-	private int layer;
+    private int layer;
 
-	private Vector<OptionEventListener> listener;
+    private Vector<OptionEventListener> listener;
 
-	/**
-	 * Creates option with default values.
-	 */
-	public LayerOption() {
-		this.layer = RCDN_LAYER;
-		this.listener = new Vector<OptionEventListener>();
-	}
+    /**
+     * Creates option with default values.
+     */
+    public LayerOption() {
+        this.layer = RCDN_LAYER;
+        this.listener = new Vector<OptionEventListener>();
+    }
 
-	/**
-	 * Sets the required algorithm of the layer function
-	 * 
-	 * @param l
-	 *            The algorithm.
-	 */
-	public void setLayer(int l) {
-		this.layer = l;
-	}
+    /**
+     * Sets the required algorithm of the layer function
+     *
+     * @param l The algorithm.
+     */
+    public void setLayer(int l) {
+        this.layer = l;
+    }
 
-	/**
-	 * Sets the required algorithm of the layer function
-	 * 
-	 * @param l
-	 *            The algorithm.
-	 */
-	public void setLayer(String l) {
-		if (l.equals("RCDN_LAYER"))
-			this.layer = RCDN_LAYER;
-		else if (l.equals("WEAK_RCDN_LAYER"))
-			this.layer = WEAK_RCDN_LAYER;
-		else if (l.equals("RCD_LAYER"))
-			this.layer = RCD_LAYER;
-		else if (l.equals("WEAK_RCD_LAYER"))
-			this.layer = WEAK_RCD_LAYER;
-		fireOptionEvent(new EventObject(this));
-	}
+    /**
+     * Sets the required algorithm of the layer function
+     *
+     * @param l The algorithm.
+     */
+    public void setLayer(String l) {
+        if (l.equals("RCDN_LAYER")) {
+            this.layer = RCDN_LAYER;
+        } else if (l.equals("WEAK_RCDN_LAYER")) {
+            this.layer = WEAK_RCDN_LAYER;
+        } else if (l.equals("RCD_LAYER")) {
+            this.layer = RCD_LAYER;
+        } else if (l.equals("WEAK_RCD_LAYER")) {
+            this.layer = WEAK_RCD_LAYER;
+        }
+        fireOptionEvent(new EventObject(this));
+    }
 
-	/**
-	 * Get the required layer function algorithm.
-	 * 
-	 * @return The algorithm.
-	 */
-	public int getLayer() {
-		return this.layer;
-	}
+    /**
+     * Get the required layer function algorithm.
+     *
+     * @return The algorithm.
+     */
+    public int getLayer() {
+        return this.layer;
+    }
 
-	/**
-	 * Adds an option listener.
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void addOptionListener(OptionEventListener l) {
-		if (!this.listener.contains(l))
-			this.listener.addElement(l);
-	}
+    /**
+     * Adds an option listener.
+     *
+     * @param l The listener.
+     */
+    public void addOptionListener(OptionEventListener l) {
+        if (!this.listener.contains(l)) {
+            this.listener.addElement(l);
+        }
+    }
 
-	/**
-	 * Removes an option listener
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void removeOptionListener(OptionEventListener l) {
-		if (this.listener.contains(l))
-			this.listener.removeElement(l);
-	}
+    /**
+     * Removes an option listener
+     *
+     * @param l The listener.
+     */
+    public void removeOptionListener(OptionEventListener l) {
+        if (this.listener.contains(l)) {
+            this.listener.removeElement(l);
+        }
+    }
 
-	/**
-	 * Sends a event to all its listeners.
-	 * 
-	 * @param event
-	 *            The event which will be sent
-	 */
-	private synchronized void fireOptionEvent(EventObject event) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			this.listener.elementAt(i).optionEventOccurred(event);
-		}
-	}
+    /**
+     * Sends a event to all its listeners.
+     *
+     * @param event The event which will be sent
+     */
+    private synchronized void fireOptionEvent(EventObject event) {
+        for (int i = 0; i < this.listener.size(); i++) {
+            this.listener.elementAt(i).optionEventOccurred(event);
+        }
+    }
 
 }
 /*

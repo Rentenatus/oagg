@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 /* 
@@ -17,42 +18,41 @@ package agg.attribute;
  *@version $Id: AttrMapping.java,v 1.5 2010/03/31 21:06:47 olga Exp $
  *@author $Author: olga $
  */
-
 public interface AttrMapping extends java.io.Serializable {
-	static final long serialVersionUID = 4086026124433522160L;
 
-	// Constants for mapping modes.
+    static final long serialVersionUID = 4086026124433522160L;
 
-	/**
-	 * Constant for the "plain" mapping mode. In Graph Transformation this
-	 * stands for a mapping as in the rule morphisms.
-	 */
-	static public final int PLAIN_MAP = 0;
+    // Constants for mapping modes.
+    /**
+     * Constant for the "plain" mapping mode. In Graph Transformation this stands for a mapping as in the rule
+     * morphisms.
+     */
+    static public final int PLAIN_MAP = 0;
 
-	/**
-	 * Constant for the "match" mapping mode. In Graph Transformation this
-	 * stands for a mapping as in match constructions.
-	 */
-	static public final int MATCH_MAP = 1;
+    /**
+     * Constant for the "match" mapping mode. In Graph Transformation this stands for a mapping as in match
+     * constructions.
+     */
+    static public final int MATCH_MAP = 1;
 
-	static public final int GRAPH_MAP = 2;
+    static public final int GRAPH_MAP = 2;
 
-	static public final int OBJECT_FLOW_MAP = 3;
-	
-	/**
-	 * Use the next possible mapping;
-	 * 
-	 * @return "true" if more subsequent mappings exist, "false" otherwise.
-	 */
-	public boolean next();
+    static public final int OBJECT_FLOW_MAP = 3;
 
-	/**
-	 * Discard mapping; Removes variable assignments made by this mapping from
-	 * its context and dissolves the connection between the attribute instances.
-	 */
-	public void remove();
-	
-	public void removeNow();
+    /**
+     * Use the next possible mapping;
+     *
+     * @return "true" if more subsequent mappings exist, "false" otherwise.
+     */
+    public boolean next();
+
+    /**
+     * Discard mapping; Removes variable assignments made by this mapping from its context and dissolves the connection
+     * between the attribute instances.
+     */
+    public void remove();
+
+    public void removeNow();
 }
 
 /*

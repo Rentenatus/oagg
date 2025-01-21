@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui;
 
 import agg.attribute.AttrInstance;
@@ -21,14 +22,14 @@ import agg.attribute.view.AttrViewSetting;
  */
 public interface AttrEditorManager {
 
-	public AttrTopEditor getTopEditor(AttrManager m, AttrViewSetting v);
+    public AttrTopEditor getTopEditor(AttrManager m, AttrViewSetting v);
 
-	public AttrTupleEditor getSmallEditorForInstance(AttrManager m,
-			AttrViewSetting v, AttrInstance inst);
+    public AttrTupleEditor getSmallEditorForInstance(AttrManager m,
+            AttrViewSetting v, AttrInstance inst);
 
-	public HandlerEditorManager getHandlerEditorManager();
+    public HandlerEditorManager getHandlerEditorManager();
 
-	public InputParameterEditor getInputParameterEditor(AttrManager m);
+    public InputParameterEditor getInputParameterEditor(AttrManager m);
 }
 /*
  * $Log: AttrEditorManager.java,v $

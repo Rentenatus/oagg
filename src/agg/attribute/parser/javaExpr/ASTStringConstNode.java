@@ -1,16 +1,15 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 /* JJT: 0.2.2 */
-
 package agg.attribute.parser.javaExpr;
-
 
 /**
  * @version $Id: ASTStringConstNode.java,v 1.4 2010/08/23 07:31:25 olga Exp $
@@ -18,35 +17,35 @@ package agg.attribute.parser.javaExpr;
  */
 public class ASTStringConstNode extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	String val;
+    String val;
 
-	ASTStringConstNode(String id) {
-		super(id);
-	}
+    ASTStringConstNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTStringConstNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTStringConstNode(id);
+    }
 
-	public void checkContext() {
-		setNodeClass(this.val.getClass());
-	}
+    public void checkContext() {
+        setNodeClass(this.val.getClass());
+    }
 
-	public void interpret() {
-		stack.add(++top, this.val.substring(1, this.val.length() - 1));		
-	}
+    public void interpret() {
+        stack.add(++top, this.val.substring(1, this.val.length() - 1));
+    }
 
-	public String getString() {
-		return this.val;
-	}
+    public String getString() {
+        return this.val;
+    }
 
-	public Node copy() {
-		Node copy = super.copy();
-		((ASTStringConstNode) copy).val = new String(this.val);
-		return copy;
-	}
+    public Node copy() {
+        Node copy = super.copy();
+        ((ASTStringConstNode) copy).val = new String(this.val);
+        return copy;
+    }
 }
 /*
  * $Log: ASTStringConstNode.java,v $

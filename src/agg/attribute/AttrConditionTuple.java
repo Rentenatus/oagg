@@ -1,45 +1,51 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 import java.util.Vector;
 
 /**
  * The interface for a condition tuple.
- * 
+ *
  * @version $Id: AttrConditionTuple.java,v 1.3 2007/11/01 09:58:20 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrConditionTuple extends AttrInstance {
-	static final long serialVersionUID = 5350620835396803108L;
 
-	/**
-	 * Adding of a condition member, returning the member. For deletion, see
-	 * agg.attribute.AttrConditionMember.
-	 */
-	public AttrConditionMember addCondition(String expr);
+    static final long serialVersionUID = 5350620835396803108L;
 
-	/** Test, if all members can yield true or false. */
-	public boolean isDefinite();
+    /**
+     * Adding of a condition member, returning the member. For deletion, see agg.attribute.AttrConditionMember.
+     */
+    public AttrConditionMember addCondition(String expr);
 
-	/** Test, if ANDing of all members yields true. */
-	public boolean isTrue();
+    /**
+     * Test, if all members can yield true or false.
+     */
+    public boolean isDefinite();
 
-	/**
-	 * Test, if the tuple contains members which can be evaluated and yield
-	 * 'false'.
-	 */
-	public boolean isFalse();
+    /**
+     * Test, if ANDing of all members yields true.
+     */
+    public boolean isTrue();
 
-	/** Getting all variable names of conditions. */
-	public Vector<String> getAllVariables();
+    /**
+     * Test, if the tuple contains members which can be evaluated and yield 'false'.
+     */
+    public boolean isFalse();
+
+    /**
+     * Getting all variable names of conditions.
+     */
+    public Vector<String> getAllVariables();
 
 }
 /*

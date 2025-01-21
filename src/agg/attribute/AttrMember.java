@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 import java.io.Serializable;
@@ -15,39 +16,38 @@ import agg.util.XMLObject;
 
 /**
  * An abstract tuple member interface.
- * 
+ *
  * @version $Id: AttrMember.java,v 1.2 2007/09/10 13:05:31 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrMember extends Serializable, XMLObject {
 
-	static final long serialVersionUID = 7298845703304764209L;
+    static final long serialVersionUID = 7298845703304764209L;
 
-	/**
-	 * Testing if the member is consistent and complete.
-	 */
-	public boolean isValid();
+    /**
+     * Testing if the member is consistent and complete.
+     */
+    public boolean isValid();
 
-	/**
-	 * Returns a text describing the errors in this member, or null if the
-	 * member is correct.
-	 */
-	public String getValidityReport();
+    /**
+     * Returns a text describing the errors in this member, or null if the member is correct.
+     */
+    public String getValidityReport();
 
-	/**
-	 * Returns the tuple that contains this member.
-	 */
-	public AttrTuple getHoldingTuple();
+    /**
+     * Returns the tuple that contains this member.
+     */
+    public AttrTuple getHoldingTuple();
 
-	/**
-	 * Returns the member name.
-	 */
-	public String getName();
+    /**
+     * Returns the member name.
+     */
+    public String getName();
 
-	/**
-	 * Returns the member index within the containing tuple.
-	 */
-	public int getIndexInTuple();
+    /**
+     * Returns the member index within the containing tuple.
+     */
+    public int getIndexInTuple();
 
 }
 

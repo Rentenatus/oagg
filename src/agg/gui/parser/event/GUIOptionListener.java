@@ -1,31 +1,31 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser.event;
 
 import java.util.EventListener;
 
 /**
  * Listen if a option for the GUI has changed
- * 
+ *
  * @version $Id: GUIOptionListener.java,v 1.2 2007/09/10 13:05:50 olga Exp $
  * @author $Author: olga $
  */
 public interface GUIOptionListener extends EventListener {
 
-	/**
-	 * Reacts if a GUI option has changed
-	 * 
-	 * @param oe
-	 *            the option event
-	 */
-	public void optionHasChanged(GUIOptionEvent oe);
+    /**
+     * Reacts if a GUI option has changed
+     *
+     * @param oe the option event
+     */
+    public void optionHasChanged(GUIOptionEvent oe);
 }
 /*
  * $Log: GUIOptionListener.java,v $

@@ -1,47 +1,47 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: NUMxNUMtoNUMnode.java,v 1.3 2010/03/31 21:10:49 olga Exp $
  * @author $Author: olga $
  */
 public class NUMxNUMtoNUMnode extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	NUMxNUMtoNUMnode(String id) {
-		super(id);
-	}
+    NUMxNUMtoNUMnode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new NUMxNUMtoNUMnode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new NUMxNUMtoNUMnode(id);
+    }
 
-	public void checkContext() throws ASTWrongTypeException {
-		Node child1 = jjtGetChild(0), child2 = jjtGetChild(1);
+    public void checkContext() throws ASTWrongTypeException {
+        Node child1 = jjtGetChild(0), child2 = jjtGetChild(1);
 
-		child1.checkContext();
-		child2.checkContext();
+        child1.checkContext();
+        child2.checkContext();
 
-		if (((SimpleNode)child1).hasNumberType() 
-				&& ((SimpleNode)child2).hasNumberType()) {
-			setNodeClass(commonNumberType((SimpleNode)child1, (SimpleNode)child2));
-		} else {
-			throw new ASTWrongTypeException("[Number x Number -> Number]", "["
-					+ ((SimpleNode)child1).getNodeClass().getName() + " x "
-					+ ((SimpleNode)child2).getNodeClass().getName() + "]");
-		}
-	}
+        if (((SimpleNode) child1).hasNumberType()
+                && ((SimpleNode) child2).hasNumberType()) {
+            setNodeClass(commonNumberType((SimpleNode) child1, (SimpleNode) child2));
+        } else {
+            throw new ASTWrongTypeException("[Number x Number -> Number]", "["
+                    + ((SimpleNode) child1).getNodeClass().getName() + " x "
+                    + ((SimpleNode) child2).getNodeClass().getName() + "]");
+        }
+    }
 }
 /*
  * $Log: NUMxNUMtoNUMnode.java,v $

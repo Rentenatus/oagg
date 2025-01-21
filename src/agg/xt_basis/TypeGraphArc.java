@@ -1,125 +1,125 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.xt_basis;
 
-
 /**
- * 
+ *
  * @author $Author: olga $
  * @version $Id: TypeGraphArc.java,v 1.14 2010/10/08 08:48:02 olga Exp $
  */
 public class TypeGraphArc {
-	/**
-	 * true, if this combination of source, traget and edge type is contained in
-	 * the type graph
-	 */
-	private boolean typeGraphObjectDefined = false;
 
-	/**
-	 * its edge object inside of a type graph
-	 */
-	private Arc itsArc;
-	
-	private boolean visible = true;
-	
-	/**
-	 * minimum number of nodes arcs of this type starts from.
-	 */
-	private short sourceMin = Type.UNDEFINED;
+    /**
+     * true, if this combination of source, traget and edge type is contained in the type graph
+     */
+    private boolean typeGraphObjectDefined = false;
 
-	/**
-	 * maximum number of nodes arcs of this type starts from.
-	 */
-	private short sourceMax = Type.UNDEFINED;
+    /**
+     * its edge object inside of a type graph
+     */
+    private Arc itsArc;
 
-	/**
-	 * minimum number of nodes arcs of this type goes to.
-	 */
-	private short targetMin = Type.UNDEFINED;
+    private boolean visible = true;
 
-	/**
-	 * maximum number of nodes arcs of this type goes to.
-	 */
-	private short targetMax = Type.UNDEFINED;
+    /**
+     * minimum number of nodes arcs of this type starts from.
+     */
+    private short sourceMin = Type.UNDEFINED;
 
-	
-	TypeGraphArc() {}
+    /**
+     * maximum number of nodes arcs of this type starts from.
+     */
+    private short sourceMax = Type.UNDEFINED;
 
-	public void dispose() {
-		this.itsArc = null;
-	}
-		
-	Arc addTypeGraphObject(Arc a) {		
-		this.itsArc = a;
-		this.typeGraphObjectDefined = (a != null);
-		return this.itsArc;
-	}
+    /**
+     * minimum number of nodes arcs of this type goes to.
+     */
+    private short targetMin = Type.UNDEFINED;
 
-	public Arc getArc() {
-		return this.itsArc;
-	}
-	
-	public void setVisible(boolean vis) {
-		this.visible = vis;
-	}
-	
-	public boolean isVisible() {
-		return this.visible;		
-	}
-		
-	boolean doesTypeGraphObjectExist() {
-		return this.typeGraphObjectDefined;
-	}
+    /**
+     * maximum number of nodes arcs of this type goes to.
+     */
+    private short targetMax = Type.UNDEFINED;
 
-	boolean removeTypeGraphObject() {
-		this.typeGraphObjectDefined = false;
-		this.itsArc = null;
-		return true;
-	}
+    TypeGraphArc() {
+    }
 
-	void forceRemoveTypeGraphObject() {
-		this.typeGraphObjectDefined = false;
-		this.itsArc = null;
-	}
+    public void dispose() {
+        this.itsArc = null;
+    }
 
-	public void setSourceMin(int value) {
-		this.sourceMin = (short) value;
-	}
+    Arc addTypeGraphObject(Arc a) {
+        this.itsArc = a;
+        this.typeGraphObjectDefined = (a != null);
+        return this.itsArc;
+    }
 
-	public void setSourceMax(int value) {
-		this.sourceMax = (short) value;
-	}
+    public Arc getArc() {
+        return this.itsArc;
+    }
 
-	public void setTargetMin(int value) {
-		this.targetMin = (short) value;
-	}
+    public void setVisible(boolean vis) {
+        this.visible = vis;
+    }
 
-	public void setTargetMax(int value) {
-		this.targetMax = (short) value;
-	}
+    public boolean isVisible() {
+        return this.visible;
+    }
 
-	public int getSourceMin() {
-		return this.sourceMin;
-	}
+    boolean doesTypeGraphObjectExist() {
+        return this.typeGraphObjectDefined;
+    }
 
-	public int getSourceMax() {
-		return this.sourceMax;
-	}
+    boolean removeTypeGraphObject() {
+        this.typeGraphObjectDefined = false;
+        this.itsArc = null;
+        return true;
+    }
 
-	public int getTargetMin() {
-		return this.targetMin;
-	}
+    void forceRemoveTypeGraphObject() {
+        this.typeGraphObjectDefined = false;
+        this.itsArc = null;
+    }
 
-	public int getTargetMax() {
-		return this.targetMax;
-	}
+    public void setSourceMin(int value) {
+        this.sourceMin = (short) value;
+    }
+
+    public void setSourceMax(int value) {
+        this.sourceMax = (short) value;
+    }
+
+    public void setTargetMin(int value) {
+        this.targetMin = (short) value;
+    }
+
+    public void setTargetMax(int value) {
+        this.targetMax = (short) value;
+    }
+
+    public int getSourceMin() {
+        return this.sourceMin;
+    }
+
+    public int getSourceMax() {
+        return this.sourceMax;
+    }
+
+    public int getTargetMin() {
+        return this.targetMin;
+    }
+
+    public int getTargetMax() {
+        return this.targetMax;
+    }
 
 }
 

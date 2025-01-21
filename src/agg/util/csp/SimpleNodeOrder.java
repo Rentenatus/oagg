@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: SimpleNodeOrder.java,v 1.3 2010/03/08 15:50:34 olga Exp $
-
 // $Log: SimpleNodeOrder.java,v $
 // Revision 1.3  2010/03/08 15:50:34  olga
 // code optimizing
@@ -60,34 +60,32 @@
 // Revision 1.1  1997/09/16 15:56:55  mich
 // Initial revision
 //
-
 package agg.util.csp;
 
 import agg.xt_basis.Node;
 
-
 public class SimpleNodeOrder implements BinaryPredicate {
 
-	Object varObj;
+    Object varObj;
 
-	public SimpleNodeOrder(Object varObj) {
-		this.varObj = varObj;
-	}
+    public SimpleNodeOrder(Object varObj) {
+        this.varObj = varObj;
+    }
 
-	/**
-	 * Return true iff the sum of in and out arcs of <code>o1</code> is greater 
-	 * the sum of in and out arcs of <code>o2</code>.
-	 * <p>
-	 * <b>Pre:</b> <code>o1,o2 instance of Node</code>.
-	 */
-	public final boolean execute(Object o1, Object o2) {
-		Node n1 = (Node) o1;
-		Node n2 = (Node) o2;
-		int arcs1 = n1.getNumberOfInOutArcs();
-		int arcs2 = n2.getNumberOfInOutArcs();
-		if (arcs1 > arcs2) {
-			return true;
-		} 
-		return false;
-	}
+    /**
+     * Return true iff the sum of in and out arcs of <code>o1</code> is greater the sum of in and out arcs of
+     * <code>o2</code>.
+     * <p>
+     * <b>Pre:</b> <code>o1,o2 instance of Node</code>.
+     */
+    public final boolean execute(Object o1, Object o2) {
+        Node n1 = (Node) o1;
+        Node n2 = (Node) o2;
+        int arcs1 = n1.getNumberOfInOutArcs();
+        int arcs2 = n2.getNumberOfInOutArcs();
+        if (arcs1 > arcs2) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui;
 
 import agg.attribute.AttrTuple;
@@ -18,13 +19,13 @@ import agg.attribute.view.AttrViewSetting;
  */
 public interface AttrTupleEditor extends AttrEditor {
 
-	public void setTuple(AttrTuple anAttrTuple);
+    public void setTuple(AttrTuple anAttrTuple);
 
-	public AttrTuple getTuple();
+    public AttrTuple getTuple();
 
-	public void setViewSetting(AttrViewSetting anAttrViewSetting);
+    public void setViewSetting(AttrViewSetting anAttrViewSetting);
 
-	public AttrViewSetting getViewSetting();
+    public AttrViewSetting getViewSetting();
 
 }
 /*

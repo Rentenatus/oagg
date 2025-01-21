@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // This class belongs to the following package:
 package agg.parser;
 
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Vector;
 
 //import com.objectspace.jgl.Pair;
-
 import agg.util.XMLObject;
 import agg.util.Pair;
 import agg.xt_basis.GraGra;
@@ -26,240 +26,218 @@ import agg.xt_basis.Rule;
 
 //****************************************************************************+
 /**
- * A container for critical pairs This interface represents the abstract class
- * of a stategy. All classes which implements this interface are concrete
- * strategies and can be used to confige the parser. This interface supports
+ * A container for critical pairs This interface represents the abstract class of a stategy. All classes which
+ * implements this interface are concrete strategies and can be used to confige the parser. This interface supports
  * access to critical pairs.
- * 
+ *
  * @author $Author: olga $
  * @version $Id: PairContainer.java,v 1.15 2010/12/16 17:32:14 olga Exp $
  */
 public interface PairContainer extends XMLObject {
 
-	// ****************************************************************************+
-	/**
-	 * Computes the critical part of two rules. This can be a
-	 * <code>Vector</code> of overlaping graphs.
-	 * 
-	 * @param r1
-	 *            The first part of a critical pair
-	 * @param r2
-	 *            The second part of a critical pair
-	 * @param kind
-	 *            The kind of critical pair
-	 * @throws InvalidAlgorithmException
-	 *             Thrown if a algorithm is desired which is not provided.
-	 * @return The critic object of two rules.
-	 */
-	public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> 
-	getCriticalPair(Rule r1, Rule r2, int kind)
-			throws InvalidAlgorithmException;
+    // ****************************************************************************+
+    /**
+     * Computes the critical part of two rules. This can be a <code>Vector</code> of overlaping graphs.
+     *
+     * @param r1 The first part of a critical pair
+     * @param r2 The second part of a critical pair
+     * @param kind The kind of critical pair
+     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
+     * @return The critic object of two rules.
+     */
+    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+            getCriticalPair(Rule r1, Rule r2, int kind)
+            throws InvalidAlgorithmException;
 
-	public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> 
-	getCriticalPair(Rule r1, Rule r2, int kind, boolean local)
-			throws InvalidAlgorithmException;
-	
-	/**
-	 * Returned <code>CriticalPairData<\code> object which allows an access to the
-	 * computed critical pairs of the specified rules in a more readable way.
-	 * @see <code>CriticalPairData<\code>
-	 * 
-	 * @return  critical pair data if it is already computed, otherwise null
-	 */
-	public CriticalPairData getCriticalPairData(Rule r1, Rule r2);
-	
-	/**
-	 * Returns a list of <code>CriticalPairData</code>  which allows an access to the
-	 * computed critical pairs of the specified kind of conflict in a more readable way.
-	 * @see <code>CriticalPairData</code>
-	 * 
-	 * @return  critical pair data if it is already computed, otherwise null
-	 */
-	public List<CriticalPairData> getCriticalPairDataOfKind(String kind);
-	
-	/**
-	 * @deprecated  replaced by <code>getCriticalPair(Rule r1, Rule r2, int kind)</code>
-	 */
-	public Object getCritical(Rule r1, Rule r2, int kind)
-	throws InvalidAlgorithmException;
+    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+            getCriticalPair(Rule r1, Rule r2, int kind, boolean local)
+            throws InvalidAlgorithmException;
 
-	
-	// ****************************************************************************+
-	/**
-	 * Returns the number of containers for the critical pair.
-	 * 
-	 * @return The number of containers.
-	 */
-	public int getNumberOfContainers();
+    /**
+     * Returned <code>CriticalPairData<\code> object which allows an access to the computed critical pairs of the
+     * specified rules in a more readable way.
+     *
+     * @see <code>CriticalPairData<\code>
+     *
+     * @return critical pair data if it is already computed, otherwise null
+     */
+    public CriticalPairData getCriticalPairData(Rule r1, Rule r2);
 
-	// ****************************************************************************+
-	/**
-	 * This container is a <code>Hashtable</code> with a rule as key. The
-	 * value will be a set of rules.
-	 * 
-	 * @param kind
-	 *            The kind of algorithm
-	 * @throws InvalidAlgorithmException
-	 *             Thrown if a algorithm is desired which is not provided.
-	 * @return The hashtable with critical pairs.
-	 */
-	public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> 
-	getContainer(int kind) throws InvalidAlgorithmException;
+    /**
+     * Returns a list of <code>CriticalPairData</code> which allows an access to the computed critical pairs of the
+     * specified kind of conflict in a more readable way.
+     *
+     * @see <code>CriticalPairData</code>
+     *
+     * @return critical pair data if it is already computed, otherwise null
+     */
+    public List<CriticalPairData> getCriticalPairDataOfKind(String kind);
 
-	// ****************************************************************************+
-	/**
-	 * This method computes which rules are in a relation of a special kind.
-	 * 
-	 * @param kind
-	 *            The kind of critical pair
-	 * @param rule
-	 *            The rule which is the first part of a critical pair
-	 * @throws InvalidAlgorithmException
-	 *             Thrown if a algorithm is desired which is not provided.
-	 * @return All rules that are critic with the parameter.
-	 */
-	public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> 
-	getCriticalSet(int kind, Rule rule)
-			throws InvalidAlgorithmException;
+    /**
+     * @deprecated replaced by <code>getCriticalPair(Rule r1, Rule r2, int kind)</code>
+     */
+    public Object getCritical(Rule r1, Rule r2, int kind)
+            throws InvalidAlgorithmException;
 
-	// ****************************************************************************+
-	/**
-	 * Sets the graph grammar the critical pairs are computed for.
-	 * 
-	 * @param grammar
-	 *            The graph grammar.
-	 */
-	public void setGrammar(GraGra grammar);
-	
-	/**
-	 * Returns the grammar the critical pairs are computed for.
-	 */
-	public GraGra getGrammar();
-	
-	/**
-	 * Set rule list to be analyzed. 
-	 * The rule matrix contains the same 
-	 * rule set in horizontal and vertical direction.
-	 */
-	public void setRules(List<Rule> ruleList);
-	
-	/**
-	 * Set rule lists to be analyzed. 
-	 * The rule matrix contains the first list in horizontal 
-	 * and the second list in vertical direction.
-	 */
-	public void setRules(final List<Rule> ruleList, final List<Rule> ruleList2);
-	
-	/**
-	 * Returns the rule list in horizontal direction of the rule matrix.
-	 */
-	public List<Rule> getRules();
-	
-	/**
-	 * Returns the rule list in vertical direction of the rule matrix.
-	 */
-	public List<Rule> getRules2();
-	
-	/**
-	 * This method has an effect if the rule matrix contains the same 
-	 * rule set in horizontal and vertical direction. <br>
-	 * If the parameter is <code>true</code> then only the right top triangle 
-	 * of the rule matrix will be computed.
-	 */
-	public void setComputeAsymmetrical(boolean b);
-	
-	public void restoreExprReplacedByVarInApplConds();
-	
-	public void setMorphCompletionStrategy(MorphCompletionStrategy strat);
-	
-	public MorphCompletionStrategy getMorphCompletionStrategy();
-	
-	
-	// ****************************************************************************+
-	/**
-	 * Initials all containers. So there are at least empty objects as
-	 * containers.
-	 */
-	public void initAllContainer();
+    // ****************************************************************************+
+    /**
+     * Returns the number of containers for the critical pair.
+     *
+     * @return The number of containers.
+     */
+    public int getNumberOfContainers();
 
-	/** Clears all container. */
-	public void clear();
+    // ****************************************************************************+
+    /**
+     * This container is a <code>Hashtable</code> with a rule as key. The value will be a set of rules.
+     *
+     * @param kind The kind of algorithm
+     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
+     * @return The hashtable with critical pairs.
+     */
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+            getContainer(int kind) throws InvalidAlgorithmException;
 
-	/**
-	 * Returns CriticalPair.CONFLICT or CriticalPair.DEPENDENCY constant.
-	 */
-	public int getKindOfConflict();
+    // ****************************************************************************+
+    /**
+     * This method computes which rules are in a relation of a special kind.
+     *
+     * @param kind The kind of critical pair
+     * @param rule The rule which is the first part of a critical pair
+     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
+     * @return All rules that are critic with the parameter.
+     */
+    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+            getCriticalSet(int kind, Rule rule)
+            throws InvalidAlgorithmException;
 
-	/**
-	 * Adds a PairEventListener.
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void addPairEventListener(ParserEventListener l);
+    // ****************************************************************************+
+    /**
+     * Sets the graph grammar the critical pairs are computed for.
+     *
+     * @param grammar The graph grammar.
+     */
+    public void setGrammar(GraGra grammar);
 
-	@SuppressWarnings("deprecation")
-	public LayerFunction getLayer();
+    /**
+     * Returns the grammar the critical pairs are computed for.
+     */
+    public GraGra getGrammar();
 
-	/**
-	 * Returns <code>true</code> if the process of computing critical pairs is running.
-	 */
-	public boolean isAlive();
+    /**
+     * Set rule list to be analyzed. The rule matrix contains the same rule set in horizontal and vertical direction.
+     */
+    public void setRules(List<Rule> ruleList);
 
-	/**
-	 * Stops the process of computing critical pairs.
-	 */
-	public void stop();
+    /**
+     * Set rule lists to be analyzed. The rule matrix contains the first list in horizontal and the second list in
+     * vertical direction.
+     */
+    public void setRules(final List<Rule> ruleList, final List<Rule> ruleList2);
 
-	/**
-	 * If the parameter is <code>true</code> initiates the stop of the process 
-	 * of computing critical pairs.
-	 */
-	public void setStop(boolean b);
+    /**
+     * Returns the rule list in horizontal direction of the rule matrix.
+     */
+    public List<Rule> getRules();
 
-	/**
-	 * Returns <code>true</code> if the process of computing critical pairs
-	 * was stopped (not finished).
-	 */
-	public boolean wasStopped();
+    /**
+     * Returns the rule list in vertical direction of the rule matrix.
+     */
+    public List<Rule> getRules2();
 
-	/**
-	 * Returns <code>true</code> if the rule pair container is empty.
-	 */
-	public boolean isEmpty();
+    /**
+     * This method has an effect if the rule matrix contains the same rule set in horizontal and vertical direction.
+     * <br>
+     * If the parameter is <code>true</code> then only the right top triangle of the rule matrix will be computed.
+     */
+    public void setComputeAsymmetrical(boolean b);
 
-	/**
-	 * Set and use (if the first parameter is <code>true</code>) 
-	 * the given host graph in the process of computing critical situations
-	 * of the rule pairs.
-	 */
-	public void enableUseHostGraph(boolean enable, Graph g);
+    public void restoreExprReplacedByVarInApplConds();
 
-	/**
-	 * Returns <code>true</code>) 
-	 * if a host graph is used in the process of computing critical situations
-	 * of the rule pairs.
-	 */
-	public boolean useHostGraphEnabled();
+    public void setMorphCompletionStrategy(MorphCompletionStrategy strat);
 
-	/**
-	 *  Returns <code>true</code> if all conflicts of all rule pairs 
-	 * of the container are computed.<br>
-	 * Note: In case of a host graph is used to determine critical situations -
-	 * this method returns <code>false</code> only.
-	 */
-	public boolean isComputed();
-	
-	/**
-	 * Returns currently active ExcludePair of the pair container.
-	 */
-	public ExcludePair getActiveExcludePair();
-	
-	/**
-	 * Reset the options of the pair container according to the given CriticalPairOption <code>op</code>.
-	 */
-	public void refreshOptions(final CriticalPairOption op);
-	
+    public MorphCompletionStrategy getMorphCompletionStrategy();
+
+    // ****************************************************************************+
+    /**
+     * Initials all containers. So there are at least empty objects as containers.
+     */
+    public void initAllContainer();
+
+    /**
+     * Clears all container.
+     */
+    public void clear();
+
+    /**
+     * Returns CriticalPair.CONFLICT or CriticalPair.DEPENDENCY constant.
+     */
+    public int getKindOfConflict();
+
+    /**
+     * Adds a PairEventListener.
+     *
+     * @param l The listener.
+     */
+    public void addPairEventListener(ParserEventListener l);
+
+    @SuppressWarnings("deprecation")
+    public LayerFunction getLayer();
+
+    /**
+     * Returns <code>true</code> if the process of computing critical pairs is running.
+     */
+    public boolean isAlive();
+
+    /**
+     * Stops the process of computing critical pairs.
+     */
+    public void stop();
+
+    /**
+     * If the parameter is <code>true</code> initiates the stop of the process of computing critical pairs.
+     */
+    public void setStop(boolean b);
+
+    /**
+     * Returns <code>true</code> if the process of computing critical pairs was stopped (not finished).
+     */
+    public boolean wasStopped();
+
+    /**
+     * Returns <code>true</code> if the rule pair container is empty.
+     */
+    public boolean isEmpty();
+
+    /**
+     * Set and use (if the first parameter is <code>true</code>) the given host graph in the process of computing
+     * critical situations of the rule pairs.
+     */
+    public void enableUseHostGraph(boolean enable, Graph g);
+
+    /**
+     * Returns <code>true</code>) if a host graph is used in the process of computing critical situations of the rule
+     * pairs.
+     */
+    public boolean useHostGraphEnabled();
+
+    /**
+     * Returns <code>true</code> if all conflicts of all rule pairs of the container are computed.<br>
+     * Note: In case of a host graph is used to determine critical situations - this method returns <code>false</code>
+     * only.
+     */
+    public boolean isComputed();
+
+    /**
+     * Returns currently active ExcludePair of the pair container.
+     */
+    public ExcludePair getActiveExcludePair();
+
+    /**
+     * Reset the options of the pair container according to the given CriticalPairOption <code>op</code>.
+     */
+    public void refreshOptions(final CriticalPairOption op);
+
 }
 
 // End of PairContainer.java

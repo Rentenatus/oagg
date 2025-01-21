@@ -1,17 +1,17 @@
-/*******************************************************************************
- * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- *******************************************************************************/
 /**
- * 
+ **
+ * ***************************************************************************
+ * <copyright>
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * </copyright>
+ ******************************************************************************
+ */
+/**
+ *
  */
 package agg.gui.treeview.nodedata;
-
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -37,334 +37,334 @@ import agg.util.Pair;
  */
 public abstract class GraGraTreeNodeDataAdapter implements GraGraTreeNodeData {
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#dispose()
-	 */
-	public void dispose() {
-	}
+     */
+    public void dispose() {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getAtomApplCond()
-	 */
-	public EdAtomApplCond getAtomApplCond() {
-		return null;
-	}
+     */
+    public EdAtomApplCond getAtomApplCond() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getAtomic()
-	 */
-	public EdAtomic getAtomic() {
-		return null;
-	}
+     */
+    public EdAtomic getAtomic() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getAttrCondition()
-	 */
-	public Pair<CondMember, EdRule> getAttrCondition() {
-		return null;
-	}
+     */
+    public Pair<CondMember, EdRule> getAttrCondition() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getConclusion()
-	 */
-	public EdAtomic getConclusion() {
-		return null;
-	}
+     */
+    public EdAtomic getConclusion() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getConstraint()
-	 */
-	public EdConstraint getConstraint() {
-		return null;
-	}
+     */
+    public EdConstraint getConstraint() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getData()
-	 */
-	public Object getData() {
-		return null;
-	}
+     */
+    public Object getData() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getGraGra()
-	 */
-	public EdGraGra getGraGra() {
-		return null;
-	}
+     */
+    public EdGraGra getGraGra() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getGraph()
-	 */
-	public EdGraph getGraph() {
-		return null;
-	}
+     */
+    public EdGraph getGraph() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getNAC()
-	 */
-	public EdNAC getNAC() {
-		return null;
-	}
+     */
+    public EdNAC getNAC() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getPAC()
-	 */
-	public EdPAC getPAC() {
-		return null;
-	}
+     */
+    public EdPAC getPAC() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getRule()
-	 */
-	public EdRule getRule() {
-		return null;
-	}
+     */
+    public EdRule getRule() {
+        return null;
+    }
 
-	public Formula getFormula() {
-		return null;
-	}
-	
-	/* (non-Javadoc)
+    public Formula getFormula() {
+        return null;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getRuleConstraint()
-	 */
-	public EdRuleConstraint getRuleConstraint() {
-		return null;
-	}
+     */
+    public EdRuleConstraint getRuleConstraint() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getTreeNode()
-	 */
-	public DefaultMutableTreeNode getTreeNode() {
-		return null;
-	}
+     */
+    public DefaultMutableTreeNode getTreeNode() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isAtomApplCond()
-	 */
-	public boolean isAtomApplCond() {
-		return false;
-	}
+     */
+    public boolean isAtomApplCond() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isAtomic()
-	 */
-	public boolean isAtomic() {
-		return false;
-	}
+     */
+    public boolean isAtomic() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isAttrCondition()
-	 */
-	public boolean isAttrCondition() {
-		return false;
-	}
+     */
+    public boolean isAttrCondition() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isConclusion()
-	 */
-	public boolean isConclusion() {
-		return false;
-	}
+     */
+    public boolean isConclusion() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isConstraint()
-	 */
-	public boolean isConstraint() {
-		return false;
-	}
+     */
+    public boolean isConstraint() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isGraGra()
-	 */
-	public boolean isGraGra() {
-		return false;
-	}
+     */
+    public boolean isGraGra() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isGraph()
-	 */
-	public boolean isGraph() {
-		return false;
-	}
+     */
+    public boolean isGraph() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isNAC()
-	 */
-	public boolean isNAC() {
-		return false;
-	}
+     */
+    public boolean isNAC() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isPAC()
-	 */
-	public boolean isPAC() {
-		return false;
-	}
+     */
+    public boolean isPAC() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isRule()
-	 */
-	public boolean isRule() {
-		return false;
-	}
+     */
+    public boolean isRule() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isRuleConstraint()
-	 */
-	public boolean isRuleConstraint() {
-		return false;
-	}
+     */
+    public boolean isRuleConstraint() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isTypeGraph()
-	 */
-	public boolean isTypeGraph() {
-		return false;
-	}
+     */
+    public boolean isTypeGraph() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#setData(java.lang.Object)
-	 */
-	public void setData(Object obj) {
-	}
+     */
+    public void setData(Object obj) {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#setString(java.lang.String, java.lang.String, java.lang.String)
-	 */
-	public void setString(String tag, String tag1, String newString) {
-	}
+     */
+    public void setString(String tag, String tag1, String newString) {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#setString(java.lang.String, java.lang.String)
-	 */
-	public void setString(String tag, String newString) {
-	}
+     */
+    public void setString(String tag, String newString) {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#setString(java.lang.String)
-	 */
-	public void setString(String str) {
-	}
+     */
+    public void setString(String str) {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#setTreeNode(javax.swing.tree.DefaultMutableTreeNode)
-	 */
-	public void setTreeNode(DefaultMutableTreeNode node) {
-	}
+     */
+    public void setTreeNode(DefaultMutableTreeNode node) {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#string()
-	 */
-	public String string() {
-		return null;
-	}
+     */
+    public String string() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#update()
-	 */
-	public void update() {
-	}
+     */
+    public void update() {
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getRuleScheme()
-	 */
-	public EdRuleScheme getRuleScheme() {
-		return null;
-	}
+     */
+    public EdRuleScheme getRuleScheme() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isRuleScheme()
-	 */
-	public boolean isRuleScheme() {
-		return false;
-	}
-	
-	/* (non-Javadoc)
+     */
+    public boolean isRuleScheme() {
+        return false;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isKernelRule()
-	 */
-	public boolean isKernelRule() {
-		return false;
-	}
-	
-	/* (non-Javadoc)
+     */
+    public boolean isKernelRule() {
+        return false;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getKernelRule()
-	 */
-	public EdRule getKernelRule() {
-		return null;
-	}
+     */
+    public EdRule getKernelRule() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isMultiRule()
-	 */
-	public boolean isMultiRule() {
-		return false;
-	}
-	
-	/* (non-Javadoc)
+     */
+    public boolean isMultiRule() {
+        return false;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getMultiRule()
-	 */
-	public EdRule getMultiRule() {
-		return null;
-	}
-	
-	/* (non-Javadoc)
+     */
+    public EdRule getMultiRule() {
+        return null;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isAmalgamatedRule()
-	 */
-	public boolean isAmalgamatedRule() {
-		return false;
-	}
-	
-	/* (non-Javadoc)
+     */
+    public boolean isAmalgamatedRule() {
+        return false;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getAmalgamatedRule()
-	 */
-	public EdRule getAmalgamatedRule() {
-		return null;
-	}
-	
-	/* (non-Javadoc)
+     */
+    public EdRule getAmalgamatedRule() {
+        return null;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isRuleSequence()
-	 */
-	public boolean isRuleSequence() {
-		return false;
-	}
-	
-	/* (non-Javadoc)
+     */
+    public boolean isRuleSequence() {
+        return false;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#getRuleSequence()
-	 */
-	public RuleSequence getRuleSequence() {
-		return null;
-	}
+     */
+    public RuleSequence getRuleSequence() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.nodedata.GraGraTreeNodeData#isNestedAC()
-	 */
-	public boolean isNestedAC() {
-		return false;
-	}
+     */
+    public boolean isNestedAC() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.nodedata.GraGraTreeNodeData#getNestedAC()
-	 */
-	public EdNestedApplCond getNestedAC() {
-		return null;
-	}
+     */
+    public EdNestedApplCond getNestedAC() {
+        return null;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.nodedata.GraGraTreeNodeData#isApplFormula()
-	 */
-	public boolean isApplFormula() {
-		return false;
-	}
+     */
+    public boolean isApplFormula() {
+        return false;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.nodedata.GraGraTreeNodeData#getToolTipText()
-	 */
-	public String getToolTipText() {
-		return "";
-	}
+     */
+    public String getToolTipText() {
+        return "";
+    }
 
-	public boolean isTreeTextEditable() {
-		return true;
-	}
-	
+    public boolean isTreeTextEditable() {
+        return true;
+    }
+
 }

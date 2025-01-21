@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 //$Id: RoundRectShapeIcon.java,v 1.4 2010/09/23 08:20:21 olga Exp $
-
 package agg.gui.icons;
 
 import java.awt.Color;
@@ -19,44 +19,44 @@ import javax.swing.Icon;
 
 public class RoundRectShapeIcon implements Icon {
 
-	Color color;
-	boolean filled;
-	
-	public RoundRectShapeIcon(Color c) {
-		this.color = c;
-	}
+    Color color;
+    boolean filled;
 
-	public RoundRectShapeIcon(Color c, boolean filledshape) {
-		this.color = c;
-		this.filled = filledshape;
-	}
-	
-	public void setColor(Color c) {
-		this.color = c;
-	}
+    public RoundRectShapeIcon(Color c) {
+        this.color = c;
+    }
 
-	public Color getColor() {
-		return this.color;
-	}
+    public RoundRectShapeIcon(Color c, boolean filledshape) {
+        this.color = c;
+        this.filled = filledshape;
+    }
 
-	public void paintIcon(Component c, Graphics g, int x, int y) {
-		Color oldColor = g.getColor();
-		g.setColor(this.color);
-		if (this.filled) {
-			g.fillRoundRect(x + 1, y + 1, getIconWidth() - 2, getIconHeight() - 2,
-					5, 5);
-		} else {
-			g.drawRoundRect(x + 1, y + 1, getIconWidth() - 2, getIconHeight() - 2,
-				5, 5);
-		}
-		g.setColor(oldColor);
-	}
+    public void setColor(Color c) {
+        this.color = c;
+    }
 
-	public int getIconWidth() {
-		return 14;
-	}
+    public Color getColor() {
+        return this.color;
+    }
 
-	public int getIconHeight() {
-		return 12;
-	}
+    public void paintIcon(Component c, Graphics g, int x, int y) {
+        Color oldColor = g.getColor();
+        g.setColor(this.color);
+        if (this.filled) {
+            g.fillRoundRect(x + 1, y + 1, getIconWidth() - 2, getIconHeight() - 2,
+                    5, 5);
+        } else {
+            g.drawRoundRect(x + 1, y + 1, getIconWidth() - 2, getIconHeight() - 2,
+                    5, 5);
+        }
+        g.setColor(oldColor);
+    }
+
+    public int getIconWidth() {
+        return 14;
+    }
+
+    public int getIconHeight() {
+        return 12;
+    }
 }

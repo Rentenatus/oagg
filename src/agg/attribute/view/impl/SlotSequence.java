@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.view.impl;
 
 import java.io.Serializable;
@@ -22,128 +23,135 @@ import agg.util.Disposable;
  */
 public class SlotSequence extends AttrObject implements Disposable {
 
-	protected Vector<Slot> slots = new Vector<Slot>(10, 10);
+    protected Vector<Slot> slots = new Vector<Slot>(10, 10);
 
-	static final long serialVersionUID = 3923744045591286915L;
+    static final long serialVersionUID = 3923744045591286915L;
 
-	@SuppressWarnings("unused")
-	private static transient int COUNTER = 0;
+    @SuppressWarnings("unused")
+    private static transient int COUNTER = 0;
 
-	public SlotSequence() {
-		super();
-		COUNTER++;
-		// System.out.println("SlotSequence: Erzeuge Sequence #"+COUNTER);
-	}
+    public SlotSequence() {
+        super();
+        COUNTER++;
+        // System.out.println("SlotSequence: Erzeuge Sequence #"+COUNTER);
+    }
 
-	protected void finalize() {
-		COUNTER--;
-		// System.out.println("SlotSequence: Loesche Sequence #"+COUNTER);
-	}
+    protected void finalize() {
+        COUNTER--;
+        // System.out.println("SlotSequence: Loesche Sequence #"+COUNTER);
+    }
 
-	public void dispose() {
-		System.out.println("SlotSequence.dispose  ");
-	}
+    public void dispose() {
+        System.out.println("SlotSequence.dispose  ");
+    }
 
-	public synchronized int getSize() {
-		return this.slots.size();
-	}
+    public synchronized int getSize() {
+        return this.slots.size();
+    }
 
-	public synchronized int getIndexAt(int slot) {
-		// if((slot == -1) || (slot >= getSize())) return 0;
-		if ((slot == -1) || (slot >= getSize()))
-			return getSize() - 1;
-		// System.out.println("SlotSequence::: "+slot+" "+getSize()+"
-		// "+slots.size());
-		return this.slots.elementAt(slot).getIndex();
-	}
+    public synchronized int getIndexAt(int slot) {
+        // if((slot == -1) || (slot >= getSize())) return 0;
+        if ((slot == -1) || (slot >= getSize())) {
+            return getSize() - 1;
+        }
+        // System.out.println("SlotSequence::: "+slot+" "+getSize()+"
+        // "+slots.size());
+        return this.slots.elementAt(slot).getIndex();
+    }
 
-	public int getSlotForIndex(int index) {
-		int in;
-		int slot;
-		Enumeration<Slot> en;
-		for (en = this.slots.elements(), slot = 0; en.hasMoreElements(); slot++) {
-			in = en.nextElement().getIndex();
-			if (in == index)
-				return slot;
-		}
-		return TupleFormat.HIDDEN;
-	}
+    public int getSlotForIndex(int index) {
+        int in;
+        int slot;
+        Enumeration<Slot> en;
+        for (en = this.slots.elements(), slot = 0; en.hasMoreElements(); slot++) {
+            in = en.nextElement().getIndex();
+            if (in == index) {
+                return slot;
+            }
+        }
+        return TupleFormat.HIDDEN;
+    }
 
-	public synchronized void addSlot(int index) {
-		Slot newSlot = new Slot(index);
-		this.slots.addElement(newSlot);
-	}
+    public synchronized void addSlot(int index) {
+        Slot newSlot = new Slot(index);
+        this.slots.addElement(newSlot);
+    }
 
-	public void incrementAllGreaterThan(int index) {
-		int in;
-		Slot slot;
+    public void incrementAllGreaterThan(int index) {
+        int in;
+        Slot slot;
 
-		for (Enumeration<Slot> en = this.slots.elements(); en.hasMoreElements();) {
-			slot = en.nextElement();
-			in = slot.getIndex();
-			if (in > index)
-				slot.setIndex(in + 1);
-		}
-	}
+        for (Enumeration<Slot> en = this.slots.elements(); en.hasMoreElements();) {
+            slot = en.nextElement();
+            in = slot.getIndex();
+            if (in > index) {
+                slot.setIndex(in + 1);
+            }
+        }
+    }
 
-	public synchronized void deleteSlot(int slot) {
-		if (slot >= getSize()) {
-			warn("deleteSlot(): slot=" + slot + " >= size=" + getSize(), true);
-			return;
-		}
-		this.slots.removeElementAt(slot);
-	}
+    public synchronized void deleteSlot(int slot) {
+        if (slot >= getSize()) {
+            warn("deleteSlot(): slot=" + slot + " >= size=" + getSize(), true);
+            return;
+        }
+        this.slots.removeElementAt(slot);
+    }
 
-	public void decrementAllGreaterThan(int index) {
-		int in;
-		Slot slot;
+    public void decrementAllGreaterThan(int index) {
+        int in;
+        Slot slot;
 
-		for (Enumeration<Slot> en = this.slots.elements(); en.hasMoreElements();) {
-			slot = en.nextElement();
-			in = slot.getIndex();
-			if (in > index)
-				slot.setIndex(in - 1);
-		}
-	}
+        for (Enumeration<Slot> en = this.slots.elements(); en.hasMoreElements();) {
+            slot = en.nextElement();
+            in = slot.getIndex();
+            if (in > index) {
+                slot.setIndex(in - 1);
+            }
+        }
+    }
 
-	public void deleteSlotForIndex(int index) {
-		int slot = getSlotForIndex(index);
-		if (slot != TupleFormat.HIDDEN)
-			deleteSlot(slot);
-	}
+    public void deleteSlotForIndex(int index) {
+        int slot = getSlotForIndex(index);
+        if (slot != TupleFormat.HIDDEN) {
+            deleteSlot(slot);
+        }
+    }
 
-	public void moveSlotInserting(int srcSlot, int destSlot) {		
-		if (srcSlot == destSlot || srcSlot == destSlot - 1)
-			return;
-		int sSlot = srcSlot;
-		Slot slotObj = this.slots.elementAt(sSlot);
+    public void moveSlotInserting(int srcSlot, int destSlot) {
+        if (srcSlot == destSlot || srcSlot == destSlot - 1) {
+            return;
+        }
+        int sSlot = srcSlot;
+        Slot slotObj = this.slots.elementAt(sSlot);
 
-		if (destSlot >= getSize()) {
-			this.slots.addElement(slotObj);
-		} else {
-			this.slots.insertElementAt(slotObj, destSlot);
-		}
-		if (sSlot > destSlot)
-			sSlot++;
-		this.slots.removeElementAt(sSlot);
-	}
+        if (destSlot >= getSize()) {
+            this.slots.addElement(slotObj);
+        } else {
+            this.slots.insertElementAt(slotObj, destSlot);
+        }
+        if (sSlot > destSlot) {
+            sSlot++;
+        }
+        this.slots.removeElementAt(sSlot);
+    }
 
-	public String toString() {
-		Slot slot;
-		String log = null;
-		try {
-			log = "(";			
-			for (int i = 0; i<this.slots.size(); i++) {
-				slot = this.slots.get(i);
-				log += slot.getIndex() + ",";
-			}
-		} catch (NullPointerException e) {
-			log = "(???)";
-		}
-		return log;
-	}
+    public String toString() {
+        Slot slot;
+        String log = null;
+        try {
+            log = "(";
+            for (int i = 0; i < this.slots.size(); i++) {
+                slot = this.slots.get(i);
+                log += slot.getIndex() + ",";
+            }
+        } catch (NullPointerException e) {
+            log = "(???)";
+        }
+        return log;
+    }
 
-	/*
+    /*
 	 * private void readObject(ObjectInputStream in) throws IOException,
 	 * ClassNotFoundException {
 	 * AttrSession.logPrintln(AttrSession.logFileIO,"starte SlotSequence zu
@@ -151,34 +159,34 @@ public class SlotSequence extends AttrObject implements Disposable {
 	 * System.out.println("InvalidClassException seqeunce\n"); // SlotSequence s =
 	 * (SlotSequence) in.readObject(); // s.addSlot(s.getSize()); //this.slots =
 	 * s.slots; } }
-	 */
+     */
+    class Slot implements Serializable {
 
-	class Slot implements Serializable {
-		protected int index;
+        protected int index;
 
-		static final long serialVersionUID = -6821223290051933180L;
+        static final long serialVersionUID = -6821223290051933180L;
 
-		public Slot(int index) {
-			this.index = index;
-		}
+        public Slot(int index) {
+            this.index = index;
+        }
 
-		public int getIndex() {
-			return this.index;
-		}
+        public int getIndex() {
+            return this.index;
+        }
 
-		public void setIndex(int index) {
-			this.index = index;
-			;
-		}
+        public void setIndex(int index) {
+            this.index = index;
+            ;
+        }
 
-		/*
+        /*
 		 * private void readObject(ObjectInputStream in) throws IOException,
 		 * ClassNotFoundException {
 		 * AttrSession.logPrintln(AttrSession.logFileIO,"starte Slots zu
 		 * laden"); try{ in.defaultReadObject(); } catch(InvalidClassException
 		 * ice){ System.out.println("InvalidClassException\n"); index = 0; } }
-		 */
-	}
+         */
+    }
 }
 /*
  * $Log: SlotSequence.java,v $

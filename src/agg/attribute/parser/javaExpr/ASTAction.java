@@ -1,38 +1,37 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTAction.java,v 1.3 2007/09/24 09:42:38 olga Exp $
  * @author $Author: olga $
  */
 public class ASTAction extends OpMemberNode {
 
-	/*
+    /*
 	 * Inherits: protected Method method = null; protected Object receivingObj,
 	 * returnObj;
-	 */
+     */
+    static final long serialVersionUID = 1L;
 
-	static final long serialVersionUID = 1L;
+    ASTAction(String id) {
+        super(id);
+    }
 
-	ASTAction(String id) {
-		super(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTAction(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTAction(id);
-	}
-
-	/*
+    /*
 	 * public void checkContext( SimpleNode recipient ) throws
 	 * ASTWrongTypeException { findMethod( recipient ); setNodeClass(
 	 * recipient.getNodeClass() ); }
@@ -40,19 +39,19 @@ public class ASTAction extends OpMemberNode {
 	 * public void interpret( SimpleNode recipient ){
 	 * 
 	 * invoke( recipient ); stack[ ++top ] = receivingObj; }
-	 */
-
-	public String getString() {
-		String argList = "";
-		int nChildren = jjtGetNumChildren();
-		Node meth = jjtGetChild(0);
-		for (int i = 1; i < nChildren; i++) {
-			if (i > 1)
-				argList += ",";
-			argList += jjtGetChild(i).getString();
-		}
-		return ";" + meth.getString() + "(" + argList + ")";
-	}
+     */
+    public String getString() {
+        String argList = "";
+        int nChildren = jjtGetNumChildren();
+        Node meth = jjtGetChild(0);
+        for (int i = 1; i < nChildren; i++) {
+            if (i > 1) {
+                argList += ",";
+            }
+            argList += jjtGetChild(i).getString();
+        }
+        return ";" + meth.getString() + "(" + argList + ")";
+    }
 }
 /*
  * $Log: ASTAction.java,v $

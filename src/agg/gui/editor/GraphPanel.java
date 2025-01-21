@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.editor;
 
 import java.awt.BorderLayout;
@@ -30,388 +31,391 @@ import agg.xt_basis.Arc;
 import agg.xt_basis.Node;
 
 /**
- * 
+ *
  * @author $Author: olga $
  * @version $Id: GraphPanel.java,v 1.7 2010/09/23 08:19:07 olga Exp $
  */
 @SuppressWarnings("serial")
 public class GraphPanel extends JPanel {
 
-	private Object itsParent; // RuleEditor or GraphEditor
+    private Object itsParent; // RuleEditor or GraphEditor
 
-	protected GraphCanvas canvas;
+    protected GraphCanvas canvas;
 
-	protected EdGraph eGraph;
+    protected EdGraph eGraph;
 
-	protected JScrollPane jsp;
+    protected JScrollPane jsp;
 
-	protected Cursor lastEditCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    protected Cursor lastEditCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
-	private boolean mappedObjDeleted = false;
+    private boolean mappedObjDeleted = false;
 
-	private boolean attrEditorOn = false;
+    private boolean attrEditorOn = false;
 
-	private String name = "";
+    private String name = "";
 
-	/**
-	 * Create a panel for drawing. The panel contains a view port, vertical and
-	 * horizontal scroll bars.
-	 */
-	public GraphPanel(Object parent) {
-		this();
-		this.itsParent = parent;
-	}
+    /**
+     * Create a panel for drawing. The panel contains a view port, vertical and horizontal scroll bars.
+     */
+    public GraphPanel(Object parent) {
+        this();
+        this.itsParent = parent;
+    }
 
-	/**
-	 * Create a panel for drawing. The panel contains a view port, vertical and
-	 * horizontal scroll bars.
-	 */
-	public GraphPanel() {
-		super(new BorderLayout(), true); // DoubleBuffered
-		
-		this.setBackground(Color.WHITE);
-		this.setForeground(Color.WHITE);
-		
-		this.canvas = new GraphCanvas();
-		try {
-			this.jsp = new JScrollPane(this.canvas,
-					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			this.jsp.setBackground(Color.white);
-			this.jsp.setForeground(Color.white);
-			this.jsp.getHorizontalScrollBar().setUnitIncrement(30);
-			this.jsp.getVerticalScrollBar().setUnitIncrement(30);
-			this.jsp.getHorizontalScrollBar().setBlockIncrement(50);
-			this.jsp.getVerticalScrollBar().setBlockIncrement(50);
-			this.jsp.getHorizontalScrollBar().getModel().setValueIsAdjusting(true);
-			this.jsp.getVerticalScrollBar().getModel().setValueIsAdjusting(true);
-			add(this.jsp, BorderLayout.CENTER);
+    /**
+     * Create a panel for drawing. The panel contains a view port, vertical and horizontal scroll bars.
+     */
+    public GraphPanel() {
+        super(new BorderLayout(), true); // DoubleBuffered
 
-			this.canvas.setViewport(this);
-		} catch (IllegalArgumentException ex) {
-		}
-	}
-	
-	public Object getParentEditor() {
-		return this.itsParent;
-	}
+        this.setBackground(Color.WHITE);
+        this.setForeground(Color.WHITE);
 
-	public void setName(String n) {
-		this.name = n;
-	}
+        this.canvas = new GraphCanvas();
+        try {
+            this.jsp = new JScrollPane(this.canvas,
+                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            this.jsp.setBackground(Color.white);
+            this.jsp.setForeground(Color.white);
+            this.jsp.getHorizontalScrollBar().setUnitIncrement(30);
+            this.jsp.getVerticalScrollBar().setUnitIncrement(30);
+            this.jsp.getHorizontalScrollBar().setBlockIncrement(50);
+            this.jsp.getVerticalScrollBar().setBlockIncrement(50);
+            this.jsp.getHorizontalScrollBar().getModel().setValueIsAdjusting(true);
+            this.jsp.getVerticalScrollBar().getModel().setValueIsAdjusting(true);
+            add(this.jsp, BorderLayout.CENTER);
 
-	public String getName() {
-		return this.name;
-	}
+            this.canvas.setViewport(this);
+        } catch (IllegalArgumentException ex) {
+        }
+    }
 
-	public void setBackground(Color c) {
-		super.setBackground(c);
-		if (this.jsp != null)
-			this.jsp.setBackground(c);
-		if (this.canvas != null) {
-			this.canvas.setBackground(c);
-		}
-	}
+    public Object getParentEditor() {
+        return this.itsParent;
+    }
 
-	public JScrollPane getScrollPane() {
-		return this.jsp;
-	}
+    public void setName(String n) {
+        this.name = n;
+    }
 
-	/** Gets my minimum dimension */
-	public Dimension getMinimumSize() {
-		return new Dimension(0, 0);
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	/** Gets my preferred dimension */
-	public Dimension getPreferredSize() {
-		return new Dimension(250, 200);
-	}
+    public void setBackground(Color c) {
+        super.setBackground(c);
+        if (this.jsp != null) {
+            this.jsp.setBackground(c);
+        }
+        if (this.canvas != null) {
+            this.canvas.setBackground(c);
+        }
+    }
 
-	public JScrollBar getHorizontalScrollBar() {
-		return this.jsp.getHorizontalScrollBar();
-	}
+    public JScrollPane getScrollPane() {
+        return this.jsp;
+    }
 
-	public JScrollBar getVerticalScrollBar() {
-		return this.jsp.getVerticalScrollBar();
-	}
+    /**
+     * Gets my minimum dimension
+     */
+    public Dimension getMinimumSize() {
+        return new Dimension(0, 0);
+    }
 
-	public void setViewportView(GraphCanvas view) {
-		this.jsp.setViewportView(view);
-	}
+    /**
+     * Gets my preferred dimension
+     */
+    public Dimension getPreferredSize() {
+        return new Dimension(250, 200);
+    }
 
-	public void updateGraphics() {
-		this.canvas.repaint();
-	}
+    public JScrollBar getHorizontalScrollBar() {
+        return this.jsp.getHorizontalScrollBar();
+    }
 
-	public void updateGraphics(boolean graphDimensionCheck) {
-		if (this.eGraph != null) {
-			if (graphDimensionCheck) {
-				Dimension maxDim = getGraphDimension();
-				if ((maxDim.width != 0) || (maxDim.height != 0)) {
-					this.canvas.setSize(maxDim);
-				}
-			}
-			this.canvas.repaint();
-		}
-	}
+    public JScrollBar getVerticalScrollBar() {
+        return this.jsp.getVerticalScrollBar();
+    }
 
-	public void adjustGraphPanelSize() {
-		Dimension maxDim = getGraphDimension();
-		if ((maxDim.width != 0) || (maxDim.height != 0))
-			this.canvas.setSize(maxDim);
-	}
+    public void setViewportView(GraphCanvas view) {
+        this.jsp.setViewportView(view);
+    }
 
-	public void updateGraphicsAfterDelete() {
-		if (this.eGraph != null) {
-			Dimension maxDim = getGraphDimension();
-			if ((maxDim.width != 0) || (maxDim.height != 0)) {
-				this.canvas.setSize(maxDim);
-			}
-			this.canvas.repaint(); 
-		}
-	}
+    public void updateGraphics() {
+        this.canvas.repaint();
+    }
 
-	private Dimension getGraphDimension() {
-		Dimension maxDim = new Dimension(0, 0);
-		if (this.eGraph != null) {
-			maxDim.setSize(this.canvas.getGraphDimension());
-			this.canvas.setRealWidth(maxDim.width);
-			this.canvas.setRealHeight(maxDim.height);
-			return maxDim;
-		} 
-		return maxDim;
-	}
+    public void updateGraphics(boolean graphDimensionCheck) {
+        if (this.eGraph != null) {
+            if (graphDimensionCheck) {
+                Dimension maxDim = getGraphDimension();
+                if ((maxDim.width != 0) || (maxDim.height != 0)) {
+                    this.canvas.setSize(maxDim);
+                }
+            }
+            this.canvas.repaint();
+        }
+    }
 
-	public void resizeAfterTransform(boolean val) {
-		this.canvas.resizeAfterTransform(val);
-	}
+    public void adjustGraphPanelSize() {
+        Dimension maxDim = getGraphDimension();
+        if ((maxDim.width != 0) || (maxDim.height != 0)) {
+            this.canvas.setSize(maxDim);
+        }
+    }
 
-	public EdGraph getGraph() {
-		return this.eGraph;
-	}
+    public void updateGraphicsAfterDelete() {
+        if (this.eGraph != null) {
+            Dimension maxDim = getGraphDimension();
+            if ((maxDim.width != 0) || (maxDim.height != 0)) {
+                this.canvas.setSize(maxDim);
+            }
+            this.canvas.repaint();
+        }
+    }
 
-	public void setGraph(final EdGraph eg, boolean adjustCanvasSize) {
-		this.eGraph = eg;
-		this.canvas.setGraph(this.eGraph);
-		if (this.eGraph != null) {
-			if (adjustCanvasSize) {
-				Dimension maxDim = this.canvas.getGraphDimension();			
-				this.canvas.setSize(new Dimension(maxDim.width, maxDim.height));
-				this.canvas.setRealWidth(maxDim.width);
-				this.canvas.setRealHeight(maxDim.height);			
-			} else {
-				this.canvas.repaint();
-			}
-		}
-		else {
-			this.canvas.setSize(new Dimension(getWidth()
-					- this.jsp.getVerticalScrollBar().getWidth() - 3, getHeight()
-					- this.jsp.getHorizontalScrollBar().getHeight() - 3));
-			this.canvas.setRealWidth(this.canvas.getWidth());
-			this.canvas.setRealHeight(this.canvas.getHeight());
-		}
-		this.jsp.getHorizontalScrollBar().setValue(0);
-		this.jsp.getVerticalScrollBar().setValue(0);
-	}
-	
-	public void setGraph(final EdGraph eg) {
-		this.setGraph(eg, true);
-	}
+    private Dimension getGraphDimension() {
+        Dimension maxDim = new Dimension(0, 0);
+        if (this.eGraph != null) {
+            maxDim.setSize(this.canvas.getGraphDimension());
+            this.canvas.setRealWidth(maxDim.width);
+            this.canvas.setRealHeight(maxDim.height);
+            return maxDim;
+        }
+        return maxDim;
+    }
 
-	public GraphCanvas getCanvas() {
-		return this.canvas;
-	}
+    public void resizeAfterTransform(boolean val) {
+        this.canvas.resizeAfterTransform(val);
+    }
 
-	public int getEditMode() {
-		return this.canvas.getEditMode();
-	}
+    public EdGraph getGraph() {
+        return this.eGraph;
+    }
 
-	public void setEditMode(int m) {
-		this.canvas.setEditMode(m);
-	}
+    public void setGraph(final EdGraph eg, boolean adjustCanvasSize) {
+        this.eGraph = eg;
+        this.canvas.setGraph(this.eGraph);
+        if (this.eGraph != null) {
+            if (adjustCanvasSize) {
+                Dimension maxDim = this.canvas.getGraphDimension();
+                this.canvas.setSize(new Dimension(maxDim.width, maxDim.height));
+                this.canvas.setRealWidth(maxDim.width);
+                this.canvas.setRealHeight(maxDim.height);
+            } else {
+                this.canvas.repaint();
+            }
+        } else {
+            this.canvas.setSize(new Dimension(getWidth()
+                    - this.jsp.getVerticalScrollBar().getWidth() - 3, getHeight()
+                    - this.jsp.getHorizontalScrollBar().getHeight() - 3));
+            this.canvas.setRealWidth(this.canvas.getWidth());
+            this.canvas.setRealHeight(this.canvas.getHeight());
+        }
+        this.jsp.getHorizontalScrollBar().setValue(0);
+        this.jsp.getVerticalScrollBar().setValue(0);
+    }
 
-	private Cursor editCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    public void setGraph(final EdGraph eg) {
+        this.setGraph(eg, true);
+    }
 
-	public void setEditCursor(Cursor cur) {
-		this.editCursor = cur;
-	}
+    public GraphCanvas getCanvas() {
+        return this.canvas;
+    }
 
-	public Cursor getEditCursor() {
-		return this.editCursor;
-	}
+    public int getEditMode() {
+        return this.canvas.getEditMode();
+    }
 
-	private int lastEditMode = EditorConstants.DRAW;
+    public void setEditMode(int m) {
+        this.canvas.setEditMode(m);
+    }
 
-	public void setLastEditMode(int m) {
-		this.lastEditMode = m;
-	}
+    private Cursor editCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
-	public int getLastEditMode() {
-		if (this.lastEditMode == EditorConstants.ARC)
-			return EditorConstants.DRAW;
-		
-		return this.lastEditMode;
-	}
+    public void setEditCursor(Cursor cur) {
+        this.editCursor = cur;
+    }
 
-	public void setLastEditCursor(Cursor cur) {
-		this.lastEditCursor = cur;
-	}
+    public Cursor getEditCursor() {
+        return this.editCursor;
+    }
 
-	public Cursor getLastEditCursor() {
-		return this.lastEditCursor;
-	}
+    private int lastEditMode = EditorConstants.DRAW;
 
-	public void setVisible(boolean vis) {
-		this.canvas.setVisible(vis);
-	}
+    public void setLastEditMode(int m) {
+        this.lastEditMode = m;
+    }
 
-	public void setMappedObjDeleted(boolean b) {
-		this.mappedObjDeleted = b;
-	}
+    public int getLastEditMode() {
+        if (this.lastEditMode == EditorConstants.ARC) {
+            return EditorConstants.DRAW;
+        }
 
-	public boolean isMappedObjDeleted() {
-		return this.mappedObjDeleted;
-	}
+        return this.lastEditMode;
+    }
 
-	public void setAttrEditorActivated(boolean b) {
-		this.attrEditorOn = b;
-	}
+    public void setLastEditCursor(Cursor cur) {
+        this.lastEditCursor = cur;
+    }
 
-	public boolean isAttrEditorActivated() {
-		return this.attrEditorOn;
-	}
+    public Cursor getLastEditCursor() {
+        return this.lastEditCursor;
+    }
 
-	/**
-	 * Deletes an arc layout for the used object specified by the Arc bArc. The
-	 * used object will be deleted, too.
-	 * Undo-Redo is not supported.
-	 */
-	public void delArc(Arc bArc) {
-		this.canvas.delArc(bArc);
-	}
+    public void setVisible(boolean vis) {
+        this.canvas.setVisible(vis);
+    }
 
-	/**
-	 * Deletes a node layout for the used object specified by the Node bNode.
-	 * The used object will be deleted, too.
-	 * Undo-Redo is not supported.
-	 */
-	public void delNode(Node bNode) {
-		this.canvas.delNode(bNode);
-	}
+    public void setMappedObjDeleted(boolean b) {
+        this.mappedObjDeleted = b;
+    }
 
-	/**
-	 * Deletes a node layout specified by the EdNode eNode. The used object will
-	 * be deleted, too.
-	 * Undo-Redo is not supported.
-	 */
-	public void delSelectedNode(EdNode eNode) {
-		this.canvas.delSelectedNode(eNode);
-	}
+    public boolean isMappedObjDeleted() {
+        return this.mappedObjDeleted;
+    }
 
-	/**
-	 * Deletes an arc layout specified by the EdArc eArc. The used object will
-	 * be deleted too.
-	 * Undo-Redo is not supported.
-	 */
-	public void delSelectedArc(EdArc eArc) {
-		this.canvas.delSelectedArc(eArc);
-	}
+    public void setAttrEditorActivated(boolean b) {
+        this.attrEditorOn = b;
+    }
 
-	/** Deletes all selected nodes 
-	 * Undo-Redo is not supported.
-	 */
-	public void deleteSelectedNodes() {
-		this.canvas.deleteSelectedNodes();
-	}
+    public boolean isAttrEditorActivated() {
+        return this.attrEditorOn;
+    }
 
-	/** Deletes all selected arcs 
-	 * Undo-Redo is not supported.
-	 */
-	public void deleteSelectedArcs() {
-		this.canvas.deleteSelectedArcs();
-	}
+    /**
+     * Deletes an arc layout for the used object specified by the Arc bArc. The used object will be deleted, too.
+     * Undo-Redo is not supported.
+     */
+    public void delArc(Arc bArc) {
+        this.canvas.delArc(bArc);
+    }
 
-	/** Deletes all selected objects (nodes and arcs) 
-	 * Undo-Redo is supported.
-	 */
-	// called from EditSelPopupMenu, RuleEditor, GraphEditor
-	public void deleteSelected() {
-		this.canvas.deleteSelected();
-	}
+    /**
+     * Deletes a node layout for the used object specified by the Node bNode. The used object will be deleted, too.
+     * Undo-Redo is not supported.
+     */
+    public void delNode(Node bNode) {
+        this.canvas.delNode(bNode);
+    }
 
-	/** Deletes an object on the position specified by the int x, int y 
-	 * Undo-Redo is not supported.
-	 */
-	public boolean deleteObj(int x, int y) {
-		return this.canvas.deleteObj(x, y);
-	}
+    /**
+     * Deletes a node layout specified by the EdNode eNode. The used object will be deleted, too. Undo-Redo is not
+     * supported.
+     */
+    public void delSelectedNode(EdNode eNode) {
+        this.canvas.delSelectedNode(eNode);
+    }
 
-	/** Deletes an layout object specified by the EdGraphObject ego 
-	 * Undo-Redo is supported.
-	 */
-	// called from EditPopupMenu
-	public void deleteObj(EdGraphObject ego) {
-		this.canvas.deleteObj(ego);
-	}
+    /**
+     * Deletes an arc layout specified by the EdArc eArc. The used object will be deleted too. Undo-Redo is not
+     * supported.
+     */
+    public void delSelectedArc(EdArc eArc) {
+        this.canvas.delSelectedArc(eArc);
+    }
 
-	boolean hasSelection() {
-		return (this.eGraph != null && this.eGraph.hasSelection())? true: false;
-	}
-	
-	/**
-	 * Undo-Redo is not supported.
-	 */
-	public void deselect(EdGraphObject ego) {
-		this.canvas.deselect(ego);
-		updateGraphics();
-	}
+    /**
+     * Deletes all selected nodes Undo-Redo is not supported.
+     */
+    public void deleteSelectedNodes() {
+        this.canvas.deleteSelectedNodes();
+    }
 
-	/**
-	 * Undo-Redo is not supported.
-	 */
-	public EdGraphObject select(int x, int y) {
-		return this.canvas.select(x, y);
-	}
+    /**
+     * Deletes all selected arcs Undo-Redo is not supported.
+     */
+    public void deleteSelectedArcs() {
+        this.canvas.deleteSelectedArcs();
+    }
 
-	/**
-	 * Undo-Redo is not supported.
-	 */
-	public void selectAll() {
-		this.canvas.selectAll();
-		updateGraphics();
-	}
+    /**
+     * Deletes all selected objects (nodes and arcs) Undo-Redo is supported.
+     */
+    // called from EditSelPopupMenu, RuleEditor, GraphEditor
+    public void deleteSelected() {
+        this.canvas.deleteSelected();
+    }
 
-	/**
-	 * Undo-Redo is not supported.
-	 */
-	public void deselectAll() {
-		if (this.canvas.deselectAll())
-			updateGraphics();
-	}
+    /**
+     * Deletes an object on the position specified by the int x, int y Undo-Redo is not supported.
+     */
+    public boolean deleteObj(int x, int y) {
+        return this.canvas.deleteObj(x, y);
+    }
 
-	/**
-	 * Undo-Redo is not supported.
-	 */
-	public void selectNodesOfSelectedNodeType() {
-		if (this.canvas.selectNodesOfSelectedNodeType())
-			updateGraphics();
-	}
+    /**
+     * Deletes an layout object specified by the EdGraphObject ego Undo-Redo is supported.
+     */
+    // called from EditPopupMenu
+    public void deleteObj(EdGraphObject ego) {
+        this.canvas.deleteObj(ego);
+    }
 
-	/**
-	 * Undo-Redo is not supported.
-	 */
-	public void selectArcsOfSelectedArcType() {
-		if (this.canvas.selectArcsOfSelectedArcType())
-			updateGraphics();
-	}
+    boolean hasSelection() {
+        return (this.eGraph != null && this.eGraph.hasSelection()) ? true : false;
+    }
 
-	/**
-	 * Undo-Redo is not supported.
-	 */
-	public void straightenSelectedArcs() {
-		if (this.canvas.straigthSelectedArcs())
-			updateGraphics();
-	}
+    /**
+     * Undo-Redo is not supported.
+     */
+    public void deselect(EdGraphObject ego) {
+        this.canvas.deselect(ego);
+        updateGraphics();
+    }
 
-	
+    /**
+     * Undo-Redo is not supported.
+     */
+    public EdGraphObject select(int x, int y) {
+        return this.canvas.select(x, y);
+    }
+
+    /**
+     * Undo-Redo is not supported.
+     */
+    public void selectAll() {
+        this.canvas.selectAll();
+        updateGraphics();
+    }
+
+    /**
+     * Undo-Redo is not supported.
+     */
+    public void deselectAll() {
+        if (this.canvas.deselectAll()) {
+            updateGraphics();
+        }
+    }
+
+    /**
+     * Undo-Redo is not supported.
+     */
+    public void selectNodesOfSelectedNodeType() {
+        if (this.canvas.selectNodesOfSelectedNodeType()) {
+            updateGraphics();
+        }
+    }
+
+    /**
+     * Undo-Redo is not supported.
+     */
+    public void selectArcsOfSelectedArcType() {
+        if (this.canvas.selectArcsOfSelectedArcType()) {
+            updateGraphics();
+        }
+    }
+
+    /**
+     * Undo-Redo is not supported.
+     */
+    public void straightenSelectedArcs() {
+        if (this.canvas.straigthSelectedArcs()) {
+            updateGraphics();
+        }
+    }
+
 }

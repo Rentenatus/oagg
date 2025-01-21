@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.impl.javaExpr;
 
 import java.io.IOException;
@@ -18,74 +19,72 @@ import agg.attribute.handler.HandlerType;
  * @author $Author: olga $
  */
 public class JexType implements HandlerType {
-	static final long serialVersionUID = 8053541082320950101L;
 
-	protected JexHandler handler = null;
+    static final long serialVersionUID = 8053541082320950101L;
 
-	protected String text = null;
+    protected JexHandler handler = null;
 
-	protected Class<?> clazz = null;
+    protected String text = null;
 
-	public JexType(JexHandler handler, String typeString, Class<?> clazz) {
-		this.handler = handler;
-		this.text = typeString.trim();
-		this.clazz = clazz;
-	}
+    protected Class<?> clazz = null;
 
-	/**
-	 * Getting the string representation of this type. Overrides the
-	 * "toString()" method of the "Object" class.
-	 */
-	public String toString() {
-		return this.text;
-	}
+    public JexType(JexHandler handler, String typeString, Class<?> clazz) {
+        this.handler = handler;
+        this.text = typeString.trim();
+        this.clazz = clazz;
+    }
 
-	public boolean equals(Object obj) {
-		if (obj instanceof JexType) {
-			JexType t = (JexType) obj;
-			return this.clazz == t.clazz && this.handler == t.handler
-					&& this.text.equals(t.text);
-		} 
-		return false;
-	}
+    /**
+     * Getting the string representation of this type. Overrides the "toString()" method of the "Object" class.
+     */
+    public String toString() {
+        return this.text;
+    }
 
-	public Class<?> getClazz() {
-		return this.clazz;
-	}
+    public boolean equals(Object obj) {
+        if (obj instanceof JexType) {
+            JexType t = (JexType) obj;
+            return this.clazz == t.clazz && this.handler == t.handler
+                    && this.text.equals(t.text);
+        }
+        return false;
+    }
 
-	/**
-	 * Overriding of the standard implementation is required, because
-	 * representations for primitive types (Integer.TYPE, Character.TYPE etc.)
-	 * are not serializable. They are not written on the stream.
-	 * 
-	 * @see #readObject
-	 */
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		out.writeObject(this.handler);
-		out.writeObject(this.text);
-		if (!this.clazz.isPrimitive()) {
-			out.writeObject(this.clazz);
-		}
-	}
+    public Class<?> getClazz() {
+        return this.clazz;
+    }
 
-	/**
-	 * Overriding of the standard implementation is required, because
-	 * representations for primitive types (Integer.TYPE, Character.TYPE etc.)
-	 * are not serializable. They are not read from the stream. Instead, they
-	 * are restored according to their string representation.
-	 * 
-	 * @see #writeObject
-	 */
-	@SuppressWarnings("rawtypes")
-	private void readObject(java.io.ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
-		this.handler = (JexHandler) in.readObject();
-		this.text = (String) in.readObject();
-		this.clazz = this.handler.classResolver.forName(this.text);
-		if (this.clazz == null || !this.clazz.isPrimitive()) {
-			this.clazz = (Class) in.readObject();
-		}
-	}
+    /**
+     * Overriding of the standard implementation is required, because representations for primitive types (Integer.TYPE,
+     * Character.TYPE etc.) are not serializable. They are not written on the stream.
+     *
+     * @see #readObject
+     */
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeObject(this.handler);
+        out.writeObject(this.text);
+        if (!this.clazz.isPrimitive()) {
+            out.writeObject(this.clazz);
+        }
+    }
+
+    /**
+     * Overriding of the standard implementation is required, because representations for primitive types (Integer.TYPE,
+     * Character.TYPE etc.) are not serializable. They are not read from the stream. Instead, they are restored
+     * according to their string representation.
+     *
+     * @see #writeObject
+     */
+    @SuppressWarnings("rawtypes")
+    private void readObject(java.io.ObjectInputStream in) throws IOException,
+            ClassNotFoundException {
+        this.handler = (JexHandler) in.readObject();
+        this.text = (String) in.readObject();
+        this.clazz = this.handler.classResolver.forName(this.text);
+        if (this.clazz == null || !this.clazz.isPrimitive()) {
+            this.clazz = (Class) in.readObject();
+        }
+    }
 }
 /*
  * $Log: JexType.java,v $

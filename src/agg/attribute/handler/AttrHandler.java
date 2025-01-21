@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler;
 
 import java.io.Serializable;
@@ -14,75 +15,64 @@ import java.io.Serializable;
 import agg.attribute.parser.javaExpr.ClassResolver;
 
 /**
- * This interface is implemented by Attribute Handlers; It provides services for
- * the Attribute Manager.
- * 
+ * This interface is implemented by Attribute Handlers; It provides services for the Attribute Manager.
+ *
  * @version $Id: AttrHandler.java,v 1.3 2010/11/28 22:10:34 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrHandler extends Serializable {
-	static final long serialVersionUID = 5710467243044564905L;
 
-	/**
-	 * Getting the name of this handler so an attribute manager can display it
-	 * in the handlers' menu.
-	 * 
-	 * @return A (hopefully) meaningful name of the attribute handler.
-	 */
-	public String getName();
+    static final long serialVersionUID = 5710467243044564905L;
 
-	/**
-	 * Getting the type handle for a textual representation, for example "int" ->
-	 * int.
-	 * 
-	 * @param typeString
-	 *            The textual representation for the type wanted.
-	 * @return The handle for the requested type if such exists, null otherwise.
-	 * @exception AttrHandlerException
-	 *                When the type cannot be found in the handler.
-	 */
-	public HandlerType newHandlerType(String typeString)
-			throws AttrHandlerException;
+    /**
+     * Getting the name of this handler so an attribute manager can display it in the handlers' menu.
+     *
+     * @return A (hopefully) meaningful name of the attribute handler.
+     */
+    public String getName();
 
-	/**
-	 * Getting the expression handle by providing the type and a
-	 * String-representation of the expression.
-	 * 
-	 * @param type
-	 *            A handle of one of the types created by 'newHandlerType()'.
-	 * @return The handle for a newly created expression or...
-	 * @exception AttrHandlerException
-	 *                When the expression String cannot be a representation of
-	 *                an expression of the given type.
-	 */
-	public HandlerExpr newHandlerExpr(HandlerType type, String expr)
-			throws AttrHandlerException;
+    /**
+     * Getting the type handle for a textual representation, for example "int" -> int.
+     *
+     * @param typeString The textual representation for the type wanted.
+     * @return The handle for the requested type if such exists, null otherwise.
+     * @exception AttrHandlerException When the type cannot be found in the handler.
+     */
+    public HandlerType newHandlerType(String typeString)
+            throws AttrHandlerException;
 
-	/**
-	 * Getting the expression handle by providing the type and an appropriate
-	 * instance of the type.
-	 * 
-	 * @param type
-	 *            A handle of one of the types created by 'newHandlerType()'.
-	 * @return The handle for a newly created expression or...
-	 * @exception AttrHandlerException
-	 *                When the instance is not of the required type.
-	 */
-	public HandlerExpr newHandlerValue(HandlerType type, Object value)
-			throws AttrHandlerException;
+    /**
+     * Getting the expression handle by providing the type and a String-representation of the expression.
+     *
+     * @param type A handle of one of the types created by 'newHandlerType()'.
+     * @return The handle for a newly created expression or...
+     * @exception AttrHandlerException When the expression String cannot be a representation of an expression of the
+     * given type.
+     */
+    public HandlerExpr newHandlerExpr(HandlerType type, String expr)
+            throws AttrHandlerException;
 
-	
-	public ClassResolver getClassResolver();
-	
-	/*
+    /**
+     * Getting the expression handle by providing the type and an appropriate instance of the type.
+     *
+     * @param type A handle of one of the types created by 'newHandlerType()'.
+     * @return The handle for a newly created expression or...
+     * @exception AttrHandlerException When the instance is not of the required type.
+     */
+    public HandlerExpr newHandlerValue(HandlerType type, Object value)
+            throws AttrHandlerException;
+
+    public ClassResolver getClassResolver();
+
+    /*
 	 * Start an editor, so the user can configure whatever there is to configure
 	 * with this handler.
 	 * 
 	 * @param parent
 	 *            The window for which the caller wishes the popping-up dialog
 	 *            to be a child.
-	 */
-	// public void configEdit( Frame parent );
+     */
+    // public void configEdit( Frame parent );
 }
 /*
  * $Log: AttrHandler.java,v $

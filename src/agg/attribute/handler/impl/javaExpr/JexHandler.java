@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.impl.javaExpr;
 
 import java.io.IOException;
@@ -26,113 +27,108 @@ import agg.attribute.parser.javaExpr.SimpleNode;
  */
 public class JexHandler implements AttrHandler {
 
-	static final long serialVersionUID = 9042008410571344426L;
+    static final long serialVersionUID = 9042008410571344426L;
 
-	protected ClassResolver classResolver;
+    protected ClassResolver classResolver;
 
-	// transient protected ConfigEditor configEditor = null;
+    // transient protected ConfigEditor configEditor = null;
+    public JexHandler() {
+        this.classResolver = new ClassResolver();
+    }
 
-	public JexHandler() {
-		this.classResolver = new ClassResolver();
-	}
+    /**
+     * Getting the name of this handler as known by the attribute manager. Used to obtain the instance of this handler
+     * from the manager using its getHandler() method.
+     */
+    static public String getLabelName() {
+        return "Java Expr";
+    }
 
-	/**
-	 * Getting the name of this handler as known by the attribute manager. Used
-	 * to obtain the instance of this handler from the manager using its
-	 * getHandler() method.
-	 */
-	static public String getLabelName() {
-		return "Java Expr";
-	}
+    /**
+     * Called by #see ConfigEditor
+     */
+    public ClassResolver getClassResolver() {
+        return this.classResolver;
+    }
 
-	/**
-	 * Called by #see ConfigEditor
-	 */
-	public ClassResolver getClassResolver() {
-		return this.classResolver;
-	}
+    public String getName() {
+        return getLabelName();
+    }
 
-	public String getName() {
-		return getLabelName();
-	}
+    public HandlerType newHandlerType(String typeString)
+            throws AttrHandlerException {
+        Class<?> clazz;
 
-	public HandlerType newHandlerType(String typeString)
-			throws AttrHandlerException {
-		Class<?> clazz;
+        try {
+            clazz = this.classResolver.forName(typeString);
+        } catch (ClassResolverException ex) {
+            throw new AttrHandlerException(ex.getMessage());
+        }
+        if (clazz == null) {
+            throw new AttrHandlerException("Type not found");
+        }
+        return new JexType(this, typeString, clazz);
+    }
 
-		try {
-			clazz = this.classResolver.forName(typeString);
-		} catch (ClassResolverException ex) {
-			throw new AttrHandlerException(ex.getMessage());
-		}
-		if (clazz == null) {
-			throw new AttrHandlerException("Type not found");
-		}
-		return new JexType(this, typeString, clazz);
-	}
-
-	public HandlerExpr newHandlerExpr(HandlerType type, String exprString)
-			throws AttrHandlerException {
+    public HandlerExpr newHandlerExpr(HandlerType type, String exprString)
+            throws AttrHandlerException {
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"JexHandler:\n->newHandlerExpr");
-				
-		SimpleNode.setClassResolver(this.classResolver);
-		try {
-			return new JexExpr(exprString, false, (JexType) type);
-		} catch (AttrHandlerException ex1) {
-			throw ex1;
-		} finally {
+
+        SimpleNode.setClassResolver(this.classResolver);
+        try {
+            return new JexExpr(exprString, false, (JexType) type);
+        } catch (AttrHandlerException ex1) {
+            throw ex1;
+        } finally {
 //			AttrSession.logPrintln(VerboseControl.logTrace,
 //					"JexHandler:\n<-newHandlerExpr");
-		}
-	}
+        }
+    }
 
-	public HandlerExpr newHandlerValue(HandlerType type, Object value)
-			throws AttrHandlerException {
-		try {
-			return new JexExpr(value, (JexType) type);
-		} catch (AttrHandlerException ex1) {
-			throw ex1;
-		}
-	}
+    public HandlerExpr newHandlerValue(HandlerType type, Object value)
+            throws AttrHandlerException {
+        try {
+            return new JexExpr(value, (JexType) type);
+        } catch (AttrHandlerException ex1) {
+            throw ex1;
+        }
+    }
 
-	/*
+    /*
 	 * public void configEdit( Frame parent ){
 	 * 
 	 * if( configEditor == null ){ configEditor = new ConfigEditor( null,
 	 * getName(),10, 200, this.classResolver ); } configEditor.edit( getName(), 10,
 	 * 200 ); }
-	 */
+     */
+    /**
+     * Appending a package path to the package list.
+     *
+     * @param packageName The path name, e.g. "java.io"
+     */
+    public void appendPackage(String packageName) {
+        Vector<String> packages = this.classResolver.getPackages();
+        packages.addElement(packageName);
+        this.classResolver.setPackages(packages);
+    }
 
-	/**
-	 * Appending a package path to the package list.
-	 * 
-	 * @param packageName
-	 *            The path name, e.g. "java.io"
-	 */
-	public void appendPackage(String packageName) {
-		Vector<String> packages = this.classResolver.getPackages();
-		packages.addElement(packageName);
-		this.classResolver.setPackages(packages);
-	}
+    public void adaptParser() {
+        SimpleNode.setClassResolver(this.classResolver);
+    }
 
-	public void adaptParser() {
-		SimpleNode.setClassResolver(this.classResolver);
-	}
-
-	// ****************************************************************************
-
-	private void readObject(java.io.ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
-		/*
+    // ****************************************************************************
+    private void readObject(java.io.ObjectInputStream in) throws IOException,
+            ClassNotFoundException {
+        /*
 		 * if(this.classResolver == null) System.out.println("ClassResolver ==
 		 * null"); else System.out.println(this.classResolver);
-		 */
-		in.defaultReadObject();
-		/*
+         */
+        in.defaultReadObject();
+        /*
 		 * System.out.println(this.classResolver);
-		 */
-	}
+         */
+    }
 }
 
 /*

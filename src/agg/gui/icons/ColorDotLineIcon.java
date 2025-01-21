@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 //$Id: ColorDotLineIcon.java,v 1.4 2010/08/23 07:33:26 olga Exp $
-
 package agg.gui.icons;
 
 import java.awt.BasicStroke;
@@ -23,45 +23,45 @@ import agg.editor.impl.Line;
 
 public class ColorDotLineIcon implements Icon {
 
-	Color color;
-	boolean filled;
-	
-	public ColorDotLineIcon(Color c) {
-		this.color = c;
-	}
+    Color color;
+    boolean filled;
 
-	public ColorDotLineIcon(Color c, boolean bold) {
-		this.color = c;
-		this.filled = bold;
-	}
-	
-	public void setColor(Color c) {
-		this.color = c;
-	}
+    public ColorDotLineIcon(Color c) {
+        this.color = c;
+    }
 
-	public Color getColor() {
-		return this.color;
-	}
+    public ColorDotLineIcon(Color c, boolean bold) {
+        this.color = c;
+        this.filled = bold;
+    }
 
-	public void paintIcon(Component c, Graphics g, int x, int y) {
-		Color oldColor = g.getColor();
-		Line line = new Line(x, y + 7, x + 20, y + 7);
-		line.setColor(this.color);
-		
-		if (this.filled) {
-			((Graphics2D) g).setStroke(new BasicStroke(3.0f));
-			line.drawColorDotLine(g, 1, 3);
-		} else {		
-			line.drawColorDotLine(g, 1, 1);
-		}
-		g.setColor(oldColor);
-	}
+    public void setColor(Color c) {
+        this.color = c;
+    }
 
-	public int getIconWidth() {
-		return 20;
-	}
+    public Color getColor() {
+        return this.color;
+    }
 
-	public int getIconHeight() {
-		return 14;
-	}
+    public void paintIcon(Component c, Graphics g, int x, int y) {
+        Color oldColor = g.getColor();
+        Line line = new Line(x, y + 7, x + 20, y + 7);
+        line.setColor(this.color);
+
+        if (this.filled) {
+            ((Graphics2D) g).setStroke(new BasicStroke(3.0f));
+            line.drawColorDotLine(g, 1, 3);
+        } else {
+            line.drawColorDotLine(g, 1, 1);
+        }
+        g.setColor(oldColor);
+    }
+
+    public int getIconWidth() {
+        return 20;
+    }
+
+    public int getIconHeight() {
+        return 14;
+    }
 }

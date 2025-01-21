@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /**
@@ -15,31 +16,31 @@ package agg.attribute.parser.javaExpr;
  */
 public class ASTWrongTypeException extends RuntimeException {
 
-	static final long serialVersionUID = -1269956020947599174L;
+    static final long serialVersionUID = -1269956020947599174L;
 
-	public String expected = null, found = null;
+    public String expected = null, found = null;
 
-	public ASTWrongTypeException() {
-		super();
-	}
+    public ASTWrongTypeException() {
+        super();
+    }
 
-	public ASTWrongTypeException(String msg) {
-		super(msg);
-	}
+    public ASTWrongTypeException(String msg) {
+        super(msg);
+    }
 
-	public ASTWrongTypeException(String expected, String found) {
-		super();
-		this.expected = expected;
-		this.found = found;
-	}
+    public ASTWrongTypeException(String expected, String found) {
+        super();
+        this.expected = expected;
+        this.found = found;
+    }
 
-	public String getExpected() {
-		return this.expected;
-	}
+    public String getExpected() {
+        return this.expected;
+    }
 
-	public String getFound() {
-		return this.found;
-	}
+    public String getFound() {
+        return this.found;
+    }
 }
 /*
  * $Log: ASTWrongTypeException.java,v $

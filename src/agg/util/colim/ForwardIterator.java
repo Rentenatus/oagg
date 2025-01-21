@@ -1,60 +1,62 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.util.colim;
 
-
 /**
- * ForwardIterator is the interface of all iterators that can
- * read and/or write one item at a time in a forward direction.
+ * ForwardIterator is the interface of all iterators that can read and/or write one item at a time in a forward
+ * direction.
  */
+public interface ForwardIterator extends InputIterator, OutputIterator {
 
-public interface ForwardIterator extends InputIterator, OutputIterator
-  {
-  /**
-   * Advance by one.
-   */
-  public void advance();
+    /**
+     * Advance by one.
+     */
+    public void advance();
 
-  /**
-   * Advance by a specified amount.
-   * @param n The amount to advance.
-   */
-  public void advance( int n );
+    /**
+     * Advance by a specified amount.
+     *
+     * @param n The amount to advance.
+     */
+    public void advance(int n);
 
-  /**
-   * Return the object that is a specified distance from my current position.
-   * @param offset The offset from my current position.
-   */
-  public Object get( int offset );
+    /**
+     * Return the object that is a specified distance from my current position.
+     *
+     * @param offset The offset from my current position.
+     */
+    public Object get(int offset);
 
-  /**
-   * Replace the object at a specified distance from my current position.
-   * @param offset The offset from my current position.
-   * @param object The object to write.
-   */
-  public void put( int offset, Object object );
+    /**
+     * Replace the object at a specified distance from my current position.
+     *
+     * @param offset The offset from my current position.
+     * @param object The object to write.
+     */
+    public void put(int offset, Object object);
 
-  /**
-   * Return the distance from myself to another iterator.
-   * I should be before the specified iterator.
-   * @param iterator The iterator to compare myself against.
-   */
-  public int distance( ForwardIterator iterator );
+    /**
+     * Return the distance from myself to another iterator. I should be before the specified iterator.
+     *
+     * @param iterator The iterator to compare myself against.
+     */
+    public int distance(ForwardIterator iterator);
 
-  /**
-   * Return a clone of myself.
-   */
-  public Object clone();
+    /**
+     * Return a clone of myself.
+     */
+    public Object clone();
 
-  /**
-   * Return my associated container.
-   */
-  public Container getContainer();
-  }
+    /**
+     * Return my associated container.
+     */
+    public Container getContainer();
+}

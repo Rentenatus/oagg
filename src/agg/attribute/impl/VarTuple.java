@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Enumeration;
@@ -19,553 +20,571 @@ import agg.attribute.handler.AttrHandler;
 import agg.util.XMLHelper;
 
 /**
- * Adds the possibility of being shared. Needed as the container of variable
- * values inside a context core.
- * 
+ * Adds the possibility of being shared. Needed as the container of variable values inside a context core.
+ *
  * @author $Author: olga $
  * @version $Id: VarTuple.java,v 1.25 2010/11/28 22:11:36 olga Exp $
  */
 public class VarTuple extends LoneTuple implements AttrVariableTuple {
 
-	static final long serialVersionUID = 1133219076552845488L;
+    static final long serialVersionUID = 1133219076552845488L;
 
-	/**
-	 * A special value designating that the assignment was done in the parent
-	 * context and this context's references don't count; such a value is
-	 * permanent, it may not be changed by this value tuple.
-	 */
-	protected final int FIXED_VALUE = -1;
+    /**
+     * A special value designating that the assignment was done in the parent context and this context's references
+     * don't count; such a value is permanent, it may not be changed by this value tuple.
+     */
+    protected final int FIXED_VALUE = -1;
 
 //	private static transient int COUNTER = 0;
+    private Vector<Integer> signaturOrder;
 
-	private Vector<Integer> signaturOrder;
-	
-	
-	public VarTuple(AttrTupleManager manager, ContextView context,
-			ValueTuple parent) {
-		super(manager, context, parent);
-		getContextView().setAllowVarDeclarations(true);
-		getContextView().setAllowComplexExpr(true);
+    public VarTuple(AttrTupleManager manager, ContextView context,
+            ValueTuple parent) {
+        super(manager, context, parent);
+        getContextView().setAllowVarDeclarations(true);
+        getContextView().setAllowComplexExpr(true);
 
-		if (this.parent != null) {
-			if (this.getSize() == 0 && this.parent.getSize() > 0) {
-				for (int i = 0; i < this.parent.getSize(); i++) {
-					final VarMember m = (VarMember) this.parent.getMemberAt(i);
-					if  (m.getDeclaration().getTypeName() == null
-							|| m.getName() == null) {
-						continue;
-					}
-					this.declare(m.getHandler(), m.getDeclaration()
-							.getTypeName(), m.getName());
-					if (m.isSet()) {
-						((VarMember) this.getMemberAt(m.getName())).setExpr(m.getExpr());
-						((VarMember) this.getMemberAt(m.getName())).setExprAsText(m.getExprAsText());
-					}
-				}
-			}
-			for (int i = 0; i < this.getSize(); i++) {
-				final VarMember var = (VarMember) this.getMemberAt(i);
-				final VarMember varp = (VarMember) this.parent.getMemberAt(var.getName());
-				if (varp != null) {
-					var.setInputParameter(varp.isInputParameter());
-					var.setMark(varp.getMark());
-					var.setTransient(varp.isTransient());
-				}
-			}
-			getContextView().setVariableContext(
-					parent.getContextView().isVariableContext());
-		}
+        if (this.parent != null) {
+            if (this.getSize() == 0 && this.parent.getSize() > 0) {
+                for (int i = 0; i < this.parent.getSize(); i++) {
+                    final VarMember m = (VarMember) this.parent.getMemberAt(i);
+                    if (m.getDeclaration().getTypeName() == null
+                            || m.getName() == null) {
+                        continue;
+                    }
+                    this.declare(m.getHandler(), m.getDeclaration()
+                            .getTypeName(), m.getName());
+                    if (m.isSet()) {
+                        ((VarMember) this.getMemberAt(m.getName())).setExpr(m.getExpr());
+                        ((VarMember) this.getMemberAt(m.getName())).setExprAsText(m.getExprAsText());
+                    }
+                }
+            }
+            for (int i = 0; i < this.getSize(); i++) {
+                final VarMember var = (VarMember) this.getMemberAt(i);
+                final VarMember varp = (VarMember) this.parent.getMemberAt(var.getName());
+                if (varp != null) {
+                    var.setInputParameter(varp.isInputParameter());
+                    var.setMark(varp.getMark());
+                    var.setTransient(varp.isTransient());
+                }
+            }
+            getContextView().setVariableContext(
+                    parent.getContextView().isVariableContext());
+        }
 
 //		COUNTER++;
-		this.errorMsg = "";
-	}
-	
-	public void updateByParent() {
-		if (this.parent != null) {	
-			for (int i = 0; i < this.getSize(); i++) {
-				final VarMember m = (VarMember) this.getMemberAt(i);
-				if (this.parent.getMemberAt(m.getName()) == null) {
-					this.getTupleType().deleteMemberAt(m.getName());
-				} else {
-					final VarMember pm = (VarMember) this.parent.getMemberAt(m.getName());
-					m.setInputParameter(pm.isInputParameter());
-					if (!m.isIn) {
-						while (m.getReferenceCount() > 0) {
-							m.undoUnification();
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	public void propagateValueFromParent() {
-		if (this.parent != null) {	
-			for (int i = 0; i < this.parent.getSize(); i++) {
-				final VarMember pm = (VarMember) this.parent.getMemberAt(i);				
-				if (pm.isSet()) {
-					final VarMember m = (VarMember) this.getMemberAt(pm.getName());
-					m.setExpr(pm.getExpr());
-					if (!m.isTransient)
-						m.setTransient(pm.isTransient());
-				}
-			}			
-		}
-	}
-	
-	public void clear() {
-		for (int i = 0; i < getSize(); i++) {
-			this.deleteMemberAt(i);
-		}
-	}
+        this.errorMsg = "";
+    }
 
-	public void dispose() {
-		super.dispose();
-		if (this.type != null)
-			this.type.dispose();
-		if (getContextView() != null)
-			resetContextView(null);
-	}
+    public void updateByParent() {
+        if (this.parent != null) {
+            for (int i = 0; i < this.getSize(); i++) {
+                final VarMember m = (VarMember) this.getMemberAt(i);
+                if (this.parent.getMemberAt(m.getName()) == null) {
+                    this.getTupleType().deleteMemberAt(m.getName());
+                } else {
+                    final VarMember pm = (VarMember) this.parent.getMemberAt(m.getName());
+                    m.setInputParameter(pm.isInputParameter());
+                    if (!m.isIn) {
+                        while (m.getReferenceCount() > 0) {
+                            m.undoUnification();
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	protected void finalize() {
-		super.finalize();
+    public void propagateValueFromParent() {
+        if (this.parent != null) {
+            for (int i = 0; i < this.parent.getSize(); i++) {
+                final VarMember pm = (VarMember) this.parent.getMemberAt(i);
+                if (pm.isSet()) {
+                    final VarMember m = (VarMember) this.getMemberAt(pm.getName());
+                    m.setExpr(pm.getExpr());
+                    if (!m.isTransient) {
+                        m.setTransient(pm.isTransient());
+                    }
+                }
+            }
+        }
+    }
+
+    public void clear() {
+        for (int i = 0; i < getSize(); i++) {
+            this.deleteMemberAt(i);
+        }
+    }
+
+    public void dispose() {
+        super.dispose();
+        if (this.type != null) {
+            this.type.dispose();
+        }
+        if (getContextView() != null) {
+            resetContextView(null);
+        }
+    }
+
+    protected void finalize() {
+        super.finalize();
 //		COUNTER--;
-	}
+    }
 
-	public void makeCopyOf(final VarTuple tuple) {
-		for (int i = 0; i < tuple.getSize(); i++) {
-			final VarMember m = (VarMember) tuple.getMemberAt(i);
+    public void makeCopyOf(final VarTuple tuple) {
+        for (int i = 0; i < tuple.getSize(); i++) {
+            final VarMember m = (VarMember) tuple.getMemberAt(i);
 //			System.out.println(m.getDeclaration().getTypeName()+"   "+m.getName());
-			if  (m.getDeclaration().getTypeName() == null
-					|| m.getName() == null) {
-				continue;
-			}
-			this.declare(m.getHandler(), m.getDeclaration()
-					.getTypeName(), m.getName());
-			
-			final VarMember var = (VarMember) this.getMemberAt(i);
-			if (m.isSet()) {
-				if (m.getExprAsText().indexOf("@") != -1) {
-					var.setExpr(m.getExpr());
-				} else
-					var.setExprAsText(m.getExprAsText());
-			}
-			
-			var.setInputParameter(m.isInputParameter());
-			var.setMark(m.getMark());
-			var.setTransient(m.isTransient());
-		}
-	}
-	
-	public String getErrorMsg() {
-		return this.errorMsg;
-	}
+            if (m.getDeclaration().getTypeName() == null
+                    || m.getName() == null) {
+                continue;
+            }
+            this.declare(m.getHandler(), m.getDeclaration()
+                    .getTypeName(), m.getName());
 
-	protected ValueMember newMember(DeclMember decl) {
-		if (decl == null)
-			Thread.dumpStack();
-		if (decl != null)
-			return new VarMember(this, decl);
-		
-		return null;
-	}
+            final VarMember var = (VarMember) this.getMemberAt(i);
+            if (m.isSet()) {
+                if (m.getExprAsText().indexOf("@") != -1) {
+                    var.setExpr(m.getExpr());
+                } else {
+                    var.setExprAsText(m.getExprAsText());
+                }
+            }
 
-	protected String getLogEntry(int index) {
-		return (super.getLogEntry(index)
-				+ (getVarMemberAt(index).isInputParameter() ? " In " : " ") + (getVarMemberAt(
-				index).isOutputParameter() ? " Out " : " "));
-	}
+            var.setInputParameter(m.isInputParameter());
+            var.setMark(m.getMark());
+            var.setTransient(m.isTransient());
+        }
+    }
 
+    public String getErrorMsg() {
+        return this.errorMsg;
+    }
 
-	public VarMember getVarMemberAt(int index) {
-		return (VarMember) getMemberAt(index);
-	}
+    protected ValueMember newMember(DeclMember decl) {
+        if (decl == null) {
+            Thread.dumpStack();
+        }
+        if (decl != null) {
+            return new VarMember(this, decl);
+        }
 
-	public VarMember getVarMemberAt(String name) {
-		return (VarMember) getMemberAt(name);
-	}
+        return null;
+    }
 
-	public boolean isDeclared(String name) {
-		return getTupleType().containsName(name);
-	}
+    protected String getLogEntry(int index) {
+        return (super.getLogEntry(index)
+                + (getVarMemberAt(index).isInputParameter() ? " In " : " ") + (getVarMemberAt(
+                index).isOutputParameter() ? " Out " : " "));
+    }
 
-	public boolean isDeclared(String typestr, String name) {
-		if (getTupleType().containsName(name)) {
-			final VarMember vm = (VarMember) getMemberAt(name);
-			if (vm.getDeclaration().getTypeName().equals(typestr))
-				return true;
-			
-			return false;
-		} 
-		return false;
-	}
+    public VarMember getVarMemberAt(int index) {
+        return (VarMember) getMemberAt(index);
+    }
 
-	public void declare(AttrHandler handler, String typestr, String name) {		
+    public VarMember getVarMemberAt(String name) {
+        return (VarMember) getMemberAt(name);
+    }
+
+    public boolean isDeclared(String name) {
+        return getTupleType().containsName(name);
+    }
+
+    public boolean isDeclared(String typestr, String name) {
+        if (getTupleType().containsName(name)) {
+            final VarMember vm = (VarMember) getMemberAt(name);
+            if (vm.getDeclaration().getTypeName().equals(typestr)) {
+                return true;
+            }
+
+            return false;
+        }
+        return false;
+    }
+
+    public void declare(AttrHandler handler, String typestr, String name) {
 //		if (!getTupleType().isClassName(name)) 
-		{
-			getTupleType().addMember(handler, typestr, name);
-		}
+        {
+            getTupleType().addMember(handler, typestr, name);
+        }
 //		else {
 //			throw new AttrImplException("Class name  " + name
 //					+ "  cannot be used as a member name.");
 //		}
-	}
+    }
 
-	public void deleteLeafDeclaration(String name) {
-		final DeclTuple decl = getTupleType();
-		if (decl.getParentInCharge(decl.getIndexForName(name)) == decl) {
-			decl.deleteMemberAt(name);
-		} else {
-			throw new AttrImplException(
-					"Can't delete a declaration which was made \nin a parent context.");
-		}
-	}
+    public void deleteLeafDeclaration(String name) {
+        final DeclTuple decl = getTupleType();
+        if (decl.getParentInCharge(decl.getIndexForName(name)) == decl) {
+            decl.deleteMemberAt(name);
+        } else {
+            throw new AttrImplException(
+                    "Can't delete a declaration which was made \nin a parent context.");
+        }
+    }
 
-	public boolean isDeclared(Vector<String> varNames) {
-		for (int i = 0; i < varNames.size(); i++) {
-			if (!getTupleType().containsName(varNames.elementAt(i)))
-				return false;
-		}
-		return true;
-	}
+    public boolean isDeclared(Vector<String> varNames) {
+        for (int i = 0; i < varNames.size(); i++) {
+            if (!getTupleType().containsName(varNames.elementAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	/** Checks if there is input parameter. */
-	public boolean hasInputParameter() {
-		int size = getSize();
-		for (int i = 0; i < size; i++) {
-			if (getVarMemberAt(i).isInputParameter())
-				return true;
-		}
-		return false;
-	}
+    /**
+     * Checks if there is input parameter.
+     */
+    public boolean hasInputParameter() {
+        int size = getSize();
+        for (int i = 0; i < size; i++) {
+            if (getVarMemberAt(i).isInputParameter()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * Checks if all input parameter are set. If there are no parameter this
-	 * method returns true.
-	 */
-	public boolean areInputParametersSet() {
-		int size = getSize();
-		for (int i = 0; i < size; i++) {
-			final VarMember vm = getVarMemberAt(i);
-			if (vm.isInputParameter() && !vm.isSet())
-				return false;
-		}
-		return true;
-	}
+    /**
+     * Checks if all input parameter are set. If there are no parameter this method returns true.
+     */
+    public boolean areInputParametersSet() {
+        int size = getSize();
+        for (int i = 0; i < size; i++) {
+            final VarMember vm = getVarMemberAt(i);
+            if (vm.isInputParameter() && !vm.isSet()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public void unsetInputParameters() {
-		int size = getSize();
-		for (int i = 0; i < size; i++) {
-			final VarMember vm = getVarMemberAt(i);
-			if (vm.isInputParameter() && vm.isSet()) {
-				while (vm.getReferenceCount() > 0) {
-					vm.undoUnification();
-				}
-			}
-		}
-	}
+    public void unsetInputParameters() {
+        int size = getSize();
+        for (int i = 0; i < size; i++) {
+            final VarMember vm = getVarMemberAt(i);
+            if (vm.isInputParameter() && vm.isSet()) {
+                while (vm.getReferenceCount() > 0) {
+                    vm.undoUnification();
+                }
+            }
+        }
+    }
 
-	public void disableInputParameters() {
-		int size = getSize();
-		for (int i = 0; i < size; i++) {
-			final VarMember vm = getVarMemberAt(i);
-			if (vm.isInputParameter()) {
-				vm.setInputParameter(false);
-			}
-		}
-	}
-	
-	/**
-	 * Checks if all output parameter are set. If there are no parameter this
-	 * method return true. 
-	 */
-	public boolean areOutputParametersSet(){ 
-		int size = getSize(); 
-		for (int i = 0; i<size; i++) {
-			final VarMember vm = getVarMemberAt(i);
-			if (vm.isOutputParameter() && !vm.isSet())
-				return false; 
-		}
-		return true; 
-	}
+    public void disableInputParameters() {
+        int size = getSize();
+        for (int i = 0; i < size; i++) {
+            final VarMember vm = getVarMemberAt(i);
+            if (vm.isInputParameter()) {
+                vm.setInputParameter(false);
+            }
+        }
+    }
 
-	public void unsetVariables() {
-		int size = getSize();
-		for (int i = 0; i < size; i++) {
-			final VarMember vm = getVarMemberAt(i);
-			if (vm.isSet()) {
-				while (vm.getReferenceCount() > 0) {
-					vm.undoUnification();
-				}
-			}
-		}
-	}
+    /**
+     * Checks if all output parameter are set. If there are no parameter this method return true.
+     */
+    public boolean areOutputParametersSet() {
+        int size = getSize();
+        for (int i = 0; i < size; i++) {
+            final VarMember vm = getVarMemberAt(i);
+            if (vm.isOutputParameter() && !vm.isSet()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public void unsetNotInputVariables() {
-		int size = getSize();
-		for (int i = 0; i < size; i++) {
-			final VarMember vm = getVarMemberAt(i);
-			if (!vm.isInputParameter() && vm.isSet()) {
-				while (vm.getReferenceCount() > 0) {
-					vm.undoUnification();
-				}
-			}
-		}
-	}
+    public void unsetVariables() {
+        int size = getSize();
+        for (int i = 0; i < size; i++) {
+            final VarMember vm = getVarMemberAt(i);
+            if (vm.isSet()) {
+                while (vm.getReferenceCount() > 0) {
+                    vm.undoUnification();
+                }
+            }
+        }
+    }
 
-	/** Test, if all members can yield true or false. */
-	public boolean isDefinite() {
-		for (int i = 0; i < getSize(); i++) {
-			final VarMember m = getVarMemberAt(i);
+    public void unsetNotInputVariables() {
+        int size = getSize();
+        for (int i = 0; i < size; i++) {
+            final VarMember vm = getVarMemberAt(i);
+            if (!vm.isInputParameter() && vm.isSet()) {
+                while (vm.getReferenceCount() > 0) {
+                    vm.undoUnification();
+                }
+            }
+        }
+    }
 
-			// nicht definierte Variablen werden geloescht
-			if (!m.isDefinite()) {
-				final DeclTuple decl = ((ValueTuple) getParent()).getTupleType();
-				if (m.getReferenceCount() == 0) { // is not used
-					if (decl.getIndexForName(m.getName()) != -1) { // is
-						// declared
-						if (decl.getParentInCharge(decl.getIndexForName(m
-								.getName())) == decl) {// is not set, then
-							// delete
-							decl.deleteMemberAt(m.getName());
-							i--;
-						} else
-							return false;
-					} else
-						return false;
-				} else
-					return false;
-			}
-		}
-		return true;
-	}
+    /**
+     * Test, if all members can yield true or false.
+     */
+    public boolean isDefinite() {
+        for (int i = 0; i < getSize(); i++) {
+            final VarMember m = getVarMemberAt(i);
 
-	public Vector<String> getUndefiniteVariables() {
-		final Vector<String> undefVars = new Vector<String>(2);
-		for (int i = 0; i < getSize(); i++) {
-			final VarMember m = getVarMemberAt(i);
-			if (!m.isDefinite())
-				undefVars.addElement(m.getName());
-		}
-		return undefVars;
-	}
+            // nicht definierte Variablen werden geloescht
+            if (!m.isDefinite()) {
+                final DeclTuple decl = ((ValueTuple) getParent()).getTupleType();
+                if (m.getReferenceCount() == 0) { // is not used
+                    if (decl.getIndexForName(m.getName()) != -1) { // is
+                        // declared
+                        if (decl.getParentInCharge(decl.getIndexForName(m
+                                .getName())) == decl) {// is not set, then
+                            // delete
+                            decl.deleteMemberAt(m.getName());
+                            i--;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-	public Vector<String> getVariableNames() {
-		final Vector<String> names = new Vector<String>();
-		for (int i = 0; i < getSize(); i++) {
-			final VarMember v = getVarMemberAt(i);
-			if ((v != null)) {
-				String varName = v.getName();
-				if (!names.contains(varName))
-					names.addElement(varName);
-			}
-		}
-		// System.out.println(names);
-		return names;
-	}
+    public Vector<String> getUndefiniteVariables() {
+        final Vector<String> undefVars = new Vector<String>(2);
+        for (int i = 0; i < getSize(); i++) {
+            final VarMember m = getVarMemberAt(i);
+            if (!m.isDefinite()) {
+                undefVars.addElement(m.getName());
+            }
+        }
+        return undefVars;
+    }
 
-	public boolean compareTo(AttrInstance another) {
-		VarTuple vt = (VarTuple) another;
-		// compare tuple type
-		if (!this.type.compareTo(vt.getTupleType()))
-			return false;
-		// compare member value
-		int length = getSize();
-		for (int i = 0; i < length; i++) {
-			VarMember v = getVarMemberAt(i);
-			VarMember v1 = vt.getVarMemberAt(i);
-			if ((v.getExpr() == null) && (v1.getExpr() == null))
-				;
-			else if ((v.getExpr() == null) && (v1.getExpr() != null))
-				return false;
-			else if ((v.getExpr() != null) && (v1.getExpr() == null))
-				return false;
-			else if (!v.getExpr().equals(v1.getExpr()))
-				return false;
-		}
-		return true;
-	}
+    public Vector<String> getVariableNames() {
+        final Vector<String> names = new Vector<String>();
+        for (int i = 0; i < getSize(); i++) {
+            final VarMember v = getVarMemberAt(i);
+            if ((v != null)) {
+                String varName = v.getName();
+                if (!names.contains(varName)) {
+                    names.addElement(varName);
+                }
+            }
+        }
+        // System.out.println(names);
+        return names;
+    }
 
-	public String toString() {
-		String s = "VarTuple  hash: " + hashCode() + "  [\n";
-		for (int i = 0; i < getSize(); i++) {
-			VarMember v = getVarMemberAt(i);
-			if (v != null) {
-				s = s.concat(getVarMemberAt(i).getName() + ": "
-						+ getVarMemberAt(i).toString());
-				s = s.concat("\n");
-			}
-		}
-		s = s.concat("\n ]");
-		return s;
-	}
+    public boolean compareTo(AttrInstance another) {
+        VarTuple vt = (VarTuple) another;
+        // compare tuple type
+        if (!this.type.compareTo(vt.getTupleType())) {
+            return false;
+        }
+        // compare member value
+        int length = getSize();
+        for (int i = 0; i < length; i++) {
+            VarMember v = getVarMemberAt(i);
+            VarMember v1 = vt.getVarMemberAt(i);
+            if ((v.getExpr() == null) && (v1.getExpr() == null))
+				; else if ((v.getExpr() == null) && (v1.getExpr() != null)) {
+                return false;
+            } else if ((v.getExpr() != null) && (v1.getExpr() == null)) {
+                return false;
+            } else if (!v.getExpr().equals(v1.getExpr())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public void showVariables() {
-		System.out.println("Attr. context variables:  "+this.context.core+ "     "+this.context);
-		for (int i = 0; i < getSize(); i++) {
-			VarMember v = getVarMemberAt(i);
-			if (v != null) {
-				String val = v.isSet()? v.getExprAsText(): "";
-				System.out.println(v.getDeclaration().getTypeName() + " : "
-						+ v.getName() + " : " +v + " : " + v.getMark()+ " : "+v.isTransient+" = "+val);
-			}
-		}
-		System.out.println("================================");
-	}
+    public String toString() {
+        String s = "VarTuple  hash: " + hashCode() + "  [\n";
+        for (int i = 0; i < getSize(); i++) {
+            VarMember v = getVarMemberAt(i);
+            if (v != null) {
+                s = s.concat(getVarMemberAt(i).getName() + ": "
+                        + getVarMemberAt(i).toString());
+                s = s.concat("\n");
+            }
+        }
+        s = s.concat("\n ]");
+        return s;
+    }
 
-	public void initSignaturOrder() {
-		if (this.signaturOrder == null) {
-			this.signaturOrder = new Vector<Integer>(5);
-			for (int i = 0; i < this.getSize(); i++) {
-				VarMember m = (VarMember) this.getMemberAt(i);	
-				if (m.isInputParameter())
-					this.signaturOrder.add(new Integer(i));
-			}
-		}
-	}
-	
-	public void disposeSignaturOrder() {
-		if (this.signaturOrder != null) {
-			for (int i = 0; i < this.signaturOrder.size(); i++) {
-				VarMember m = (VarMember) this.getMemberAt(this.signaturOrder.get(i).intValue());
-				if (m != null) {
-					m.setInputParameter(false);
-					m.setOutputParameter(false);
-				}
-			}
-			this.signaturOrder = null;		
-		}
-	}
-	
-	public List<Integer> getSignaturOrder() {
-		return this.signaturOrder;
-	}
-	
-	public void addToSignaturOrder(int indxOfVar) {
-		if (this.signaturOrder != null) {
-			VarMember m = this.getVarMemberAt(indxOfVar);
-			if (m != null) {
-				m.setInputParameter(true);
-				int i = this.signaturOrder.indexOf(Integer.valueOf(indxOfVar));
-				if (i != -1)
-					this.signaturOrder.remove(i);			
-				this.signaturOrder.add(new Integer(indxOfVar));
-			}
-		}
-	}
-	
-	public void removeFromSignaturOrder(int indxOfVar) {
-		if (this.signaturOrder != null) {
-			VarMember m = this.getVarMemberAt(indxOfVar);
-			if (m != null) {
-				m.setInputParameter(false);
-				this.signaturOrder.remove(Integer.valueOf(indxOfVar));	
-			}
-		}
-	}
-	
-	
-	public void XwriteObject(XMLHelper h) {
-		int num = getSize();
-		for (int i = 0; i < num; i++) {
-			VarMember val = getVarMemberAt(i);
-			if (val != null 
-					&& val.getDecl().getTypeName() != null
-					&& val.getName() != null
-					&& !"".equals(val.getDecl().getTypeName())
-					&& !"".equals(val.getName())) {
-				h.openSubTag("Parameter");
+    public void showVariables() {
+        System.out.println("Attr. context variables:  " + this.context.core + "     " + this.context);
+        for (int i = 0; i < getSize(); i++) {
+            VarMember v = getVarMemberAt(i);
+            if (v != null) {
+                String val = v.isSet() ? v.getExprAsText() : "";
+                System.out.println(v.getDeclaration().getTypeName() + " : "
+                        + v.getName() + " : " + v + " : " + v.getMark() + " : " + v.isTransient + " = " + val);
+            }
+        }
+        System.out.println("================================");
+    }
 
-				if (val.isSet()) {
-					if (val.getExpr().isConstant()) {
-						h.addAttr("value", val.getExpr().getValue().toString());
-						/*
+    public void initSignaturOrder() {
+        if (this.signaturOrder == null) {
+            this.signaturOrder = new Vector<Integer>(5);
+            for (int i = 0; i < this.getSize(); i++) {
+                VarMember m = (VarMember) this.getMemberAt(i);
+                if (m.isInputParameter()) {
+                    this.signaturOrder.add(new Integer(i));
+                }
+            }
+        }
+    }
+
+    public void disposeSignaturOrder() {
+        if (this.signaturOrder != null) {
+            for (int i = 0; i < this.signaturOrder.size(); i++) {
+                VarMember m = (VarMember) this.getMemberAt(this.signaturOrder.get(i).intValue());
+                if (m != null) {
+                    m.setInputParameter(false);
+                    m.setOutputParameter(false);
+                }
+            }
+            this.signaturOrder = null;
+        }
+    }
+
+    public List<Integer> getSignaturOrder() {
+        return this.signaturOrder;
+    }
+
+    public void addToSignaturOrder(int indxOfVar) {
+        if (this.signaturOrder != null) {
+            VarMember m = this.getVarMemberAt(indxOfVar);
+            if (m != null) {
+                m.setInputParameter(true);
+                int i = this.signaturOrder.indexOf(Integer.valueOf(indxOfVar));
+                if (i != -1) {
+                    this.signaturOrder.remove(i);
+                }
+                this.signaturOrder.add(new Integer(indxOfVar));
+            }
+        }
+    }
+
+    public void removeFromSignaturOrder(int indxOfVar) {
+        if (this.signaturOrder != null) {
+            VarMember m = this.getVarMemberAt(indxOfVar);
+            if (m != null) {
+                m.setInputParameter(false);
+                this.signaturOrder.remove(Integer.valueOf(indxOfVar));
+            }
+        }
+    }
+
+    public void XwriteObject(XMLHelper h) {
+        int num = getSize();
+        for (int i = 0; i < num; i++) {
+            VarMember val = getVarMemberAt(i);
+            if (val != null
+                    && val.getDecl().getTypeName() != null
+                    && val.getName() != null
+                    && !"".equals(val.getDecl().getTypeName())
+                    && !"".equals(val.getName())) {
+                h.openSubTag("Parameter");
+
+                if (val.isSet()) {
+                    if (val.getExpr().isConstant()) {
+                        h.addAttr("value", val.getExpr().getValue().toString());
+                        /*
 						 * h.openSubTag("Value");
 						 * if(val.getDeclaration().getType().toString().equals("String"))
 						 * h.addAttrValue("string", v); else
 						 * h.addAttrValue(decl.getType().toString(), v);
 						 * h.close();
-						 */
-					} else {
-						h.addAttr("expr", val.getExpr().getString());
-					}
-				}
-				h.addAttr("name", val.getName());
-				h.addAttr("type", val.getDecl().getTypeName());
-				boolean isin = val.isInputParameter();
-				boolean isout = val.isOutputParameter();
-				String inout = (isin && isout) ? "inout" : (isin) ? "input"
-						: (isout) ? "output" : "";
-				if (inout != "")
-					h.addAttr("PTYPE", inout);
-				h.close();
-			}
-		}
-		if (this.signaturOrder != null && !this.signaturOrder.isEmpty()) {
-			h.openSubTag("Input");
-			String str = this.signaturOrder.toString().replace("[", "").replace("]", "");
-			h.addAttr("order", str);
-			h.close();
-		}
-	}
+                         */
+                    } else {
+                        h.addAttr("expr", val.getExpr().getString());
+                    }
+                }
+                h.addAttr("name", val.getName());
+                h.addAttr("type", val.getDecl().getTypeName());
+                boolean isin = val.isInputParameter();
+                boolean isout = val.isOutputParameter();
+                String inout = (isin && isout) ? "inout" : (isin) ? "input"
+                        : (isout) ? "output" : "";
+                if (inout != "") {
+                    h.addAttr("PTYPE", inout);
+                }
+                h.close();
+            }
+        }
+        if (this.signaturOrder != null && !this.signaturOrder.isEmpty()) {
+            h.openSubTag("Input");
+            String str = this.signaturOrder.toString().replace("[", "").replace("]", "");
+            h.addAttr("order", str);
+            h.close();
+        }
+    }
 
-	public void XreadObject(XMLHelper h) {
-		Enumeration<?> en = h.getEnumeration("", null, true, "Parameter");
-		while (en.hasMoreElements()) {
-			h.peekElement(en.nextElement());
-			String name = h.readAttr("name");
-			if (!isDeclared(name)) {
-				String typestr = h.readAttr("type");
-				if (!"".equals(typestr)) {
-					String handlerName = agg.attribute.handler.impl.javaExpr.JexHandler
-							.getLabelName();
-					AttrHandler handler = getAttrManager().getHandler(handlerName);
-					declare(handler, typestr, name);
-					VarMember var = getVarMemberAt(name);
-					String inout = h.readAttr("PTYPE");
-					boolean isin = false;
-					boolean isout = false;
-					if (inout.equals("inout")) {
-						isin = isout = true;
-					} else if (inout.equals("input"))
-						isin = true;
-					else if (inout.equals("output"))
-						isout = true;
-					var.setInputParameter(isin);
-					var.setOutputParameter(isout);
-	
-					String value = h.readAttr("value");
-					if ((value != null) && !value.equals("")) {
-						// System.out.println("VarTuple.Xread: value: "+value);
-						if (typestr.equals("String"))
-							var.setExprAsText("\"" + value + "\"");
-						else if (typestr.equals("Character") || typestr.equals("char"))
-							var.setExprAsText("\'" + value.charAt(0) + "\'");
-						else
-							var.setExprAsText(value);
-						var.checkValidity();
-					} else {
-						String expr = h.readAttr("expr");
-						// System.out.println("VarTuple.Xread: expr: "+expr);
-						if ((expr != null) && !expr.equals("")) {
-							var.setExprAsText(expr);
-							var.checkValidity();
-						}
-					}
-				}
-			}
-			h.close();
-		}
-		if (h.readSubTag("Input")) {
-			this.signaturOrder = new Vector<Integer>(5);
-			String order = h.readAttr("order");
-			String[] array = order.split(", ");
-			for (int i=0; i<array.length; i++) {
-				this.signaturOrder.add(Integer.valueOf(array[i]));
-			}
-			h.close();		
-		}
-	}
+    public void XreadObject(XMLHelper h) {
+        Enumeration<?> en = h.getEnumeration("", null, true, "Parameter");
+        while (en.hasMoreElements()) {
+            h.peekElement(en.nextElement());
+            String name = h.readAttr("name");
+            if (!isDeclared(name)) {
+                String typestr = h.readAttr("type");
+                if (!"".equals(typestr)) {
+                    String handlerName = agg.attribute.handler.impl.javaExpr.JexHandler
+                            .getLabelName();
+                    AttrHandler handler = getAttrManager().getHandler(handlerName);
+                    declare(handler, typestr, name);
+                    VarMember var = getVarMemberAt(name);
+                    String inout = h.readAttr("PTYPE");
+                    boolean isin = false;
+                    boolean isout = false;
+                    if (inout.equals("inout")) {
+                        isin = isout = true;
+                    } else if (inout.equals("input")) {
+                        isin = true;
+                    } else if (inout.equals("output")) {
+                        isout = true;
+                    }
+                    var.setInputParameter(isin);
+                    var.setOutputParameter(isout);
+
+                    String value = h.readAttr("value");
+                    if ((value != null) && !value.equals("")) {
+                        // System.out.println("VarTuple.Xread: value: "+value);
+                        if (typestr.equals("String")) {
+                            var.setExprAsText("\"" + value + "\"");
+                        } else if (typestr.equals("Character") || typestr.equals("char")) {
+                            var.setExprAsText("\'" + value.charAt(0) + "\'");
+                        } else {
+                            var.setExprAsText(value);
+                        }
+                        var.checkValidity();
+                    } else {
+                        String expr = h.readAttr("expr");
+                        // System.out.println("VarTuple.Xread: expr: "+expr);
+                        if ((expr != null) && !expr.equals("")) {
+                            var.setExprAsText(expr);
+                            var.checkValidity();
+                        }
+                    }
+                }
+            }
+            h.close();
+        }
+        if (h.readSubTag("Input")) {
+            this.signaturOrder = new Vector<Integer>(5);
+            String order = h.readAttr("order");
+            String[] array = order.split(", ");
+            for (int i = 0; i < array.length; i++) {
+                this.signaturOrder.add(Integer.valueOf(array[i]));
+            }
+            h.close();
+        }
+    }
 
 }
 /*

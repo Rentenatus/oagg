@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui;
 
 import java.awt.BorderLayout;
@@ -22,141 +23,174 @@ import javax.swing.JPanel;
 import agg.attribute.impl.VerboseControl;
 
 /**
- * This class provides a window which switches some debug output on and off. At
- * this time only attribute information are provided.
- * 
+ * This class provides a window which switches some debug output on and off. At this time only attribute information are
+ * provided.
+ *
  * @author $Author: olga $
  * @version $Id: DebugFrame.java,v 1.3 2007/09/10 13:05:24 olga Exp $
  */
 @SuppressWarnings("serial")
 public class DebugFrame extends JFrame implements ActionListener {
 
-	// In AGGAppl gibt es das Flag "DEBUGFRAME", mit dem der ganze Frame mit
-	// Meunueintrag
-	// aus der AGG-GUI genommen werden kann.
-	// Siehe agg.attribute.impl.VerboseControl
+    // In AGGAppl gibt es das Flag "DEBUGFRAME", mit dem der ganze Frame mit
+    // Meunueintrag
+    // aus der AGG-GUI genommen werden kann.
+    // Siehe agg.attribute.impl.VerboseControl
+    private static String FileIO = "File I/O";
 
-	private static String FileIO = "File I/O";
+    /**
+     * Each creation of any subclass of AttrObject
+     */
+    private static String Creation = "Creation";
 
-	/** Each creation of any subclass of AttrObject */
-	private static String Creation = "Creation";
+    /**
+     * Context of AttrInstance (impl by ValueTuple)
+     */
+    private static String ContextOfInstances = "Context of Instances";
 
-	/** Context of AttrInstance (impl by ValueTuple) */
-	private static String ContextOfInstances = "Context of Instances";
+    /**
+     * Mapping in an AttrContext (impl by ContextView / ContextCore )
+     */
+    private static String Mapping = "Mapping";
 
-	/** Mapping in an AttrContext (impl by ContextView / ContextCore ) */
-	private static String Mapping = "Mapping";
+    /**
+     * Handling of AttrContext (impl by ContextView / ContextCore )
+     */
+    private static String Context = "Context";
 
-	/** Handling of AttrContext (impl by ContextView / ContextCore ) */
-	private static String Context = "Context";
+    /**
+     * Context (rule) conditions AttrCond (impl by CondTuple)
+     */
+    private static String Cond = "Condition";
 
-	/** Context (rule) conditions AttrCond (impl by CondTuple) */
-	private static String Cond = "Condition";
+    /**
+     * Context (rule) variables AttrVar (impl by VarTuple)
+     */
+    private static String Var = "Variable";
 
-	/** Context (rule) variables AttrVar (impl by VarTuple) */
-	private static String Var = "Variable";
+    /**
+     * Setting of variables.
+     */
+    private static String SetValue = "set Value";
 
-	/** Setting of variables. */
-	private static String SetValue = "set Value";
+    /**
+     * Removing of variables
+     */
+    private static String RemoveValue = "remove Value";
 
-	/** Removing of variables */
-	private static String RemoveValue = "remove Value";
+    /**
+     * Events
+     */
+    private static String Event = "Events";
 
-	/** Events */
-	private static String Event = "Events";
+    /**
+     * Syntax trees of Java expressions.
+     */
+    private static String ParseTree = "Parse Tree";
 
-	/** Syntax trees of Java expressions. */
-	private static String ParseTree = "Parse Tree";
+    /**
+     * Traces method calls
+     */
+    private static String Trace = "Trace";
 
-	/** Traces method calls */
-	private static String Trace = "Trace";
+    public DebugFrame() {
+        setTitle("Debug Preferences");
+        setSize(200, 300);
+        setLocation(200, 200);
+        getContentPane().setLayout(new BorderLayout());
 
-	public DebugFrame() {
-		setTitle("Debug Preferences");
-		setSize(200, 300);
-		setLocation(200, 200);
-		getContentPane().setLayout(new BorderLayout());
+        JPanel p = new JPanel(new GridLayout(0, 1), true);
+        p.setSize(200, 300);
+        getContentPane().add(p);
+        p.add(new JLabel("Debugoptionen"));
+        JCheckBox jcb = new JCheckBox(FileIO, VerboseControl.logFileIO);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(Creation, VerboseControl.logCreation);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(ContextOfInstances,
+                VerboseControl.logContextOfInstances);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(Mapping, VerboseControl.logMapping);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(Context, VerboseControl.logContext);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(Cond, VerboseControl.logCond);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(Var, VerboseControl.logVar);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(SetValue, VerboseControl.logSetValue);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(RemoveValue, VerboseControl.logRemoveValue);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(Event, VerboseControl.logEvent);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(ParseTree, VerboseControl.logParseTree);
+        p.add(jcb);
+        jcb.addActionListener(this);
+        jcb = new JCheckBox(Trace, null, VerboseControl.logTrace);
+        p.add(jcb);
+        jcb.addActionListener(this);
+    }
 
-		JPanel p = new JPanel(new GridLayout(0, 1), true);
-		p.setSize(200, 300);
-		getContentPane().add(p);
-		p.add(new JLabel("Debugoptionen"));
-		JCheckBox jcb = new JCheckBox(FileIO, VerboseControl.logFileIO);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(Creation, VerboseControl.logCreation);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(ContextOfInstances,
-				VerboseControl.logContextOfInstances);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(Mapping, VerboseControl.logMapping);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(Context, VerboseControl.logContext);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(Cond, VerboseControl.logCond);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(Var, VerboseControl.logVar);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(SetValue, VerboseControl.logSetValue);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(RemoveValue, VerboseControl.logRemoveValue);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(Event, VerboseControl.logEvent);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(ParseTree, VerboseControl.logParseTree);
-		p.add(jcb);
-		jcb.addActionListener(this);
-		jcb = new JCheckBox(Trace, null, VerboseControl.logTrace);
-		p.add(jcb);
-		jcb.addActionListener(this);
-	}
-
-	public void actionPerformed(ActionEvent evt) {
-		String lnfName = evt.getActionCommand();
-		if (lnfName == FileIO)
-			VerboseControl.logFileIO = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == Creation)
-			VerboseControl.logCreation = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == ContextOfInstances)
-			VerboseControl.logContextOfInstances = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == Mapping)
-			VerboseControl.logMapping = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == Context)
-			VerboseControl.logContext = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == Cond)
-			VerboseControl.logCond = ((JCheckBox) evt.getSource()).isSelected();
-		if (lnfName == Var)
-			VerboseControl.logVar = ((JCheckBox) evt.getSource()).isSelected();
-		if (lnfName == SetValue)
-			VerboseControl.logSetValue = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == RemoveValue)
-			VerboseControl.logRemoveValue = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == Event)
-			VerboseControl.logEvent = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == ParseTree)
-			VerboseControl.logParseTree = ((JCheckBox) evt.getSource())
-					.isSelected();
-		if (lnfName == Trace)
-			VerboseControl.logTrace = ((JCheckBox) evt.getSource())
-					.isSelected();
-	}
+    public void actionPerformed(ActionEvent evt) {
+        String lnfName = evt.getActionCommand();
+        if (lnfName == FileIO) {
+            VerboseControl.logFileIO = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == Creation) {
+            VerboseControl.logCreation = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == ContextOfInstances) {
+            VerboseControl.logContextOfInstances = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == Mapping) {
+            VerboseControl.logMapping = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == Context) {
+            VerboseControl.logContext = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == Cond) {
+            VerboseControl.logCond = ((JCheckBox) evt.getSource()).isSelected();
+        }
+        if (lnfName == Var) {
+            VerboseControl.logVar = ((JCheckBox) evt.getSource()).isSelected();
+        }
+        if (lnfName == SetValue) {
+            VerboseControl.logSetValue = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == RemoveValue) {
+            VerboseControl.logRemoveValue = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == Event) {
+            VerboseControl.logEvent = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == ParseTree) {
+            VerboseControl.logParseTree = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+        if (lnfName == Trace) {
+            VerboseControl.logTrace = ((JCheckBox) evt.getSource())
+                    .isSelected();
+        }
+    }
 
 }
 // ======================================================================

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.HashMap;
@@ -23,560 +24,523 @@ import agg.attribute.view.AttrViewSetting;
 import agg.attribute.view.impl.OpenViewSetting;
 
 /**
- * Attribute Tuple Manager - Factory of attribute management; Provides creating
- * services needed by graphical components.
- * 
+ * Attribute Tuple Manager - Factory of attribute management; Provides creating services needed by graphical components.
+ *
  * @author $Author: olga $
  * @version $Id: AttrTupleManager.java,v 1.21 2010/11/28 22:11:36 olga Exp $
  */
 @SuppressWarnings("serial")
 public class AttrTupleManager extends AttrObject implements
-		agg.attribute.AttrManager {
+        agg.attribute.AttrManager {
 
-	public HashMap<String,Boolean> classNameLookupMap;
+    public HashMap<String, Boolean> classNameLookupMap;
 
-	protected AttrHandler handlers[] = AvailableHandlers.newInstances();
+    protected AttrHandler handlers[] = AvailableHandlers.newInstances();
 
-	protected AttrViewSetting defaultOpenView;
+    protected AttrViewSetting defaultOpenView;
 
-	protected AttrViewSetting defaultMaskedView;
+    protected AttrViewSetting defaultMaskedView;
 
-	protected AttrViewSetting fixedViewSetting;
+    protected AttrViewSetting fixedViewSetting;
 
-	protected ContextView defaultContext;
+    protected ContextView defaultContext;
 
-	protected boolean isCorrectInputEnforced = false;
+    protected boolean isCorrectInputEnforced = false;
 
-	private String errorMsg = "";
+    private String errorMsg = "";
 
-	private boolean variableContext = false;
+    private boolean variableContext = false;
 
-	protected static AttrTupleManager myDefaultInstance = new AttrTupleManager();
+    protected static AttrTupleManager myDefaultInstance = new AttrTupleManager();
 
-	
-	
-	/**
-	 * Returns the default instance of AttrManager. Called e.g. by facades.
-	 */
-	public static AttrManager getDefaultManager() {
-		return myDefaultInstance;
-	}
+    /**
+     * Returns the default instance of AttrManager. Called e.g. by facades.
+     */
+    public static AttrManager getDefaultManager() {
+        return myDefaultInstance;
+    }
 
-	/** Public constructor. */
-	public AttrTupleManager() {
-		new AttrSession();
-		setDebug(true);
+    /**
+     * Public constructor.
+     */
+    public AttrTupleManager() {
+        new AttrSession();
+        setDebug(true);
 
-		this.classNameLookupMap = new HashMap<String,Boolean>();
-		
-		this.defaultOpenView = new OpenViewSetting(this);
-		this.defaultMaskedView = this.defaultOpenView.getMaskedView();
+        this.classNameLookupMap = new HashMap<String, Boolean>();
 
-		this.fixedViewSetting = new OpenViewSetting(this);
+        this.defaultOpenView = new OpenViewSetting(this);
+        this.defaultMaskedView = this.defaultOpenView.getMaskedView();
 
-		this.defaultContext = makeDefaultContext();
-	}
+        this.fixedViewSetting = new OpenViewSetting(this);
 
-	
-	private ContextView makeDefaultContext() {
-		ContextView c = new ContextView(this, AttrMapping.PLAIN_MAP);
-		c.setAllowVarDeclarations(false);
-		c.setAllowComplexExpr(false);
-		c.setAllowEmptyValues(false);
-		c.setAllowInitialExpr(true);
-		return c;
-	}
-	
-	// ///////////////////////////////////////////////
-	// Begin of AttrManager interface implementation.
+        this.defaultContext = makeDefaultContext();
+    }
 
-	// ///////////////////
-	// Context for variables and parameters:
-	public AttrContext newContext(int mapStyle) {
-		ContextView c = new ContextView(this, mapStyle, null);
-		c.setVariableContext(this.variableContext);
-		return c;
-	}
+    private ContextView makeDefaultContext() {
+        ContextView c = new ContextView(this, AttrMapping.PLAIN_MAP);
+        c.setAllowVarDeclarations(false);
+        c.setAllowComplexExpr(false);
+        c.setAllowEmptyValues(false);
+        c.setAllowInitialExpr(true);
+        return c;
+    }
 
-	/**
-	 * Creating a new attribute context which extends an existing one. In Graph
-	 * Transformation, the setting of variables by matching corresponding
-	 * graphical objects requires such a construction. It allows for keeping
-	 * more that one rule match at a given time;
-	 * 
-	 * @param mapStyle
-	 *            The kind of mapping that is allowed within this context; it is
-	 *            one of: - AttrMapping.PLAIN_MAP: In Graph Transformation: rule
-	 *            mapping - AttrMapping.MATCH_MAP: In Graph Transformation:
-	 *            matching
-	 * @param parent
-	 *            The context to extend
-	 * @return The new attribute context child
-	 * @see AttrContext
-	 * @see AttrMapping
-	 */
-	public AttrContext newContext(int mapStyle, AttrContext parent) {
-		ContextView c = new ContextView(this, mapStyle, parent);
-		c.setVariableContext(this.variableContext);
-		return c;
-	}
+    // ///////////////////////////////////////////////
+    // Begin of AttrManager interface implementation.
+    // ///////////////////
+    // Context for variables and parameters:
+    public AttrContext newContext(int mapStyle) {
+        ContextView c = new ContextView(this, mapStyle, null);
+        c.setVariableContext(this.variableContext);
+        return c;
+    }
 
-	/*
+    /**
+     * Creating a new attribute context which extends an existing one. In Graph Transformation, the setting of variables
+     * by matching corresponding graphical objects requires such a construction. It allows for keeping more that one
+     * rule match at a given time;
+     *
+     * @param mapStyle The kind of mapping that is allowed within this context; it is one of: - AttrMapping.PLAIN_MAP:
+     * In Graph Transformation: rule mapping - AttrMapping.MATCH_MAP: In Graph Transformation: matching
+     * @param parent The context to extend
+     * @return The new attribute context child
+     * @see AttrContext
+     * @see AttrMapping
+     */
+    public AttrContext newContext(int mapStyle, AttrContext parent) {
+        ContextView c = new ContextView(this, mapStyle, parent);
+        c.setVariableContext(this.variableContext);
+        return c;
+    }
+
+    /*
 	public AttrContext makeCopyOf(AttrContext context) {
 		ContextView c = new ContextView(this, ((ContextView) context).getMapStyle());
 		c.copyAttrContext(context);
 		return c;
 	}
-	*/
-	
-	
-	/**
-	 * Creating a full view on an existing attribute context; Through a "full
-	 * view" on a context, variables can be declared and values can be assigned
-	 * to them by the editor of attribute instances. In Graph Transformation, it
-	 * is used for the left-hand-side of a rule.
-	 * 
-	 * @param context
-	 *            The context to generate the view on
-	 * @return The new attribute context view
-	 * @see AttrContext
-	 */
-	public AttrContext newLeftContext(AttrContext context) {
-		ContextView c = new ContextView(this, context, true);
-		c.setVariableContext(this.variableContext);
-		return c;
-	}
+     */
+    /**
+     * Creating a full view on an existing attribute context; Through a "full view" on a context, variables can be
+     * declared and values can be assigned to them by the editor of attribute instances. In Graph Transformation, it is
+     * used for the left-hand-side of a rule.
+     *
+     * @param context The context to generate the view on
+     * @return The new attribute context view
+     * @see AttrContext
+     */
+    public AttrContext newLeftContext(AttrContext context) {
+        ContextView c = new ContextView(this, context, true);
+        c.setVariableContext(this.variableContext);
+        return c;
+    }
 
-	/**
-	 * Creating a view on an existing attribute context, through which variables
-	 * can not be declared; they only can be assigned values; In Graph
-	 * Transformation, it is used for the right-hand-side of a rule.
-	 * 
-	 * @param context
-	 *            The context to generate the view on
-	 * @return The new attribute context view
-	 * @see AttrContext
-	 */
-	public AttrContext newRightContext(AttrContext context) {
-		ContextView c = new ContextView(this, context, false);
-		c.setVariableContext(this.variableContext);
-		return c;
-	}
+    /**
+     * Creating a view on an existing attribute context, through which variables can not be declared; they only can be
+     * assigned values; In Graph Transformation, it is used for the right-hand-side of a rule.
+     *
+     * @param context The context to generate the view on
+     * @return The new attribute context view
+     * @see AttrContext
+     */
+    public AttrContext newRightContext(AttrContext context) {
+        ContextView c = new ContextView(this, context, false);
+        c.setVariableContext(this.variableContext);
+        return c;
+    }
 
-	/**
-	 * A variable context means that mainly variables will be used as values of
-	 * the graph objects of a graph, so if a rule / match attribute context has
-	 * an attribute condition, then often it cannot be evaluated and 
-	 * will get <code>TRUE</code> as result.<br> 
-	 * This feature is mainly used during critical pair analysis to evaluate 
-	 * attribute conditions.<br> 
-	 * Do not use this setting for common transformation.
-	 */
-	public void setVariableContext(boolean b) {
-		this.variableContext = b;
-	}
+    /**
+     * A variable context means that mainly variables will be used as values of the graph objects of a graph, so if a
+     * rule / match attribute context has an attribute condition, then often it cannot be evaluated and will get
+     * <code>TRUE</code> as result.<br>
+     * This feature is mainly used during critical pair analysis to evaluate attribute conditions.<br>
+     * Do not use this setting for common transformation.
+     */
+    public void setVariableContext(boolean b) {
+        this.variableContext = b;
+    }
 
-	/**
-	 * @see agg.attribute.impl#setVariableContext(boolean b)
-	 */
-	public boolean isVariableContext() {
-		return this.variableContext;
-	}
+    /**
+     * @see agg.attribute.impl#setVariableContext(boolean b)
+     */
+    public boolean isVariableContext() {
+        return this.variableContext;
+    }
 
-	/**
-	 * Getting an attribute handler by name.
-	 * 
-	 * @return The attribute handler with the specified name or 'null'.
-	 */
-	public AttrHandler getHandler(String name) {
-		for (int i = 0; i < this.handlers.length; i++) {
-			if (this.handlers[i].getName().equals(name)) {
-				return this.handlers[i];
-			}
-		}
-		return null;
-	}
+    /**
+     * Getting an attribute handler by name.
+     *
+     * @return The attribute handler with the specified name or 'null'.
+     */
+    public AttrHandler getHandler(String name) {
+        for (int i = 0; i < this.handlers.length; i++) {
+            if (this.handlers[i].getName().equals(name)) {
+                return this.handlers[i];
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Creating a new attribute type.
-	 * 
-	 * @return The new attribute type
-	 */
-	public AttrType newType() {
-		return new DeclTuple(this);
-	}
+    /**
+     * Creating a new attribute type.
+     *
+     * @return The new attribute type
+     */
+    public AttrType newType() {
+        return new DeclTuple(this);
+    }
 
-	// ///////////////////
-	// Instance:
+    // ///////////////////
+    // Instance:
+    /**
+     * Creating a new attribute instance of the required type, without a context. Note that for such attributes,
+     * expressions cannot contain variables. In Graph Transformation, it is used for creating a new attribute in the
+     * host graph.
+     *
+     * @param type The type to use
+     * @return The new attribute instance
+     */
+    public AttrInstance newInstance(AttrType type) {
+        return newInstance(type, null);
+    }
 
-	/**
-	 * Creating a new attribute instance of the required type, without a
-	 * context. Note that for such attributes, expressions cannot contain
-	 * variables. In Graph Transformation, it is used for creating a new
-	 * attribute in the host graph.
-	 * 
-	 * @param type
-	 *            The type to use
-	 * @return The new attribute instance
-	 */
-	public AttrInstance newInstance(AttrType type) {
-		return newInstance(type, null);
-	}
+    /**
+     * Creating a new attribute instance of the required type and in the given context or a context view. In Graph
+     * Transformation, it is used for creating a new attribute in a rule.
+     *
+     * @param type The type to use
+     * @param context The context to use
+     * @return The new attribute instance
+     */
+    public AttrInstance newInstance(AttrType type, AttrContext context) {
+        if (type == null) {
+            return null;
+        }
 
-	/**
-	 * Creating a new attribute instance of the required type and in the given
-	 * context or a context view. In Graph Transformation, it is used for
-	 * creating a new attribute in a rule.
-	 * 
-	 * @param type
-	 *            The type to use
-	 * @param context
-	 *            The context to use
-	 * @return The new attribute instance
-	 */
-	public AttrInstance newInstance(AttrType type, AttrContext context) {
-		if (type == null)
-			return null;
-
-		if (context == null) {
-			return new ValueTuple(this, (DeclTuple) type, this.defaultContext);
+        if (context == null) {
+            return new ValueTuple(this, (DeclTuple) type, this.defaultContext);
 //			return new ValueTuple(this, (DeclTuple) type, makeDefaultContext());
-		}
-		
-		return new ValueTuple(this, (DeclTuple) type, (ContextView) context);
-	}
+        }
 
-	/**
-	 * Returns an error message if something gone wrong, otherwise - empty
-	 * message.
-	 */
-	public String getErrorMsg() {
-		return this.errorMsg;
-	}
+        return new ValueTuple(this, (DeclTuple) type, (ContextView) context);
+    }
 
-	public void clearErrorMsg() {
-		this.errorMsg = "";
-	}
+    /**
+     * Returns an error message if something gone wrong, otherwise - empty message.
+     */
+    public String getErrorMsg() {
+        return this.errorMsg;
+    }
 
-	// ///////////////////
-	// Pre-Match Check
+    public void clearErrorMsg() {
+        this.errorMsg = "";
+    }
 
-	/**
-	 * Checking if matching can be performed with respect to a given rule
-	 * context. If the rule context in question is without inconsistencies, this
-	 * method remains 'silent'. Otherwise, it throws an exception whose message
-	 * text describes the reason.
-	 */
-	public void checkIfReadyToMatch(AttrContext ruleContext)
-			throws AttrException {
-		if (ruleContext == null) {
-			throw new AttrException("Null context supplied.");
-		}
-		ContextView context = (ContextView) ruleContext;
-		String text = "";
-		/*
+    // ///////////////////
+    // Pre-Match Check
+    /**
+     * Checking if matching can be performed with respect to a given rule context. If the rule context in question is
+     * without inconsistencies, this method remains 'silent'. Otherwise, it throws an exception whose message text
+     * describes the reason.
+     */
+    public void checkIfReadyToMatch(AttrContext ruleContext)
+            throws AttrException {
+        if (ruleContext == null) {
+            throw new AttrException("Null context supplied.");
+        }
+        ContextView context = (ContextView) ruleContext;
+        String text = "";
+        /*
 		 * if( ruleContext.getConditions().isFalse() ) { text = "Application
 		 * condition [ "+((CondTuple)
 		 * ruleContext.getConditions()).getFailedConditionAsString()+" ]
 		 * failed."; }
-		 */
-		CondTuple conds = (CondTuple) context.getConditions();
-		for (int k = 0; k < conds.getSize(); k++) {
-			CondMember cm = conds.getCondMemberAt(k);
-			// System.out.println("AttrTupleManager.checkIfReadyToMatch::
-			// condMember: "+cm);
-			if (
-			// (cm.getMark() != CondMember.NAC)
-			// && (cm.getMark() != CondMember.NAC_LHS)
-			// && (cm.getMark() != CondMember.PAC)
-			// && (cm.getMark() != CondMember.PAC_LHS)
-			// && (cm.getMark() != CondMember.NAC_PAC)
-			// && (cm.getMark() != CondMember.NAC_PAC_LHS)
-					cm.isEnabled()
-					&& (cm.getMark() == CondMember.LHS) && cm.isFalse()) {
-				text = "Condition:  " + cm.getExprAsText() + "  failed!";
-			}
+         */
+        CondTuple conds = (CondTuple) context.getConditions();
+        for (int k = 0; k < conds.getSize(); k++) {
+            CondMember cm = conds.getCondMemberAt(k);
+            // System.out.println("AttrTupleManager.checkIfReadyToMatch::
+            // condMember: "+cm);
+            if ( // (cm.getMark() != CondMember.NAC)
+                    // && (cm.getMark() != CondMember.NAC_LHS)
+                    // && (cm.getMark() != CondMember.PAC)
+                    // && (cm.getMark() != CondMember.PAC_LHS)
+                    // && (cm.getMark() != CondMember.NAC_PAC)
+                    // && (cm.getMark() != CondMember.NAC_PAC_LHS)
+                    cm.isEnabled()
+                    && (cm.getMark() == CondMember.LHS) && cm.isFalse()) {
+                text = "Condition:  " + cm.getExprAsText() + "  failed!";
+            }
 //			System.out.println("AttrTupleManager.checkIfReadyToMatch: error: "+text);
-		}
-		if (text.length() > 0) {
-			this.errorMsg = text;
-			throw new AttrException(text);
-		}
-	}
+        }
+        if (text.length() > 0) {
+            this.errorMsg = text;
+            throw new AttrException(text);
+        }
+    }
 
-	// ///////////////////
-	// Mapping:
+    // ///////////////////
+    // Mapping:
+    /**
+     * Mapping between two attribute instances; The mapping is done according to the context mapping property
+     * (total/partial) and is integrated into the context;
+     *
+     * @param mappingContext The context to include the mapping in
+     * @param source Mapping source attribute
+     * @param target Mapping target attribute
+     * @return A handle to the mapping; it can be used to undo the mapping (remove()) or to proceed to the next possible
+     * one (next())
+     * @see agg.attribute.AttrMapping#remove()
+     * @see agg.attribute.AttrMapping#next()
+     */
+    public AttrMapping newMapping(AttrContext mappingContext,
+            AttrInstance source, AttrInstance target) throws AttrException {
+        this.errorMsg = "";
+        try {
+            return new TupleMapping((ContextView) mappingContext,
+                    (ValueTuple) source, (ValueTuple) target);
+        } catch (AttrImplException ex1) {
+            this.errorMsg = "Attributes don't match.";
+            throw new AttrException(this.errorMsg);
+        }
+    }
 
-	/**
-	 * Mapping between two attribute instances; The mapping is done according to
-	 * the context mapping property (total/partial) and is integrated into the
-	 * context;
-	 * 
-	 * @param mappingContext
-	 *            The context to include the mapping in
-	 * @param source
-	 *            Mapping source attribute
-	 * @param target
-	 *            Mapping target attribute
-	 * @return A handle to the mapping; it can be used to undo the mapping
-	 *         (remove()) or to proceed to the next possible one (next())
-	 * @see agg.attribute.AttrMapping#remove()
-	 * @see agg.attribute.AttrMapping#next()
-	 */
-	public AttrMapping newMapping(AttrContext mappingContext,
-			AttrInstance source, AttrInstance target) throws AttrException {
-		this.errorMsg = "";
-		try {
-			return new TupleMapping((ContextView) mappingContext,
-					(ValueTuple) source, (ValueTuple) target);
-		} catch (AttrImplException ex1) {
-			this.errorMsg = "Attributes don't match.";			
-			throw new AttrException(this.errorMsg);
-		}
-	}
-	
-	public AttrMapping newMappingChild2Parent(AttrContext mappingContext,
-			AttrInstance source, AttrInstance target) throws AttrException {
-		this.errorMsg = "";
-		try {
-			return new TupleMapping((ContextView) mappingContext,
-					(ValueTuple) source, (ValueTuple) target);
-		} catch (AttrImplException ex1) {
-			this.errorMsg = "Attributes don't match.";			
-			throw new AttrException(this.errorMsg);
-		}
-	}
-	
-	// ///////////////////
-	// Transformation Check
+    public AttrMapping newMappingChild2Parent(AttrContext mappingContext,
+            AttrInstance source, AttrInstance target) throws AttrException {
+        this.errorMsg = "";
+        try {
+            return new TupleMapping((ContextView) mappingContext,
+                    (ValueTuple) source, (ValueTuple) target);
+        } catch (AttrImplException ex1) {
+            this.errorMsg = "Attributes don't match.";
+            throw new AttrException(this.errorMsg);
+        }
+    }
 
-	/**
-	 * Checking if an attributed graph transformation can be performed with
-	 * respect to a given context: variables and attribute conditions. If the given
-	 * match context is complete and without inconsistencies, this
-	 * method remains 'silent'. Otherwise, it throws an exception whose message
-	 * text describes the reason.
-	 */
-	public void checkIfReadyToTransform(AttrContext matchContext)
-			throws AttrException {
+    // ///////////////////
+    // Transformation Check
+    /**
+     * Checking if an attributed graph transformation can be performed with respect to a given context: variables and
+     * attribute conditions. If the given match context is complete and without inconsistencies, this method remains
+     * 'silent'. Otherwise, it throws an exception whose message text describes the reason.
+     */
+    public void checkIfReadyToTransform(AttrContext matchContext)
+            throws AttrException {
 
-		if (matchContext == null) {
-			this.errorMsg = "Null context supplied.";
-			throw new AttrException(this.errorMsg);
-		}
-		
-		this.errorMsg = "";
-		VarTuple vars = (VarTuple) matchContext.getVariables();
-		for (int k = 0; k < vars.getSize(); k++) {
-			VarMember vm = vars.getVarMemberAt(k);
-			if (vm.isEnabled()
-					&& (vm.getMark() != VarMember.PAC)
-					&& (vm.getMark() != VarMember.NAC)
-					&& (vm.getMark() != VarMember.GAC)
-					&& !vm.isDefinite()) {
-				this.errorMsg = "Variable:  " + vm.getName() + "  is not definite!";
-			}
-		}
-		CondTuple conds = (CondTuple) matchContext.getConditions();
-		for (int k = 0; k < conds.getSize(); k++) {
-			CondMember cm = conds.getCondMemberAt(k);
-			if (cm.isEnabled()
-					&& (cm.getMark() == CondMember.LHS) 
-					&& !cm.isTrue()) {
-				this.errorMsg = "Condition:  " + cm.getExprAsText()
-						+ "  is not satisfied!";
-			}
-		}
-		if (this.errorMsg.length() > 0) {
-			throw new AttrException(this.errorMsg);
-		}
-	}
+        if (matchContext == null) {
+            this.errorMsg = "Null context supplied.";
+            throw new AttrException(this.errorMsg);
+        }
 
-	/**
-	 * Checking if an attributed graph transformation can be performed with
-	 * respect to a given context: if checkVariablesOnly is TRUE then only do check
-	 * variables, otherwise - variables and attribute conditions. If the given
-	 * match context is complete and without inconsistencies, this
-	 * method remains 'silent'. Otherwise, it throws an exception whose message
-	 * text describes the reason.
-	 */
-	public void checkIfReadyToTransform(AttrContext matchContext,
-			boolean checkVariablesOnly) throws AttrException {
-		if (!checkVariablesOnly) {
-			try {
-				checkIfReadyToTransform(matchContext);
-			} catch (AttrException ex) {
-				this.errorMsg = ex.getMessage();
-			}
-		} else {
-			this.errorMsg = "";
-			if (matchContext == null) {
-				this.errorMsg = "Null context supplied.";
-				throw new AttrException(this.errorMsg);
-			}
+        this.errorMsg = "";
+        VarTuple vars = (VarTuple) matchContext.getVariables();
+        for (int k = 0; k < vars.getSize(); k++) {
+            VarMember vm = vars.getVarMemberAt(k);
+            if (vm.isEnabled()
+                    && (vm.getMark() != VarMember.PAC)
+                    && (vm.getMark() != VarMember.NAC)
+                    && (vm.getMark() != VarMember.GAC)
+                    && !vm.isDefinite()) {
+                this.errorMsg = "Variable:  " + vm.getName() + "  is not definite!";
+            }
+        }
+        CondTuple conds = (CondTuple) matchContext.getConditions();
+        for (int k = 0; k < conds.getSize(); k++) {
+            CondMember cm = conds.getCondMemberAt(k);
+            if (cm.isEnabled()
+                    && (cm.getMark() == CondMember.LHS)
+                    && !cm.isTrue()) {
+                this.errorMsg = "Condition:  " + cm.getExprAsText()
+                        + "  is not satisfied!";
+            }
+        }
+        if (this.errorMsg.length() > 0) {
+            throw new AttrException(this.errorMsg);
+        }
+    }
 
-			VarTuple vars = (VarTuple) matchContext.getVariables();
-			for (int k = 0; k < vars.getSize(); k++) {
-				VarMember vm = vars.getVarMemberAt(k);
-				if (vm.isEnabled()
-						&& (vm.getMark() != VarMember.PAC)
-						&& (vm.getMark() != VarMember.NAC)
-						&& (vm.getMark() != VarMember.GAC)
-						&& !vm.isDefinite()) {
-					this.errorMsg = "Variable:  " + vm.getName() + "  is not definite!";
-				}
-			}
-			if (this.errorMsg.length() > 0) {
-				throw new AttrException(this.errorMsg);
-			}
-		}
-	}
+    /**
+     * Checking if an attributed graph transformation can be performed with respect to a given context: if
+     * checkVariablesOnly is TRUE then only do check variables, otherwise - variables and attribute conditions. If the
+     * given match context is complete and without inconsistencies, this method remains 'silent'. Otherwise, it throws
+     * an exception whose message text describes the reason.
+     */
+    public void checkIfReadyToTransform(AttrContext matchContext,
+            boolean checkVariablesOnly) throws AttrException {
+        if (!checkVariablesOnly) {
+            try {
+                checkIfReadyToTransform(matchContext);
+            } catch (AttrException ex) {
+                this.errorMsg = ex.getMessage();
+            }
+        } else {
+            this.errorMsg = "";
+            if (matchContext == null) {
+                this.errorMsg = "Null context supplied.";
+                throw new AttrException(this.errorMsg);
+            }
 
-	// ///////////////////
-	// View Context:
+            VarTuple vars = (VarTuple) matchContext.getVariables();
+            for (int k = 0; k < vars.getSize(); k++) {
+                VarMember vm = vars.getVarMemberAt(k);
+                if (vm.isEnabled()
+                        && (vm.getMark() != VarMember.PAC)
+                        && (vm.getMark() != VarMember.NAC)
+                        && (vm.getMark() != VarMember.GAC)
+                        && !vm.isDefinite()) {
+                    this.errorMsg = "Variable:  " + vm.getName() + "  is not definite!";
+                }
+            }
+            if (this.errorMsg.length() > 0) {
+                throw new AttrException(this.errorMsg);
+            }
+        }
+    }
 
-	/**
-	 * Creating a new view instance for loose coupling of attribute objects
-	 * with their visual representation.
-	 */
-	public AttrViewSetting newViewSetting() {
-		return new OpenViewSetting(this);
-	}
+    // ///////////////////
+    // View Context:
+    /**
+     * Creating a new view instance for loose coupling of attribute objects with their visual representation.
+     */
+    public AttrViewSetting newViewSetting() {
+        return new OpenViewSetting(this);
+    }
 
-	public AttrViewSetting getDefaultOpenView() {
-		return this.defaultOpenView;
-	}
+    public AttrViewSetting getDefaultOpenView() {
+        return this.defaultOpenView;
+    }
 
-	public AttrViewSetting getDefaultMaskedView() {
-		return this.defaultMaskedView;
-	}
+    public AttrViewSetting getDefaultMaskedView() {
+        return this.defaultMaskedView;
+    }
 
-	// End of AttrManager interface implementation.
-	// ///////////////////////////////////////////////
+    // End of AttrManager interface implementation.
+    // ///////////////////////////////////////////////
+    public AttrViewSetting getFixedViewSetting() {
+        return this.fixedViewSetting;
+    }
 
-	public AttrViewSetting getFixedViewSetting() {
-		return this.fixedViewSetting;
-	}
+    public void setDebug(boolean b) {
+        VerboseControl.setDebug(b);
+    }
 
-	public void setDebug(boolean b) {
-		VerboseControl.setDebug(b);
-	}
+    public AttrHandler[] getHandlers() {
+        AttrHandler handlersCopy[] = new AttrHandler[this.handlers.length];
+        System.arraycopy(this.handlers, 0, handlersCopy, 0, this.handlers.length);
+        return handlersCopy;
+    }
 
-	public AttrHandler[] getHandlers() {
-		AttrHandler handlersCopy[] = new AttrHandler[this.handlers.length];
-		System.arraycopy(this.handlers, 0, handlersCopy, 0, this.handlers.length);
-		return handlersCopy;
-	}
+    public boolean isCorrectInputEnforced() {
+        return this.isCorrectInputEnforced;
+    }
 
-	public boolean isCorrectInputEnforced() {
-		return this.isCorrectInputEnforced;
-	}
+    public void setCorrectInputEnforced(boolean b) {
+        this.isCorrectInputEnforced = b;
+    }
 
-	public void setCorrectInputEnforced(boolean b) {
-		this.isCorrectInputEnforced = b;
-	}
-	
-	/**
-	 * Returns the class name if the specified name is a class name,
-	 * otherwise - null. 
-	 */
-	public String isClassName(String name) {
-		// System.out.println("AttrTupleManager.isClassName:: "+name);
-		String result = null;
-		boolean isClass = false;
-		try {
+    /**
+     * Returns the class name if the specified name is a class name, otherwise - null.
+     */
+    public String isClassName(String name) {
+        // System.out.println("AttrTupleManager.isClassName:: "+name);
+        String result = null;
+        boolean isClass = false;
+        try {
 //			Class<?> c = 
-			Class.forName(name);
-			result = name;
-			isClass = true;
-		} catch (ClassNotFoundException ex) {
-		}
-		if (!isClass) {
-			// construct class name as package+class
-			agg.attribute.handler.AttrHandler attrHandlers[] = agg.attribute.impl.AttrTupleManager
-					.getDefaultManager().getHandlers();
-			for (int h = 0; h < attrHandlers.length; h++) {
-				agg.attribute.handler.AttrHandler attrh = attrHandlers[h];
-				java.util.Vector<String> packs = ((agg.attribute.handler.impl.javaExpr.JexHandler) attrh)
-						.getClassResolver().getPackages();
-				for (int pi = 0; pi < packs.size(); pi++) {
-					String pack = packs.get(pi);
-					// check if class exists
-					try {
+            Class.forName(name);
+            result = name;
+            isClass = true;
+        } catch (ClassNotFoundException ex) {
+        }
+        if (!isClass) {
+            // construct class name as package+class
+            agg.attribute.handler.AttrHandler attrHandlers[] = agg.attribute.impl.AttrTupleManager
+                    .getDefaultManager().getHandlers();
+            for (int h = 0; h < attrHandlers.length; h++) {
+                agg.attribute.handler.AttrHandler attrh = attrHandlers[h];
+                java.util.Vector<String> packs = ((agg.attribute.handler.impl.javaExpr.JexHandler) attrh)
+                        .getClassResolver().getPackages();
+                for (int pi = 0; pi < packs.size(); pi++) {
+                    String pack = packs.get(pi);
+                    // check if class exists
+                    try {
 //						Class<?> c = 
-						Class.forName(pack + "." + name);
-						result = pack + "." + name;
-						isClass = true;
-						break;
-					} catch (ClassNotFoundException ex) {
-					}
-				}
-				if (isClass)
-					break;
-			}
-		}
-		// System.out.println("AttrTupleManager.isClassName:: result: "+result);
-		return result;
-	}
-	
-	public String getStaticMethodCall(String aValue) {
-		// check the form: $package.class$.static_method
-		if (aValue.indexOf("$") == 0) {
-			int ind = aValue.substring(1).indexOf("$");
-			if (ind > 0) {
-				String clstr = aValue.substring(1, ind + 1);
-				try {
-					Class.forName(clstr);
-					String tst = clstr.substring(clstr.indexOf(".") + 1);
-					while (tst.indexOf(".") != -1) {
-						clstr = tst.concat("");
-						tst = clstr.substring(clstr.indexOf(".") + 1);
-					}
-					clstr = tst.concat("");
-					String result = clstr + aValue.substring(ind + 2);
-					return result;
-				} catch (ClassNotFoundException ex) {}
-			}
-		} else {
-				agg.attribute.handler.AttrHandler 
-				attrHandlers[] = agg.attribute.impl.AttrTupleManager.getDefaultManager().getHandlers();
-				for (int h = 0; h < attrHandlers.length; h++) {
-					agg.attribute.handler.AttrHandler attrh = attrHandlers[h];
-					java.util.Vector<String> packs = ((agg.attribute.handler.impl.javaExpr.JexHandler) attrh)
-							.getClassResolver().getPackages();
-					for (int pi = 0; pi < packs.size(); pi++) {
-						String pack = packs.get(pi);
-				
-						String tst = aValue;
-						String pname = null;
-						String tmp = "";
-						while (tst.indexOf(".") != -1) {
-							String next = tst.substring(0, tst.indexOf("."));
-							String p = tmp + next;
-							if (p.equals(pack)) {
-								pname = pack;
-								break;
-							} else
-								tmp = tmp + next;
-							tmp = tmp + ".";
-							tst = tst.substring(tst.indexOf(".") + 1, tst.length());
-						}
-						if (pname != null) {
-							// cut package name
-							String result = aValue.replaceFirst(pname + ".", "");
-							// cut method name
-							String clstr = result.substring(0, result.indexOf("."));
-							try {
-								Class.forName(pname + "." + clstr);
-								return result;
-							} catch (ClassNotFoundException ex) {
-							}
-						}
-					}
-				}
-		}
-		return aValue;
-	}
+                        Class.forName(pack + "." + name);
+                        result = pack + "." + name;
+                        isClass = true;
+                        break;
+                    } catch (ClassNotFoundException ex) {
+                    }
+                }
+                if (isClass) {
+                    break;
+                }
+            }
+        }
+        // System.out.println("AttrTupleManager.isClassName:: result: "+result);
+        return result;
+    }
+
+    public String getStaticMethodCall(String aValue) {
+        // check the form: $package.class$.static_method
+        if (aValue.indexOf("$") == 0) {
+            int ind = aValue.substring(1).indexOf("$");
+            if (ind > 0) {
+                String clstr = aValue.substring(1, ind + 1);
+                try {
+                    Class.forName(clstr);
+                    String tst = clstr.substring(clstr.indexOf(".") + 1);
+                    while (tst.indexOf(".") != -1) {
+                        clstr = tst.concat("");
+                        tst = clstr.substring(clstr.indexOf(".") + 1);
+                    }
+                    clstr = tst.concat("");
+                    String result = clstr + aValue.substring(ind + 2);
+                    return result;
+                } catch (ClassNotFoundException ex) {
+                }
+            }
+        } else {
+            agg.attribute.handler.AttrHandler attrHandlers[] = agg.attribute.impl.AttrTupleManager.getDefaultManager().getHandlers();
+            for (int h = 0; h < attrHandlers.length; h++) {
+                agg.attribute.handler.AttrHandler attrh = attrHandlers[h];
+                java.util.Vector<String> packs = ((agg.attribute.handler.impl.javaExpr.JexHandler) attrh)
+                        .getClassResolver().getPackages();
+                for (int pi = 0; pi < packs.size(); pi++) {
+                    String pack = packs.get(pi);
+
+                    String tst = aValue;
+                    String pname = null;
+                    String tmp = "";
+                    while (tst.indexOf(".") != -1) {
+                        String next = tst.substring(0, tst.indexOf("."));
+                        String p = tmp + next;
+                        if (p.equals(pack)) {
+                            pname = pack;
+                            break;
+                        } else {
+                            tmp = tmp + next;
+                        }
+                        tmp = tmp + ".";
+                        tst = tst.substring(tst.indexOf(".") + 1, tst.length());
+                    }
+                    if (pname != null) {
+                        // cut package name
+                        String result = aValue.replaceFirst(pname + ".", "");
+                        // cut method name
+                        String clstr = result.substring(0, result.indexOf("."));
+                        try {
+                            Class.forName(pname + "." + clstr);
+                            return result;
+                        } catch (ClassNotFoundException ex) {
+                        }
+                    }
+                }
+            }
+        }
+        return aValue;
+    }
 }
 
 /*

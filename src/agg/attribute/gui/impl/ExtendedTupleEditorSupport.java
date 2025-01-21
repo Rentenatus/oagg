@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.Dimension;
@@ -41,484 +42,538 @@ import agg.attribute.view.AttrViewEvent;
 
 /**
  * Editor for all data of a tuple.
- * 
+ *
  * @author $Author: olga $
- * @version $Id: ExtendedTupleEditorSupport.java,v 1.2 2005/11/21 09:20:45 olga
- *          Exp $
+ * @version $Id: ExtendedTupleEditorSupport.java,v 1.2 2005/11/21 09:20:45 olga Exp $
  */
 public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
-		implements ListSelectionListener, RowDragListener {
+        implements ListSelectionListener, RowDragListener {
 
-	// Actions for tool bars and menus.
+    // Actions for tool bars and menus.
+    /**
+     * Action for removing a member from the edited tuple.
+     */
+    protected Action deleteAction;
 
-	/** Action for removing a member from the edited tuple. */
-	protected Action deleteAction;
+    /**
+     * Action for evaluating a member of the edited tuple.
+     */
+    protected Action evaluateAction;
 
-	/** Action for evaluating a member of the edited tuple. */
-	protected Action evaluateAction;
+    /**
+     * Resetting the layout of the edited tuple.
+     */
+    protected Action resetAction;
 
-	/** Resetting the layout of the edited tuple. */
-	protected Action resetAction;
+    /**
+     * Making all members visible.
+     */
+    protected Action showAllAction;
 
-	/** Making all members visible. */
-	protected Action showAllAction;
+    /**
+     * Making all members invisible.
+     */
+    protected Action hideAllAction;
 
-	/** Making all members invisible. */
-	protected Action hideAllAction;
+    /**
+     * Collections of tuple actions, used for collectively enabling/disabling actions depending on the state of the
+     * editor.
+     */
+    protected Vector<Action> tupleActions;
 
-	/**
-	 * Collections of tuple actions, used for collectively enabling/disabling
-	 * actions depending on the state of the editor.
-	 */
-	protected Vector<Action> tupleActions;
+    /**
+     * Collections of member actions, used for collectively enabling/disabling actions depending on the state of the
+     * editor.
+     */
+    protected Vector<Action> memberActions;
 
-	/**
-	 * Collections of member actions, used for collectively enabling/disabling
-	 * actions depending on the state of the editor.
-	 */
-	protected Vector<Action> memberActions;
+    // State indicators
+    /**
+     * Indicates if row selection is enabled.
+     */
+    protected boolean rowSelectionEnabled;
 
-	// State indicators
+    /**
+     * Indicates if row dragging is enabled.
+     */
+    protected boolean rowDraggingEnabled;
 
-	/** Indicates if row selection is enabled. */
-	protected boolean rowSelectionEnabled;
+    /**
+     * The row dragger instance.
+     */
+    protected TableRowDragger rowDragger;
 
-	/** Indicates if row dragging is enabled. */
-	protected boolean rowDraggingEnabled;
+    /**
+     * When disabling of dragging was requested while dragging was active, the operation is performed later, as soon as
+     * dragging stops.
+     */
+    protected boolean rowDraggingDisablingRequested;
 
-	/** The row dragger instance. */
-	protected TableRowDragger rowDragger;
+    // Widgets
+    protected JTextArea outputTextArea;
 
-	/**
-	 * When disabling of dragging was requested while dragging was active, the
-	 * operation is performed later, as soon as dragging stops.
-	 */
-	protected boolean rowDraggingDisablingRequested;
+    protected JScrollPane outputScrollPane;
 
-	// Widgets
+    protected JPanel toolBarPanel;
 
-	protected JTextArea outputTextArea;
+    protected JSplitPane tableAndOutputSplitPane;
 
-	protected JScrollPane outputScrollPane;
+    // ///////////////////////////////////////////
+    // Constructing
+    // 
+    /**
+     * Creating the tuple editor.
+     */
+    public ExtendedTupleEditorSupport(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+    }
 
-	protected JPanel toolBarPanel;
+    protected void createTableView() {
+        super.createTableView();
+        // Reordering of columns.
+        this.tableView.getTableHeader().setReorderingAllowed(true);
 
-	protected JSplitPane tableAndOutputSplitPane;
+        // Enable row selection and -dragging.
+        setRowSelectionEnabled(true);
+        setRowDraggingEnabled(true);
 
-	// ///////////////////////////////////////////
-	// Constructing
-	// 
+        // Decorating.
+        // tableScrollPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
+    }
 
-	/** Creating the tuple editor. */
-	public ExtendedTupleEditorSupport(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-	}
+    protected void genericCreateAllViews() {
+        createTableView();
+        createOutputTextArea();
+        createToolBar();
+    }
 
-	protected void createTableView() {
-		super.createTableView();
-		// Reordering of columns.
-		this.tableView.getTableHeader().setReorderingAllowed(true);
+    /**
+     * Called by createTableView(). Makes selecting of rows possible or not. Calling this method with 'true' is
+     * necessary if one desires any member actions (deleting, evaluating). Can also be called from 'outside', even in
+     * the middle of a session.
+     */
+    public void setRowSelectionEnabled(boolean b) {
+        // AttrSession.logPrintln(this+": setRowSelectionEnabled("+b+")");
+        if (b) {
+            // Selecting of rows, not columns:
+            this.tableView.setRowSelectionAllowed(true);
+            this.tableView.setColumnSelectionAllowed(false);
 
-		// Enable row selection and -dragging.
-		setRowSelectionEnabled(true);
-		setRowDraggingEnabled(true);
+            // Just one row at a time:
+            this.tableView.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-		// Decorating.
-		// tableScrollPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
-	}
+            // Listen to selection events:
+            if (!this.rowSelectionEnabled) {
+                this.rowSelectionEnabled = true;
+                this.tableView.getSelectionModel().addListSelectionListener(this);
+            }
+        } else {
+            // Selecting of neither rows nor columns:
+            this.tableView.setRowSelectionAllowed(false);
+            this.tableView.setColumnSelectionAllowed(false);
 
-	protected void genericCreateAllViews() {
-		createTableView();
-		createOutputTextArea();
-		createToolBar();
-	}
+            // Stop listening to selection events:
+            if (this.rowSelectionEnabled) {
+                this.rowSelectionEnabled = false;
+                this.tableView.getSelectionModel().removeListSelectionListener(this);
+            }
+        }
+    }
 
-	/**
-	 * Called by createTableView(). Makes selecting of rows possible or not.
-	 * Calling this method with 'true' is necessary if one desires any member
-	 * actions (deleting, evaluating). Can also be called from 'outside', even
-	 * in the middle of a session.
-	 */
-	public void setRowSelectionEnabled(boolean b) {
-		// AttrSession.logPrintln(this+": setRowSelectionEnabled("+b+")");
-		if (b) {
-			// Selecting of rows, not columns:
-			this.tableView.setRowSelectionAllowed(true);
-			this.tableView.setColumnSelectionAllowed(false);
+    /**
+     * Called by createTableView(). Makes dragging of rows possible or not. Calling this method with 'true' is necessary
+     * if one desires moving of rows around. Can also be called from 'outside', even in the middle of a session.
+     */
+    public void setRowDraggingEnabled(boolean b) {
+        // AttrSession.logPrintln(this + ": setRowDraggingEnabled("+b+")");
+        if (b) {
+            if (this.rowDragger == null) {
+                this.rowDragger = new TableRowDragger(this.tableView);
+            }
+            if (!this.rowDraggingEnabled) {
+                this.rowDraggingEnabled = true;
+                this.rowDragger.addRowDragListener(this);
+            }
+        } else {
+            if (this.rowDraggingEnabled) {
+                // No disabling while dragging is active. Request will be
+                // honoured
+                // when dragging stops.
+                if (isDraggingActive()) {
+                    this.rowDraggingDisablingRequested = true;
+                } else {
+                    this.rowDraggingEnabled = false;
+                    this.rowDragger.removeRowDragListener(this);
+                }
+            }
+        }
+    }
 
-			// Just one row at a time:
-			this.tableView.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    /**
+     * Switching sensitivity of buttons for actions which apply to the whole tuple on or off. Typically called with
+     * 'false' when the tuple is null.
+     */
+    protected void setTupleActionsEnabled(boolean b) {
+        for (Enumeration<Action> en = this.tupleActions.elements(); en.hasMoreElements();) {
+            en.nextElement().setEnabled(b);
+        }
+    }
 
-			// Listen to selection events:
-			if (!this.rowSelectionEnabled) {
-				this.rowSelectionEnabled = true;
-				this.tableView.getSelectionModel().addListSelectionListener(this);
-			}
-		} else {
-			// Selecting of neither rows nor columns:
-			this.tableView.setRowSelectionAllowed(false);
-			this.tableView.setColumnSelectionAllowed(false);
+    /**
+     * Switching sensitivity of buttons for actions which apply to single tuple members on or off. Typically called with
+     * 'false' when no member is selected.
+     */
+    protected void setMemberActionsEnabled(boolean b) {
+        for (Enumeration<Action> en = this.memberActions.elements(); en.hasMoreElements();) {
+            en.nextElement().setEnabled(b);
+        }
+    }
 
-			// Stop listening to selection events:
-			if (this.rowSelectionEnabled) {
-				this.rowSelectionEnabled = false;
-				this.tableView.getSelectionModel().removeListSelectionListener(this);
-			}
-		}
-	}
+    /**
+     * Adding a tuple action to an action container.
+     */
+    protected void addTupleAction(Action a) {
+        if (this.tupleActions == null) {
+            this.tupleActions = new Vector<Action>(4);
+        }
+        this.tupleActions.addElement(a);
+    }
 
-	/**
-	 * Called by createTableView(). Makes dragging of rows possible or not.
-	 * Calling this method with 'true' is necessary if one desires moving of
-	 * rows around. Can also be called from 'outside', even in the middle of a
-	 * session.
-	 */
-	public void setRowDraggingEnabled(boolean b) {
-		// AttrSession.logPrintln(this + ": setRowDraggingEnabled("+b+")");
-		if (b) {
-			if (this.rowDragger == null) {
-				this.rowDragger = new TableRowDragger(this.tableView);
-			}
-			if (!this.rowDraggingEnabled) {
-				this.rowDraggingEnabled = true;
-				this.rowDragger.addRowDragListener(this);
-			}
-		} else {
-			if (this.rowDraggingEnabled) {
-				// No disabling while dragging is active. Request will be
-				// honoured
-				// when dragging stops.
-				if (isDraggingActive()) {
-					this.rowDraggingDisablingRequested = true;
-				} else {
-					this.rowDraggingEnabled = false;
-					this.rowDragger.removeRowDragListener(this);
-				}
-			}
-		}
-	}
+    /**
+     * Adding a member action to an action container.
+     */
+    protected void addMemberAction(Action a) {
+        if (this.memberActions == null) {
+            this.memberActions = new Vector<Action>(4);
+        }
+        this.memberActions.addElement(a);
+    }
 
-	/**
-	 * Switching sensitivity of buttons for actions which apply to the whole
-	 * tuple on or off. Typically called with 'false' when the tuple is null.
-	 */
-	protected void setTupleActionsEnabled(boolean b) {
-		for (Enumeration<Action> en = this.tupleActions.elements(); en.hasMoreElements();) {
-			en.nextElement().setEnabled(b);
-		}
-	}
+    //
+    // "Library" of TUPLE actions that can be attached to toolbars and/or menus.
+    /**
+     * Action for setting the view back: all members become visible, the order is as created.
+     */
+    @SuppressWarnings("serial")
+    protected Action getResetAction() {
+        if (this.resetAction != null) {
+            return this.resetAction; // Already defined;
+        }
+        Action action = new AbstractAction("Reset") {
+            public void actionPerformed(ActionEvent ev) {
+                if (ExtendedTupleEditorSupport.this.tuple == null) {
+                    return;
+                }
+                ExtendedTupleEditorSupport.this.viewSetting.resetTuple(ExtendedTupleEditorSupport.this.tuple);
+            }
+        };
+        action.putValue(Action.SHORT_DESCRIPTION,
+                "Back to the original layout.");
+        addTupleAction(action);
+        this.resetAction = action;
+        return action;
+    }
 
-	/**
-	 * Switching sensitivity of buttons for actions which apply to single tuple
-	 * members on or off. Typically called with 'false' when no member is
-	 * selected.
-	 */
-	protected void setMemberActionsEnabled(boolean b) {
-		for (Enumeration<Action> en = this.memberActions.elements(); en.hasMoreElements();) {
-			en.nextElement().setEnabled(b);
-		}
-	}
+    /**
+     * Action for making all members visible.
+     */
+    @SuppressWarnings("serial")
+    protected Action getShowAllAction() {
+        if (this.showAllAction != null) {
+            return this.showAllAction; // Already defined;
+        }
+        Action action = new AbstractAction("Show All") {
+            public void actionPerformed(ActionEvent ev) {
+                if (ExtendedTupleEditorSupport.this.tuple == null) {
+                    return;
+                }
+                // System.out.println("ExtendedTupleEditorSupport.ShowAll-actionPerformed");
+                ExtendedTupleEditorSupport.this.viewSetting.setAllVisible(ExtendedTupleEditorSupport.this.tuple, true);
+            }
+        };
+        action.putValue(Action.SHORT_DESCRIPTION,
+                "Makes all tuple members visible.");
+        addTupleAction(action);
+        this.showAllAction = action;
+        return action;
+    }
 
-	/** Adding a tuple action to an action container. */
-	protected void addTupleAction(Action a) {
-		if (this.tupleActions == null)
-			this.tupleActions = new Vector<Action>(4);
-		this.tupleActions.addElement(a);
-	}
+    /**
+     * Action for making all members invisible.
+     */
+    @SuppressWarnings("serial")
+    protected Action getHideAllAction() {
+        if (this.hideAllAction != null) {
+            return this.hideAllAction; // Already defined;
+        }
+        Action action = new AbstractAction("Hide All") {
+            public void actionPerformed(ActionEvent ev) {
+                if (ExtendedTupleEditorSupport.this.tuple == null) {
+                    return;
+                }
+                // System.out.println("ExtendedTupleEditorSupport.HideAll-actionPerformed");
+                ExtendedTupleEditorSupport.this.viewSetting.setAllVisible(ExtendedTupleEditorSupport.this.tuple, false);
+            }
+        };
+        action.putValue(Action.SHORT_DESCRIPTION, "Hides all tuple members.");
+        addTupleAction(action);
+        this.hideAllAction = action;
+        return action;
+    }
 
-	/** Adding a member action to an action container. */
-	protected void addMemberAction(Action a) {
-		if (this.memberActions == null)
-			this.memberActions = new Vector<Action>(4);
-		this.memberActions.addElement(a);
-	}
+    //
+    // "Library" of MEMBER actions that can be attached to toolbars and/or
+    // menus.
+    /**
+     * Action for deleting the selected member.
+     */
+    @SuppressWarnings("serial")
+    protected Action getDeleteAction() {
+        if (this.deleteAction != null) {
+            return this.deleteAction; // Already defined;
+        }
+        Action action = new AbstractAction("Delete") {
+            public void actionPerformed(ActionEvent ev) {
+                if (ExtendedTupleEditorSupport.this.tuple == null) {
+                    return;
+                }
+                AttrType type = ((AttrInstance) ExtendedTupleEditorSupport.this.tuple).getType();
+                int slot = ExtendedTupleEditorSupport.this.tableView.getSelectedRow();
 
-	//
-	// "Library" of TUPLE actions that can be attached to toolbars and/or menus.
+                if (slot >= type.getNumberOfEntries(ExtendedTupleEditorSupport.this.viewSetting)) {
+                    return;
+                } else if (!type.isOwnMemberAt(ExtendedTupleEditorSupport.this.viewSetting, slot)) {
+                    setMessage("Cannot delete this attribute member which belongs to a parent type."
+                            + "  Each attribute member must be deleted from its own type tuple.");
+                    JOptionPane.showMessageDialog(null,
+                            "<html><body>"
+                            + "Cannot delete this attribute member which belongs to a parent type."
+                            + "<br>"
+                            + "Each attribute member must be deleted from its own type tuple.",
+                            " Cannot delete ",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-	/**
-	 * Action for setting the view back: all members become visible, the order
-	 * is as created.
-	 */
-	@SuppressWarnings("serial")
-	protected Action getResetAction() {
-		if (this.resetAction != null)
-			return this.resetAction; // Already defined;
-		Action action = new AbstractAction("Reset") {
-			public void actionPerformed(ActionEvent ev) {
-				if (ExtendedTupleEditorSupport.this.tuple == null)
-					return;
-				ExtendedTupleEditorSupport.this.viewSetting.resetTuple(ExtendedTupleEditorSupport.this.tuple);
-			}
-		};
-		action.putValue(Action.SHORT_DESCRIPTION,
-				"Back to the original layout.");
-		addTupleAction(action);
-		this.resetAction = action;
-		return action;
-	}
+                type.deleteMemberAt(ExtendedTupleEditorSupport.this.viewSetting, slot);
+            }
+        };
+        action
+                .putValue(Action.SHORT_DESCRIPTION,
+                        "Removes the selected member");
+        addMemberAction(action);
+        this.deleteAction = action;
+        return action;
+    }
 
-	/** Action for making all members visible. */
-	@SuppressWarnings("serial")
-	protected Action getShowAllAction() {
-		if (this.showAllAction != null)
-			return this.showAllAction; // Already defined;
-		Action action = new AbstractAction("Show All") {
-			public void actionPerformed(ActionEvent ev) {
-				if (ExtendedTupleEditorSupport.this.tuple == null)
-					return;
-				// System.out.println("ExtendedTupleEditorSupport.ShowAll-actionPerformed");
-				ExtendedTupleEditorSupport.this.viewSetting.setAllVisible(ExtendedTupleEditorSupport.this.tuple, true);
-			}
-		};
-		action.putValue(Action.SHORT_DESCRIPTION,
-				"Makes all tuple members visible.");
-		addTupleAction(action);
-		this.showAllAction = action;
-		return action;
-	}
+    /**
+     * Evaluating the expression of the selected member.
+     */
+    @SuppressWarnings("serial")
+    protected Action getEvaluateAction() {
+        if (this.evaluateAction != null) {
+            return this.evaluateAction; // Already defined;
+        }
+        Action action = new AbstractAction("Evaluate") {
+            public void actionPerformed(ActionEvent ev) {
+                AttrInstanceMember member = getSelectedMember();
+                if (member == null) {
+                    return;
+                }
+                HandlerExpr expr = member.getExpr();
+                if (expr == null) {
+                    return;
+                }
+                try {
+                    expr.evaluate(((AttrInstance) ExtendedTupleEditorSupport.this.tuple).getContext());
+                    member.setExpr(expr);
+                } catch (AttrHandlerException ex) {
+                    setMessage(ex.getMessage());
+                }
+            }
+        };
+        action.putValue(Action.SHORT_DESCRIPTION, "Evaluates the expression");
+        addMemberAction(action);
+        this.evaluateAction = action;
+        return action;
+    }
 
-	/** Action for making all members invisible. */
-	@SuppressWarnings("serial")
-	protected Action getHideAllAction() {
-		if (this.hideAllAction != null)
-			return this.hideAllAction; // Already defined;
-		Action action = new AbstractAction("Hide All") {
-			public void actionPerformed(ActionEvent ev) {
-				if (ExtendedTupleEditorSupport.this.tuple == null)
-					return;
-				// System.out.println("ExtendedTupleEditorSupport.HideAll-actionPerformed");
-				ExtendedTupleEditorSupport.this.viewSetting.setAllVisible(ExtendedTupleEditorSupport.this.tuple, false);
-			}
-		};
-		action.putValue(Action.SHORT_DESCRIPTION, "Hides all tuple members.");
-		addTupleAction(action);
-		this.hideAllAction = action;
-		return action;
-	}
+    //
+    // A message text area.
+    //
+    /**
+     * Creates a text area for displaying messages.
+     */
+    protected void createOutputTextArea() {
+        this.outputTextArea = new JTextArea(80, 30);
+        this.outputTextArea.setRows(2);
+        this.outputTextArea.setEditable(false);
+        this.outputTextArea.setLineWrap(false);
+        this.outputScrollPane = new JScrollPane(this.outputTextArea,
+                VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        // outputTA.setBackground( Color.gray );
+        this.outputScrollPane.setMinimumSize(new Dimension(60, 30));
+        this.outputScrollPane.setPreferredSize(new Dimension(100, 30));
+    }
 
-	//
-	// "Library" of MEMBER actions that can be attached to toolbars and/or
-	// menus.
+    /**
+     * Shows the report for the currently selected row.
+     */
+    public void displayValidityReport() {
+        if (this.tuple == null) {
+            return;
+        }
+        setMessage("");
+        int row = this.tableView.getSelectedRow();
+        if (row < this.tuple.getNumberOfEntries() && row >= 0) {
+            displayValidityReport(row);
+        }
+    }
 
-	/** Action for deleting the selected member. */
-	@SuppressWarnings("serial")
-	protected Action getDeleteAction() {
-		if (this.deleteAction != null)
-			return this.deleteAction; // Already defined;
-		Action action = new AbstractAction("Delete") {
-			public void actionPerformed(ActionEvent ev) {
-				if (ExtendedTupleEditorSupport.this.tuple == null)
-					return;
-				AttrType type = ((AttrInstance) ExtendedTupleEditorSupport.this.tuple).getType();
-				int slot = ExtendedTupleEditorSupport.this.tableView.getSelectedRow();
-				
-				if (slot >= type.getNumberOfEntries(ExtendedTupleEditorSupport.this.viewSetting)){
-					return;
-				}
-				else if (!type.isOwnMemberAt(ExtendedTupleEditorSupport.this.viewSetting, slot)) {
-					setMessage("Cannot delete this attribute member which belongs to a parent type."
-							+"  Each attribute member must be deleted from its own type tuple.");
-					JOptionPane.showMessageDialog(null,
-							"<html><body>"
-							+"Cannot delete this attribute member which belongs to a parent type."
-							+"<br>"
-							+"Each attribute member must be deleted from its own type tuple.",
-							" Cannot delete ",
-							JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				
-				type.deleteMemberAt(ExtendedTupleEditorSupport.this.viewSetting, slot);
-			}
-		};
-		action
-				.putValue(Action.SHORT_DESCRIPTION,
-						"Removes the selected member");
-		addMemberAction(action);
-		this.deleteAction = action;
-		return action;
-	}
+    /**
+     * Shows the report for the specified row.
+     */
+    public void displayValidityReport(int row) {
+        displayValidityReport(this.tableModel.getMember(this.tuple, row));
+    }
 
-	/** Evaluating the expression of the selected member. */
-	@SuppressWarnings("serial")
-	protected Action getEvaluateAction() {
-		if (this.evaluateAction != null)
-			return this.evaluateAction; // Already defined;
-		Action action = new AbstractAction("Evaluate") {
-			public void actionPerformed(ActionEvent ev) {
-				AttrInstanceMember member = getSelectedMember();
-				if (member == null)
-					return;
-				HandlerExpr expr = member.getExpr();
-				if (expr == null)
-					return;
-				try {
-					expr.evaluate(((AttrInstance) ExtendedTupleEditorSupport.this.tuple).getContext());
-					member.setExpr(expr);
-				} catch (AttrHandlerException ex) {
-					setMessage(ex.getMessage());
-				}
-			}
-		};
-		action.putValue(Action.SHORT_DESCRIPTION, "Evaluates the expression");
-		addMemberAction(action);
-		this.evaluateAction = action;
-		return action;
-	}
+    /**
+     * Shows the report for the specified attribute member.
+     */
+    public void displayValidityReport(AttrMember m) {
+        setMessage(m.getValidityReport());
+    }
 
-	//
-	// A message text area.
-	//
+    /**
+     * Displays <code>text</code> in the message area, if it was created.
+     */
+    public void setMessage(String text) {
+        if (this.outputTextArea == null) {
+            return;
+        }
+        if (text != null && text.length() > 0) {
+            this.outputTextArea.setText(text.replaceAll("\n", "  "));
+            this.outputTextArea.setRows(2);
+        } else {
+            this.outputTextArea.setText("");
+        }
+    }
 
-	/** Creates a text area for displaying messages. */
-	protected void createOutputTextArea() {
-		this.outputTextArea = new JTextArea(80, 30);
-		this.outputTextArea.setRows(2);
-		this.outputTextArea.setEditable(false);
-		this.outputTextArea.setLineWrap(false);
-		this.outputScrollPane = new JScrollPane(this.outputTextArea,
-				VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		// outputTA.setBackground( Color.gray );
-		this.outputScrollPane.setMinimumSize(new Dimension(60, 30));
-		this.outputScrollPane.setPreferredSize(new Dimension(100, 30));
-	}
+    //
+    // A Tool Bar:
+    protected abstract void createToolBar();
 
-	/** Shows the report for the currently selected row. */
-	public void displayValidityReport() {
-		if (this.tuple == null)
-			return;
-		setMessage("");
-		int row = this.tableView.getSelectedRow();
-		if (row < this.tuple.getNumberOfEntries() && row >= 0)
-			displayValidityReport(row);
-	}
+    //
+    // Implementing the RowDragListener interface
+    //
+    /**
+     * Just acknowledge the fact.
+     */
+    public void draggingStarted(RowDragEvent ev) {
+        setMessage("...Moving row...");
+        // System.out.println("Started dragging row "+draggedRow);
+    }
 
-	/** Shows the report for the specified row. */
-	public void displayValidityReport(int row) {
-		displayValidityReport(this.tableModel.getMember(this.tuple, row));
-	}
+    /**
+     * Here, just handle dragging disabling requests, if any.
+     */
+    public void draggingStopped(RowDragEvent ev) {
+        if (this.rowDraggingDisablingRequested) {
+            this.rowDraggingDisablingRequested = false;
+            setRowDraggingEnabled(false);
+        }
+        displayValidityReport();
+    }
 
-	/** Shows the report for the specified attribute member. */
-	public void displayValidityReport(AttrMember m) {
-		setMessage(m.getValidityReport());
-	}
-
-	/** Displays <code>text</code> in the message area, if it was created. */
-	public void setMessage(String text) {
-		if (this.outputTextArea == null)
-			return;
-		if (text != null && text.length() > 0) {
-			this.outputTextArea.setText(text.replaceAll("\n", "  "));
-			this.outputTextArea.setRows(2);
-		}
-		else
-			this.outputTextArea.setText("");
-	}
-
-	//
-	// A Tool Bar:
-
-	protected abstract void createToolBar();
-
-	//
-	// Implementing the RowDragListener interface
-	//
-
-	/** Just acknowledge the fact. */
-	public void draggingStarted(RowDragEvent ev) {
-		setMessage("...Moving row...");
-		// System.out.println("Started dragging row "+draggedRow);
-	}
-
-	/** Here, just handle dragging disabling requests, if any. */
-	public void draggingStopped(RowDragEvent ev) {
-		if (this.rowDraggingDisablingRequested) {
-			this.rowDraggingDisablingRequested = false;
-			setRowDraggingEnabled(false);
-		}
-		displayValidityReport();
-	}
-
-	/** Actually moving a member wrt the current view. */
-	public void draggingMoved(RowDragEvent ev) {
-		/*
+    /**
+     * Actually moving a member wrt the current view.
+     */
+    public void draggingMoved(RowDragEvent ev) {
+        /*
 		 * System.out.println ("draggingMoved("+ev.getSourceRow()+", "+
 		 * ev.getTargetRow()+")");
-		 */
-		int src = ev.getSourceRow();
-		int dest = ev.getTargetRow();
-		src = Math.min(src, this.tuple.getNumberOfEntries() - 1);
-		dest = Math.min(dest, this.tuple.getNumberOfEntries() - 1);
-		if (dest == -1 || src == -1)
-			return;
-		if (dest == src)
-			return;
-		// System.out.println("Source row="+src+"; dest. row="+dest);
-		if (src < dest)
-			dest++; // append if moving down the table;
-		this.viewSetting.moveSlotInserting(this.tuple, src, dest);
-	}
+         */
+        int src = ev.getSourceRow();
+        int dest = ev.getTargetRow();
+        src = Math.min(src, this.tuple.getNumberOfEntries() - 1);
+        dest = Math.min(dest, this.tuple.getNumberOfEntries() - 1);
+        if (dest == -1 || src == -1) {
+            return;
+        }
+        if (dest == src) {
+            return;
+        }
+        // System.out.println("Source row="+src+"; dest. row="+dest);
+        if (src < dest) {
+            dest++; // append if moving down the table;
+        }
+        this.viewSetting.moveSlotInserting(this.tuple, src, dest);
+    }
 
-	/** Convenience method. */
-	protected boolean isDraggingActive() {
-		if (!this.rowDraggingEnabled) {
-			return false;
-		} 
-		return this.rowDragger.isDraggingActive();
-	}
+    /**
+     * Convenience method.
+     */
+    protected boolean isDraggingActive() {
+        if (!this.rowDraggingEnabled) {
+            return false;
+        }
+        return this.rowDragger.isDraggingActive();
+    }
 
-	/**
-	 * Convenience method, called by the list selection event handling method
-	 * valueChanged().
-	 */
-	protected void memberRowSelected(int row) {
-		displayValidityReport();
-		setMemberActionsEnabled(true);
-	}
+    /**
+     * Convenience method, called by the list selection event handling method valueChanged().
+     */
+    protected void memberRowSelected(int row) {
+        displayValidityReport();
+        setMemberActionsEnabled(true);
+    }
 
-	/**
-	 * Convenience method, called by the list selection event handling method
-	 * valueChanged( ListSelectionEvent ev ), when the selected row is the
-	 * bottom row for adding of new members..
-	 */
-	protected void newRowSelected() {
-		setMessage("A new member can be added in this row.");
-		setMemberActionsEnabled(false);
-	}
+    /**
+     * Convenience method, called by the list selection event handling method valueChanged( ListSelectionEvent ev ),
+     * when the selected row is the bottom row for adding of new members..
+     */
+    protected void newRowSelected() {
+        setMessage("A new member can be added in this row.");
+        setMemberActionsEnabled(false);
+    }
 
-	/** ListSelectionListener interface implementation. */
-	public void valueChanged(ListSelectionEvent ev) {
-		if (this.tuple == null)
-			return;
-		if (isDraggingActive())
-			return;
-		int row = ev.getFirstIndex();
-		if (row < this.tuple.getNumberOfEntries() && row >= 0) {
-			memberRowSelected(row);
-		} else if (row == this.tuple.getNumberOfEntries()) {
-			newRowSelected();
-		}
-	}
+    /**
+     * ListSelectionListener interface implementation.
+     */
+    public void valueChanged(ListSelectionEvent ev) {
+        if (this.tuple == null) {
+            return;
+        }
+        if (isDraggingActive()) {
+            return;
+        }
+        int row = ev.getFirstIndex();
+        if (row < this.tuple.getNumberOfEntries() && row >= 0) {
+            memberRowSelected(row);
+        } else if (row == this.tuple.getNumberOfEntries()) {
+            newRowSelected();
+        }
+    }
 
-	//
-	// Public methods.
-	//
+    //
+    // Public methods.
+    //
+    // Implementation of the TupleEditor interface
+    /**
+     * Implemented as parent, plus managing enabling/disabling of actions.
+     */
+    public void setTuple(AttrTuple anAttrTuple) {
+        super.setTuple(anAttrTuple);
+        setTupleActionsEnabled(anAttrTuple != null);
+        setMemberActionsEnabled(false);
+    } // setTuple()
 
-	// Implementation of the TupleEditor interface
-
-	/** Implemented as parent, plus managing enabling/disabling of actions. */
-	public void setTuple(AttrTuple anAttrTuple) {
-		super.setTuple(anAttrTuple);
-		setTupleActionsEnabled(anAttrTuple != null);
-		setMemberActionsEnabled(false);
-	} // setTuple()
-
-	public void attributeChanged(AttrViewEvent event) {
-		super.attributeChanged(event);
-		if (!isDraggingActive())
-			displayValidityReport();
-	}
+    public void attributeChanged(AttrViewEvent event) {
+        super.attributeChanged(event);
+        if (!isDraggingActive()) {
+            displayValidityReport();
+        }
+    }
 }
 /*
  * $Log: ExtendedTupleEditorSupport.java,v $

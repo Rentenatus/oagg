@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.Enumeration;
@@ -24,426 +25,424 @@ import agg.util.XMLHelper;
 import agg.util.Pair;
 
 /**
- * This class provides a container for critical pairs. The critical pairs uses
- * the exclude algorithm. Further on the used graph grammar is layered.
- * 
+ * This class provides a container for critical pairs. The critical pairs uses the exclude algorithm. Further on the
+ * used graph grammar is layered.
+ *
  * @author $Author: olga $
- * @version $Id: LayeredExcludePairContainer.java,v 1.7 2007/06/13 08:32:58 olga
- *          Exp $
+ * @version $Id: LayeredExcludePairContainer.java,v 1.7 2007/06/13 08:32:58 olga Exp $
  */
 public class LayeredExcludePairContainer extends ExcludePairContainer implements
-		LayeredPairContainer {
+        LayeredPairContainer {
 
-	@SuppressWarnings("deprecation")
-	private LayerFunction layerFunc; // not more needed
+    @SuppressWarnings("deprecation")
+    private LayerFunction layerFunc; // not more needed
 
-	private int layer = -1;
+    private int layer = -1;
 
-	protected LayeredExcludePair layeredPair;
+    protected LayeredExcludePair layeredPair;
 
-	protected LayeredSimpleExcludePair layeredSimplePair;
+    protected LayeredSimpleExcludePair layeredSimplePair;
 
-	/**
-	 * Creates a container for critical pairs for a layered graph grammar.
-	 * 
-	 * @param gragra
-	 *            The graph grammar.
-	 * @param layer
-	 *            The layer function.
-	 * @deprecated
-	 */
-	public LayeredExcludePairContainer(GraGra gragra, LayerFunction layer) {
-		super(gragra);
-		// this.layerFunc = layer;
-	}
+    /**
+     * Creates a container for critical pairs for a layered graph grammar.
+     *
+     * @param gragra The graph grammar.
+     * @param layer The layer function.
+     * @deprecated
+     */
+    public LayeredExcludePairContainer(GraGra gragra, LayerFunction layer) {
+        super(gragra);
+        // this.layerFunc = layer;
+    }
 
-	/**
-	 * Creates a new container for critical pairs. An invalid layer function is
-	 * used. It is necessary to set a valid layer function.
-	 * 
-	 * @param gragra
-	 *            The graph grammar.
-	 */
-	public LayeredExcludePairContainer(GraGra gragra) {
-		super(gragra);
-	}
+    /**
+     * Creates a new container for critical pairs. An invalid layer function is used. It is necessary to set a valid
+     * layer function.
+     *
+     * @param gragra The graph grammar.
+     */
+    public LayeredExcludePairContainer(GraGra gragra) {
+        super(gragra);
+    }
 
-	/**
-	 * Computes if the first rule exclude the second rule. The result is added
-	 * to the container.
-	 * 
-	 * @param r1
-	 *            The first rule.
-	 * @param r2
-	 *            The second rule.
-	 */
-	protected synchronized void computeCritical(Rule r1, Rule r2) {
-		Report.trace("LayeredExcludePairContainer: starte computeCritical", 2);
-		// System.out.println("LayeredExcludePairContainer.computeCritical(r1,
-		// r2): "+r1.getName()+" "+r2.getName()+" "+this.getEntry(r1,
-		// r2).state);
-		// mark Entry
-		if (!r1.isEnabled() || !r2.isEnabled()) { // test disabled rule
-			this.getEntry(r1, r2).state = Entry.DISABLED;
-			addEntry(r1, r2, false, null);
-			addQuadruple(this.excludeContainer, r1, r2, false, null);
-			addQuadruple(this.conflictFreeContainer, r1, r2, false, null);
-			firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
-					+ r1.getName() + ">  and  <" + r2.getName()
-					+ ">  should not be computed."));
-			return;
-		}
+    /**
+     * Computes if the first rule exclude the second rule. The result is added to the container.
+     *
+     * @param r1 The first rule.
+     * @param r2 The second rule.
+     */
+    protected synchronized void computeCritical(Rule r1, Rule r2) {
+        Report.trace("LayeredExcludePairContainer: starte computeCritical", 2);
+        // System.out.println("LayeredExcludePairContainer.computeCritical(r1,
+        // r2): "+r1.getName()+" "+r2.getName()+" "+this.getEntry(r1,
+        // r2).state);
+        // mark Entry
+        if (!r1.isEnabled() || !r2.isEnabled()) { // test disabled rule
+            this.getEntry(r1, r2).state = Entry.DISABLED;
+            addEntry(r1, r2, false, null);
+            addQuadruple(this.excludeContainer, r1, r2, false, null);
+            addQuadruple(this.conflictFreeContainer, r1, r2, false, null);
+            firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
+                    + r1.getName() + ">  and  <" + r2.getName()
+                    + ">  should not be computed."));
+            return;
+        }
 
-		if (r1.getLayer() != r2.getLayer()) {// test rule layer
-			this.getEntry(r1, r2).state = Entry.NOT_RELATED;
-			addEntry(r1, r2, false, null);
-			addQuadruple(this.excludeContainer, r1, r2, false, null);
-			addQuadruple(this.conflictFreeContainer, r1, r2, false, null);
-			firePairEvent(new CriticalPairEvent(this, r1, r2, ""));
-			return;
-		}
+        if (r1.getLayer() != r2.getLayer()) {// test rule layer
+            this.getEntry(r1, r2).state = Entry.NOT_RELATED;
+            addEntry(r1, r2, false, null);
+            addQuadruple(this.excludeContainer, r1, r2, false, null);
+            addQuadruple(this.conflictFreeContainer, r1, r2, false, null);
+            firePairEvent(new CriticalPairEvent(this, r1, r2, ""));
+            return;
+        }
 
-		if ((this.layer > -1) && (r1.getLayer() != this.layer)) {
-			return;
-		}
+        if ((this.layer > -1) && (r1.getLayer() != this.layer)) {
+            return;
+        }
 
-		if ((this.getEntry(r1, r2).state == Entry.SCHEDULED_FOR_COMPUTING)
-				|| (this.getEntry(r1, r2).state == Entry.NOT_SET)) {
-			getEntry(r1, r2).setState(Entry.COMPUTING_IS_RUNNING);
+        if ((this.getEntry(r1, r2).state == Entry.SCHEDULED_FOR_COMPUTING)
+                || (this.getEntry(r1, r2).state == Entry.NOT_SET)) {
+            getEntry(r1, r2).setState(Entry.COMPUTING_IS_RUNNING);
 
-			firePairEvent(new CriticalPairEvent(this, r1, r2,
-					"Computing critical rule pair  [  " + r1.getName()
-							+ "  ,  " + r2.getName() + "  ]"));
+            firePairEvent(new CriticalPairEvent(this, r1, r2,
+                    "Computing critical rule pair  [  " + r1.getName()
+                    + "  ,  " + r2.getName() + "  ]"));
 
-			if (!this.complete) {
-				this.layeredPair = null;
+            if (!this.complete) {
+                this.layeredPair = null;
 
-				this.layeredSimplePair = new LayeredSimpleExcludePair();
-				this.excludePair = this.layeredSimplePair;
-			} else {
-				this.layeredSimplePair = null;
+                this.layeredSimplePair = new LayeredSimpleExcludePair();
+                this.excludePair = this.layeredSimplePair;
+            } else {
+                this.layeredSimplePair = null;
 
-				this.layeredPair = new LayeredExcludePair();
-				this.excludePair = this.layeredPair;
-			}
+                this.layeredPair = new LayeredExcludePair();
+                this.excludePair = this.layeredPair;
+            }
 
-			setOptionsOfExcludePair();
-			
-			Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
-			try {
-				if (this.layeredPair != null) {
-					overlapping = this.layeredPair.isCritical(CriticalPair.EXCLUDE, r1, r2);
-				} else if (this.layeredSimplePair != null) {
-					overlapping = this.layeredSimplePair.isCritical(CriticalPair.EXCLUDE, r1, r2);
-				}
-			} catch (InvalidAlgorithmException iae) {
-				// System.out.println(iae.getLocalizedMessage());
-			}
+            setOptionsOfExcludePair();
 
-			if (this.excludePair != null)
-				this.excludePair.dispose();
-			this.excludePair = null;
-			this.layeredPair = null;
-			this.layeredSimplePair = null;
+            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
+            try {
+                if (this.layeredPair != null) {
+                    overlapping = this.layeredPair.isCritical(CriticalPair.EXCLUDE, r1, r2);
+                } else if (this.layeredSimplePair != null) {
+                    overlapping = this.layeredSimplePair.isCritical(CriticalPair.EXCLUDE, r1, r2);
+                }
+            } catch (InvalidAlgorithmException iae) {
+                // System.out.println(iae.getLocalizedMessage());
+            }
+
+            if (this.excludePair != null) {
+                this.excludePair.dispose();
+            }
+            this.excludePair = null;
+            this.layeredPair = null;
+            this.layeredSimplePair = null;
 //			System.gc();
 
-			boolean critic = (overlapping != null);
+            boolean critic = (overlapping != null);
 
-			// new container
-			addEntry(r1, r2, critic, overlapping);
+            // new container
+            addEntry(r1, r2, critic, overlapping);
 
-			/*
+            /*
 			 * Wenn overlapping Elemente enthaelt sind r1/r2 kritisch critic
 			 * wird daher true. Alle wichtigen Informationen werden eingetragen.
 			 * Enthaelt r1/r2 keine Elementen, so wird critic auf false gesetzt.
 			 * Wenn excludeContainer nach r1/r2 gefragt wird, liefert die
 			 * Antwort auch false. overlapping kann daher null sein.
-			 */
+             */
 
-			/*
+ /*
 			 * Achtung, wenn r1 r2 nicht kritisch ist gibt es keine
 			 * Ueberlappungen
-			 */
-			addQuadruple(this.excludeContainer, r1, r2, critic, overlapping);
+             */
+            addQuadruple(this.excludeContainer, r1, r2, critic, overlapping);
 
-			/*
+            /*
 			 * conflictfree braucht keine ueberlappungsgraphen daher ist das
 			 * letzte Argument null
-			 */
-			addQuadruple(this.conflictFreeContainer, r1, r2, !critic, null);
+             */
+            addQuadruple(this.conflictFreeContainer, r1, r2, !critic, null);
 
-			if (overlapping != null)
-				firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
-						+ r1.getName() + ">  and  <" + r2.getName()
-						+ ">  have critical pairs"));
-			else
-				firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
-						+ r1.getName() + ">  and  <" + r2.getName()
-						+ ">  have no critical pairs"));
-		}
-		Report.trace("LayeredExcludePairContainer: beende computeCritical", -2);
-	}
+            if (overlapping != null) {
+                firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
+                        + r1.getName() + ">  and  <" + r2.getName()
+                        + ">  have critical pairs"));
+            } else {
+                firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
+                        + r1.getName() + ">  and  <" + r2.getName()
+                        + ">  have no critical pairs"));
+            }
+        }
+        Report.trace("LayeredExcludePairContainer: beende computeCritical", -2);
+    }
 
-	protected void fillContainers() {
-		super.fillContainers();
-		if (this.layer > -1)
-			this.isComputed = false;
-	}
+    protected void fillContainers() {
+        super.fillContainers();
+        if (this.layer > -1) {
+            this.isComputed = false;
+        }
+    }
 
-	/**
-	 * Sets a layer function to layer a certain object.
-	 * 
-	 * @param layer
-	 *            A specific layer function.
-	 * @deprecated not more used
-	 */
-	public void setLayer(LayerFunction layer) {
-		this.layerFunc = layer;
-	}
+    /**
+     * Sets a layer function to layer a certain object.
+     *
+     * @param layer A specific layer function.
+     * @deprecated not more used
+     */
+    public void setLayer(LayerFunction layer) {
+        this.layerFunc = layer;
+    }
 
-	/**
-	 * Returns a layer function from a certain object.
-	 * 
-	 * @return A specific layer function.
-	 * @deprecated not more used
-	 */
-	public LayerFunction getLayer() {
-		return this.layerFunc;
-	}
+    /**
+     * Returns a layer function from a certain object.
+     *
+     * @return A specific layer function.
+     * @deprecated not more used
+     */
+    public LayerFunction getLayer() {
+        return this.layerFunc;
+    }
 
-	/**
-	 * Sets a layer to compute. If layer = -1 then all layers should be
-	 * computed.
-	 * 
-	 * @param layer
-	 */
-	public void setLayer(int layer) {
-		this.layer = layer;
-		// System.out.println("LayeredExcludePairContainer::: compute layer:
-		// "+layer);
-	}
+    /**
+     * Sets a layer to compute. If layer = -1 then all layers should be computed.
+     *
+     * @param layer
+     */
+    public void setLayer(int layer) {
+        this.layer = layer;
+        // System.out.println("LayeredExcludePairContainer::: compute layer:
+        // "+layer);
+    }
 
-	/**
-	 * Writes the contents of this object to a file in a xml format.
-	 * 
-	 * @param h
-	 *            A helper object for storing.
-	 */
-	public void XwriteObject(XMLHelper h) {
-		h.openNewElem("CriticalPairs", this);
-		h.addObject("GraGra", getGrammar(), true);
-		h.openSubTag("conflictsContainer");
-		h.addAttr("kind", "exclude");
-		
-		// Inhalt von excludeContainer schreiben (save)
-		for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
-			Rule r1 = keys.nextElement();
-			h.openSubTag("Rule");
-			h.addObject("R1", r1, false);
+    /**
+     * Writes the contents of this object to a file in a xml format.
+     *
+     * @param h A helper object for storing.
+     */
+    public void XwriteObject(XMLHelper h) {
+        h.openNewElem("CriticalPairs", this);
+        h.addObject("GraGra", getGrammar(), true);
+        h.openSubTag("conflictsContainer");
+        h.addAttr("kind", "exclude");
 
-			Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> 
-			secondPart = this.excludeContainer.get(r1);
-			for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
-				Rule r2 = k2.nextElement();
-				h.openSubTag("Rule");
-				h.addObject("R2", r2, false);
-				Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
-				Boolean b = p.first;
-				h.addAttr("bool", b.toString());
-				if (b.booleanValue()) {
-					Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
-					for (int i = 0; i < v.size(); i++) {
-						Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.elementAt(i);
-						Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = p2i.first;
-						h.openSubTag("Overlapping_Pair");
-						OrdinaryMorphism first = p2.first;
-						Graph overlapping = first.getImage();
-						h.addObject("", overlapping, true);
+        // Inhalt von excludeContainer schreiben (save)
+        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
+            Rule r1 = keys.nextElement();
+            h.openSubTag("Rule");
+            h.addObject("R1", r1, false);
 
-						Iterator<?> e = overlapping.getNodesSet().iterator();
-						while (e.hasNext()) {
-							GraphObject o = (GraphObject) e.next();
-							if (o.isCritical()) {
-								h.openSubTag("Critical");
-								h.addObject("object", o, false);
-								h.close();
-							}
-						}
-						e = overlapping.getArcsSet().iterator();
-						while (e.hasNext()) {
-							GraphObject o = (GraphObject) e.next();
-							if (o.isCritical()) {
-								h.openSubTag("Critical");
-								h.addObject("object", o, false);
-								h.close();
-							}
-						}
-						
-						writeOverlapMorphisms(h, r1, r2, p2i);
+            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+                Rule r2 = k2.nextElement();
+                h.openSubTag("Rule");
+                h.addObject("R2", r2, false);
+                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+                Boolean b = p.first;
+                h.addAttr("bool", b.toString());
+                if (b.booleanValue()) {
+                    Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
+                    for (int i = 0; i < v.size(); i++) {
+                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.elementAt(i);
+                        Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = p2i.first;
+                        h.openSubTag("Overlapping_Pair");
+                        OrdinaryMorphism first = p2.first;
+                        Graph overlapping = first.getImage();
+                        h.addObject("", overlapping, true);
 
-						h.close();
-					}
-				}
-				h.close();
-			}
+                        Iterator<?> e = overlapping.getNodesSet().iterator();
+                        while (e.hasNext()) {
+                            GraphObject o = (GraphObject) e.next();
+                            if (o.isCritical()) {
+                                h.openSubTag("Critical");
+                                h.addObject("object", o, false);
+                                h.close();
+                            }
+                        }
+                        e = overlapping.getArcsSet().iterator();
+                        while (e.hasNext()) {
+                            GraphObject o = (GraphObject) e.next();
+                            if (o.isCritical()) {
+                                h.openSubTag("Critical");
+                                h.addObject("object", o, false);
+                                h.close();
+                            }
+                        }
 
-			h.close();
-		}
-		h.close();
-		h.openSubTag("conflictFreeContainer");
-		for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
-			Rule r1 = keys.nextElement();
-			h.openSubTag("Rule");
-			h.addObject("R1", r1, false);
-			Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> 
-			secondPart = this.conflictFreeContainer.get(r1);
-			for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
-				Rule r2 = k2.nextElement();
-				h.openSubTag("Rule");
-				h.addObject("R2", r2, false);
-				Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
-				Boolean b = p.first;
-				h.addAttr("bool", b.toString());
-				h.close();
-			}
+                        writeOverlapMorphisms(h, r1, r2, p2i);
 
-			h.close();
-		}
-		h.close();
-		h.close();
-	}
+                        h.close();
+                    }
+                }
+                h.close();
+            }
 
-	/**
-	 * Reads the contents of a xml file to restore this object.
-	 * 
-	 * @param h
-	 *            A helper object for loading.
-	 */
-	@SuppressWarnings("unused")
-	public void XreadObject(XMLHelper h) {
-		if (h.isTag("CriticalPairs", this)) {
-			// System.out.println("LayerExcludePairContainer.XreadObject ...");
-			Rule r1 = null;
-			Rule r2 = null;
-			boolean b = false;
-			Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
-			Vector<String> tagnames = new Vector<String>(1);
-			Vector<String> tagnames2 = new Vector<String>(1);
+            h.close();
+        }
+        h.close();
+        h.openSubTag("conflictFreeContainer");
+        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
+            Rule r1 = keys.nextElement();
+            h.openSubTag("Rule");
+            h.addObject("R1", r1, false);
+            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
+            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+                Rule r2 = k2.nextElement();
+                h.openSubTag("Rule");
+                h.addObject("R2", r2, false);
+                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+                Boolean b = p.first;
+                h.addAttr("bool", b.toString());
+                h.close();
+            }
 
-			this.grammar = BaseFactory.theFactory().createGraGra();
-			h.getObject("", this.grammar, true);
+            h.close();
+        }
+        h.close();
+        h.close();
+    }
 
-			tagnames.add("excludeContainer");
-			tagnames.add("conflictsContainer");
-			tagnames.add("conflictContainer");
+    /**
+     * Reads the contents of a xml file to restore this object.
+     *
+     * @param h A helper object for loading.
+     */
+    @SuppressWarnings("unused")
+    public void XreadObject(XMLHelper h) {
+        if (h.isTag("CriticalPairs", this)) {
+            // System.out.println("LayerExcludePairContainer.XreadObject ...");
+            Rule r1 = null;
+            Rule r2 = null;
+            boolean b = false;
+            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
+            Vector<String> tagnames = new Vector<String>(1);
+            Vector<String> tagnames2 = new Vector<String>(1);
 
-			tagnames2.add("dependencyContainer");
-			tagnames2.add("dependenciesContainer");
+            this.grammar = BaseFactory.theFactory().createGraGra();
+            h.getObject("", this.grammar, true);
 
-			boolean switchDependency = false;
-			
-			if (h.readSubTag(tagnames)) {
-				String kind = h.readAttr("kind");
-				this.conflictKind = CriticalPair.CONFLICT;
-			}
-			else if (h.readSubTag(tagnames2)) {
-				this.conflictKind = CriticalPair.TRIGGER_DEPENDENCY;
-				if (h.readAttr("kind").equals("trigger_switch_dependency")) {
-					switchDependency = true;
-					this.conflictKind = CriticalPair.TRIGGER_SWITCH_DEPENDENCY;
-				}
-			}
+            tagnames.add("excludeContainer");
+            tagnames.add("conflictsContainer");
+            tagnames.add("conflictContainer");
 
-			if (this.conflictKind == CriticalPair.CONFLICT
-					|| this.conflictKind == CriticalPair.TRIGGER_DEPENDENCY
-					|| this.conflictKind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
-				Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-				if (!r1s.hasMoreElements())
-					r1s = h.getEnumeration("", null, true, "Regel");
-				while (r1s.hasMoreElements()) {
-					h.peekElement(r1s.nextElement());
-					r1 = (Rule) h.getObject("R1", null, false);
-					Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-					if (!r2s.hasMoreElements())
-						r2s = h.getEnumeration("", null, true, "Regel");
-					while (r2s.hasMoreElements()) {
-						h.peekElement(r2s.nextElement());
-						r2 = (Rule) h.getObject("R2", null, false);
-						// System.out.println(r1.getName()+" "+r2.getName());
-						String bool = h.readAttr("bool");
-						allOverlappings = null;
-						b = false;
-						if (bool.equals("true")) {
-							b = true;
-							allOverlappings = new Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
-							Enumeration<?> overlappings = h.getEnumeration("",
-									null, true, "Overlapping_Pair");
-							while (overlappings.hasMoreElements()) {
-								h.peekElement(overlappings.nextElement());
-								Graph g = (Graph) h.getObject("", new Graph(),
-										true);
-								while (h.readSubTag("Critical")) {
-									GraphObject o = (GraphObject) h.getObject(
-											"object", null, false);
-									if (o != null)
-										o.setCritical(true);
-									h.close();
-								}
-								Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(
-										h, r1, r2, g);
-								allOverlappings.addElement(p);
+            tagnames2.add("dependencyContainer");
+            tagnames2.add("dependenciesContainer");
 
-								h.close();
-							}
-						}
-						addQuadruple(this.excludeContainer, r1, r2, b,
-								allOverlappings);
-						h.close();
-					}
-					h.close();
-				}
-				h.close();
-				// System.out.println("excludeContainer
-				// "+excludeContainer+"\n");
-			}/* Ende readSubTag("excludeContainer") */
-			if (h.readSubTag("conflictFreeContainer")) {
-				// System.out.println(conflictFreeContainer);
-				Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-				if (!r1s.hasMoreElements())
-					r1s = h.getEnumeration("", null, true, "Regel");
-				while (r1s.hasMoreElements()) {
-					h.peekElement(r1s.nextElement());
-					r1 = (Rule) h.getObject("R1", null, false);
-					Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-					if (!r2s.hasMoreElements())
-						r2s = h.getEnumeration("", null, true, "Regel");
-					while (r2s.hasMoreElements()) {
-						h.peekElement(r2s.nextElement());
-						r2 = (Rule) h.getObject("R2", null, false);
-						// System.out.println(r1.getName()+" "+r2.getName());
-						String bool = h.readAttr("bool");
-						b = false;
-						if (bool.equals("true"))
-							b = true;
-						addQuadruple(this.conflictFreeContainer, r1, r2, b, null);
+            boolean switchDependency = false;
 
-						if (!r1.isEnabled()) // test disabled rule
-							this.getEntry(r1, r2).state = Entry.DISABLED;
-						else if (r1.getLayer() != r2.getLayer()) // test rule
-							// layer
-							this.getEntry(r1, r2).state = Entry.NOT_RELATED;
+            if (h.readSubTag(tagnames)) {
+                String kind = h.readAttr("kind");
+                this.conflictKind = CriticalPair.CONFLICT;
+            } else if (h.readSubTag(tagnames2)) {
+                this.conflictKind = CriticalPair.TRIGGER_DEPENDENCY;
+                if (h.readAttr("kind").equals("trigger_switch_dependency")) {
+                    switchDependency = true;
+                    this.conflictKind = CriticalPair.TRIGGER_SWITCH_DEPENDENCY;
+                }
+            }
 
-						h.close();
-					}
-					h.close();
-				}
-				h.close();
-				// System.out.println("conflictFreeContainer
-				// "+conflictFreeContainer+"\n");
-			}
-		}
-		h.close();
-	}
+            if (this.conflictKind == CriticalPair.CONFLICT
+                    || this.conflictKind == CriticalPair.TRIGGER_DEPENDENCY
+                    || this.conflictKind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
+                Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
+                if (!r1s.hasMoreElements()) {
+                    r1s = h.getEnumeration("", null, true, "Regel");
+                }
+                while (r1s.hasMoreElements()) {
+                    h.peekElement(r1s.nextElement());
+                    r1 = (Rule) h.getObject("R1", null, false);
+                    Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
+                    if (!r2s.hasMoreElements()) {
+                        r2s = h.getEnumeration("", null, true, "Regel");
+                    }
+                    while (r2s.hasMoreElements()) {
+                        h.peekElement(r2s.nextElement());
+                        r2 = (Rule) h.getObject("R2", null, false);
+                        // System.out.println(r1.getName()+" "+r2.getName());
+                        String bool = h.readAttr("bool");
+                        allOverlappings = null;
+                        b = false;
+                        if (bool.equals("true")) {
+                            b = true;
+                            allOverlappings = new Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
+                            Enumeration<?> overlappings = h.getEnumeration("",
+                                    null, true, "Overlapping_Pair");
+                            while (overlappings.hasMoreElements()) {
+                                h.peekElement(overlappings.nextElement());
+                                Graph g = (Graph) h.getObject("", new Graph(),
+                                        true);
+                                while (h.readSubTag("Critical")) {
+                                    GraphObject o = (GraphObject) h.getObject(
+                                            "object", null, false);
+                                    if (o != null) {
+                                        o.setCritical(true);
+                                    }
+                                    h.close();
+                                }
+                                Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(
+                                        h, r1, r2, g);
+                                allOverlappings.addElement(p);
+
+                                h.close();
+                            }
+                        }
+                        addQuadruple(this.excludeContainer, r1, r2, b,
+                                allOverlappings);
+                        h.close();
+                    }
+                    h.close();
+                }
+                h.close();
+                // System.out.println("excludeContainer
+                // "+excludeContainer+"\n");
+            }/* Ende readSubTag("excludeContainer") */
+            if (h.readSubTag("conflictFreeContainer")) {
+                // System.out.println(conflictFreeContainer);
+                Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
+                if (!r1s.hasMoreElements()) {
+                    r1s = h.getEnumeration("", null, true, "Regel");
+                }
+                while (r1s.hasMoreElements()) {
+                    h.peekElement(r1s.nextElement());
+                    r1 = (Rule) h.getObject("R1", null, false);
+                    Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
+                    if (!r2s.hasMoreElements()) {
+                        r2s = h.getEnumeration("", null, true, "Regel");
+                    }
+                    while (r2s.hasMoreElements()) {
+                        h.peekElement(r2s.nextElement());
+                        r2 = (Rule) h.getObject("R2", null, false);
+                        // System.out.println(r1.getName()+" "+r2.getName());
+                        String bool = h.readAttr("bool");
+                        b = false;
+                        if (bool.equals("true")) {
+                            b = true;
+                        }
+                        addQuadruple(this.conflictFreeContainer, r1, r2, b, null);
+
+                        if (!r1.isEnabled()) // test disabled rule
+                        {
+                            this.getEntry(r1, r2).state = Entry.DISABLED;
+                        } else if (r1.getLayer() != r2.getLayer()) // test rule
+                        // layer
+                        {
+                            this.getEntry(r1, r2).state = Entry.NOT_RELATED;
+                        }
+
+                        h.close();
+                    }
+                    h.close();
+                }
+                h.close();
+                // System.out.println("conflictFreeContainer
+                // "+conflictFreeContainer+"\n");
+            }
+        }
+        h.close();
+    }
 
 }
 /*

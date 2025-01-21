@@ -1,135 +1,136 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: RuleAtomicApplConstraintTreeNodeData.java,v 1.3 2010/09/23 08:23:32 olga Exp $
-
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import agg.editor.impl.EdAtomApplCond;
 
-
 /**
- * The RuleAtomicApplConstraintTreeNodeData implements an user object of a tree node in the
- * GraGraTreeModel.
- * 
+ * The RuleAtomicApplConstraintTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ *
  * @author $Author: olga $
  * @version $Id: RuleAtomicApplConstraintTreeNodeData.java,v 1.3 2010/09/23 08:23:32 olga Exp $
  */
 public class RuleAtomicApplConstraintTreeNodeData extends GraGraTreeNodeDataAdapter {
-	
-	private Object data;
-	
-	private EdAtomApplCond eAtomApplCond;
 
-	/** Value to display. */
-	private String string = "";
+    private Object data;
 
-	/** My tree node in a tree */
-	private DefaultMutableTreeNode treeNode;
+    private EdAtomApplCond eAtomApplCond;
 
+    /**
+     * Value to display.
+     */
+    private String string = "";
 
-	public RuleAtomicApplConstraintTreeNodeData(final EdAtomApplCond cond) {
-		setConstraint(cond);
-	}
+    /**
+     * My tree node in a tree
+     */
+    private DefaultMutableTreeNode treeNode;
 
-	private void setConstraint(final EdAtomApplCond cond) {
-		this.data = cond;
-		this.string = "AtomApplCond";
-		this.eAtomApplCond = cond;
-	}
-	
-	public RuleAtomicApplConstraintTreeNodeData(String s) {
-		this.data = s;
-		this.string = s;
-	}
+    public RuleAtomicApplConstraintTreeNodeData(final EdAtomApplCond cond) {
+        setConstraint(cond);
+    }
 
-	public RuleAtomicApplConstraintTreeNodeData(final Object obj) {
-		if (obj instanceof EdAtomApplCond)
-			setConstraint((EdAtomApplCond) obj);
-		else if (obj instanceof String)
-			new RuleAtomicApplConstraintTreeNodeData((String) obj);
-	}
+    private void setConstraint(final EdAtomApplCond cond) {
+        this.data = cond;
+        this.string = "AtomApplCond";
+        this.eAtomApplCond = cond;
+    }
 
-	public void dispose() {
-		this.data = null;
-		this.string = null;
-		this.eAtomApplCond = null;
-		this.treeNode = null;
-	}
-	
-	/* Set data object of this tree node data */
-	public void setData(final Object obj) {
-		if (obj instanceof EdAtomApplCond)
-			setConstraint((EdAtomApplCond) obj);
-		else if (obj instanceof String) {
-			this.string = (String) obj;
-			this.data = obj;
-		}
-		else {
-			this.data = null;
-			this.string = null;
-			this.eAtomApplCond = null;		
-		}
-	}
+    public RuleAtomicApplConstraintTreeNodeData(String s) {
+        this.data = s;
+        this.string = s;
+    }
 
-	public Object getData() {
-		return this.data;
-	}
-		
-	/**
-	 * Sets the string to display for this object.
-	 */
-	public void setString(String str) {
-		if (str == null) {
-			return;
-		}
-		String newString = str.replaceAll(" ", "");
-		this.string = newString;
-	}
+    public RuleAtomicApplConstraintTreeNodeData(final Object obj) {
+        if (obj instanceof EdAtomApplCond) {
+            setConstraint((EdAtomApplCond) obj);
+        } else if (obj instanceof String) {
+            new RuleAtomicApplConstraintTreeNodeData((String) obj);
+        }
+    }
 
-	/**
-	 * Returns the string to display for this object.
-	 */
-	public String string() {
-		return this.string;
-	}
+    public void dispose() {
+        this.data = null;
+        this.string = null;
+        this.eAtomApplCond = null;
+        this.treeNode = null;
+    }
 
-	public String toString() {
-		return this.string;
-	}
+    /* Set data object of this tree node data */
+    public void setData(final Object obj) {
+        if (obj instanceof EdAtomApplCond) {
+            setConstraint((EdAtomApplCond) obj);
+        } else if (obj instanceof String) {
+            this.string = (String) obj;
+            this.data = obj;
+        } else {
+            this.data = null;
+            this.string = null;
+            this.eAtomApplCond = null;
+        }
+    }
 
-	public EdAtomApplCond getAtomApplCond() {
-		return this.eAtomApplCond;
-	}
+    public Object getData() {
+        return this.data;
+    }
 
-	public void setTreeNode(DefaultMutableTreeNode node) {
-		this.treeNode = node;
-	}
+    /**
+     * Sets the string to display for this object.
+     */
+    public void setString(String str) {
+        if (str == null) {
+            return;
+        }
+        String newString = str.replaceAll(" ", "");
+        this.string = newString;
+    }
 
-	public DefaultMutableTreeNode getTreeNode() {
-		return this.treeNode;
-	}
+    /**
+     * Returns the string to display for this object.
+     */
+    public String string() {
+        return this.string;
+    }
 
-	/* (non-Javadoc)
+    public String toString() {
+        return this.string;
+    }
+
+    public EdAtomApplCond getAtomApplCond() {
+        return this.eAtomApplCond;
+    }
+
+    public void setTreeNode(DefaultMutableTreeNode node) {
+        this.treeNode = node;
+    }
+
+    public DefaultMutableTreeNode getTreeNode() {
+        return this.treeNode;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isAtomApplCond()
-	 */
-	public boolean isAtomApplCond() {
-		return true;
-	}
+     */
+    public boolean isAtomApplCond() {
+        return true;
+    }
 
-	public String getToolTipText() {
-		return " Atomic post application condition ";
-	}
-	
-	public boolean isTreeTextEditable() {
-		return false;
-	}
+    public String getToolTipText() {
+        return " Atomic post application condition ";
+    }
+
+    public boolean isTreeTextEditable() {
+        return false;
+    }
 }

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.saveload;
 
 import java.io.File;
@@ -20,80 +21,86 @@ import javax.swing.filechooser.FileFilter;
  */
 public abstract class ExtensionFileFilter extends FileFilter {
 
-	protected Vector<String> extensions;
+    protected Vector<String> extensions;
 
-	protected String extension;
+    protected String extension;
 
-	protected String description;
+    protected String description;
 
-	/**
-	 * Creates a new file filter.
-	 */
-	public ExtensionFileFilter() {
-		this.extension = "";
-		this.description = "";
-		this.extensions = new Vector<String>(2);
-	}
+    /**
+     * Creates a new file filter.
+     */
+    public ExtensionFileFilter() {
+        this.extension = "";
+        this.description = "";
+        this.extensions = new Vector<String>(2);
+    }
 
-	/**
-	 * Creates a new file filter that accepts the given file type.
-	 */
-	public ExtensionFileFilter(String extension, String description) {
-		this();
-		this.extension = extension;
-		this.description = description;
-		this.extensions.addElement(extension);
-	}
+    /**
+     * Creates a new file filter that accepts the given file type.
+     */
+    public ExtensionFileFilter(String extension, String description) {
+        this();
+        this.extension = extension;
+        this.description = description;
+        this.extensions.addElement(extension);
+    }
 
-	/**
-	 * Return true if this file should be shown in the directory pane, false if
-	 * it shouldn't.
-	 * 
-	 * @see javax.swing.filechooser.FileFilter#accept
-	 */
-	public boolean accept(File f) {
-		if (f != null) {
-			if (f.isDirectory()) {
-				return true;
-			}
-			for (int i = 0; i < this.extensions.size(); i++) {
-				String ext = this.extensions.elementAt(i);
-				if (f.getName().toLowerCase().endsWith(ext))
-					return true;
-			}
-			// return f.getName().toLowerCase().endsWith(extension);
-		}
-		return false;
-	}
+    /**
+     * Return true if this file should be shown in the directory pane, false if it shouldn't.
+     *
+     * @see javax.swing.filechooser.FileFilter#accept
+     */
+    public boolean accept(File f) {
+        if (f != null) {
+            if (f.isDirectory()) {
+                return true;
+            }
+            for (int i = 0; i < this.extensions.size(); i++) {
+                String ext = this.extensions.elementAt(i);
+                if (f.getName().toLowerCase().endsWith(ext)) {
+                    return true;
+                }
+            }
+            // return f.getName().toLowerCase().endsWith(extension);
+        }
+        return false;
+    }
 
-	/** Adds a new file extension. */
-	public void addExtension(String ext) {
-		this.extensions.addElement(ext);
-	}
+    /**
+     * Adds a new file extension.
+     */
+    public void addExtension(String ext) {
+        this.extensions.addElement(ext);
+    }
 
-	/**
-	 * Returns the human readable description of this filter.
-	 */
-	public String getDescription() {
-		return this.description;
-	}
+    /**
+     * Returns the human readable description of this filter.
+     */
+    public String getDescription() {
+        return this.description;
+    }
 
-	/**
-	 * Sets the human readable description of this filter.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    /**
+     * Sets the human readable description of this filter.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	/** Returns the file extension */
-	public String getExtension() {
-		return this.extension;
-	}
+    /**
+     * Returns the file extension
+     */
+    public String getExtension() {
+        return this.extension;
+    }
 
-	/** Returns file extensions */
-	public String getExtensions() {
-		return this.extensions.toString();
-	}
+    /**
+     * Returns file extensions
+     */
+    public String getExtensions() {
+        return this.extensions.toString();
+    }
 }
 /*
  * $Log: ExtensionFileFilter.java,v $

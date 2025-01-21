@@ -1,63 +1,63 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTLENode.java,v 1.5 2010/07/29 10:09:19 olga Exp $
  * @author $Author: olga $
  */
 public class ASTLENode extends NUMxNUMtoBOOLnode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTLENode(String id) {
-		super(id);
-	}
+    ASTLENode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTLENode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTLENode(id);
+    }
 
-	public void interpret() {
-		Node child1 = jjtGetChild(0);
-		Node child2 = jjtGetChild(1);
+    public void interpret() {
+        Node child1 = jjtGetChild(0);
+        Node child2 = jjtGetChild(1);
 
-		child1.interpret();
-		child2.interpret();
+        child1.interpret();
+        child2.interpret();
 
-		Object op1Result = stack.get(top-1);
-		Object op2Result = stack.get(top);
-		Object result;
-		Class<?> commonType = commonNumberType((SimpleNode)child1, (SimpleNode)child2);
+        Object op1Result = stack.get(top - 1);
+        Object op2Result = stack.get(top);
+        Object result;
+        Class<?> commonType = commonNumberType((SimpleNode) child1, (SimpleNode) child2);
 
-		if (typeCode(commonType) <= typeCode(Integer.TYPE)) {
-			result = new Boolean(
-					((Number) op1Result).intValue() <= ((Number) op2Result)
-							.intValue());
-		} else {
-			result = new Boolean(
-					((Number) op1Result).floatValue() <= ((Number) op2Result)
-							.floatValue());
-		}
+        if (typeCode(commonType) <= typeCode(Integer.TYPE)) {
+            result = new Boolean(
+                    ((Number) op1Result).intValue() <= ((Number) op2Result)
+                    .intValue());
+        } else {
+            result = new Boolean(
+                    ((Number) op1Result).floatValue() <= ((Number) op2Result)
+                    .floatValue());
+        }
 //		stack[--top] = result;
-		stack.set(--top, result);
-	}
+        stack.set(--top, result);
+    }
 
-	public String getString() {
-		Node left = jjtGetChild(0);
-		Node right = jjtGetChild(1);
-		return left.getString() + "<=" + right.getString();
-	}
+    public String getString() {
+        Node left = jjtGetChild(0);
+        Node right = jjtGetChild(1);
+        return left.getString() + "<=" + right.getString();
+    }
 }
 /*
  * $Log: ASTLENode.java,v $

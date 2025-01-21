@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.EventObject;
@@ -17,391 +18,383 @@ import agg.util.Pair;
 
 /**
  * This option configures the algorithm of the critical pairs.
- * 
+ *
  * @version $Id: CriticalPairOption.java,v 1.22 2010/11/16 23:33:08 olga Exp $
  * @author $Author: olga $
  */
 public class CriticalPairOption {
 
-	public final static String COMPLETE = "complete";
-	public final static String CONSISTENT = "consistent";
-	public final static String STRONG_ATTR_CHECK = "strongAttrCheck";
-	public final static String IGNORE_SAME_MATCH = "ignoreSameMatch";
-	public final static String IGNORE_SAME_RULE = "ignoreSameRule";
-	public final static String DIRECTLY_STRICT_CONFLUENT = "directlyStrictConfluent";
-	public final static String DIRECTLY_STRICT_CONFLUENT_UPTOISO = "directlyStrictConfluentUpToIso";
-	public final static String ESSENTIAL = "essential";
-	public final static String NAMED_OBJECT = "namedObject";
-	public final static String MAX_BOUND_CRITIC_CAUSE = "maxBoundOfCriticCause";
-	
-	/**
-	 * The algorithm of the critical pairs.
-	 */
-	public static final int EXCLUDEONLY = 0; // == CONFLICT
+    public final static String COMPLETE = "complete";
+    public final static String CONSISTENT = "consistent";
+    public final static String STRONG_ATTR_CHECK = "strongAttrCheck";
+    public final static String IGNORE_SAME_MATCH = "ignoreSameMatch";
+    public final static String IGNORE_SAME_RULE = "ignoreSameRule";
+    public final static String DIRECTLY_STRICT_CONFLUENT = "directlyStrictConfluent";
+    public final static String DIRECTLY_STRICT_CONFLUENT_UPTOISO = "directlyStrictConfluentUpToIso";
+    public final static String ESSENTIAL = "essential";
+    public final static String NAMED_OBJECT = "namedObject";
+    public final static String MAX_BOUND_CRITIC_CAUSE = "maxBoundOfCriticCause";
 
-	/**
-	 * The additional algorithm of the critical pairs.
-	 */
-	public static final int TRIGGER_DEPEND = 1;
-	
-	public static final int TRIGGER_SWITCH_DEPEND = 2;
-	
-	/**
-	 * @deprecated  replaced by TRIGGER_DEPEND
-	 */
-	public static final int DEPENDONLY = TRIGGER_DEPEND;
+    /**
+     * The algorithm of the critical pairs.
+     */
+    public static final int EXCLUDEONLY = 0; // == CONFLICT
 
-	private boolean switchDependency;
-	
-	private boolean priority;
+    /**
+     * The additional algorithm of the critical pairs.
+     */
+    public static final int TRIGGER_DEPEND = 1;
 
-	private boolean layered;
+    public static final int TRIGGER_SWITCH_DEPEND = 2;
 
-	private int layer;
+    /**
+     * @deprecated replaced by TRIGGER_DEPEND
+     */
+    public static final int DEPENDONLY = TRIGGER_DEPEND;
 
-	private int algorithm;
+    private boolean switchDependency;
 
-	private boolean complete;
+    private boolean priority;
 
-	private boolean reduce;
+    private boolean layered;
 
-	private boolean reduceSameMatch;
-	
-	private boolean withNACs, withPACs;
+    private int layer;
 
-	private boolean consistent;
-	
-	private boolean strongAttrCheck;
+    private int algorithm;
 
-	private boolean equalVariableNameOfAttrMapping;
-	
-	private boolean ignoreIdenticalRules;
+    private boolean complete;
 
-	private boolean directStrctCnfl, directStrctCnflUpToIso;
-	
-	private boolean namedObject;
-	
-	protected int maxBoundOfCritKind = 0; // <=0 unbound
-	
-	private Vector<OptionEventListener> listener;
+    private boolean reduce;
 
-	/**
-	 * Creates new option with default settings.
-	 */
-	public CriticalPairOption() {
-		this.algorithm = EXCLUDEONLY;
-		this.priority = false;
-		this.layered = false;
-		this.layer = -1;
-		this.complete = true;
-		this.reduce = false; // now it is essential
-		this.reduceSameMatch = false;
-		this.withNACs = true;
-		this.withPACs = true;
-		this.consistent = false; 
-		this.strongAttrCheck = false; //true;
-		this.equalVariableNameOfAttrMapping = false;
-		this.ignoreIdenticalRules = false;
-		this.directStrctCnfl = false;
-		this.directStrctCnflUpToIso = false;
-		this.listener = new Vector<OptionEventListener>(2);
-	}
+    private boolean reduceSameMatch;
 
-	/**
-	 * Returns the algorithm of the critical pair analysis.
-	 * 
-	 * @return The algorithm
-	 */
-	public int getCriticalPairAlgorithm() {
-		return this.algorithm;
-	}
+    private boolean withNACs, withPACs;
 
-	/**
-	 * Sets the algorithm of the critical pair algorithm.
-	 * 
-	 * @param algorithm
-	 *            The algorithm.
-	 */
-	public void setCriticalPairAlgorithm(int algorithm) {
-		// System.out.println("CP_Option.setCriticalPairAlgorithm "+algorithm);
-		this.algorithm = algorithm;
-		if (algorithm == TRIGGER_SWITCH_DEPEND)
-			this.switchDependency = true;
-		else
-			this.switchDependency = false;
-		
-		fireOptionEvent(new EventObject(this));
-	}
+    private boolean consistent;
 
-	public boolean switchDependencyEnabled() {
-		return this.switchDependency;
-	}
-	
-	public void enableSwitchDependency(boolean enable) {
-		this.switchDependency = enable;
-	}
-	
-	public boolean priorityEnabled() {
-		return this.priority;
-	}
+    private boolean strongAttrCheck;
 
-	public void enablePriority(boolean enable) {
-		if (this.priority != enable) {
-			this.priority = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+    private boolean equalVariableNameOfAttrMapping;
 
-	/**
-	 * Checks if the graph grammar is layered.
-	 * 
-	 * @return true if the graph grammar is layered
-	 */
-	public boolean layeredEnabled() {
-		return this.layered;
-	}
+    private boolean ignoreIdenticalRules;
 
-	/**
-	 * Enable if layered graph grammar is used.
-	 * 
-	 * @param enable
-	 *            true for layered graph grammar
-	 */
-	public void enableLayered(boolean enable) {
-		if (this.layered != enable) {
-			this.layered = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+    private boolean directStrctCnfl, directStrctCnflUpToIso;
 
-	public void setLayer(int l) {
-		this.layer = l;
-		fireOptionEvent(new EventObject(this));
-	}
+    private boolean namedObject;
 
-	public int getLayer() {
-		return this.layer;
-	}
+    protected int maxBoundOfCritKind = 0; // <=0 unbound
 
-	public void setOptionsFromList(final List<Pair<String,String>> optionList) {
-		for (int i=0; i<optionList.size(); i++) {
-			final Pair<String,String> opVal = optionList.get(i);
-			if (opVal.first.equals(CriticalPairOption.COMPLETE)) {
-				this.enableComplete(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.CONSISTENT)) {
-				this.enableConsistent(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.STRONG_ATTR_CHECK)) {
-				this.enableStrongAttrCheck(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.IGNORE_SAME_MATCH)) {
-				this.enableReduceSameMatch(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.IGNORE_SAME_RULE)) {
-				this.enableIgnoreIdenticalRules(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.DIRECTLY_STRICT_CONFLUENT)) {
-				this.enableDirectlyStrictConfl(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.DIRECTLY_STRICT_CONFLUENT_UPTOISO)) {
-				this.enableDirectlyStrictConflUpToIso(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.NAMED_OBJECT)) {
-				this.enableNamedObject(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.ESSENTIAL)) {
-				this.enableReduce(Boolean.valueOf(opVal.second).booleanValue());
-			}
-			else if (opVal.first.equals(CriticalPairOption.MAX_BOUND_CRITIC_CAUSE)) {
-				try {this.setMaxBoundOfCriticKind(Integer.valueOf(opVal.second).intValue());}
-				catch (Exception ex) {this.setMaxBoundOfCriticKind(0);}
-			}
-		}
-	}
-	
-	public boolean completeEnabled() {
-		return this.complete;
-	}
+    private Vector<OptionEventListener> listener;
 
-	public void enableComplete(boolean enable) {
-		if (this.complete != enable) {
-			this.complete = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+    /**
+     * Creates new option with default settings.
+     */
+    public CriticalPairOption() {
+        this.algorithm = EXCLUDEONLY;
+        this.priority = false;
+        this.layered = false;
+        this.layer = -1;
+        this.complete = true;
+        this.reduce = false; // now it is essential
+        this.reduceSameMatch = false;
+        this.withNACs = true;
+        this.withPACs = true;
+        this.consistent = false;
+        this.strongAttrCheck = false; //true;
+        this.equalVariableNameOfAttrMapping = false;
+        this.ignoreIdenticalRules = false;
+        this.directStrctCnfl = false;
+        this.directStrctCnflUpToIso = false;
+        this.listener = new Vector<OptionEventListener>(2);
+    }
 
-	public boolean reduceEnabled() {
-		return this.reduce;
-	}
+    /**
+     * Returns the algorithm of the critical pair analysis.
+     *
+     * @return The algorithm
+     */
+    public int getCriticalPairAlgorithm() {
+        return this.algorithm;
+    }
 
-	public void enableReduce(boolean enable) {
-		if (this.reduce != enable) {
-			this.reduce = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+    /**
+     * Sets the algorithm of the critical pair algorithm.
+     *
+     * @param algorithm The algorithm.
+     */
+    public void setCriticalPairAlgorithm(int algorithm) {
+        // System.out.println("CP_Option.setCriticalPairAlgorithm "+algorithm);
+        this.algorithm = algorithm;
+        if (algorithm == TRIGGER_SWITCH_DEPEND) {
+            this.switchDependency = true;
+        } else {
+            this.switchDependency = false;
+        }
 
-	public boolean reduceSameMatchEnabled() {
-		return this.reduceSameMatch;
-	}
-	
-	public void enableDirectlyStrictConfl(boolean enable) {
-		if (this.directStrctCnfl != enable) {
-			this.directStrctCnfl = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
-	
-	public boolean directlyStrictConflEnabled() {
-		return this.directStrctCnfl;
-	}
-	
-	public void enableDirectlyStrictConflUpToIso(boolean enable) {
-		if (this.directStrctCnflUpToIso != enable) {
-			this.directStrctCnflUpToIso = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
-	
-	public boolean directlyStrictConflUpToIsoEnabled() {
-		return this.directStrctCnflUpToIso;
-	}
-	
-	public void enableReduceSameMatch(boolean enable) {
-		if (this.reduceSameMatch != enable) {
-			this.reduceSameMatch = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
-	
-	public void enableNacs(boolean enable) {
-		if (this.withNACs != enable) {
-			this.withNACs = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+        fireOptionEvent(new EventObject(this));
+    }
 
-	public boolean nacsEnabled() {
-		return this.withNACs;
-	}
+    public boolean switchDependencyEnabled() {
+        return this.switchDependency;
+    }
 
-	public void enablePacs(boolean enable) {
-		if (this.withPACs != enable) {
-			this.withPACs = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+    public void enableSwitchDependency(boolean enable) {
+        this.switchDependency = enable;
+    }
 
-	public boolean pacsEnabled() {
-		return this.withPACs;
-	}
-	
-	public boolean consistentEnabled() {
-		return this.consistent;
-	}
+    public boolean priorityEnabled() {
+        return this.priority;
+    }
 
-	public void enableConsistent(boolean enable) {
-		if (this.consistent != enable) {
-			this.consistent = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+    public void enablePriority(boolean enable) {
+        if (this.priority != enable) {
+            this.priority = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
 
-	public boolean strongAttrCheckEnabled() {
-		return this.strongAttrCheck;
-	}
+    /**
+     * Checks if the graph grammar is layered.
+     *
+     * @return true if the graph grammar is layered
+     */
+    public boolean layeredEnabled() {
+        return this.layered;
+    }
 
-	public void enableStrongAttrCheck(boolean enable) {
-		if (this.strongAttrCheck != enable) {
-			this.strongAttrCheck = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
-	
-	public boolean equalVariableNameOfAttrMappingEnabled() {
-		return this.equalVariableNameOfAttrMapping;
-	}
-	
-	public void enableEqualVariableNameOfAttrMapping(boolean enable) {
-		if (this.equalVariableNameOfAttrMapping != enable) {
-			this.equalVariableNameOfAttrMapping = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
-	
-	public boolean ignoreIdenticalRulesEnabled() {
-		return this.ignoreIdenticalRules;
-	}
+    /**
+     * Enable if layered graph grammar is used.
+     *
+     * @param enable true for layered graph grammar
+     */
+    public void enableLayered(boolean enable) {
+        if (this.layered != enable) {
+            this.layered = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
 
-	public void enableIgnoreIdenticalRules(boolean enable) {
-		if (this.ignoreIdenticalRules != enable) {
-			this.ignoreIdenticalRules = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+    public void setLayer(int l) {
+        this.layer = l;
+        fireOptionEvent(new EventObject(this));
+    }
 
-	public boolean namedObjectEnabled() {
-		return this.namedObject;
-	}
+    public int getLayer() {
+        return this.layer;
+    }
 
-	public void enableNamedObject(boolean enable) {
-		if (this.namedObject != enable) {
-			this.namedObject = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
-	
-	public void setMaxBoundOfCriticKind(int bound) {
-		this.maxBoundOfCritKind = bound;
-	}
-	
-	public int getMaxBoundOfCriticKind() {
-		return this.maxBoundOfCritKind;
-	}
-	
-	/**
-	 * Adds an option listener.
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void addOptionListener(OptionEventListener l) {
-		if (!this.listener.contains(l))
-			this.listener.addElement(l);
-	}
+    public void setOptionsFromList(final List<Pair<String, String>> optionList) {
+        for (int i = 0; i < optionList.size(); i++) {
+            final Pair<String, String> opVal = optionList.get(i);
+            if (opVal.first.equals(CriticalPairOption.COMPLETE)) {
+                this.enableComplete(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.CONSISTENT)) {
+                this.enableConsistent(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.STRONG_ATTR_CHECK)) {
+                this.enableStrongAttrCheck(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.IGNORE_SAME_MATCH)) {
+                this.enableReduceSameMatch(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.IGNORE_SAME_RULE)) {
+                this.enableIgnoreIdenticalRules(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.DIRECTLY_STRICT_CONFLUENT)) {
+                this.enableDirectlyStrictConfl(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.DIRECTLY_STRICT_CONFLUENT_UPTOISO)) {
+                this.enableDirectlyStrictConflUpToIso(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.NAMED_OBJECT)) {
+                this.enableNamedObject(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.ESSENTIAL)) {
+                this.enableReduce(Boolean.valueOf(opVal.second).booleanValue());
+            } else if (opVal.first.equals(CriticalPairOption.MAX_BOUND_CRITIC_CAUSE)) {
+                try {
+                    this.setMaxBoundOfCriticKind(Integer.valueOf(opVal.second).intValue());
+                } catch (Exception ex) {
+                    this.setMaxBoundOfCriticKind(0);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Removes an option listener
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void removeOptionListener(OptionEventListener l) {
-		if (this.listener.contains(l))
-			this.listener.removeElement(l);
-	}
+    public boolean completeEnabled() {
+        return this.complete;
+    }
 
-	/**
-	 * Sends a event to all its listeners.
-	 * 
-	 * @param event
-	 *            The event which will be sent
-	 */
-	private synchronized void fireOptionEvent(EventObject event) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			this.listener.elementAt(i).optionEventOccurred(event);
-		}
-	}
+    public void enableComplete(boolean enable) {
+        if (this.complete != enable) {
+            this.complete = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
 
-	/**
-	 * Returns the option in human readable way.
-	 * 
-	 * @return The text.
-	 */
-	public String toString() {
-		return super.toString() + " " + getCriticalPairAlgorithm();
-	}
+    public boolean reduceEnabled() {
+        return this.reduce;
+    }
+
+    public void enableReduce(boolean enable) {
+        if (this.reduce != enable) {
+            this.reduce = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean reduceSameMatchEnabled() {
+        return this.reduceSameMatch;
+    }
+
+    public void enableDirectlyStrictConfl(boolean enable) {
+        if (this.directStrctCnfl != enable) {
+            this.directStrctCnfl = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean directlyStrictConflEnabled() {
+        return this.directStrctCnfl;
+    }
+
+    public void enableDirectlyStrictConflUpToIso(boolean enable) {
+        if (this.directStrctCnflUpToIso != enable) {
+            this.directStrctCnflUpToIso = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean directlyStrictConflUpToIsoEnabled() {
+        return this.directStrctCnflUpToIso;
+    }
+
+    public void enableReduceSameMatch(boolean enable) {
+        if (this.reduceSameMatch != enable) {
+            this.reduceSameMatch = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public void enableNacs(boolean enable) {
+        if (this.withNACs != enable) {
+            this.withNACs = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean nacsEnabled() {
+        return this.withNACs;
+    }
+
+    public void enablePacs(boolean enable) {
+        if (this.withPACs != enable) {
+            this.withPACs = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean pacsEnabled() {
+        return this.withPACs;
+    }
+
+    public boolean consistentEnabled() {
+        return this.consistent;
+    }
+
+    public void enableConsistent(boolean enable) {
+        if (this.consistent != enable) {
+            this.consistent = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean strongAttrCheckEnabled() {
+        return this.strongAttrCheck;
+    }
+
+    public void enableStrongAttrCheck(boolean enable) {
+        if (this.strongAttrCheck != enable) {
+            this.strongAttrCheck = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean equalVariableNameOfAttrMappingEnabled() {
+        return this.equalVariableNameOfAttrMapping;
+    }
+
+    public void enableEqualVariableNameOfAttrMapping(boolean enable) {
+        if (this.equalVariableNameOfAttrMapping != enable) {
+            this.equalVariableNameOfAttrMapping = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean ignoreIdenticalRulesEnabled() {
+        return this.ignoreIdenticalRules;
+    }
+
+    public void enableIgnoreIdenticalRules(boolean enable) {
+        if (this.ignoreIdenticalRules != enable) {
+            this.ignoreIdenticalRules = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public boolean namedObjectEnabled() {
+        return this.namedObject;
+    }
+
+    public void enableNamedObject(boolean enable) {
+        if (this.namedObject != enable) {
+            this.namedObject = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
+
+    public void setMaxBoundOfCriticKind(int bound) {
+        this.maxBoundOfCritKind = bound;
+    }
+
+    public int getMaxBoundOfCriticKind() {
+        return this.maxBoundOfCritKind;
+    }
+
+    /**
+     * Adds an option listener.
+     *
+     * @param l The listener.
+     */
+    public void addOptionListener(OptionEventListener l) {
+        if (!this.listener.contains(l)) {
+            this.listener.addElement(l);
+        }
+    }
+
+    /**
+     * Removes an option listener
+     *
+     * @param l The listener.
+     */
+    public void removeOptionListener(OptionEventListener l) {
+        if (this.listener.contains(l)) {
+            this.listener.removeElement(l);
+        }
+    }
+
+    /**
+     * Sends a event to all its listeners.
+     *
+     * @param event The event which will be sent
+     */
+    private synchronized void fireOptionEvent(EventObject event) {
+        for (int i = 0; i < this.listener.size(); i++) {
+            this.listener.elementAt(i).optionEventOccurred(event);
+        }
+    }
+
+    /**
+     * Returns the option in human readable way.
+     *
+     * @return The text.
+     */
+    public String toString() {
+        return super.toString() + " " + getCriticalPairAlgorithm();
+    }
 }
 /*
  * $Log: CriticalPairOption.java,v $

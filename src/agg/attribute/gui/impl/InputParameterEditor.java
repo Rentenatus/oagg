@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -22,69 +23,78 @@ import agg.attribute.impl.VarMember;
 
 /**
  * This class provides an editor for input parameter
- * 
+ *
  * @version $Id: InputParameterEditor.java,v 1.4 2010/08/18 09:24:53 olga Exp $
  * @author $Author: olga $
  */
 public class InputParameterEditor extends LightInstanceEditor {
 
-	/** create an editor */
-	public InputParameterEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-		// System.out.println("input editor 1306");
-	}
+    /**
+     * create an editor
+     */
+    public InputParameterEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+        // System.out.println("input editor 1306");
+    }
 
-	/** create the table of this editor */
-	protected TupleTableModel createTableModel() {
-		int[] columns = { IS_INPUT_PARAMETER, TYPE, NAME, EXPR, CORRECTNESS };
+    /**
+     * create the table of this editor
+     */
+    protected TupleTableModel createTableModel() {
+        int[] columns = {IS_INPUT_PARAMETER, TYPE, NAME, EXPR, CORRECTNESS};
 
-		TupleTableModel tm = new TupleTableModel(this);
-		tm.setColumnArray(columns);
-		tm.setExtensible(false);
+        TupleTableModel tm = new TupleTableModel(this);
+        tm.setColumnArray(columns);
+        tm.setExtensible(false);
 
-		tm.setColumnTitle(IS_INPUT_PARAMETER, " In ");
-		tm.setColumnTitle(TYPE, "Type");
-		tm.setColumnTitle(NAME, "Parameter Name");
-		tm.setColumnTitle(EXPR, "Value");
-		tm.setColumnTitle(CORRECTNESS, "OK");
+        tm.setColumnTitle(IS_INPUT_PARAMETER, " In ");
+        tm.setColumnTitle(TYPE, "Type");
+        tm.setColumnTitle(NAME, "Parameter Name");
+        tm.setColumnTitle(EXPR, "Value");
+        tm.setColumnTitle(CORRECTNESS, "OK");
 
-		tm.setColumnEditable(IS_INPUT_PARAMETER, false);
-		tm.setColumnEditable(TYPE, false);
-		tm.setColumnEditable(NAME, false);
-		tm.setColumnEditable(EXPR, true);
-		tm.setColumnEditable(CORRECTNESS, false);
+        tm.setColumnEditable(IS_INPUT_PARAMETER, false);
+        tm.setColumnEditable(TYPE, false);
+        tm.setColumnEditable(NAME, false);
+        tm.setColumnEditable(EXPR, true);
+        tm.setColumnEditable(CORRECTNESS, false);
 
-		return tm;
-	}
+        return tm;
+    }
 
-	/** simply put the table into my main panel */
-	protected void genericCustomizeMainLayout() {
-		this.mainPanel = new JPanel(new BorderLayout());
-		this.mainPanel.add(this.tableScrollPane, BorderLayout.CENTER);
-		this.mainPanel.setPreferredSize(new Dimension(200, 200));
-	}
+    /**
+     * simply put the table into my main panel
+     */
+    protected void genericCustomizeMainLayout() {
+        this.mainPanel = new JPanel(new BorderLayout());
+        this.mainPanel.add(this.tableScrollPane, BorderLayout.CENTER);
+        this.mainPanel.setPreferredSize(new Dimension(200, 200));
+    }
 
-	/** now add all input parameter */
-	public void setTuple(AttrTuple anAttrTuple) {
-		super.setTuple(anAttrTuple);
-		if (anAttrTuple == null)
-			return;
-		int size = ((AttrVariableTuple) anAttrTuple).getNumberOfEntries();
-		// System.out.println(anAttrTuple.getClass().getName()+"Size: "+size);
-		for (int i = 0; i < size; i++) {
-			AttrVariableTuple avt = (AttrVariableTuple) anAttrTuple;
-			VarMember vm = (VarMember) avt.getMemberAt(i);
-			// System.out.println(vm);
-			if (vm.isInputParameter()) {
-				// System.out.println("attr nr."+i+" ist input parameter und
-				// visible");
-				getViewSetting().setVisibleAt(anAttrTuple, true, i);
-			} else {
-				getViewSetting().setVisibleAt(anAttrTuple, false, i);
-				// System.out.println("attr nr."+i+" ist nicht sichtbar");
-			}
-		}
-	}
+    /**
+     * now add all input parameter
+     */
+    public void setTuple(AttrTuple anAttrTuple) {
+        super.setTuple(anAttrTuple);
+        if (anAttrTuple == null) {
+            return;
+        }
+        int size = ((AttrVariableTuple) anAttrTuple).getNumberOfEntries();
+        // System.out.println(anAttrTuple.getClass().getName()+"Size: "+size);
+        for (int i = 0; i < size; i++) {
+            AttrVariableTuple avt = (AttrVariableTuple) anAttrTuple;
+            VarMember vm = (VarMember) avt.getMemberAt(i);
+            // System.out.println(vm);
+            if (vm.isInputParameter()) {
+                // System.out.println("attr nr."+i+" ist input parameter und
+                // visible");
+                getViewSetting().setVisibleAt(anAttrTuple, true, i);
+            } else {
+                getViewSetting().setVisibleAt(anAttrTuple, false, i);
+                // System.out.println("attr nr."+i+" ist nicht sichtbar");
+            }
+        }
+    }
 }
 /*
  * $Id: InputParameterEditor.java,v 1.4 2010/08/18 09:24:53 olga Exp $
@@ -124,4 +134,3 @@ public class InputParameterEditor extends LightInstanceEditor {
  * Revision 1.1 1999/07/21 12:12:48 shultzke ParameterEditor hizugefuegt und in
  * dazugehoerigen Klassen durchgestellt.
  */
-

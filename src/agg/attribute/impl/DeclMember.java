@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import agg.attribute.AttrEvent;
@@ -19,235 +20,267 @@ import agg.util.XMLHelper;
 
 /**
  * Keeps the declaration name, type and the type's handler.
- * 
+ *
  * @version $Id: DeclMember.java,v 1.13 2010/11/28 22:11:37 olga Exp $
  * @author $Author: olga $
  */
 public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
 
-	static final long serialVersionUID = -1967468240702798334L;
+    static final long serialVersionUID = -1967468240702798334L;
 
-	/** The Tuple containing this declaration. */
-	protected DeclTuple tuple;
+    /**
+     * The Tuple containing this declaration.
+     */
+    protected DeclTuple tuple;
 
-	/** The type of this declaration. */
-	protected HandlerType type;
+    /**
+     * The type of this declaration.
+     */
+    protected HandlerType type;
 
-	/** Type name. */
-	protected String typeName;
+    /**
+     * Type name.
+     */
+    protected String typeName;
 
-	/** The name of this declaration. */
-	protected String name;
+    /**
+     * The name of this declaration.
+     */
+    protected String name;
 
-	/** The attribute handler that created the type. */
-	protected AttrHandler handler;
+    /**
+     * The attribute handler that created the type.
+     */
+    protected AttrHandler handler;
 
-	/** Flag if the the member name is unique within its tuple. */
-	protected boolean isNameValid = false;
+    /**
+     * Flag if the the member name is unique within its tuple.
+     */
+    protected boolean isNameValid = false;
 
-	/** Last error message from the attribute handler. */
-	protected String handlerMessage;
+    /**
+     * Last error message from the attribute handler.
+     */
+    protected String handlerMessage;
 
-	protected boolean visible;
+    protected boolean visible;
 
-	public DeclMember(DeclTuple tuple) {
-		super();
-		this.tuple = tuple;
-		this.visible = true;
-	}
+    public DeclMember(DeclTuple tuple) {
+        super();
+        this.tuple = tuple;
+        this.visible = true;
+    }
 
-	/** Constructing all at once. */
-	public DeclMember(DeclTuple tuple, AttrHandler handler, String typeString,
-			String name) {
-		this(tuple);
-		setName(name);
-		retype(handler, typeString);
-	}
+    /**
+     * Constructing all at once.
+     */
+    public DeclMember(DeclTuple tuple, AttrHandler handler, String typeString,
+            String name) {
+        this(tuple);
+        setName(name);
+        retype(handler, typeString);
+    }
 
-	// Internal methods.
+    // Internal methods.
+    protected void retype(AttrHandler attrhandler, String typename) {
+        // System.out.println("DeclMember.retype ");
+        this.handler = attrhandler;
+        this.typeName = typename.replaceAll(" ", "");
+        this.type = null;
+        this.handlerMessage = null;
+        if (attrhandler == null) {
+            return;
+        }
+        try {
+            this.type = attrhandler.newHandlerType(this.typeName);
+        } catch (AttrHandlerException ex) {
+            this.typeName = null;
+            this.handlerMessage = ex.getMessage();
+        }
+        // ((TupleObject) getHoldingTuple()).memberChanged(
+        // AttrEvent.MEMBER_RETYPED, this );
+        fireChanged(AttrEvent.MEMBER_RETYPED);
+    }
 
-	protected void retype(AttrHandler attrhandler, String typename) {
-		// System.out.println("DeclMember.retype ");
-		this.handler = attrhandler;
-		this.typeName = typename.replaceAll(" ", "");
-		this.type = null;
-		this.handlerMessage = null;
-		if (attrhandler == null)
-			return;
-		try {
-			this.type = attrhandler.newHandlerType(this.typeName);
-		} catch (AttrHandlerException ex) {
-			this.typeName = null;
-			this.handlerMessage = ex.getMessage();
-		}
-		// ((TupleObject) getHoldingTuple()).memberChanged(
-		// AttrEvent.MEMBER_RETYPED, this );
-		fireChanged(AttrEvent.MEMBER_RETYPED);
-	}
+    // Public Methods.
+    public void delete() {
+        getTuple().deleteMemberAt(getTuple().getIndexForMember(this));
+    }
 
-	// Public Methods.
+    /**
+     * Setting if the name is valid (unique in the tuple). Called by DeclTuple.
+     */
+    public void setNameValid(boolean b) {
+        this.isNameValid = b;
+    }
 
-	public void delete() {
-		getTuple().deleteMemberAt(getTuple().getIndexForMember(this));
-	}
+    // AttrTypeMember interface implementation.
+    public boolean isValid() {
+        return this.isNameValid && this.type != null;
+    }
 
-	/**
-	 * Setting if the name is valid (unique in the tuple). Called by DeclTuple.
-	 */
-	public void setNameValid(boolean b) {
-		this.isNameValid = b;
-	}
+    public boolean isDefined() {
+        return this.typeName != null && this.name != null
+                && !"".equals(this.typeName) && !"".equals(this.name);
+    }
 
-	// AttrTypeMember interface implementation.
+    public String getValidityReport() {
+        if (isValid()) {
+            return null;
+        }
+        String report = "-------- DECLARATION : --------\n";
+        if (this.handler == null) {
+            report += "No attribute handler.\n";
+        }
+        if (this.typeName == null) {
+            report += "No type.\n";
+        }
+        if (this.handlerMessage != null) {
+            report += this.handlerMessage + "\n";
+        }
+        if (this.name == null) {
+            report += "No name.\n";
+        } else if (!this.isNameValid) {
+            report += "Name is not unique or a Java data class name.\n";
+        }
 
-	public boolean isValid() {
-		return this.isNameValid && this.type != null;
-	}
+        return report;
+    }
 
-	public boolean isDefined() {
-		return  this.typeName != null && this.name != null 
-				&& !"".equals(this.typeName) && !"".equals(this.name);
-	}
-	
-	public String getValidityReport() {
-		if (isValid())
-			return null;
-		String report = "-------- DECLARATION : --------\n";
-		if (this.handler == null)
-			report += "No attribute handler.\n";
-		if (this.typeName == null)
-			report += "No type.\n";
-		if (this.handlerMessage != null)
-			report += this.handlerMessage + "\n";
-		if (this.name == null)
-			report += "No name.\n";
-		else if (!this.isNameValid)
-			report += "Name is not unique or a Java data class name.\n";
+    /**
+     * Retrieving its attribute handler.
+     */
+    public AttrHandler getHandler() {
+        return this.handler;
+    }
 
-		return report;
-	}
+    /**
+     * Setting its attribute handler.
+     */
+    public void setHandler(AttrHandler h) {
+        this.handler = h;
+        if (this.typeName != null) {
+            retype(h, this.typeName);
+        }
+    }
 
-	/** Retrieving its attribute handler. */
-	public AttrHandler getHandler() {
-		return this.handler;
-	}
+    /**
+     * Retrieving its type.
+     */
+    public HandlerType getType() {
+        return this.type;
+    }
 
-	/** Setting its attribute handler. */
-	public void setHandler(AttrHandler h) {
-		this.handler = h;
-		if (this.typeName != null) {
-			retype(h, this.typeName);
-		}
-	}
+    /**
+     * Retrieving its type name as string.
+     */
+    public String getTypeName() {
+        return this.typeName;
+    }
 
-	/** Retrieving its type. */
-	public HandlerType getType() {
-		return this.type;
-	}
+    /**
+     * Setting its type.
+     */
+    public void setType(String typeName) {
+        if (this.handler != null) {
+            retype(this.handler, typeName);
+        }
+    }
 
-	/** Retrieving its type name as string. */
-	public String getTypeName() {
-		return this.typeName;
-	}
+    /**
+     * Retrieving its name.
+     */
+    public String getName() {
+        return this.name;
+    }
 
-	/** Setting its type. */
-	public void setType(String typeName) {
-		if (this.handler != null) {
-			retype(this.handler, typeName);
-		}
-	}
+    /**
+     * Setting a name.
+     */
+    public void setName(String name) {
+        if (getTuple() == null) {
+            return;
+        }
 
-	/** Retrieving its name. */
-	public String getName() {
-		return this.name;
-	}
+        String prevName = this.name;
+        this.name = name.replaceAll(" ", "");
+        getTuple().checkNameValidity(this.name);
+        if (!this.isNameValid) {
+            this.name = prevName;
+        }
 
-	/** Setting a name. */
-	public void setName(String name) {
-		if (getTuple() == null)
-			return;
-		
-		String prevName = this.name;
-		this.name = name.replaceAll(" ", "");
-		getTuple().checkNameValidity(this.name);
-		if (!this.isNameValid)
-			this.name = prevName;
+        fireChanged(AttrEvent.MEMBER_RENAMED);
+    }
 
-		fireChanged(AttrEvent.MEMBER_RENAMED);
-	}
+    public void setVisible(boolean vis) {
+        this.visible = vis;
+    }
 
-	public void setVisible(boolean vis) {
-		this.visible = vis;
-	}
+    public boolean isVisible() {
+        return this.visible;
+    }
 
-	public boolean isVisible() {
-		return this.visible;
-	}
+    public AttrTuple getHoldingTuple() {
+        return getTuple();
+    }
 
-	public AttrTuple getHoldingTuple() {
-		return getTuple();
-	}
+    protected DeclTuple getTuple() {
+        return this.tuple;
+    }
 
-	protected DeclTuple getTuple() {
-		return this.tuple;
-	}
+    protected AttrTupleManager getManager() {
+        return this.getTuple().getManager();
+    }
 
-	protected AttrTupleManager getManager() {
-		return this.getTuple().getManager();
-	}
+    /**
+     * This member and the specified member must be valid: its type and name is not empty string and the type is
+     * available in case of a Class. Compares the handler name, the type name and the name of this member and the
+     * specified member. Returns true, if all properties are equal, otherwise - false.
+     */
+    public boolean compareTo(AttrTypeMember mem) {
+        if (mem != null
+                && this.isValid() && mem.isValid()
+                && getHandler().getName().equals(mem.getHandler().getName())
+                && getTypeName().equals(mem.getTypeName())
+                && getName().equals(mem.getName())) {
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * This member and the specified member must be valid: its type and name is not empty string
-	 * and the type is available in case of a Class.
-	 * Compares the handler name, the type name and the name 
-	 * of this member and the specified member. 
-	 * Returns true, if all properties are equal, otherwise - false.
-	 */
-	public boolean compareTo(AttrTypeMember mem) {
-		if (mem != null
-				&& this.isValid() && mem.isValid()				
-				&& getHandler().getName().equals(mem.getHandler().getName())
-				&& getTypeName().equals(mem.getTypeName())
-				&& getName().equals(mem.getName())) {
-			return true;
-		}		
-		return false;
-	}
+    /**
+     * This member and the specified member must be defined: its type and name is not empty string. Compares the handler
+     * name, the type name and the name of this member and the specified member. Returns true, if all properties are
+     * equal, otherwise - false.
+     */
+    public boolean weakcompareTo(AttrTypeMember mem) {
+        if (mem != null
+                && this.isDefined()
+                && getHandler().getName().equals(mem.getHandler().getName())) {
+            return true;
+        }
+        return false;
+    }
 
-	/**
-	 * This member and the specified member must be defined: its type and name is not empty string.
-	 * Compares the handler name, the type name and the name 
-	 * of this member and the specified member. 
-	 * Returns true, if all properties are equal, otherwise - false.
-	 */
-	public boolean weakcompareTo(AttrTypeMember mem) {
-		if (mem != null
-				&& this.isDefined()			
-				&& getHandler().getName().equals(mem.getHandler().getName())) {
-			return true;			
-		}		
-		return false;
-	}
-	
-	public void XwriteObject(XMLHelper h) {
-		h.openNewElem("AttrType", this);
-		h.addAttr("typename", getTypeName());
-		h.addAttr("attrname", getName());
-		if (this.visible)
-			h.addAttr("visible", "true");
-		else
-			h.addAttr("visible", "false");
-		h.close();
-	}
+    public void XwriteObject(XMLHelper h) {
+        h.openNewElem("AttrType", this);
+        h.addAttr("typename", getTypeName());
+        h.addAttr("attrname", getName());
+        if (this.visible) {
+            h.addAttr("visible", "true");
+        } else {
+            h.addAttr("visible", "false");
+        }
+        h.close();
+    }
 
-	
-	public void XreadObject(XMLHelper h) {
-		if (h.isTag("AttrType", this)) {
-			this.typeName = h.readAttr("typename");	
-			this.name = h.readAttr("attrname");
-			// this check was needed because reported garbled names of the attributes
-			this.name = XMLHelper.checkNameDueToSpecialCharacters(this.name);
-			
+    public void XreadObject(XMLHelper h) {
+        if (h.isTag("AttrType", this)) {
+            this.typeName = h.readAttr("typename");
+            this.name = h.readAttr("attrname");
+            // this check was needed because reported garbled names of the attributes
+            this.name = XMLHelper.checkNameDueToSpecialCharacters(this.name);
+
 //			if (name.indexOf('¬') != -1) {
 //				String test = "";
 //				for(int i=0; i<name.length(); i++) {
@@ -267,7 +300,7 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
 //					} else {
 //						test = test.concat(String.valueOf(ch));
 //					}					
-////					System.out.println(name.charAt(i)
+            ////					System.out.println(name.charAt(i)
 ////							+"   "+Character.getNumericValue(name.charAt(i))
 ////							+" type "+Character.getType(name.charAt(i))
 ////							+" def "+Character.isDefined(name.charAt(i))
@@ -280,13 +313,14 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
 //			}
 			
 			String visiblestr = h.readAttr("visible");
-			if ("true".equals(visiblestr))
-				this.visible = true;
-			else if ("false".equals(visiblestr))
-				this.visible = false;
-			h.close();
-		}
-	}
+            if ("true".equals(visiblestr)) {
+                this.visible = true;
+            } else if ("false".equals(visiblestr)) {
+                this.visible = false;
+            }
+            h.close();
+        }
+    }
 }
 
 /*

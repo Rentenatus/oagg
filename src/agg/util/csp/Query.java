@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: Query.java,v 1.15 2010/09/23 08:26:52 olga Exp $
-
 // $Log: Query.java,v $
 // Revision 1.15  2010/09/23 08:26:52  olga
 // tuning
@@ -96,185 +96,191 @@
 // VariableOrderingStrategy to SearchStrategy.
 //
 // Revision 1.1  1997/09/16 15:56:18  mich
-
 package agg.util.csp;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
-
-/** An abstract class that represents a query for a variable domain. */
+/**
+ * An abstract class that represents a query for a variable domain.
+ */
 public abstract class Query {
-	
-	protected List<Variable> itsSources = new Vector<Variable>(2, 1);
 
-	protected Variable itsTarget;
+    protected List<Variable> itsSources = new Vector<Variable>(2, 1);
 
-	protected int itsWeight;
+    protected Variable itsTarget;
 
-	// for test only
-	public String typeNameOfVariable = "";
+    protected int itsWeight;
 
-	/** Construct myself to be a constant query. */
-	public Query(Variable tar, int weight) {
-		this.itsTarget = tar;
-		this.itsWeight = weight;
-		initialize();
-	}
+    // for test only
+    public String typeNameOfVariable = "";
 
-	/** Construct myself to be a unary query. */
-	public Query(Variable src, Variable tar, int weight) {
-		this.itsSources.add(src);
-		this.itsTarget = tar;
-		this.itsWeight = weight;
-		initialize();
-	}
+    /**
+     * Construct myself to be a constant query.
+     */
+    public Query(Variable tar, int weight) {
+        this.itsTarget = tar;
+        this.itsWeight = weight;
+        initialize();
+    }
 
-	/** Construct myself to be a binary query. */
-	public Query(Variable src1, Variable src2, Variable tar, int weight) {
-		this.itsSources.add(src1);
-		this.itsSources.add(src2);
-		this.itsTarget = tar;
-		this.itsWeight = weight;
-		initialize();
-	}
+    /**
+     * Construct myself to be a unary query.
+     */
+    public Query(Variable src, Variable tar, int weight) {
+        this.itsSources.add(src);
+        this.itsTarget = tar;
+        this.itsWeight = weight;
+        initialize();
+    }
 
-	private final void initialize() {
-		for (int i = 0; i < this.itsSources.size(); i++) {
-			this.itsSources.get(i).addOutgoingQuery(this);
-		}
-		if (this.itsTarget != null)
-			this.itsTarget.addIncomingQuery(this);
-		else
-			System.out
-					.println("agg.util.csp.Query.initialize():: itsTarget is null!");
-	}
+    /**
+     * Construct myself to be a binary query.
+     */
+    public Query(Variable src1, Variable src2, Variable tar, int weight) {
+        this.itsSources.add(src1);
+        this.itsSources.add(src2);
+        this.itsTarget = tar;
+        this.itsWeight = weight;
+        initialize();
+    }
 
-	/**
-	 * Return <code>true</code> iff all my source variables are instantiated,
-	 * while my target variable is not.
-	 */
-	public boolean isApplicable() {
-		if (this.itsTarget.getInstance() != null)
-			return false;
-		for (int i = 0; i < this.itsSources.size(); i++) {
-			Variable v = this.itsSources.get(i);
-			if (v.getInstance() == null) {
-				return false;
-			}
-		}
-		return true;
-	}
+    private final void initialize() {
+        for (int i = 0; i < this.itsSources.size(); i++) {
+            this.itsSources.get(i).addOutgoingQuery(this);
+        }
+        if (this.itsTarget != null) {
+            this.itsTarget.addIncomingQuery(this);
+        } else {
+            System.out
+                    .println("agg.util.csp.Query.initialize():: itsTarget is null!");
+        }
+    }
 
-	/**
-	 * Return <code>true</code> iff I am a constant query. That means, the
-	 * result of <code>execute()</code> is the same for any variable
-	 * instantiation configuration.
-	 */
-	public boolean isConstant() {
-		return (this.itsSources.size() == 0);
-	}
+    /**
+     * Return <code>true</code> iff all my source variables are instantiated, while my target variable is not.
+     */
+    public boolean isApplicable() {
+        if (this.itsTarget.getInstance() != null) {
+            return false;
+        }
+        for (int i = 0; i < this.itsSources.size(); i++) {
+            Variable v = this.itsSources.get(i);
+            if (v.getInstance() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * Return a list of candidate values for the target variable.
-	 * <p>
-	 * <b>Pre:</b> <code>isApplicable()</code>.
-	 */
+    /**
+     * Return <code>true</code> iff I am a constant query. That means, the result of <code>execute()</code> is the same
+     * for any variable instantiation configuration.
+     */
+    public boolean isConstant() {
+        return (this.itsSources.size() == 0);
+    }
+
+    /**
+     * Return a list of candidate values for the target variable.
+     * <p>
+     * <b>Pre:</b> <code>isApplicable()</code>.
+     */
 //	public abstract List<?> execute();
-	public abstract HashSet<?> execute();
-	
-	/** Return the variable that I'm determining the domain for. */
-	public Variable getTarget() {
-		return this.itsTarget;
-	}
+    public abstract HashSet<?> execute();
 
-	/**
-	 * Return the list of variables that need to be instantiated for
-	 * the query to work. Enumeration elements are of type <code>Variable</code>.
-	 */
-	public final List<?> getSources() {
-		return this.itsSources;
-	}
+    /**
+     * Return the variable that I'm determining the domain for.
+     */
+    public Variable getTarget() {
+        return this.itsTarget;
+    }
 
-	public final Variable getSource(int i) {
-		return this.itsSources.get(i);
-	}
+    /**
+     * Return the list of variables that need to be instantiated for the query to work. Enumeration elements are of type
+     * <code>Variable</code>.
+     */
+    public final List<?> getSources() {
+        return this.itsSources;
+    }
 
-	/**
-	 * Return the number of candidate values <code>execute()</code> will
-	 * provide. For non-constant queries, this will most probably be based on
-	 * estimation. The value may change in response to re-setting the CSP
-	 * domains with the <code>setDomain()</code> method.
-	 * <p>
-	 * <b>Pre:</b> <code>csp.getDomain() != null</code>.
-	 * 
-	 * @see agg.util.csp.CSP#setDomain
-	 */
-	public abstract int getSize();
+    public final Variable getSource(int i) {
+        return this.itsSources.get(i);
+    }
 
-	/**
-	 * Return my weight. This is a constant integer usually chosen inversely
-	 * proportional to the estimated size of the candidate set returned by a
-	 * query execution.
-	 */
-	public final int getWeight() {
-		return this.itsWeight;
-	}
+    /**
+     * Return the number of candidate values <code>execute()</code> will provide. For non-constant queries, this will
+     * most probably be based on estimation. The value may change in response to re-setting the CSP domains with the
+     * <code>setDomain()</code> method.
+     * <p>
+     * <b>Pre:</b> <code>csp.getDomain() != null</code>.
+     *
+     * @see agg.util.csp.CSP#setDomain
+     */
+    public abstract int getSize();
 
-	/**
-	 * Return the name of my implementing class.
-	 */
-	public abstract String getKind();
+    /**
+     * Return my weight. This is a constant integer usually chosen inversely proportional to the estimated size of the
+     * candidate set returned by a query execution.
+     */
+    public final int getWeight() {
+        return this.itsWeight;
+    }
 
-	public abstract boolean isDomainEmpty();
-	
-	/**
-	 * Return the current instance of the source variable given by the index
-	 * <code>i</code>.
-	 * <p>
-	 * <b>Pre:</b> <code>i &lt; itsSources.size()</code>.
-	 */
-	protected final Object getSourceInstance(int i) {
-		return this.itsSources.get(i).getInstance();
-	}
-	
-	// pablo -->
-	
-	/**
-	 * Stores the correspondent constraint of this query.
-	 * 
-	 * @see Query.setCorrespondent()
-	 * @see Query.activateCorrespondent()
-	 * @see Query.deactivateCorrespondent()
-	 */
-	private BinaryConstraint correspondent;
-	
-	/**
-	 * Sets the correspondent constraint of this query.
-	 * 
-	 * @param constraint
-	 */
-	public void setCorrespondent(BinaryConstraint constraint) {
-		this.correspondent = constraint;
-	}
-	
-	/**
-	 * Activates the correspondent constraint of this query.
-	 */
-	public void activateCorrespondent() {
-		if(this.correspondent == null)
-			return;
-		this.correspondent.activate();
-	}
-	
-	/**
-	 * Deactivates the correspondent constraint of this query.
-	 */
-	public void deactivateCorrespondent() {
-		if(this.correspondent == null)
-			return;
-		this.correspondent.deactivate();
-	}
-	// pablo >
+    /**
+     * Return the name of my implementing class.
+     */
+    public abstract String getKind();
+
+    public abstract boolean isDomainEmpty();
+
+    /**
+     * Return the current instance of the source variable given by the index <code>i</code>.
+     * <p>
+     * <b>Pre:</b> <code>i &lt; itsSources.size()</code>.
+     */
+    protected final Object getSourceInstance(int i) {
+        return this.itsSources.get(i).getInstance();
+    }
+
+    // pablo -->
+    /**
+     * Stores the correspondent constraint of this query.
+     *
+     * @see Query.setCorrespondent()
+     * @see Query.activateCorrespondent()
+     * @see Query.deactivateCorrespondent()
+     */
+    private BinaryConstraint correspondent;
+
+    /**
+     * Sets the correspondent constraint of this query.
+     *
+     * @param constraint
+     */
+    public void setCorrespondent(BinaryConstraint constraint) {
+        this.correspondent = constraint;
+    }
+
+    /**
+     * Activates the correspondent constraint of this query.
+     */
+    public void activateCorrespondent() {
+        if (this.correspondent == null) {
+            return;
+        }
+        this.correspondent.activate();
+    }
+
+    /**
+     * Deactivates the correspondent constraint of this query.
+     */
+    public void deactivateCorrespondent() {
+        if (this.correspondent == null) {
+            return;
+        }
+        this.correspondent.deactivate();
+    }
+    // pablo >
 }

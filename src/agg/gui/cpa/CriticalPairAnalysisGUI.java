@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.cpa;
 
 import java.awt.Container;
@@ -53,740 +54,731 @@ import agg.util.Pair;
 
 /**
  * Holds the whole GUI for the critical pair analysis
- * 
- * @version $Id: CriticalPairAnalysisGUI.java,v 1.13 2006/12/13 13:33:05 enrico
- *          Exp $
+ *
+ * @version $Id: CriticalPairAnalysisGUI.java,v 1.13 2006/12/13 13:33:05 enrico Exp $
  * @author $Author: olga $
  */
 public class CriticalPairAnalysisGUI implements ParserGUIListener,
-		ActionListener, GUIOptionListener {
-
-	/**
-	 * The text for critical pairs
-	 */
-	public static final String CRITICALPAIRS = "Critical Pairs";
-
-	/**
-	 * The text for dependency pairs
-	 */
-	public static final String CINFLICTSPAIRS = "Minimal Conflicts";
-
-	/**
-	 * The text for dependency pairs
-	 */
-	public static final String DEPENDENCYPAIRS = "Minimal Dependencies";
-
-	/**
-	 * the text for the parser
-	 */
-	public static final String PARSER = "Parser";
-
-	/**
-	 * the load text
-	 */
-	public static final String LOAD = "Load Pairs";
-
-	/**
-	 * the save text
-	 */
-	public static final String SAVE = "Save Pairs";
-
-	/**
-	 * the exclude text
-	 */
-	public static final String EXCLUDE = "Exclude";
-
-	/**
-	 * the before text
-	 */
-	public static final String BEFORE = "Before";
-
-	/**
-	 * the pane for rules and critical pairs
-	 */
-	JSplitPane mainPane;
-
-	/**
-	 * this pane holds the two tree views
-	 */
-	JSplitPane treePane;
-
-	/**
-	 * this pane holds the the graphs
-	 */
-	JSplitPane graphPane;
-
-	/**
-	 * the grammar which belongs to the current critical pairs
-	 */
-	GraGra grammar;
-
-	GraphDesktop gDesktop;
-
-	Rule links, rechts;
-
-	/**
-	 * the tables of conflicts and dependencies which show progress of critical pairs 
-	 */
-	CriticalPairPanel pairPanel, pairPanel2; 
-
-	boolean isPanel2 = false;
-
-	Thread threadCP;
-
-	boolean threadCPisAlive;
-
-	Vector<StatusMessageListener> listener;
-
-	EdGraGra layout;
-
-	PairContainer beo, beo2;
-
-	ParserGUIOption option;
-
-	IntNumberDialog fromToDialog;
-	
-	
-	/**
-	 * the default constructor with the option to configure with
-	 * 
-	 * @param option
-	 *            the option to configure the GUI
-	 */
-	public CriticalPairAnalysisGUI(JFrame applFrame, ParserGUIOption option) {
-		this(applFrame, null, null, option);
-	}
-
-	/**
-	 * the main constructor
-	 * 
-	 * @param gragra
-	 *            the grammar the critical pairs belong to
-	 * @param layout
-	 *            the layout for the graph
-	 * @param option
-	 *            the option for the GUI
-	 */
-	public CriticalPairAnalysisGUI(JFrame applFrame, GraGra gragra, EdGraGra layout,
-			ParserGUIOption option) {
-		setGrammar(gragra);
-
-		this.gDesktop = new GraphDesktop(applFrame, layout, option);
-		this.gDesktop.addParserGUIListener(this);
-
-		setLayout(layout);
-
-		this.option = option;
-		if (option != null)
-			option.addOptionListener(this);
-
-		this.listener = new Vector<StatusMessageListener>();
-		if (option != null)
-			this.gDesktop.setOverlappingGraphWindowSize(option
-					.getCriticalPairWindowSize());
-		else
-			this.gDesktop.setOverlappingGraphWindowSize(new Dimension(250, 200));
-
-		this.graphPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		this.graphPane.setOneTouchExpandable(false); // true);
-		this.graphPane.setTopComponent(null); // gBrowser.getComponent());
-		this.graphPane.setBottomComponent(this.gDesktop.getComponent());
-		this.graphPane.setDividerLocation(0);
-
-		this.mainPane = new JSplitPane();
-		this.mainPane.setOneTouchExpandable(false);
-		this.mainPane.setLeftComponent(null);
-		this.mainPane.setRightComponent(this.graphPane);
-		this.mainPane.setDividerLocation(0);
-		this.mainPane.revalidate();
-		
-		fromToDialog = new IntNumberDialog(null); //applFrame);
-	}
-
-	public void addMouseListener(MouseListener ml) {
-		this.treePane.addMouseListener(ml);
-		this.gDesktop.getComponent().addMouseListener(ml);
-		if (this.pairPanel != null)
-			this.pairPanel.getMainContainer().addMouseListener(ml);
-		if (this.pairPanel2 != null)
-			this.pairPanel.getMainContainer().addMouseListener(ml);
-	}
-
-	private void setGrammar(GraGra gragra) {
-		this.grammar = gragra;
-	}
-
-	/**
-	 * sets the critical pairs which will be displayed
-	 * 
-	 * @param pairs
-	 *            the pairs to display
-	 */
-	public void setCriticalPairs(PairContainer pairs) {
-		if (pairs == null
-				|| pairs.getGrammar().getListOfRules().isEmpty()) {
-			return;
-		}
-		
-		if (pairs.getKindOfConflict() == CriticalPair.TRIGGER_DEPENDENCY
-				|| pairs.getKindOfConflict() == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
-			setCriticalPairs2(pairs);
-			return;
-		}
-
-		this.beo = pairs;
-		if (this.pairPanel == null) {
-			String cpTableName = "Minimal Conflicts";
-			if (this.beo instanceof LayeredExcludePairContainer) {
-				this.pairPanel = new CriticalPairPanel(
-						this.beo.getRules(), this.beo.getRules2(),
-						(LayeredExcludePairContainer) this.beo);
-			} else {
-				this.pairPanel = new CriticalPairPanel(
-						this.beo.getRules(), this.beo.getRules2(),
-						(ExcludePairContainer) this.beo);
-			}
-			this.gDesktop.addCriticalPairTable(this.pairPanel, cpTableName);
-			this.mainPane.revalidate();
-			this.mainPane.repaint();
-			this.pairPanel.addParserGUIListener(this);
-			((ExcludePairContainer) this.beo).addPairEventListener(this.pairPanel);
-		} else {
-			if (this.beo instanceof LayeredExcludePairContainer) {
-				this.pairPanel.setPairContainer((LayeredExcludePairContainer) this.beo);
-			} else {
-				this.pairPanel.setPairContainer((ExcludePairContainer)this. beo);
-			}
-			this.gDesktop.removeAllGraphFrames();
-			this.gDesktop.removeRuleFrames();
-			this.mainPane.revalidate();
-			this.mainPane.repaint();
-			((ExcludePairContainer)this. beo).addPairEventListener(this.pairPanel);
-		}
-		fireStatusMessageEvent(new StatusMessageEvent(this, ""));
-	}
-
-	private void setCriticalPairs2(PairContainer pairs) {
-		if ((pairs == null) 
-				|| (pairs.getGrammar().getListOfRules().isEmpty())) {
-			return;
-		}
-
-		this.beo2 = pairs;
-		if (this.pairPanel2 == null) {
-			String cpTableName = "Minimal Dependencies";
-			if (this.beo2 instanceof LayeredDependencyPairContainer) {
-				this.pairPanel2 = new CriticalPairPanel(
-						this.beo2.getRules(), this.beo2.getRules2(),
-						(LayeredDependencyPairContainer) this.beo2);
-			} else if (this.beo2 instanceof DependencyPairContainer) {
-				this.pairPanel2 = new CriticalPairPanel(
-						this.beo2.getRules(), this.beo2.getRules2(),
-						(DependencyPairContainer) this.beo2);
-			}
-			this.gDesktop.addCriticalPairTable(this.pairPanel2, cpTableName);
-			this.mainPane.revalidate();
-			this.mainPane.repaint();
-			this.pairPanel2.addParserGUIListener(this);
-			((ExcludePairContainer)this. beo2).addPairEventListener(this.pairPanel2);
-		} else {
-			if (this.beo2 instanceof LayeredDependencyPairContainer) {
-				this.pairPanel2
-						.setPairContainer((LayeredDependencyPairContainer) this.beo2);
-			} else if (this.beo instanceof DependencyPairContainer) {
-				this.pairPanel2.setPairContainer((DependencyPairContainer) this.beo2);
-			}
-			this.gDesktop.removeAllGraphFrames();
-			this.gDesktop.removeRuleFrames();
-			this.mainPane.revalidate();
-			this.mainPane.repaint();
-			((ExcludePairContainer) this.beo2).addPairEventListener(this.pairPanel2);
-		}
-		fireStatusMessageEvent(new StatusMessageEvent(this, ""));
-	}
-
-	/**
-	 * Returns the conflict critical pairs which are displayed.
-	 */
-	public PairContainer getCriticalPairs() {
-		return this.beo;
-	}
-
-	/**
-	 * Returns the dependency critical pairs which are displayed.
-	 */
-	public PairContainer getCriticalPairs2() {
-		return this.beo2;
-	}
-
-	/**
-	 * Returns the critical pairs.
-	 * If the given parameter <code>kindOfConflict</code> is <code>CriticalPair.CONFLICT</code>
-	 * returns the conflict critical pairs,
-	 * if the given parameter <code>kindOfConflict</code> is <code>CriticalPair.TRIGGER_DEPENDENCY</code>
-	 * or <code>CriticalPair.TRIGGER_SWITCH_DEPENDENCY</code>
-	 * returns the dependency critical pairs,
-	 * otherwise - null.
-	 */
-	public PairContainer getCriticalPairs(int kindOfConflict) {
-		if (kindOfConflict == CriticalPair.CONFLICT)
-			return this.beo;
-		else if (kindOfConflict == CriticalPair.TRIGGER_DEPENDENCY)
-			return this.beo2;
-		else if (kindOfConflict == CriticalPair.TRIGGER_SWITCH_DEPENDENCY)
-			return this.beo2;
-		else
-			return null;
-	}
-
-	private void setLayout(EdGraGra edgragra) {
-		this.layout = edgragra;
-		this.gDesktop.setLayout(this.layout);
-	}
-
-	public boolean isEmpty() {
-		return (this.beo == null || this.beo.isEmpty())
-				&& (this.beo2 == null || this.beo2.isEmpty());
-	}
-	
-	/**
-	 * get the container which contains the gui
-	 * 
-	 * @return the gui
-	 */
-	public Container getContainer() {
-		return this.mainPane;
-	}
-
-	public CriticalPairPanel getCriticalPairPanel() {
-		return this.pairPanel;
-	}
-
-	public CriticalPairPanel getCriticalPairPanel2() {
-		return this.pairPanel2;
-	}
-
-	public CriticalPairPanel getCriticalPairPanel(int kind) {
-		if (kind == CriticalPair.CONFLICT)
-			return this.pairPanel;
-		else if (kind == CriticalPair.TRIGGER_DEPENDENCY)
-			return this.pairPanel2;
-		else if (kind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY)
-			return this.pairPanel2;
-		else
-			return null;
-	}
-
-	public void reinitGraphDesktop() {
-		if (this.beo != null)
-			((ExcludePairContainer) this.beo).removePairEventListener(this.pairPanel);
-		if (this.beo2 != null)
-			((ExcludePairContainer) this.beo2).removePairEventListener(this.pairPanel2);
-		this.gDesktop.reinitComponents();
-		this.pairPanel = null;
-		this.beo = null;
-		this.pairPanel2 = null;
-		this.beo2 = null;
-		this.gDesktop.getDesktop().repaint();
-		this.showGACsWarn = true;
-	}
-
-	public GraphDesktop getGraphDesktop() {
-		return this.gDesktop;
-	}
-
-	public JFrame getApplFrame() {
-		return this.gDesktop.parentFrame;
-	}
-	
-	public void update() {
-		this.gDesktop.refresh();
-		this.mainPane.revalidate();
-		this.mainPane.repaint();
-	}
-
-	/**
-	 * set the grammar with layout
-	 * 
-	 * @param edgragra
-	 *            the grammar
-	 * @return error string if setting has failed
-	 */
-	public String setGraGra(EdGraGra edgragra) {//		boolean changed = false;
-		if (edgragra == null) {
-			reinitGraphDesktop();
-			this.grammar = null;
-			this.layout = null;
-			this.links = null;
-			this.rechts = null;
-		} else  {
-			if (this.grammar == null || edgragra.getBasisGraGra() != this.grammar) {
-				reinitGraphDesktop();
-				setGrammar(edgragra.getBasisGraGra());
-				if (this.pairPanel != null) {
-					((ExcludePairContainer) this.beo)
-							.removePairEventListener(this.pairPanel);
-					this.gDesktop.removePairPanelFrame(this.pairPanel);
-					this.pairPanel = null;
-					this.beo = null;
-				}
-				if (this.pairPanel2 != null) {
-					((ExcludePairContainer) this.beo2)
-							.removePairEventListener(this.pairPanel2);
-					this.gDesktop.removePairPanelFrame(this.pairPanel2);
-					this.pairPanel2 = null;
-					this.beo2 = null;
-				}
-			}
-			setLayout(edgragra);
-
-			this.links = null;
-			this.rechts = null;
-			
-			this.gDesktop.removeAllGraphFrames();
-			this.gDesktop.removeRuleFrames();
-		}
-		
-		return "";
-	}
-
-	/**
-	 * get the grammar with layout
-	 */
-	public EdGraGra getGraGra() {
-		return this.layout;
-	}
-
-	/**
-	 * Sets the GUI options for display settings.
-	 * 
-	 * @param option
-	 *            The GUI options for display settings.
-	 */
-	public void setGUIOption(ParserGUIOption opt) {
-		this.option = opt;
-		this.gDesktop.setGUIOption(opt);
-		this.option.addOptionListener(this);
-	}
-
-	/**
-	 * creates a menu of this gui
-	 * 
-	 * @return put this menu in a menu bar
-	 */
-	public JMenu createMenu() {
-		JMenu m = new JMenu("Parse");
-
-		m.add(new JCheckBoxMenuItem(CRITICALPAIRS, false));
-		m.add(new JMenuItem(PARSER));
-		m.addSeparator();
-		JMenuItem load = new JMenuItem(LOAD);
-		JMenuItem save = new JMenuItem(SAVE);
-
-		load.setEnabled(false);
-		save.setEnabled(false);
-		m.add(load);
-		m.add(save);
-		m.addSeparator();
-		JMenu beforeExcludeList = new JMenu("Mode");
-
-		m.add(beforeExcludeList);
-		JCheckBoxMenuItem exclude = new JCheckBoxMenuItem(EXCLUDE, true);
-
-		exclude.addActionListener(this);
-		JCheckBoxMenuItem before = new JCheckBoxMenuItem(BEFORE, false);
-
-		before.addActionListener(this);
-		beforeExcludeList.add(exclude);
-		beforeExcludeList.add(before);
-		return m;
-	}
-
-	// Implementing ParserGUIListeners
-	
-	void getRulesByEvent(final ParserGUIEvent pguie) {
-		if (pguie.getSource() == this.pairPanel) {
-			this.gDesktop.setIconOfCPAGraph(true);
-			this.gDesktop.setIconOfRules(true);
-			
-			if (pguie.getData() instanceof Pair) {
-				if ((((Pair<?,?>) pguie.getData()).first instanceof Rule)
-						&& (((Pair<?,?>) pguie.getData()).second instanceof Rule)) {
-					this.isPanel2 = false;
-					this.links = (Rule) ((Pair<?,?>) pguie.getData()).first;
-					this.rechts = (Rule) ((Pair<?,?>) pguie.getData()).second;
-				}
-			} else if (pguie.getData() instanceof CriticalPairData) {
-					this.isPanel2 = false;
-					this.links = ((CriticalPairData) pguie.getData()).getRule1();
-					this.rechts = ((CriticalPairData) pguie.getData()).getRule2();
-			}
-		} else if (pguie.getSource() == this.pairPanel2) {
-			this.gDesktop.setIconOfCPAGraph(true);
-			this.gDesktop.setIconOfRules(true);
-			if (pguie.getData() instanceof Pair) {
-				if ((((Pair<?,?>) pguie.getData()).first instanceof Rule)
-						&& (((Pair<?,?>) pguie.getData()).second instanceof Rule)) {
-					this.isPanel2 = true;
-					this.links = (Rule) ((Pair<?,?>) pguie.getData()).first;
-					this.rechts = (Rule) ((Pair<?,?>) pguie.getData()).second;
-				}
-			} else if (pguie.getData() instanceof CriticalPairData) {
-				this.isPanel2 = true;
-				this.links = ((CriticalPairData) pguie.getData()).getRule1();
-				this.rechts = ((CriticalPairData) pguie.getData()).getRule2();
-			}
-		}
-		if (this.links != null && this.rechts != null) {
-			this.gDesktop.addRule1(this.links, 300, 150);
-			this.gDesktop.addRule2(this.rechts, 300, 150);
-		}
-	}
-	
-	Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> 
-	getOverlappingsByEvent(final ParserGUIEvent pguie) {
-		Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> 
-		overlappings = null;
-		Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> 
-		overlappingsForGraph = null;
-		try {
-			if (!CriticalPairAnalysisGUI.this.isPanel2) { // conflicts
-				if (pguie.getData() instanceof Pair) {
-					if (CriticalPairAnalysisGUI.this.beo.useHostGraphEnabled()) {
-						overlappingsForGraph = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
-												.getCriticalForGraph(
-														CriticalPairAnalysisGUI.this.links, 
-														CriticalPairAnalysisGUI.this.rechts);
-						if (overlappingsForGraph != null && !overlappingsForGraph.isEmpty()) 								
-							overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
-							.getCriticalPair(CriticalPairAnalysisGUI.this.links, 
-									CriticalPairAnalysisGUI.this.rechts, CriticalPair.EXCLUDE, true);						
-						CriticalPairAnalysisGUI.this.gDesktop.refresh();					
-					} else {
-						if (pguie.getMsg() == CriticalPairEvent.CONTINUE_COMPUTE) 
-							overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
-							.continueComputeCriticalPair(
-									CriticalPairAnalysisGUI.this.links, 
-									CriticalPairAnalysisGUI.this.rechts, 
-									CriticalPair.EXCLUDE, true);						
-						else
-							overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
-										.getCriticalPair(
-												CriticalPairAnalysisGUI.this.links, 
-												CriticalPairAnalysisGUI.this.rechts, 
-												CriticalPair.EXCLUDE, true);
-					}
-				}
-				else if (pguie.getData() instanceof CriticalPairData) {
-					overlappings = (Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> )
-									((CriticalPairData)pguie.getData()).getCriticalsOfKind(-1);
-				}
-			} 
-			else { // dependencies	
-				if (pguie.getData() instanceof Pair) {
-					overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo2).getCriticalPair(CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, CriticalPair.EXCLUDE, true);								
-				}
-				else if (pguie.getData() instanceof CriticalPairData) {
-					overlappings = (Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> )
-									((CriticalPairData)pguie.getData()).getCriticalsOfKind(-1);
-				}
-			}
-		} catch (InvalidAlgorithmException iae) {}
-		return overlappings;
-	}
-	
-	/**
-	 * this gui listens for <CODE>ParserGUIEvents</CODE>. So it must
-	 * implement the listener
-	 * 
-	 * @param pguie
-	 *            the event
-	 */
-	public void occured(final ParserGUIEvent pguie) {
-		if ( (pguie.getData() instanceof CPAEventData)
-			|| ((this.getCriticalPairs()) != null
-					&& ((ExcludePairContainer) this.getCriticalPairs()).isAlive())
-			|| ((this.getCriticalPairs2()) != null
-					&& ((ExcludePairContainer) this.getCriticalPairs2()).isAlive())
-			|| (pguie.getData() instanceof CriticalPairEvent
-					&& ((CriticalPairEvent)pguie.getData()).getKey() 
-							== CriticalPairEvent.REMOVE_RELATION_ENTRY) )
-			return;
-		
-		if (pguie.getData() == null) {
-			this.gDesktop.removeAllGraphFrames();
-			this.gDesktop.removeRuleFrames();
-			this.mainPane.revalidate();
-			this.mainPane.repaint();
-			return;
-		}
-		
-		if (pguie.getSource() == this.gDesktop)
-			return;
-		
-		if ((this.threadCP == null) || !this.threadCPisAlive) {
-			this.mainPane.revalidate();
-			this.mainPane.repaint();
-
-			getRulesByEvent(pguie);
-			
-			this.mainPane.revalidate();
-			this.mainPane.repaint();
-
-			if (this.links != null && this.rechts != null) {
-				StatusMessageEvent sme = new StatusMessageEvent(this, "",
-						"Overlapping graphs of rules  [  " + this.links.getName()
-								+ "  ,  " + this.rechts.getName() + "  ]");
-				fireStatusMessageEvent(sme);
-				
-				this.gDesktop.removeAllGraphFrames();
-				this.mainPane.revalidate();
-				this.mainPane.repaint();
-
-				if (!this.isPanel2)
-					((ExcludePairContainer) this.beo).setStop(false);
-				else
-					((ExcludePairContainer) this.beo2).setStop(false);
-				
-				// run thread when a button pressed
-				this.threadCP = runCPairThread(pguie);
-				this.threadCP.setPriority(4);
-				this.threadCP.start();
-			} 
-		}
-	}
-
-	Thread runCPairThread(final ParserGUIEvent pguie) {
-		// run thread when a button pressed
-		final Thread th = new Thread() {
-			public void run() {
-				CriticalPairAnalysisGUI.this.threadCPisAlive = true;
-				fireStatusMessageEvent(new StatusMessageEvent(this, "",
-						"Thread  -  Computing overlapping graphs of rules  [  "
-								+ CriticalPairAnalysisGUI.this.links.getName() + "  ,  "
-								+ CriticalPairAnalysisGUI.this.rechts.getName()
-								+ "  ]  -  is running ..."));
-				
-				Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> 
-				overlappings = getOverlappingsByEvent(pguie);
-
-				if (overlappings != null && overlappings.size() > 0) {
-					int x0 = 0;
-					int xn = overlappings.size()-1;
-					if (overlappings.size() >= 50) {
-						// here dialog (from-to)
-						fromToDialog.showGUI(xn);
-						if (fromToDialog.isCanceled()) {
-							x0 = 0;
-							xn = -1;
-						}
-						else {
-							Point fromTo = fromToDialog.getFromTo();					
-							x0 = fromTo.x;
-							if (x0 > 0) x0--;
-							xn = fromTo.y;
-							xn--;
-						}
-					}
-					if (!CriticalPairAnalysisGUI.this.isPanel2) {
-						if (CriticalPairAnalysisGUI.this.beo instanceof DependencyPairContainer
-									|| CriticalPairAnalysisGUI.this.beo instanceof ExcludePairContainer) {
-							for (int x = x0; x <=xn; x++) {
-								Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> 
-								p = overlappings.elementAt(x);
-								Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = p.first;
-								Graph graph = p1.first.getTarget();
-								CriticalPairAnalysisGUI.this.gDesktop.addOverlapping(graph, p);
-								CriticalPairAnalysisGUI.this.gDesktop.addGraph(graph);
-							}
-						} 
-					} else if (CriticalPairAnalysisGUI.this.beo2 instanceof DependencyPairContainer) {
-						for (int x = x0; x <=xn; x++) {
-							Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> 
-							p = overlappings.elementAt(x);
-							Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = p.first;
-							Graph graph = p1.first.getTarget();
-							CriticalPairAnalysisGUI.this.gDesktop.addOverlapping(graph, p);
-							CriticalPairAnalysisGUI.this.gDesktop.addGraph(graph);
-						}
-					}
-					showWarningWhenGACsUsed(CriticalPairAnalysisGUI.this.links,
-											CriticalPairAnalysisGUI.this.rechts);
-				} 
-				else {
-					if (!CriticalPairAnalysisGUI.this.isPanel2) {	// no any conflict							
-						boolean hostGraphCheck = CriticalPairAnalysisGUI.this.beo.useHostGraphEnabled();
-						ExcludePairContainer.Entry entry = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
-						.getEntry(
-								CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, true);
-
-						if (entry.getState() == ExcludePairContainer.Entry.COMPUTED) {
-							if(hostGraphCheck)
-								CriticalPairAnalysisGUI.this.gDesktop.notCriticFrame(
-										CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, 
-										"on the current host graph");
-							else {
-								CriticalPairAnalysisGUI.this.gDesktop.notCriticFrame(
-										CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts);	
-							}
-							showWarningWhenGACsUsed(CriticalPairAnalysisGUI.this.links,
-									CriticalPairAnalysisGUI.this.rechts);
-						}
-					} else {	// no any dependency
-						ExcludePairContainer.Entry entry = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo2)
-						.getEntry(
-								CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, true);
-						
-						int state = entry.getState();
-						if (state == ExcludePairContainer.Entry.COMPUTED
-								|| state == ExcludePairContainer.Entry.COMPUTED2
-								|| state == ExcludePairContainer.Entry.COMPUTED12) {
-							if (entry.getStatus() == ExcludePairContainer.Entry.NOT_COMPUTABLE) {
-								JOptionPane.showMessageDialog(null, 
-										"This rule pair could not be computed "
-										+"\nbecause reverting of the rule "
-										+"<"+CriticalPairAnalysisGUI.this.links.getName()+">"
-										+" failed.");
-							} else {
-								CriticalPairAnalysisGUI.this.gDesktop.notCriticFrame(
-										CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts);
-								showWarningWhenGACsUsed(CriticalPairAnalysisGUI.this.links,
-										CriticalPairAnalysisGUI.this.rechts);
-							}
-						}
-					}
-				}
-				
-				fireStatusMessageEvent(new StatusMessageEvent(this, "",
-						"Thread  -  Computing overlapping graphs of rules  [  "
-								+ CriticalPairAnalysisGUI.this.links.getName() + "  ,  "
-								+ CriticalPairAnalysisGUI.this.rechts.getName() + "  ]  -  finished"));
-
-				CriticalPairAnalysisGUI.this.threadCPisAlive = false;						
-			}
-		};
-		return th;
-	}
-	
-	boolean showGACsWarn = true;
-	void showWarningWhenGACsUsed(final Rule r1, final Rule r2) {
-		String what = "";
-		if (r1.hasEnabledACs(false))
-			what = "The first rule: < ".concat(r1.getName()).concat(" > ");
-		else if (r2.hasEnabledACs(false))
-		what = "The second rule: < ".concat(r2.getName()).concat(" > ");
-		if (!what.isEmpty() && this.showGACsWarn) {	
-			Object[] options = { "OK", "Do not warn again" };	
-			int answer = JOptionPane.showOptionDialog(null,
-					"The result of this critical pair may be incomplete! \n"
-					+what+"\nmakes use of General Application Conditions.\n" 
-					+"Unfortunately, critical pair analysis does not take GACs in account"
-					+"\n(not jet implemented).\n", 
-					"CPA", 
-					JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
-					options, options[1]);
-			this.showGACsWarn = (answer == 0);
-			
+        ActionListener, GUIOptionListener {
+
+    /**
+     * The text for critical pairs
+     */
+    public static final String CRITICALPAIRS = "Critical Pairs";
+
+    /**
+     * The text for dependency pairs
+     */
+    public static final String CINFLICTSPAIRS = "Minimal Conflicts";
+
+    /**
+     * The text for dependency pairs
+     */
+    public static final String DEPENDENCYPAIRS = "Minimal Dependencies";
+
+    /**
+     * the text for the parser
+     */
+    public static final String PARSER = "Parser";
+
+    /**
+     * the load text
+     */
+    public static final String LOAD = "Load Pairs";
+
+    /**
+     * the save text
+     */
+    public static final String SAVE = "Save Pairs";
+
+    /**
+     * the exclude text
+     */
+    public static final String EXCLUDE = "Exclude";
+
+    /**
+     * the before text
+     */
+    public static final String BEFORE = "Before";
+
+    /**
+     * the pane for rules and critical pairs
+     */
+    JSplitPane mainPane;
+
+    /**
+     * this pane holds the two tree views
+     */
+    JSplitPane treePane;
+
+    /**
+     * this pane holds the the graphs
+     */
+    JSplitPane graphPane;
+
+    /**
+     * the grammar which belongs to the current critical pairs
+     */
+    GraGra grammar;
+
+    GraphDesktop gDesktop;
+
+    Rule links, rechts;
+
+    /**
+     * the tables of conflicts and dependencies which show progress of critical pairs
+     */
+    CriticalPairPanel pairPanel, pairPanel2;
+
+    boolean isPanel2 = false;
+
+    Thread threadCP;
+
+    boolean threadCPisAlive;
+
+    Vector<StatusMessageListener> listener;
+
+    EdGraGra layout;
+
+    PairContainer beo, beo2;
+
+    ParserGUIOption option;
+
+    IntNumberDialog fromToDialog;
+
+    /**
+     * the default constructor with the option to configure with
+     *
+     * @param option the option to configure the GUI
+     */
+    public CriticalPairAnalysisGUI(JFrame applFrame, ParserGUIOption option) {
+        this(applFrame, null, null, option);
+    }
+
+    /**
+     * the main constructor
+     *
+     * @param gragra the grammar the critical pairs belong to
+     * @param layout the layout for the graph
+     * @param option the option for the GUI
+     */
+    public CriticalPairAnalysisGUI(JFrame applFrame, GraGra gragra, EdGraGra layout,
+            ParserGUIOption option) {
+        setGrammar(gragra);
+
+        this.gDesktop = new GraphDesktop(applFrame, layout, option);
+        this.gDesktop.addParserGUIListener(this);
+
+        setLayout(layout);
+
+        this.option = option;
+        if (option != null) {
+            option.addOptionListener(this);
+        }
+
+        this.listener = new Vector<StatusMessageListener>();
+        if (option != null) {
+            this.gDesktop.setOverlappingGraphWindowSize(option
+                    .getCriticalPairWindowSize());
+        } else {
+            this.gDesktop.setOverlappingGraphWindowSize(new Dimension(250, 200));
+        }
+
+        this.graphPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        this.graphPane.setOneTouchExpandable(false); // true);
+        this.graphPane.setTopComponent(null); // gBrowser.getComponent());
+        this.graphPane.setBottomComponent(this.gDesktop.getComponent());
+        this.graphPane.setDividerLocation(0);
+
+        this.mainPane = new JSplitPane();
+        this.mainPane.setOneTouchExpandable(false);
+        this.mainPane.setLeftComponent(null);
+        this.mainPane.setRightComponent(this.graphPane);
+        this.mainPane.setDividerLocation(0);
+        this.mainPane.revalidate();
+
+        fromToDialog = new IntNumberDialog(null); //applFrame);
+    }
+
+    public void addMouseListener(MouseListener ml) {
+        this.treePane.addMouseListener(ml);
+        this.gDesktop.getComponent().addMouseListener(ml);
+        if (this.pairPanel != null) {
+            this.pairPanel.getMainContainer().addMouseListener(ml);
+        }
+        if (this.pairPanel2 != null) {
+            this.pairPanel.getMainContainer().addMouseListener(ml);
+        }
+    }
+
+    private void setGrammar(GraGra gragra) {
+        this.grammar = gragra;
+    }
+
+    /**
+     * sets the critical pairs which will be displayed
+     *
+     * @param pairs the pairs to display
+     */
+    public void setCriticalPairs(PairContainer pairs) {
+        if (pairs == null
+                || pairs.getGrammar().getListOfRules().isEmpty()) {
+            return;
+        }
+
+        if (pairs.getKindOfConflict() == CriticalPair.TRIGGER_DEPENDENCY
+                || pairs.getKindOfConflict() == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
+            setCriticalPairs2(pairs);
+            return;
+        }
+
+        this.beo = pairs;
+        if (this.pairPanel == null) {
+            String cpTableName = "Minimal Conflicts";
+            if (this.beo instanceof LayeredExcludePairContainer) {
+                this.pairPanel = new CriticalPairPanel(
+                        this.beo.getRules(), this.beo.getRules2(),
+                        (LayeredExcludePairContainer) this.beo);
+            } else {
+                this.pairPanel = new CriticalPairPanel(
+                        this.beo.getRules(), this.beo.getRules2(),
+                        (ExcludePairContainer) this.beo);
+            }
+            this.gDesktop.addCriticalPairTable(this.pairPanel, cpTableName);
+            this.mainPane.revalidate();
+            this.mainPane.repaint();
+            this.pairPanel.addParserGUIListener(this);
+            ((ExcludePairContainer) this.beo).addPairEventListener(this.pairPanel);
+        } else {
+            if (this.beo instanceof LayeredExcludePairContainer) {
+                this.pairPanel.setPairContainer((LayeredExcludePairContainer) this.beo);
+            } else {
+                this.pairPanel.setPairContainer((ExcludePairContainer) this.beo);
+            }
+            this.gDesktop.removeAllGraphFrames();
+            this.gDesktop.removeRuleFrames();
+            this.mainPane.revalidate();
+            this.mainPane.repaint();
+            ((ExcludePairContainer) this.beo).addPairEventListener(this.pairPanel);
+        }
+        fireStatusMessageEvent(new StatusMessageEvent(this, ""));
+    }
+
+    private void setCriticalPairs2(PairContainer pairs) {
+        if ((pairs == null)
+                || (pairs.getGrammar().getListOfRules().isEmpty())) {
+            return;
+        }
+
+        this.beo2 = pairs;
+        if (this.pairPanel2 == null) {
+            String cpTableName = "Minimal Dependencies";
+            if (this.beo2 instanceof LayeredDependencyPairContainer) {
+                this.pairPanel2 = new CriticalPairPanel(
+                        this.beo2.getRules(), this.beo2.getRules2(),
+                        (LayeredDependencyPairContainer) this.beo2);
+            } else if (this.beo2 instanceof DependencyPairContainer) {
+                this.pairPanel2 = new CriticalPairPanel(
+                        this.beo2.getRules(), this.beo2.getRules2(),
+                        (DependencyPairContainer) this.beo2);
+            }
+            this.gDesktop.addCriticalPairTable(this.pairPanel2, cpTableName);
+            this.mainPane.revalidate();
+            this.mainPane.repaint();
+            this.pairPanel2.addParserGUIListener(this);
+            ((ExcludePairContainer) this.beo2).addPairEventListener(this.pairPanel2);
+        } else {
+            if (this.beo2 instanceof LayeredDependencyPairContainer) {
+                this.pairPanel2
+                        .setPairContainer((LayeredDependencyPairContainer) this.beo2);
+            } else if (this.beo instanceof DependencyPairContainer) {
+                this.pairPanel2.setPairContainer((DependencyPairContainer) this.beo2);
+            }
+            this.gDesktop.removeAllGraphFrames();
+            this.gDesktop.removeRuleFrames();
+            this.mainPane.revalidate();
+            this.mainPane.repaint();
+            ((ExcludePairContainer) this.beo2).addPairEventListener(this.pairPanel2);
+        }
+        fireStatusMessageEvent(new StatusMessageEvent(this, ""));
+    }
+
+    /**
+     * Returns the conflict critical pairs which are displayed.
+     */
+    public PairContainer getCriticalPairs() {
+        return this.beo;
+    }
+
+    /**
+     * Returns the dependency critical pairs which are displayed.
+     */
+    public PairContainer getCriticalPairs2() {
+        return this.beo2;
+    }
+
+    /**
+     * Returns the critical pairs. If the given parameter <code>kindOfConflict</code> is
+     * <code>CriticalPair.CONFLICT</code> returns the conflict critical pairs, if the given parameter
+     * <code>kindOfConflict</code> is <code>CriticalPair.TRIGGER_DEPENDENCY</code> or
+     * <code>CriticalPair.TRIGGER_SWITCH_DEPENDENCY</code> returns the dependency critical pairs, otherwise - null.
+     */
+    public PairContainer getCriticalPairs(int kindOfConflict) {
+        if (kindOfConflict == CriticalPair.CONFLICT) {
+            return this.beo;
+        } else if (kindOfConflict == CriticalPair.TRIGGER_DEPENDENCY) {
+            return this.beo2;
+        } else if (kindOfConflict == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
+            return this.beo2;
+        } else {
+            return null;
+        }
+    }
+
+    private void setLayout(EdGraGra edgragra) {
+        this.layout = edgragra;
+        this.gDesktop.setLayout(this.layout);
+    }
+
+    public boolean isEmpty() {
+        return (this.beo == null || this.beo.isEmpty())
+                && (this.beo2 == null || this.beo2.isEmpty());
+    }
+
+    /**
+     * get the container which contains the gui
+     *
+     * @return the gui
+     */
+    public Container getContainer() {
+        return this.mainPane;
+    }
+
+    public CriticalPairPanel getCriticalPairPanel() {
+        return this.pairPanel;
+    }
+
+    public CriticalPairPanel getCriticalPairPanel2() {
+        return this.pairPanel2;
+    }
+
+    public CriticalPairPanel getCriticalPairPanel(int kind) {
+        if (kind == CriticalPair.CONFLICT) {
+            return this.pairPanel;
+        } else if (kind == CriticalPair.TRIGGER_DEPENDENCY) {
+            return this.pairPanel2;
+        } else if (kind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
+            return this.pairPanel2;
+        } else {
+            return null;
+        }
+    }
+
+    public void reinitGraphDesktop() {
+        if (this.beo != null) {
+            ((ExcludePairContainer) this.beo).removePairEventListener(this.pairPanel);
+        }
+        if (this.beo2 != null) {
+            ((ExcludePairContainer) this.beo2).removePairEventListener(this.pairPanel2);
+        }
+        this.gDesktop.reinitComponents();
+        this.pairPanel = null;
+        this.beo = null;
+        this.pairPanel2 = null;
+        this.beo2 = null;
+        this.gDesktop.getDesktop().repaint();
+        this.showGACsWarn = true;
+    }
+
+    public GraphDesktop getGraphDesktop() {
+        return this.gDesktop;
+    }
+
+    public JFrame getApplFrame() {
+        return this.gDesktop.parentFrame;
+    }
+
+    public void update() {
+        this.gDesktop.refresh();
+        this.mainPane.revalidate();
+        this.mainPane.repaint();
+    }
+
+    /**
+     * set the grammar with layout
+     *
+     * @param edgragra the grammar
+     * @return error string if setting has failed
+     */
+    public String setGraGra(EdGraGra edgragra) {//		boolean changed = false;
+        if (edgragra == null) {
+            reinitGraphDesktop();
+            this.grammar = null;
+            this.layout = null;
+            this.links = null;
+            this.rechts = null;
+        } else {
+            if (this.grammar == null || edgragra.getBasisGraGra() != this.grammar) {
+                reinitGraphDesktop();
+                setGrammar(edgragra.getBasisGraGra());
+                if (this.pairPanel != null) {
+                    ((ExcludePairContainer) this.beo)
+                            .removePairEventListener(this.pairPanel);
+                    this.gDesktop.removePairPanelFrame(this.pairPanel);
+                    this.pairPanel = null;
+                    this.beo = null;
+                }
+                if (this.pairPanel2 != null) {
+                    ((ExcludePairContainer) this.beo2)
+                            .removePairEventListener(this.pairPanel2);
+                    this.gDesktop.removePairPanelFrame(this.pairPanel2);
+                    this.pairPanel2 = null;
+                    this.beo2 = null;
+                }
+            }
+            setLayout(edgragra);
+
+            this.links = null;
+            this.rechts = null;
+
+            this.gDesktop.removeAllGraphFrames();
+            this.gDesktop.removeRuleFrames();
+        }
+
+        return "";
+    }
+
+    /**
+     * get the grammar with layout
+     */
+    public EdGraGra getGraGra() {
+        return this.layout;
+    }
+
+    /**
+     * Sets the GUI options for display settings.
+     *
+     * @param option The GUI options for display settings.
+     */
+    public void setGUIOption(ParserGUIOption opt) {
+        this.option = opt;
+        this.gDesktop.setGUIOption(opt);
+        this.option.addOptionListener(this);
+    }
+
+    /**
+     * creates a menu of this gui
+     *
+     * @return put this menu in a menu bar
+     */
+    public JMenu createMenu() {
+        JMenu m = new JMenu("Parse");
+
+        m.add(new JCheckBoxMenuItem(CRITICALPAIRS, false));
+        m.add(new JMenuItem(PARSER));
+        m.addSeparator();
+        JMenuItem load = new JMenuItem(LOAD);
+        JMenuItem save = new JMenuItem(SAVE);
+
+        load.setEnabled(false);
+        save.setEnabled(false);
+        m.add(load);
+        m.add(save);
+        m.addSeparator();
+        JMenu beforeExcludeList = new JMenu("Mode");
+
+        m.add(beforeExcludeList);
+        JCheckBoxMenuItem exclude = new JCheckBoxMenuItem(EXCLUDE, true);
+
+        exclude.addActionListener(this);
+        JCheckBoxMenuItem before = new JCheckBoxMenuItem(BEFORE, false);
+
+        before.addActionListener(this);
+        beforeExcludeList.add(exclude);
+        beforeExcludeList.add(before);
+        return m;
+    }
+
+    // Implementing ParserGUIListeners
+    void getRulesByEvent(final ParserGUIEvent pguie) {
+        if (pguie.getSource() == this.pairPanel) {
+            this.gDesktop.setIconOfCPAGraph(true);
+            this.gDesktop.setIconOfRules(true);
+
+            if (pguie.getData() instanceof Pair) {
+                if ((((Pair<?, ?>) pguie.getData()).first instanceof Rule)
+                        && (((Pair<?, ?>) pguie.getData()).second instanceof Rule)) {
+                    this.isPanel2 = false;
+                    this.links = (Rule) ((Pair<?, ?>) pguie.getData()).first;
+                    this.rechts = (Rule) ((Pair<?, ?>) pguie.getData()).second;
+                }
+            } else if (pguie.getData() instanceof CriticalPairData) {
+                this.isPanel2 = false;
+                this.links = ((CriticalPairData) pguie.getData()).getRule1();
+                this.rechts = ((CriticalPairData) pguie.getData()).getRule2();
+            }
+        } else if (pguie.getSource() == this.pairPanel2) {
+            this.gDesktop.setIconOfCPAGraph(true);
+            this.gDesktop.setIconOfRules(true);
+            if (pguie.getData() instanceof Pair) {
+                if ((((Pair<?, ?>) pguie.getData()).first instanceof Rule)
+                        && (((Pair<?, ?>) pguie.getData()).second instanceof Rule)) {
+                    this.isPanel2 = true;
+                    this.links = (Rule) ((Pair<?, ?>) pguie.getData()).first;
+                    this.rechts = (Rule) ((Pair<?, ?>) pguie.getData()).second;
+                }
+            } else if (pguie.getData() instanceof CriticalPairData) {
+                this.isPanel2 = true;
+                this.links = ((CriticalPairData) pguie.getData()).getRule1();
+                this.rechts = ((CriticalPairData) pguie.getData()).getRule2();
+            }
+        }
+        if (this.links != null && this.rechts != null) {
+            this.gDesktop.addRule1(this.links, 300, 150);
+            this.gDesktop.addRule2(this.rechts, 300, 150);
+        }
+    }
+
+    Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+            getOverlappingsByEvent(final ParserGUIEvent pguie) {
+        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = null;
+        Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> overlappingsForGraph = null;
+        try {
+            if (!CriticalPairAnalysisGUI.this.isPanel2) { // conflicts
+                if (pguie.getData() instanceof Pair) {
+                    if (CriticalPairAnalysisGUI.this.beo.useHostGraphEnabled()) {
+                        overlappingsForGraph = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
+                                .getCriticalForGraph(
+                                        CriticalPairAnalysisGUI.this.links,
+                                        CriticalPairAnalysisGUI.this.rechts);
+                        if (overlappingsForGraph != null && !overlappingsForGraph.isEmpty()) {
+                            overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
+                                    .getCriticalPair(CriticalPairAnalysisGUI.this.links,
+                                            CriticalPairAnalysisGUI.this.rechts, CriticalPair.EXCLUDE, true);
+                        }
+                        CriticalPairAnalysisGUI.this.gDesktop.refresh();
+                    } else {
+                        if (pguie.getMsg() == CriticalPairEvent.CONTINUE_COMPUTE) {
+                            overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
+                                    .continueComputeCriticalPair(
+                                            CriticalPairAnalysisGUI.this.links,
+                                            CriticalPairAnalysisGUI.this.rechts,
+                                            CriticalPair.EXCLUDE, true);
+                        } else {
+                            overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
+                                    .getCriticalPair(
+                                            CriticalPairAnalysisGUI.this.links,
+                                            CriticalPairAnalysisGUI.this.rechts,
+                                            CriticalPair.EXCLUDE, true);
+                        }
+                    }
+                } else if (pguie.getData() instanceof CriticalPairData) {
+                    overlappings = (Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>) ((CriticalPairData) pguie.getData()).getCriticalsOfKind(-1);
+                }
+            } else { // dependencies	
+                if (pguie.getData() instanceof Pair) {
+                    overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo2).getCriticalPair(CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, CriticalPair.EXCLUDE, true);
+                } else if (pguie.getData() instanceof CriticalPairData) {
+                    overlappings = (Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>) ((CriticalPairData) pguie.getData()).getCriticalsOfKind(-1);
+                }
+            }
+        } catch (InvalidAlgorithmException iae) {
+        }
+        return overlappings;
+    }
+
+    /**
+     * this gui listens for <CODE>ParserGUIEvents</CODE>. So it must implement the listener
+     *
+     * @param pguie the event
+     */
+    public void occured(final ParserGUIEvent pguie) {
+        if ((pguie.getData() instanceof CPAEventData)
+                || ((this.getCriticalPairs()) != null
+                && ((ExcludePairContainer) this.getCriticalPairs()).isAlive())
+                || ((this.getCriticalPairs2()) != null
+                && ((ExcludePairContainer) this.getCriticalPairs2()).isAlive())
+                || (pguie.getData() instanceof CriticalPairEvent
+                && ((CriticalPairEvent) pguie.getData()).getKey()
+                == CriticalPairEvent.REMOVE_RELATION_ENTRY)) {
+            return;
+        }
+
+        if (pguie.getData() == null) {
+            this.gDesktop.removeAllGraphFrames();
+            this.gDesktop.removeRuleFrames();
+            this.mainPane.revalidate();
+            this.mainPane.repaint();
+            return;
+        }
+
+        if (pguie.getSource() == this.gDesktop) {
+            return;
+        }
+
+        if ((this.threadCP == null) || !this.threadCPisAlive) {
+            this.mainPane.revalidate();
+            this.mainPane.repaint();
+
+            getRulesByEvent(pguie);
+
+            this.mainPane.revalidate();
+            this.mainPane.repaint();
+
+            if (this.links != null && this.rechts != null) {
+                StatusMessageEvent sme = new StatusMessageEvent(this, "",
+                        "Overlapping graphs of rules  [  " + this.links.getName()
+                        + "  ,  " + this.rechts.getName() + "  ]");
+                fireStatusMessageEvent(sme);
+
+                this.gDesktop.removeAllGraphFrames();
+                this.mainPane.revalidate();
+                this.mainPane.repaint();
+
+                if (!this.isPanel2) {
+                    ((ExcludePairContainer) this.beo).setStop(false);
+                } else {
+                    ((ExcludePairContainer) this.beo2).setStop(false);
+                }
+
+                // run thread when a button pressed
+                this.threadCP = runCPairThread(pguie);
+                this.threadCP.setPriority(4);
+                this.threadCP.start();
+            }
+        }
+    }
+
+    Thread runCPairThread(final ParserGUIEvent pguie) {
+        // run thread when a button pressed
+        final Thread th = new Thread() {
+            public void run() {
+                CriticalPairAnalysisGUI.this.threadCPisAlive = true;
+                fireStatusMessageEvent(new StatusMessageEvent(this, "",
+                        "Thread  -  Computing overlapping graphs of rules  [  "
+                        + CriticalPairAnalysisGUI.this.links.getName() + "  ,  "
+                        + CriticalPairAnalysisGUI.this.rechts.getName()
+                        + "  ]  -  is running ..."));
+
+                Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = getOverlappingsByEvent(pguie);
+
+                if (overlappings != null && overlappings.size() > 0) {
+                    int x0 = 0;
+                    int xn = overlappings.size() - 1;
+                    if (overlappings.size() >= 50) {
+                        // here dialog (from-to)
+                        fromToDialog.showGUI(xn);
+                        if (fromToDialog.isCanceled()) {
+                            x0 = 0;
+                            xn = -1;
+                        } else {
+                            Point fromTo = fromToDialog.getFromTo();
+                            x0 = fromTo.x;
+                            if (x0 > 0) {
+                                x0--;
+                            }
+                            xn = fromTo.y;
+                            xn--;
+                        }
+                    }
+                    if (!CriticalPairAnalysisGUI.this.isPanel2) {
+                        if (CriticalPairAnalysisGUI.this.beo instanceof DependencyPairContainer
+                                || CriticalPairAnalysisGUI.this.beo instanceof ExcludePairContainer) {
+                            for (int x = x0; x <= xn; x++) {
+                                Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = overlappings.elementAt(x);
+                                Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = p.first;
+                                Graph graph = p1.first.getTarget();
+                                CriticalPairAnalysisGUI.this.gDesktop.addOverlapping(graph, p);
+                                CriticalPairAnalysisGUI.this.gDesktop.addGraph(graph);
+                            }
+                        }
+                    } else if (CriticalPairAnalysisGUI.this.beo2 instanceof DependencyPairContainer) {
+                        for (int x = x0; x <= xn; x++) {
+                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = overlappings.elementAt(x);
+                            Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = p.first;
+                            Graph graph = p1.first.getTarget();
+                            CriticalPairAnalysisGUI.this.gDesktop.addOverlapping(graph, p);
+                            CriticalPairAnalysisGUI.this.gDesktop.addGraph(graph);
+                        }
+                    }
+                    showWarningWhenGACsUsed(CriticalPairAnalysisGUI.this.links,
+                            CriticalPairAnalysisGUI.this.rechts);
+                } else {
+                    if (!CriticalPairAnalysisGUI.this.isPanel2) {	// no any conflict							
+                        boolean hostGraphCheck = CriticalPairAnalysisGUI.this.beo.useHostGraphEnabled();
+                        ExcludePairContainer.Entry entry = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
+                                .getEntry(
+                                        CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, true);
+
+                        if (entry.getState() == ExcludePairContainer.Entry.COMPUTED) {
+                            if (hostGraphCheck) {
+                                CriticalPairAnalysisGUI.this.gDesktop.notCriticFrame(
+                                        CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts,
+                                        "on the current host graph");
+                            } else {
+                                CriticalPairAnalysisGUI.this.gDesktop.notCriticFrame(
+                                        CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts);
+                            }
+                            showWarningWhenGACsUsed(CriticalPairAnalysisGUI.this.links,
+                                    CriticalPairAnalysisGUI.this.rechts);
+                        }
+                    } else {	// no any dependency
+                        ExcludePairContainer.Entry entry = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo2)
+                                .getEntry(
+                                        CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, true);
+
+                        int state = entry.getState();
+                        if (state == ExcludePairContainer.Entry.COMPUTED
+                                || state == ExcludePairContainer.Entry.COMPUTED2
+                                || state == ExcludePairContainer.Entry.COMPUTED12) {
+                            if (entry.getStatus() == ExcludePairContainer.Entry.NOT_COMPUTABLE) {
+                                JOptionPane.showMessageDialog(null,
+                                        "This rule pair could not be computed "
+                                        + "\nbecause reverting of the rule "
+                                        + "<" + CriticalPairAnalysisGUI.this.links.getName() + ">"
+                                        + " failed.");
+                            } else {
+                                CriticalPairAnalysisGUI.this.gDesktop.notCriticFrame(
+                                        CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts);
+                                showWarningWhenGACsUsed(CriticalPairAnalysisGUI.this.links,
+                                        CriticalPairAnalysisGUI.this.rechts);
+                            }
+                        }
+                    }
+                }
+
+                fireStatusMessageEvent(new StatusMessageEvent(this, "",
+                        "Thread  -  Computing overlapping graphs of rules  [  "
+                        + CriticalPairAnalysisGUI.this.links.getName() + "  ,  "
+                        + CriticalPairAnalysisGUI.this.rechts.getName() + "  ]  -  finished"));
+
+                CriticalPairAnalysisGUI.this.threadCPisAlive = false;
+            }
+        };
+        return th;
+    }
+
+    boolean showGACsWarn = true;
+
+    void showWarningWhenGACsUsed(final Rule r1, final Rule r2) {
+        String what = "";
+        if (r1.hasEnabledACs(false)) {
+            what = "The first rule: < ".concat(r1.getName()).concat(" > ");
+        } else if (r2.hasEnabledACs(false)) {
+            what = "The second rule: < ".concat(r2.getName()).concat(" > ");
+        }
+        if (!what.isEmpty() && this.showGACsWarn) {
+            Object[] options = {"OK", "Do not warn again"};
+            int answer = JOptionPane.showOptionDialog(null,
+                    "The result of this critical pair may be incomplete! \n"
+                    + what + "\nmakes use of General Application Conditions.\n"
+                    + "Unfortunately, critical pair analysis does not take GACs in account"
+                    + "\n(not jet implemented).\n",
+                    "CPA",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                    options, options[1]);
+            this.showGACsWarn = (answer == 0);
+
 //			JOptionPane.showMessageDialog(null,	
 //				"The result of this critical pair may be incomplete! \n"
 //				+what+"\nmakes use of General Application Conditions.\n" 
@@ -794,93 +786,96 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
 //				+"\n(not jet implemented).\n", 
 //				"CPA", 
 //				JOptionPane.WARNING_MESSAGE);
-		}
-	}
-	
-	
-	public boolean isGenerating() {
-		if ((this.beo != null) && ((ExcludePairContainer) this.beo).isAlive())
-			return true;
-		else if ((this.beo2 != null) && ((ExcludePairContainer) this.beo2).isAlive())
-			return true;
-		else
-			return false;
-	}
+        }
+    }
 
-	public boolean pairsComputed() {
-		if ((this.beo != null) && ((ExcludePairContainer) this.beo).isComputed())
-			return true;
-		else if ((this.beo2 != null) && ((ExcludePairContainer) this.beo2).isComputed())
-			return true;
-		else
-			return false;
-	}
+    public boolean isGenerating() {
+        if ((this.beo != null) && ((ExcludePairContainer) this.beo).isAlive()) {
+            return true;
+        } else if ((this.beo2 != null) && ((ExcludePairContainer) this.beo2).isAlive()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	public boolean isOnePairThreadAlive() {
-		if ((this.threadCP != null) && this.threadCPisAlive)
-			return true;
-		
-		return false;
-	}
+    public boolean pairsComputed() {
+        if ((this.beo != null) && ((ExcludePairContainer) this.beo).isComputed()) {
+            return true;
+        } else if ((this.beo2 != null) && ((ExcludePairContainer) this.beo2).isComputed()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	public PairContainer getActivePairContainer() {
-		CriticalPairPanel p = this.gDesktop.getActivePairPanel();
-		if (p != null)
-			return p.getPairContainer();
-		
-		return null;
-	}
+    public boolean isOnePairThreadAlive() {
+        if ((this.threadCP != null) && this.threadCPisAlive) {
+            return true;
+        }
 
-	public void stopOnePairThread() {
-		if ((this.threadCP != null) && this.threadCPisAlive) {
-			if (this.beo != null)
-				((ExcludePairContainer) this.beo).setStop(true);
-			if (this.beo2 != null)
-				((ExcludePairContainer) this.beo2).setStop(true);
-			this.threadCPisAlive = false;
-		}
-	}
+        return false;
+    }
 
-	/**
-	 * register your <CODE>StatusMessageListener</CODE> to receive messages
-	 * 
-	 * @param sml
-	 *            the listener which listen to my messages
-	 */
-	public void addStatusMessageListener(StatusMessageListener sml) {
-		this.listener.addElement(sml);
-	}
+    public PairContainer getActivePairContainer() {
+        CriticalPairPanel p = this.gDesktop.getActivePairPanel();
+        if (p != null) {
+            return p.getPairContainer();
+        }
 
-	void fireStatusMessageEvent(StatusMessageEvent sme) {
-		for (int i = 0; i < this.listener.size(); i++)
-			this.listener.elementAt(i).newMessage(sme);
-	}
+        return null;
+    }
 
-	// Implementing of ActionListeners 
-	/**
-	 * this GUI listens for <CODE>ActionEvents</CODE> which are created from
-	 * Buttons and other GUI typical stuff
-	 * 
-	 * @param e
-	 *            the event
-	 */
-	public void actionPerformed(ActionEvent e) {}
+    public void stopOnePairThread() {
+        if ((this.threadCP != null) && this.threadCPisAlive) {
+            if (this.beo != null) {
+                ((ExcludePairContainer) this.beo).setStop(true);
+            }
+            if (this.beo2 != null) {
+                ((ExcludePairContainer) this.beo2).setStop(true);
+            }
+            this.threadCPisAlive = false;
+        }
+    }
 
-	/**
-	 * this GUI listens if the option has changed
-	 * 
-	 * @param e
-	 *            the event with the new option
-	 */
-	public void optionHasChanged(GUIOptionEvent e) {
-		if (e.getChangedOption().equals(GUIOptionEvent.CRITICALPAIRWINDOWSIZE)) {
-			this.gDesktop.setOverlappingGraphWindowSize(this.option
-					.getCriticalPairWindowSize());
-		} else if (e.getChangedOption().equals(GUIOptionEvent.PARSERDISPLAY)) {
-		} else if (e.getChangedOption().equals(
-				GUIOptionEvent.NUMBEROFCRITICALPAIR)) {
-		}
-	}
+    /**
+     * register your <CODE>StatusMessageListener</CODE> to receive messages
+     *
+     * @param sml the listener which listen to my messages
+     */
+    public void addStatusMessageListener(StatusMessageListener sml) {
+        this.listener.addElement(sml);
+    }
+
+    void fireStatusMessageEvent(StatusMessageEvent sme) {
+        for (int i = 0; i < this.listener.size(); i++) {
+            this.listener.elementAt(i).newMessage(sme);
+        }
+    }
+
+    // Implementing of ActionListeners 
+    /**
+     * this GUI listens for <CODE>ActionEvents</CODE> which are created from Buttons and other GUI typical stuff
+     *
+     * @param e the event
+     */
+    public void actionPerformed(ActionEvent e) {
+    }
+
+    /**
+     * this GUI listens if the option has changed
+     *
+     * @param e the event with the new option
+     */
+    public void optionHasChanged(GUIOptionEvent e) {
+        if (e.getChangedOption().equals(GUIOptionEvent.CRITICALPAIRWINDOWSIZE)) {
+            this.gDesktop.setOverlappingGraphWindowSize(this.option
+                    .getCriticalPairWindowSize());
+        } else if (e.getChangedOption().equals(GUIOptionEvent.PARSERDISPLAY)) {
+        } else if (e.getChangedOption().equals(
+                GUIOptionEvent.NUMBEROFCRITICALPAIR)) {
+        }
+    }
 }
 
 /*

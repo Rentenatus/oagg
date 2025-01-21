@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import agg.xt_basis.Rule;
@@ -14,96 +15,102 @@ import agg.xt_basis.Rule;
 //****************************************************************************+
 /**
  * A message generated during critical pair analysis.
- * 
+ *
  * @author $Author: olga $ Parser Group
  * @version $Id: CriticalPairEvent.java,v 1.9 2010/12/20 20:05:36 olga Exp $
  */
 @SuppressWarnings("serial")
 public class CriticalPairEvent extends ParserMessageEvent {
 
-	public static final int UNCRITICAL = 0;
+    public static final int UNCRITICAL = 0;
 
-	public static final int CRITICAL = 1;
+    public static final int CRITICAL = 1;
 
-	public static final int NON_RELEVANT = 2;
+    public static final int NON_RELEVANT = 2;
 
-	public static final int SHOW_ENTRY = 3;
+    public static final int SHOW_ENTRY = 3;
 
-	public static final int HIDE_ENTRY = 4;
+    public static final int HIDE_ENTRY = 4;
 
-	public static final int REMOVE_RULE_ENTRY = 5;
+    public static final int REMOVE_RULE_ENTRY = 5;
 
-	public static final int REMOVE_RELATION_ENTRY = 6;
+    public static final int REMOVE_RELATION_ENTRY = 6;
 
-	public static final int REMOVE_ENTRY = 7;
-	
-	public static final int REMOVE_ENTRIES = 71;
+    public static final int REMOVE_ENTRY = 7;
 
-	public static final int NOT_COMPUTABLE = 8;
-	
-	public static final int NOT_COMPLETE_COMPUTABLE = 9;
-	
-	public static final int CONTINUE_COMPUTE = 10;
-	
-	/** contains the first rule of the actual pair */
-	Rule first;
+    public static final int REMOVE_ENTRIES = 71;
 
-	/** contains the second rule of the actual pair */
-	Rule second;
+    public static final int NOT_COMPUTABLE = 8;
 
-	/**
-	 * Constructs a new object informing, that the state of the rule pair
-	 * (first, second) has changed.
-	 */
-	public CriticalPairEvent(ExcludePairContainer source, Rule first,
-			Rule second) {
-		super(source);
-		this.first = first;
-		this.second = second;
-		this.key = -1;
-	}
+    public static final int NOT_COMPLETE_COMPUTABLE = 9;
 
-	/**
-	 * Constructs a new object informing, that the state of the rule pair
-	 * (first, second) has changed.
-	 */
-	public CriticalPairEvent(ExcludePairContainer source, Rule first,
-			Rule second, String message) {
-		super(source, message);
-		this.first = first;
-		this.second = second;
-		this.key = -1;
-	}
+    public static final int CONTINUE_COMPUTE = 10;
 
-	public CriticalPairEvent(ExcludePairContainer source, Rule first,
-			Rule second, int key) {
-		super(source, "");
-		this.first = first;
-		this.second = second;
-		this.key = key;
-	}
+    /**
+     * contains the first rule of the actual pair
+     */
+    Rule first;
 
-	public CriticalPairEvent(ExcludePairContainer source, Rule first,
-			Rule second, int key, String message) {
-		super(source, message);
-		this.first = first;
-		this.second = second;
-		this.key = key;
-	}
+    /**
+     * contains the second rule of the actual pair
+     */
+    Rule second;
 
-	/** returns the first rule of the changed pair */
-	public Rule getFirstRule() {
-		return this.first;
-	}
+    /**
+     * Constructs a new object informing, that the state of the rule pair (first, second) has changed.
+     */
+    public CriticalPairEvent(ExcludePairContainer source, Rule first,
+            Rule second) {
+        super(source);
+        this.first = first;
+        this.second = second;
+        this.key = -1;
+    }
 
-	/** returns the second rule of the changed pair */
-	public Rule getSecondRule() {
-		return this.second;
-	}
+    /**
+     * Constructs a new object informing, that the state of the rule pair (first, second) has changed.
+     */
+    public CriticalPairEvent(ExcludePairContainer source, Rule first,
+            Rule second, String message) {
+        super(source, message);
+        this.first = first;
+        this.second = second;
+        this.key = -1;
+    }
 
-	public int getKey() {
-		return this.key;
-	}
+    public CriticalPairEvent(ExcludePairContainer source, Rule first,
+            Rule second, int key) {
+        super(source, "");
+        this.first = first;
+        this.second = second;
+        this.key = key;
+    }
+
+    public CriticalPairEvent(ExcludePairContainer source, Rule first,
+            Rule second, int key, String message) {
+        super(source, message);
+        this.first = first;
+        this.second = second;
+        this.key = key;
+    }
+
+    /**
+     * returns the first rule of the changed pair
+     */
+    public Rule getFirstRule() {
+        return this.first;
+    }
+
+    /**
+     * returns the second rule of the changed pair
+     */
+    public Rule getSecondRule() {
+        return this.second;
+    }
+
+    public int getKey() {
+        return this.key;
+    }
 }
 
 /*

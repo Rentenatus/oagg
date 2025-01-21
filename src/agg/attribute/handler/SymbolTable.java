@@ -1,43 +1,40 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler;
 
 /**
- * An interface between the Attribute Manager and the Attribute Handlers.
- * Passing of types and values of identifiers. This interface is implemented by
- * the Attribute Manager. A Handler evaluates expressions; the values are
- * assigned by the Manager, never by the Handler; therefore we have no
- * assignment methods in this interface.
- * 
+ * An interface between the Attribute Manager and the Attribute Handlers. Passing of types and values of identifiers.
+ * This interface is implemented by the Attribute Manager. A Handler evaluates expressions; the values are assigned by
+ * the Manager, never by the Handler; therefore we have no assignment methods in this interface.
+ *
  * @version $Id: SymbolTable.java,v 1.2 2007/09/10 13:05:52 olga Exp $
  * @author $Author: olga $
  */
 public interface SymbolTable {
 
-	/**
-	 * Getting the type of an identifier.
-	 * 
-	 * @param name
-	 *            Identifier's name
-	 * @return Identifier's type
-	 */
-	public HandlerType getType(String name);
+    /**
+     * Getting the type of an identifier.
+     *
+     * @param name Identifier's name
+     * @return Identifier's type
+     */
+    public HandlerType getType(String name);
 
-	/**
-	 * Getting the value of an identifier.
-	 * 
-	 * @param name
-	 *            Identifier's name
-	 * @return Identifier's value as expression
-	 */
-	public HandlerExpr getExpr(String name);
+    /**
+     * Getting the value of an identifier.
+     *
+     * @param name Identifier's name
+     * @return Identifier's value as expression
+     */
+    public HandlerExpr getExpr(String name);
 }
 /*
  * $Log: SymbolTable.java,v $

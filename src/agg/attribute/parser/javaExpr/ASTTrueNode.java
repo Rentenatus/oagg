@@ -1,40 +1,40 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTTrueNode.java,v 1.3 2010/07/29 10:09:23 olga Exp $
  * @author $Author: olga $
  */
 public class ASTTrueNode extends BoolNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTTrueNode(String id) {
-		super(id);
-	}
+    ASTTrueNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTTrueNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTTrueNode(id);
+    }
 
-	public void interpret() {
-		stack.add(++top, new Boolean(true));
-	}
+    public void interpret() {
+        stack.add(++top, new Boolean(true));
+    }
 
-	public String getString() {
-		return "true";
-	}
+    public String getString() {
+        return "true";
+    }
 }
 /*
  * $Log: ASTTrueNode.java,v $

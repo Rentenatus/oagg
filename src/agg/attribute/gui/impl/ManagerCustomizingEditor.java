@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -32,103 +33,101 @@ import agg.attribute.handler.AttrHandler;
 
 /**
  * Customizing of an attribute manager. To be completed.
- * 
+ *
  * @author $Author: olga $
- * @version $Id: ManagerCustomizingEditor.java,v 1.1 2005/08/25 11:56:58 enrico
- *          Exp $
+ * @version $Id: ManagerCustomizingEditor.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
  */
 public class ManagerCustomizingEditor extends AbstractEditor implements
-		AttrEditor, ScrollPaneConstants {
+        AttrEditor, ScrollPaneConstants {
 
-	public ManagerCustomizingEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-	}
+    public ManagerCustomizingEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+    }
 
-	protected JTable handlerList;
+    protected JTable handlerList;
 
-	protected JPanel handlerListP;
+    protected JPanel handlerListP;
 
-	protected Box messageBox;
+    protected Box messageBox;
 
-	protected String handlerData[][];
+    protected String handlerData[][];
 
-	protected String headers[] = null;
+    protected String headers[] = null;
 
-	@SuppressWarnings("serial")
-	protected void genericCreateAllViews() {
+    @SuppressWarnings("serial")
+    protected void genericCreateAllViews() {
 
-		// List of handlers
-		if (this.headers == null) {
-			String h[] = { "Name", "Class", "Editor Class" };
-			this.headers = h;
-		}
-		AttrHandler handlers[] = getAttrManager().getHandlers();
-		this.handlerData = new String[handlers.length][];
-		for (int i = 0; i < handlers.length; i++) {
-			AttrHandler h = handlers[i];
-			Object handlerEditor = getHandlerEditorManager()
-					.getCustomizingEditor(h);
-			String handlerEditorName = "(None)";
-			if (handlerEditor != null) {
-				handlerEditorName = handlerEditor.getClass().getName();
-			}
-			String row[] = { h.getName(), h.getClass().getName(),
-					handlerEditorName };
-			this.handlerData[i] = row;
-		}
+        // List of handlers
+        if (this.headers == null) {
+            String h[] = {"Name", "Class", "Editor Class"};
+            this.headers = h;
+        }
+        AttrHandler handlers[] = getAttrManager().getHandlers();
+        this.handlerData = new String[handlers.length][];
+        for (int i = 0; i < handlers.length; i++) {
+            AttrHandler h = handlers[i];
+            Object handlerEditor = getHandlerEditorManager()
+                    .getCustomizingEditor(h);
+            String handlerEditorName = "(None)";
+            if (handlerEditor != null) {
+                handlerEditorName = handlerEditor.getClass().getName();
+            }
+            String row[] = {h.getName(), h.getClass().getName(),
+                handlerEditorName};
+            this.handlerData[i] = row;
+        }
 
 //		TableModel model = 
-		new AbstractTableModel() {
-			public Object getValueAt(int row, int column) {
-				return ManagerCustomizingEditor.this.handlerData[row][column];
-			}
+        new AbstractTableModel() {
+            public Object getValueAt(int row, int column) {
+                return ManagerCustomizingEditor.this.handlerData[row][column];
+            }
 
-			public int getRowCount() {
-				return ManagerCustomizingEditor.this.handlerData.length;
-			}
+            public int getRowCount() {
+                return ManagerCustomizingEditor.this.handlerData.length;
+            }
 
-			public int getColumnCount() {
-				return 3;
-			}
+            public int getColumnCount() {
+                return 3;
+            }
 
-			public String getColumnName(int column) {
-				return ManagerCustomizingEditor.this.headers[column];
-			}
-		};
+            public String getColumnName(int column) {
+                return ManagerCustomizingEditor.this.headers[column];
+            }
+        };
 
-		this.handlerList = new JTable(this.handlerData, this.headers);
-		// handlerList = new JTable( model );
-		this.handlerList.getTableHeader().setReorderingAllowed(false);
-		JScrollPane tabScrollPane = new JScrollPane(this.handlerList);
-		tabScrollPane.setPreferredSize(new Dimension(800, 100));
-		JScrollPane listScrollPane = new JScrollPane(tabScrollPane,
-				VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		listScrollPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		listScrollPane.setPreferredSize(new Dimension(250, 100));
-		this.handlerListP = new JPanel();
-		this.handlerListP.setLayout(new BorderLayout());
-		this.handlerListP.add(listScrollPane, "Center");
-		this.handlerListP.setBorder(BorderFactory.createTitledBorder(
-				new EtchedBorder(), "Registered Attribute Handlers",
-				TitledBorder.LEFT, TitledBorder.TOP));
+        this.handlerList = new JTable(this.handlerData, this.headers);
+        // handlerList = new JTable( model );
+        this.handlerList.getTableHeader().setReorderingAllowed(false);
+        JScrollPane tabScrollPane = new JScrollPane(this.handlerList);
+        tabScrollPane.setPreferredSize(new Dimension(800, 100));
+        JScrollPane listScrollPane = new JScrollPane(tabScrollPane,
+                VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        listScrollPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        listScrollPane.setPreferredSize(new Dimension(250, 100));
+        this.handlerListP = new JPanel();
+        this.handlerListP.setLayout(new BorderLayout());
+        this.handlerListP.add(listScrollPane, "Center");
+        this.handlerListP.setBorder(BorderFactory.createTitledBorder(
+                new EtchedBorder(), "Registered Attribute Handlers",
+                TitledBorder.LEFT, TitledBorder.TOP));
 
-		// Under construction message
+        // Under construction message
+        this.messageBox = Box.createVerticalBox();
+        this.messageBox.add(new JLabel("For now, just displaying."));
+        this.messageBox.add(new JLabel(
+                "Registration of handlers at runtime would be nice ..."));
+        // messageBox.setBorder(new EtchedBorder());
+    }
 
-		this.messageBox = Box.createVerticalBox();
-		this.messageBox.add(new JLabel("For now, just displaying."));
-		this.messageBox.add(new JLabel(
-				"Registration of handlers at runtime would be nice ..."));
-		// messageBox.setBorder(new EtchedBorder());
-	}
+    protected void arrangeMainPanel() {
+    }
 
-	protected void arrangeMainPanel() {
-	}
-
-	protected void genericCustomizeMainLayout() {
-		this.mainPanel = new JPanel(new BorderLayout());
-		this.mainPanel.add(this.handlerListP, BorderLayout.NORTH);
-		this.mainPanel.add(this.messageBox, BorderLayout.CENTER);
-	}
+    protected void genericCustomizeMainLayout() {
+        this.mainPanel = new JPanel(new BorderLayout());
+        this.mainPanel.add(this.handlerListP, BorderLayout.NORTH);
+        this.mainPanel.add(this.messageBox, BorderLayout.CENTER);
+    }
 }
 
 /*

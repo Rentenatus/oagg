@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.view.impl;
 
 import java.lang.ref.WeakReference;
@@ -27,115 +28,114 @@ import agg.attribute.view.AttrViewSetting;
  */
 public class MaskedViewSetting extends ViewSetting {
 
-	static final long serialVersionUID = -7941882634203060406L;
+    static final long serialVersionUID = -7941882634203060406L;
 
-	protected OpenViewSetting openView;
+    protected OpenViewSetting openView;
 
-	public MaskedViewSetting(OpenViewSetting ov) {
-		super(ov.getManager());
-		this.openView = ov;
-	}
+    public MaskedViewSetting(OpenViewSetting ov) {
+        super(ov.getManager());
+        this.openView = ov;
+    }
 
-	/**
-	 * Getting the tuple format for a (type) tuple. Format tuples are created
-	 * lazily "on demand". It means that when there is no format for the
-	 * specified AttrTuple yet, it is created and returned.
-	 */
-	protected TupleFormat getFormat(AttrTuple attr) {
-		return ((ViewSetting) getOpenView()).getFormat(attr);
-	}
+    /**
+     * Getting the tuple format for a (type) tuple. Format tuples are created lazily "on demand". It means that when
+     * there is no format for the specified AttrTuple yet, it is created and returned.
+     */
+    protected TupleFormat getFormat(AttrTuple attr) {
+        return ((ViewSetting) getOpenView()).getFormat(attr);
+    }
 
-	/** Removing the format for a (type) tuple. */
-	protected void removeFormat(AttrType type) {
-		((ViewSetting) getOpenView()).removeFormat(type);
-	}
+    /**
+     * Removing the format for a (type) tuple.
+     */
+    protected void removeFormat(AttrType type) {
+        ((ViewSetting) getOpenView()).removeFormat(type);
+    }
 
-	// protected ViewSetting getSharingView(){ return openView; }
+    // protected ViewSetting getSharingView(){ return openView; }
+    //
+    // Public methods
+    //
+    public AttrViewSetting getOpenView() {
+        return this.openView;
+    }
 
-	//
-	// Public methods
-	//
+    public AttrViewSetting getMaskedView() {
+        return this;
+    }
 
-	public AttrViewSetting getOpenView() {
-		return this.openView;
-	}
+    public void addObserver(AttrViewObserver o, AttrTuple attr) {
+        this.openView.ensureBeingAttrObserver(attr);
+        addObserverForTuple(o, attr);
+    }
 
-	public AttrViewSetting getMaskedView() {
-		return this;
-	}
+    public void removeObserver(AttrViewObserver o, AttrTuple attr) {
+        removeObserverForTuple(o, attr);
+        // If 'attr' has no more view observers, there's no point observing it.
+        this.openView.stopObservingIfNeedless(attr);
+    }
 
-	public void addObserver(AttrViewObserver o, AttrTuple attr) {
-		this.openView.ensureBeingAttrObserver(attr);
-		addObserverForTuple(o, attr);
-	}
+    public boolean hasObserver(AttrTuple attr) {
+        Vector<WeakReference<AttrViewObserver>> observers = getObserversForTuple(attr);
+        return (observers == null || observers.isEmpty()) ? false : true;
+    }
 
-	public void removeObserver(AttrViewObserver o, AttrTuple attr) {
-		removeObserverForTuple(o, attr);
-		// If 'attr' has no more view observers, there's no point observing it.
-		this.openView.stopObservingIfNeedless(attr);
-	}
+    public int convertIndexToSlot(AttrTuple attr, int index) {
+        TupleFormat f = getFormat(attr);
+        return f.getVisibleSlotForIndex(index);
+    }
 
-	public boolean hasObserver(AttrTuple attr) {
-		Vector<WeakReference<AttrViewObserver>> observers =  getObserversForTuple(attr);
-		return (observers == null || observers.isEmpty())?false:true;
-	}
-	
-	public int convertIndexToSlot(AttrTuple attr, int index) {
-		TupleFormat f = getFormat(attr);
-		return f.getVisibleSlotForIndex(index);
-	}
+    public int convertSlotToIndex(AttrTuple attr, int slot) {
+        TupleFormat f = getFormat(attr);
+        return f.getIndexAtVisibleSlot(slot);
+    }
 
-	public int convertSlotToIndex(AttrTuple attr, int slot) {
-		TupleFormat f = getFormat(attr);
-		return f.getIndexAtVisibleSlot(slot);
-	}
+    public int getSize(AttrTuple attr) {
+        return getFormat(attr).getVisibleSize();
+    }
 
-	public int getSize(AttrTuple attr) {
-		return getFormat(attr).getVisibleSize();
-	}
+    public boolean isVisible(AttrTuple attr, int slot) {
+        return getFormat(attr).isVisible(slot);
+    }
 
-	public boolean isVisible(AttrTuple attr, int slot) {
-		return getFormat(attr).isVisible(slot);
-	}
+    public void setVisibleAt(AttrTuple attr, boolean b, int slot) {
+        TupleFormat f = getFormat(attr);
+        synchronized (f) {
+            f.setVisible(b, f.getTotalSlot(slot));
 
-	public void setVisibleAt(AttrTuple attr, boolean b, int slot) {
-		TupleFormat f = getFormat(attr);
-		synchronized (f) {
-			f.setVisible(b, f.getTotalSlot(slot));
+            ((DeclMember) ((TupleObject) attr).getTupleType().getMemberAt(slot))
+                    .setVisible(b);
 
-			((DeclMember) ((TupleObject) attr).getTupleType().getMemberAt(slot))
-					.setVisible(b);
+            fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrViewEvent.MEMBER_VISIBILITY, slot, slot);
+            this.openView.fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrEvent.GENERAL_CHANGE, 0, 0);
+        }
+    }
 
-			fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrViewEvent.MEMBER_VISIBILITY, slot, slot);
-			this.openView.fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrEvent.GENERAL_CHANGE, 0, 0);
-		}
-	}
+    public void setAllVisible(AttrTuple attr, boolean b) {
+        this.openView.setAllVisible(attr, b);
+    }
 
-	public void setAllVisible(AttrTuple attr, boolean b) {
-		this.openView.setAllVisible(attr, b);
-	}
+    public void setVisible(AttrTuple attr) {
+        this.openView.setVisible(attr);
+    }
 
-	public void setVisible(AttrTuple attr) {
-		this.openView.setVisible(attr);
-	}
+    public void moveSlotInserting(AttrTuple attr, int srcSlot, int destSlot) {
+        TupleFormat f = getFormat(attr);
+        synchronized (f) {
+            f.moveSlotInserting(f.getTotalSlot(srcSlot), f
+                    .getTotalSlot(destSlot));
+            fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrViewEvent.MEMBER_MOVED, srcSlot, destSlot);
+            this.openView.fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrEvent.GENERAL_CHANGE, 0, 0);
+        }
+    }
 
-	public void moveSlotInserting(AttrTuple attr, int srcSlot, int destSlot) {
-		TupleFormat f = getFormat(attr);
-		synchronized (f) {
-			f.moveSlotInserting(f.getTotalSlot(srcSlot), f
-					.getTotalSlot(destSlot));
-			fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrViewEvent.MEMBER_MOVED, srcSlot, destSlot);
-			this.openView.fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrEvent.GENERAL_CHANGE, 0, 0);
-		}
-	}
-
-	public void resetTuple(AttrTuple attr) {
-		this.openView.resetTuple(attr);
-	}
+    public void resetTuple(AttrTuple attr) {
+        this.openView.resetTuple(attr);
+    }
 }
 /*
  * $Log: MaskedViewSetting.java,v $

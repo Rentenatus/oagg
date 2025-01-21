@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 /* JJT: 0.2.2 */
-
 package agg.attribute.parser.javaExpr;
 
 /**
@@ -17,27 +17,27 @@ package agg.attribute.parser.javaExpr;
  */
 public class ASTMemberName extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	String name;
+    String name;
 
-	ASTMemberName(String id) {
-		super(id);
-	}
+    ASTMemberName(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTMemberName(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTMemberName(id);
+    }
 
-	public String getString() {
-		return this.name;
-	}
+    public String getString() {
+        return this.name;
+    }
 
-	public Node copy() {
-		Node copy = super.copy();
-		((ASTMemberName) copy).name = new String(this.name);
-		return copy;
-	}
+    public Node copy() {
+        Node copy = super.copy();
+        ((ASTMemberName) copy).name = new String(this.name);
+        return copy;
+    }
 }
 /*
  * $Log: ASTMemberName.java,v $

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 import java.io.ByteArrayInputStream;
@@ -27,353 +28,386 @@ import agg.attribute.impl.VerboseControl;
  */
 public class SimpleNode implements Node {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	protected Node parent;
+    protected Node parent;
 
-	protected java.util.Vector<Node> children;
+    protected java.util.Vector<Node> children;
 
-	protected String identifier;
+    protected String identifier;
 
-	protected Object info;
+    protected Object info;
 
-	private String error;
+    private String error;
 
-	public SimpleNode(String id) {
-		this.identifier = id;
-		typeInit();
-		this.error = "";
-	}
+    public SimpleNode(String id) {
+        this.identifier = id;
+        typeInit();
+        this.error = "";
+    }
 
-	public static Node jjtCreate(String id) {
-		return new SimpleNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new SimpleNode(id);
+    }
 
-	public void jjtOpen() {
-	}
+    public void jjtOpen() {
+    }
 
-	public void jjtClose() {
-		if (this.children != null) {
-			this.children.trimToSize();
-		}
-	}
+    public void jjtClose() {
+        if (this.children != null) {
+            this.children.trimToSize();
+        }
+    }
 
-	public void jjtSetParent(Node n) {
-		this.parent = n;
-	}
+    public void jjtSetParent(Node n) {
+        this.parent = n;
+    }
 
-	public Node jjtGetParent() {
-		return this.parent;
-	}
+    public Node jjtGetParent() {
+        return this.parent;
+    }
 
-	public void jjtAddChild(Node n) {
-		if (this.children == null) {
-			this.children = new java.util.Vector<Node>();
-		}
-		this.children.addElement(n);
-	}
+    public void jjtAddChild(Node n) {
+        if (this.children == null) {
+            this.children = new java.util.Vector<Node>();
+        }
+        this.children.addElement(n);
+    }
 
-	public Node jjtGetChild(int i) {
-		return this.children.elementAt(i);
-	}
+    public Node jjtGetChild(int i) {
+        return this.children.elementAt(i);
+    }
 
-	public int jjtGetNumChildren() {
-		return (this.children == null) ? 0 : this.children.size();
-	}
+    public int jjtGetNumChildren() {
+        return (this.children == null) ? 0 : this.children.size();
+    }
 
-	/*
+    /*
 	 * These two methods provide a very simple mechanism for attaching arbitrary
 	 * data to the node.
-	 */
+     */
+    public void setInfo(Object i) {
+        this.info = i;
+    }
 
-	public void setInfo(Object i) {
-		this.info = i;
-	}
+    public Object getInfo() {
+        return this.info;
+    }
 
-	public Object getInfo() {
-		return this.info;
-	}
-
-	/*
+    /*
 	 * You can override these two methods in subclasses of SimpleNode to
 	 * customize the way the node appears when the tree is dumped. If your
 	 * output uses more than one line you should override toString(String),
 	 * otherwise overriding toString() is probably all you need to do.
-	 */
+     */
+    public String toString() {
+        Class<?> c = getNodeClass();
 
-	public String toString() {
-		Class<?> c = getNodeClass();
+        if (c == null) {
+            return this.identifier;
+        }
+        return this.identifier + " [" + c.toString() + "]";
 
-		if (c == null) {
-			return this.identifier;
-		} 
-		return this.identifier + " [" + c.toString() + "]";
-		
-	}
+    }
 
-	public String toString(String prefix) {
-		return prefix + toString();
-	}
+    public String toString(String prefix) {
+        return prefix + toString();
+    }
 
-	/*
+    /*
 	 * Override this method if you want to customize how the node dumps out its
 	 * children.
-	 */
+     */
+    public void dump(String prefix) {
+        // System.out.println( toString(prefix) );
+        AttrSession.logPrintln(VerboseControl.logJexParser, toString(prefix));
+        if (this.children != null) {
+            for (java.util.Enumeration<Node> e = this.children.elements(); e
+                    .hasMoreElements();) {
+                SimpleNode n = (SimpleNode) e.nextElement();
+                n.dump(prefix + " ");
+            }
+        }
+    }
 
-	public void dump(String prefix) {
-		// System.out.println( toString(prefix) );
-		AttrSession.logPrintln(VerboseControl.logJexParser, toString(prefix));
-		if (this.children != null) {
-			for (java.util.Enumeration<Node> e = this.children.elements(); e
-					.hasMoreElements();) {
-				SimpleNode n = (SimpleNode) e.nextElement();
-				n.dump(prefix + " ");
-			}
-		}
-	}
-
-	/** *********************** Added by Sreeni. ****************** */
-
-	/** Stack for calculations. */
+    /**
+     * *********************** Added by Sreeni. ******************
+     */
+    /**
+     * Stack for calculations.
+     */
 //	protected static Object[] stack = new Object[2048]; //[1024];	
-	
-	protected static ArrayList<Object> stack = new ArrayList<Object>();
-	
-	protected static int top = -1;
+    protected static ArrayList<Object> stack = new ArrayList<Object>();
 
-	/**
-	 * This method must be overridden from all its subclasses.
-	 */
-	public void interpret() {
-		// throw new Error(); /* It better not come here. */
-		this.error = "SimpleNode.interpret:  FAILED!";
-	}
+    protected static int top = -1;
 
-	public String getError() {
-		return this.error;
-	}
+    /**
+     * This method must be overridden from all its subclasses.
+     */
+    public void interpret() {
+        // throw new Error(); /* It better not come here. */
+        this.error = "SimpleNode.interpret:  FAILED!";
+    }
 
-	/** *********************** Added by BM. ****************** */
+    public String getError() {
+        return this.error;
+    }
 
-	/** Initialization flag */
-	static protected boolean neverCalled = true;
+    /**
+     * *********************** Added by BM. ******************
+     */
+    /**
+     * Initialization flag
+     */
+    static protected boolean neverCalled = true;
 
-	/** Symbol table */
-	static protected SymbolTable symtab = null;
+    /**
+     * Symbol table
+     */
+    static protected SymbolTable symtab = null;
 
-	/** Widening order for numeric types */
-	protected static java.util.Hashtable<Class<?>, Integer> numberTypes = new java.util.Hashtable<Class<?>, Integer>();
+    /**
+     * Widening order for numeric types
+     */
+    protected static java.util.Hashtable<Class<?>, Integer> numberTypes = new java.util.Hashtable<Class<?>, Integer>();
 
 //	/** Constructors */
 //	protected static java.util.Hashtable constructors = new java.util.Hashtable();
-
 //	/** Referencing methods for Operands */
 //	protected static java.util.Hashtable refMethods = new java.util.Hashtable();
+    /**
+     * String class handle for frequent comparison
+     */
+    static protected Class<?> stringClass;
 
-	/** String class handle for frequent comparison */
-	static protected Class<?> stringClass;
+    /**
+     * Object class handle for frequent comparison
+     */
+    static protected Class<?> objectClass;
 
-	/** Object class handle for frequent comparison */
-	static protected Class<?> objectClass;
+    static protected void typeInit() {
+        if (neverCalled) {
+            neverCalled = false;
+            int codeNr = 0;
 
-	static protected void typeInit() {
-		if (neverCalled) {
-			neverCalled = false;
-			int codeNr = 0;
+            codeNr = 0;
+            numberTypes.put(Byte.TYPE, new Integer(codeNr++));
+            numberTypes.put(Short.TYPE, new Integer(codeNr++));
+            numberTypes.put(Long.TYPE, new Integer(codeNr++));
+            numberTypes.put(Integer.TYPE, new Integer(codeNr++));
+            numberTypes.put(Float.TYPE, new Integer(codeNr++));
+            numberTypes.put(Double.TYPE, new Integer(codeNr++));
 
-			codeNr = 0;
-			numberTypes.put(Byte.TYPE, new Integer(codeNr++));
-			numberTypes.put(Short.TYPE, new Integer(codeNr++));
-			numberTypes.put(Long.TYPE, new Integer(codeNr++));
-			numberTypes.put(Integer.TYPE, new Integer(codeNr++));
-			numberTypes.put(Float.TYPE, new Integer(codeNr++));
-			numberTypes.put(Double.TYPE, new Integer(codeNr++));
+            try {
+                stringClass = Class.forName("java.lang.String");
+                objectClass = Class.forName("java.lang.Object");
+            } catch (Exception e) {
+                throw (RuntimeException) e;
+            }
+        }
+    }
 
-			try {
-				stringClass = Class.forName("java.lang.String");
-				objectClass = Class.forName("java.lang.Object");
-			} catch (Exception e) {
-				throw (RuntimeException) e;
-			}
-		}
-	}
+    /**
+     * The class handle
+     */
+    private Class<?> nodeClass = null;
 
-	/** The class handle */
-	private Class<?> nodeClass = null;
+    /**
+     * Getting the node class.
+     */
+    // protected Class<?> getNodeClass(){
+    public Class<?> getNodeClass() {
+        return this.nodeClass;
+    }
 
-	/** Getting the node class. */
-	// protected Class<?> getNodeClass(){
-	public Class<?> getNodeClass() {
-		return this.nodeClass;
-	}
+    /**
+     * Setting the node class.
+     */
+    protected void setNodeClass(Class<?> nodeClass) {
+        this.nodeClass = nodeClass;
+    }
 
-	/** Setting the node class. */
-	protected void setNodeClass(Class<?> nodeClass) {
-		this.nodeClass = nodeClass;
-	}
+    /**
+     * Setting the node class to that of the parameter node.
+     */
+    protected void takeNodeClassFrom(SimpleNode node) {
+        setNodeClass(node.getNodeClass());
+    }
 
-	/** Setting the node class to that of the parameter node. */
-	protected void takeNodeClassFrom(SimpleNode node) {
-		setNodeClass(node.getNodeClass());
-	}
+    /**
+     * Checking if the node represents a member (method or field).
+     */
+    public boolean isAction() {
+        return (this.identifier.equals("Action"));
+    }
 
-	/** Checking if the node represents a member (method or field). */
-	public boolean isAction() {
-		return (this.identifier.equals("Action"));
-	}
+    /**
+     * Checking if the node represents a member (method or field).
+     */
+    public boolean isMember() {
+        return (this.identifier.equals("Method") || this.identifier.equals("Action") || this.identifier
+                .equals("Field"));
+    }
 
-	/** Checking if the node represents a member (method or field). */
-	public boolean isMember() {
-		return (this.identifier.equals("Method") || this.identifier.equals("Action") || this.identifier
-				.equals("Field"));
-	}
+    /**
+     * Checking if the node represents an array index).
+     */
+    public boolean isArrayIndex() {
+        return (this.identifier.equals("ArrayIndex"));
+    }
 
-	/** Checking if the node represents an array index). */
-	public boolean isArrayIndex() {
-		return (this.identifier.equals("ArrayIndex"));
-	}
+    /**
+     * Checking if node's type is a number type.
+     */
+    public boolean hasStringType() {
+        return (getNodeClass() == stringClass);
+    }
 
-	/** Checking if node's type is a number type. */
-	public boolean hasStringType() {
-		return (getNodeClass() == stringClass);
-	}
+    /**
+     * Checking if node's type is a number type.
+     */
+    public boolean hasNumberType() {
+        return (numberTypes.containsKey(this.nodeClass));
+    }
 
-	/** Checking if node's type is a number type. */
-	public boolean hasNumberType() {
-		return (numberTypes.containsKey(this.nodeClass));
-	}
+    /**
+     * Getting the number type code of this node object
+     */
+    protected int typeCode() {
+        return typeCode(getNodeClass());
+    }
 
-	/** Getting the number type code of this node object */
-	protected int typeCode() {
-		return typeCode(getNodeClass());
-	}
+    /**
+     * Getting the number type code of a primitive number type
+     */
+    protected static int typeCode(Class<?> cls) {
+        return numberTypes.get(cls).intValue();
+    }
 
-	/** Getting the number type code of a primitive number type */
-	protected static int typeCode(Class<?> cls) {
-		return numberTypes.get(cls).intValue();
-	}
+    /**
+     * Widening a number type as necessary.
+     */
+    protected Class<?> commonNumberType(SimpleNode n1, SimpleNode n2) {
+        int numType1 = numberTypes.get(n1.getNodeClass()).intValue();
+        int numType2 = numberTypes.get(n2.getNodeClass()).intValue();
 
-	/** Widening a number type as necessary. */
-	protected Class<?> commonNumberType(SimpleNode n1, SimpleNode n2) {
-		int numType1 = numberTypes.get(n1.getNodeClass()).intValue();
-		int numType2 = numberTypes.get(n2.getNodeClass()).intValue();
+        return (numType1 > numType2 ? n1.getNodeClass() : n2.getNodeClass());
+    }
 
-		return (numType1 > numType2 ? n1.getNodeClass() : n2.getNodeClass());
-	}
+    protected boolean isConstantExpr() {
+        int nChildren = jjtGetNumChildren();
+        SimpleNode child;
 
-	protected boolean isConstantExpr() {
-		int nChildren = jjtGetNumChildren();
-		SimpleNode child;
+        for (int i = 0; i < nChildren; i++) {
+            child = (SimpleNode) jjtGetChild(i);
+            if (!child.isConstantExpr()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-		for (int i = 0; i < nChildren; i++) {
-			child = (SimpleNode) jjtGetChild(i);
-			if (!child.isConstantExpr()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/***************************************************************************
-	 * Public Methods
-	 **************************************************************************/
-
-	/** Obtaining the node type and checking for consistency. */
-	public void checkContext() {
-		/* It better not come here. */
+    /**
+     * *************************************************************************
+     * Public Methods
+	 *************************************************************************
+     */
+    /**
+     * Obtaining the node type and checking for consistency.
+     */
+    public void checkContext() {
+        /* It better not come here. */
 //		throw new Error(); 
-		this.error = "SimpleNode.checkContext FAILED!";
-	}
+        this.error = "SimpleNode.checkContext FAILED!";
+    }
 
-	static public void setSymbolTable(SymbolTable st) {
-		symtab = st;
-	}
+    static public void setSymbolTable(SymbolTable st) {
+        symtab = st;
+    }
 
-	static public SymbolTable getSymbolTable() {
-		return symtab;
-	}
+    static public SymbolTable getSymbolTable() {
+        return symtab;
+    }
 
-	static protected ClassResolver classResolver = null;
+    static protected ClassResolver classResolver = null;
 
-	static public void setClassResolver(ClassResolver cr) {
-		classResolver = cr;
-	}
+    static public void setClassResolver(ClassResolver cr) {
+        classResolver = cr;
+    }
 
-	public Object getRootResult() {
+    public Object getRootResult() {
 //		return stack[top];
-		return stack.get(top);
-	}
+        return stack.get(top);
+    }
 
-	/**
-	 * returns this node as a string with all children. Subclasses must override
-	 * this.
-	 */
-	public String getString() {
-		return toString();
-	}
+    /**
+     * returns this node as a string with all children. Subclasses must override this.
+     */
+    public String getString() {
+        return toString();
+    }
 
-	/**
-	 * Rewrites all children. This method must be overridden if any special
-	 * handling is needed.
-	 * 
-	 * @see ASTId#rewrite special rewriting at class ASTId
-	 */
-	public void rewrite() {
-		for (int i = 0; i < jjtGetNumChildren(); i++) {
-			this.error = "";
-			try {
-				jjtGetChild(i).interpret();
+    /**
+     * Rewrites all children. This method must be overridden if any special handling is needed.
+     *
+     * @see ASTId#rewrite special rewriting at class ASTId
+     */
+    public void rewrite() {
+        for (int i = 0; i < jjtGetNumChildren(); i++) {
+            this.error = "";
+            try {
+                jjtGetChild(i).interpret();
 
-				if (jjtGetChild(i).getError().length() != 0) {
-					
+                if (jjtGetChild(i).getError().length() != 0) {
+
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
 //							" SimpleNode.rewrite  : interpret  FAILED!");
-					
-					this.error = jjtGetChild(i).getError();
-					break;
-				}
+                    this.error = jjtGetChild(i).getError();
+                    break;
+                }
 
-			} catch (ASTMissingValueException amve) {
-				jjtGetChild(i).rewrite();
-			}
-		}
-	}
+            } catch (ASTMissingValueException amve) {
+                jjtGetChild(i).rewrite();
+            }
+        }
+    }
 
-	/** Replaces a child */
-	public void replaceChild(Node oldChild, Node newChild) {
-		int pos = this.children.indexOf(oldChild);
-		this.children.insertElementAt(newChild, pos);
-		this.children.removeElement(oldChild);
-	}
+    /**
+     * Replaces a child
+     */
+    public void replaceChild(Node oldChild, Node newChild) {
+        int pos = this.children.indexOf(oldChild);
+        this.children.insertElementAt(newChild, pos);
+        this.children.removeElement(oldChild);
+    }
 
-	/**
-	 * fills the vector with the names of all variables which occur in this
-	 * abstract syntax tree
-	 */
-	public void getAllVariablesinExpression(Vector<String> v) {
-		for (int i = 0; i < jjtGetNumChildren(); i++) {
-			jjtGetChild(i).getAllVariablesinExpression(v);
-		}
-	}
+    /**
+     * fills the vector with the names of all variables which occur in this abstract syntax tree
+     */
+    public void getAllVariablesinExpression(Vector<String> v) {
+        for (int i = 0; i < jjtGetNumChildren(); i++) {
+            jjtGetChild(i).getAllVariablesinExpression(v);
+        }
+    }
 
-	public String getIdentifier() {
-		return this.identifier;
-	}
+    public String getIdentifier() {
+        return this.identifier;
+    }
 
-	/**
-	 * Copys the abstract syntax tree. The information object won't be copied.
-	 */
-	public Node copy() {
-		Node copy = null;
-		/*
+    /**
+     * Copys the abstract syntax tree. The information object won't be copied.
+     */
+    public Node copy() {
+        Node copy = null;
+        /*
 		 * Class<?> clazze = getClass(); boolean found = false; Constructor[]
 		 * construct = clazze.getDeclaredConstructors(); int i=0; for(;i<construct.length
 		 * &&!found; ){ Class<?>[] parameters = construct[i].getParameterTypes();
 		 * if(parameters.length == 1){
-		 *//*
+         *//*
 			 * gesucht wir der Constructor der als Parameter nur String
 			 * enthaelt. Die Laenge ist daher 1
-			 *//*
+         *//*
 			 * String s = parameters[0].getName(); found = (s.equals(
 			 * "java.lang.String")); } if(!found) i++; } Object[]
 			 * constructorParameter = new Object[1]; constructorParameter[0] =
@@ -385,30 +419,29 @@ public class SimpleNode implements Node {
 			 * ((SimpleNode)copy).setNodeClass( nodeClass); for(int c = 0; c<jjtGetNumChildren();
 			 * c++){ Node child = jjtGetChild(c); Node childCopy = child.copy();
 			 * copy.jjtAddChild(childCopy); childCopy.jjtSetParent(copy); }
-			 */
-		try {
+         */
+        try {
 
-			/*
+            /*
 			 * Diese Copy-Methode sei Yang Xiang <xiang@uni-hamburg.de>
 			 * gewidmet, der unerschrocken ueber meine Anfrage in
 			 * de.comp.lang.java eine Stunde spaeter diese Loesung parat hatte
-			 */
-
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(out);
-			oos.writeObject(this);
-			oos.flush();
-			ByteArrayInputStream in = new ByteArrayInputStream(out
-					.toByteArray());
-			ObjectInputStream ois = new ObjectInputStream(in);
-			copy = (Node) ois.readObject();
-			oos.close();
-			ois.close();
-		} catch (IOException ioe) {
-		} catch (ClassNotFoundException cnfe) {
-		}
-		return copy;
-	}
+             */
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(out);
+            oos.writeObject(this);
+            oos.flush();
+            ByteArrayInputStream in = new ByteArrayInputStream(out
+                    .toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(in);
+            copy = (Node) ois.readObject();
+            oos.close();
+            ois.close();
+        } catch (IOException ioe) {
+        } catch (ClassNotFoundException cnfe) {
+        }
+        return copy;
+    }
 }
 
 /*

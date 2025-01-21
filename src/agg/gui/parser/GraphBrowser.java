@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser;
 
 import java.awt.Component;
@@ -24,193 +25,188 @@ import agg.gui.parser.event.ParserGUIEvent;
 import agg.gui.parser.event.ParserGUIListener;
 import agg.xt_basis.Graph;
 
-
 /**
- * This class displays two graphs. Each graph is the left side of a selected
- * rule.
- * 
+ * This class displays two graphs. Each graph is the left side of a selected rule.
+ *
  * @version $Id: GraphBrowser.java,v 1.9 2010/09/23 08:20:54 olga Exp $
  * @author $Author: olga $
- * 
+ *
  * @deprecated not more supported
  */
 public class GraphBrowser implements ParserGUIListener {
 
-	JSplitPane graphPane;
+    JSplitPane graphPane;
 
-	GraphEditor geLeft, geRight;
+    GraphEditor geLeft, geRight;
 
-	EdGraGra layout;
+    EdGraGra layout;
 
-	private boolean attrsVisible = true;
+    private boolean attrsVisible = true;
 
-	/**
-	 * Creates a new graph browser.
-	 * 
-	 * @param layout
-	 *            The layout is taken from a graph grammar.
-	 */
-	public GraphBrowser(EdGraGra layout) {
-		setLayout(layout);
-		this.geLeft = new GraphEditor();
-		this.geLeft.setEditMode(agg.gui.editor.EditorConstants.MOVE); // VIEW);
-		this.geLeft.setGraph(null);
-		this.geRight = new GraphEditor();
-		this.geRight.setEditMode(agg.gui.editor.EditorConstants.MOVE); // VIEW);
-		this.geRight.setGraph(null);
-		this.graphPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.geLeft, this.geRight);
-		this.graphPane.setOneTouchExpandable(true);
-		this.graphPane.setContinuousLayout(true);
-		this.graphPane.setDividerLocation(250);
-	}
+    /**
+     * Creates a new graph browser.
+     *
+     * @param layout The layout is taken from a graph grammar.
+     */
+    public GraphBrowser(EdGraGra layout) {
+        setLayout(layout);
+        this.geLeft = new GraphEditor();
+        this.geLeft.setEditMode(agg.gui.editor.EditorConstants.MOVE); // VIEW);
+        this.geLeft.setGraph(null);
+        this.geRight = new GraphEditor();
+        this.geRight.setEditMode(agg.gui.editor.EditorConstants.MOVE); // VIEW);
+        this.geRight.setGraph(null);
+        this.graphPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.geLeft, this.geRight);
+        this.graphPane.setOneTouchExpandable(true);
+        this.graphPane.setContinuousLayout(true);
+        this.graphPane.setDividerLocation(250);
+    }
 
-	/**
-	 * Sets a new layout in this graph browser.
-	 * 
-	 * @param layout
-	 *            The new layout.
-	 */
-	public void setLayout(EdGraGra layout) {
-		this.layout = layout;
-	}
+    /**
+     * Sets a new layout in this graph browser.
+     *
+     * @param layout The new layout.
+     */
+    public void setLayout(EdGraGra layout) {
+        this.layout = layout;
+    }
 
-	/**
-	 * The returned component can be displayed in a frame or panel.
-	 * 
-	 * @return The component is a JSplitPane.
-	 */
-	public Component getComponent() {
-		return getGraphPane();
-	}
+    /**
+     * The returned component can be displayed in a frame or panel.
+     *
+     * @return The component is a JSplitPane.
+     */
+    public Component getComponent() {
+        return getGraphPane();
+    }
 
-	public Component getLeftComponent() {
-		return this.geLeft.getGraphPanel().getCanvas();
-	}
+    public Component getLeftComponent() {
+        return this.geLeft.getGraphPanel().getCanvas();
+    }
 
-	public Component getRightComponent() {
-		return this.geRight.getGraphPanel().getCanvas();
-	}
+    public Component getRightComponent() {
+        return this.geRight.getGraphPanel().getCanvas();
+    }
 
-	/**
-	 * The returned graph pane holds the two panels for the left hand side of
-	 * the rules.
-	 * 
-	 * @return The JSplitPane
-	 */
-	public JSplitPane getGraphPane() {
-		return this.graphPane;
-	}
+    /**
+     * The returned graph pane holds the two panels for the left hand side of the rules.
+     *
+     * @return The JSplitPane
+     */
+    public JSplitPane getGraphPane() {
+        return this.graphPane;
+    }
 
-	/**
-	 * Sets the graph of the left side of the graph browser.
-	 * 
-	 * @param left
-	 *            A graph without layout.
-	 */
-	public void setLeftGraph(Graph left) {
-		if (left == null) {
-			this.geLeft.setGraph(null);
-			this.geLeft.updateGraphics();
-		} else if (this.layout != null) {
-			EdGraph eg = new EdGraph(left, this.layout.getTypeSet(), this.attrsVisible);
-			// eg.updateGraph(this.attrsVisible);
-			copyLayout(this.layout, eg);
-			eg.updateGraph(this.attrsVisible);
-			this.geLeft.setGraph(eg);
-			// this.geLeft.setEditMode(agg.editor.impl.EditorConstants.VIEW);
-			this.geLeft.setTitle(left.getName());
-		}
-	}
+    /**
+     * Sets the graph of the left side of the graph browser.
+     *
+     * @param left A graph without layout.
+     */
+    public void setLeftGraph(Graph left) {
+        if (left == null) {
+            this.geLeft.setGraph(null);
+            this.geLeft.updateGraphics();
+        } else if (this.layout != null) {
+            EdGraph eg = new EdGraph(left, this.layout.getTypeSet(), this.attrsVisible);
+            // eg.updateGraph(this.attrsVisible);
+            copyLayout(this.layout, eg);
+            eg.updateGraph(this.attrsVisible);
+            this.geLeft.setGraph(eg);
+            // this.geLeft.setEditMode(agg.editor.impl.EditorConstants.VIEW);
+            this.geLeft.setTitle(left.getName());
+        }
+    }
 
-	public void setLeftGraph(Graph left, String title) {
-		setLeftGraph(left);
-		if (this.layout != null)
-			this.geLeft.setTitle(title);
-	}
+    public void setLeftGraph(Graph left, String title) {
+        setLeftGraph(left);
+        if (this.layout != null) {
+            this.geLeft.setTitle(title);
+        }
+    }
 
-	/**
-	 * Sets the graph of the right side of the graph browser.
-	 * 
-	 * @param right
-	 *            A graph without layout.
-	 */
-	public void setRightGraph(Graph right) {
-		if (right == null) {
-			this.geRight.setGraph(null);
-			this.geRight.updateGraphics();
-		} else if (this.layout != null) {
-			EdGraph eg = new EdGraph(right, this.layout.getTypeSet(), this.attrsVisible);
-			eg.updateGraph(this.attrsVisible);
-			copyLayout(this.layout, eg);
-			this.geRight.setGraph(eg);
-			// this.geRight.setEditMode(agg.editor.impl.EditorConstants.VIEW);
-			this.geRight.setTitle(right.getName());
-		}
-	}
+    /**
+     * Sets the graph of the right side of the graph browser.
+     *
+     * @param right A graph without layout.
+     */
+    public void setRightGraph(Graph right) {
+        if (right == null) {
+            this.geRight.setGraph(null);
+            this.geRight.updateGraphics();
+        } else if (this.layout != null) {
+            EdGraph eg = new EdGraph(right, this.layout.getTypeSet(), this.attrsVisible);
+            eg.updateGraph(this.attrsVisible);
+            copyLayout(this.layout, eg);
+            this.geRight.setGraph(eg);
+            // this.geRight.setEditMode(agg.editor.impl.EditorConstants.VIEW);
+            this.geRight.setTitle(right.getName());
+        }
+    }
 
-	public void setRightGraph(Graph right, String title) {
-		setRightGraph(right);
-		if (this.layout != null)
-			this.geRight.setTitle(title);
-	}
+    public void setRightGraph(Graph right, String title) {
+        setRightGraph(right);
+        if (this.layout != null) {
+            this.geRight.setTitle(title);
+        }
+    }
 
-	/**
-	 * The event occured when a window of a overlapping graph is selected.
-	 * Therefor display of the overlapping morphisms has to be updated.
-	 * 
-	 * @param pguie
-	 *            The event from the window.
-	 */
-	@SuppressWarnings("rawtypes")
-	public void occured(ParserGUIEvent pguie) {
-		// System.out.println("GraphBrowser aktiviert"+pguie.getSource());
-		if (pguie.getData() instanceof EdMorphism) {
-			EdMorphism numbers = (EdMorphism) pguie.getData();
-			HashMap mapL = numbers.getTargetOfMorphism(1);
-			GraphEditor linksGege = (GraphEditor) getGraphPane()
-					.getLeftComponent();
-			linksGege.getGraph().setMorphismMarks(mapL, true);
-			HashMap mapR = numbers.getTargetOfMorphism(2);
-			GraphEditor rechtsGege = (GraphEditor) getGraphPane()
-					.getRightComponent();
-			rechtsGege.getGraph().setMorphismMarks(mapR, true);
-			linksGege.updateGraphics();
-			rechtsGege.updateGraphics();
-		}
-	}
+    /**
+     * The event occured when a window of a overlapping graph is selected. Therefor display of the overlapping morphisms
+     * has to be updated.
+     *
+     * @param pguie The event from the window.
+     */
+    @SuppressWarnings("rawtypes")
+    public void occured(ParserGUIEvent pguie) {
+        // System.out.println("GraphBrowser aktiviert"+pguie.getSource());
+        if (pguie.getData() instanceof EdMorphism) {
+            EdMorphism numbers = (EdMorphism) pguie.getData();
+            HashMap mapL = numbers.getTargetOfMorphism(1);
+            GraphEditor linksGege = (GraphEditor) getGraphPane()
+                    .getLeftComponent();
+            linksGege.getGraph().setMorphismMarks(mapL, true);
+            HashMap mapR = numbers.getTargetOfMorphism(2);
+            GraphEditor rechtsGege = (GraphEditor) getGraphPane()
+                    .getRightComponent();
+            rechtsGege.getGraph().setMorphismMarks(mapR, true);
+            linksGege.updateGraphics();
+            rechtsGege.updateGraphics();
+        }
+    }
 
-	public void refresh() {
-		this.geLeft.updateGraphics();
-		this.geRight.updateGraphics();
-	}
+    public void refresh() {
+        this.geLeft.updateGraphics();
+        this.geRight.updateGraphics();
+    }
 
-	/*
+    /*
 	 * The base graph of EdGraph to has to be a graph (left or right graph of a
 	 * rule) of the base gragra of EdGraGra from
-	 */
-	private void copyLayout(EdGraGra from, EdGraph to) {
-		EdRule r = null;
-		for (int i = 0; i < from.getRules().size(); i++) {
-			r = from.getRules().elementAt(i);
-			if (r.getLeft().getBasisGraph().equals(to.getBasisGraph())) {
-				break;
-			}
-		}
-		// System.out.println("GraphBrowser: Layout graph : "+r.getLeft());
-		if (r == null)
-			return;
-		EdGraph g = r.getLeft();
-		for (int k = 0; k < to.getNodes().size(); k++) {
-			EdNode n = to.getNodes().elementAt(k);
-			for (int j = 0; j < g.getNodes().size(); j++) {
-				EdNode en = g.getNodes().elementAt(j);
-				if (en.getBasisNode().equals(n.getBasisNode())) {
-					n.setXY(en.getX(), en.getY());
-					break;
-				}
-			}
-		}
-	}
+     */
+    private void copyLayout(EdGraGra from, EdGraph to) {
+        EdRule r = null;
+        for (int i = 0; i < from.getRules().size(); i++) {
+            r = from.getRules().elementAt(i);
+            if (r.getLeft().getBasisGraph().equals(to.getBasisGraph())) {
+                break;
+            }
+        }
+        // System.out.println("GraphBrowser: Layout graph : "+r.getLeft());
+        if (r == null) {
+            return;
+        }
+        EdGraph g = r.getLeft();
+        for (int k = 0; k < to.getNodes().size(); k++) {
+            EdNode n = to.getNodes().elementAt(k);
+            for (int j = 0; j < g.getNodes().size(); j++) {
+                EdNode en = g.getNodes().elementAt(j);
+                if (en.getBasisNode().equals(n.getBasisNode())) {
+                    n.setXY(en.getX(), en.getY());
+                    break;
+                }
+            }
+        }
+    }
 }
 /*
  * $Log: GraphBrowser.java,v $

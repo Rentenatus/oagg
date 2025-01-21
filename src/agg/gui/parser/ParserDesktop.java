@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser;
 
 import java.awt.Color;
@@ -50,674 +51,655 @@ import agg.xt_basis.OrdinaryMorphism;
 
 //****************************************************************************+
 /**
- * This desktop provides a view into the parsing process. There are two windows
- * available. One shows the host graph, the second shows the stop graph for
- * compare how close the host graph is. Attention, please check the option to be
- * sure that the parsing process is set visible.
- * 
+ * This desktop provides a view into the parsing process. There are two windows available. One shows the host graph, the
+ * second shows the stop graph for compare how close the host graph is. Attention, please check the option to be sure
+ * that the parsing process is set visible.
+ *
  * @author $Author: olga $
  * @version $Id: ParserDesktop.java,v 1.22 2010/09/23 08:20:53 olga Exp $
  */
 public class ParserDesktop implements InternalFrameListener,
-		ParserEventListener {
+        ParserEventListener {
 
-	private static final int STOP_GRAPH = 1;
+    private static final int STOP_GRAPH = 1;
 
-	private static final int HOST_GRAPH = 2;
+    private static final int HOST_GRAPH = 2;
 
-	private AGGParser aggparser;
+    private AGGParser aggparser;
 
-	/** main desktop */
-	final JDesktopPane desktop = new JDesktopPane();
+    /**
+     * main desktop
+     */
+    final JDesktopPane desktop = new JDesktopPane();
 
-	/** the frame icon for the host graph */
+    /**
+     * the frame icon for the host graph
+     */
 //	private ImageIcon hostIcon;
-
-	/** the frame icon for the stop graph */
+    /**
+     * the frame icon for the stop graph
+     */
 //	private ImageIcon stopIcon;
+    /**
+     * layout of the two graphs
+     */
+    private EdGraGra layout;
 
-	/** layout of the two graphs */
-	private EdGraGra layout;
+    /**
+     * size of the two graph windows
+     */
+    private Dimension internalFrameSize;
 
-	/** size of the two graph windows */
-	private Dimension internalFrameSize;
+    private ParserGUIOption option;
 
-	private ParserGUIOption option;
+    private Parser parser;
 
-	private Parser parser;
+    protected JInternalFrame hostFrame;
 
-	protected JInternalFrame hostFrame;
+    private GraphEditor hostGraphEditor;
 
-	private GraphEditor hostGraphEditor;
-
-	private EdGraph hostGraphLayout;
+    private EdGraph hostGraphLayout;
 
 //	private Graph hostGraph;
+    protected JInternalFrame stopFrame;
 
-	protected JInternalFrame stopFrame;
+    private GraphEditor stopGraphEditor;
 
-	private GraphEditor stopGraphEditor;
-
-	private EdGraph stopGraphLayout;
+    private EdGraph stopGraphLayout;
 
 //	private Graph stopGraph;
+    private boolean graphFramesExist;
 
-	private boolean graphFramesExist;
-	
-	private Vector<StatusMessageListener> listener;
+    private Vector<StatusMessageListener> listener;
 
-	private KeyAdapter keyAdapter;
+    private KeyAdapter keyAdapter;
 
-	private String typedKey;
+    private String typedKey;
 
-	private MouseListener ml;
+    private MouseListener ml;
 
-	protected JPopupMenu graphMenu = new JPopupMenu("Graph");
-	protected JMenuItem miLayoutGraph = new JMenuItem("Layout Graph");
-	protected GraphPanel activeGraphPanel;
-	
-	/**
-	 * Creates a empty desktop configured with the option.
-	 * 
-	 * @param option
-	 *            The option to configure the desktop.
-	 */
-	public ParserDesktop(AGGParser aggparser, ParserGUIOption option) {
-		this(aggparser, option, null, null, null);
-	}
+    protected JPopupMenu graphMenu = new JPopupMenu("Graph");
+    protected JMenuItem miLayoutGraph = new JMenuItem("Layout Graph");
+    protected GraphPanel activeGraphPanel;
 
-	/**
-	 * Creates a new desktop. This desktop shows the host and stop graph as it
-	 * is configured in the option. The layout for the graphs is given by the
-	 * graph grammar.
-	 * 
-	 * @param aggparser
-	 * 				the parser instance
-	 * @param option
-	 *            the option to configure the desktop
-	 * @param aLayout
-	 *            the grammar provides the layout for the graphs
-	 * @param aHostGraph
-	 *            the host graph of the parsing process
-	 * @param aStopGraph
-	 *            the stop graph of the parsing process
-	 */
-	public ParserDesktop(final AGGParser aggparser, 
-			final ParserGUIOption option,
-			final EdGraGra aLayout, 
-			final Graph aHostGraph, 
-			final Graph aStopGraph) {
-		
-		this.desktop.setBackground(Color.white);
-		this.desktop.setForeground(Color.white);
-		
-		this.aggparser = aggparser;
-		this.option = option;
-		setInternalFrameSize(new Dimension(200, 200));
+    /**
+     * Creates a empty desktop configured with the option.
+     *
+     * @param option The option to configure the desktop.
+     */
+    public ParserDesktop(AGGParser aggparser, ParserGUIOption option) {
+        this(aggparser, option, null, null, null);
+    }
 
-		this.keyAdapter = new KeyAdapter() {
-			public void keyReleased(KeyEvent e) {
-				performShortKeyEvent(e);
-			}
-		};
-		this.desktop.addKeyListener(this.keyAdapter);
+    /**
+     * Creates a new desktop. This desktop shows the host and stop graph as it is configured in the option. The layout
+     * for the graphs is given by the graph grammar.
+     *
+     * @param aggparser the parser instance
+     * @param option the option to configure the desktop
+     * @param aLayout the grammar provides the layout for the graphs
+     * @param aHostGraph the host graph of the parsing process
+     * @param aStopGraph the stop graph of the parsing process
+     */
+    public ParserDesktop(final AGGParser aggparser,
+            final ParserGUIOption option,
+            final EdGraGra aLayout,
+            final Graph aHostGraph,
+            final Graph aStopGraph) {
 
-		makeGraphMenu();
-		
-		this.ml = new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					if (e.getSource() instanceof GraphCanvas) {
-						ParserDesktop.this.activeGraphPanel = ((GraphCanvas) e.getSource())
-									.getViewport();
-						ParserDesktop.this.graphMenu.show(ParserDesktop.this.activeGraphPanel, e.getX(), e.getY());
-					}
-				}
-			}
-			
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {					
-					if (e.getSource() instanceof GraphCanvas) {
-						ParserDesktop.this.activeGraphPanel = ((GraphCanvas) e.getSource())
-									.getViewport();
-						ParserDesktop.this.graphMenu.show(ParserDesktop.this.activeGraphPanel, e.getX(), e.getY());
-					}
-				}
-			}
-			
-			public void mouseClicked(MouseEvent e) {
-					
-			}
-			
-			public void mouseEntered(MouseEvent e) {
-				ParserDesktop.this.desktop.requestFocusInWindow();
-			}
-		};
-		
-		this.desktop.addMouseListener(this.ml);
+        this.desktop.setBackground(Color.white);
+        this.desktop.setForeground(Color.white);
 
-		this.listener = new Vector<StatusMessageListener>();
+        this.aggparser = aggparser;
+        this.option = option;
+        setInternalFrameSize(new Dimension(200, 200));
 
-		if (aHostGraph != null && aStopGraph != null) {
-			this.makeGraphFrames();
-			
-			setLayout(aLayout);
-			setStopGraph(aStopGraph);
-			setHostGraph(aHostGraph);
-		}
-	}
+        this.keyAdapter = new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                performShortKeyEvent(e);
+            }
+        };
+        this.desktop.addKeyListener(this.keyAdapter);
 
-	private void makeGraphFrames() {
-		makeStopGraphFrame();
-		makeHostGraphFrame();
-		this.graphFramesExist = true;
-	}
-	
-	private void makeStopGraphFrame() {
-		if (this.stopFrame == null) {
-			// stop graph editor and frame
-			this.stopGraphEditor = new GraphEditor(null);
-			this.stopGraphEditor.setEditMode(agg.gui.editor.EditorConstants.VIEW);
-			this.stopGraphEditor.getGraphPanel().setName("");
-			this.stopGraphEditor.removeTitlePanel();
-			this.stopGraphEditor.getGraphPanel().getCanvas().addMouseListener(this.ml);
-			
-			this.stopFrame = new JInternalFrame("Stop Graph", true, false, true, true);
-			this.stopFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
-					.getStopIcon()));
-			this.stopFrame.setBackground(Color.white);
-			this.stopFrame.setForeground(Color.white);
-			this.stopFrame.addInternalFrameListener(this);
-			this.stopFrame.addMouseListener(this.ml);
-			this.stopFrame.addKeyListener(this.keyAdapter);
-			this.stopFrame.setVisible(false);
-			this.stopFrame.setSize(this.internalFrameSize);
-			this.stopFrame.getContentPane().add(this.stopGraphEditor);
-			this.stopFrame.pack();
-			
-			this.desktop.add(this.stopFrame, Integer.valueOf(STOP_GRAPH));
-		}
-	}
-	
-	private void makeHostGraphFrame() {
-		if (this.hostFrame == null) {
-			// host graph editor and frame
-			this.hostGraphEditor = new GraphEditor(null);
-			this.hostGraphEditor.setEditMode(agg.gui.editor.EditorConstants.VIEW);
-			this.hostGraphEditor.removeTitlePanel();
-			this.hostGraphEditor.getGraphPanel().setName("");
-			this.hostGraphEditor.getGraphPanel().getCanvas().addMouseListener(this.ml);
-			
-			this.hostFrame = new JInternalFrame("Host Graph", true, false, true, true);
-			this.hostFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
-					.getWorkerIcon()));
-			this.hostFrame.setBackground(Color.white);
-			this.hostFrame.setForeground(Color.white);
-			this.hostFrame.addInternalFrameListener(this);
-			this.hostFrame.addMouseListener(this.ml);
-			this.hostFrame.addKeyListener(this.keyAdapter);
-			this.hostFrame.setVisible(false);
-			this.hostFrame.setPreferredSize(new Dimension(600, 400));
-			this.hostFrame.setLocation(200, 0);
-			
-			this.hostFrame.getContentPane().add(this.hostGraphEditor);
-			this.hostFrame.pack();
-			
-			this.desktop.add(this.hostFrame, Integer.valueOf(HOST_GRAPH));
-		}
-	}
+        makeGraphMenu();
 
-	boolean performShortKeyEvent(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		// System.out.println("ParserDesktop:: Shift: "+ e.isShiftDown()+" Ctrl:
-		// "+e.isControlDown()+" Alt: "+ e.isAltDown());
-		// System.out.println("ParserDesktop:: keyReleased:: key: Code:
-		// "+keyCode+" Char: "+e.getKeyChar()+" Text:
-		// "+KeyEvent.getKeyText(keyCode)/*+" ModifiersText:
-		// "+KeyEvent.getKeyModifiersText(keyCode)*/);
-		if (e.isShiftDown() && e.isAltDown()) {
-			this.typedKey = KeyEvent.getKeyText(keyCode);
-			// System.out.println("ShiftDown() && AltDown:: typedKey:
-			// "+typedKey);
-			if (this.typedKey.equals("S"))
-				this.aggparser.startParser();
-			else if (this.typedKey.equals("Q"))
-				this.aggparser.stopParser();
-			else if (this.typedKey.equals("Z"))
-				this.aggparser.backToGUI();
-			else
-				return false;
-		}
-		return true;
-	}
+        this.ml = new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    if (e.getSource() instanceof GraphCanvas) {
+                        ParserDesktop.this.activeGraphPanel = ((GraphCanvas) e.getSource())
+                                .getViewport();
+                        ParserDesktop.this.graphMenu.show(ParserDesktop.this.activeGraphPanel, e.getX(), e.getY());
+                    }
+                }
+            }
 
-	/**
-	 * Returns the component of the graph desktop. This component can be
-	 * displayed in a frame or panel.
-	 * 
-	 * @return This component is a JDesktopPane.
-	 */
-	public Component getComponent() {
-		return getDesktop();
-	}
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    if (e.getSource() instanceof GraphCanvas) {
+                        ParserDesktop.this.activeGraphPanel = ((GraphCanvas) e.getSource())
+                                .getViewport();
+                        ParserDesktop.this.graphMenu.show(ParserDesktop.this.activeGraphPanel, e.getX(), e.getY());
+                    }
+                }
+            }
 
-	// ****************************************************************************+
-	/**
-	 * Returns the desktop with the graphs of this gui.
-	 * 
-	 * @return The JDesktopPane
-	 */
-	public JDesktopPane getDesktop() {
-		return this.desktop;
-	}
+            public void mouseClicked(MouseEvent e) {
 
-	/**
-	 * Sets the new layout for the host and stop graph. The layout is taken from
-	 * the graph grammar.
-	 * 
-	 * @param layout
-	 *            The graph grammar with layout.
-	 */
-	public void setLayout(EdGraGra layout) {
-		this.layout = layout;
-		this.hostGraphLayout = null;
-	}
+            }
 
-	public void setStopLayout(EdGraph layout) {
-		this.stopGraphLayout = layout;
-	}
+            public void mouseEntered(MouseEvent e) {
+                ParserDesktop.this.desktop.requestFocusInWindow();
+            }
+        };
 
-	/**
-	 * The size of the internal windows is specified here.
-	 * 
-	 * @param internalFrameSize
-	 *            The size of the new window.
-	 */
-	public void setInternalFrameSize(Dimension internalFrameSize) {
-		this.internalFrameSize = internalFrameSize;
-	}
+        this.desktop.addMouseListener(this.ml);
 
-	private void setGraph(Graph graph, int graphType) {
-		if (graphType != HOST_GRAPH && graphType != STOP_GRAPH)
-			return;
+        this.listener = new Vector<StatusMessageListener>();
 
-		switch (graphType) {
-		case STOP_GRAPH:
-			if (this.stopGraphEditor.getGraph() != null)
-				this.stopGraphEditor.setGraph(null);
+        if (aHostGraph != null && aStopGraph != null) {
+            this.makeGraphFrames();
 
-			EdGraph eg = null;
-			if (this.stopGraphLayout != null) {
-				if (this.stopGraphLayout.getBasisGraph() == graph)
-					eg = this.stopGraphLayout;
-				else {
-					eg = new EdGraph(graph, this.layout.getTypeSet());
-					eg.doDefaultEvolutionaryGraphLayout(20);
-				}
-			} else if (graph != null) {
-				eg = new EdGraph(graph, this.layout.getTypeSet());
-				eg.doDefaultEvolutionaryGraphLayout(20);
-			}
+            setLayout(aLayout);
+            setStopGraph(aStopGraph);
+            setHostGraph(aHostGraph);
+        }
+    }
 
-			if (eg != null && this.stopGraphLayout != null)
-				eg.setLayoutByBasisObject(this.stopGraphLayout);
+    private void makeGraphFrames() {
+        makeStopGraphFrame();
+        makeHostGraphFrame();
+        this.graphFramesExist = true;
+    }
 
-			if (this.option.getParserDisplay() == ParserGUIOption.SHOWHOSTGRAPH
-					+ ParserGUIOption.SHOWSTOPGRAPH)
-				this.stopFrame.setVisible(true);
-			else
-				this.stopFrame.setVisible(false);
-			
+    private void makeStopGraphFrame() {
+        if (this.stopFrame == null) {
+            // stop graph editor and frame
+            this.stopGraphEditor = new GraphEditor(null);
+            this.stopGraphEditor.setEditMode(agg.gui.editor.EditorConstants.VIEW);
+            this.stopGraphEditor.getGraphPanel().setName("");
+            this.stopGraphEditor.removeTitlePanel();
+            this.stopGraphEditor.getGraphPanel().getCanvas().addMouseListener(this.ml);
+
+            this.stopFrame = new JInternalFrame("Stop Graph", true, false, true, true);
+            this.stopFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
+                    .getStopIcon()));
+            this.stopFrame.setBackground(Color.white);
+            this.stopFrame.setForeground(Color.white);
+            this.stopFrame.addInternalFrameListener(this);
+            this.stopFrame.addMouseListener(this.ml);
+            this.stopFrame.addKeyListener(this.keyAdapter);
+            this.stopFrame.setVisible(false);
+            this.stopFrame.setSize(this.internalFrameSize);
+            this.stopFrame.getContentPane().add(this.stopGraphEditor);
+            this.stopFrame.pack();
+
+            this.desktop.add(this.stopFrame, Integer.valueOf(STOP_GRAPH));
+        }
+    }
+
+    private void makeHostGraphFrame() {
+        if (this.hostFrame == null) {
+            // host graph editor and frame
+            this.hostGraphEditor = new GraphEditor(null);
+            this.hostGraphEditor.setEditMode(agg.gui.editor.EditorConstants.VIEW);
+            this.hostGraphEditor.removeTitlePanel();
+            this.hostGraphEditor.getGraphPanel().setName("");
+            this.hostGraphEditor.getGraphPanel().getCanvas().addMouseListener(this.ml);
+
+            this.hostFrame = new JInternalFrame("Host Graph", true, false, true, true);
+            this.hostFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
+                    .getWorkerIcon()));
+            this.hostFrame.setBackground(Color.white);
+            this.hostFrame.setForeground(Color.white);
+            this.hostFrame.addInternalFrameListener(this);
+            this.hostFrame.addMouseListener(this.ml);
+            this.hostFrame.addKeyListener(this.keyAdapter);
+            this.hostFrame.setVisible(false);
+            this.hostFrame.setPreferredSize(new Dimension(600, 400));
+            this.hostFrame.setLocation(200, 0);
+
+            this.hostFrame.getContentPane().add(this.hostGraphEditor);
+            this.hostFrame.pack();
+
+            this.desktop.add(this.hostFrame, Integer.valueOf(HOST_GRAPH));
+        }
+    }
+
+    boolean performShortKeyEvent(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+        // System.out.println("ParserDesktop:: Shift: "+ e.isShiftDown()+" Ctrl:
+        // "+e.isControlDown()+" Alt: "+ e.isAltDown());
+        // System.out.println("ParserDesktop:: keyReleased:: key: Code:
+        // "+keyCode+" Char: "+e.getKeyChar()+" Text:
+        // "+KeyEvent.getKeyText(keyCode)/*+" ModifiersText:
+        // "+KeyEvent.getKeyModifiersText(keyCode)*/);
+        if (e.isShiftDown() && e.isAltDown()) {
+            this.typedKey = KeyEvent.getKeyText(keyCode);
+            // System.out.println("ShiftDown() && AltDown:: typedKey:
+            // "+typedKey);
+            if (this.typedKey.equals("S")) {
+                this.aggparser.startParser();
+            } else if (this.typedKey.equals("Q")) {
+                this.aggparser.stopParser();
+            } else if (this.typedKey.equals("Z")) {
+                this.aggparser.backToGUI();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns the component of the graph desktop. This component can be displayed in a frame or panel.
+     *
+     * @return This component is a JDesktopPane.
+     */
+    public Component getComponent() {
+        return getDesktop();
+    }
+
+    // ****************************************************************************+
+    /**
+     * Returns the desktop with the graphs of this gui.
+     *
+     * @return The JDesktopPane
+     */
+    public JDesktopPane getDesktop() {
+        return this.desktop;
+    }
+
+    /**
+     * Sets the new layout for the host and stop graph. The layout is taken from the graph grammar.
+     *
+     * @param layout The graph grammar with layout.
+     */
+    public void setLayout(EdGraGra layout) {
+        this.layout = layout;
+        this.hostGraphLayout = null;
+    }
+
+    public void setStopLayout(EdGraph layout) {
+        this.stopGraphLayout = layout;
+    }
+
+    /**
+     * The size of the internal windows is specified here.
+     *
+     * @param internalFrameSize The size of the new window.
+     */
+    public void setInternalFrameSize(Dimension internalFrameSize) {
+        this.internalFrameSize = internalFrameSize;
+    }
+
+    private void setGraph(Graph graph, int graphType) {
+        if (graphType != HOST_GRAPH && graphType != STOP_GRAPH) {
+            return;
+        }
+
+        switch (graphType) {
+            case STOP_GRAPH:
+                if (this.stopGraphEditor.getGraph() != null) {
+                    this.stopGraphEditor.setGraph(null);
+                }
+
+                EdGraph eg = null;
+                if (this.stopGraphLayout != null) {
+                    if (this.stopGraphLayout.getBasisGraph() == graph) {
+                        eg = this.stopGraphLayout;
+                    } else {
+                        eg = new EdGraph(graph, this.layout.getTypeSet());
+                        eg.doDefaultEvolutionaryGraphLayout(20);
+                    }
+                } else if (graph != null) {
+                    eg = new EdGraph(graph, this.layout.getTypeSet());
+                    eg.doDefaultEvolutionaryGraphLayout(20);
+                }
+
+                if (eg != null && this.stopGraphLayout != null) {
+                    eg.setLayoutByBasisObject(this.stopGraphLayout);
+                }
+
+                if (this.option.getParserDisplay() == ParserGUIOption.SHOWHOSTGRAPH
+                        + ParserGUIOption.SHOWSTOPGRAPH) {
+                    this.stopFrame.setVisible(true);
+                } else {
+                    this.stopFrame.setVisible(false);
+                }
+
 //			this.stopGraphLayout.setEditable(false);
-			this.stopGraphEditor.setGraph(this.stopGraphLayout);
-			// stopgege.getGraphPanel().updateGraphics();
-			break;
+                this.stopGraphEditor.setGraph(this.stopGraphLayout);
+                // stopgege.getGraphPanel().updateGraphics();
+                break;
 
-		case HOST_GRAPH:
-			if (this.hostGraphEditor.getGraph() != null)
-				this.hostGraphEditor.setGraph(null);
+            case HOST_GRAPH:
+                if (this.hostGraphEditor.getGraph() != null) {
+                    this.hostGraphEditor.setGraph(null);
+                }
 
-			if (this.hostGraphLayout == null && graph != null) {
-				this.hostGraphLayout = new EdGraph(graph, this.layout.getTypeSet());
-				this.hostGraphLayout.setTransformChangeEnabled(true);
-				this.hostGraphLayout.setLayoutByIndex(this.layout.getGraph(), false);
-			}
+                if (this.hostGraphLayout == null && graph != null) {
+                    this.hostGraphLayout = new EdGraph(graph, this.layout.getTypeSet());
+                    this.hostGraphLayout.setTransformChangeEnabled(true);
+                    this.hostGraphLayout.setLayoutByIndex(this.layout.getGraph(), false);
+                }
 
-			if (this.option.getParserDisplay() >= ParserGUIOption.SHOWHOSTGRAPH)
-				this.hostFrame.setVisible(true);
-			else
-				this.hostFrame.setVisible(false);
-			
+                if (this.option.getParserDisplay() >= ParserGUIOption.SHOWHOSTGRAPH) {
+                    this.hostFrame.setVisible(true);
+                } else {
+                    this.hostFrame.setVisible(false);
+                }
+
 //			hostGraphLayout.setEditable(false);
-			if (this.hostGraphEditor.getGraph() == null)
-				this.hostGraphEditor.setGraph(this.hostGraphLayout);
-			else
-				this.hostGraphEditor.getGraphPanel().setGraph(this.hostGraphLayout, false);
-			this.hostGraphEditor.getGraphPanel().updateGraphics();
-			break;
-		default:
-			break;
-		}
-	}
+                if (this.hostGraphEditor.getGraph() == null) {
+                    this.hostGraphEditor.setGraph(this.hostGraphLayout);
+                } else {
+                    this.hostGraphEditor.getGraphPanel().setGraph(this.hostGraphLayout, false);
+                }
+                this.hostGraphEditor.getGraphPanel().updateGraphics();
+                break;
+            default:
+                break;
+        }
+    }
 
-	/**
-	 * Updates a internal frame with a new graph.
-	 * 
-	 * @param om
-	 *            The morphism holds the new graph. The morphism is necessary to
-	 *            get the layout information from the old graph.
-	 * @param graphType
-	 *            The graph type distinguish which graph will be updated.
-	 */
-	protected void updateFrame(OrdinaryMorphism om, int graphType) {
-		if (graphType != HOST_GRAPH)
-			return;
+    /**
+     * Updates a internal frame with a new graph.
+     *
+     * @param om The morphism holds the new graph. The morphism is necessary to get the layout information from the old
+     * graph.
+     * @param graphType The graph type distinguish which graph will be updated.
+     */
+    protected void updateFrame(OrdinaryMorphism om, int graphType) {
+        if (graphType != HOST_GRAPH) {
+            return;
+        }
 
-		if (this.hostGraphLayout.getBasisGraph() != om.getImage()) {
-			EdGraph oldLayout = this.hostGraphLayout;
-			this.hostGraphLayout = new EdGraph(om.getImage(), this.layout.getTypeSet());
-			this.hostGraphLayout.getBasisGraph().setName("");
-			if (!this.hostGraphLayout.updateLayoutByIsoMorphism(om, oldLayout))
-				this.hostGraphLayout.setLayoutByIndex(oldLayout, false);
-			this.hostGraphLayout.resolveArcOverlappings(15);
-		}
-		this.hostGraphLayout.setTransformChangeEnabled(true);
-		updateFrame(this.hostFrame, this.hostGraphLayout);
-	}
+        if (this.hostGraphLayout.getBasisGraph() != om.getImage()) {
+            EdGraph oldLayout = this.hostGraphLayout;
+            this.hostGraphLayout = new EdGraph(om.getImage(), this.layout.getTypeSet());
+            this.hostGraphLayout.getBasisGraph().setName("");
+            if (!this.hostGraphLayout.updateLayoutByIsoMorphism(om, oldLayout)) {
+                this.hostGraphLayout.setLayoutByIndex(oldLayout, false);
+            }
+            this.hostGraphLayout.resolveArcOverlappings(15);
+        }
+        this.hostGraphLayout.setTransformChangeEnabled(true);
+        updateFrame(this.hostFrame, this.hostGraphLayout);
+    }
 
-	/**
-	 * Updates a internal frame with a graph.
-	 * 
-	 * @param theFrame
-	 *            The internal frame for the graph.
-	 * @param graphLayout
-	 *            The new graph with layout.
-	 */
-	protected void updateFrame(JInternalFrame theFrame, EdGraph graphLayout) {
-		if (theFrame == this.hostFrame) {
-			hostFrameSetAnimationIcon();
-			this.hostGraphEditor.getGraphPanel().setGraph(graphLayout, false);
-		} else if (theFrame == this.stopFrame) {
-			this.stopGraphEditor.getGraphPanel().setGraph(graphLayout, false);
-		}
+    /**
+     * Updates a internal frame with a graph.
+     *
+     * @param theFrame The internal frame for the graph.
+     * @param graphLayout The new graph with layout.
+     */
+    protected void updateFrame(JInternalFrame theFrame, EdGraph graphLayout) {
+        if (theFrame == this.hostFrame) {
+            hostFrameSetAnimationIcon();
+            this.hostGraphEditor.getGraphPanel().setGraph(graphLayout, false);
+        } else if (theFrame == this.stopFrame) {
+            this.stopGraphEditor.getGraphPanel().setGraph(graphLayout, false);
+        }
 
-	}
+    }
 
-	/**
-	 * Updates an internal frame with a new graph. The internal frame is
-	 * selected by the graph type.
-	 * 
-	 * @param graph
-	 *            The new graph for the internal frame.
-	 * @param graphType
-	 *            The graph type distinguishes the kind of graph.
-	 */
-	protected void updateFrame(Graph graph, int graphType) {
-		if (graphType == HOST_GRAPH) {
-			if (this.hostGraphLayout.getBasisGraph() != graph) {
-				EdGraph eg = new EdGraph(graph, this.layout.getTypeSet());
-				eg.setLayoutByIndex(this.hostGraphLayout, false);
-				eg.resolveArcOverlappings(15);
-				this.hostGraphLayout = eg;
-				this.hostGraphLayout.setTransformChangeEnabled(true);
-				updateFrame(this.hostFrame, this.hostGraphLayout);
-			} else {
-				this.hostGraphLayout.resolveArcOverlappings(15);
-				updateFrame(this.hostFrame,this. hostGraphLayout);
-			}
-		}
-	}
+    /**
+     * Updates an internal frame with a new graph. The internal frame is selected by the graph type.
+     *
+     * @param graph The new graph for the internal frame.
+     * @param graphType The graph type distinguishes the kind of graph.
+     */
+    protected void updateFrame(Graph graph, int graphType) {
+        if (graphType == HOST_GRAPH) {
+            if (this.hostGraphLayout.getBasisGraph() != graph) {
+                EdGraph eg = new EdGraph(graph, this.layout.getTypeSet());
+                eg.setLayoutByIndex(this.hostGraphLayout, false);
+                eg.resolveArcOverlappings(15);
+                this.hostGraphLayout = eg;
+                this.hostGraphLayout.setTransformChangeEnabled(true);
+                updateFrame(this.hostFrame, this.hostGraphLayout);
+            } else {
+                this.hostGraphLayout.resolveArcOverlappings(15);
+                updateFrame(this.hostFrame, this.hostGraphLayout);
+            }
+        }
+    }
 
-	/**
-	 * The new host graph is set. A parser creates new graphs if a certain graph
-	 * must be copied.
-	 * 
-	 * @param graph
-	 *            The new graph.
-	 */
-	public void setHostGraph(Graph graph) {
+    /**
+     * The new host graph is set. A parser creates new graphs if a certain graph must be copied.
+     *
+     * @param graph The new graph.
+     */
+    public void setHostGraph(Graph graph) {
 //		hostGraph = graph;
-		setGraph(graph, HOST_GRAPH);
-	}
+        setGraph(graph, HOST_GRAPH);
+    }
 
-	/**
-	 * The new stop graph is set.
-	 * 
-	 * @param graph
-	 *            The new graph.
-	 */
-	public void setStopGraph(Graph graph) {
+    /**
+     * The new stop graph is set.
+     *
+     * @param graph The new graph.
+     */
+    public void setStopGraph(Graph graph) {
 //		stopGraph = graph;
-		setGraph(graph, STOP_GRAPH);
-	}
+        setGraph(graph, STOP_GRAPH);
+    }
 
-	/**
-	 * Sets a new parser for the display. All important information like host
-	 * graph and so one are taken from the parser.
-	 * 
-	 * @param parser
-	 *            The parser to display.
-	 */
-	public void setParser(Parser parser) {
-		if (!this.graphFramesExist) {
-			this.makeGraphFrames();
-		}
-		
-		this.parser = parser;
-		this.parser.addParserEventListener(this);
-		
-		setStopGraph(parser.getStopGraph());
-		setHostGraph(parser.getHostGraph());
-	}
+    /**
+     * Sets a new parser for the display. All important information like host graph and so one are taken from the
+     * parser.
+     *
+     * @param parser The parser to display.
+     */
+    public void setParser(Parser parser) {
+        if (!this.graphFramesExist) {
+            this.makeGraphFrames();
+        }
 
-	/**
-	 * Sets a new parser for the display. All important information like host
-	 * graph and so one are taken from the parser.
-	 * 
-	 * @param parser
-	 *            The parser to display.
-	 * @param om
-	 *            The morphism holds the copy of the original host graph.
-	 */
-	public void setParser(Parser parser, OrdinaryMorphism om) {
-		if (!this.graphFramesExist) {
-			this.makeGraphFrames();
-		}
-		
-		this.parser = parser;
-		this.parser.addParserEventListener(this);
-		
-		setStopGraph(parser.getStopGraph());
-		setHostGraph(om.getOriginal());
-	}
+        this.parser = parser;
+        this.parser.addParserEventListener(this);
 
-	/*
+        setStopGraph(parser.getStopGraph());
+        setHostGraph(parser.getHostGraph());
+    }
+
+    /**
+     * Sets a new parser for the display. All important information like host graph and so one are taken from the
+     * parser.
+     *
+     * @param parser The parser to display.
+     * @param om The morphism holds the copy of the original host graph.
+     */
+    public void setParser(Parser parser, OrdinaryMorphism om) {
+        if (!this.graphFramesExist) {
+            this.makeGraphFrames();
+        }
+
+        this.parser = parser;
+        this.parser.addParserEventListener(this);
+
+        setStopGraph(parser.getStopGraph());
+        setHostGraph(om.getOriginal());
+    }
+
+    /*
 	 * ======================================================================
 	 * Internal Frame Listener
 	 * ======================================================================
-	 */
-	/**
-	 * This method is inherited from the InternalFrameListener. But it is not
-	 * used.
-	 * 
-	 * @param e
-	 *            The event from the listener.
-	 */
-	public void internalFrameActivated(InternalFrameEvent e) {		
-		if (((JInternalFrame)e.getSource()) == this.hostFrame) {
-			this.hostFrame.toFront();
-		} else if (((JInternalFrame)e.getSource()) == this.stopFrame) {
-			this.stopFrame.toFront();
-		}
-	}
+     */
+    /**
+     * This method is inherited from the InternalFrameListener. But it is not used.
+     *
+     * @param e The event from the listener.
+     */
+    public void internalFrameActivated(InternalFrameEvent e) {
+        if (((JInternalFrame) e.getSource()) == this.hostFrame) {
+            this.hostFrame.toFront();
+        } else if (((JInternalFrame) e.getSource()) == this.stopFrame) {
+            this.stopFrame.toFront();
+        }
+    }
 
-	/**
-	 * This method is inherited from the InternalFrameListener. But it is not
-	 * used.
-	 * 
-	 * @param e
-	 *            The event from the listener.
-	 */
-	public void internalFrameClosed(InternalFrameEvent e) {
-		// Invoked when an internal frame has been closed.
-	}
+    /**
+     * This method is inherited from the InternalFrameListener. But it is not used.
+     *
+     * @param e The event from the listener.
+     */
+    public void internalFrameClosed(InternalFrameEvent e) {
+        // Invoked when an internal frame has been closed.
+    }
 
-	/**
-	 * This method is inherited from the InternalFrameListener. But it is not
-	 * used.
-	 * 
-	 * @param e
-	 *            The event from the listener.
-	 */
-	public void internalFrameClosing(InternalFrameEvent e) {
-		// Invoked when an internal frame is in the process of being closed.
-	}
+    /**
+     * This method is inherited from the InternalFrameListener. But it is not used.
+     *
+     * @param e The event from the listener.
+     */
+    public void internalFrameClosing(InternalFrameEvent e) {
+        // Invoked when an internal frame is in the process of being closed.
+    }
 
-	/**
-	 * This method is inherited from the InternalFrameListener. But it is not
-	 * used.
-	 * 
-	 * @param e
-	 *            The event from the listener.
-	 */
-	public void internalFrameDeactivated(InternalFrameEvent e) {
-	}
+    /**
+     * This method is inherited from the InternalFrameListener. But it is not used.
+     *
+     * @param e The event from the listener.
+     */
+    public void internalFrameDeactivated(InternalFrameEvent e) {
+    }
 
-	/**
-	 * This method is inherited from the InternalFrameListener. But it is not
-	 * used.
-	 * 
-	 * @param e
-	 *            The event from the listener.
-	 */
-	public void internalFrameDeiconified(InternalFrameEvent e) {
-		// Invoked when an internal frame is de-iconified.
-	}
+    /**
+     * This method is inherited from the InternalFrameListener. But it is not used.
+     *
+     * @param e The event from the listener.
+     */
+    public void internalFrameDeiconified(InternalFrameEvent e) {
+        // Invoked when an internal frame is de-iconified.
+    }
 
-	/**
-	 * This method is inherited from the InternalFrameListener. But it is not
-	 * used.
-	 * 
-	 * @param e
-	 *            The event from the listener.
-	 */
-	public void internalFrameIconified(InternalFrameEvent e) {
-		// Invoked when an internal frame is iconified.
-	}
+    /**
+     * This method is inherited from the InternalFrameListener. But it is not used.
+     *
+     * @param e The event from the listener.
+     */
+    public void internalFrameIconified(InternalFrameEvent e) {
+        // Invoked when an internal frame is iconified.
+    }
 
-	/**
-	 * This method is inherited from the InternalFrameListener. But it is not
-	 * used.
-	 * 
-	 * @param e
-	 *            The event from the listener.
-	 */
-	public void internalFrameOpened(InternalFrameEvent e) {
-		// Invoked when a internal frame has been opened.
-	}
+    /**
+     * This method is inherited from the InternalFrameListener. But it is not used.
+     *
+     * @param e The event from the listener.
+     */
+    public void internalFrameOpened(InternalFrameEvent e) {
+        // Invoked when a internal frame has been opened.
+    }
 
-	/**
-	 * This method is called if the parser fires events. In this case it is
-	 * important after every derivation from the parser to update the gui.
-	 * 
-	 * @param p
-	 *            The event from the parser.
-	 */
-	public void parserEventOccured(ParserEvent p) {
-		if (p instanceof ParserMessageEvent) {
-			String message = ((ParserMessageEvent) p).getMessage();
-			Object source = p.getSource();
-			if (message.indexOf("applied") != -1
-					|| message.indexOf("IsoCopy") != -1) {
-				fireStatusMessageEvent(new StatusMessageEvent(this, "", message));
-				// System.out.println("parserEventOccured: "+message);
+    /**
+     * This method is called if the parser fires events. In this case it is important after every derivation from the
+     * parser to update the gui.
+     *
+     * @param p The event from the parser.
+     */
+    public void parserEventOccured(ParserEvent p) {
+        if (p instanceof ParserMessageEvent) {
+            String message = ((ParserMessageEvent) p).getMessage();
+            Object source = p.getSource();
+            if (message.indexOf("applied") != -1
+                    || message.indexOf("IsoCopy") != -1) {
+                fireStatusMessageEvent(new StatusMessageEvent(this, "", message));
+                // System.out.println("parserEventOccured: "+message);
 
-				if (source instanceof Parser) {
-					updateFrame(((Parser) source).getHostGraph(), HOST_GRAPH);
-				} else if (source instanceof OrdinaryMorphism) {
-					updateFrame((OrdinaryMorphism) source, HOST_GRAPH);
-				}
-			} else if (message.indexOf("Result") != -1) {
-				if (source instanceof Parser) {
-					hostFrameResetIcon();
-					updateFrame(((Parser) source).getHostGraph(), HOST_GRAPH);
-				}
-			}
-		} else if (p instanceof ParserErrorEvent) {
-			String message = ((ParserErrorEvent) p).getMessage();
-			fireStatusMessageEvent(new StatusMessageEvent(this, "ERROR",
-					"Error: " + message));
-		}
-	}
+                if (source instanceof Parser) {
+                    updateFrame(((Parser) source).getHostGraph(), HOST_GRAPH);
+                } else if (source instanceof OrdinaryMorphism) {
+                    updateFrame((OrdinaryMorphism) source, HOST_GRAPH);
+                }
+            } else if (message.indexOf("Result") != -1) {
+                if (source instanceof Parser) {
+                    hostFrameResetIcon();
+                    updateFrame(((Parser) source).getHostGraph(), HOST_GRAPH);
+                }
+            }
+        } else if (p instanceof ParserErrorEvent) {
+            String message = ((ParserErrorEvent) p).getMessage();
+            fireStatusMessageEvent(new StatusMessageEvent(this, "ERROR",
+                    "Error: " + message));
+        }
+    }
 
-	public void hostFrameSetAnimationIcon() {
-		this.hostFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
-				.getWorkingIcon()));
-	}
+    public void hostFrameSetAnimationIcon() {
+        this.hostFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
+                .getWorkingIcon()));
+    }
 
-	public void hostFrameResetIcon() {
-		this.hostFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
-				.getWorkerIcon()));
-	}
+    public void hostFrameResetIcon() {
+        this.hostFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
+                .getWorkerIcon()));
+    }
 
-	/**
-	 * Here register all listener to receive status messages. The AGG has to
-	 * register the status bar here.
-	 * 
-	 * @param l
-	 *            The listener, e.g. the status bar.
-	 */
-	public void addStatusMessageListener(StatusMessageListener l) {
-		if (!this.listener.contains(l))
-			this.listener.addElement(l);
-	}
+    /**
+     * Here register all listener to receive status messages. The AGG has to register the status bar here.
+     *
+     * @param l The listener, e.g. the status bar.
+     */
+    public void addStatusMessageListener(StatusMessageListener l) {
+        if (!this.listener.contains(l)) {
+            this.listener.addElement(l);
+        }
+    }
 
-	private void fireStatusMessageEvent(StatusMessageEvent sme) {
-		for (int i = 0; i < this.listener.size(); i++)
-			this.listener.elementAt(i).newMessage(sme);
-	}
+    private void fireStatusMessageEvent(StatusMessageEvent sme) {
+        for (int i = 0; i < this.listener.size(); i++) {
+            this.listener.elementAt(i).newMessage(sme);
+        }
+    }
 
-	public void disposeTestHostGraph(EdGraGra gra) {
-		if (gra.getGraphOf(this.hostGraphLayout.getBasisGraph()) == null)
-			this.hostGraphLayout.dispose();
-	}
+    public void disposeTestHostGraph(EdGraGra gra) {
+        if (gra.getGraphOf(this.hostGraphLayout.getBasisGraph()) == null) {
+            this.hostGraphLayout.dispose();
+        }
+    }
 
-	private void makeGraphMenu() {
-		this.graphMenu.add(this.miLayoutGraph);
-		this.miLayoutGraph.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (ParserDesktop.this.activeGraphPanel != null
-						&& ParserDesktop.this.activeGraphPanel.getGraph() != null) {
-					makeLayout(ParserDesktop.this.activeGraphPanel.getGraph(), ParserDesktop.this.activeGraphPanel
-							.getSize());
-					ParserDesktop.this.activeGraphPanel.updateGraphics();
-				}
-			}
-		});
-	}
-	
-	protected void makeLayout(EdGraph g, Dimension d) {
-		g.updateVisibility();
-		final List<EdNode> visiblenodes = g.getVisibleNodes();
+    private void makeGraphMenu() {
+        this.graphMenu.add(this.miLayoutGraph);
+        this.miLayoutGraph.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (ParserDesktop.this.activeGraphPanel != null
+                        && ParserDesktop.this.activeGraphPanel.getGraph() != null) {
+                    makeLayout(ParserDesktop.this.activeGraphPanel.getGraph(), ParserDesktop.this.activeGraphPanel
+                            .getSize());
+                    ParserDesktop.this.activeGraphPanel.updateGraphics();
+                }
+            }
+        });
+    }
 
-		g.setCurrentLayoutToDefault(false);
-		g.getDefaultGraphLayouter().setEnabled(true);
-		Dimension dim = g.getDefaultGraphLayouter().getNeededPanelSize(visiblenodes);
-		if (dim.width < 350)
-			dim.width = 350;
-		if (dim.width < d.width)
-			dim.width = d.width;
-		if (dim.height < 250)
-			dim.height = 250;
-		if (dim.height < d.height)
-			dim.height = d.height;
-		g.getDefaultGraphLayouter().setPanelSize(dim);
-		g.getDefaultGraphLayouter().allowChangePanelSize(false);
-		g.getDefaultGraphLayouter().setEnabled(true);
-		g.doDefaultEvolutionaryGraphLayout(
-				g.getDefaultGraphLayouter(), 100, 10);
-	}
-	
+    protected void makeLayout(EdGraph g, Dimension d) {
+        g.updateVisibility();
+        final List<EdNode> visiblenodes = g.getVisibleNodes();
+
+        g.setCurrentLayoutToDefault(false);
+        g.getDefaultGraphLayouter().setEnabled(true);
+        Dimension dim = g.getDefaultGraphLayouter().getNeededPanelSize(visiblenodes);
+        if (dim.width < 350) {
+            dim.width = 350;
+        }
+        if (dim.width < d.width) {
+            dim.width = d.width;
+        }
+        if (dim.height < 250) {
+            dim.height = 250;
+        }
+        if (dim.height < d.height) {
+            dim.height = d.height;
+        }
+        g.getDefaultGraphLayouter().setPanelSize(dim);
+        g.getDefaultGraphLayouter().allowChangePanelSize(false);
+        g.getDefaultGraphLayouter().setEnabled(true);
+        g.doDefaultEvolutionaryGraphLayout(
+                g.getDefaultGraphLayouter(), 100, 10);
+    }
+
 }
 
 // End of ParserDesktop.java

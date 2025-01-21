@@ -1,83 +1,109 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 /**
- * Attribute event interface for delivering information about attribute changes
- * to clients.
- * 
+ * Attribute event interface for delivering information about attribute changes to clients.
+ *
  * @see agg.attribute.AttrTuple
- * 
+ *
  * @version $Id: AttrEvent.java,v 1.5 2008/09/22 13:12:14 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrEvent {
 
-	/** Change not specified. (The event receiver should update the whole tuple */
-	public static final int GENERAL_CHANGE = 0;
+    /**
+     * Change not specified. (The event receiver should update the whole tuple
+     */
+    public static final int GENERAL_CHANGE = 0;
 
-	/** A new member was added. */
-	public static final int MEMBER_ADDED = 10;
+    /**
+     * A new member was added.
+     */
+    public static final int MEMBER_ADDED = 10;
 
-	/** A member was deleted. */
-	public static final int MEMBER_DELETED = 20;
+    /**
+     * A member was deleted.
+     */
+    public static final int MEMBER_DELETED = 20;
 
-	/** A member to delete. */
-	public static final int MEMBER_TO_DELETE = 21;
-	
-	/** A member was modified, no further specification. */
-	public static final int MEMBER_MODIFIED = 40;
+    /**
+     * A member to delete.
+     */
+    public static final int MEMBER_TO_DELETE = 21;
 
-	/** A member was renamed. */
-	public static final int MEMBER_RENAMED = 50;
+    /**
+     * A member was modified, no further specification.
+     */
+    public static final int MEMBER_MODIFIED = 40;
 
-	/** A member was retyped. */
-	public static final int MEMBER_RETYPED = 60;
+    /**
+     * A member was renamed.
+     */
+    public static final int MEMBER_RENAMED = 50;
 
-	/** The value of an attribute was modified. */
-	public static final int MEMBER_VALUE_MODIFIED = 70;
+    /**
+     * A member was retyped.
+     */
+    public static final int MEMBER_RETYPED = 60;
 
-	/** The state of correctness of a member value has changed. */
-	public static final int MEMBER_VALUE_CORRECTNESS = 80;
+    /**
+     * The value of an attribute was modified.
+     */
+    public static final int MEMBER_VALUE_MODIFIED = 70;
 
-	public static final int MEMBER_DISABLED = 90;
+    /**
+     * The state of correctness of a member value has changed.
+     */
+    public static final int MEMBER_VALUE_CORRECTNESS = 80;
 
-	public static final int MEMBER_MARK = 91;
+    public static final int MEMBER_DISABLED = 90;
 
-	/**
-	 * The highest id value for this interface. Extending interfaces must not
-	 * have id constants below this value.
-	 */
-	public static final int ATTR_EVENT_MAX_ID = 200;
+    public static final int MEMBER_MARK = 91;
 
-	// Public Methods
+    /**
+     * The highest id value for this interface. Extending interfaces must not have id constants below this value.
+     */
+    public static final int ATTR_EVENT_MAX_ID = 200;
 
-	/** Getting the originator of the event. */
-	public AttrTuple getSource();
+    // Public Methods
+    /**
+     * Getting the originator of the event.
+     */
+    public AttrTuple getSource();
 
-	/** Getting the message id. */
-	public int getID();
+    /**
+     * Getting the message id.
+     */
+    public int getID();
 
-	/** Getting the first position index. */
-	public int getIndex();
+    /**
+     * Getting the first position index.
+     */
+    public int getIndex();
 
-	/** Getting the first position index. */
-	public int getIndex0();
+    /**
+     * Getting the first position index.
+     */
+    public int getIndex0();
 
-	/** Getting the second position index. */
-	public int getIndex1();
-	
-	/** Getting the changed attribute member of the event. 
-	 * Returns null when <code>getIndex0() != getIndex1()</code>.
-	 */
-	public AttrMember getAttrMember();
+    /**
+     * Getting the second position index.
+     */
+    public int getIndex1();
+
+    /**
+     * Getting the changed attribute member of the event. Returns null when <code>getIndex0() != getIndex1()</code>.
+     */
+    public AttrMember getAttrMember();
 }
 /*
  * $Log: AttrEvent.java,v $

@@ -1,66 +1,66 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTExpression.java,v 1.8 2010/11/28 22:12:22 olga Exp $
  * @author $Author: olga $
  */
 public class ASTExpression extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTExpression(String id) {
-		super(id);
-	}
+    ASTExpression(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTExpression(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTExpression(id);
+    }
 
-	/*
+    /*
 	 * Override this method if you want to customize how the node dumps out its
 	 * children.
-	 */
+     */
+    public void dump(String prefix) {
+        if (this.children != null) {
+            for (java.util.Enumeration<Node> e = this.children.elements(); e
+                    .hasMoreElements();) {
+                SimpleNode n = (SimpleNode) e.nextElement();
+                n.dump(prefix);
+            }
+        }
+    }
 
-	public void dump(String prefix) {
-		if (this.children != null) {
-			for (java.util.Enumeration<Node> e = this.children.elements(); e
-					.hasMoreElements();) {
-				SimpleNode n = (SimpleNode) e.nextElement();
-				n.dump(prefix);
-			}
-		}
-	}
+    public void checkContext() throws ASTWrongTypeException {
+        Node child1 = jjtGetChild(0);
+        child1.checkContext();
+        takeNodeClassFrom((SimpleNode) child1);
+    }
 
-	public void checkContext() throws ASTWrongTypeException {
-		Node child1 = jjtGetChild(0);
-		child1.checkContext();
-		takeNodeClassFrom((SimpleNode)child1);
-	}
+    public void interpret() {
+        jjtGetChild(0).interpret();
+    }
 
-	public void interpret() {
-		jjtGetChild(0).interpret();
-	}
-
-	public String getString() {
-		Node nparent = jjtGetParent();
-		String result = jjtGetChild(0).getString();
-		if (nparent != null) {
-			if (nparent instanceof ASTPrimaryExpression)
-				result = "(" + result + ")";
-		}
-		return result;
-	}
+    public String getString() {
+        Node nparent = jjtGetParent();
+        String result = jjtGetChild(0).getString();
+        if (nparent != null) {
+            if (nparent instanceof ASTPrimaryExpression) {
+                result = "(" + result + ")";
+            }
+        }
+        return result;
+    }
 }
 /*
  * $Log: ASTExpression.java,v $

@@ -1,76 +1,80 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 import agg.attribute.handler.HandlerExpr;
 
 /**
  * The interface for an instance tuple member.
- * 
+ *
  * @version $Id: AttrInstanceMember.java,v 1.2 2007/09/10 13:05:31 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrInstanceMember extends AttrMember {
-	static final long serialVersionUID = 8245278580252379537L;
 
-	/** Retrieving the type. */
-	public AttrTypeMember getDeclaration();
+    static final long serialVersionUID = 8245278580252379537L;
 
-	/** Test, if the value is set or not. */
-	public boolean isSet();
+    /**
+     * Retrieving the type.
+     */
+    public AttrTypeMember getDeclaration();
 
-	/**
-	 * Retrieving the expression (value) contained in this member. The result
-	 * can be queried and set according to the agg.attribute.handler.HandlerExpr
-	 * interface.
-	 */
-	public HandlerExpr getExpr();
+    /**
+     * Test, if the value is set or not.
+     */
+    public boolean isSet();
 
-	/** Setting the expression (value) contained in this member. */
-	public void setExpr(HandlerExpr expr);
+    /**
+     * Retrieving the expression (value) contained in this member. The result can be queried and set according to the
+     * agg.attribute.handler.HandlerExpr interface.
+     */
+    public HandlerExpr getExpr();
 
-	/**
-	 * Retrieving the value of an entry. If the result is 'null', the reason can
-	 * be: 1. The value is set as 'null'; 2. The value is not set at all. For
-	 * testing if the value was set as 'null' or not set at all, use 'isSet()'
-	 * of this interface.
-	 */
-	public Object getExprAsObject();
+    /**
+     * Setting the expression (value) contained in this member.
+     */
+    public void setExpr(HandlerExpr expr);
 
-	/** Returns the textual representation of the expression. */
-	public String getExprAsText();
+    /**
+     * Retrieving the value of an entry. If the result is 'null', the reason can be: 1. The value is set as 'null'; 2.
+     * The value is not set at all. For testing if the value was set as 'null' or not set at all, use 'isSet()' of this
+     * interface.
+     */
+    public Object getExprAsObject();
 
-	/**
-	 * Setting the value of an instance member directly.
-	 * 
-	 * @param value
-	 *            Any object instance.
-	 */
-	public void setExprAsObject(Object value);
+    /**
+     * Returns the textual representation of the expression.
+     */
+    public String getExprAsText();
 
-	/**
-	 * Evaluating an expression and setting its value as this member's entry.
-	 * 
-	 * @param expr
-	 *            textual expression representation;
-	 */
-	public void setExprAsEvaluatedText(String expr);
+    /**
+     * Setting the value of an instance member directly.
+     *
+     * @param value Any object instance.
+     */
+    public void setExprAsObject(Object value);
 
-	/**
-	 * Setting an expression for this member without immediate evaluation.
-	 * Syntax and type checking are performed.
-	 * 
-	 * @param expr
-	 *            textual expression representation;
-	 */
-	public void setExprAsText(String expr);
+    /**
+     * Evaluating an expression and setting its value as this member's entry.
+     *
+     * @param expr textual expression representation;
+     */
+    public void setExprAsEvaluatedText(String expr);
+
+    /**
+     * Setting an expression for this member without immediate evaluation. Syntax and type checking are performed.
+     *
+     * @param expr textual expression representation;
+     */
+    public void setExprAsText(String expr);
 }
 /*
  * $Log: AttrInstanceMember.java,v $

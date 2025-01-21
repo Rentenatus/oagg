@@ -1,17 +1,16 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
-
-
 import agg.attribute.impl.AttrSession;
 import agg.attribute.impl.VerboseControl;
 
@@ -21,104 +20,104 @@ import agg.attribute.impl.VerboseControl;
  */
 public class ASTAddNode extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTAddNode(String id) {
-		super(id);
-	}
+    ASTAddNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTAddNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTAddNode(id);
+    }
 
-	public void interpret() {
-		// System.out.println("ASTAddNode: top vor children "+top);
-		AttrSession.logPrintln(VerboseControl.logJexParser,
-				"ASTAddNode: top vor children " + top);
-		jjtGetChild(0).interpret();
-		jjtGetChild(1).interpret();
-		// System.out.println("ASTAddNode: top nach children "+top);
-		AttrSession.logPrintln(VerboseControl.logJexParser,
-				"ASTAddNode: top nach children " + top);
-		dump("ASTAddNode - interpret: ");
-		Class<?> cls = getNodeClass();
-		Object op1Result = stack.get(top-1); //stack[top - 1];
-		Object op2Result = stack.get(top); //stack[top];
-		Object result;
+    public void interpret() {
+        // System.out.println("ASTAddNode: top vor children "+top);
+        AttrSession.logPrintln(VerboseControl.logJexParser,
+                "ASTAddNode: top vor children " + top);
+        jjtGetChild(0).interpret();
+        jjtGetChild(1).interpret();
+        // System.out.println("ASTAddNode: top nach children "+top);
+        AttrSession.logPrintln(VerboseControl.logJexParser,
+                "ASTAddNode: top nach children " + top);
+        dump("ASTAddNode - interpret: ");
+        Class<?> cls = getNodeClass();
+        Object op1Result = stack.get(top - 1); //stack[top - 1];
+        Object op2Result = stack.get(top); //stack[top];
+        Object result;
 
-		if (cls == stringClass) {
-			result = new String("" + op1Result + op2Result);
-		} else {
-			if (typeCode() <= typeCode(Integer.TYPE)) {
-				result = new Integer(((Number) op1Result).intValue()
-						+ ((Number) op2Result).intValue());
-			} else {
-				result = new Float(((Number) op1Result).floatValue()
-						+ ((Number) op2Result).floatValue());
-			}
-		}
-		top--;
-		Node obj = ObjectConstNode
-				.jjtCreate(this.identifier + " to ObjectConstNode");
-		((ObjectConstNode) obj).obj = result;
-		obj.jjtSetParent(jjtGetParent());
-		((ObjectConstNode) obj).setNodeClass(getNodeClass());
-		jjtGetParent().replaceChild(this, obj);
-		jjtSetParent(null);
-		obj.interpret();
-	}
+        if (cls == stringClass) {
+            result = new String("" + op1Result + op2Result);
+        } else {
+            if (typeCode() <= typeCode(Integer.TYPE)) {
+                result = new Integer(((Number) op1Result).intValue()
+                        + ((Number) op2Result).intValue());
+            } else {
+                result = new Float(((Number) op1Result).floatValue()
+                        + ((Number) op2Result).floatValue());
+            }
+        }
+        top--;
+        Node obj = ObjectConstNode
+                .jjtCreate(this.identifier + " to ObjectConstNode");
+        ((ObjectConstNode) obj).obj = result;
+        obj.jjtSetParent(jjtGetParent());
+        ((ObjectConstNode) obj).setNodeClass(getNodeClass());
+        jjtGetParent().replaceChild(this, obj);
+        jjtSetParent(null);
+        obj.interpret();
+    }
 
-	protected void propagateStringConcatType() {
-		SimpleNode child1 = (SimpleNode) jjtGetChild(0);
-		SimpleNode child2 = (SimpleNode) jjtGetChild(1);
+    protected void propagateStringConcatType() {
+        SimpleNode child1 = (SimpleNode) jjtGetChild(0);
+        SimpleNode child2 = (SimpleNode) jjtGetChild(1);
 
-		setNodeClass(stringClass);
+        setNodeClass(stringClass);
 
-		if (child1.identifier == "AddNode") {
-			((ASTAddNode) child1).propagateStringConcatType();
-		}
-		if (child2.identifier == "AddNode") {
-			((ASTAddNode) child2).propagateStringConcatType();
-		}
-	}
+        if (child1.identifier == "AddNode") {
+            ((ASTAddNode) child1).propagateStringConcatType();
+        }
+        if (child2.identifier == "AddNode") {
+            ((ASTAddNode) child2).propagateStringConcatType();
+        }
+    }
 
-	public void checkContext() throws ASTWrongTypeException {
-		Node child1 = jjtGetChild(0);
-		Node child2 = jjtGetChild(1);
+    public void checkContext() throws ASTWrongTypeException {
+        Node child1 = jjtGetChild(0);
+        Node child2 = jjtGetChild(1);
 
-		child1.checkContext();
-		child2.checkContext();
+        child1.checkContext();
+        child2.checkContext();
 
-		if (((SimpleNode)child1).hasNumberType() 
-				&& ((SimpleNode)child2).hasNumberType()) {
-			setNodeClass(commonNumberType((SimpleNode)child1, (SimpleNode)child2));
-		} else if (((SimpleNode)child1).getNodeClass() == stringClass
-				|| ((SimpleNode)child2).getNodeClass() == stringClass) {
-			propagateStringConcatType();
-		} else {
-			throw new ASTWrongTypeException("[Number x Number -> Number]"
-					+ " or [String x String -> String]", ((SimpleNode)child1).getNodeClass()
-					.getName()
-					+ " x " + ((SimpleNode)child2).getNodeClass().getName());
-		}
-	}
+        if (((SimpleNode) child1).hasNumberType()
+                && ((SimpleNode) child2).hasNumberType()) {
+            setNodeClass(commonNumberType((SimpleNode) child1, (SimpleNode) child2));
+        } else if (((SimpleNode) child1).getNodeClass() == stringClass
+                || ((SimpleNode) child2).getNodeClass() == stringClass) {
+            propagateStringConcatType();
+        } else {
+            throw new ASTWrongTypeException("[Number x Number -> Number]"
+                    + " or [String x String -> String]", ((SimpleNode) child1).getNodeClass()
+                            .getName()
+                    + " x " + ((SimpleNode) child2).getNodeClass().getName());
+        }
+    }
 
-	public String toString() {
-		String result = super.toString();
-		result += " " + stack + " " + top;
-		return result;
-	}
+    public String toString() {
+        String result = super.toString();
+        result += " " + stack + " " + top;
+        return result;
+    }
 
-	public String getString() {
-		String resultString = "+";
-		Node child1 = jjtGetChild(0);
-		Node child2 = jjtGetChild(1);
-		String left;
-		String right;
-		left = child1.getString();
-		right = child2.getString();
-		return left + resultString + right;
-	}
+    public String getString() {
+        String resultString = "+";
+        Node child1 = jjtGetChild(0);
+        Node child2 = jjtGetChild(1);
+        String left;
+        String right;
+        left = child1.getString();
+        right = child2.getString();
+        return left + resultString + right;
+    }
 }
 
 /*

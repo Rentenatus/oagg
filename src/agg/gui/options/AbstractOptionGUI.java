@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.options;
 
 import java.awt.GridBagConstraints;
@@ -23,118 +24,114 @@ import javax.swing.border.Border;
 import agg.gui.parser.event.OptionEvent;
 import agg.gui.parser.event.OptionListener;
 
-
 /**
- * This is an abstract option display, which provides necessary feature for the
- * main AGG option window. Such a option display will be added to a tab of the
- * main AGG option window.
- * 
+ * This is an abstract option display, which provides necessary feature for the main AGG option window. Such a option
+ * display will be added to a tab of the main AGG option window.
+ *
  * @version $Id: AbstractOptionGUI.java,v 1.2 2010/08/18 09:25:57 olga Exp $
  * @author $Author: olga $
  */
 @SuppressWarnings("serial")
 public abstract class AbstractOptionGUI extends JPanel {
-	
 
-	/** The set of listeners receives the messages */
-	protected HashSet<OptionListener> listener;
+    /**
+     * The set of listeners receives the messages
+     */
+    protected HashSet<OptionListener> listener;
 
-	/**
-	 * Don't really create a new GUI but initial the listener stuff.
-	 */
-	public AbstractOptionGUI() {
-		super(true);
-		this.listener = new HashSet<OptionListener>();
-	}
+    /**
+     * Don't really create a new GUI but initial the listener stuff.
+     */
+    public AbstractOptionGUI() {
+        super(true);
+        this.listener = new HashSet<OptionListener>();
+    }
 
-	/**
-	 * here register as a listener. A status bar would like to do so
-	 */
-	public void addOptionListener(OptionListener ol) {
-		this.listener.add(ol);
-	}
+    /**
+     * here register as a listener. A status bar would like to do so
+     */
+    public void addOptionListener(OptionListener ol) {
+        this.listener.add(ol);
+    }
 
-	/**
-	 * just remove the listener. From now on the listener will be silent in the
-	 * future.
-	 */
-	public void removeOptionListener(OptionListener ol) {
-		this.listener.remove(ol);
-	}
+    /**
+     * just remove the listener. From now on the listener will be silent in the future.
+     */
+    public void removeOptionListener(OptionListener ol) {
+        this.listener.remove(ol);
+    }
 
-	/**
-	 * send new events to all listener
-	 */
-	public void fireOptionEvent(OptionEvent oe) {
-		Iterator<OptionListener> iter = this.listener.iterator();
-		while (iter.hasNext()) {
-			OptionListener ol = iter.next();
-			ol.optionEventOccurred(oe);
-		}
-	}
+    /**
+     * send new events to all listener
+     */
+    public void fireOptionEvent(OptionEvent oe) {
+        Iterator<OptionListener> iter = this.listener.iterator();
+        while (iter.hasNext()) {
+            OptionListener ol = iter.next();
+            ol.optionEventOccurred(oe);
+        }
+    }
 
-	/**
-	 * Returns a icon for the tab. The default is <code>null</code>.
-	 */
-	public Icon getIcon() {
-		return null;
-	}
+    /**
+     * Returns a icon for the tab. The default is <code>null</code>.
+     */
+    public Icon getIcon() {
+        return null;
+    }
 
-	/**
-	 * Returns the text for the tab title. This method must be overridden by any
-	 * subclass.
-	 */
-	public abstract String getTabTitle();
+    /**
+     * Returns the text for the tab title. This method must be overridden by any subclass.
+     */
+    public abstract String getTabTitle();
 
-	/**
-	 * Returns the text for the tab tip. This method must be overridden by any
-	 * subclass.
-	 */
-	public abstract String getTabTip();
+    /**
+     * Returns the text for the tab tip. This method must be overridden by any subclass.
+     */
+    public abstract String getTabTip();
 
-	/** Updates the gui from the model */
-	public abstract void update();
+    /**
+     * Updates the gui from the model
+     */
+    public abstract void update();
 
-	/** Executes the commands, if implemented, when the close-button pressed.*/
-	public abstract void executeOnClose();
-	
-	/**
-	 * Creates a standard panel with a etched border. The title is shown at the
-	 * top left of the panel.
-	 * 
-	 * @param title
-	 *            Enter a title for this panel.
-	 */
-	protected JPanel makeInitialOptionPanel(String title) {
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.gridheight = 1;
-		return makeInitialOptionPanel(true, title, c);
-	}
+    /**
+     * Executes the commands, if implemented, when the close-button pressed.
+     */
+    public abstract void executeOnClose();
 
-	/**
-	 * Creates a standard panel with an "etched" look border. The constraint belongs to
-	 * title.
-	 * 
-	 * @param title
-	 *            Enter a title for this panel.
-	 */
-	protected JPanel makeInitialOptionPanel(boolean border, String title, GridBagConstraints c) {
-		JPanel optionPanel = new JPanel();
-		if (border) {
-			Border etched = BorderFactory.createEtchedBorder();
-			optionPanel.setBorder(etched);
-		}
-		GridBagLayout gridbag = new GridBagLayout();
-		optionPanel.setLayout(gridbag);
-		if (!"".equals(title)) {
-			JLabel titleText = new JLabel(title);
-			gridbag.setConstraints(titleText, c);
-			optionPanel.add(titleText);
-		}
-		return optionPanel;
-	}
+    /**
+     * Creates a standard panel with a etched border. The title is shown at the top left of the panel.
+     *
+     * @param title Enter a title for this panel.
+     */
+    protected JPanel makeInitialOptionPanel(String title) {
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        return makeInitialOptionPanel(true, title, c);
+    }
+
+    /**
+     * Creates a standard panel with an "etched" look border. The constraint belongs to title.
+     *
+     * @param title Enter a title for this panel.
+     */
+    protected JPanel makeInitialOptionPanel(boolean border, String title, GridBagConstraints c) {
+        JPanel optionPanel = new JPanel();
+        if (border) {
+            Border etched = BorderFactory.createEtchedBorder();
+            optionPanel.setBorder(etched);
+        }
+        GridBagLayout gridbag = new GridBagLayout();
+        optionPanel.setLayout(gridbag);
+        if (!"".equals(title)) {
+            JLabel titleText = new JLabel(title);
+            gridbag.setConstraints(titleText, c);
+            optionPanel.add(titleText);
+        }
+        return optionPanel;
+    }
 
 }
 /*

@@ -1,31 +1,31 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser.event;
 
 import java.util.EventListener;
 
 /**
  * Listen for events from the parser GUI
- * 
+ *
  * @version $Id: ParserGUIListener.java,v 1.2 2007/09/10 13:05:50 olga Exp $
  * @author $Author: olga $
  */
 public interface ParserGUIListener extends EventListener {
 
-	/**
-	 * This message is invoked if the GUI sends events
-	 * 
-	 * @param pguie
-	 *            receive the new event
-	 */
-	public void occured(ParserGUIEvent pguie);
+    /**
+     * This message is invoked if the GUI sends events
+     *
+     * @param pguie receive the new event
+     */
+    public void occured(ParserGUIEvent pguie);
 }
 /*
  * $Log: ParserGUIListener.java,v $

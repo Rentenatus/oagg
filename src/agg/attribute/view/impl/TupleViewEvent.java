@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.view.impl;
 
 import agg.attribute.AttrTuple;
@@ -20,51 +21,50 @@ import agg.attribute.view.AttrViewSetting;
  */
 public class TupleViewEvent extends TupleEvent implements AttrViewEvent {
 
-	static final long serialVersionUID = 2422750570570672804L;
+    static final long serialVersionUID = 2422750570570672804L;
 
-	protected ViewSetting view;
+    protected ViewSetting view;
 
-	public TupleViewEvent(AttrTuple attr, int id, int index0, int index1,
-			AttrViewSetting view) {
-		super(attr, id, index0, index1);
-		this.view = (ViewSetting) view;
-	}
+    public TupleViewEvent(AttrTuple attr, int id, int index0, int index1,
+            AttrViewSetting view) {
+        super(attr, id, index0, index1);
+        this.view = (ViewSetting) view;
+    }
 
-	public TupleEvent cloneWithNewSource(AttrTuple tup) {
-		return new TupleViewEvent(tup, this.id, this.index0, this.index1, this.view);
-	}
+    public TupleEvent cloneWithNewSource(AttrTuple tup) {
+        return new TupleViewEvent(tup, this.id, this.index0, this.index1, this.view);
+    }
 
-	public AttrViewSetting getView() {
-		return this.view;
-	}
+    public AttrViewSetting getView() {
+        return this.view;
+    }
 
-	public String toString() {
-		return (super.toString() + ", view=" + (this.view == null ? "null" : this.view
-				.toString()));
-	}
+    public String toString() {
+        return (super.toString() + ", view=" + (this.view == null ? "null" : this.view
+                .toString()));
+    }
 
-	public String toLongString() {
-		return (super.toString() + "\n  View: " + (this.view == null ? "null" : this.view
-				.toString()));
-	}
+    public String toLongString() {
+        return (super.toString() + "\n  View: " + (this.view == null ? "null" : this.view
+                .toString()));
+    }
 
-	//
-	// Internal
-
-	protected String idToString(int anID) {
-		String r;
-		switch (anID) {
-		case MEMBER_MOVED:
-			r = "MEMBER_MOVED";
-			break;
-		case MEMBER_VISIBILITY:
-			r = "MEMBER_VISIBILITY";
-			break;
-		default:
-			r = super.idToString(anID);
-		}
-		return r;
-	}
+    //
+    // Internal
+    protected String idToString(int anID) {
+        String r;
+        switch (anID) {
+            case MEMBER_MOVED:
+                r = "MEMBER_MOVED";
+                break;
+            case MEMBER_VISIBILITY:
+                r = "MEMBER_VISIBILITY";
+                break;
+            default:
+                r = super.idToString(anID);
+        }
+        return r;
+    }
 }
 /*
  * $Log: TupleViewEvent.java,v $

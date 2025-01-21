@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: SolutionStrategy.java,v 1.11 2010/02/22 14:43:23 olga Exp $
-
 // $Log: SolutionStrategy.java,v $
 // Revision 1.11  2010/02/22 14:43:23  olga
 // code optimizing
@@ -76,75 +76,70 @@
 // Initial revision
 //
 //
-
 package agg.util.csp;
 
 import java.util.Dictionary;
 
 /**
  * An interface for solution strategies for Constraint Satisfaction Problems.
- * 
+ *
  * @see agg.util.csp.CSP
  */
 public interface SolutionStrategy {
-	/**
-	 * Find the next solution of <code>csp</code>, and instantiate its
-	 * variables accordingly. Variables already instantiated will not be
-	 * altered, so this method can be used to complete partial solutions. Invoke
-	 * this method successively with the same argument to get all solutions (or
-	 * all completions of a given partial solution).
-	 * 
-	 * @param csp
-	 *            The CSP to solve.
-	 * @return <code>false</code> if there are no more solutions.
-	 */
-	public boolean next(CSP csp);
 
-	/**
-	 * Reset my internal state, so that the forthcoming invocation of
-	 * <code>next()</code> returns the first solution of the given CSP.
-	 */
-	public void reset();
+    /**
+     * Find the next solution of <code>csp</code>, and instantiate its variables accordingly. Variables already
+     * instantiated will not be altered, so this method can be used to complete partial solutions. Invoke this method
+     * successively with the same argument to get all solutions (or all completions of a given partial solution).
+     *
+     * @param csp The CSP to solve.
+     * @return <code>false</code> if there are no more solutions.
+     */
+    public boolean next(CSP csp);
 
-	/**
-	 * Reinitialize my search strategy.
-	 * The search queries will be generated newly if the given parameter is <code>true</code>. 
-	 */
-	public boolean reinitialize(boolean doUpdateQueries);
+    /**
+     * Reset my internal state, so that the forthcoming invocation of <code>next()</code> returns the first solution of
+     * the given CSP.
+     */
+    public void reset();
 
-	/**
-	 * Reinitialize my search strategy. The instance object of the specified variable
-	 * will be set to null.
-	 */
-	public void reinitialize(Variable var);
+    /**
+     * Reinitialize my search strategy. The search queries will be generated newly if the given parameter is
+     * <code>true</code>.
+     */
+    public boolean reinitialize(boolean doUpdateQueries);
 
-	/**
-	 * Clear internal data. 
-	 */
-	public void clear();
-	
-	
-	public boolean hasQueries();
-	
-	/**
-	 * Reset the object domain of the query <code>Query_Type</code>.
-	 */
-	public void resetQuery_Type();
-	
-	public boolean hasSolution();
-	
-	public void setRelatedInstanceVarMap(
-			Dictionary<Object, Variable> relatedVarMap);
+    /**
+     * Reinitialize my search strategy. The instance object of the specified variable will be set to null.
+     */
+    public void reinitialize(Variable var);
 
-	public Dictionary<Object, Variable> getInstanceVarMap();
+    /**
+     * Clear internal data.
+     */
+    public void clear();
 
-	public boolean parallelSearch();
-	
-	public void enableParallelSearch(boolean b);
-	
-	public void setStartParallelSearchByFirst(boolean b);
-	
-	public Variable getStartVariable();
-	
-	public Query getQuery(final Variable var);
+    public boolean hasQueries();
+
+    /**
+     * Reset the object domain of the query <code>Query_Type</code>.
+     */
+    public void resetQuery_Type();
+
+    public boolean hasSolution();
+
+    public void setRelatedInstanceVarMap(
+            Dictionary<Object, Variable> relatedVarMap);
+
+    public Dictionary<Object, Variable> getInstanceVarMap();
+
+    public boolean parallelSearch();
+
+    public void enableParallelSearch(boolean b);
+
+    public void setStartParallelSearchByFirst(boolean b);
+
+    public Variable getStartVariable();
+
+    public Query getQuery(final Variable var);
 }

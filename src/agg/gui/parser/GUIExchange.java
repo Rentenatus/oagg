@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser;
 
 import java.awt.Component;
@@ -15,59 +16,59 @@ import agg.gui.AGGAppl;
 
 /**
  * This class exchanges the main gui of AGG and another component.
- * 
+ *
  * @version $Id: GUIExchange.java,v 1.5 2010/09/23 08:20:54 olga Exp $
  * @author $Author: olga $
  */
 public class GUIExchange {
 
-	private AGGAppl parent;
+    private AGGAppl parent;
 
-	private boolean hasVal;
+    private boolean hasVal;
 
-	/**
-	 * The exchanger will be initialized with the AGG which will be exchanged.
-	 * 
-	 * @param parent
-	 *            the parent frame
-	 */
-	public GUIExchange(AGGAppl parent) {
-		this.parent = parent;
-		
-		this.hasVal = false;
-	}
+    /**
+     * The exchanger will be initialized with the AGG which will be exchanged.
+     *
+     * @param parent the parent frame
+     */
+    public GUIExchange(AGGAppl parent) {
+        this.parent = parent;
 
-	/**
-	 * Here the component will be exchanged
-	 * 
-	 * @param c
-	 *            The component to exchange with.
-	 */
-	public void changeWith(Component c) {
-		this.parent.setMainContent(c);
+        this.hasVal = false;
+    }
 
-		this.parent.repaint();
-		this.parent.validate();
-		this.hasVal = true;
-	}
+    /**
+     * Here the component will be exchanged
+     *
+     * @param c The component to exchange with.
+     */
+    public void changeWith(Component c) {
+        this.parent.setMainContent(c);
 
-	/** To get the main gui from AGG back just call restore */
-	public void restore() {
-		AGGAppl.resetMainContent();
+        this.parent.repaint();
+        this.parent.validate();
+        this.hasVal = true;
+    }
 
-		this.parent.repaint();
-		this.parent.validate();
-		this.hasVal = false;
-	}
+    /**
+     * To get the main gui from AGG back just call restore
+     */
+    public void restore() {
+        AGGAppl.resetMainContent();
 
-	/**
-	 * If a gui is exchanged and set in this object the result is true.
-	 * 
-	 * @return True if a component is stored.
-	 */
-	public boolean isSet() {
-		return this.hasVal;
-	}
+        this.parent.repaint();
+        this.parent.validate();
+        this.hasVal = false;
+    }
+
+    /**
+     * If a gui is exchanged and set in this object the result is true.
+     *
+     * @return True if a component is stored.
+     */
+    public boolean isSet() {
+        return this.hasVal;
+    }
 }
 /*
  * $Log: GUIExchange.java,v $

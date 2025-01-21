@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: Change_ObservableGone.java,v 1.2 2007/09/10 13:05:52 olga Exp $
-
 // $Log: Change_ObservableGone.java,v $
 // Revision 1.2  2007/09/10 13:05:52  olga
 // In this update:
@@ -33,23 +33,21 @@
 // Revision 1.3  1997/12/26 20:02:30  mich
 // + Minor commentary corrections.
 //
-
 package agg.util;
 
 import java.util.Observable;
 
 /**
- * This change information may be sent out by an observable object when it wants
- * its Observers to dispose their reference to it. This is necessary to break
- * the circular reference inherent to the observer pattern which makes it
+ * This change information may be sent out by an observable object when it wants its Observers to dispose their
+ * reference to it. This is necessary to break the circular reference inherent to the observer pattern which makes it
  * inaccessible for the garbage collector.
- * 
+ *
  * <p>
- * Its item is of type <code>java.util.Observable</code> and denotes the
- * observable that should no longer be referenced.
+ * Its item is of type <code>java.util.Observable</code> and denotes the observable that should no longer be referenced.
  */
 public class Change_ObservableGone extends Change {
-	public Change_ObservableGone(Observable item) {
-		super(item);
-	}
+
+    public Change_ObservableGone(Observable item) {
+        super(item);
+    }
 }

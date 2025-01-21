@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.EmptyStackException;
@@ -28,284 +29,262 @@ import agg.util.IntComparator;
 import agg.util.OrderedSet;
 import agg.util.Pair;
 
-
-
 //****************************************************************************+
 /**
- * This class provides a parser which needs critical pairs. The critical pair
- * must be <code>LayeredExcludePair</code>. So objects has to be instantiated
- * with <code>LayeredExcludePairContainer</code>. To be independent of a
- * grammar it is necessary to instantiate a object with a host graph and stop
- * graph separately.
- * 
+ * This class provides a parser which needs critical pairs. The critical pair must be <code>LayeredExcludePair</code>.
+ * So objects has to be instantiated with <code>LayeredExcludePairContainer</code>. To be independent of a grammar it is
+ * necessary to instantiate a object with a host graph and stop graph separately.
+ *
  * @author $Author: olga $
  * @version $Id: LayeredExcludeParser.java,v 1.17 2010/12/16 17:32:32 olga Exp $
  */
 public class LayeredExcludeParser extends ExcludeParser {
 
-	/**
-	 * The layer function for the parser
-	 */
-	// protected LayerFunction layer;
-	protected RuleLayer layer;
+    /**
+     * The layer function for the parser
+     */
+    // protected LayerFunction layer;
+    protected RuleLayer layer;
 
-	/**
-	 * Creates a new parser. This parser uses critical pair analysis for
-	 * optimized parsing. Additionally layered graph grammars provides more
-	 * efficiency.
-	 * 
-	 * @param grammar
-	 *            The graph grammar.
-	 * @param hostGraph
-	 *            The host graph.
-	 * @param stopGraph
-	 *            The stop graph.
-	 * @param excludeContainer
-	 *            The critical pairs
-	 * @param layer
-	 *            The layer function
-	 * @deprecated
-	 */
-	public LayeredExcludeParser(GraGra grammar, Graph hostGraph,
-			Graph stopGraph, LayeredExcludePairContainer excludeContainer,
-			LayerFunction layer) {
-		super(grammar, hostGraph, stopGraph, excludeContainer);
-		// this.layer = layer;
-	}
+    /**
+     * Creates a new parser. This parser uses critical pair analysis for optimized parsing. Additionally layered graph
+     * grammars provides more efficiency.
+     *
+     * @param grammar The graph grammar.
+     * @param hostGraph The host graph.
+     * @param stopGraph The stop graph.
+     * @param excludeContainer The critical pairs
+     * @param layer The layer function
+     * @deprecated
+     */
+    public LayeredExcludeParser(GraGra grammar, Graph hostGraph,
+            Graph stopGraph, LayeredExcludePairContainer excludeContainer,
+            LayerFunction layer) {
+        super(grammar, hostGraph, stopGraph, excludeContainer);
+        // this.layer = layer;
+    }
 
-	/**
-	 * Creates a new parser. This parser uses critical pair analysis for
-	 * optimized parsing. Additionally layered graph grammars provides more
-	 * efficiency.
-	 * 
-	 * @param grammar
-	 *            The graph grammar.
-	 * @param hostGraph
-	 *            The host graph.
-	 * @param stopGraph
-	 *            The stop graph.
-	 * @param excludeContainer
-	 *            The critical pairs
-	 */
-	public LayeredExcludeParser(GraGra grammar, Graph hostGraph,
-			Graph stopGraph, LayeredExcludePairContainer excludeContainer,
-			RuleLayer layer) {
-		super(grammar, hostGraph, stopGraph, excludeContainer);
-		this.layer = layer;
-	}
+    /**
+     * Creates a new parser. This parser uses critical pair analysis for optimized parsing. Additionally layered graph
+     * grammars provides more efficiency.
+     *
+     * @param grammar The graph grammar.
+     * @param hostGraph The host graph.
+     * @param stopGraph The stop graph.
+     * @param excludeContainer The critical pairs
+     */
+    public LayeredExcludeParser(GraGra grammar, Graph hostGraph,
+            Graph stopGraph, LayeredExcludePairContainer excludeContainer,
+            RuleLayer layer) {
+        super(grammar, hostGraph, stopGraph, excludeContainer);
+        this.layer = layer;
+    }
 
-	/**
-	 * Starts the parser.
-	 * 
-	 * @return true if the graph can be parsed.
-	 */
-	@SuppressWarnings("rawtypes")
-	public boolean parse() {
-		System.out.println("### Starting layered exclude parser with CPA...");
-		fireParserEvent(new ParserMessageEvent(this,
-				"Starting layered exclude parser ..."));
-		
-		Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer(); // layer.getRuleLayer());
-		OrderedSet<Integer> ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
-		for (Enumeration<Integer> en = invertedRuleLayer.keys(); en.hasMoreElements();)
-			ruleLayer.add(en.nextElement());
-		
-		Integer currentLayer = this.layer.getStartLayer();
-		int i=0;
-		
-		/*
+    /**
+     * Starts the parser.
+     *
+     * @return true if the graph can be parsed.
+     */
+    @SuppressWarnings("rawtypes")
+    public boolean parse() {
+        System.out.println("### Starting layered exclude parser with CPA...");
+        fireParserEvent(new ParserMessageEvent(this,
+                "Starting layered exclude parser ..."));
+
+        Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer(); // layer.getRuleLayer());
+        OrderedSet<Integer> ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
+        for (Enumeration<Integer> en = invertedRuleLayer.keys(); en.hasMoreElements();) {
+            ruleLayer.add(en.nextElement());
+        }
+
+        Integer currentLayer = this.layer.getStartLayer();
+        int i = 0;
+
+        /*
 		 * haelt alle Matche, die kritisch sind, damit nicht an einer Stelle
 		 * immer wieder angesetzt wird
-		 */
-		RuleInstances eri = new RuleInstances();
-		Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
-		if (this.stop)
-			return false;
+         */
+        RuleInstances eri = new RuleInstances();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
+        if (this.stop) {
+            return false;
+        }
 
-		try {
-			conflictFree = this.pairContainer
-					.getContainer(CriticalPair.CONFLICTFREE);
-		} catch (InvalidAlgorithmException iae) {
-			fireParserEvent(new ParserErrorEvent(iae, "ERROR: "
-					+ iae.getMessage()));
-			return false;
-		}
-		Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
-		if (this.stop)
-			return false;
+        try {
+            conflictFree = this.pairContainer
+                    .getContainer(CriticalPair.CONFLICTFREE);
+        } catch (InvalidAlgorithmException iae) {
+            fireParserEvent(new ParserErrorEvent(iae, "ERROR: "
+                    + iae.getMessage()));
+            return false;
+        }
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
+        if (this.stop) {
+            return false;
+        }
 
-		try {
-			exclude = this.pairContainer.getContainer(CriticalPair.EXCLUDE);
-		} catch (InvalidAlgorithmException iae) {
-			fireParserEvent(new ParserErrorEvent(iae, "ERROR: "
-					+ iae.getMessage()));
-			return false;
-		}
+        try {
+            exclude = this.pairContainer.getContainer(CriticalPair.EXCLUDE);
+        } catch (InvalidAlgorithmException iae) {
+            fireParserEvent(new ParserErrorEvent(iae, "ERROR: "
+                    + iae.getMessage()));
+            return false;
+        }
 
-		Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> 
-		excludeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-		makeLightContainer(exclude, excludeLight);
-		
-		Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> 
-		conflictFreeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-		makeLightContainer(conflictFree, conflictFreeLight);
-		/*
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        makeLightContainer(exclude, excludeLight);
+
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        makeLightContainer(conflictFree, conflictFreeLight);
+        /*
 		 * makeLightContainer kann nur die Elemente filtern, in denen alle teile
 		 * false liefern. Mischformen fallen durch
-		 */
-		for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
-				.hasMoreElements();) {
-			Object key = keys.nextElement();
-			if ((key != null) && excludeLight.containsKey(key)) {
-				conflictFreeLight.remove(key);
-			}
-		}
-		Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> 
-		layeredExcludeLight 
-		= new Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>>();
-		Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> 
-		layeredConflictFreeLight 
-		= new Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>>();
-                /*
+         */
+        for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
+                .hasMoreElements();) {
+            Object key = keys.nextElement();
+            if ((key != null) && excludeLight.containsKey(key)) {
+                conflictFreeLight.remove(key);
+            }
+        }
+        Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredExcludeLight
+                = new Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>>();
+        Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredConflictFreeLight
+                = new Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>>();
+        /*
                  * es gibt ein set von rules fuer einen bestimmten layer ausserdem gibt
                  * es set von confliktfreien regeln aller layer synchronisieren beider
                  * sets. Hashtable Integer layer -> gefilterten confliktfreien Hashtable
-                 */
-                Iterator<Integer> iter = ruleLayer.iterator();
-                    while (iter.hasNext() && !this.stop) {
-			Integer l = (Integer) iter.next();
-			if (l == null) {
-				continue;
-			}
-			
-			HashSet lRules = invertedRuleLayer.get(l);
-			/* fuer alle regeln eines Layeres */
-			for (Iterator<?> en2 = lRules.iterator(); en2.hasNext() && !this.stop;) {
-				Rule r = (Rule) en2.next();
-				Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> 
-				value = conflictFreeLight.get(r);
-				/* falls die Regel im conflictFreeLight ist */
-				if (value != null) {
-					/* neue Hashtable aufbauen */
-					Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> 
-					hashtable = layeredConflictFreeLight.get(l);
-					if (hashtable == null) {
-						hashtable = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-						layeredConflictFreeLight.put(l, hashtable);
-					}
-					hashtable.put(r, value);
-				} else {
-					/* ansonsten muss die Regel ja in exclude sein */
-					value = excludeLight.get(r);
-					/* vertrauen ist gut, kontrolle ist besser */
-					if (value != null) {
-						/* neue Hashtable aufbauen */
-						Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> 
-						hashtable = layeredExcludeLight.get(l);
-						if (hashtable == null) {
-							hashtable = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-							layeredExcludeLight.put(l, hashtable);
-						}
-						hashtable.put(r, value);
-					}
-				}
-			}
-		}// for(Enumeration en =
+         */
+        Iterator<Integer> iter = ruleLayer.iterator();
+        while (iter.hasNext() && !this.stop) {
+            Integer l = (Integer) iter.next();
+            if (l == null) {
+                continue;
+            }
 
-		fireParserEvent(new ParserMessageEvent(this, "Parser initialized"));
-		// info only
+            HashSet lRules = invertedRuleLayer.get(l);
+            /* fuer alle regeln eines Layeres */
+            for (Iterator<?> en2 = lRules.iterator(); en2.hasNext() && !this.stop;) {
+                Rule r = (Rule) en2.next();
+                Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = conflictFreeLight.get(r);
+                /* falls die Regel im conflictFreeLight ist */
+                if (value != null) {
+                    /* neue Hashtable aufbauen */
+                    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredConflictFreeLight.get(l);
+                    if (hashtable == null) {
+                        hashtable = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+                        layeredConflictFreeLight.put(l, hashtable);
+                    }
+                    hashtable.put(r, value);
+                } else {
+                    /* ansonsten muss die Regel ja in exclude sein */
+                    value = excludeLight.get(r);
+                    /* vertrauen ist gut, kontrolle ist besser */
+                    if (value != null) {
+                        /* neue Hashtable aufbauen */
+                        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredExcludeLight.get(l);
+                        if (hashtable == null) {
+                            hashtable = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+                            layeredExcludeLight.put(l, hashtable);
+                        }
+                        hashtable.put(r, value);
+                    }
+                }
+            }
+        }// for(Enumeration en =
+
+        fireParserEvent(new ParserMessageEvent(this, "Parser initialized"));
+        // info only
 //		int count = 0;
-		boolean result = true;
-		while (!this.stop && !getHostGraph().isIsomorphicTo(this.stopGraph) && result) {
-			boolean ruleApplied = false;
-			if (currentLayer != null) {
-				Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> 
-				lFree = layeredConflictFreeLight.get(currentLayer);
-				Match m = null;
-				if (lFree != null)
-					m = findMatch(getHostGraph(), lFree.keySet().iterator(), eri);
-				if (m != null) {
+        boolean result = true;
+        while (!this.stop && !getHostGraph().isIsomorphicTo(this.stopGraph) && result) {
+            boolean ruleApplied = false;
+            if (currentLayer != null) {
+                Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lFree = layeredConflictFreeLight.get(currentLayer);
+                Match m = null;
+                if (lFree != null) {
+                    m = findMatch(getHostGraph(), lFree.keySet().iterator(), eri);
+                }
+                if (m != null) {
 //					String rulename = m.getRule().getName();
-					if (applyRule(m)) {
-						ruleApplied = true;
+                    if (applyRule(m)) {
+                        ruleApplied = true;
 //						count++;
-						try {
-							Thread.sleep(this.delay);
-						} catch (InterruptedException ex1) {
-						}
-					}
-				}
+                        try {
+                            Thread.sleep(this.delay);
+                        } catch (InterruptedException ex1) {
+                        }
+                    }
+                }
 
-				if (!ruleApplied && !this.stop) {
-					Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> 
-					lExclude = layeredExcludeLight
-							.get(currentLayer);
-					Match savedMatch = null;
-					if (lExclude != null) {
-						Enumeration<Rule> keys = lExclude.keys();
-						while (keys.hasMoreElements() && !ruleApplied) {
-							Rule r = keys.nextElement();
-							Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> 
-							inclusions = findInclusions(r, CriticalPair.EXCLUDE);
-							fireParserEvent(new ParserMessageEvent(this,
-									"Searching for difficult match of rule  \""
-											+ r.getName() + "\""));
-							m = BaseFactory.theFactory().createMatch(r,
-									getHostGraph());
-							m.setCompletionStrategy(
-									(MorphCompletionStrategy) this.grammar
-											.getMorphismCompletionStrategy()
-											.clone(), true);
+                if (!ruleApplied && !this.stop) {
+                    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lExclude = layeredExcludeLight
+                            .get(currentLayer);
+                    Match savedMatch = null;
+                    if (lExclude != null) {
+                        Enumeration<Rule> keys = lExclude.keys();
+                        while (keys.hasMoreElements() && !ruleApplied) {
+                            Rule r = keys.nextElement();
+                            Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> inclusions = findInclusions(r, CriticalPair.EXCLUDE);
+                            fireParserEvent(new ParserMessageEvent(this,
+                                    "Searching for difficult match of rule  \""
+                                    + r.getName() + "\""));
+                            m = BaseFactory.theFactory().createMatch(r,
+                                    getHostGraph());
+                            m.setCompletionStrategy(
+                                    (MorphCompletionStrategy) this.grammar
+                                            .getMorphismCompletionStrategy()
+                                            .clone(), true);
 
-							boolean validMatch = false;
-							while (!ruleApplied && m.nextCompletion() && !this.stop) {
-								if (m.isValid()) {
-									if (!isMatchCritic(m, inclusions)) {
-										if (applyRule(m)) {
-											ruleApplied = true;
+                            boolean validMatch = false;
+                            while (!ruleApplied && m.nextCompletion() && !this.stop) {
+                                if (m.isValid()) {
+                                    if (!isMatchCritic(m, inclusions)) {
+                                        if (applyRule(m)) {
+                                            ruleApplied = true;
 //											count++;
-											try {
-												Thread.sleep(this.delay);
-											} catch (InterruptedException ex1) {
-											}
-										}
-									} else {
-										if (!validMatch && savedMatch == null) {
-											if (!eri.isIn(m)) {
-												validMatch = true;
-												savedMatch = m;
-											}
-										}
-										break;
-									}
-								}
-								else {
-									break;
-								}
-							}
-							if (!validMatch) {
-								/*
+                                            try {
+                                                Thread.sleep(this.delay);
+                                            } catch (InterruptedException ex1) {
+                                            }
+                                        }
+                                    } else {
+                                        if (!validMatch && savedMatch == null) {
+                                            if (!eri.isIn(m)) {
+                                                validMatch = true;
+                                                savedMatch = m;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                } else {
+                                    break;
+                                }
+                            }
+                            if (!validMatch) {
+                                /*
 								 * Match darf nur geloescht werden, wenn er
 								 * nicht savedMatch ist
-								 */
-								BaseFactory.theFactory().destroyMatch(m);
-							}
-						}// while(keys.hasMoreElements()&& !ruleApplied)
-					}// if(lExclude != null)
+                                 */
+                                BaseFactory.theFactory().destroyMatch(m);
+                            }
+                        }// while(keys.hasMoreElements()&& !ruleApplied)
+                    }// if(lExclude != null)
 
-					/*
+                    /*
 					 * wenn keine Regel angewendet wurde, dann kann nur noch
 					 * eine kritische Regel angewendet werden.
-					 */
-					if (!this.stop && !ruleApplied && savedMatch != null) {
-						/* push onto Stack */
-						OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
-						if (copyMorph != null) { 
-							copyMorph.getTarget().setName("Graph_Copy");
-							fireParserEvent(new ParserMessageEvent(copyMorph,
-									"IsoCopy"));
-							eri.add(savedMatch);
-							/*
+                     */
+                    if (!this.stop && !ruleApplied && savedMatch != null) {
+                        /* push onto Stack */
+                        OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
+                        if (copyMorph != null) {
+                            copyMorph.getTarget().setName("Graph_Copy");
+                            fireParserEvent(new ParserMessageEvent(copyMorph,
+                                    "IsoCopy"));
+                            eri.add(savedMatch);
+                            /*
 							 * ERI muss nicht kopiert werden, da nur an
 							 * Entscheidungsstellen der Match/die Matches gemerkt
 							 * werden mssen, die uns m�licherweise auf einen Holzweg
@@ -314,90 +293,90 @@ public class LayeredExcludeParser extends ExcludeParser {
 							 * mehr verfgbar. Dadurch kann ein neues ERI erzeugt
 							 * werden. Auf dem Stack liegen dann nur die
 							 * Ableitungen, die uns in eine Sackgasse gefhrt haben.
-							 */
-							TripleData 
-							tmpTriple = new TripleData(getHostGraph(), eri, currentLayer);
-							this.stack.push(tmpTriple);
-							eri = new RuleInstances();
-							/*
+                             */
+                            TripleData tmpTriple = new TripleData(getHostGraph(), eri, currentLayer);
+                            this.stack.push(tmpTriple);
+                            eri = new RuleInstances();
+                            /*
 							 * Die Regel muss auf den kopierten Graphen mit
 							 * DEMSELBEN kopierten Match angewendet werden.
-							 */
-							setHostGraph(copyMorph.getImage());
-							OrdinaryMorphism tmpMorph = savedMatch
-									.compose(copyMorph);
-							Match n = tmpMorph.makeMatch(savedMatch.getRule());
-							n.setCompletionStrategy(
-									(MorphCompletionStrategy) this.grammar
-											.getMorphismCompletionStrategy()
-											.clone(), true);
-	
-							boolean notFound = false;
-							while (!n.isValid() && !notFound) {
-								if (!n.nextCompletion())
-									notFound = true;
-							}
-							if (!notFound) {
-								if (applyRule(n)) {
-									ruleApplied = true;
+                             */
+                            setHostGraph(copyMorph.getImage());
+                            OrdinaryMorphism tmpMorph = savedMatch
+                                    .compose(copyMorph);
+                            Match n = tmpMorph.makeMatch(savedMatch.getRule());
+                            n.setCompletionStrategy(
+                                    (MorphCompletionStrategy) this.grammar
+                                            .getMorphismCompletionStrategy()
+                                            .clone(), true);
+
+                            boolean notFound = false;
+                            while (!n.isValid() && !notFound) {
+                                if (!n.nextCompletion()) {
+                                    notFound = true;
+                                }
+                            }
+                            if (!notFound) {
+                                if (applyRule(n)) {
+                                    ruleApplied = true;
 //									count++;
-									try {
-										Thread.sleep(this.delay);
-									} catch (InterruptedException ex1) {
-									}
-								}
-							}
-						}
-					}// if(!ruleApplied && savedMatch != null)
+                                    try {
+                                        Thread.sleep(this.delay);
+                                    } catch (InterruptedException ex1) {
+                                    }
+                                }
+                            }
+                        }
+                    }// if(!ruleApplied && savedMatch != null)
 
-					if (!ruleApplied) {
-						/* naechster Layer soll verwendet werden. */
-						i++;
-						boolean nextLayerExists = true;
-						if (i < ruleLayer.size()) {
-							currentLayer = ruleLayer.get(i);
-						}
-						else {
-							nextLayerExists = false;
-						}
-						if (!nextLayerExists) {
-							try {
-								TripleData tmpTriple = (TripleData) this.stack.pop();
-								/* backtrack */
-								setHostGraph(tmpTriple.getHostGraph());
-								eri = tmpTriple.getRuleInstance();
-								currentLayer = tmpTriple.getLayer();
-							} catch (EmptyStackException ioe) {
-								/* Stack ist leer */
-								fireParserEvent(new ParserErrorEvent(this,
-										"ERROR: This graph is not part of the language"));
-								result = false;
-							}
-						}
-					}
-				}
-			}// if(currentLayer != null)
-			else {
-				result = false;
-			}
-		}// while(!getHostGraph().isIsomorphicWith(stopGraph)&& result)
-		if (this.stop) {
-			result = false;
-		}
-		while (!this.stack.empty()) {
-			try {
-				fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
-				TripleData tmpTriple = (TripleData) this.stack.pop();
-				Graph g = tmpTriple.getHostGraph();
-				g.dispose();
-			} catch (EmptyStackException ioe) {}
-		}
+                    if (!ruleApplied) {
+                        /* naechster Layer soll verwendet werden. */
+                        i++;
+                        boolean nextLayerExists = true;
+                        if (i < ruleLayer.size()) {
+                            currentLayer = ruleLayer.get(i);
+                        } else {
+                            nextLayerExists = false;
+                        }
+                        if (!nextLayerExists) {
+                            try {
+                                TripleData tmpTriple = (TripleData) this.stack.pop();
+                                /* backtrack */
+                                setHostGraph(tmpTriple.getHostGraph());
+                                eri = tmpTriple.getRuleInstance();
+                                currentLayer = tmpTriple.getLayer();
+                            } catch (EmptyStackException ioe) {
+                                /* Stack ist leer */
+                                fireParserEvent(new ParserErrorEvent(this,
+                                        "ERROR: This graph is not part of the language"));
+                                result = false;
+                            }
+                        }
+                    }
+                }
+            }// if(currentLayer != null)
+            else {
+                result = false;
+            }
+        }// while(!getHostGraph().isIsomorphicWith(stopGraph)&& result)
+        if (this.stop) {
+            result = false;
+        }
+        while (!this.stack.empty()) {
+            try {
+                fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
+                TripleData tmpTriple = (TripleData) this.stack.pop();
+                Graph g = tmpTriple.getHostGraph();
+                g.dispose();
+            } catch (EmptyStackException ioe) {
+            }
+        }
 
-		fireParserEvent(new ParserMessageEvent(this,
-				"Stopping parser. Result is " + result + "."));
-		this.correct = result;
-		return result;
-	}
+        fireParserEvent(new ParserMessageEvent(this,
+                "Stopping parser. Result is " + result + "."));
+        this.correct = result;
+        return result;
+    }
 
 }
 

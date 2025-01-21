@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.Iterator;
@@ -25,323 +26,303 @@ import agg.xt_basis.TypeException;
 
 // ---------------------------------------------------------------------------+
 /**
- * This parser eats graphs which are created by AGG. A parser needs a host graph
- * and a stop graph. The graph grammar for parsing must contain reducing rules.
- * This abstract parser provides some convenient methods for parsing.
- * 
+ * This parser eats graphs which are created by AGG. A parser needs a host graph and a stop graph. The graph grammar for
+ * parsing must contain reducing rules. This abstract parser provides some convenient methods for parsing.
+ *
  * @author $Author: olga $ Parser Group
  * @version $Id: AbstractParser.java,v 1.15 2010/08/18 09:26:52 olga Exp $
  */
 public abstract class AbstractParser implements Parser {
 
-	/**
-	 * The grammar which can recognize a graph
-	 */
-	protected GraGra grammar;
+    /**
+     * The grammar which can recognize a graph
+     */
+    protected GraGra grammar;
 
-	/**
-	 * The Graph which will be parsed
-	 */
-	protected Graph graph;
+    /**
+     * The Graph which will be parsed
+     */
+    protected Graph graph;
 
-	/**
-	 * The graph which stops the algorithm
-	 */
-	protected Graph stopGraph;
+    /**
+     * The graph which stops the algorithm
+     */
+    protected Graph stopGraph;
 
-	/**
-	 * The set of critical pairs
-	 */
-	protected PairContainer pairContainer;
+    /**
+     * The set of critical pairs
+     */
+    protected PairContainer pairContainer;
 
-	/**
-	 * All listerner which want to receive events
-	 */
-	protected Vector<ParserEventListener> listener;
+    /**
+     * All listerner which want to receive events
+     */
+    protected Vector<ParserEventListener> listener;
 
-	protected int delay;
+    protected int delay;
 
-	/**
-	 * Creates a new abstract parser. This parser stores all the basic
-	 * information like host graph, stop graph, critical pairs and graph
-	 * grammar.
-	 * 
-	 * @param grammar
-	 *            The graph grammar.
-	 * @param hostGraph
-	 *            The host graph.
-	 * @param stopGraph
-	 *            The stop graph.
-	 * @param pairContainer
-	 *            The container of the critical pairs.
-	 */
-	public AbstractParser(GraGra grammar, Graph hostGraph, Graph stopGraph,
-			PairContainer pairContainer) {
-		this.listener = new Vector<ParserEventListener>();
-		setHostGraph(hostGraph);
-		setStopGraph(stopGraph);
-		setGrammar(grammar);
-		setCriticalPairs(pairContainer);
-	}
+    /**
+     * Creates a new abstract parser. This parser stores all the basic information like host graph, stop graph, critical
+     * pairs and graph grammar.
+     *
+     * @param grammar The graph grammar.
+     * @param hostGraph The host graph.
+     * @param stopGraph The stop graph.
+     * @param pairContainer The container of the critical pairs.
+     */
+    public AbstractParser(GraGra grammar, Graph hostGraph, Graph stopGraph,
+            PairContainer pairContainer) {
+        this.listener = new Vector<ParserEventListener>();
+        setHostGraph(hostGraph);
+        setStopGraph(stopGraph);
+        setGrammar(grammar);
+        setCriticalPairs(pairContainer);
+    }
 
-	/**
-	 * Sets the host graph for the parser.
-	 * 
-	 * @param hostGraph
-	 *            The host graph.
-	 */
-	public void setHostGraph(Graph hostGraph) {
-		this.graph = hostGraph;
-	}
+    /**
+     * Sets the host graph for the parser.
+     *
+     * @param hostGraph The host graph.
+     */
+    public void setHostGraph(Graph hostGraph) {
+        this.graph = hostGraph;
+    }
 
-	/**
-	 * Sets the stop graph for the parser.
-	 * 
-	 * @param stopGraph
-	 *            The stop graph.
-	 */
-	public void setStopGraph(Graph stopGraph) {
-		this.stopGraph = stopGraph;
-	}
+    /**
+     * Sets the stop graph for the parser.
+     *
+     * @param stopGraph The stop graph.
+     */
+    public void setStopGraph(Graph stopGraph) {
+        this.stopGraph = stopGraph;
+    }
 
-	/**
-	 * Sets the critical pairs for the parser.
-	 * 
-	 * @param pairs
-	 *            The critical pairs are holded in a container.
-	 */
-	public void setCriticalPairs(PairContainer pairs) {
-		this.pairContainer = pairs;
-	}
+    /**
+     * Sets the critical pairs for the parser.
+     *
+     * @param pairs The critical pairs are holded in a container.
+     */
+    public void setCriticalPairs(PairContainer pairs) {
+        this.pairContainer = pairs;
+    }
 
-	/**
-	 * Sets the grammar for the parser. This grammar must contain reducing
-	 * rules.
-	 * 
-	 * @param grammar
-	 *            The grammar for the parser.
-	 */
-	public void setGrammar(GraGra grammar) {
-		this.grammar = grammar;
-	}
+    /**
+     * Sets the grammar for the parser. This grammar must contain reducing rules.
+     *
+     * @param grammar The grammar for the parser.
+     */
+    public void setGrammar(GraGra grammar) {
+        this.grammar = grammar;
+    }
 
-	/**
-	 * Returns the host graph from the parser. This method is important to get
-	 * the current state of parsing process.
-	 * 
-	 * @return The current host graph.
-	 */
-	public Graph getHostGraph() {
-		return this.graph;
-	}
+    /**
+     * Returns the host graph from the parser. This method is important to get the current state of parsing process.
+     *
+     * @return The current host graph.
+     */
+    public Graph getHostGraph() {
+        return this.graph;
+    }
 
-	/**
-	 * Returns the host graph from the parser. This method is important to get
-	 * the current state of parsing process.
-	 * 
-	 * @return The current host graph.
-	 */
-	public Graph getGraph() {
-		return getHostGraph();
-	}
+    /**
+     * Returns the host graph from the parser. This method is important to get the current state of parsing process.
+     *
+     * @return The current host graph.
+     */
+    public Graph getGraph() {
+        return getHostGraph();
+    }
 
-	/**
-	 * Returns the current stop graph of the parser.
-	 * 
-	 * @return The stop graph.
-	 */
-	public Graph getStopGraph() {
-		return this.stopGraph;
-	}
+    /**
+     * Returns the current stop graph of the parser.
+     *
+     * @return The stop graph.
+     */
+    public Graph getStopGraph() {
+        return this.stopGraph;
+    }
 
-	// -----------------------------------------------------------------------+
-	/**
-	 * Starts the parser. The result is true if the parser can parse the graph
-	 * 
-	 * @return true if the graph can be parsed.
-	 */
-	public abstract boolean parse();
+    // -----------------------------------------------------------------------+
+    /**
+     * Starts the parser. The result is true if the parser can parse the graph
+     *
+     * @return true if the graph can be parsed.
+     */
+    public abstract boolean parse();
 
-	/**
-	 * Applys a rule on a host graph. As the match provides access as well as to
-	 * the rule of the match as to the host graph.
-	 * 
-	 * @param m
-	 *            The match.
-	 */
-	protected boolean applyRule(Match m) {
-		Morphism comatch = null;
-		if (m.isValid()) {
+    /**
+     * Applys a rule on a host graph. As the match provides access as well as to the rule of the match as to the host
+     * graph.
+     *
+     * @param m The match.
+     */
+    protected boolean applyRule(Match m) {
+        Morphism comatch = null;
+        if (m.isValid()) {
 //			TestStep s = new TestStep();
-			try {
-				comatch = StaticStep.execute(m);
-				((agg.xt_basis.OrdinaryMorphism) comatch).dispose();
-			} catch (TypeException e) {
-				fireParserEvent(new ParserErrorEvent(this, "Rule  <"
-						+ m.getRule().getName() + ">  cannot be applied"));
-				return false;
-			}
-			fireParserEvent(new ParserMessageEvent(this, "Rule  <"
-					+ m.getRule().getName() + ">  is applied"));
-			m.dispose();
-		} else {
-			/*
+            try {
+                comatch = StaticStep.execute(m);
+                ((agg.xt_basis.OrdinaryMorphism) comatch).dispose();
+            } catch (TypeException e) {
+                fireParserEvent(new ParserErrorEvent(this, "Rule  <"
+                        + m.getRule().getName() + ">  cannot be applied"));
+                return false;
+            }
+            fireParserEvent(new ParserMessageEvent(this, "Rule  <"
+                    + m.getRule().getName() + ">  is applied"));
+            m.dispose();
+        } else {
+            /*
 			 * dieser Fall sollte nie eintreten, da vor dem Aufruf von applyRule
 			 * der Match m ueberprueft werden sollte
-			 */
-			fireParserEvent(new ParserErrorEvent(this, "Rule  <"
-					+ m.getRule().getName() + ">  cannot be applied"));
-		}
-		return true;
-	}
+             */
+            fireParserEvent(new ParserErrorEvent(this, "Rule  <"
+                    + m.getRule().getName() + ">  cannot be applied"));
+        }
+        return true;
+    }
 
-	// ----------------------------------------------------------------------+
-	/**
-	 * Finds a <B>valid</B> match for a set of rules. Additionally there is a
-	 * check on <CODE>RuleInstances</CODE>.
-	 * 
-	 * @param g
-	 *            The graph to match into. Usually the host graph.
-	 * @param rules
-	 *            This enumeration must contain rule objects.
-	 * @param eri
-	 *            The rule instances.
-	 * @return The valid match from a choosen rule into the graph.
-	 */
-	protected Match findMatch(Graph g, Iterator<?> rules, RuleInstances eri) {
-		boolean found = false;
-		Match resultMatch = null;
-		while (rules.hasNext() && !found) {
-			Rule rule = (Rule) rules.next();
-			resultMatch = BaseFactory.theFactory().createMatch(rule, g);
+    // ----------------------------------------------------------------------+
+    /**
+     * Finds a <B>valid</B> match for a set of rules. Additionally there is a check on <CODE>RuleInstances</CODE>.
+     *
+     * @param g The graph to match into. Usually the host graph.
+     * @param rules This enumeration must contain rule objects.
+     * @param eri The rule instances.
+     * @return The valid match from a choosen rule into the graph.
+     */
+    protected Match findMatch(Graph g, Iterator<?> rules, RuleInstances eri) {
+        boolean found = false;
+        Match resultMatch = null;
+        while (rules.hasNext() && !found) {
+            Rule rule = (Rule) rules.next();
+            resultMatch = BaseFactory.theFactory().createMatch(rule, g);
 
-			resultMatch.setCompletionStrategy((MorphCompletionStrategy) this.grammar
-					.getMorphismCompletionStrategy().clone(), true);
+            resultMatch.setCompletionStrategy((MorphCompletionStrategy) this.grammar
+                    .getMorphismCompletionStrategy().clone(), true);
 
-			while (!found && resultMatch.nextCompletion()) {
-				if (resultMatch.isValid()) {
-					if (eri != null) {
-						if (!eri.isIn(resultMatch))
-							found = true;
-					} else {
-						found = true;
-					}
-				}
-			}
-			if (!found) {
-				BaseFactory.theFactory().destroyMatch(resultMatch);
-				resultMatch = null;
-			}
-		}
-		return resultMatch;
-	}
+            while (!found && resultMatch.nextCompletion()) {
+                if (resultMatch.isValid()) {
+                    if (eri != null) {
+                        if (!eri.isIn(resultMatch)) {
+                            found = true;
+                        }
+                    } else {
+                        found = true;
+                    }
+                }
+            }
+            if (!found) {
+                BaseFactory.theFactory().destroyMatch(resultMatch);
+                resultMatch = null;
+            }
+        }
+        return resultMatch;
+    }
 
-	// ----------------------------------------------------------------------+
-	/**
-	 * Finds a <B>valid</B> match for the given set of rules.
-	 * 
-	 * @param g
-	 *            the graph to match into. Usually the host graph.
-	 * @param rules
-	 *            the rule set
-	 * @return 
-	 * 		a valid match of an applicable rule of the set into the graph.
-	 */
-	protected Match findMatch(Graph g, Iterator<Rule> rules) {
-		return findMatch(g, rules, null);
-	}
+    // ----------------------------------------------------------------------+
+    /**
+     * Finds a <B>valid</B> match for the given set of rules.
+     *
+     * @param g the graph to match into. Usually the host graph.
+     * @param rules the rule set
+     * @return a valid match of an applicable rule of the set into the graph.
+     */
+    protected Match findMatch(Graph g, Iterator<Rule> rules) {
+        return findMatch(g, rules, null);
+    }
 
-	// ----------------------------------------------------------------------+
-	/**
-	 * Clears some internal stuff.
-	 */
-	protected void finalize() {
-		getHostGraph().dispose();
-	}
+    // ----------------------------------------------------------------------+
+    /**
+     * Clears some internal stuff.
+     */
+    protected void finalize() {
+        getHostGraph().dispose();
+    }
 
-	// ----------------------------------------------------------------------+
-	/**
-	 * Parse the methods and attributes of an UML-Diagram.
-	 */
-	public void parseString() {
-	}
+    // ----------------------------------------------------------------------+
+    /**
+     * Parse the methods and attributes of an UML-Diagram.
+     */
+    public void parseString() {
+    }
 
-	// -----------------------------------------------------------------------+
-	/**
-	 * Adds a ParserEventListener.
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void addParserEventListener(ParserEventListener l) {
-		if (!this.listener.contains(l)) {
-			this.listener.addElement(l);
-		}
-	}
+    // -----------------------------------------------------------------------+
+    /**
+     * Adds a ParserEventListener.
+     *
+     * @param l The listener.
+     */
+    public void addParserEventListener(ParserEventListener l) {
+        if (!this.listener.contains(l)) {
+            this.listener.addElement(l);
+        }
+    }
 
-	// -----------------------------------------------------------------------+
-	/**
-	 * Removes a ParserEventListener
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void removeParserEventListener(ParserEventListener l) {
-		if (this.listener.contains(l))
-			this.listener.removeElement(l);
-	}
+    // -----------------------------------------------------------------------+
+    /**
+     * Removes a ParserEventListener
+     *
+     * @param l The listener.
+     */
+    public void removeParserEventListener(ParserEventListener l) {
+        if (this.listener.contains(l)) {
+            this.listener.removeElement(l);
+        }
+    }
 
-	// ***********************************************************************+
-	/**
-	 * Sends a event to all its listeners.
-	 * 
-	 * @param event
-	 *            The event which will be sent
-	 */
-	protected synchronized void fireParserEvent(ParserEvent event) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			this.listener.elementAt(i).parserEventOccured(event);
-		}
-	}
+    // ***********************************************************************+
+    /**
+     * Sends a event to all its listeners.
+     *
+     * @param event The event which will be sent
+     */
+    protected synchronized void fireParserEvent(ParserEvent event) {
+        for (int i = 0; i < this.listener.size(); i++) {
+            this.listener.elementAt(i).parserEventOccured(event);
+        }
+    }
 
-	protected void printImageGraph(Morphism m) {
-		System.out.println("Image graph of match:  " + m);
-		Graph left = m.getOriginal();
-		Iterator<?> e = left.getNodesSet().iterator();		
-		while (e.hasNext()) {
-			GraphObject o = (GraphObject) e.next();
-			GraphObject i = m.getImage(o);
-			if (i != null)
-				System.out.print(i);
-		}
-		e = left.getArcsSet().iterator();		
-		while (e.hasNext()) {
-			GraphObject o = (GraphObject) e.next();
-			GraphObject i = m.getImage(o);
-			if (i != null)
-				System.out.print(i);
-		}
-		System.out.println();
-	}
+    protected void printImageGraph(Morphism m) {
+        System.out.println("Image graph of match:  " + m);
+        Graph left = m.getOriginal();
+        Iterator<?> e = left.getNodesSet().iterator();
+        while (e.hasNext()) {
+            GraphObject o = (GraphObject) e.next();
+            GraphObject i = m.getImage(o);
+            if (i != null) {
+                System.out.print(i);
+            }
+        }
+        e = left.getArcsSet().iterator();
+        while (e.hasNext()) {
+            GraphObject o = (GraphObject) e.next();
+            GraphObject i = m.getImage(o);
+            if (i != null) {
+                System.out.print(i);
+            }
+        }
+        System.out.println();
+    }
 
-	protected void printGraph(Graph g) {		
-		System.out.println("Graph of match:  ");
-		Iterator<?> e = g.getNodesSet().iterator();
-		while (e.hasNext()) {
-			GraphObject o = (GraphObject) e.next();
-			System.out.print(o);
-		}
-		e = g.getArcsSet().iterator();
-		while (e.hasNext()) {
-			GraphObject o = (GraphObject) e.next();
-			System.out.print(o);
-		}
-		System.out.println();
-	}
+    protected void printGraph(Graph g) {
+        System.out.println("Graph of match:  ");
+        Iterator<?> e = g.getNodesSet().iterator();
+        while (e.hasNext()) {
+            GraphObject o = (GraphObject) e.next();
+            System.out.print(o);
+        }
+        e = g.getArcsSet().iterator();
+        while (e.hasNext()) {
+            GraphObject o = (GraphObject) e.next();
+            System.out.print(o);
+        }
+        System.out.println();
+    }
 
-	public void setDelayAfterApplyRule(int miliseconds) {
-		this.delay = miliseconds;
-	}
+    public void setDelayAfterApplyRule(int miliseconds) {
+        this.delay = miliseconds;
+    }
 
 }
 

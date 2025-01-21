@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.cpa;
 
 import java.awt.Component;
@@ -18,81 +19,77 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import agg.gui.IconResource;
 
 /**
- * The renderer supports some user friendly items for a tree. So this class
- * tells a rule tree to display the AGG typical items.
- * 
+ * The renderer supports some user friendly items for a tree. So this class tells a rule tree to display the AGG typical
+ * items.
+ *
  * @version $Id: RuleTreeCellRenderer.java,v 1.4 2010/09/23 08:18:49 olga Exp $
  * @author $Author: olga $
  */
 @SuppressWarnings("serial")
 public class RuleTreeCellRenderer extends DefaultTreeCellRenderer {
 
-	ImageIcon gragra, rule, nac;
+    ImageIcon gragra, rule, nac;
 
-	/**
-	 * Creates a new renderer and sets all the important images for the tree.
-	 */
-	public RuleTreeCellRenderer() {
-		this.gragra = IconResource.getIconFromURL(IconResource.getURLGraGra());
-		this.rule = IconResource.getIconFromURL(IconResource.getURLRule());
-		this.nac = IconResource.getIconFromURL(IconResource.getURLNAC());
-	}
+    /**
+     * Creates a new renderer and sets all the important images for the tree.
+     */
+    public RuleTreeCellRenderer() {
+        this.gragra = IconResource.getIconFromURL(IconResource.getURLGraGra());
+        this.rule = IconResource.getIconFromURL(IconResource.getURLRule());
+        this.nac = IconResource.getIconFromURL(IconResource.getURLNAC());
+    }
 
-	/**
-	 * Returns a little picture for the rule tree.
-	 * 
-	 * @param tree
-	 *            The customized tree.
-	 * @param value
-	 *            The value of a node of the tree.
-	 * @param sel
-	 *            true if the node is selected.
-	 * @param expanded
-	 *            true if the node is expanded.
-	 * @param leaf
-	 *            true if the node is a leaf.
-	 * @param row
-	 *            The index of the row of the node.
-	 * @param focus
-	 *            true if the node has the focus.
-	 * @return The little picture for the node.
-	 */
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
-			boolean sel, boolean expanded, boolean leaf, int row,
-			boolean focus) {
-		super.getTreeCellRendererComponent(tree, value, sel, expanded,
-				leaf, row, focus);
+    /**
+     * Returns a little picture for the rule tree.
+     *
+     * @param tree The customized tree.
+     * @param value The value of a node of the tree.
+     * @param sel true if the node is selected.
+     * @param expanded true if the node is expanded.
+     * @param leaf true if the node is a leaf.
+     * @param row The index of the row of the node.
+     * @param focus true if the node has the focus.
+     * @return The little picture for the node.
+     */
+    public Component getTreeCellRendererComponent(JTree tree, Object value,
+            boolean sel, boolean expanded, boolean leaf, int row,
+            boolean focus) {
+        super.getTreeCellRendererComponent(tree, value, sel, expanded,
+                leaf, row, focus);
 
-		if (isRoot(value)) {
-			setIcon(this.gragra);
-		} else if (isRule(value)) {
-			setIcon(this.rule);
-		} else if (isNAC(value)) {
-			setIcon(this.nac);
-		}
-		return this;
-	}
+        if (isRoot(value)) {
+            setIcon(this.gragra);
+        } else if (isRule(value)) {
+            setIcon(this.rule);
+        } else if (isNAC(value)) {
+            setIcon(this.nac);
+        }
+        return this;
+    }
 
-	private boolean isRoot(Object o) {
-		if (o instanceof RuleModel.TreeData)
-			return ((RuleModel.TreeData) o).isRoot();
-		
-		return false;
-	}
+    private boolean isRoot(Object o) {
+        if (o instanceof RuleModel.TreeData) {
+            return ((RuleModel.TreeData) o).isRoot();
+        }
 
-	private boolean isRule(Object o) {
-		if (o instanceof RuleModel.TreeData)
-			return ((RuleModel.TreeData) o).isRule();
-		
-		return false;
-	}
+        return false;
+    }
 
-	private boolean isNAC(Object o) {
-		if (o instanceof RuleModel.TreeData)
-			return ((RuleModel.TreeData) o).isNAC();
-		
-		return false;
-	}
+    private boolean isRule(Object o) {
+        if (o instanceof RuleModel.TreeData) {
+            return ((RuleModel.TreeData) o).isRule();
+        }
+
+        return false;
+    }
+
+    private boolean isNAC(Object o) {
+        if (o instanceof RuleModel.TreeData) {
+            return ((RuleModel.TreeData) o).isNAC();
+        }
+
+        return false;
+    }
 
 }
 /*

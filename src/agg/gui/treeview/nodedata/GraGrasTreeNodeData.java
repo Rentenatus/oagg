@@ -1,98 +1,95 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: GraGrasTreeNodeData.java,v 1.3 2010/09/23 08:23:31 olga Exp $
-
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-
-
 /**
- * The GraGraTreeNodeData implements an user object of a tree node in the
- * GraGraTreeModel.
- * 
+ * The GraGraTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ *
  * @author $Author: olga $
  * @version $Id: GraGrasTreeNodeData.java,v 1.3 2010/09/23 08:23:31 olga Exp $
  */
 public class GraGrasTreeNodeData extends GraGraTreeNodeDataAdapter {
-	
-	/** Value to display. */
-	private String string = "";
 
-	/** My tree node in a tree */
-	private DefaultMutableTreeNode treeNode;
+    /**
+     * Value to display.
+     */
+    private String string = "";
 
-	/**
-	 * Constructs a new instance of GraGraTreeNodeData with the passed in
-	 * arguments.
-	 */
-	public GraGrasTreeNodeData(final String name) {
-		this.string = name;
-	}
+    /**
+     * My tree node in a tree
+     */
+    private DefaultMutableTreeNode treeNode;
 
-	public GraGrasTreeNodeData(final Object obj) {
-		if (obj instanceof String)
-			this.string = (String) obj;
-	}
+    /**
+     * Constructs a new instance of GraGraTreeNodeData with the passed in arguments.
+     */
+    public GraGrasTreeNodeData(final String name) {
+        this.string = name;
+    }
 
-	public void dispose() {
-		this.string = null;
-		this.treeNode = null;
-	}
-	
-	/* Set data object of this tree node data */
-	public void setData(Object obj) {
-		if (obj instanceof String) {
-			this.string = (String) obj;
-		}
-		else {
-			this.string = null;		
-		}
-	}
+    public GraGrasTreeNodeData(final Object obj) {
+        if (obj instanceof String) {
+            this.string = (String) obj;
+        }
+    }
 
-	public Object getData() {
-		return this.string;
-	}
-	
-	
-	/**
-	 * Sets the string to display for this object.
-	 */
-	public void setString(String str) {
-		if (str == null) {
-			return;
-		}
-		String newString = str.replaceAll(" ", "");
-		this.string = newString;
-	}
+    public void dispose() {
+        this.string = null;
+        this.treeNode = null;
+    }
 
-	/**
-	 * Returns the string to display for this object.
-	 */
-	public String string() {
-		return this.string;
-	}
+    /* Set data object of this tree node data */
+    public void setData(Object obj) {
+        if (obj instanceof String) {
+            this.string = (String) obj;
+        } else {
+            this.string = null;
+        }
+    }
 
-	public String toString() {
-		return this.string();
-	}
+    public Object getData() {
+        return this.string;
+    }
 
+    /**
+     * Sets the string to display for this object.
+     */
+    public void setString(String str) {
+        if (str == null) {
+            return;
+        }
+        String newString = str.replaceAll(" ", "");
+        this.string = newString;
+    }
 
-	public void setTreeNode(DefaultMutableTreeNode node) {
-		this.treeNode = node;
-	}
+    /**
+     * Returns the string to display for this object.
+     */
+    public String string() {
+        return this.string;
+    }
 
-	public DefaultMutableTreeNode getTreeNode() {
-		return this.treeNode;
-	}
+    public String toString() {
+        return this.string();
+    }
 
+    public void setTreeNode(DefaultMutableTreeNode node) {
+        this.treeNode = node;
+    }
+
+    public DefaultMutableTreeNode getTreeNode() {
+        return this.treeNode;
+    }
 
 }

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.gui.impl;
 
 import java.util.EventObject;
@@ -15,22 +16,21 @@ import agg.attribute.handler.gui.HandlerChangeEvent;
 import agg.attribute.handler.gui.HandlerEditor;
 
 /**
- * @version $Id: DefaultHandlerChangeEvent.java,v 1.1 2005/08/25 11:56:58 enrico
- *          Exp $
+ * @version $Id: DefaultHandlerChangeEvent.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
  * @author $Author: olga $
  */
 public class DefaultHandlerChangeEvent extends EventObject implements
-		HandlerChangeEvent {
+        HandlerChangeEvent {
 
-	static final long serialVersionUID = 247608297125283454L;
+    static final long serialVersionUID = 247608297125283454L;
 
-	public DefaultHandlerChangeEvent(HandlerEditor src) {
-		super(src);
-	}
+    public DefaultHandlerChangeEvent(HandlerEditor src) {
+        super(src);
+    }
 
-	public HandlerEditor getSourceEditor() {
-		return (HandlerEditor) getSource();
-	}
+    public HandlerEditor getSourceEditor() {
+        return (HandlerEditor) getSource();
+    }
 }
 /*
  * $Log: DefaultHandlerChangeEvent.java,v $

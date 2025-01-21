@@ -1,394 +1,334 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.xt_basis;
 
 /**
- * This object stand for an error while type checking. The
- * {@link TypeSet#checkTypeGraph} and {@link TypeSet#checkType} methods will
- * return a Enumeration with such objects, if an error occured.
- * 
- * From the object you can get some information about the kind of error and the
- * wrong typed graph objects. This object will also provide a number for the
- * error occured.
- * 
+ * This object stand for an error while type checking. The {@link TypeSet#checkTypeGraph} and {@link TypeSet#checkType}
+ * methods will return a Enumeration with such objects, if an error occured.
+ *
+ * From the object you can get some information about the kind of error and the wrong typed graph objects. This object
+ * will also provide a number for the error occured.
+ *
  * @version $Id: TypeError.java,v 1.6 2010/09/23 08:27:33 olga Exp $
  * @author $Author: olga $
  */
 public class TypeError {
 
-	/**
-	 * Error number for undefined errors. No method in the official distribution
-	 * will return this, but you can use it for testing or if your error wont
-	 * fit in one of the other categories. All contained objects may be null.
-	 */
-	public static final int NOT_DEFINED = 0;
+    /**
+     * Error number for undefined errors. No method in the official distribution will return this, but you can use it
+     * for testing or if your error wont fit in one of the other categories. All contained objects may be null.
+     */
+    public static final int NOT_DEFINED = 0;
 
-	/**
-	 * Error number if no type graph was defined. This error will occure when
-	 * you try to check the type error or when you try to check some other graph
-	 * with an empty type graph or no type graph. All contained objects should
-	 * be null.
-	 */
-	public static final int NO_TYPE_GRAPH = 1;
+    /**
+     * Error number if no type graph was defined. This error will occure when you try to check the type error or when
+     * you try to check some other graph with an empty type graph or no type graph. All contained objects should be
+     * null.
+     */
+    public static final int NO_TYPE_GRAPH = 1;
 
-	/**
-	 * Error number if a type is not present in the type graph.
-	 * {@link agg.xt_basis.TypeError#getType()} will return the missing type and
-	 * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the used
-	 * type graph.
-	 */
-	public static final int TYPE_UNDEFINED = 2;
+    /**
+     * Error number if a type is not present in the type graph. {@link agg.xt_basis.TypeError#getType()} will return the
+     * missing type and {@link agg.xt_basis.TypeError#getContainingGraph()} will return the used type graph.
+     */
+    public static final int TYPE_UNDEFINED = 2;
 
-	/**
-	 * Error number if a type is already defined in the type graph (Two nodes of
-	 * the same type or two edges of the same type between the same nodes).
-	 * {@link agg.xt_basis.TypeError#getType()} will return the missing type,
-	 * {@link agg.xt_basis.TypeError#getGraphObject()} will return the last
-	 * found graph object with this type and
-	 * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the used
-	 * type graph.
-	 */
-	public static final int TYPE_ALREADY_DEFINED = 3;
+    /**
+     * Error number if a type is already defined in the type graph (Two nodes of the same type or two edges of the same
+     * type between the same nodes). {@link agg.xt_basis.TypeError#getType()} will return the missing type,
+     * {@link agg.xt_basis.TypeError#getGraphObject()} will return the last found graph object with this type and
+     * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the used type graph.
+     */
+    public static final int TYPE_ALREADY_DEFINED = 3;
 
-	/**
-	 * Error number you tried to remove a graph object from the type graph, but
-	 * there are graph objects in the other graphs of this type.
-	 * {@link agg.xt_basis.TypeError#getType()} will return the type,
-	 * {@link agg.xt_basis.TypeError#getGraphObject()} will return the graph
-	 * object you tried to remove or if you tried to remove the type,
-	 * {@link agg.xt_basis.TypeError#getType()} will return the type.
-	 * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the used
-	 * type graph.
-	 */
-	public static final int TYPE_IS_IN_USE = 4;
+    /**
+     * Error number you tried to remove a graph object from the type graph, but there are graph objects in the other
+     * graphs of this type. {@link agg.xt_basis.TypeError#getType()} will return the type,
+     * {@link agg.xt_basis.TypeError#getGraphObject()} will return the graph object you tried to remove or if you tried
+     * to remove the type, {@link agg.xt_basis.TypeError#getType()} will return the type.
+     * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the used type graph.
+     */
+    public static final int TYPE_IS_IN_USE = 4;
 
-	// merge of two type sets
-	/**
-	 * Error number if you tried to merge two type sets and there are used types
-	 * unknown (The merging will happening, if you use another TypeSet to check
-	 * a graph). {@link agg.xt_basis.TypeError#getType()} will return the
-	 * missing type, {@link agg.xt_basis.TypeError#getGraphObject()} will return
-	 * the graph object using this type and
-	 * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the
-	 * checked graph.
-	 */
-	public static final int TYPE_UNKNOWN_HERE = 11;
+    // merge of two type sets
+    /**
+     * Error number if you tried to merge two type sets and there are used types unknown (The merging will happening, if
+     * you use another TypeSet to check a graph). {@link agg.xt_basis.TypeError#getType()} will return the missing type,
+     * {@link agg.xt_basis.TypeError#getGraphObject()} will return the graph object using this type and
+     * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the checked graph.
+     */
+    public static final int TYPE_UNKNOWN_HERE = 11;
 
-	// type check
-	/**
-	 * Error number if a graph object was found which type is not defined in the
-	 * type graph (but defined in the TypeSet).
-	 * {@link agg.xt_basis.TypeError#getType()} will return the type,
-	 * {@link agg.xt_basis.TypeError#getGraphObject()} will return the graph
-	 * object with the wrong type and
-	 * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the
-	 * checked graph.
-	 */
-	public static final int NO_SUCH_TYPE = 21;
+    // type check
+    /**
+     * Error number if a graph object was found which type is not defined in the type graph (but defined in the
+     * TypeSet). {@link agg.xt_basis.TypeError#getType()} will return the type,
+     * {@link agg.xt_basis.TypeError#getGraphObject()} will return the graph object with the wrong type and
+     * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the checked graph.
+     */
+    public static final int NO_SUCH_TYPE = 21;
 
-	/**
-	 * Error number if there were more arcs of a type as allowed by the type
-	 * graph. {@link agg.xt_basis.TypeError#getType()} will return the type,
-	 * {@link agg.xt_basis.TypeError#getGraphObject()} will return the last
-	 * found graph object with this type and
-	 * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the
-	 * checked graph. It is possible that more than one error object will be
-	 * produced for one occurence of this mismatch (f.e. one for each arc).
-	 */
-	public static final int TO_MUCH_ARCS = 22;
+    /**
+     * Error number if there were more arcs of a type as allowed by the type graph.
+     * {@link agg.xt_basis.TypeError#getType()} will return the type, {@link agg.xt_basis.TypeError#getGraphObject()}
+     * will return the last found graph object with this type and {@link agg.xt_basis.TypeError#getContainingGraph()}
+     * will return the checked graph. It is possible that more than one error object will be produced for one occurence
+     * of this mismatch (f.e. one for each arc).
+     */
+    public static final int TO_MUCH_ARCS = 22;
 
-	/**
-	 * Error number if there were not as many arcs of a type as allowed by the
-	 * type graph. {@link agg.xt_basis.TypeError#getType()} will return the type
-	 * and {@link agg.xt_basis.TypeError#getContainingGraph()} will return the
-	 * checked graph.
-	 */
-	public static final int TO_LESS_ARCS = 23;
+    /**
+     * Error number if there were not as many arcs of a type as allowed by the type graph.
+     * {@link agg.xt_basis.TypeError#getType()} will return the type and
+     * {@link agg.xt_basis.TypeError#getContainingGraph()} will return the checked graph.
+     */
+    public static final int TO_LESS_ARCS = 23;
 
-	public static final int TO_LESS_NODES = 24;
+    public static final int TO_LESS_NODES = 24;
 
-	public static final int TO_MUCH_NODES = 25;
+    public static final int TO_MUCH_NODES = 25;
 
-	public static final int PARENT_NOT_ALLOWED = 26;
+    public static final int PARENT_NOT_ALLOWED = 26;
 
-	public static final int NOT_COMPATIBLE_TYPE = 27;
+    public static final int NOT_COMPATIBLE_TYPE = 27;
 
-	public static final int UNKNOWN_ERROR = 28;
-	
-	public static final int NO_PARALLEL_ARC = 29;
+    public static final int UNKNOWN_ERROR = 28;
 
-	/**
-	 * a short error message
-	 */
-	String message = null;
+    public static final int NO_PARALLEL_ARC = 29;
 
-	/**
-	 * a number describing the error
-	 */
-	int errorNumber = 0;
+    /**
+     * a short error message
+     */
+    String message = null;
 
-	/**
-	 * the invalid GraphObject
-	 */
-	GraphObject wrongObject = null;
+    /**
+     * a number describing the error
+     */
+    int errorNumber = 0;
 
-	/**
-	 * the invalid Type
-	 */
-	Type wrongType = null;
+    /**
+     * the invalid GraphObject
+     */
+    GraphObject wrongObject = null;
 
-	/**
-	 * the graph, which was checked
-	 */
-	Graph containingGraph = null;
+    /**
+     * the invalid Type
+     */
+    Type wrongType = null;
 
-	/**
-	 * creates an error object. The values can not changed after creation.
-	 * 
-	 * @param errorNumber
-	 *            a code for the error occured. As described above (see
-	 *            {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also
-	 *            defines which other parameters are set.
-	 * @param message
-	 *            a short english describtion of the error. The describtion
-	 *            should not contain more informations as given by the
-	 *            errorNumber and the other parameter.
-	 * 
-	 * @see agg.xt_basis.TypeError#setContainingGraph(Graph)
-	 * @see agg.xt_basis.TypeError#NOT_DEFINED
-	 * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
-	 */
-	public TypeError(int errorNumber, String message) {
-		this.message = message;
-		this.errorNumber = errorNumber;
-	}// TypeError(int,String)
+    /**
+     * the graph, which was checked
+     */
+    Graph containingGraph = null;
 
-	/**
-	 * creates an error object. The values can not changed after creation.
-	 * 
-	 * @param errorNumber
-	 *            a code for the error occured. As described above (see
-	 *            {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also
-	 *            defines which other parameters are set.
-	 * @param message
-	 *            a short english describtion of the error. The describtion
-	 *            should not contain more informations as given by the
-	 *            errorNumber and the other parameter.
-	 * @param wrongType
-	 *            the invalid {@link agg.xt_basis.Type}. Which role the Type
-	 *            plays is described in the comment of the error number.
-	 * 
-	 * @see agg.xt_basis.TypeError#setContainingGraph(Graph)
-	 * @see agg.xt_basis.TypeError#NOT_DEFINED
-	 * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
-	 */
-	public TypeError(int errorNumber, String message, Type wrongType) {
-		this.message = message;
-		this.errorNumber = errorNumber;
-		this.wrongType = wrongType;
-	}// TypeError(int,String,Type)
+    /**
+     * creates an error object. The values can not changed after creation.
+     *
+     * @param errorNumber a code for the error occured. As described above (see
+     * {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also defines which other parameters are set.
+     * @param message a short english describtion of the error. The describtion should not contain more informations as
+     * given by the errorNumber and the other parameter.
+     *
+     * @see agg.xt_basis.TypeError#setContainingGraph(Graph)
+     * @see agg.xt_basis.TypeError#NOT_DEFINED
+     * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
+     */
+    public TypeError(int errorNumber, String message) {
+        this.message = message;
+        this.errorNumber = errorNumber;
+    }// TypeError(int,String)
 
-	/**
-	 * creates an error object. The values can not changed after creation.
-	 * 
-	 * @param errorNumber
-	 *            a code for the error occured. As described above (see
-	 *            {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also
-	 *            defines which other parameters are set.
-	 * @param message
-	 *            a short english describtion of the error. The describtion
-	 *            should not contain more informations as given by the
-	 *            errorNumber and the other parameter.
-	 * @param wrongObject
-	 *            the invalid {@link agg.xt_basis.GraphObject}.
-	 * @param wrongType
-	 *            the invalid {@link agg.xt_basis.Type}. Which role the
-	 *            GraphObject and the Type plays is described in the comment of
-	 *            the error number.
-	 * 
-	 * @see agg.xt_basis.TypeError#setContainingGraph(Graph)
-	 * @see agg.xt_basis.TypeError#NOT_DEFINED
-	 * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
-	 * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
-	 * @see agg.xt_basis.TypeError#TYPE_ALREADY_DEFINED
-	 * @see agg.xt_basis.TypeError#TYPE_UNKNOWN_HERE
-	 * @see agg.xt_basis.TypeError#NO_SUCH_TYPE
-	 * @see agg.xt_basis.TypeError#TO_MUCH_ARCS
-	 * @see agg.xt_basis.TypeError#TO_LESS_ARCS
-	 */
-	public TypeError(int errorNumber, String message, GraphObject wrongObject,
-			Type wrongType) {
-		this.message = message;
-		this.errorNumber = errorNumber;
-		this.wrongType = wrongType;
-		this.wrongObject = wrongObject;
-	}// TypeError(int,String,GraphObject,Type)
+    /**
+     * creates an error object. The values can not changed after creation.
+     *
+     * @param errorNumber a code for the error occured. As described above (see
+     * {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also defines which other parameters are set.
+     * @param message a short english describtion of the error. The describtion should not contain more informations as
+     * given by the errorNumber and the other parameter.
+     * @param wrongType the invalid {@link agg.xt_basis.Type}. Which role the Type plays is described in the comment of
+     * the error number.
+     *
+     * @see agg.xt_basis.TypeError#setContainingGraph(Graph)
+     * @see agg.xt_basis.TypeError#NOT_DEFINED
+     * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
+     */
+    public TypeError(int errorNumber, String message, Type wrongType) {
+        this.message = message;
+        this.errorNumber = errorNumber;
+        this.wrongType = wrongType;
+    }// TypeError(int,String,Type)
 
-	/**
-	 * creates an error object. The values can not be changed after creation.
-	 * 
-	 * @param errorNumber
-	 *            a code for the error occurred. As described above (see
-	 *            {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also
-	 *            defines which other parameters are set.
-	 * @param message
-	 *            a short English description of the error. The description
-	 *            should not contain more informations as given by the
-	 *            errorNumber and the other parameter.
-	 * @param contGraph
-	 *            the graph which contains the wrong objects.
-	 * 
-	 * @see agg.xt_basis.TypeError#NOT_DEFINED
-	 * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
-	 */
-	public TypeError(int errorNumber, String message, Graph contGraph) {
-		this.message = message;
-		this.errorNumber = errorNumber;
-		this.containingGraph = contGraph;
-	}
+    /**
+     * creates an error object. The values can not changed after creation.
+     *
+     * @param errorNumber a code for the error occured. As described above (see
+     * {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also defines which other parameters are set.
+     * @param message a short english describtion of the error. The describtion should not contain more informations as
+     * given by the errorNumber and the other parameter.
+     * @param wrongObject the invalid {@link agg.xt_basis.GraphObject}.
+     * @param wrongType the invalid {@link agg.xt_basis.Type}. Which role the GraphObject and the Type plays is
+     * described in the comment of the error number.
+     *
+     * @see agg.xt_basis.TypeError#setContainingGraph(Graph)
+     * @see agg.xt_basis.TypeError#NOT_DEFINED
+     * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
+     * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
+     * @see agg.xt_basis.TypeError#TYPE_ALREADY_DEFINED
+     * @see agg.xt_basis.TypeError#TYPE_UNKNOWN_HERE
+     * @see agg.xt_basis.TypeError#NO_SUCH_TYPE
+     * @see agg.xt_basis.TypeError#TO_MUCH_ARCS
+     * @see agg.xt_basis.TypeError#TO_LESS_ARCS
+     */
+    public TypeError(int errorNumber, String message, GraphObject wrongObject,
+            Type wrongType) {
+        this.message = message;
+        this.errorNumber = errorNumber;
+        this.wrongType = wrongType;
+        this.wrongObject = wrongObject;
+    }// TypeError(int,String,GraphObject,Type)
 
-	/**
-	 * creates an error object. The values can not changed after creation.
-	 * 
-	 * @param errorNumber
-	 *            a code for the error occured. As described above (see
-	 *            {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also
-	 *            defines which other parameters are set.
-	 * @param message
-	 *            a short english describtion of the error. The describtion
-	 *            should not contain more informations as given by the
-	 *            errorNumber and the other parameter.
-	 * @param wrongType
-	 *            the invalid {@link agg.xt_basis.Type}. Which role the Type
-	 *            plays is described in the comment of the error number.
-	 * @param containingGraph
-	 *            the graph which contains the wrong objects.
-	 * 
-	 * @see agg.xt_basis.TypeError#NOT_DEFINED
-	 * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
-	 */
-	public TypeError(int errorNumber, String message, Type wrongType,
-			Graph containingGraph) {
-		this.message = message;
-		this.errorNumber = errorNumber;
-		this.wrongType = wrongType;
-		this.containingGraph = containingGraph;
-	}// TypeError(int,String,Type)
+    /**
+     * creates an error object. The values can not be changed after creation.
+     *
+     * @param errorNumber a code for the error occurred. As described above (see
+     * {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also defines which other parameters are set.
+     * @param message a short English description of the error. The description should not contain more informations as
+     * given by the errorNumber and the other parameter.
+     * @param contGraph the graph which contains the wrong objects.
+     *
+     * @see agg.xt_basis.TypeError#NOT_DEFINED
+     * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
+     */
+    public TypeError(int errorNumber, String message, Graph contGraph) {
+        this.message = message;
+        this.errorNumber = errorNumber;
+        this.containingGraph = contGraph;
+    }
 
-	/**
-	 * creates an error object. The values can not changed after creation.
-	 * 
-	 * @param errorNumber
-	 *            a code for the error occured. As described above (see
-	 *            {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also
-	 *            defines which other parameters are set.
-	 * @param message
-	 *            a short english describtion of the error. The describtion
-	 *            should not contain more informations as given by the
-	 *            errorNumber and the other parameter.
-	 * @param wrongObject
-	 *            the invalid {@link agg.xt_basis.GraphObject}.
-	 * @param wrongType
-	 *            the invalid {@link agg.xt_basis.Type}. Which role the
-	 *            GraphObject and the Type plays is described in the comment of
-	 *            the error number.
-	 * @param containingGraph
-	 *            the graph which contains the wrong objects.
-	 * 
-	 * @see agg.xt_basis.TypeError#NOT_DEFINED
-	 * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
-	 * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
-	 * @see agg.xt_basis.TypeError#TYPE_ALREADY_DEFINED
-	 * @see agg.xt_basis.TypeError#TYPE_UNKNOWN_HERE
-	 * @see agg.xt_basis.TypeError#NO_SUCH_TYPE
-	 * @see agg.xt_basis.TypeError#TO_MUCH_ARCS
-	 * @see agg.xt_basis.TypeError#TO_LESS_ARCS
-	 */
-	public TypeError(int errorNumber, String message, GraphObject wrongObject,
-			Type wrongType, Graph containingGraph) {
-		this.message = message;
-		this.errorNumber = errorNumber;
-		this.wrongType = wrongType;
-		this.wrongObject = wrongObject;
-		this.containingGraph = containingGraph;
-	}// TypeError(int,String,GraphObject,Type,Graph)
+    /**
+     * creates an error object. The values can not changed after creation.
+     *
+     * @param errorNumber a code for the error occured. As described above (see
+     * {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also defines which other parameters are set.
+     * @param message a short english describtion of the error. The describtion should not contain more informations as
+     * given by the errorNumber and the other parameter.
+     * @param wrongType the invalid {@link agg.xt_basis.Type}. Which role the Type plays is described in the comment of
+     * the error number.
+     * @param containingGraph the graph which contains the wrong objects.
+     *
+     * @see agg.xt_basis.TypeError#NOT_DEFINED
+     * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
+     */
+    public TypeError(int errorNumber, String message, Type wrongType,
+            Graph containingGraph) {
+        this.message = message;
+        this.errorNumber = errorNumber;
+        this.wrongType = wrongType;
+        this.containingGraph = containingGraph;
+    }// TypeError(int,String,Type)
 
-	/**
-	 * returns a code for the error occured. As described above (see
-	 * {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also defines which
-	 * other parameters are set.
-	 * 
-	 * @see agg.xt_basis.TypeError#NOT_DEFINED
-	 * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
-	 * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
-	 * @see agg.xt_basis.TypeError#TYPE_ALREADY_DEFINED
-	 * @see agg.xt_basis.TypeError#TYPE_UNKNOWN_HERE
-	 * @see agg.xt_basis.TypeError#NO_SUCH_TYPE
-	 * @see agg.xt_basis.TypeError#TO_MUCH_ARCS
-	 * @see agg.xt_basis.TypeError#TO_LESS_ARCS
-	 */
-	public int getErrorNumber() {
-		return this.errorNumber;
-	}// getErrorNumber
+    /**
+     * creates an error object. The values can not changed after creation.
+     *
+     * @param errorNumber a code for the error occured. As described above (see
+     * {@link agg.xt_basis.TypeError#NOT_DEFINED}) the code also defines which other parameters are set.
+     * @param message a short english describtion of the error. The describtion should not contain more informations as
+     * given by the errorNumber and the other parameter.
+     * @param wrongObject the invalid {@link agg.xt_basis.GraphObject}.
+     * @param wrongType the invalid {@link agg.xt_basis.Type}. Which role the GraphObject and the Type plays is
+     * described in the comment of the error number.
+     * @param containingGraph the graph which contains the wrong objects.
+     *
+     * @see agg.xt_basis.TypeError#NOT_DEFINED
+     * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
+     * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
+     * @see agg.xt_basis.TypeError#TYPE_ALREADY_DEFINED
+     * @see agg.xt_basis.TypeError#TYPE_UNKNOWN_HERE
+     * @see agg.xt_basis.TypeError#NO_SUCH_TYPE
+     * @see agg.xt_basis.TypeError#TO_MUCH_ARCS
+     * @see agg.xt_basis.TypeError#TO_LESS_ARCS
+     */
+    public TypeError(int errorNumber, String message, GraphObject wrongObject,
+            Type wrongType, Graph containingGraph) {
+        this.message = message;
+        this.errorNumber = errorNumber;
+        this.wrongType = wrongType;
+        this.wrongObject = wrongObject;
+        this.containingGraph = containingGraph;
+    }// TypeError(int,String,GraphObject,Type,Graph)
 
-	/**
-	 * returns a short english describtion of the error. The describtion should
-	 * not contain more informations as given by the errorNumber and the other
-	 * parameter.
-	 * 
-	 * @see agg.xt_basis.TypeError#getErrorNumber()
-	 */
-	public String getMessage() {
-		return this.message;
-	}// getMessage
+    /**
+     * returns a code for the error occured. As described above (see {@link agg.xt_basis.TypeError#NOT_DEFINED}) the
+     * code also defines which other parameters are set.
+     *
+     * @see agg.xt_basis.TypeError#NOT_DEFINED
+     * @see agg.xt_basis.TypeError#NO_TYPE_GRAPH
+     * @see agg.xt_basis.TypeError#TYPE_UNDEFINED
+     * @see agg.xt_basis.TypeError#TYPE_ALREADY_DEFINED
+     * @see agg.xt_basis.TypeError#TYPE_UNKNOWN_HERE
+     * @see agg.xt_basis.TypeError#NO_SUCH_TYPE
+     * @see agg.xt_basis.TypeError#TO_MUCH_ARCS
+     * @see agg.xt_basis.TypeError#TO_LESS_ARCS
+     */
+    public int getErrorNumber() {
+        return this.errorNumber;
+    }// getErrorNumber
 
-	/**
-	 * retuns the GraphObject of error. Which role this object plays is
-	 * described in the comment for the error number (see
-	 * {@link agg.xt_basis.TypeError#NOT_DEFINED}).
-	 */
-	public GraphObject getGraphObject() {
-		return this.wrongObject;
-	}// getGraphObject
+    /**
+     * returns a short english describtion of the error. The describtion should not contain more informations as given
+     * by the errorNumber and the other parameter.
+     *
+     * @see agg.xt_basis.TypeError#getErrorNumber()
+     */
+    public String getMessage() {
+        return this.message;
+    }// getMessage
 
-	/**
-	 * retuns the Type of error. Which role this object plays is described in
-	 * the comment for the error number (see
-	 * {@link agg.xt_basis.TypeError#NOT_DEFINED}).
-	 */
-	public Type getType() {
-		return this.wrongType;
-	}// getType
+    /**
+     * retuns the GraphObject of error. Which role this object plays is described in the comment for the error number
+     * (see {@link agg.xt_basis.TypeError#NOT_DEFINED}).
+     */
+    public GraphObject getGraphObject() {
+        return this.wrongObject;
+    }// getGraphObject
 
-	/**
-	 * returns the graph which was checked and which contains the errors.
-	 */
-	public Graph getContainingGraph() {
-		return this.containingGraph;
-	}// getContainingGraph
+    /**
+     * retuns the Type of error. Which role this object plays is described in the comment for the error number (see
+     * {@link agg.xt_basis.TypeError#NOT_DEFINED}).
+     */
+    public Type getType() {
+        return this.wrongType;
+    }// getType
 
-	/**
-	 * sets the graph containing the error.
-	 */
-	public void setContainingGraph(Graph containingGraph) {
-		this.containingGraph = containingGraph;
-	}// setContainingGraph
+    /**
+     * returns the graph which was checked and which contains the errors.
+     */
+    public Graph getContainingGraph() {
+        return this.containingGraph;
+    }// getContainingGraph
 
-	/**
-	 * returns a short string with error number and message for testing
-	 * purposes.
-	 */
-	public String toString() {
-		return "TypeError: " + this.getMessage() + " [" + this.getErrorNumber()
-				+ "] in " + this.getContainingGraph().getName();
-	}// toString
+    /**
+     * sets the graph containing the error.
+     */
+    public void setContainingGraph(Graph containingGraph) {
+        this.containingGraph = containingGraph;
+    }// setContainingGraph
+
+    /**
+     * returns a short string with error number and message for testing purposes.
+     */
+    public String toString() {
+        return "TypeError: " + this.getMessage() + " [" + this.getErrorNumber()
+                + "] in " + this.getContainingGraph().getName();
+    }// toString
 
 }// class TypeError
 

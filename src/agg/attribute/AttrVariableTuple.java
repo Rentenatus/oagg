@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 import java.util.Vector;
@@ -15,30 +16,33 @@ import agg.attribute.impl.VarMember;
 
 /**
  * The interface for a tuple of variables.
- * 
+ *
  * @version $Id: AttrVariableTuple.java,v 1.2 2007/09/10 13:05:31 olga Exp $
  */
 public interface AttrVariableTuple extends AttrInstance {
-	static final long serialVersionUID = -148304387902146269L;
 
-	/** Test, if all variables evaluate to definite values. */
-	public boolean isDefinite();
+    static final long serialVersionUID = -148304387902146269L;
 
-	/** tests if all input parameters are set */
-	public boolean areInputParametersSet();
+    /**
+     * Test, if all variables evaluate to definite values.
+     */
+    public boolean isDefinite();
 
-	/**
-	 * tests if all output parameters are set public boolean
-	 * areOutputParametersSet();
-	 */
+    /**
+     * tests if all input parameters are set
+     */
+    public boolean areInputParametersSet();
 
-	public int getSize();
+    /**
+     * tests if all output parameters are set public boolean areOutputParametersSet();
+     */
+    public int getSize();
 
-	public VarMember getVarMemberAt(String name);
+    public VarMember getVarMemberAt(String name);
 
-	public VarMember getVarMemberAt(int index);
+    public VarMember getVarMemberAt(int index);
 
-	public Vector<String> getVariableNames();
+    public Vector<String> getVariableNames();
 
 }
 /*

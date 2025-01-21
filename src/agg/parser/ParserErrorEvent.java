@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.Enumeration;
@@ -21,85 +22,81 @@ import agg.xt_basis.Node;
 
 //****************************************************************************+
 /**
- * This event is used if the parser has to handle any error. Typically an error
- * occurs if a graph cannot be parsed.
- * 
+ * This event is used if the parser has to handle any error. Typically an error occurs if a graph cannot be parsed.
+ *
  * @author $Author: olga $ Parser Group
  * @version $Id: ParserErrorEvent.java,v 1.6 2010/09/23 08:25:00 olga Exp $
  */
 @SuppressWarnings("serial")
 public class ParserErrorEvent extends ParserEvent {
 
-	/**
-	 * The graph.
-	 * 
-	 * @serial Events are serializable so this attribute.
-	 */
-	private Graph errorGraph;
+    /**
+     * The graph.
+     *
+     * @serial Events are serializable so this attribute.
+     */
+    private Graph errorGraph;
 
-	/**
-	 * This constructor is inherited from <CODE>ParserEvent</CODE>.
-	 * 
-	 * @param source
-	 *            The source of the event.
-	 */
-	public ParserErrorEvent(Object source) {
-		this(source, "");
-	}
+    /**
+     * This constructor is inherited from <CODE>ParserEvent</CODE>.
+     *
+     * @param source The source of the event.
+     */
+    public ParserErrorEvent(Object source) {
+        this(source, "");
+    }
 
-	/**
-	 * Creates a new event with a error message.
-	 * 
-	 * @param source
-	 *            The source of the event.
-	 * @param _message
-	 *            The error message.
-	 */
-	public ParserErrorEvent(Object source, String _message) {
-		super(source);
-		setMessage(_message);
-		if (source instanceof Graph)
-			this.errorGraph = (Graph) source;
-		else
-			this.errorGraph = null;
-	}
+    /**
+     * Creates a new event with a error message.
+     *
+     * @param source The source of the event.
+     * @param _message The error message.
+     */
+    public ParserErrorEvent(Object source, String _message) {
+        super(source);
+        setMessage(_message);
+        if (source instanceof Graph) {
+            this.errorGraph = (Graph) source;
+        } else {
+            this.errorGraph = null;
+        }
+    }
 
-	/**
-	 * Returns the error text.
-	 * 
-	 * @return The error message.
-	 */
-	public String getErrorString() {
-		return getMessage();
-	}
+    /**
+     * Returns the error text.
+     *
+     * @return The error message.
+     */
+    public String getErrorString() {
+        return getMessage();
+    }
 
-	/**
-	 * If a graph is the source of this event this part of the graph is returned
-	 * which causes the error.
-	 * 
-	 * @return A set of graph object.
-	 */
-	public Enumeration<Object> getErrorGraph() {
-		// Da AGG zur Zeit noch nicht das Matchen von Variablen auf Variablen
-		// unterstuetzt, gibt es noch keine R&uuml;ckgabe.
-		// Es war vereinbart eine ID zu verwenden.
-		Vector<Object> graphElements = new Vector<Object>();
-		if (this.errorGraph != null) {
-			for (Iterator<Node> elements = this.errorGraph.getNodesSet().iterator(); elements
-					.hasNext();) {
-				GraphObject grob = elements.next();
-				AttrInstance ai = grob.getAttribute();
-				graphElements.addElement(ai.getValueAt("id"));
-			}
-			for (Iterator<Arc> elements = this.errorGraph.getArcsSet().iterator(); elements
-			.hasNext();) {
-		GraphObject grob = elements.next();
-		AttrInstance ai = grob.getAttribute();
-		graphElements.addElement(ai.getValueAt("id"));
-	}
-		}
-		return graphElements.elements();
-	}
+    /**
+     * If a graph is the source of this event this part of the graph is returned which causes the error.
+     *
+     * @return A set of graph object.
+     */
+    public Enumeration<Object> getErrorGraph() {
+        // Da AGG zur Zeit noch nicht das Matchen von Variablen auf Variablen
+        // unterstuetzt, gibt es noch keine R&uuml;ckgabe.
+        // Es war vereinbart eine ID zu verwenden.
+        Vector<Object> graphElements = new Vector<Object>();
+        if (this.errorGraph != null) {
+            for (Iterator<Node> elements = this.errorGraph.getNodesSet().iterator(); elements
+                    .hasNext();) {
+                GraphObject grob = elements.next();
+                AttrInstance ai = grob.getAttribute();
+                graphElements.addElement(ai.getValueAt("id"));
+            }
+            for (Iterator<Arc> elements = this.errorGraph.getArcsSet().iterator(); elements
+                    .hasNext();) {
+                GraphObject grob = elements.next();
+                AttrInstance ai = grob.getAttribute();
+                graphElements.addElement(ai.getValueAt("id"));
+            }
+        }
+        return graphElements.elements();
+    }
 }
 
 /*

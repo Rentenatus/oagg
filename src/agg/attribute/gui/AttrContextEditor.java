@@ -1,27 +1,27 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui;
 
 import agg.attribute.AttrContext;
 
 // import java.beans.*;
-
 /**
  * @version $Id: AttrContextEditor.java,v 1.2 2007/09/10 13:05:50 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrContextEditor extends AttrEditor {
 
-	public void setContext(AttrContext anAttrContext);
+    public void setContext(AttrContext anAttrContext);
 
-	public AttrContext getContext();
+    public AttrContext getContext();
 }
 /*
  * $Log: AttrContextEditor.java,v $

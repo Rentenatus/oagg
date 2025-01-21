@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui;
 
 import java.awt.BorderLayout;
@@ -56,133 +57,116 @@ import agg.gui.treeview.GraGraTreeView;
 
 /**
  * The main class of AGG application.
- * 
+ *
  * @author $Author: olga $
  * @version $Id: AGGAppl.java,v 1.61 2010/09/19 16:23:04 olga Exp $
  */
-public class AGGAppl extends JFrame implements 
-		EditEventListener {
+public class AGGAppl extends JFrame implements
+        EditEventListener {
 
-	static final long serialVersionUID = 42L;
+    static final long serialVersionUID = 42L;
 
-	/* The width and height of my frame */
-	public final static int FRAME_WIDTH = 900;
+    /* The width and height of my frame */
+    public final static int FRAME_WIDTH = 900;
 
-	public final static int FRAME_HEIGHT = 550;
+    public final static int FRAME_HEIGHT = 550;
 
-	public final static int INITIAL_WIDTH = 350;
+    public final static int INITIAL_WIDTH = 350;
 
-	public final static int INITIAL_HEIGHT = 400;
+    public final static int INITIAL_HEIGHT = 400;
 
-	/* Create myself */
-	protected final static AGGAppl appl = new AGGAppl();
+    /* Create myself */
+    protected final static AGGAppl appl = new AGGAppl();
 
-	private String aggTitle = "AGG";
-	/* Track progress */
-	public final static int total = 10;
+    private String aggTitle = "AGG";
+    /* Track progress */
+    public final static int total = 10;
 
-	public static int currentProgressValue;
+    public static int currentProgressValue;
 
-	/* create a progress bar */
-	public final static JProgressBar 
-	progressBar = new JProgressBar();
+    /* create a progress bar */
+    public final static JProgressBar progressBar = new JProgressBar();
 
-	/* create logo frame */
-	final static JDialog logoFrame = new JDialog();
+    /* create logo frame */
+    final static JDialog logoFrame = new JDialog();
 
-	final static JLabel gragraLogo = new JLabel();
-	
-	/* create a double buffered content panel */
-	private final static JPanel contentPanel = new JPanel(new BorderLayout(),
-			true);
+    final static JLabel gragraLogo = new JLabel();
 
-	/* create a tool bar panel */
-	private final static JPanel toolBarPanel = new JPanel(new GridLayout(2, 1));
+    /* create a double buffered content panel */
+    private final static JPanel contentPanel = new JPanel(new BorderLayout(),
+            true);
 
-	/* create a menu bar */
-	private final static JMenuBar menuBar = new JMenuBar();
+    /* create a tool bar panel */
+    private final static JPanel toolBarPanel = new JPanel(new GridLayout(2, 1));
 
-	/* create a status bar */
-	private final static StatusBar 
-	statusBar = new StatusBar();
+    /* create a menu bar */
+    private final static JMenuBar menuBar = new JMenuBar();
 
-	/* panel of my main content */
-	private final static JPanel 
-	mainPanel = new JPanel(new BorderLayout(), true);
+    /* create a status bar */
+    private final static StatusBar statusBar = new StatusBar();
 
-	/* help menu */
-	private final static JMenu 
-	helpMenu = new GraGraHelp();
+    /* panel of my main content */
+    private final static JPanel mainPanel = new JPanel(new BorderLayout(), true);
 
-	/* tree view */
-	protected final static GraGraTreeView 
-	treeView = new GraGraTreeView(appl);
+    /* help menu */
+    private final static JMenu helpMenu = new GraGraHelp();
 
-	/* editor */
-	protected final static GraGraEditor 
-	editor = new GraGraEditor(appl);
+    /* tree view */
+    protected final static GraGraTreeView treeView = new GraGraTreeView(appl);
 
-	/* This flag toggles if there is an menu entry for debugging stuff */
-	private static final boolean DEBUGFRAME = false;
+    /* editor */
+    protected final static GraGraEditor editor = new GraGraEditor(appl);
 
-	/* create analysis */
-	private final static AGGAnalyzer 
-	aggAnalyzer = new AGGAnalyzer(appl, treeView);
+    /* This flag toggles if there is an menu entry for debugging stuff */
+    private static final boolean DEBUGFRAME = false;
 
-	/* create termination analysis */
-	private final static TerminationAnalysis 
-	terminationAnalysis = new TerminationAnalysis(appl, treeView);
+    /* create analysis */
+    private final static AGGAnalyzer aggAnalyzer = new AGGAnalyzer(appl, treeView);
 
-	/* create critical pair analysis */
-	protected final static CriticalPairAnalysis 
-	criticalPairAnalysis = new CriticalPairAnalysis(appl, treeView);
-	
-	/* create applicability of rule sequence */
-	private final static ApplicabilityRuleSequence 
-	aggApplRuleSequence = new ApplicabilityRuleSequence(appl, treeView, criticalPairAnalysis.getCriticalPairOption());
-	
-	/* create constraints */
-	private final static AGGConstraints 
-	aggConstraints = new AGGConstraints(appl, treeView);
+    /* create termination analysis */
+    private final static TerminationAnalysis terminationAnalysis = new TerminationAnalysis(appl, treeView);
 
-	/* create parser */
-	private final static AGGParser 
-	aggParser = new AGGParser(appl, treeView);
+    /* create critical pair analysis */
+    protected final static CriticalPairAnalysis criticalPairAnalysis = new CriticalPairAnalysis(appl, treeView);
 
-	/* create AGG preferences */
-	private final static AGGPreferences 
-	aggPreferences = new AGGPreferences(appl);
+    /* create applicability of rule sequence */
+    private final static ApplicabilityRuleSequence aggApplRuleSequence = new ApplicabilityRuleSequence(appl, treeView, criticalPairAnalysis.getCriticalPairOption());
 
-	/* create JPG output */
-	private final static GraphicsExportJPEG 
-	exportJPEG = new GraphicsExportJPEG(appl);
+    /* create constraints */
+    private final static AGGConstraints aggConstraints = new AGGConstraints(appl, treeView);
 
-	/* get logo image of the application */
-	private final static ImageIcon 
-	image = new ImageIcon(ClassLoader.getSystemResource("agg/lib/icons/AGG_LOGO.gif"));
+    /* create parser */
+    private final static AGGParser aggParser = new AGGParser(appl, treeView);
 
-	private final static JLabel 
-	loadlabel = new JLabel("Loading  graph  grammar,  please wait . . .");
+    /* create AGG preferences */
+    private final static AGGPreferences aggPreferences = new AGGPreferences(appl);
 
-	/* my main content : a split pane containing toolbar, treeview, editor */
-	private final static JSplitPane 
-	splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, editor);
+    /* create JPG output */
+    private final static GraphicsExportJPEG exportJPEG = new GraphicsExportJPEG(appl);
 
-	@SuppressWarnings("serial")
-	private final static JPanel progressPanel = new JPanel() {
-		public Insets getInsets() {
-			return new Insets(30, 10, 10, 10);
-		}
-	};
+    /* get logo image of the application */
+    private final static ImageIcon image = new ImageIcon(ClassLoader.getSystemResource("agg/lib/icons/AGG_LOGO.gif"));
 
-	protected static String fname;
-	
-	protected static boolean typesHidden;
-	
-	public AGGAppl() {
-	}
+    private final static JLabel loadlabel = new JLabel("Loading  graph  grammar,  please wait . . .");
 
-/*	
+    /* my main content : a split pane containing toolbar, treeview, editor */
+    private final static JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeView, editor);
+
+    @SuppressWarnings("serial")
+    private final static JPanel progressPanel = new JPanel() {
+        public Insets getInsets() {
+            return new Insets(30, 10, 10, 10);
+        }
+    };
+
+    protected static String fname;
+
+    protected static boolean typesHidden;
+
+    public AGGAppl() {
+    }
+
+    /*	
 	private static Runnable makeRunnable(final String[] argums) {
 	    Runnable r = new Runnable() {
 	        public void run() {
@@ -210,572 +194,594 @@ public class AGGAppl extends JFrame implements
 
 	      return r;
 	}
-	*/
-	
-	public final static AGGAppl getInstance() {
-		return appl;
-	}
-	
-	public static void main(String[] args) {
-		// main application as Thread
+     */
+    public final static AGGAppl getInstance() {
+        return appl;
+    }
+
+    public static void main(String[] args) {
+        // main application as Thread
 //		Thread mainThread = new Thread(makeRunnable(args), "AGG Application");
 //	    mainThread.setPriority(8);
 //	    mainThread.start();
 
-		final long time0 = System.currentTimeMillis();
-	    
-		fname = "";		
-		for (int i = 0; i < args.length; i++) {
-			if (args[i].endsWith(".ggx")) {
-				fname = args[i];
-			} 
-			else if (args[i].equals("-t")) {
-				// type editor not on top
-				typesHidden = true;
-			}
+        final long time0 = System.currentTimeMillis();
+
+        fname = "";
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].endsWith(".ggx")) {
+                fname = args[i];
+            } else if (args[i].equals("-t")) {
+                // type editor not on top
+                typesHidden = true;
+            }
 //			else if (args[i].equals("-u")) { // user defined class for attributes
 //				if ((i+1) < args.length) {
 //					String userDefClass = args[i+1];
 //				}
 //			}			
-		}
-	
-		appl.initApplication();		
-		appl.showApplication(args);
-		
-		AGGAppl.criticalPairAnalysis.allowNodeTypeInheritance = true;
-		
+        }
+
+        appl.initApplication();
+        appl.showApplication(args);
+
+        AGGAppl.criticalPairAnalysis.allowNodeTypeInheritance = true;
+
 //		treeView.enableParallelRuleElementOfGraGra(enableParallelRule);
-		// ParallelRule is already enabled by default
-		
+        // ParallelRule is already enabled by default
 //		treeView.enableRuleSchemeElementOfGraGra(enableRuleScheme);
-		// RuleScheme is already enabled by default
-		
-		treeView.enableNestedApplCond(true); //enableNestedAC);
-		editor.enableNestedApplCond(true); //enableNestedAC);
-		
-		aggPreferences.selectTypesOnTop(!typesHidden);
-		
-		System.out.println("AGG used "
-				+ (System.currentTimeMillis() - time0) + " ms"+" to start.");
-	}
+        // RuleScheme is already enabled by default
+        treeView.enableNestedApplCond(true); //enableNestedAC);
+        editor.enableNestedApplCond(true); //enableNestedAC);
 
-	/**
-	 * Creates a content of the application : a main panel with a gragra
-	 * tree view and a gragra editor , a menu bar with menus from the tree view and
-	 * editor, a status bar
-	 */
-	private void createApplContent() {
-		progressBar.setValue(++currentProgressValue);
+        aggPreferences.selectTypesOnTop(!typesHidden);
 
-		statusBar.setFrame(this);
-		/* add the status bar to content panel */
-		contentPanel.add(statusBar, BorderLayout.SOUTH);
+        System.out.println("AGG used "
+                + (System.currentTimeMillis() - time0) + " ms" + " to start.");
+    }
 
-		progressBar.setValue(++currentProgressValue);
+    /**
+     * Creates a content of the application : a main panel with a gragra tree view and a gragra editor , a menu bar with
+     * menus from the tree view and editor, a status bar
+     */
+    private void createApplContent() {
+        progressBar.setValue(++currentProgressValue);
 
-		// /* create output to JPG output */
-		// exportJPEG = new GraphicsExportJPEG(this);
+        statusBar.setFrame(this);
+        /* add the status bar to content panel */
+        contentPanel.add(statusBar, BorderLayout.SOUTH);
 
-		/* create a gragra editor */
-		// editor = new GraGraEditorImpl(this);
-		editor.addEditEventListener(this);
-		editor.addEditEventListener(statusBar);
-		editor.getTypeEditor().addTypeEventListener(statusBar);
-		editor.setExportJPEG(exportJPEG);
+        progressBar.setValue(++currentProgressValue);
 
-		progressBar.setValue(++currentProgressValue);
+        // /* create output to JPG output */
+        // exportJPEG = new GraphicsExportJPEG(this);
 
-		/* create a gragra treeview */
-		// treeView = new GraGraTreeView(this);
-		treeView.setExportJPEG(exportJPEG);
-		treeView.addSaveEventListener(statusBar);
-		treeView.addLoadEventListener(statusBar);
-		treeView.addTreeViewEventListener(statusBar);
-		treeView.addTreeViewEventListener(editor);
-		treeView.addTreeModelListener(editor);
-		editor.addEditEventListener(treeView);
-		editor.getGraGraTransform().addTransformEventListener(treeView);
-		aggPreferences.addActionListenerOfDefaults(treeView.getActionAdapter());
-		
-		progressBar.setValue(++currentProgressValue);
+        /* create a gragra editor */
+        // editor = new GraGraEditorImpl(this);
+        editor.addEditEventListener(this);
+        editor.addEditEventListener(statusBar);
+        editor.getTypeEditor().addTypeEventListener(statusBar);
+        editor.setExportJPEG(exportJPEG);
 
-		/* add tool bar to tool bar panel */
-		toolBarPanel.add(treeView.getToolBar());
-		toolBarPanel.add(editor.getToolBar());
+        progressBar.setValue(++currentProgressValue);
 
-		/* create an AGG parser */
-		// aggParser = new AGGParser(appl, treeView);
-		aggParser.addStatusMessageListener(statusBar);
-		aggParser.addParserEventListener(statusBar);
-		editor.addEditEventListener(aggParser);
-		aggPreferences.addActionListenerOfDefaults(editor.getActionListener());
-		// aggParser.setExportJPEG(exportJPEG);
+        /* create a gragra treeview */
+        // treeView = new GraGraTreeView(this);
+        treeView.setExportJPEG(exportJPEG);
+        treeView.addSaveEventListener(statusBar);
+        treeView.addLoadEventListener(statusBar);
+        treeView.addTreeViewEventListener(statusBar);
+        treeView.addTreeViewEventListener(editor);
+        treeView.addTreeModelListener(editor);
+        editor.addEditEventListener(treeView);
+        editor.getGraGraTransform().addTransformEventListener(treeView);
+        aggPreferences.addActionListenerOfDefaults(treeView.getActionAdapter());
 
-		progressBar.setValue(++currentProgressValue);
+        progressBar.setValue(++currentProgressValue);
 
-		/* create an AGG analyzer */
-		// aggAnalyzer = new AGGAnalyzer(appl, treeView);
-		editor.addEditEventListener(aggAnalyzer);
+        /* add tool bar to tool bar panel */
+        toolBarPanel.add(treeView.getToolBar());
+        toolBarPanel.add(editor.getToolBar());
 
-		/* create critical pair analysis */
-		// criticalPairAnalysis = new CriticalPairAnalysis(appl, treeView);
-		aggAnalyzer.addCriticalPairAnalysis(criticalPairAnalysis);
-		treeView.addTreeViewEventListener(criticalPairAnalysis);
-		criticalPairAnalysis.addCPAnalysisEventListener(statusBar);
-		criticalPairAnalysis.addStatusMessageListener(statusBar);
-		/* set layer option to cp-analysis */
-		criticalPairAnalysis.setLayerOption(aggParser.getLayerOption());
-		/* set parser option to cp-analysis */
-		criticalPairAnalysis.setParserOption(aggParser.getParserOption());
-		/* set GUI option to CP Analysis */
-		criticalPairAnalysis.setGUIOption(aggParser.getParserGUIOption());
+        /* create an AGG parser */
+        // aggParser = new AGGParser(appl, treeView);
+        aggParser.addStatusMessageListener(statusBar);
+        aggParser.addParserEventListener(statusBar);
+        editor.addEditEventListener(aggParser);
+        aggPreferences.addActionListenerOfDefaults(editor.getActionListener());
+        // aggParser.setExportJPEG(exportJPEG);
 
-		criticalPairAnalysis.setExportJPEG(exportJPEG);
-		
-		/* set critical pair option to parser */
-		aggParser.setCriticalPairOption(criticalPairAnalysis
-				.getCriticalPairOption());
+        progressBar.setValue(++currentProgressValue);
 
-		progressBar.setValue(++currentProgressValue);
+        /* create an AGG analyzer */
+        // aggAnalyzer = new AGGAnalyzer(appl, treeView);
+        editor.addEditEventListener(aggAnalyzer);
 
-		/* creat applicability of rule sequence GUI */
+        /* create critical pair analysis */
+        // criticalPairAnalysis = new CriticalPairAnalysis(appl, treeView);
+        aggAnalyzer.addCriticalPairAnalysis(criticalPairAnalysis);
+        treeView.addTreeViewEventListener(criticalPairAnalysis);
+        criticalPairAnalysis.addCPAnalysisEventListener(statusBar);
+        criticalPairAnalysis.addStatusMessageListener(statusBar);
+        /* set layer option to cp-analysis */
+        criticalPairAnalysis.setLayerOption(aggParser.getLayerOption());
+        /* set parser option to cp-analysis */
+        criticalPairAnalysis.setParserOption(aggParser.getParserOption());
+        /* set GUI option to CP Analysis */
+        criticalPairAnalysis.setGUIOption(aggParser.getParserGUIOption());
+
+        criticalPairAnalysis.setExportJPEG(exportJPEG);
+
+        /* set critical pair option to parser */
+        aggParser.setCriticalPairOption(criticalPairAnalysis
+                .getCriticalPairOption());
+
+        progressBar.setValue(++currentProgressValue);
+
+        /* creat applicability of rule sequence GUI */
 //		aggApplRuleSequence = new ApplicabilityRuleSequence(appl, treeView);
-		aggAnalyzer.addApplicabilityRuleSequence(aggApplRuleSequence);
-		treeView.addTreeViewEventListener(aggApplRuleSequence);
-		
-		/* create the constraints GUI */
-		// aggConstraints = new AGGConstraints(appl, treeView);
-		aggAnalyzer.addConstraints(aggConstraints);
-		/* create the termination analysis */
-		// terminationAnalysis = new TerminationAnalysis(appl, treeView);
-		aggAnalyzer.addTerminationAnalysis(terminationAnalysis);
-		treeView.addTreeViewEventListener(terminationAnalysis);
+        aggAnalyzer.addApplicabilityRuleSequence(aggApplRuleSequence);
+        treeView.addTreeViewEventListener(aggApplRuleSequence);
 
-		aggAnalyzer.addCPAOptions();
-		
-		progressBar.setValue(++currentProgressValue);
+        /* create the constraints GUI */
+        // aggConstraints = new AGGConstraints(appl, treeView);
+        aggAnalyzer.addConstraints(aggConstraints);
+        /* create the termination analysis */
+        // terminationAnalysis = new TerminationAnalysis(appl, treeView);
+        aggAnalyzer.addTerminationAnalysis(terminationAnalysis);
+        treeView.addTreeViewEventListener(terminationAnalysis);
 
-		/* create AGG preferences */
-		// aggPreferences = new AGGPreferences(this);
-		/* add transformation options GUI to options GUI of the AGG preferences */
-		aggPreferences.getOptionGUI().addGUI(
-				editor.getGeneralTransformOptionGUI());
-		aggPreferences.getOptionGUI().addGUI(editor.getTransformOptionGUI());
-		/* add graph layouter options GUI to options GUI of the AGG preferences */
-		aggPreferences.getOptionGUI()
-				.addGUI(editor.getGraphLayouterOptionGUI());
-		/* add parser options GUI to options GUI of the AGG preferences */
-		aggPreferences.getOptionGUI().addGUI(aggParser.getParserOptionGUI());
-		/* add layer options GUI to options GUI of the AGG preferences */
-		// aggPreferences.getOptionGUI().addGUI(aggParser.getLayerOptionGUI());
-		/* add CP options GUI to options GUI of the AGG preferences */
-		aggPreferences.getOptionGUI().addGUI(
-				aggAnalyzer.getCriticalPairAnalysis()
-						.getCriticalPairOptionGUI());
-		/* add gragra editor action listener to preferences defaults menu */
-		aggPreferences.addActionListenerOfDefaults(editor.getActionListener());
-		editor.addEditEventListener(aggPreferences);
+        aggAnalyzer.addCPAOptions();
 
-		editor.getTransformOptionGUI().addActionListener(
-				aggAnalyzer.getCriticalPairAnalysis()
-						.getCriticalPairOptionGUI());
-		editor.getTransformOptionGUI().addActionListener(treeView.getActionAdapter());
+        progressBar.setValue(++currentProgressValue);
 
-		aggAnalyzer.getCriticalPairAnalysis().getCriticalPairOptionGUI()
-				.addActionListener(editor.getTransformOptionGUI());
-		editor.getGeneralTransformOptionGUI().addOptionListener(aggParser);
-		editor.getGeneralTransformOptionGUI().addOptionListener(
-				aggAnalyzer.getCriticalPairAnalysis());
+        /* create AGG preferences */
+        // aggPreferences = new AGGPreferences(this);
+        /* add transformation options GUI to options GUI of the AGG preferences */
+        aggPreferences.getOptionGUI().addGUI(
+                editor.getGeneralTransformOptionGUI());
+        aggPreferences.getOptionGUI().addGUI(editor.getTransformOptionGUI());
+        /* add graph layouter options GUI to options GUI of the AGG preferences */
+        aggPreferences.getOptionGUI()
+                .addGUI(editor.getGraphLayouterOptionGUI());
+        /* add parser options GUI to options GUI of the AGG preferences */
+        aggPreferences.getOptionGUI().addGUI(aggParser.getParserOptionGUI());
+        /* add layer options GUI to options GUI of the AGG preferences */
+        // aggPreferences.getOptionGUI().addGUI(aggParser.getLayerOptionGUI());
+        /* add CP options GUI to options GUI of the AGG preferences */
+        aggPreferences.getOptionGUI().addGUI(
+                aggAnalyzer.getCriticalPairAnalysis()
+                        .getCriticalPairOptionGUI());
+        /* add gragra editor action listener to preferences defaults menu */
+        aggPreferences.addActionListenerOfDefaults(editor.getActionListener());
+        editor.addEditEventListener(aggPreferences);
 
-		progressBar.setValue(++currentProgressValue);
+        editor.getTransformOptionGUI().addActionListener(
+                aggAnalyzer.getCriticalPairAnalysis()
+                        .getCriticalPairOptionGUI());
+        editor.getTransformOptionGUI().addActionListener(treeView.getActionAdapter());
 
-		/* create main panel in which put the treeview and the gragra editor */
-		mainPanel.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
+        aggAnalyzer.getCriticalPairAnalysis().getCriticalPairOptionGUI()
+                .addActionListener(editor.getTransformOptionGUI());
+        editor.getGeneralTransformOptionGUI().addOptionListener(aggParser);
+        editor.getGeneralTransformOptionGUI().addOptionListener(
+                aggAnalyzer.getCriticalPairAnalysis());
 
-		/* add tool bar to the main panel */
-		mainPanel.add(toolBarPanel, BorderLayout.NORTH);
+        progressBar.setValue(++currentProgressValue);
 
-		/* create a splitPane with treeView and editor */
-		// splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView,
-		// editor);
-		splitPane.setDividerSize(15);
-		splitPane.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-		splitPane.setContinuousLayout(true);
-		splitPane.setOneTouchExpandable(true);
+        /* create main panel in which put the treeview and the gragra editor */
+        mainPanel.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
 
-		/* add the splitPane to the main panel */
-		mainPanel.add(splitPane, BorderLayout.CENTER);
-		mainPanel.revalidate();
+        /* add tool bar to the main panel */
+        mainPanel.add(toolBarPanel, BorderLayout.NORTH);
 
-		/* add the main panel to the content panel */
-		contentPanel.add(mainPanel, BorderLayout.CENTER);
-		contentPanel.revalidate();
+        /* create a splitPane with treeView and editor */
+        // splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,treeView,
+        // editor);
+        splitPane.setDividerSize(15);
+        splitPane.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
+        splitPane.setContinuousLayout(true);
+        splitPane.setOneTouchExpandable(true);
 
-		progressBar.setValue(++currentProgressValue);
+        /* add the splitPane to the main panel */
+        mainPanel.add(splitPane, BorderLayout.CENTER);
+        mainPanel.revalidate();
 
-		/* add file menu */
-		addMenus(treeView.getMenus());
+        /* add the main panel to the content panel */
+        contentPanel.add(mainPanel, BorderLayout.CENTER);
+        contentPanel.revalidate();
 
-		/* add edit, mode, transform menus */
-		addMenus(editor.getMenus());
+        progressBar.setValue(++currentProgressValue);
 
-		/* add parser menus */
-		addMenus(aggParser.getMenus());
+        /* add file menu */
+        addMenus(treeView.getMenus());
 
-		/* add analysis menus */
-		addMenus(aggAnalyzer.getMenus());
+        /* add edit, mode, transform menus */
+        addMenus(editor.getMenus());
 
-		/* add preferences menus */
-		addMenus(aggPreferences.getMenus());
+        /* add parser menus */
+        addMenus(aggParser.getMenus());
 
-		/* add debug menu */
-		if (DEBUGFRAME)
-			addDebugMenu();
+        /* add analysis menus */
+        addMenus(aggAnalyzer.getMenus());
 
-		/* add help menu */
-		addHelpMenu();
-	}
+        /* add preferences menus */
+        addMenus(aggPreferences.getMenus());
 
-	public  void initApplication() {
-		
-		final String ver = agg.xt_basis.Version.getID();
-		
-		System.out.println(
-				">>> This AGG version 2.1 (and all future versions) \n"+
-				"    is made available under the terms of the Eclipse Public License v1.0 \n" +
-				"    which accompanies this distribution, and is available at \n" +
-				"    http://www.eclipse.org/legal/.");
-		System.out.println(">>> ");
-		System.out.println(">>> Java Version "+System.getProperty("java.version"));
-		System.out.println(">>> AGG Version "+ver+" runs under JVM 1.8.0_60 and higher.");
-		
-		appl.setTitle("AGG  " + ver);
-		this.aggTitle = appl.getTitle();
-		appl.getContentPane().setLayout(new BorderLayout());
-		JOptionPane.setRootFrame(appl);
+        /* add debug menu */
+        if (DEBUGFRAME) {
+            addDebugMenu();
+        }
 
-		final WindowListener wl = new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				Object[] options = { "SAVE", "EXIT" };
-				treeView.exitAppl(options);
-			}
-		};
-		appl.addWindowListener(wl);
+        /* add help menu */
+        addHelpMenu();
+    }
 
-		final ComponentListener cl = new ComponentAdapter() {
-			public void componentResized(ComponentEvent e) {
+    public void initApplication() {
+
+        final String ver = agg.xt_basis.Version.getID();
+
+        System.out.println(
+                ">>> This AGG version 2.1 (and all future versions) \n"
+                + "    is made available under the terms of the Eclipse Public License v1.0 \n"
+                + "    which accompanies this distribution, and is available at \n"
+                + "    http://www.eclipse.org/legal/.");
+        System.out.println(">>> ");
+        System.out.println(">>> Java Version " + System.getProperty("java.version"));
+        System.out.println(">>> AGG Version " + ver + " runs under JVM 1.8.0_60 and higher.");
+
+        appl.setTitle("AGG  " + ver);
+        this.aggTitle = appl.getTitle();
+        appl.getContentPane().setLayout(new BorderLayout());
+        JOptionPane.setRootFrame(appl);
+
+        final WindowListener wl = new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                Object[] options = {"SAVE", "EXIT"};
+                treeView.exitAppl(options);
+            }
+        };
+        appl.addWindowListener(wl);
+
+        final ComponentListener cl = new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
 //				System.out.println("ApplFrame: width: "+appl.getWidth());
-				editor.resetTypePanelWidth();
-			}
-		};
-		appl.addComponentListener(cl);
+                editor.resetTypePanelWidth();
+            }
+        };
+        appl.addComponentListener(cl);
 
-		/* get icon image of the application */
-		java.net.URL url = ClassLoader.getSystemClassLoader()
-								.getResource("agg/lib/icons/AGG_ICON64.gif");
-		if (url != null) {
-			final ImageIcon icon = new ImageIcon(url);
-			if (icon.getImage() != null) {
-				appl.setIconImage(icon.getImage());
-			}
-		} else {
-			System.out.println("AGG_ICON64.gif not found!");
-		}
+        /* get icon image of the application */
+        java.net.URL url = ClassLoader.getSystemClassLoader()
+                .getResource("agg/lib/icons/AGG_ICON64.gif");
+        if (url != null) {
+            final ImageIcon icon = new ImageIcon(url);
+            if (icon.getImage() != null) {
+                appl.setIconImage(icon.getImage());
+            }
+        } else {
+            System.out.println("AGG_ICON64.gif not found!");
+        }
 
-	}
+    }
 
-	private void showApplicationLogo() {
-		logoFrame.setModal(false);
-		logoFrame.getContentPane().setLayout(new BorderLayout());
-		// logoFrame.getContentPane().setSize(INITIAL_WIDTH, INITIAL_HEIGHT);
-		logoFrame.setSize(INITIAL_WIDTH, INITIAL_HEIGHT);
+    private void showApplicationLogo() {
+        logoFrame.setModal(false);
+        logoFrame.getContentPane().setLayout(new BorderLayout());
+        // logoFrame.getContentPane().setSize(INITIAL_WIDTH, INITIAL_HEIGHT);
+        logoFrame.setSize(INITIAL_WIDTH, INITIAL_HEIGHT);
 
-		if (image == null)
-			System.out.println("AGG_LOGO.gif not found!");
-		else {
-			// System.out.println(image.getIconWidth()+"
-			// "+image.getIconHeight());
-			gragraLogo.setIcon(image);
-			gragraLogo.setPreferredSize(new Dimension(image.getIconWidth(),
-					image.getIconHeight()));
-			logoFrame.getContentPane().add(gragraLogo, BorderLayout.CENTER);
-		}
+        if (image == null) {
+            System.out.println("AGG_LOGO.gif not found!");
+        } else {
+            // System.out.println(image.getIconWidth()+"
+            // "+image.getIconHeight());
+            gragraLogo.setIcon(image);
+            gragraLogo.setPreferredSize(new Dimension(image.getIconWidth(),
+                    image.getIconHeight()));
+            logoFrame.getContentPane().add(gragraLogo, BorderLayout.CENTER);
+        }
 
-		final WindowListener wl = new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				logoFrame.setVisible(false);
-			}
-		};
-		logoFrame.addWindowListener(wl);
+        final WindowListener wl = new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                logoFrame.setVisible(false);
+            }
+        };
+        logoFrame.addWindowListener(wl);
 
-		/* create a panel of a progress bar */
-		// progressPanel = new JPanel() {
-		// public Insets getInsets() {
-		// return new Insets(30,10,10,10);
-		// }
-		// };
-		progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.Y_AXIS));
-		progressPanel.setBackground(Color.white);
+        /* create a panel of a progress bar */
+        // progressPanel = new JPanel() {
+        // public Insets getInsets() {
+        // return new Insets(30,10,10,10);
+        // }
+        // };
+        progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.Y_AXIS));
+        progressPanel.setBackground(Color.white);
 
-		/* create a progress label */
-		final Dimension d = new Dimension(300, 20);
-		final JLabel progressLabel = new JLabel("Loading, please wait...");
-		progressLabel.setAlignmentX(CENTER_ALIGNMENT);
-		progressLabel.setMaximumSize(d);
-		progressLabel.setPreferredSize(d);
-		progressPanel.add(progressLabel);
+        /* create a progress label */
+        final Dimension d = new Dimension(300, 20);
+        final JLabel progressLabel = new JLabel("Loading, please wait...");
+        progressLabel.setAlignmentX(CENTER_ALIGNMENT);
+        progressLabel.setMaximumSize(d);
+        progressLabel.setPreferredSize(d);
+        progressPanel.add(progressLabel);
 
-		progressPanel.add(Box.createRigidArea(new Dimension(300, 5)));
+        progressPanel.add(Box.createRigidArea(new Dimension(300, 5)));
 
-		progressLabel.setLabelFor(progressBar);
-		progressBar.setAlignmentX(CENTER_ALIGNMENT);
-		progressBar.setMinimum(0);
-		progressBar.setMaximum(AGGAppl.total);
-		progressBar.setValue(0);
-		progressBar.setPreferredSize(new Dimension(300, 20));
-		progressPanel.add(progressBar);
-		progressPanel.revalidate();
+        progressLabel.setLabelFor(progressBar);
+        progressBar.setAlignmentX(CENTER_ALIGNMENT);
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(AGGAppl.total);
+        progressBar.setValue(0);
+        progressBar.setPreferredSize(new Dimension(300, 20));
+        progressPanel.add(progressBar);
+        progressPanel.revalidate();
 
-		/* set the panel of the progress bar in logo frame */
-		logoFrame.getContentPane().add(progressPanel, BorderLayout.SOUTH);
+        /* set the panel of the progress bar in logo frame */
+        logoFrame.getContentPane().add(progressPanel, BorderLayout.SOUTH);
 
-		/* show logo frame */
-		Point locationPoint = getLocationPoint(AGGAppl.INITIAL_WIDTH, AGGAppl.INITIAL_HEIGHT);
-		logoFrame.setLocation(locationPoint);
-		logoFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
-		logoFrame.pack();
-		logoFrame.setVisible(true);
-	}
+        /* show logo frame */
+        Point locationPoint = getLocationPoint(AGGAppl.INITIAL_WIDTH, AGGAppl.INITIAL_HEIGHT);
+        logoFrame.setLocation(locationPoint);
+        logoFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-	public void showApplication(String[] args) {
-		appl.showApplicationLogo();
+        logoFrame.pack();
+        logoFrame.setVisible(true);
+    }
 
-		appl.createApplContent();
-		appl.setJMenuBar(menuBar);
-		appl.getContentPane().add(contentPanel, BorderLayout.CENTER);
+    public void showApplication(String[] args) {
+        appl.showApplicationLogo();
+
+        appl.createApplContent();
+        appl.setJMenuBar(menuBar);
+        appl.getContentPane().add(contentPanel, BorderLayout.CENTER);
 
 //		Point locationPoint = getLocationPoint(AGGAppl.FRAME_WIDTH, AGGAppl.FRAME_HEIGHT);		
 //		appl.setLocation(locationPoint);
-		appl.setLocation(new Point(100, 100));
-		appl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));		
-		appl.pack();
+        appl.setLocation(new Point(100, 100));
+        appl.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        appl.pack();
 
-		logoFrame.setVisible(false);
+        logoFrame.setVisible(false);
 
-		appl.setVisible(true);
-		
-		createFileLoadLogo();
-		if (fname != null && fname.length() > 0) {
-			logoFrame.setVisible(true);
-			Thread tmpThread = new Thread() {
-				public void run() {					
-					treeView.loadGraGra(fname);
-					logoFrame.setVisible(false);
-				}
-			};
-			tmpThread.start();
-		}				
-	}
+        appl.setVisible(true);
 
-	private Point getLocationPoint(int wdth, int hght) {
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		if (screenSize.width <= 1400) {
-			return new Point(screenSize.width/2 - wdth/2, 
-						screenSize.height/2 - hght/2 - 100);
-		}
-		return new Point(screenSize.width/4 - wdth/2, 
-					screenSize.height/2 - hght/2 - 200);
-		
-		
-	}
-	
-	private void createFileLoadLogo() {
-		logoFrame.getContentPane().remove(progressPanel);
-		/* set the loading message into logo frame */
-		logoFrame.getContentPane().add(loadlabel, BorderLayout.SOUTH);
-		logoFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		logoFrame.pack();
-	}
+        createFileLoadLogo();
+        if (fname != null && fname.length() > 0) {
+            logoFrame.setVisible(true);
+            Thread tmpThread = new Thread() {
+                public void run() {
+                    treeView.loadGraGra(fname);
+                    logoFrame.setVisible(false);
+                }
+            };
+            tmpThread.start();
+        }
+    }
 
-	public static void showFileLoadLogo() {
-		if (!logoFrame.isVisible()) {
-			logoFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));			
-			logoFrame.setVisible(true);
-			logoFrame.toFront();
-		} else {
-			logoFrame.toFront();
-		}			
-	}
+    private Point getLocationPoint(int wdth, int hght) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        if (screenSize.width <= 1400) {
+            return new Point(screenSize.width / 2 - wdth / 2,
+                    screenSize.height / 2 - hght / 2 - 100);
+        }
+        return new Point(screenSize.width / 4 - wdth / 2,
+                screenSize.height / 2 - hght / 2 - 200);
 
-	public static void hideFileLoadLogo() {
-		if (logoFrame.isVisible()) {
-			logoFrame.setVisible(false);
-		}
-	}
+    }
 
-	/** Returns myself */
-	public static AGGAppl sharedInstance() {
-		return appl;
-	}
+    private void createFileLoadLogo() {
+        logoFrame.getContentPane().remove(progressPanel);
+        /* set the loading message into logo frame */
+        logoFrame.getContentPane().add(loadlabel, BorderLayout.SOUTH);
+        logoFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        logoFrame.pack();
+    }
 
-	/** Adds menus to my menu bar */
-	public void addMenus(Enumeration<JMenu> menus) {
-		while (menus.hasMoreElements())
-			menuBar.add( menus.nextElement());
-	}
+    public static void showFileLoadLogo() {
+        if (!logoFrame.isVisible()) {
+            logoFrame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            logoFrame.setVisible(true);
+            logoFrame.toFront();
+        } else {
+            logoFrame.toFront();
+        }
+    }
 
-	/** Adds menu to my menu bar */
-	public void addMenu(JMenu menu) {
-		menuBar.add(menu);
-	}
+    public static void hideFileLoadLogo() {
+        if (logoFrame.isVisible()) {
+            logoFrame.setVisible(false);
+        }
+    }
 
-	/** Removes menus from my menu bar */
-	public void removeMenus(Enumeration<JMenu> menus) {
-		while (menus.hasMoreElements()) {
-			JMenu m = menus.nextElement();
-			removeMenu(m);
-		}
-	}
+    /**
+     * Returns myself
+     */
+    public static AGGAppl sharedInstance() {
+        return appl;
+    }
 
-	/** Removes menu from my menu bar */
-	public void removeMenu(JMenu menu) {
-		for (int i = menuBar.getMenuCount() - 1; i >= 0; i--) {
-			JMenu m = menuBar.getMenu(i);
-			if (m == menu)
-				menuBar.remove(i);
-		}
-	}
+    /**
+     * Adds menus to my menu bar
+     */
+    public void addMenus(Enumeration<JMenu> menus) {
+        while (menus.hasMoreElements()) {
+            menuBar.add(menus.nextElement());
+        }
+    }
 
-	/** Enables or disables the menu item at the index indx. */
-	public void setMenuEnabled(int indx, boolean enabled) {
-		menuBar.getMenu(indx).setEnabled(enabled);
-	}
+    /**
+     * Adds menu to my menu bar
+     */
+    public void addMenu(JMenu menu) {
+        menuBar.add(menu);
+    }
 
-	/** Extends my help menu by a new help item */
-	public void extendHelp(JMenuItem item) {
-		if (helpMenu != null)
-			helpMenu.add(item);
-	}
+    /**
+     * Removes menus from my menu bar
+     */
+    public void removeMenus(Enumeration<JMenu> menus) {
+        while (menus.hasMoreElements()) {
+            JMenu m = menus.nextElement();
+            removeMenu(m);
+        }
+    }
 
-	/** Removes the help item from my help */
-	public void removeHelp(JMenuItem item) {
-		if (helpMenu != null)
-			helpMenu.remove(item);
-	}
+    /**
+     * Removes menu from my menu bar
+     */
+    public void removeMenu(JMenu menu) {
+        for (int i = menuBar.getMenuCount() - 1; i >= 0; i--) {
+            JMenu m = menuBar.getMenu(i);
+            if (m == menu) {
+                menuBar.remove(i);
+            }
+        }
+    }
 
-	/** Sets the content of my main panel */
-	public void setMainContent(Component comp) {
-		mainPanel.removeAll();
-		mainPanel.add(comp, BorderLayout.CENTER);
-		validate();
-		repaint();
-	}
+    /**
+     * Enables or disables the menu item at the index indx.
+     */
+    public void setMenuEnabled(int indx, boolean enabled) {
+        menuBar.getMenu(indx).setEnabled(enabled);
+    }
 
-	/** Resets the content of my main panel */
-	public static void resetMainContent() {
-		mainPanel.removeAll();
-		mainPanel.add(toolBarPanel, BorderLayout.NORTH);
-		mainPanel.add(splitPane, BorderLayout.CENTER);
-		statusBar.setMode(editor.getEditMode(), (new agg.gui.event.EditEvent(
-				new Object(), editor.getEditMode())).getMessage());
-	}
+    /**
+     * Extends my help menu by a new help item
+     */
+    public void extendHelp(JMenuItem item) {
+        if (helpMenu != null) {
+            helpMenu.add(item);
+        }
+    }
 
-	/** Removes the content of my main panel */
-	public void removeMainContent() {
-		mainPanel.removeAll();
-	}
+    /**
+     * Removes the help item from my help
+     */
+    public void removeHelp(JMenuItem item) {
+        if (helpMenu != null) {
+            helpMenu.remove(item);
+        }
+    }
 
-	public void addToFrameTitle(String dirname, String filename) {
-		String str = "";
-		if (dirname != null && !dirname.equals("")) {
-			if (dirname.endsWith(File.separator))
-				str = str.concat(dirname);
-			else
-				str = str.concat(dirname).concat(File.separator);
-		}	
-		if (filename != null && !filename.equals("")) {
-			str = str.concat(filename);
-		}
-		if (str.equals("")) {
-			appl.setTitle(this.aggTitle);
-		} else {
-			appl.setTitle(this.aggTitle.concat("     ( ".concat(str).concat(" )")));
-		}
-	}
-	
-	private void addHelpMenu() {
-		((GraGraHelp) helpMenu).setParentFrame(this);
-		menuBar.add(helpMenu);
-	}
+    /**
+     * Sets the content of my main panel
+     */
+    public void setMainContent(Component comp) {
+        mainPanel.removeAll();
+        mainPanel.add(comp, BorderLayout.CENTER);
+        validate();
+        repaint();
+    }
 
-	private void addDebugMenu() {
-		JMenu debug = menuBar.add(new JMenu("DEBUG", true));
-		debug.setMnemonic('D');
-		JMenuItem mi = debug.add(new JMenuItem("DebugPrefs"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				DebugFrame df = new DebugFrame();
-				df.setVisible(true);
-			}
-		});
-	}
+    /**
+     * Resets the content of my main panel
+     */
+    public static void resetMainContent() {
+        mainPanel.removeAll();
+        mainPanel.add(toolBarPanel, BorderLayout.NORTH);
+        mainPanel.add(splitPane, BorderLayout.CENTER);
+        statusBar.setMode(editor.getEditMode(), (new agg.gui.event.EditEvent(
+                new Object(), editor.getEditMode())).getMessage());
+    }
 
-	public void addToolBar(JToolBar aToolBar) {
-		toolBarPanel.add(aToolBar);
-	}
+    /**
+     * Removes the content of my main panel
+     */
+    public void removeMainContent() {
+        mainPanel.removeAll();
+    }
 
-	public GraGraTreeView getGraGraTreeView() {
-		return treeView;
-	}
+    public void addToFrameTitle(String dirname, String filename) {
+        String str = "";
+        if (dirname != null && !dirname.equals("")) {
+            if (dirname.endsWith(File.separator)) {
+                str = str.concat(dirname);
+            } else {
+                str = str.concat(dirname).concat(File.separator);
+            }
+        }
+        if (filename != null && !filename.equals("")) {
+            str = str.concat(filename);
+        }
+        if (str.equals("")) {
+            appl.setTitle(this.aggTitle);
+        } else {
+            appl.setTitle(this.aggTitle.concat("     ( ".concat(str).concat(" )")));
+        }
+    }
 
-	public GraGraEditor getGraGraEditor() {
-		return editor;
-	}
+    private void addHelpMenu() {
+        ((GraGraHelp) helpMenu).setParentFrame(this);
+        menuBar.add(helpMenu);
+    }
 
-	public AGGPreferences getPreferences() {
-		return aggPreferences;
-	}
-	
-	public CriticalPairAnalysis getCPA() {
-		return criticalPairAnalysis;
-	}
-	
-	public ApplicabilityRuleSequence getARS() {
-		return aggApplRuleSequence;
-	}
-	
-	/**
-	 * Returns my main panel which contains gragra treeview and gragra editor
-	 */
-	public JPanel getMainPanel() {
-		return mainPanel;
-	}
+    private void addDebugMenu() {
+        JMenu debug = menuBar.add(new JMenu("DEBUG", true));
+        debug.setMnemonic('D');
+        JMenuItem mi = debug.add(new JMenuItem("DebugPrefs"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                DebugFrame df = new DebugFrame();
+                df.setVisible(true);
+            }
+        });
+    }
 
-	public void exportJPEG() {
-		exportJPEG.save(editor);
-	}
+    public void addToolBar(JToolBar aToolBar) {
+        toolBarPanel.add(aToolBar);
+    }
 
-	public void exportAppl2JPEG() {
-		exportJPEG.save(mainPanel);
-	}
+    public GraGraTreeView getGraGraTreeView() {
+        return treeView;
+    }
 
-	public void editEventOccurred(EditEvent e) {
-		if (e.getMsg() == EditEvent.MENU_KEY) {
-			if (e.getMessage().equals("Help"))
-				helpMenu.doClick();
-		}
-	}
+    public GraGraEditor getGraGraEditor() {
+        return editor;
+    }
+
+    public AGGPreferences getPreferences() {
+        return aggPreferences;
+    }
+
+    public CriticalPairAnalysis getCPA() {
+        return criticalPairAnalysis;
+    }
+
+    public ApplicabilityRuleSequence getARS() {
+        return aggApplRuleSequence;
+    }
+
+    /**
+     * Returns my main panel which contains gragra treeview and gragra editor
+     */
+    public JPanel getMainPanel() {
+        return mainPanel;
+    }
+
+    public void exportJPEG() {
+        exportJPEG.save(editor);
+    }
+
+    public void exportAppl2JPEG() {
+        exportJPEG.save(mainPanel);
+    }
+
+    public void editEventOccurred(EditEvent e) {
+        if (e.getMsg() == EditEvent.MENU_KEY) {
+            if (e.getMessage().equals("Help")) {
+                helpMenu.doClick();
+            }
+        }
+    }
 
 //	public void setPreferenceArcUndirected(boolean b) {
 //		aggPreferences.selectArcUndirected(b);
 //	}
-	
-	public void setPreferenceNoArcParallel(boolean b) {
-		aggPreferences.selectNoArcParallel(b);
-	}
-	
+    public void setPreferenceNoArcParallel(boolean b) {
+        aggPreferences.selectNoArcParallel(b);
+    }
+
 }
 // $Log: AGGAppl.java,v $
 // Revision 1.61  2010/09/19 16:23:04  olga

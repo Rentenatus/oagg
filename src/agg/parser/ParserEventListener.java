@@ -1,32 +1,32 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.EventListener;
 
 /**
  * A parser sends messages to all listeners.
- * 
+ *
  * @see Parser#addParserEventListener Register at the parser to receive events.
  * @author $Author: olga $ Parser Group
  * @version $Id: ParserEventListener.java,v 1.2 2007/09/10 13:05:40 olga Exp $
  */
 public interface ParserEventListener extends EventListener {
 
-	/**
-	 * Invoked when a parser event occurs.
-	 * 
-	 * @param p
-	 *            The event from the parser.
-	 */
-	public void parserEventOccured(ParserEvent p);
+    /**
+     * Invoked when a parser event occurs.
+     *
+     * @param p The event from the parser.
+     */
+    public void parserEventOccured(ParserEvent p);
 }
 
 /*

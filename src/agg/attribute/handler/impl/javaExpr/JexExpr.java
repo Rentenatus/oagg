@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.impl.javaExpr;
 
 import java.io.IOException;
@@ -23,436 +24,452 @@ import agg.attribute.impl.VerboseControl;
 import agg.attribute.parser.javaExpr.Jex;
 import agg.attribute.parser.javaExpr.Node;
 
-
 /**
  * @version $Id: JexExpr.java,v 1.16 2010/09/23 08:13:35 olga Exp $
  * @author $Author: olga $
  */
 public class JexExpr extends Object implements HandlerExpr {
 
-	static protected Jex parser = new Jex();
+    static protected Jex parser = new Jex();
 
-	protected JexHandler handler;
+    protected JexHandler handler;
 
-	protected JexType type;
+    protected JexType type;
 
 //	protected String text;
+    /**
+     * The value of an attribute
+     */
+    protected Object value;
 
-	/** The value of an attribute */
-	protected Object value;
+    /**
+     * Represents the abstract syntax tree of an expression
+     */
+    protected Node ast;
 
-	/** Represents the abstract syntax tree of an expression */
-	protected Node ast;
+    protected int property = Jex.PARSE_ERROR;
 
-	protected int property = Jex.PARSE_ERROR;
+    public static final long serialVersionUID = 268212822469784946L;
 
-	public static final long serialVersionUID = 268212822469784946L;
+    public JexExpr() {
+    }
 
-	public JexExpr() {
-	}
-
-	public JexExpr(String exprString, boolean asValue, JexType type)
-			throws AttrHandlerException {
+    public JexExpr(String exprString, boolean asValue, JexType type)
+            throws AttrHandlerException {
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"JexExpr:\n->Constructor");
 
-		if (asValue) {
-			this.assignValue(exprString, type);
-		} else {
-			this.type = type;
+        if (asValue) {
+            this.assignValue(exprString, type);
+        } else {
+            this.type = type;
 //			this.text = exprString.trim();
-			this.property = parser.parse(exprString.trim());
-			this.ast = parser.getAST();
-			
+            this.property = parser.parse(exprString.trim());
+            this.ast = parser.getAST();
+
 //			if (VerboseControl.logTrace) {
 //				AttrSession.logPrintln(VerboseControl.logTrace, "konstant: "
 //						+ isConstant() + "\nvariable: " + isVariable()
 //						+ "\nkomplex: " + isComplex());
 //				this.ast.dump("JexExpr: ");
 //			}
-			
-			if (isConstant()) {
-				evaluate(null);
-			}
+            if (isConstant()) {
+                evaluate(null);
+            }
 //			else value = new String(text);
-		}
+        }
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"JexExpr:\n<-Construktor");
-	}
+    }
 
-	public JexExpr(Object value, JexType type) throws AttrHandlerException {
-		this.assignValue(value, type);
-	}
+    public JexExpr(Object value, JexType type) throws AttrHandlerException {
+        this.assignValue(value, type);
+    }
 
-	protected void assignValue(Object avalue, JexType atype)
-			throws AttrHandlerException {
+    protected void assignValue(Object avalue, JexType atype)
+            throws AttrHandlerException {
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"JexExpr:\n->assignValue");
-		
-		Class<?> clazz = atype.getClazz();
-		
-		if( this.value != null && !clazz.isInstance( this.value )) { 
+
+        Class<?> clazz = atype.getClazz();
+
+        if (this.value != null && !clazz.isInstance(this.value)) {
 //			System.out.println("JexExpr.assignValue:  "
 //					+this.value.toString() 
 //					+ " is not an instance of " 
 //					+ clazz.toString());
-			throw new AttrHandlerException( 
-					this.value.toString() 
-					+ " is not an instance of " 
-					+ clazz.toString()); 
-		}
-		 
-		this.type = atype;
-		this.value = avalue;
-		
-		// this.text = (this.value == null ? "null" : this.value.toString());
-		// if( this.value != null && this.value instanceof String ) {
-		// 		this.text = "\"" + this.text + "\"";
-		// }
-		
-		this.property = Jex.IS_CONSTANT;
-		
+            throw new AttrHandlerException(
+                    this.value.toString()
+                    + " is not an instance of "
+                    + clazz.toString());
+        }
+
+        this.type = atype;
+        this.value = avalue;
+
+        // this.text = (this.value == null ? "null" : this.value.toString());
+        // if( this.value != null && this.value instanceof String ) {
+        // 		this.text = "\"" + this.text + "\"";
+        // }
+        this.property = Jex.IS_CONSTANT;
+
 //		if (this.value instanceof HandlerExpr) {
 //			System.out.println("JexExpr.assignValue::  "+ value);
 //		}
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"JexExpr:\n<-assignValue");
-	}
+    }
 
-	static public Jex getParser() {
-		return parser;
-	}
+    static public Jex getParser() {
+        return parser;
+    }
 
-	public JexHandler getHandler() {
-		if (this.type != null)
-			return this.type.handler;
-		
-		return null;
-	}
+    public JexHandler getHandler() {
+        if (this.type != null) {
+            return this.type.handler;
+        }
 
-	/**
-	 * Getting the string representation of this value. Overrides the
-	 * "toString()" method of the "Object" class.
-	 */
-	public String toString() {
-		return getString();
-	}
+        return null;
+    }
 
-	public boolean equals(HandlerExpr expr) {
-		JexExpr testObject = (JexExpr) expr;
-		boolean result = true;
-		if (testObject == null || getHandler() != testObject.getHandler()
-				|| !this.type.equals(testObject.type)) {
-			result = false;
-		} else if (this.value != null && testObject.value != null) {
-			result = this.value.equals(testObject.value);
-		} else {
-			if (this.value == null && testObject.value == null) {
-				// result = text.equals( testObject.text );
+    /**
+     * Getting the string representation of this value. Overrides the "toString()" method of the "Object" class.
+     */
+    public String toString() {
+        return getString();
+    }
 
-				/* Dieser Fall tritt ein wenn null als Value eingegeben wird. */
-				if (this.ast == null && testObject.ast == null)
-					return true;
-				if (this.ast != null && testObject.ast != null) {
-					result = this.ast.equals(testObject.ast);
-					// TO DO: die equals Methode soll in Abstr Baum rein!!
-					result = this.ast.toString().equals(testObject.ast.toString());
-				} else
-					result = false;
-			} else
-				result = false;
-		}
-		return result;
-	}
+    public boolean equals(HandlerExpr expr) {
+        JexExpr testObject = (JexExpr) expr;
+        boolean result = true;
+        if (testObject == null || getHandler() != testObject.getHandler()
+                || !this.type.equals(testObject.type)) {
+            result = false;
+        } else if (this.value != null && testObject.value != null) {
+            result = this.value.equals(testObject.value);
+        } else {
+            if (this.value == null && testObject.value == null) {
+                // result = text.equals( testObject.text );
 
-	public Object getValue() {
-		return this.value;
-	}
+                /* Dieser Fall tritt ein wenn null als Value eingegeben wird. */
+                if (this.ast == null && testObject.ast == null) {
+                    return true;
+                }
+                if (this.ast != null && testObject.ast != null) {
+                    result = this.ast.equals(testObject.ast);
+                    // TO DO: die equals Methode soll in Abstr Baum rein!!
+                    result = this.ast.toString().equals(testObject.ast.toString());
+                } else {
+                    result = false;
+                }
+            } else {
+                result = false;
+            }
+        }
+        return result;
+    }
 
-	public JexType getType() {
-		return this.type;
-	}
+    public Object getValue() {
+        return this.value;
+    }
 
-	protected void copyFrom(HandlerExpr expr) {
-		JexExpr from = (JexExpr) expr;
-		this.type = from.type;
-		this.value = from.value;
-		this.property = from.property;
-		if (from.ast != null) {
-			// try{
-			// from.ast.getString() kopiert keine Objecte
-			// TODO
-			// this.property = parser.parse( from.ast.getString() );
-			// ast = parser.getAST();
-			this.ast = from.ast.copy();
-			// }
-			// catch(AttrHandlerException ahe){
-			// ast = from.ast;
-			// }
-		} else {
-			this.ast = null;
-			this.property = from.property;
-		}
-		// text = new String( from.text );
-	}
+    public JexType getType() {
+        return this.type;
+    }
 
-	public HandlerExpr getCopy() {
-		JexExpr copy = new JexExpr();
-		copy.copyFrom(this);
-		return copy;
-	}
+    protected void copyFrom(HandlerExpr expr) {
+        JexExpr from = (JexExpr) expr;
+        this.type = from.type;
+        this.value = from.value;
+        this.property = from.property;
+        if (from.ast != null) {
+            // try{
+            // from.ast.getString() kopiert keine Objecte
+            // TODO
+            // this.property = parser.parse( from.ast.getString() );
+            // ast = parser.getAST();
+            this.ast = from.ast.copy();
+            // }
+            // catch(AttrHandlerException ahe){
+            // ast = from.ast;
+            // }
+        } else {
+            this.ast = null;
+            this.property = from.property;
+        }
+        // text = new String( from.text );
+    }
 
-	public void check(SymbolTable symtab) throws AttrHandlerException {
-		if (this.property == Jex.IS_CONSTANT) {
-			return;
-		}
-		if (getHandler() != null && this.type != null) {
-			getHandler().adaptParser();
-			parser.check(getString(), this.type.getClazz(), symtab);
-		}
-	}
+    public HandlerExpr getCopy() {
+        JexExpr copy = new JexExpr();
+        copy.copyFrom(this);
+        return copy;
+    }
 
-	public void checkConstant(SymbolTable symtab) throws AttrHandlerException {
-		if (this.property == Jex.IS_CONSTANT) {		
-			if (getHandler() != null && this.type != null) {
-				getHandler().adaptParser();
-				parser.check(getString(), this.type.getClazz(), symtab);
-			}
-		}
-	}
-	
-	public void evaluate(SymbolTable symtab) throws AttrHandlerException {
-		if (VerboseControl.logTrace) {
-			AttrSession.logPrintln(VerboseControl.logTrace,
-					"JexExpr:\n->evaluate()");
-			AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: text "
-					+ getString() + " vor interpret aufruf");
-			AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: value "
-					+ this.value + " vor interpret aufruf");
-			AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: symtab "
-					+ symtab + " vor interpret aufruf");
-		
-			if (symtab instanceof ContextView) {
-				ContextView context = (ContextView) symtab;
-				AttrSession.logAttrInstance(context.getVariables(),
-						"JexExpr: Variablen");
-				AttrSession.logPrintln("JexExpr: Variablen:"
-						+ context.getVariables().getNumberOfEntries());
-				for (int i = 0; i < context.getVariables().getNumberOfEntries(); i++) {
-					AttrSession.logPrintln("JexExpr: Variablen bei "
-							+ i
-							+ ": "
-							+ ((AttrVariableMember) context.getVariables()
-									.getMemberAt(i)).getExprAsText());
-				}
-			} else
-				AttrSession.logPrintln("JexExpr: symtab ist kein ContextView");
-		}
-		
-		// falls ein matchmapping existiert, nur dann soll ausgewertet werden.
-		// boolean matchMapping = true;
-		// ContextView contextView = null;
-		// if(symtab instanceof ContextView)
-		// contextView = (ContextView)symtab;
-		// if(contextView != null){
-		// matchMapping = contextView.getAllowedMapping() ==
-		// AttrMapping.MATCH_MAP;
-		// AttrSession.logPrintln(VerboseControl.logTrace,"werte ausdruck aus
-		// mit mapping: "+contextView.getAllowedMapping());
-		// }
+    public void check(SymbolTable symtab) throws AttrHandlerException {
+        if (this.property == Jex.IS_CONSTANT) {
+            return;
+        }
+        if (getHandler() != null && this.type != null) {
+            getHandler().adaptParser();
+            parser.check(getString(), this.type.getClazz(), symtab);
+        }
+    }
 
-		if (this.value == null) {
-			// wir gehen erstmal davon aus, dass die Expression zu einer
-			// Konstanten ausgewertet wird.
-			this.property = Jex.IS_CONSTANT;
-			if (getHandler() != null && this.type != null) {
-				getHandler().adaptParser();
-				if (symtab != null && mustRewrite(symtab)) {
-					this.value = null;
-					try {
+    public void checkConstant(SymbolTable symtab) throws AttrHandlerException {
+        if (this.property == Jex.IS_CONSTANT) {
+            if (getHandler() != null && this.type != null) {
+                getHandler().adaptParser();
+                parser.check(getString(), this.type.getClazz(), symtab);
+            }
+        }
+    }
+
+    public void evaluate(SymbolTable symtab) throws AttrHandlerException {
+        if (VerboseControl.logTrace) {
+            AttrSession.logPrintln(VerboseControl.logTrace,
+                    "JexExpr:\n->evaluate()");
+            AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: text "
+                    + getString() + " vor interpret aufruf");
+            AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: value "
+                    + this.value + " vor interpret aufruf");
+            AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: symtab "
+                    + symtab + " vor interpret aufruf");
+
+            if (symtab instanceof ContextView) {
+                ContextView context = (ContextView) symtab;
+                AttrSession.logAttrInstance(context.getVariables(),
+                        "JexExpr: Variablen");
+                AttrSession.logPrintln("JexExpr: Variablen:"
+                        + context.getVariables().getNumberOfEntries());
+                for (int i = 0; i < context.getVariables().getNumberOfEntries(); i++) {
+                    AttrSession.logPrintln("JexExpr: Variablen bei "
+                            + i
+                            + ": "
+                            + ((AttrVariableMember) context.getVariables()
+                                    .getMemberAt(i)).getExprAsText());
+                }
+            } else {
+                AttrSession.logPrintln("JexExpr: symtab ist kein ContextView");
+            }
+        }
+
+        // falls ein matchmapping existiert, nur dann soll ausgewertet werden.
+        // boolean matchMapping = true;
+        // ContextView contextView = null;
+        // if(symtab instanceof ContextView)
+        // contextView = (ContextView)symtab;
+        // if(contextView != null){
+        // matchMapping = contextView.getAllowedMapping() ==
+        // AttrMapping.MATCH_MAP;
+        // AttrSession.logPrintln(VerboseControl.logTrace,"werte ausdruck aus
+        // mit mapping: "+contextView.getAllowedMapping());
+        // }
+        if (this.value == null) {
+            // wir gehen erstmal davon aus, dass die Expression zu einer
+            // Konstanten ausgewertet wird.
+            this.property = Jex.IS_CONSTANT;
+            if (getHandler() != null && this.type != null) {
+                getHandler().adaptParser();
+                if (symtab != null && mustRewrite(symtab)) {
+                    this.value = null;
+                    try {
 //						AttrSession.logPrintln(VerboseControl.logJexParser,
 //								"JexExpr.evaluate: rewrite");
-						parser.rewrite(getAST(), this.type.getClazz(), symtab);
-						this.property = Jex.IS_COMPLEX;
-					} catch (AttrHandlerException ex) {
+                        parser.rewrite(getAST(), this.type.getClazz(), symtab);
+                        this.property = Jex.IS_COMPLEX;
+                    } catch (AttrHandlerException ex) {
 //						AttrSession.logPrintln(VerboseControl.logJexParser,
 //								"JexExpr.evaluate:  rewriting failed. "
 //										+ ex.getMessage());
-				
-						throw new AttrHandlerException(
-								"JexExpr.evaluate::  required type: "
-										+ this.type.toString()
-										+ "  - rewriting failed. "
-										+ ex.getMessage() + "  - value failed.");
-					}
-				} else if (this.ast != null) {
-					try {
+
+                        throw new AttrHandlerException(
+                                "JexExpr.evaluate::  required type: "
+                                + this.type.toString()
+                                + "  - rewriting failed. "
+                                + ex.getMessage() + "  - value failed.");
+                    }
+                } else if (this.ast != null) {
+                    try {
 //						AttrSession.logPrintln(VerboseControl.logJexParser,
 //								"JexExpr.evaluate: interpret");
-						this.value = parser.interpret(this.ast, this.type.getClazz(), symtab);
-					} catch (AttrHandlerException ex) {
+                        this.value = parser.interpret(this.ast, this.type.getClazz(), symtab);
+                    } catch (AttrHandlerException ex) {
 //						AttrSession.logPrintln(VerboseControl.logJexParser,
 //								"JexExpr.evaluate:  interpretting failed. "
 //										+ ex.getMessage());
-						if (ex.getMessage() != null) {
-						throw new AttrHandlerException(
-								"JexExpr.evaluate::  required type: "
-										+ this.type.toString()
-										+ "  - interpretting failed. ");
-						}
-					}
-				}
-			} else
-				this.value = null;
-		}
-		if (VerboseControl.logTrace) {
-			AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: value "
-					+ this.value + " nach evaluate");
-			AttrSession.logPrintln(VerboseControl.logTrace,
-					"JexExpr:\n<-evaluate()");
-		}
-	}
+                        if (ex.getMessage() != null) {
+                            throw new AttrHandlerException(
+                                    "JexExpr.evaluate::  required type: "
+                                    + this.type.toString()
+                                    + "  - interpretting failed. ");
+                        }
+                    }
+                }
+            } else {
+                this.value = null;
+            }
+        }
+        if (VerboseControl.logTrace) {
+            AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: value "
+                    + this.value + " nach evaluate");
+            AttrSession.logPrintln(VerboseControl.logTrace,
+                    "JexExpr:\n<-evaluate()");
+        }
+    }
 
-	/** Checks the expression if there is any variable which must be rewritten */
-	protected boolean mustRewrite(SymbolTable symtab) {
-		Vector<String> v = new Vector<String>();
-		getAllVariables(v);
-		boolean result = false;
-		for (int i = 0; i < v.size() && !result; i++) {
-			String s = v.elementAt(i);
-			HandlerExpr he = symtab.getExpr(s);
-			if (he != null) {
-				result = !he.isConstant();
-			}
-		}
-		return result;
-	}
+    /**
+     * Checks the expression if there is any variable which must be rewritten
+     */
+    protected boolean mustRewrite(SymbolTable symtab) {
+        Vector<String> v = new Vector<String>();
+        getAllVariables(v);
+        boolean result = false;
+        for (int i = 0; i < v.size() && !result; i++) {
+            String s = v.elementAt(i);
+            HandlerExpr he = symtab.getExpr(s);
+            if (he != null) {
+                result = !he.isConstant();
+            }
+        }
+        return result;
+    }
 
-	public boolean isConstant() {
-		return (this.property == Jex.IS_CONSTANT);
-	}
+    public boolean isConstant() {
+        return (this.property == Jex.IS_CONSTANT);
+    }
 
-	public boolean isVariable() {
-		return (this.property == Jex.IS_VARIABLE);
-	}
+    public boolean isVariable() {
+        return (this.property == Jex.IS_VARIABLE);
+    }
 
-	public boolean isComplex() {
-		return (this.property == Jex.IS_COMPLEX);
-	}
+    public boolean isComplex() {
+        return (this.property == Jex.IS_COMPLEX);
+    }
 
-	protected boolean isAssignableTo(JexExpr expr, SymbolTable symtab) {
-		if (expr == null || symtab == null) {
-			return false;
-		}
-		
-		if (this.isConstant() && expr.isVariable()) {
-			JexExpr currentAssignment = (JexExpr) symtab.getExpr(expr
-					.getString());
-			if (currentAssignment == null
-					|| ((this.value != null) && this.value
-							.equals(currentAssignment.value))) {
-				return true;
-			}
-		}
-		return false;
-	}
+    protected boolean isAssignableTo(JexExpr expr, SymbolTable symtab) {
+        if (expr == null || symtab == null) {
+            return false;
+        }
 
-	/**
-	 * checks if both expression fit together
-	 */
-	public boolean isUnifiableWith(HandlerExpr expr, SymbolTable symtab) {
-		if (this.type == null) {
-			return false;
-		}
-		
-		JexExpr testObject = (JexExpr) expr;
-		if (testObject == null 
-				|| getHandler() != testObject.getHandler()
-				|| !this.type.equals(testObject.type)) {
-			return false;
-		}
+        if (this.isConstant() && expr.isVariable()) {
+            JexExpr currentAssignment = (JexExpr) symtab.getExpr(expr
+                    .getString());
+            if (currentAssignment == null
+                    || ((this.value != null) && this.value
+                            .equals(currentAssignment.value))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * checks if both expression fit together
+     */
+    public boolean isUnifiableWith(HandlerExpr expr, SymbolTable symtab) {
+        if (this.type == null) {
+            return false;
+        }
+
+        JexExpr testObject = (JexExpr) expr;
+        if (testObject == null
+                || getHandler() != testObject.getHandler()
+                || !this.type.equals(testObject.type)) {
+            return false;
+        }
 //		AttrSession.logPrintln(VerboseControl.logMapping,
 //				"JexExpr: Expr not null, Handler are equal, Type are equal");
-		boolean result = true;
-		/*
+        boolean result = true;
+        /*
 		 * es gibt 3 Moeglichkeiten: 
 		 * 1. beide Ausdruecke sind konstant und sie sind gleich (die ersten drei Zeilen) 
 		 * 2. der eine kann dem anderen zugewiesen werden. 
 		 * 3. der andere kann dem einen zugewiesen werden (Umkehrung)
-		 */
-		result = result && isConstant();
-		result = result && expr.isConstant();
-		result = result && equals(expr);
-		
-		result = result || isAssignableTo(testObject, symtab);
-		result = result || testObject.isAssignableTo(this, symtab);
-		
-		return result;
-	}
+         */
+        result = result && isConstant();
+        result = result && expr.isConstant();
+        result = result && equals(expr);
 
-	/** represents the expression as a string */
-	public String getString() {
-		String result;
-		if (this.value != null) {
-			result = this.value.toString();
-			if (this.value instanceof String)
-				result = "\"" + result + "\"";
-		} else {
-			if (this.ast != null)
-				result = this.ast.getString();
-			else
-				result = "null";
-		}
-		return result;
-	}
+        result = result || isAssignableTo(testObject, symtab);
+        result = result || testObject.isAssignableTo(this, symtab);
 
-	/** Returns the abstract syntax tree which represents the expression */
-	public Node getAST() {
-		return this.ast;
-	}
+        return result;
+    }
 
-	/**
-	 * fills the vector with the names of all variables which occur in this
-	 * abstract syntax tree
-	 */
-	public void getAllVariables(Vector<String> v) {
-		if (getAST() != null)
-			getAST().getAllVariablesinExpression(v);
-	}
+    /**
+     * represents the expression as a string
+     */
+    public String getString() {
+        String result;
+        if (this.value != null) {
+            result = this.value.toString();
+            if (this.value instanceof String) {
+                result = "\"" + result + "\"";
+            }
+        } else {
+            if (this.ast != null) {
+                result = this.ast.getString();
+            } else {
+                result = "null";
+            }
+        }
+        return result;
+    }
 
-	/***************************************************************************
-	 * LOAD - SAVE
-	 * *********************************************************************
-	 */
-	private void readObject(ObjectInputStream ois) throws IOException,
-			ClassNotFoundException {
-		ObjectInputStream.GetField gf = ois.readFields();
-		/* reading fields */
-		this.handler = (JexHandler) gf.get("handler", null);
+    /**
+     * Returns the abstract syntax tree which represents the expression
+     */
+    public Node getAST() {
+        return this.ast;
+    }
 
-		this.type = (JexType) gf.get("type", null);
+    /**
+     * fills the vector with the names of all variables which occur in this abstract syntax tree
+     */
+    public void getAllVariables(Vector<String> v) {
+        if (getAST() != null) {
+            getAST().getAllVariablesinExpression(v);
+        }
+    }
 
-		/** The value of an attribute */
-		this.value = gf.get("value", null);
+    /**
+     * *************************************************************************
+     * LOAD - SAVE *********************************************************************
+     */
+    private void readObject(ObjectInputStream ois) throws IOException,
+            ClassNotFoundException {
+        ObjectInputStream.GetField gf = ois.readFields();
+        /* reading fields */
+        this.handler = (JexHandler) gf.get("handler", null);
 
-		this.property = gf.get("property", Jex.PARSE_ERROR);
-		/** Represents the abstract syntax tree of an expression */
-		this.ast = (Node) gf.get("ast", null);
-		if (this.ast == null && this.value == null) {
-			String text = (String) gf.get("text", null);
-			if (text != null) {
-				JexExpr newExpr = null;
-				try {
-					newExpr = new JexExpr(text, false, this.type);
-				} catch (AttrHandlerException ahe) {
-					throw new RuntimeException(ahe.getMessage());
-				}
-				this.ast = newExpr.ast;
-				this.property = newExpr.property;
-			}
-		}
+        this.type = (JexType) gf.get("type", null);
 
-	}
+        /**
+         * The value of an attribute
+         */
+        this.value = gf.get("value", null);
+
+        this.property = gf.get("property", Jex.PARSE_ERROR);
+        /**
+         * Represents the abstract syntax tree of an expression
+         */
+        this.ast = (Node) gf.get("ast", null);
+        if (this.ast == null && this.value == null) {
+            String text = (String) gf.get("text", null);
+            if (text != null) {
+                JexExpr newExpr = null;
+                try {
+                    newExpr = new JexExpr(text, false, this.type);
+                } catch (AttrHandlerException ahe) {
+                    throw new RuntimeException(ahe.getMessage());
+                }
+                this.ast = newExpr.ast;
+                this.property = newExpr.property;
+            }
+        }
+
+    }
 }
 
 /*

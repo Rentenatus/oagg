@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Enumeration;
@@ -22,307 +23,310 @@ import agg.attribute.view.impl.OpenViewSetting;
 import agg.util.XMLHelper;
 
 /**
- * Implementation of the interface agg.attribute.AttrInstance; Encapsulates a
- * tuple of attributes, so that a graphical object needs to talk to this one
- * object only;
- * 
+ * Implementation of the interface agg.attribute.AttrInstance; Encapsulates a tuple of attributes, so that a graphical
+ * object needs to talk to this one object only;
+ *
  * @version $Id: ValueTuple.java,v 1.41 2010/11/17 14:05:53 olga Exp $
  * @author $Author: olga $
  */
 public class ValueTuple extends TupleObject implements AttrInstance,
-		AttrMsgCode {
+        AttrMsgCode {
 
-	// Protected instance variables.
+    // Protected instance variables.
+    /**
+     *
+     */
+    private static final long serialVersionUID = -8398830346220181522L;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8398830346220181522L;
+    /**
+     * Type reference.
+     */
+    protected DeclTuple type;
 
-	/** Type reference. */
-	protected DeclTuple type;
+    /**
+     * Context in which this instance is placed.
+     */
+    protected ContextView context = null;
 
-	/**
-	 * Context in which this instance is placed.
-	 */
-	protected ContextView context = null;
+    /**
+     * GUI editor for this instance.
+     */
+    // transient protected AttrEditor editor = null;
+    transient protected String errorMsg;
 
-	/** GUI editor for this instance. */
-	// transient protected AttrEditor editor = null;
-	transient protected String errorMsg;
+    // Public Constructors.
+    /**
+     * @param manager AttrTupleManager managing this tuple;
+     * @param type Type, of which this tuple shall be an instance.
+     */
+    public ValueTuple(AttrTupleManager manager, DeclTuple type) {
+        this(manager, type, null, null);
+    }
 
-	// Public Constructors.
+    /**
+     * @param manager AttrTupleManager managing this tuple
+     * @param type Type, of which this tuple shall be an instance
+     * @param context The context in which this instance is placed
+     */
+    public ValueTuple(AttrTupleManager manager, DeclTuple type,
+            ContextView context) {
+        this(manager, type, context, null);
+    }
 
-	/**
-	 * @param manager
-	 *            AttrTupleManager managing this tuple;
-	 * @param type
-	 *            Type, of which this tuple shall be an instance.
-	 */
-	public ValueTuple(AttrTupleManager manager, DeclTuple type) {
-		this(manager, type, null, null);
-	}
+    /**
+     * @param manager AttrTupleManager managing this tuple
+     * @param type Type, of which this tuple shall be an instance
+     * @param context The context in which this instance is placed
+     */
+    public ValueTuple(AttrTupleManager manager, DeclTuple type,
+            ContextView context, ValueTuple parent) {
+        super(manager, null);
+        resetContextView(context);
+        setType(type);
 
-	/**
-	 * @param manager
-	 *            AttrTupleManager managing this tuple
-	 * @param type
-	 *            Type, of which this tuple shall be an instance
-	 * @param context
-	 *            The context in which this instance is placed
-	 */
-	public ValueTuple(AttrTupleManager manager, DeclTuple type,
-			ContextView context) {
-		this(manager, type, context, null);
-	}
+        if (getContextView() == null) {
+            warn("Context = null", new RuntimeException());
+        }
 
-	/**
-	 * @param manager
-	 *            AttrTupleManager managing this tuple
-	 * @param type
-	 *            Type, of which this tuple shall be an instance
-	 * @param context
-	 *            The context in which this instance is placed
-	 */
-	public ValueTuple(AttrTupleManager manager, DeclTuple type,
-			ContextView context, ValueTuple parent) {
-		super(manager, null);
-		resetContextView(context);
-		setType(type);
-		
-		if (getContextView() == null)
-			warn("Context = null", new RuntimeException());
+        this.errorMsg = "";
+    }
 
-		this.errorMsg = "";
-	}
-	
-	/** Propagates the event to the observers, pretending to be the source. */
-	protected void propagateEvent(TupleEvent e) {
-		OpenViewSetting myOpenView = (OpenViewSetting) this.manager
-				.getDefaultOpenView();
-		if (e.id == AttrEvent.MEMBER_ADDED) {
-			refreshParents();
-			myOpenView.reorderTuple(this);
-		}
-		if (e.id == AttrEvent.MEMBER_DELETED) {
-			refreshParents();
-			myOpenView.reorderTuple(this);
-		}
-		fireAttrChanged(e.cloneWithNewSource(this));
-	}
+    /**
+     * Propagates the event to the observers, pretending to be the source.
+     */
+    protected void propagateEvent(TupleEvent e) {
+        OpenViewSetting myOpenView = (OpenViewSetting) this.manager
+                .getDefaultOpenView();
+        if (e.id == AttrEvent.MEMBER_ADDED) {
+            refreshParents();
+            myOpenView.reorderTuple(this);
+        }
+        if (e.id == AttrEvent.MEMBER_DELETED) {
+            refreshParents();
+            myOpenView.reorderTuple(this);
+        }
+        fireAttrChanged(e.cloneWithNewSource(this));
+    }
 
-	public void refreshParents() {
-		if (this.type != null) {
-			Vector<AttrMember> memberCopy = new Vector<AttrMember>(this.members);
-			this.members.clear();
-			for (int i = 0; i < this.type.getSize(); i++) {
-				DeclMember currentDecl = this.type.getDeclMemberAt(i);
-				if (currentDecl != null) {
-					boolean oldEntry = false;
-					for (int j = 0; j < memberCopy.size(); j++) {
-						if (((ValueMember) memberCopy.get(j)).getDecl() == currentDecl) {
-							ValueMember vm = (ValueMember) memberCopy.get(j);
-							this.members.add(vm);
-							oldEntry = true;
-							break;
-						}
-					}
-					if (!oldEntry) {
-						this.members.add(newMember(currentDecl));
-					}
-				}
-			}
-		}
-	}
-	
-	public void resetContextView(ContextView view) {
-		this.context = view;
-	}
+    public void refreshParents() {
+        if (this.type != null) {
+            Vector<AttrMember> memberCopy = new Vector<AttrMember>(this.members);
+            this.members.clear();
+            for (int i = 0; i < this.type.getSize(); i++) {
+                DeclMember currentDecl = this.type.getDeclMemberAt(i);
+                if (currentDecl != null) {
+                    boolean oldEntry = false;
+                    for (int j = 0; j < memberCopy.size(); j++) {
+                        if (((ValueMember) memberCopy.get(j)).getDecl() == currentDecl) {
+                            ValueMember vm = (ValueMember) memberCopy.get(j);
+                            this.members.add(vm);
+                            oldEntry = true;
+                            break;
+                        }
+                    }
+                    if (!oldEntry) {
+                        this.members.add(newMember(currentDecl));
+                    }
+                }
+            }
+        }
+    }
 
-	
-	protected ContextView getContextView() {
-		return this.context;
-	}
+    public void resetContextView(ContextView view) {
+        this.context = view;
+    }
 
-	protected void assignParent(TupleObject newParent) {
-		super.assignParent(newParent);
-		if (this.parent != null)
-			copyEntries((ValueTuple) this.parent);
-	}
+    protected ContextView getContextView() {
+        return this.context;
+    }
 
-	protected void setType(DeclTuple type) {
-		this.type = type;
-		if (this.type != null) {
-			this.type.addObserver(this);
-			adaptToType();
-			if (this.parent != null)
-				copyEntries((AttrInstance) this.parent);
-		}
-	}
+    protected void assignParent(TupleObject newParent) {
+        super.assignParent(newParent);
+        if (this.parent != null) {
+            copyEntries((ValueTuple) this.parent);
+        }
+    }
 
-	/**
-	 * Causes the value container (Vector) size to match the type container
-	 * size.
-	 */
-	protected void adaptToType() {
-		for (int i = 0; i < getTupleType().getSize(); i++) {
-			if (getTupleType().getDeclMemberAt(i) != null)
-				addMember(newMember(getTupleType().getDeclMemberAt(i)));
-		}
-	}
+    protected void setType(DeclTuple type) {
+        this.type = type;
+        if (this.type != null) {
+            this.type.addObserver(this);
+            adaptToType();
+            if (this.parent != null) {
+                copyEntries((AttrInstance) this.parent);
+            }
+        }
+    }
 
-	protected ValueMember newMember(DeclMember decl) {
-		return new ValueMember(this, decl);
-	}
+    /**
+     * Causes the value container (Vector) size to match the type container size.
+     */
+    protected void adaptToType() {
+        for (int i = 0; i < getTupleType().getSize(); i++) {
+            if (getTupleType().getDeclMemberAt(i) != null) {
+                addMember(newMember(getTupleType().getDeclMemberAt(i)));
+            }
+        }
+    }
 
-	public String getErrorMsg() {
-		return this.errorMsg;
-	}
+    protected ValueMember newMember(DeclMember decl) {
+        return new ValueMember(this, decl);
+    }
 
-	public AttrContext getContext() {
-		return getContextView();
-	}
+    public String getErrorMsg() {
+        return this.errorMsg;
+    }
 
+    public AttrContext getContext() {
+        return getContextView();
+    }
 
-	/** For debugging: displaying itself in the logging window. */
-	public void log() {
-		String line = "";
-		for (int i = 0; i < this.getNumberOfEntries(); i++) {
-			line = line + getLogEntry(i);
-		}
-		logPrintln(line);
-	}
+    /**
+     * For debugging: displaying itself in the logging window.
+     */
+    public void log() {
+        String line = "";
+        for (int i = 0; i < this.getNumberOfEntries(); i++) {
+            line = line + getLogEntry(i);
+        }
+        logPrintln(line);
+    }
 
-	/** Subprocedure for 'log()', creates a text showing the entry at 'index' */
-	protected String getLogEntry(int index) {
-		return ("\n    " + index + ". (" + this.getTypeAsString(index) + ") "
-				+ this.getNameAsString(index) + " = " + this
-				.getValueAsString(index));
-	}
+    /**
+     * Subprocedure for 'log()', creates a text showing the entry at 'index'
+     */
+    protected String getLogEntry(int index) {
+        return ("\n    " + index + ". (" + this.getTypeAsString(index) + ") "
+                + this.getNameAsString(index) + " = " + this
+                .getValueAsString(index));
+    }
 
-	//
-	// Implementation of abstract methods from TupleObject.
-	//
+    //
+    // Implementation of abstract methods from TupleObject.
+    //
+    /**
+     * Retrieving the type of this tuple instance
+     */
+    public DeclTuple getTupleType() {
+        return this.type;
+    }
 
-	/** Retrieving the type of this tuple instance */
-	public DeclTuple getTupleType() {
-		return this.type;
-	}
+    //
+    // Update methods.
+    public void updateMemberAdded(TupleEvent e) {
+        if (e.getSource() instanceof DeclTuple) {
+            addMember(newMember(getTupleType().getDeclMemberAt(e.getIndex())));
+        }
+        propagateEvent(e);
+    }
 
-	//
-	// Update methods.
+    public void updateMemberDeleted(TupleEvent e) {
+        if (e.getSource() instanceof DeclTuple) {
+            deleteMemberAt(e.getIndex());
+            propagateEvent(e);
+        }
+    }
 
-	public void updateMemberAdded(TupleEvent e) {
-		if (e.getSource() instanceof DeclTuple) {
-			addMember(newMember(getTupleType().getDeclMemberAt(e.getIndex())));
-		}
-		propagateEvent(e);
-	}
+    public void updateMemberRetyped(TupleEvent e) {
+        if (e.getSource() instanceof DeclTuple) {
+            ValueMember m = getValueMemberAt(e.getIndex());
+            if (m != null) {
+                m.typeChanged();
+            }
+            // getValueMemberAt( e.getIndex() ).typeChanged();
+        }
+        propagateEvent(e);
+    }
 
-	public void updateMemberDeleted(TupleEvent e) {
-		if (e.getSource() instanceof DeclTuple) {
-			deleteMemberAt(e.getIndex());
-			propagateEvent(e);
-		}
-	}
+    /**
+     * Interface synchronization.
+     */
+    public void updateMemberValueChanged(TupleEvent e) {
+        ValueMember val = (ValueMember) e.getSource().getMemberAt(e.getIndex());
+        getValueMemberAt(e.getIndex()).copy(val);
+        propagateEvent(e);
+    }
 
-	public void updateMemberRetyped(TupleEvent e) {
-		if (e.getSource() instanceof DeclTuple) {
-			ValueMember m = getValueMemberAt(e.getIndex());
-			if (m != null)
-				m.typeChanged();
-			// getValueMemberAt( e.getIndex() ).typeChanged();
-		}
-		propagateEvent(e);
-	}
+    //
+    // public void updateMemberValueCorrectness( TupleEvent e ){
+    // getValueMemberAt( e.getIndex() ).check();
+    // propagateEvent( e );
+    // }
+    //
+    //
+    // Implementation of the AttrInstance interface.
+    //
+    /**
+     * Convenience method for internal operations; works much like the generic getMemberAt( int index ), but returns the
+     * appropriate member type.
+     *
+     * @see agg.attribute.impl.TupleObject#getMemberAt( int )
+     */
+    public ValueMember getValueMemberAt(int index) {
+        return (ValueMember) getMemberAt(index);
+    }
 
-	/** Interface synchronization. */
-	public void updateMemberValueChanged(TupleEvent e) {
-		ValueMember val = (ValueMember) e.getSource().getMemberAt(e.getIndex());
-		getValueMemberAt(e.getIndex()).copy(val);
-		propagateEvent(e);
-	}
+    /**
+     * Convenience method for internal operations; works much like the generic getMemberAt( String name ), but returns
+     * the appropriate member type.
+     *
+     * @see agg.attribute.impl.TupleObject#getMemberAt( String )
+     */
+    public ValueMember getValueMemberAt(String name) {
+        return (ValueMember) getMemberAt(name);
+    }
 
-	//
-	// public void updateMemberValueCorrectness( TupleEvent e ){
-	// getValueMemberAt( e.getIndex() ).check();
-	// propagateEvent( e );
-	// }
-	//
+    /**
+     * Getting a simple representation of a value as String.
+     */
+    public String getValueAsString(int entryIndex) {
+        if (getMemberAt(entryIndex) != null) {
+            return getMemberAt(entryIndex).toString();
+        }
 
-	//
-	// Implementation of the AttrInstance interface.
-	//
+        return "";
+    }
 
-	/**
-	 * Convenience method for internal operations; works much like the generic
-	 * getMemberAt( int index ), but returns the appropriate member type.
-	 * 
-	 * @see agg.attribute.impl.TupleObject#getMemberAt( int )
-	 */
-	public ValueMember getValueMemberAt(int index) {
-		return (ValueMember) getMemberAt(index);
-	}
+    /**
+     * Copying the contents of an attribute instance into another; The reference to the attribute type is shared.
+     */
+    public void copy(AttrInstance source) {
+        // System.out.println("ValueTuple.copy BEGIN");
+        ValueTuple from = (ValueTuple) source;
+        if (!this.type.compareTo(from.getTupleType())) {
+            System.out
+                    .println("ValueTuple.copy(AttrInstance)::  Tried to copy from an AttrInstance with a different type!");
+            throw new AttrImplException(
+                    "Tried to copy from an AttrInstance with a different type!");
+        }
+        this.manager = from.manager;
+        // assignParent( from.getParent());
 
-	/**
-	 * Convenience method for internal operations; works much like the generic
-	 * getMemberAt( String name ), but returns the appropriate member type.
-	 * 
-	 * @see agg.attribute.impl.TupleObject#getMemberAt( String )
-	 */
-	public ValueMember getValueMemberAt(String name) {
-		return (ValueMember) getMemberAt(name);
-	}
+        // // multiple inheritance - olga
+        // for(int i=0; i<from.getParents().size(); i++){
+        // addParent( from.getParents().get(i) );
+        // }//
+        int length = from.getSize();
+        for (int i = 0; i < length; i++) {
+            ValueMember val = getValueMemberAt(i);
+            // System.out.println(from.getValueMemberAt( i )+" copy to "+val);
+            ValueMember valfrom = from.getValueMemberAt(i);
+            if (val != null) {
+                val.copy(valfrom);
+                // System.out.println(getValueMemberAt( i ));
 
-	/** Getting a simple representation of a value as String. */
-	public String getValueAsString(int entryIndex) {
-		if (getMemberAt(entryIndex) != null)
-			return getMemberAt(entryIndex).toString();
-		
-		return "";
-	}
+                if (valfrom instanceof VarMember) {
+                    ((VarMember) val).setMark(((VarMember) valfrom).getMark());
+                } else if (valfrom instanceof CondMember) {
+                    ((CondMember) val)
+                            .setMark(((CondMember) valfrom).getMark());
+                }
+            }
+        }
+        // System.out.println("ValueTuple.copy END");
+    }
 
-	/**
-	 * Copying the contents of an attribute instance into another; The reference
-	 * to the attribute type is shared.
-	 */
-	public void copy(AttrInstance source) {
-		// System.out.println("ValueTuple.copy BEGIN");
-		ValueTuple from = (ValueTuple) source;
-		if (!this.type.compareTo(from.getTupleType())) {
-			System.out
-					.println("ValueTuple.copy(AttrInstance)::  Tried to copy from an AttrInstance with a different type!");
-			throw new AttrImplException(
-					"Tried to copy from an AttrInstance with a different type!");
-		}
-		this.manager = from.manager;
-		// assignParent( from.getParent());
-
-		// // multiple inheritance - olga
-		// for(int i=0; i<from.getParents().size(); i++){
-		// addParent( from.getParents().get(i) );
-		// }//
-
-		int length = from.getSize();
-		for (int i = 0; i < length; i++) {
-			ValueMember val = getValueMemberAt(i);
-			// System.out.println(from.getValueMemberAt( i )+" copy to "+val);
-			ValueMember valfrom = from.getValueMemberAt(i);
-			if (val != null) {
-				val.copy(valfrom);
-				// System.out.println(getValueMemberAt( i ));
-
-				if (valfrom instanceof VarMember)
-					((VarMember) val).setMark(((VarMember) valfrom).getMark());
-				else if (valfrom instanceof CondMember)
-					((CondMember) val)
-							.setMark(((CondMember) valfrom).getMark());
-			}
-		}
-		// System.out.println("ValueTuple.copy END");
-	}
-
-	/*
+    /*
 	private boolean contains(ValueMember m) {
 		int length = getSize();
 		for (int i = 0; i < length; i++) {
@@ -333,602 +337,618 @@ public class ValueTuple extends TupleObject implements AttrInstance,
 		}
 		return false;
 	}
-*/
-	
-	/** Copying the contents of an attribute instance into another; */
-	public void copyEntries(AttrInstance source) {
-		// System.out.println("ValueTuple.copyEntries: ...");
-		ValueTuple from = (ValueTuple) source;
-		DeclTuple srcType = from.getTupleType();
-		DeclTuple dstType = this.type;
-		if (!srcType.compareTo(dstType) && !srcType.isSubclassOf(dstType)
-				&& !dstType.isSubclassOf(srcType)) {
-			// System.out.println("ValueTuple.copyEntries: The source of copy
-			// has wrong type.");
-			// throw new RuntimeException( "The copy source has a wrong
-			// type.\n" );
-			return;
-		}
+     */
+    /**
+     * Copying the contents of an attribute instance into another;
+     */
+    public void copyEntries(AttrInstance source) {
+        // System.out.println("ValueTuple.copyEntries: ...");
+        ValueTuple from = (ValueTuple) source;
+        DeclTuple srcType = from.getTupleType();
+        DeclTuple dstType = this.type;
+        if (!srcType.compareTo(dstType) && !srcType.isSubclassOf(dstType)
+                && !dstType.isSubclassOf(srcType)) {
+            // System.out.println("ValueTuple.copyEntries: The source of copy
+            // has wrong type.");
+            // throw new RuntimeException( "The copy source has a wrong
+            // type.\n" );
+            return;
+        }
 
-		int length = Math.min(srcType.getSize(), dstType.getSize());
-		for (int i = 0; i < length; i++) {
-			ValueMember val = getValueMemberAt(i);
-			if (val != null) {				
-				ValueMember valfrom = from.getValueMemberAt(val.getName());
-				if (valfrom != null) {
-					val.copy(valfrom);
-					val.setTransient(valfrom.isTransient);
-				}
-			}
-		}
-	}
+        int length = Math.min(srcType.getSize(), dstType.getSize());
+        for (int i = 0; i < length; i++) {
+            ValueMember val = getValueMemberAt(i);
+            if (val != null) {
+                ValueMember valfrom = from.getValueMemberAt(val.getName());
+                if (valfrom != null) {
+                    val.copy(valfrom);
+                    val.setTransient(valfrom.isTransient);
+                }
+            }
+        }
+    }
 
-	public void copyEntriesToSimilarMembers(AttrInstance source) {
-		ValueTuple from = (ValueTuple) source;
-		DeclTuple srcType = from.getTupleType();
-		DeclTuple dstType = this.type;
-		if (!srcType.compareTo(dstType) && !srcType.isSubclassOf(dstType)
-				&& !dstType.isSubclassOf(srcType)) {
-			// /throw new RuntimeException( "The copy source has a wrong
-			// type.\n" );
-			return;
-		}
+    public void copyEntriesToSimilarMembers(AttrInstance source) {
+        ValueTuple from = (ValueTuple) source;
+        DeclTuple srcType = from.getTupleType();
+        DeclTuple dstType = this.type;
+        if (!srcType.compareTo(dstType) && !srcType.isSubclassOf(dstType)
+                && !dstType.isSubclassOf(srcType)) {
+            // /throw new RuntimeException( "The copy source has a wrong
+            // type.\n" );
+            return;
+        }
 
-		for (int i = 0; i < dstType.getSize(); i++) {
-			ValueMember val = getValueMemberAt(i);
-			if (val != null) {
-				ValueMember valfrom = from.getValueMemberAt(val.getName());
-				if (valfrom != null
-						&& val.getDeclaration().getTypeName().equals(
-								valfrom.getDeclaration().getTypeName())) {
-					val.copy(valfrom);
-					val.setTransient(valfrom.isTransient);
-				}
-				else
-					continue;
-			}
-		}
-	}
+        for (int i = 0; i < dstType.getSize(); i++) {
+            ValueMember val = getValueMemberAt(i);
+            if (val != null) {
+                ValueMember valfrom = from.getValueMemberAt(val.getName());
+                if (valfrom != null
+                        && val.getDeclaration().getTypeName().equals(
+                                valfrom.getDeclaration().getTypeName())) {
+                    val.copy(valfrom);
+                    val.setTransient(valfrom.isTransient);
+                } else {
+                    continue;
+                }
+            }
+        }
+    }
 
-	/** Copying the contents of an attribute instance into another; */
-	public void adoptEntriesWhereEmpty(AttrInstance source) {
-		ValueTuple from = (ValueTuple) source;
-		DeclTuple srcType = from.getTupleType();
-		DeclTuple dstType = this.type;
-		if (!srcType.compareTo(dstType) 
-				&& !srcType.isSubclassOf(dstType)
-				&& !dstType.isSubclassOf(srcType)) {
-			throw new RuntimeException("The specified source has a wrong type.\n");
-		}
+    /**
+     * Copying the contents of an attribute instance into another;
+     */
+    public void adoptEntriesWhereEmpty(AttrInstance source) {
+        ValueTuple from = (ValueTuple) source;
+        DeclTuple srcType = from.getTupleType();
+        DeclTuple dstType = this.type;
+        if (!srcType.compareTo(dstType)
+                && !srcType.isSubclassOf(dstType)
+                && !dstType.isSubclassOf(srcType)) {
+            throw new RuntimeException("The specified source has a wrong type.\n");
+        }
 
-		int length = Math.min(srcType.getSize(), dstType.getSize());
-		for (int i = 0; i < length; i++) {
-			ValueMember dst = getValueMemberAt(i);
-			ValueMember src = from.getValueMemberAt(i);
-			if (src == null)
-				continue;
+        int length = Math.min(srcType.getSize(), dstType.getSize());
+        for (int i = 0; i < length; i++) {
+            ValueMember dst = getValueMemberAt(i);
+            ValueMember src = from.getValueMemberAt(i);
+            if (src == null) {
+                continue;
+            }
 
-			if (dst.isEmpty() && !src.isEmpty()) {
-				dst.copy(src);
-			}
+            if (dst.isEmpty() && !src.isEmpty()) {
+                dst.copy(src);
+            }
 
-		}
-	}
+        }
+    }
 
-	/**
-	 * Unset the value of the own attribute members (not of attribute members of
-	 * its parents). The value of its attribute member is null after this.
-	 */
-	public void unsetValue() {
-		for (int i = 0; i < getSize(); i++) {
-			ValueMember val = getValueMemberAt(i);
-			if (val.getDecl().getHoldingTuple() == this.getTupleType())
-				val.setExpr(null);
-		}
-	}
+    /**
+     * Unset the value of the own attribute members (not of attribute members of its parents). The value of its
+     * attribute member is null after this.
+     */
+    public void unsetValue() {
+        for (int i = 0; i < getSize(); i++) {
+            ValueMember val = getValueMemberAt(i);
+            if (val.getDecl().getHoldingTuple() == this.getTupleType()) {
+                val.setExpr(null);
+            }
+        }
+    }
 
-	public void unsetValueOfUsedVariable(final AttrContext cntxt) {
-		for (int i = 0; i < getSize(); i++) {
-			ValueMember val = getValueMemberAt(i);
-			if (val.isSet() && val.getExpr().isVariable()) {
-				VarMember var = cntxt.getVariables().getVarMemberAt(val.getExprAsText());
-				if (var != null) {
-					var.setExpr(null);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Unset the value which is an expression of the own attribute members (not of attribute members of
-	 * its parents). The value of its attribute member is null after this.
-	 */
-	public void unsetValueAsExpr() {
-		for (int i = 0; i < getSize(); i++) {
-			ValueMember val = getValueMemberAt(i);
-			if (val.getDecl().getHoldingTuple() == this.getTupleType()
-					&& val.isSet() && val.getExpr().isComplex())
-				val.setExpr(null);
-		}
-	}
-	
-	/*
+    public void unsetValueOfUsedVariable(final AttrContext cntxt) {
+        for (int i = 0; i < getSize(); i++) {
+            ValueMember val = getValueMemberAt(i);
+            if (val.isSet() && val.getExpr().isVariable()) {
+                VarMember var = cntxt.getVariables().getVarMemberAt(val.getExprAsText());
+                if (var != null) {
+                    var.setExpr(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Unset the value which is an expression of the own attribute members (not of attribute members of its parents).
+     * The value of its attribute member is null after this.
+     */
+    public void unsetValueAsExpr() {
+        for (int i = 0; i < getSize(); i++) {
+            ValueMember val = getValueMemberAt(i);
+            if (val.getDecl().getHoldingTuple() == this.getTupleType()
+                    && val.isSet() && val.getExpr().isComplex()) {
+                val.setExpr(null);
+            }
+        }
+    }
+
+    /*
 	 * Applying a rule; the substitutions occur "in-place" (in the recipient);
 	 * In Graph Transformation, this method is applied to attributes of host
 	 * graph objects, "rightSide" being an attribute of the right side of the
 	 * rule and "context" being the "match"-context built up by subsequently
 	 * matching the attributes of corresponding graphical objects. Needs the
 	 * graphobject from the graph G.
-	 */
+     */
 //	public void apply(AttrInstance rightSide, 
 //						AttrContext attrcontext,
 //						AttrInstance g) {
 //		apply(rightSide, attrcontext);
 //	}
 
-	/*
+    /*
 	 * This method works like apply( AttrInstance, AttrContext, AttrInstance)
 	 * additionally, allows using variables
 	 * without value in value of attribute member.
-	 */
+     */
 //	public void apply(AttrInstance rightSide, AttrContext attrcontext,
 //			AttrInstance g, boolean allowVariableWithoutValue) {
 //		apply(rightSide, attrcontext, allowVariableWithoutValue, false);
 //	}
-	
-	/*
+    /*
 	 * This method works like apply( AttrInstance, AttrContext, AttrInstance)
 	 * additionally, allows using variables
 	 * without value in value of attribute member.
 	 * If similarVariableName is TRUE, then the name of the variable from rightSide
 	 * must be equal to the name of the current variable.
 	 * The similarVariableName option is only used when allowVariableWithoutValue is TRUE.
-	 */
+     */
 //	public void apply(AttrInstance rightSide, AttrContext attrcontext,
 //			AttrInstance g, boolean allowVariableWithoutValue, boolean similarVariableName) {
 //		
 //		apply(rightSide, attrcontext, allowVariableWithoutValue, similarVariableName);
 //	}
+    /**
+     * Applying a rule; the substitutions occur "in-place" (in the recipient); In Graph Transformation, this method is
+     * applied to attributes of host graph objects, "rightSide" being an attribute of the right side of the rule and
+     * "context" being the "match"-context built up by subsequently matching the attributes of corresponding graphical
+     * objects.
+     */
+    public void apply(AttrInstance rightSide, AttrContext attrcontext) {
+        ValueMember left, right;
+        AttrContext matchContext = attrcontext;
+        ValueTuple rightTuple = (ValueTuple) rightSide;
 
-	/**
-	 * Applying a rule; the substitutions occur "in-place" (in the recipient);
-	 * In Graph Transformation, this method is applied to attributes of host
-	 * graph objects, "rightSide" being an attribute of the right side of the
-	 * rule and "context" being the "match"-context built up by subsequently
-	 * matching the attributes of corresponding graphical objects.
-	 */
-	public void apply(AttrInstance rightSide, AttrContext attrcontext) {
-		ValueMember left, right;
-		AttrContext matchContext = attrcontext;
-		ValueTuple rightTuple = (ValueTuple) rightSide;
+        if (matchContext == null) {
+            matchContext = rightTuple.getContext();
+        }
+        for (int i = 0; i < Math.min(getSize(), ((ValueTuple) rightSide)
+                .getSize()); i++) {
+            left = getValueMemberAt(i);
+            right = rightTuple.getValueMemberAt(left.getName());
+            if (left != null && right != null) {
+                left.apply(right, matchContext);
+            }
+        }
+    }
 
-		if (matchContext == null)
-			matchContext = rightTuple.getContext();
-		for (int i = 0; i < Math.min(getSize(), ((ValueTuple) rightSide)
-				.getSize()); i++) {
-			left = getValueMemberAt(i);
-			right = rightTuple.getValueMemberAt(left.getName());
-			if (left != null && right != null)
-				left.apply(right, matchContext);
-		}
-	}
+    /**
+     * This method works like apply( AttrInstance,context ) additionally, allow using variables without value in the
+     * value of attribute members
+     */
+    public void apply(AttrInstance rightSide, AttrContext attrcontext,
+            boolean allowVariableWithoutValue) {
+        apply(rightSide, attrcontext, allowVariableWithoutValue, false);
+    }
 
-	/**
-	 * This method works like apply( AttrInstance,context )
-	 * additionally, allow using variables without value in the
-	 * value of attribute members
-	 */
-	public void apply(AttrInstance rightSide, AttrContext attrcontext,
-			boolean allowVariableWithoutValue) {
-		apply(rightSide, attrcontext, allowVariableWithoutValue, false);
-	}
+    /**
+     * This method works like apply( AttrInstance,context ) additionally, allow using variables without value in the
+     * value of attribute members. If equalVariableName is TRUE, then the name of the variable from rightSide must be
+     * equal to the name of the current variable. The equalVariableName option is only used when
+     * allowVariableWithoutValue is TRUE.
+     */
+    public void apply(AttrInstance rightSide, AttrContext attrcontext,
+            boolean allowVariableWithoutValue, boolean equalVariableName) {
 
-	/**
-	 * This method works like apply( AttrInstance,context )
-	 * additionally, allow using variables without value in the
-	 * value of attribute members.
-	 * If equalVariableName is TRUE, then the name of the variable from rightSide
-	 * must be equal to the name of the current variable.
-	 * The equalVariableName option is only used when allowVariableWithoutValue is TRUE.
-	 */
-	public void apply(AttrInstance rightSide, AttrContext attrcontext,
-			boolean allowVariableWithoutValue, boolean equalVariableName) {
-		
-		if (!allowVariableWithoutValue) {
-			apply(rightSide, attrcontext);
-			return;
-		}
+        if (!allowVariableWithoutValue) {
+            apply(rightSide, attrcontext);
+            return;
+        }
 
-		AttrContext matchContext = attrcontext;
-		ValueTuple rightTuple = (ValueTuple) rightSide;
-		if (matchContext == null)
-			matchContext = rightTuple.getContext();
-		for (int i = 0; i < getSize(); i++) {
-			ValueMember left = getValueMemberAt(i);
-			ValueMember right = rightTuple.getValueMemberAt(left.getName());
-			if (left != null && right != null)
-				left.apply(right, matchContext, allowVariableWithoutValue, equalVariableName);
-		}
-	}
-	
-	public int getNumberOfFreeVariables(AttrContext ctx) {
-		ContextView contview = (ContextView) ctx;
-		ValueMember val;
-		int nFree = 0;
-		String varName;
-		Vector<String> names = new Vector<String>(10, 10);
+        AttrContext matchContext = attrcontext;
+        ValueTuple rightTuple = (ValueTuple) rightSide;
+        if (matchContext == null) {
+            matchContext = rightTuple.getContext();
+        }
+        for (int i = 0; i < getSize(); i++) {
+            ValueMember left = getValueMemberAt(i);
+            ValueMember right = rightTuple.getValueMemberAt(left.getName());
+            if (left != null && right != null) {
+                left.apply(right, matchContext, allowVariableWithoutValue, equalVariableName);
+            }
+        }
+    }
 
-		for (int i = 0; i < getSize(); i++) {
-			val = getValueMemberAt(i);
-			if ((val != null) && (val.getExpr() != null) && val.getExpr().isVariable() 
-					&& !val.isValid()) {
-				varName = val.getExpr().toString();
-				if (!names.contains(varName)) {
-					names.addElement(varName);
-					if (contview == null || contview.getExpr(varName) != null) {
-						nFree++;
-					}
-				}
-			}
-		}
-		return nFree;
-	}
+    public int getNumberOfFreeVariables(AttrContext ctx) {
+        ContextView contview = (ContextView) ctx;
+        ValueMember val;
+        int nFree = 0;
+        String varName;
+        Vector<String> names = new Vector<String>(10, 10);
 
-	public void XwriteObject(XMLHelper h) {
-		if (isEmpty())
-			return;
-		int num = getSize();
-		for (int i = 0; i < num; i++) {
-			ValueMember val = getValueMemberAt(i);
-			if (val != null && val.isSet()) {
-				h.addObject("", val, true);
-			}
-		}
-	}
+        for (int i = 0; i < getSize(); i++) {
+            val = getValueMemberAt(i);
+            if ((val != null) && (val.getExpr() != null) && val.getExpr().isVariable()
+                    && !val.isValid()) {
+                varName = val.getExpr().toString();
+                if (!names.contains(varName)) {
+                    names.addElement(varName);
+                    if (contview == null || contview.getExpr(varName) != null) {
+                        nFree++;
+                    }
+                }
+            }
+        }
+        return nFree;
+    }
 
-	public void XreadObject(XMLHelper h) {
-		Enumeration<?> en = h.getEnumeration("", null, true, "Attribute");
-		while (en.hasMoreElements()) {
-			h.peekElement(en.nextElement());
-			AttrTypeMember typeMem = (AttrTypeMember) h.getObject("type", null,
-					false);
-			if (typeMem != null) {
-				String name = typeMem.getName();
-				ValueMember mem = getValueMemberAt(name);
-				if (mem != null) {
-					h.enrichObject(mem);
-				}
-			}
-			h.close();
-		}
-	}
+    public void XwriteObject(XMLHelper h) {
+        if (isEmpty()) {
+            return;
+        }
+        int num = getSize();
+        for (int i = 0; i < num; i++) {
+            ValueMember val = getValueMemberAt(i);
+            if (val != null && val.isSet()) {
+                h.addObject("", val, true);
+            }
+        }
+    }
 
-	// End of AttrInstance interface implementation.
+    public void XreadObject(XMLHelper h) {
+        Enumeration<?> en = h.getEnumeration("", null, true, "Attribute");
+        while (en.hasMoreElements()) {
+            h.peekElement(en.nextElement());
+            AttrTypeMember typeMem = (AttrTypeMember) h.getObject("type", null,
+                    false);
+            if (typeMem != null) {
+                String name = typeMem.getName();
+                ValueMember mem = getValueMemberAt(name);
+                if (mem != null) {
+                    h.enrichObject(mem);
+                }
+            }
+            h.close();
+        }
+    }
 
-	public boolean canMatchTo(ValueTuple target, ContextView attrcontext) {
-		ValueMember src, tar;
-		for (int i = 0; i < getSize(); i++) {
-			src = getValueMemberAt(i);
-			if (src != null) {
-				String name = src.getName();
-				tar = target.getValueMemberAt(name);
-				if (src.getExpr() == null && tar.getExpr() == null) {
-					continue;
-				}
-				if ((!src.canMatchTo(tar, attrcontext))) {
-					this.errorMsg = src.getErrorMsg();
-					return false;
-				}
-			}
-		}
-		return true;
-	}
+    // End of AttrInstance interface implementation.
+    public boolean canMatchTo(ValueTuple target, ContextView attrcontext) {
+        ValueMember src, tar;
+        for (int i = 0; i < getSize(); i++) {
+            src = getValueMemberAt(i);
+            if (src != null) {
+                String name = src.getName();
+                tar = target.getValueMemberAt(name);
+                if (src.getExpr() == null && tar.getExpr() == null) {
+                    continue;
+                }
+                if ((!src.canMatchTo(tar, attrcontext))) {
+                    this.errorMsg = src.getErrorMsg();
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-	public boolean canMatchChild2Parent(ValueTuple target, ContextView attrcontext) {
-		ValueMember src, tar;
-		for (int i = 0; i < getSize(); i++) {
-			src = getValueMemberAt(i);
-			if (src != null) {
-				String name = src.getName();
-				tar = target.getValueMemberAt(name);
-				if (tar != null) {
-					if (src.getExpr() == null && tar.getExpr() == null) {
-						continue;
-					}
-					if ((!src.canMatchTo(tar, attrcontext))) {
-						this.errorMsg = src.getErrorMsg();
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-	
-	/** Performs a match in a per-element-style. */
-	public String[] matchTo(ValueTuple target, ContextView attrcontext) {
+    public boolean canMatchChild2Parent(ValueTuple target, ContextView attrcontext) {
+        ValueMember src, tar;
+        for (int i = 0; i < getSize(); i++) {
+            src = getValueMemberAt(i);
+            if (src != null) {
+                String name = src.getName();
+                tar = target.getValueMemberAt(name);
+                if (tar != null) {
+                    if (src.getExpr() == null && tar.getExpr() == null) {
+                        continue;
+                    }
+                    if ((!src.canMatchTo(tar, attrcontext))) {
+                        this.errorMsg = src.getErrorMsg();
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Performs a match in a per-element-style.
+     */
+    public String[] matchTo(ValueTuple target, ContextView attrcontext) {
 //		logPrintln(VerboseControl.logTrace, "ValueTuple:\n->matchTo");
-		ValueMember src, tar;
-		Vector<String> matches = new Vector<String>();
-		String match = null;
-		String assignedVariables[];
+        ValueMember src, tar;
+        Vector<String> matches = new Vector<String>();
+        String match = null;
+        String assignedVariables[];
 
-		if (!canMatchTo(target, attrcontext)) {
-			this.errorMsg = this.errorMsg + "\nAttribute don't match.";
-			throw new AttrImplException(ATTR_DONT_MATCH);
-		}
+        if (!canMatchTo(target, attrcontext)) {
+            this.errorMsg = this.errorMsg + "\nAttribute don't match.";
+            throw new AttrImplException(ATTR_DONT_MATCH);
+        }
 //		logPrintln(VerboseControl.logMapping, "try to match to " + getSize()
 //				+ " members");
-		for (int i = 0; i < getSize(); i++) {
-			src = getValueMemberAt(i);
-			if (src != null) {
-				String name = src.getName();
-				tar = target.getValueMemberAt(name);
-				match = src.matchTo(tar, attrcontext);
-				if (match != null) {
-					matches.addElement(match);
-				}
-			}
-		}
+        for (int i = 0; i < getSize(); i++) {
+            src = getValueMemberAt(i);
+            if (src != null) {
+                String name = src.getName();
+                tar = target.getValueMemberAt(name);
+                match = src.matchTo(tar, attrcontext);
+                if (match != null) {
+                    matches.addElement(match);
+                }
+            }
+        }
 //		logPrintln(VerboseControl.logMapping, "matches= " + matches);
-		assignedVariables = new String[matches.size()];
-		matches.copyInto(assignedVariables);
+        assignedVariables = new String[matches.size()];
+        matches.copyInto(assignedVariables);
 //		logPrintln(VerboseControl.logTrace, "ValueTuple:\n<-matchTo");
-		return assignedVariables;
-	}
+        return assignedVariables;
+    }
 
-	public String[] matchChild2Parent(ValueTuple target, ContextView attrcontext) {
+    public String[] matchChild2Parent(ValueTuple target, ContextView attrcontext) {
 //		logPrintln(VerboseControl.logTrace, "ValueTuple:\n->matchTo");
-		ValueMember src, tar;
-		Vector<String> matches = new Vector<String>();
-		String match = null;
-		String assignedVariables[];
+        ValueMember src, tar;
+        Vector<String> matches = new Vector<String>();
+        String match = null;
+        String assignedVariables[];
 
-		if (!canMatchChild2Parent(target, attrcontext)) {
-			this.errorMsg = this.errorMsg + "\nAttribute don't match.";
-			throw new AttrImplException(ATTR_DONT_MATCH);
-		}
+        if (!canMatchChild2Parent(target, attrcontext)) {
+            this.errorMsg = this.errorMsg + "\nAttribute don't match.";
+            throw new AttrImplException(ATTR_DONT_MATCH);
+        }
 //		logPrintln(VerboseControl.logMapping, "try to match to " + getSize()
 //				+ " members");
-		for (int i = 0; i < getSize(); i++) {
-			src = getValueMemberAt(i);
-			if (src != null) {
-				String name = src.getName();
-				tar = target.getValueMemberAt(name);
-				if (tar != null) {
-					match = src.matchTo(tar, attrcontext);
-					if (match != null) {
-						matches.addElement(match);
-					}
-				}
-			}
-		}
+        for (int i = 0; i < getSize(); i++) {
+            src = getValueMemberAt(i);
+            if (src != null) {
+                String name = src.getName();
+                tar = target.getValueMemberAt(name);
+                if (tar != null) {
+                    match = src.matchTo(tar, attrcontext);
+                    if (match != null) {
+                        matches.addElement(match);
+                    }
+                }
+            }
+        }
 //		logPrintln(VerboseControl.logMapping, "matches= " + matches);
-		assignedVariables = new String[matches.size()];
-		matches.copyInto(assignedVariables);
+        assignedVariables = new String[matches.size()];
+        matches.copyInto(assignedVariables);
 //		logPrintln(VerboseControl.logTrace, "ValueTuple:\n<-matchTo");
-		return assignedVariables;
-	}
+        return assignedVariables;
+    }
 
-	
-	public void logPrintln(boolean logTopic, String msg) {
-		super.logPrintln(logTopic, msg);
-		if (logTopic) {
-			for (int i = 0; i < getSize(); i++) {
-				System.out.println(getValueMemberAt(i));
-			}
-		}
-	}
+    public void logPrintln(boolean logTopic, String msg) {
+        super.logPrintln(logTopic, msg);
+        if (logTopic) {
+            for (int i = 0; i < getSize(); i++) {
+                System.out.println(getValueMemberAt(i));
+            }
+        }
+    }
 
-	public String toString() {
-		String result = super.toString() + " ";
-		for (int i = 0; i < getSize(); i++) {
-			result += getValueMemberAt(i) + "  ";
-		}
-		return result;
-	}
+    public String toString() {
+        String result = super.toString() + " ";
+        for (int i = 0; i < getSize(); i++) {
+            result += getValueMemberAt(i) + "  ";
+        }
+        return result;
+    }
 
-	//
-	//
-	// >>>>>>>>> DEPRECATED
-	//
-	//
+    //
+    //
+    // >>>>>>>>> DEPRECATED
+    //
+    //
+    /**
+     * Setting the value of the specified entry;
+     *
+     * @param valueText String representation of the new value;
+     * @param index specifies the entry to change; Used by AttrEditor instances.
+     */
+    public void setValueAt(String valueText, int index) {
+        if (getValueMemberAt(index) != null) {
+            getValueMemberAt(index).setExprAsText(valueText);
+        }
+    }
 
-	/**
-	 * Setting the value of the specified entry;
-	 * 
-	 * @param valueText
-	 *            String representation of the new value;
-	 * @param index
-	 *            specifies the entry to change; Used by AttrEditor instances.
-	 */
-	public void setValueAt(String valueText, int index) {
-		if (getValueMemberAt(index) != null)
-			getValueMemberAt(index).setExprAsText(valueText);
-	}
+    /**
+     * Setting the value of the specified entry;
+     *
+     * @param value the new value;
+     * @param index specifies the entry to change; Used by AttrEditor instances.
+     */
+    public void setValueAt(ValueMember value, int index) {
+        if (getValueMemberAt(index) != null) {
+            getValueMemberAt(index).copy(value);
+        }
+    }
 
-	/**
-	 * Setting the value of the specified entry;
-	 * 
-	 * @param value
-	 *            the new value;
-	 * @param index
-	 *            specifies the entry to change; Used by AttrEditor instances.
-	 */
-	public void setValueAt(ValueMember value, int index) {
-		if (getValueMemberAt(index) != null)
-			getValueMemberAt(index).copy(value);
-	}
+    /**
+     * Test, if a value is set or not.
+     */
+    public boolean isValueSetAt(String name) {
+        if (getValueMemberAt(name) != null) {
+            return !getValueMemberAt(name).isEmpty();
+        }
 
-	/** Test, if a value is set or not. */
-	public boolean isValueSetAt(String name) {
-		if (getValueMemberAt(name) != null)
-			return !getValueMemberAt(name).isEmpty();
-		
-		return false;
-	}
+        return false;
+    }
 
-	/** Test, if a value is set or not. */
-	public boolean isValueSetAt(int index) {
-		if (getValueMemberAt(index) != null)
-			return !getValueMemberAt(index).isEmpty();
-		
-		return false;
-	}
+    /**
+     * Test, if a value is set or not.
+     */
+    public boolean isValueSetAt(int index) {
+        if (getValueMemberAt(index) != null) {
+            return !getValueMemberAt(index).isEmpty();
+        }
 
-	/** Retrieving the value of an entry. */
-	public Object getValueAt(String name) {
-		if (getValueMemberAt(name) != null)
-			return getValueMemberAt(name).getExprAsObject();
-		
-		return null;
-	}
+        return false;
+    }
 
-	/**
-	 * Setting the value of an entry directly.
-	 * 
-	 * @param value
-	 *            Any object instance.
-	 * @param name
-	 *            specifies the entry to change.
-	 */
-	public void setValueAt(Object value, String name) {
-		if (getValueMemberAt(name) != null)
-			getValueMemberAt(name).setExprAsObject(value);
-	}
+    /**
+     * Retrieving the value of an entry.
+     */
+    public Object getValueAt(String name) {
+        if (getValueMemberAt(name) != null) {
+            return getValueMemberAt(name).getExprAsObject();
+        }
 
-	public boolean isEmpty() {
-		for (int i = 0; i < getSize(); i++) {
-			if (!getValueMemberAt(i).isEmpty())
-				return false;
-		}
-		return true;
-	}
+        return null;
+    }
 
-	/**
-	 * Evaluating an expression and setting its value as an entry.
-	 * 
-	 * @param expr
-	 *            textual expression representation;
-	 * @param name
-	 *            specifies the entry to change.
-	 */
-	public void setExprValueAt(String expr, String name) {
-		if (getValueMemberAt(name) != null)
-			getValueMemberAt(name).setExprAsEvaluatedText(expr);
-	}
+    /**
+     * Setting the value of an entry directly.
+     *
+     * @param value Any object instance.
+     * @param name specifies the entry to change.
+     */
+    public void setValueAt(Object value, String name) {
+        if (getValueMemberAt(name) != null) {
+            getValueMemberAt(name).setExprAsObject(value);
+        }
+    }
 
-	/**
-	 * Setting an expression as an entry without immediate evaluation. Syntax
-	 * and type checking are performed.
-	 * 
-	 * @param expr
-	 *            textual expression representation;
-	 * @param name
-	 *            specifies the entry to change;
-	 */
-	public void setExprAt(String expr, String name) {
-		if (getValueMemberAt(name) != null)
-			getValueMemberAt(name).setExprAsText(expr);
-	}
+    public boolean isEmpty() {
+        for (int i = 0; i < getSize(); i++) {
+            if (!getValueMemberAt(i).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	/** Getting a single value, referenced by 'index'. */
-	public ValueMember getEntryAt(int index) {
-		return getValueMemberAt(index);
-	}
+    /**
+     * Evaluating an expression and setting its value as an entry.
+     *
+     * @param expr textual expression representation;
+     * @param name specifies the entry to change.
+     */
+    public void setExprValueAt(String expr, String name) {
+        if (getValueMemberAt(name) != null) {
+            getValueMemberAt(name).setExprAsEvaluatedText(expr);
+        }
+    }
 
-	/** Getting a single value, referenced by 'name'. */
-	public ValueMember getEntryAt(String name) {
-		return getValueMemberAt(name);
-	}
+    /**
+     * Setting an expression as an entry without immediate evaluation. Syntax and type checking are performed.
+     *
+     * @param expr textual expression representation;
+     * @param name specifies the entry to change;
+     */
+    public void setExprAt(String expr, String name) {
+        if (getValueMemberAt(name) != null) {
+            getValueMemberAt(name).setExprAsText(expr);
+        }
+    }
 
-	public ValueMember getEntryWithValueAsText(final String valueText) {
-		for (int i = 0; i < getSize(); i++) {
-			final ValueMember member = getValueMemberAt(i);
-			if (member.isSet() 
-					&& member.getExprAsText().equals(valueText)) {
-				return member;
-			}
-		}
-		return null;
-	}
-	
-	public Vector<String> getAllVariableNamesOfExpressions() {
-		Vector<String> resultVector = new Vector<String>();
-		for (int i = 0; i < getSize(); i++) {
-			ValueMember member = getValueMemberAt(i);
-			if (member.isSet() && member.getExpr().isComplex()) {
-				Vector<String> names = member.getAllVariableNamesOfExpression();
-				for (int j = 0; j < names.size(); j++) {
-					String name = names.elementAt(j);
-					if (!resultVector.contains(name))
-						resultVector.addElement(name);
-				}
-			}
-		}
-		// System.out.println("ValueTuple: Expression vars: "+resultVector);
-		return resultVector;
-	}
+    /**
+     * Getting a single value, referenced by 'index'.
+     */
+    public ValueMember getEntryAt(int index) {
+        return getValueMemberAt(index);
+    }
 
-	public Vector<String> getAllVariableNames() {
-		Vector<String> result = new Vector<String>();
-		for (int i = 0; i < this.getNumberOfEntries(); i++) {
-			ValueMember member = getValueMemberAt(i);
-			Vector<String> names = member.getAllVariableNamesOfExpression();
-			for (int j = 0; j < names.size(); j++) {
-				String name = names.elementAt(j);
-				if (!result.contains(name))
-					result.addElement(name);
-			}
-		}
-		// System.out.println("ValueTuple: vars: "+resultVector);
-		return result;
-	}
+    /**
+     * Getting a single value, referenced by 'name'.
+     */
+    public ValueMember getEntryAt(String name) {
+        return getValueMemberAt(name);
+    }
 
-	public boolean compareTo(AttrInstance another) {
-		ValueTuple vt = (ValueTuple) another;
-		// compare tuple type
-		if (!this.type.compareTo(vt.getTupleType()))
-			return false;
-		// compare member value
-		int length = getSize();
-		for (int i = 0; i < length; i++) {
-			ValueMember v = getValueMemberAt(i);
-			ValueMember v1 = vt.getValueMemberAt(i);
-			if ((v.getExpr() == null) && (v1.getExpr() == null))
-				;
-			else if ((v.getExpr() == null) && (v1.getExpr() != null))
-				return false;
-			else if ((v.getExpr() != null) && (v1.getExpr() == null))
-				return false;
-			else if (!v.getExpr().equals(v1.getExpr()))
-				return false;
-		}
-		return true;
-	}
-	
-	public void reflectTransientFrom(AttrInstance another) {
-		ValueTuple vt = (ValueTuple) another;
-		int length = getSize();
-		for (int i = 0; i < length; i++) {
-			ValueMember v = getValueMemberAt(i);
-			ValueMember v1 = vt.getValueMemberAt(v.getName());
-			if (v1 != null && v1.isTransient)
-				v.setTransient(true);
-		}
-	}
-	
-	public void showValue() {
-		System.out.println("Attribute tuple value: ");
-		for (int i = 0; i < getSize(); i++) {
-			ValueMember v = getValueMemberAt(i);
-			if (v != null) {
-				System.out.println(v.getDeclaration().getTypeName() + " : "
-						+ v.getName() + " : " + v.getExpr());
-			}
-		}
-		System.out.println("================================");
-	}
+    public ValueMember getEntryWithValueAsText(final String valueText) {
+        for (int i = 0; i < getSize(); i++) {
+            final ValueMember member = getValueMemberAt(i);
+            if (member.isSet()
+                    && member.getExprAsText().equals(valueText)) {
+                return member;
+            }
+        }
+        return null;
+    }
+
+    public Vector<String> getAllVariableNamesOfExpressions() {
+        Vector<String> resultVector = new Vector<String>();
+        for (int i = 0; i < getSize(); i++) {
+            ValueMember member = getValueMemberAt(i);
+            if (member.isSet() && member.getExpr().isComplex()) {
+                Vector<String> names = member.getAllVariableNamesOfExpression();
+                for (int j = 0; j < names.size(); j++) {
+                    String name = names.elementAt(j);
+                    if (!resultVector.contains(name)) {
+                        resultVector.addElement(name);
+                    }
+                }
+            }
+        }
+        // System.out.println("ValueTuple: Expression vars: "+resultVector);
+        return resultVector;
+    }
+
+    public Vector<String> getAllVariableNames() {
+        Vector<String> result = new Vector<String>();
+        for (int i = 0; i < this.getNumberOfEntries(); i++) {
+            ValueMember member = getValueMemberAt(i);
+            Vector<String> names = member.getAllVariableNamesOfExpression();
+            for (int j = 0; j < names.size(); j++) {
+                String name = names.elementAt(j);
+                if (!result.contains(name)) {
+                    result.addElement(name);
+                }
+            }
+        }
+        // System.out.println("ValueTuple: vars: "+resultVector);
+        return result;
+    }
+
+    public boolean compareTo(AttrInstance another) {
+        ValueTuple vt = (ValueTuple) another;
+        // compare tuple type
+        if (!this.type.compareTo(vt.getTupleType())) {
+            return false;
+        }
+        // compare member value
+        int length = getSize();
+        for (int i = 0; i < length; i++) {
+            ValueMember v = getValueMemberAt(i);
+            ValueMember v1 = vt.getValueMemberAt(i);
+            if ((v.getExpr() == null) && (v1.getExpr() == null))
+				; else if ((v.getExpr() == null) && (v1.getExpr() != null)) {
+                return false;
+            } else if ((v.getExpr() != null) && (v1.getExpr() == null)) {
+                return false;
+            } else if (!v.getExpr().equals(v1.getExpr())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void reflectTransientFrom(AttrInstance another) {
+        ValueTuple vt = (ValueTuple) another;
+        int length = getSize();
+        for (int i = 0; i < length; i++) {
+            ValueMember v = getValueMemberAt(i);
+            ValueMember v1 = vt.getValueMemberAt(v.getName());
+            if (v1 != null && v1.isTransient) {
+                v.setTransient(true);
+            }
+        }
+    }
+
+    public void showValue() {
+        System.out.println("Attribute tuple value: ");
+        for (int i = 0; i < getSize(); i++) {
+            ValueMember v = getValueMemberAt(i);
+            if (v != null) {
+                System.out.println(v.getDeclaration().getTypeName() + " : "
+                        + v.getName() + " : " + v.getExpr());
+            }
+        }
+        System.out.println("================================");
+    }
 
 }
 /*

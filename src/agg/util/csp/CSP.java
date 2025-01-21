@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: CSP.java,v 1.14 2010/08/23 07:35:26 olga Exp $
-
 // $Log: CSP.java,v $
 // Revision 1.14  2010/08/23 07:35:26  olga
 // tuning
@@ -99,7 +99,6 @@
 // Initial revision
 //
 //
-
 package agg.util.csp;
 
 import java.util.Enumeration;
@@ -107,154 +106,155 @@ import java.util.Enumeration;
 import agg.xt_basis.GraphObject;
 
 /**
- * An abstract class for Constraint Satisfaction Problems with only binary
- * constraints.
+ * An abstract class for Constraint Satisfaction Problems with only binary constraints.
  */
 public abstract class CSP {
-	protected Object itsDomain;
-	
-	protected Object itsRequester;
-	
-	protected SolutionStrategy itsSolver;
 
-	protected boolean itsTouchedFlag;
+    protected Object itsDomain;
 
-	/**
-	 * Construct myself with an initial SolutionStrategy.
-	 * <p>
-	 * <b>Post:</b> <code>getDomain() == null</code>.
-	 */
-	public CSP(SolutionStrategy solver) {
-		this.itsDomain = null;
-		setSolutionStrategy(solver);
-	}
+    protected Object itsRequester;
 
-	public SolutionStrategy getSolutionSolver() {
-		return this.itsSolver;
-	}
-	
-	
-	/**
-	 * Return an Enumeration of all my variables. Enumeration elements are of
-	 * type <code>Variable</code>.
-	 */
-	public abstract Enumeration<Variable> getVariables();
+    protected SolutionStrategy itsSolver;
 
-	public abstract Variable getVariable(agg.xt_basis.GraphObject obj);
+    protected boolean itsTouchedFlag;
 
-	/**
-	 * An additional object name constraint will be added for the CSP variable
-	 * of the given GraphObject anObj. This constraint requires equality of the object names.  
-	 */
-	public abstract void addObjectNameConstraint(GraphObject anObj);
-	
-	/**
-	 * Removes the object name constraint for the CSP variable
-	 * of the given GraphObject anObj.
-	 */
-	public abstract void removeObjectNameConstraint(GraphObject anObj);
-	
-	/** Return the number of variables in the CSP. */
-	public abstract int getSize();
+    /**
+     * Construct myself with an initial SolutionStrategy.
+     * <p>
+     * <b>Post:</b> <code>getDomain() == null</code>.
+     */
+    public CSP(SolutionStrategy solver) {
+        this.itsDomain = null;
+        setSolutionStrategy(solver);
+    }
 
-	/**
-	 * Set the global domain of values for the variables, and call
-	 * <code>preprocessDomain()</code> with the given <code>domain</code>.
-	 * <p>
-	 * <b>Post:</b> <code>getDomain() == domain</code>.
-	 * 
-	 * @see agg.util.csp.CSP#preprocessDomain
-	 */
-	public final void setDomain(Object domain) {
-		// any old variable instantiations are obsolete:
-		final Enumeration<Variable> en = getVariables();
-		while (en.hasMoreElements()) {
-			en.nextElement().setInstance(null);
-		}
-		// if flag is true, this causes a reset() of solution strategy
-		// when nextSolution() is called
-		this.itsTouchedFlag = true; 
-		this.itsDomain = domain;
-		preprocessDomain(domain);
-	}
+    public SolutionStrategy getSolutionSolver() {
+        return this.itsSolver;
+    }
 
-	public final void setRequester(final Object requester) {
-		this.itsRequester = requester;
-	}
-	
-	public final Object getRequester() {
-		return this.itsRequester;
-	}
-	
-	/**
-	 * Pre-process the given domain for optimization purposes (to get more
-	 * accurate data for Constraint weights, or to initialize Query databases).
-	 * This is a template method to be implemented in subclasses, and is invoked
-	 * out of <code>setDomain()</code>.
-	 * 
-	 * @see agg.util.csp.CSP#setDomain
-	 */
-	protected abstract void preprocessDomain(Object domain);
+    /**
+     * Return an Enumeration of all my variables. Enumeration elements are of type <code>Variable</code>.
+     */
+    public abstract Enumeration<Variable> getVariables();
 
-	/** Return the current global domain of values. */
-	public final Object getDomain() {
-		return this.itsDomain;
-	}
+    public abstract Variable getVariable(agg.xt_basis.GraphObject obj);
 
-	/**
-	 * Compute my next solution, and instantiate my variables appropriately.
-	 * Variables already instantiated will not be altered, so this method can be
-	 * used to complete partial solutions. Invoke this method repeatedly to get
-	 * all solutions.
-	 * <p>
-	 * <b>Pre:</b> <code>getDomain() != null</code>.
-	 * 
-	 * @return <code>false</code> if there are no more solutions.
-	 */
-	public final boolean nextSolution() {
-		if (this.itsTouchedFlag) {
-			this.itsSolver.reset();
-			this.itsTouchedFlag = false;
-		}
-		return this.itsSolver.next(this);
-	}
+    /**
+     * An additional object name constraint will be added for the CSP variable of the given GraphObject anObj. This
+     * constraint requires equality of the object names.
+     */
+    public abstract void addObjectNameConstraint(GraphObject anObj);
 
-	/** Set the search algorithm which is used to compute my solutions. */
-	public final void setSolutionStrategy(SolutionStrategy solver) {
-		this.itsSolver = solver;
-		this.itsTouchedFlag = true;
-	}
+    /**
+     * Removes the object name constraint for the CSP variable of the given GraphObject anObj.
+     */
+    public abstract void removeObjectNameConstraint(GraphObject anObj);
 
-	public boolean hasSolution() {
-		return this.itsSolver.hasSolution();
-	}
-	
-	public boolean hasQueries() {
-		return this.itsSolver.hasQueries();
-	}
-	
-	/**
-	 * Reset the state of the search algorithms. 
-	 */
-	public final void reset() {
-		this.itsSolver.reset();
-		this.itsTouchedFlag = false;
-	}
+    /**
+     * Return the number of variables in the CSP.
+     */
+    public abstract int getSize();
 
-	/**
-	 * Reset the object domain of the query <code>Query_Type</code> of the search algorithms.
-	 */
-	public final void resetQuery_Type() {
-		this.itsSolver.resetQuery_Type();
-	}
-	
-	/**
-	 * Reinitialize my search algorithm.
-	 * The search queries will be generated newly if the given parameter is <code>true</code>. 
-	 */
-	public final void reinitialize(boolean doUpdateQueries) {
-		this.itsSolver.reinitialize(doUpdateQueries);
-		this.itsTouchedFlag = false;
-	}
+    /**
+     * Set the global domain of values for the variables, and call <code>preprocessDomain()</code> with the given
+     * <code>domain</code>.
+     * <p>
+     * <b>Post:</b> <code>getDomain() == domain</code>.
+     *
+     * @see agg.util.csp.CSP#preprocessDomain
+     */
+    public final void setDomain(Object domain) {
+        // any old variable instantiations are obsolete:
+        final Enumeration<Variable> en = getVariables();
+        while (en.hasMoreElements()) {
+            en.nextElement().setInstance(null);
+        }
+        // if flag is true, this causes a reset() of solution strategy
+        // when nextSolution() is called
+        this.itsTouchedFlag = true;
+        this.itsDomain = domain;
+        preprocessDomain(domain);
+    }
+
+    public final void setRequester(final Object requester) {
+        this.itsRequester = requester;
+    }
+
+    public final Object getRequester() {
+        return this.itsRequester;
+    }
+
+    /**
+     * Pre-process the given domain for optimization purposes (to get more accurate data for Constraint weights, or to
+     * initialize Query databases). This is a template method to be implemented in subclasses, and is invoked out of
+     * <code>setDomain()</code>.
+     *
+     * @see agg.util.csp.CSP#setDomain
+     */
+    protected abstract void preprocessDomain(Object domain);
+
+    /**
+     * Return the current global domain of values.
+     */
+    public final Object getDomain() {
+        return this.itsDomain;
+    }
+
+    /**
+     * Compute my next solution, and instantiate my variables appropriately. Variables already instantiated will not be
+     * altered, so this method can be used to complete partial solutions. Invoke this method repeatedly to get all
+     * solutions.
+     * <p>
+     * <b>Pre:</b> <code>getDomain() != null</code>.
+     *
+     * @return <code>false</code> if there are no more solutions.
+     */
+    public final boolean nextSolution() {
+        if (this.itsTouchedFlag) {
+            this.itsSolver.reset();
+            this.itsTouchedFlag = false;
+        }
+        return this.itsSolver.next(this);
+    }
+
+    /**
+     * Set the search algorithm which is used to compute my solutions.
+     */
+    public final void setSolutionStrategy(SolutionStrategy solver) {
+        this.itsSolver = solver;
+        this.itsTouchedFlag = true;
+    }
+
+    public boolean hasSolution() {
+        return this.itsSolver.hasSolution();
+    }
+
+    public boolean hasQueries() {
+        return this.itsSolver.hasQueries();
+    }
+
+    /**
+     * Reset the state of the search algorithms.
+     */
+    public final void reset() {
+        this.itsSolver.reset();
+        this.itsTouchedFlag = false;
+    }
+
+    /**
+     * Reset the object domain of the query <code>Query_Type</code> of the search algorithms.
+     */
+    public final void resetQuery_Type() {
+        this.itsSolver.resetQuery_Type();
+    }
+
+    /**
+     * Reinitialize my search algorithm. The search queries will be generated newly if the given parameter is
+     * <code>true</code>.
+     */
+    public final void reinitialize(boolean doUpdateQueries) {
+        this.itsSolver.reinitialize(doUpdateQueries);
+        this.itsTouchedFlag = false;
+    }
 
 }

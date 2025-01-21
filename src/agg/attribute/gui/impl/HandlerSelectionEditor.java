@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import javax.swing.AbstractListModel;
@@ -19,80 +20,80 @@ import agg.attribute.handler.AttrHandler;
 
 //import javax.swing.table.*;
 //import java.awt.*;
-
 /**
  * The default editor for selecting an attribute handler.
- * 
- * @version $Id: HandlerSelectionEditor.java,v 1.1 2005/08/25 11:56:59 enrico
- *          Exp $
+ *
+ * @version $Id: HandlerSelectionEditor.java,v 1.1 2005/08/25 11:56:59 enrico Exp $
  * @author $Author: olga $
  */
 public class HandlerSelectionEditor extends DefaultCellEditor {
 
-	static final long serialVersionUID = -4218688348462932834L;
+    static final long serialVersionUID = -4218688348462932834L;
 
-	protected static HandlerSelectionEditor myOnlyInstance;
+    protected static HandlerSelectionEditor myOnlyInstance;
 
-	protected HandlerListModel listModel;
+    protected HandlerListModel listModel;
 
-	protected HandlerSelectionEditor(JComboBox<?> cb) {
-		super(cb);
-	}
+    protected HandlerSelectionEditor(JComboBox<?> cb) {
+        super(cb);
+    }
 
-	@SuppressWarnings("unchecked")
-	public static HandlerSelectionEditor getHandlerSelectionEditor(AttrManager m) {
-		if (myOnlyInstance == null) {
-			HandlerListModel aListModel = new HandlerListModel();
-			@SuppressWarnings("rawtypes")
-			JComboBox<?> handlerComboBox = new JComboBox(aListModel);
-			handlerComboBox.setEditable(false);
-			myOnlyInstance = new HandlerSelectionEditor(handlerComboBox);
-			myOnlyInstance.listModel = aListModel;
-		}
-		myOnlyInstance.listModel.setHandlers(m.getHandlers());
-		return myOnlyInstance;
-	}
+    @SuppressWarnings("unchecked")
+    public static HandlerSelectionEditor getHandlerSelectionEditor(AttrManager m) {
+        if (myOnlyInstance == null) {
+            HandlerListModel aListModel = new HandlerListModel();
+            @SuppressWarnings("rawtypes")
+            JComboBox<?> handlerComboBox = new JComboBox(aListModel);
+            handlerComboBox.setEditable(false);
+            myOnlyInstance = new HandlerSelectionEditor(handlerComboBox);
+            myOnlyInstance.listModel = aListModel;
+        }
+        myOnlyInstance.listModel.setHandlers(m.getHandlers());
+        return myOnlyInstance;
+    }
 }
 
-@SuppressWarnings({ "serial", "rawtypes" })
+@SuppressWarnings({"serial", "rawtypes"})
 class HandlerListModel extends AbstractListModel implements ComboBoxModel {
 
-	protected AttrHandler handlers[];
+    protected AttrHandler handlers[];
 
-	protected int selIndx = -1; // 0;
+    protected int selIndx = -1; // 0;
 
-	public void setHandlers(AttrHandler h[]) {
-		this.handlers = h;
-		fireContentsChanged(this, 0, this.handlers.length);
-	}
+    public void setHandlers(AttrHandler h[]) {
+        this.handlers = h;
+        fireContentsChanged(this, 0, this.handlers.length);
+    }
 
-	public int getSize() {
-		if (this.handlers != null)
-			return this.handlers.length;
-		
-		return 0;
-	}
+    public int getSize() {
+        if (this.handlers != null) {
+            return this.handlers.length;
+        }
 
-	public Object getElementAt(int i) {
-		return this.handlers[i].getName();
-	}
+        return 0;
+    }
 
-	public Object getSelectedItem() {
-		if (this.selIndx == -1)
-			return null;
-	
-		return this.handlers[this.selIndx].getName();
-	}
+    public Object getElementAt(int i) {
+        return this.handlers[i].getName();
+    }
 
-	public void setSelectedItem(Object selectedHandlerName) {
-		String tmpHandlerName;
-		for (int i = 0; i < this.handlers.length; i++) {
-			tmpHandlerName = this.handlers[i].getName();
-			if (tmpHandlerName.equals(selectedHandlerName)) {
-				this.selIndx = i;
-			}
-		}
-	}
+    public Object getSelectedItem() {
+        if (this.selIndx == -1) {
+            return null;
+        }
+
+        return this.handlers[this.selIndx].getName();
+    }
+
+    public void setSelectedItem(Object selectedHandlerName) {
+        String tmpHandlerName;
+        for (int i = 0; i < this.handlers.length; i++) {
+            tmpHandlerName = this.handlers[i].getName();
+            if (tmpHandlerName.equals(selectedHandlerName)) {
+                this.selIndx = i;
+            }
+        }
+    }
 }
 /*
  * $Log: HandlerSelectionEditor.java,v $

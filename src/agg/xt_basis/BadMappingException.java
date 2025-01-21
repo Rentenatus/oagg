@@ -1,41 +1,43 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 //################################################################################
-
 package agg.xt_basis;
 
 /**
- * This Exception is thrown by methods of the class
- * <code>OrdinaryMorphism</code>, especially by <code>addMapping()</code>,
- * to indicate a violation of some morphism property. A more detailed
- * description of the violation cause will be given in the exception's detail
- * message.
- * 
+ * This Exception is thrown by methods of the class <code>OrdinaryMorphism</code>, especially by
+ * <code>addMapping()</code>, to indicate a violation of some morphism property. A more detailed description of the
+ * violation cause will be given in the exception's detail message.
+ *
  * @see agg.xt_basis.OrdinaryMorphism
  * @see agg.xt_basis.OrdinaryMorphism#addMapping
  */
 @SuppressWarnings("serial")
 public class BadMappingException extends RuntimeException {
-	/** Construct myself as an exception without any detail message. */
-	public BadMappingException() {
-	}
 
-	/** Construct myself with the specified detail message. */
-	public BadMappingException(String n) {
-		super(n);
-	}
+    /**
+     * Construct myself as an exception without any detail message.
+     */
+    public BadMappingException() {
+    }
+
+    /**
+     * Construct myself with the specified detail message.
+     */
+    public BadMappingException(String n) {
+        super(n);
+    }
 
 }// ##############################################################################
 
 // $Id: BadMappingException.java,v 1.2 2007/09/10 13:05:34 olga Exp $
-
 // $Log: BadMappingException.java,v $
 // Revision 1.2  2007/09/10 13:05:34  olga
 // In this update:

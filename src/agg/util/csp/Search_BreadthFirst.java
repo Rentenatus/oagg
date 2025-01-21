@@ -1,14 +1,14 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: Search_BreadthFirst.java,v 1.15 2010/03/08 15:50:35 olga Exp $
-
 // $Log: Search_BreadthFirst.java,v $
 // Revision 1.15  2010/03/08 15:50:35  olga
 // code optimizing
@@ -115,7 +115,6 @@
 // Revision 1.1  1997/09/22 05:09:04  mich
 // Initial revision
 //
-
 package agg.util.csp;
 
 import java.util.Enumeration;
@@ -125,177 +124,179 @@ import java.util.Vector;
 
 import agg.util.OrderedSet;
 
-
-/** A search strategy that traverses the constraint graph breadth first. */
+/**
+ * A search strategy that traverses the constraint graph breadth first.
+ */
 public class Search_BreadthFirst implements SearchStrategy {
 
-	private static BinaryPredicate theirVariableOrder = new SimpleVariableOrder();
-	
-	public Search_BreadthFirst() {
-	}
+    private static BinaryPredicate theirVariableOrder = new SimpleVariableOrder();
 
-	/**
-	 * Returns the best possible query order of the CSP.
-	 */
-	public final Vector<Query> execute(CSP csp) {
-		Vector<Query> aQueryResult = new Vector<Query>();
-		
-		OrderedSet<Variable> allVarsLeft = new OrderedSet<Variable>(theirVariableOrder);
-		
-		Enumeration<?> anEnum = csp.getVariables();
-		Variable aVar;
-		Query aQuery;
-		
-		// only variables without instance will be used
-		while (anEnum.hasMoreElements()) {
-			aVar = (Variable) anEnum.nextElement();
-			if (aVar.getInstance() == null) {
-				allVarsLeft.add(aVar);
-			}
-		}
-		// showVariables(allVarsLeft);
+    public Search_BreadthFirst() {
+    }
 
-		List<Query> aQueryList = bfs(new OrderedSet<Variable>(theirVariableOrder), allVarsLeft); 
-		
-		if (aQueryList != null) {
-			Iterator<Query> iter1 = aQueryList.iterator();
-			while (iter1.hasNext()) {
-				aQuery = iter1.next();
-				// remove dummy instantiation which was set by bfs1():
-				if ((aQuery != null) && (aQuery.getTarget() != null)) {				
-					aQuery.getTarget().setInstance(null);
-					aQueryResult.addElement(aQuery);
-				}
-			}			
-	//		showQueries(aQueryResult, "");
-		}
-		return aQueryResult;
-	}
-	
-	/*
+    /**
+     * Returns the best possible query order of the CSP.
+     */
+    public final Vector<Query> execute(CSP csp) {
+        Vector<Query> aQueryResult = new Vector<Query>();
+
+        OrderedSet<Variable> allVarsLeft = new OrderedSet<Variable>(theirVariableOrder);
+
+        Enumeration<?> anEnum = csp.getVariables();
+        Variable aVar;
+        Query aQuery;
+
+        // only variables without instance will be used
+        while (anEnum.hasMoreElements()) {
+            aVar = (Variable) anEnum.nextElement();
+            if (aVar.getInstance() == null) {
+                allVarsLeft.add(aVar);
+            }
+        }
+        // showVariables(allVarsLeft);
+
+        List<Query> aQueryList = bfs(new OrderedSet<Variable>(theirVariableOrder), allVarsLeft);
+
+        if (aQueryList != null) {
+            Iterator<Query> iter1 = aQueryList.iterator();
+            while (iter1.hasNext()) {
+                aQuery = iter1.next();
+                // remove dummy instantiation which was set by bfs1():
+                if ((aQuery != null) && (aQuery.getTarget() != null)) {
+                    aQuery.getTarget().setInstance(null);
+                    aQueryResult.addElement(aQuery);
+                }
+            }
+            //		showQueries(aQueryResult, "");
+        }
+        return aQueryResult;
+    }
+
+    /*
 	 * Returns the best possible queries order or null.
 	 * Note: returned null will be caught in execute(CSP). 
-	 */
-	private final Vector<Query> bfs(OrderedSet<Variable> breadthvars,
-									OrderedSet<Variable> varsleft) {
-		if (!breadthvars.isEmpty()) {
-			Vector<Query> aQueryList = new Vector<Query>();
-			OrderedSet<Variable> aVarSet = new OrderedSet<Variable>(theirVariableOrder);							
-			Variable aVar;
-                        Iterator<Variable> iterator = breadthvars.iterator();
-                        while (iterator.hasNext()) {
-				aVar = (Variable) iterator.next();
-				// search for best query of the current variable
-				Query q = getBestQuery(aVar);			
-				aQueryList.add(q);
-				// remove current variable from the set
-				varsleft.remove(aVar);				
-				// dummy instantiation to make constraints & queries applicable:
-				aVar.setInstance(this);
-				// make union of variable set with the vicinity set of current variable
+     */
+    private final Vector<Query> bfs(OrderedSet<Variable> breadthvars,
+            OrderedSet<Variable> varsleft) {
+        if (!breadthvars.isEmpty()) {
+            Vector<Query> aQueryList = new Vector<Query>();
+            OrderedSet<Variable> aVarSet = new OrderedSet<Variable>(theirVariableOrder);
+            Variable aVar;
+            Iterator<Variable> iterator = breadthvars.iterator();
+            while (iterator.hasNext()) {
+                aVar = (Variable) iterator.next();
+                // search for best query of the current variable
+                Query q = getBestQuery(aVar);
+                aQueryList.add(q);
+                // remove current variable from the set
+                varsleft.remove(aVar);
+                // dummy instantiation to make constraints & queries applicable:
+                aVar.setInstance(this);
+                // make union of variable set with the vicinity set of current variable
 //				aVarSet = aVarSet.union(getVicinity(aVar, varsleft));
-				OrderedSet<Variable> vic = getVicinity(aVar, varsleft);
-				if (vic != null)
-					aVarSet = aVarSet.union(vic);
-			}
-			// call recursively 
-			List<Query> aVicQueryList = bfs(aVarSet, varsleft);
-			
-			// add result if not null
-			if (aVicQueryList != null && !aVicQueryList.isEmpty())
-				aQueryList.addAll(aVicQueryList);
-			
-			return aQueryList;
-		} 
-		else {
-			if (varsleft.isEmpty()) {
-				return null;
-			}
-			
-			// get best variable which is the first Arc or if no arcs exist, the first Node
-			Variable aVar = getBestVar(varsleft);
-			breadthvars.add(aVar);
-			
-			// call recursively 
-			return bfs(breadthvars, varsleft);
-		}
-	}
-	
-	private final Query getBestQuery(Variable var) {
-		// Remember: CSP implementation have to ensure that there
-		// is always at least one incoming Query applicable for each
-		// uninstantiated variable!
+                OrderedSet<Variable> vic = getVicinity(aVar, varsleft);
+                if (vic != null) {
+                    aVarSet = aVarSet.union(vic);
+                }
+            }
+            // call recursively 
+            List<Query> aVicQueryList = bfs(aVarSet, varsleft);
 
-		// Initialize aBestSize with the size of the first applicable
-		// Query:
-		Iterator<Query> anEnum = var.getIncomingQueries();
-		Query aBestQuery = null;
-		int aBestSize = -1;
-		while (anEnum.hasNext()) {
-			aBestQuery = (Query) anEnum.next();
-			if (aBestQuery.isApplicable()) {
-				aBestSize = aBestQuery.getSize();
+            // add result if not null
+            if (aVicQueryList != null && !aVicQueryList.isEmpty()) {
+                aQueryList.addAll(aVicQueryList);
+            }
+
+            return aQueryList;
+        } else {
+            if (varsleft.isEmpty()) {
+                return null;
+            }
+
+            // get best variable which is the first Arc or if no arcs exist, the first Node
+            Variable aVar = getBestVar(varsleft);
+            breadthvars.add(aVar);
+
+            // call recursively 
+            return bfs(breadthvars, varsleft);
+        }
+    }
+
+    private final Query getBestQuery(Variable var) {
+        // Remember: CSP implementation have to ensure that there
+        // is always at least one incoming Query applicable for each
+        // uninstantiated variable!
+
+        // Initialize aBestSize with the size of the first applicable
+        // Query:
+        Iterator<Query> anEnum = var.getIncomingQueries();
+        Query aBestQuery = null;
+        int aBestSize = -1;
+        while (anEnum.hasNext()) {
+            aBestQuery = (Query) anEnum.next();
+            if (aBestQuery.isApplicable()) {
+                aBestSize = aBestQuery.getSize();
 //				aBestSize = aBestQuery.getTarget().getTypeQuery().getSize(); 
-				break;
-			}
-		}		
-		if (aBestSize == -1)
-			return null; // should never happen!
-
-		// Search best Query:
-		Query aQuery;
-		int aSize;
-		while (anEnum.hasNext()) {
-			aQuery = (Query) anEnum.next();
-			aSize = aQuery.getSize(); 
+                break;
+            }
+        }
+        if (aBestSize == -1) {
+            return null; // should never happen!
+        }
+        // Search best Query:
+        Query aQuery;
+        int aSize;
+        while (anEnum.hasNext()) {
+            aQuery = (Query) anEnum.next();
+            aSize = aQuery.getSize();
 //			aSize = aQuery.getTarget().getTypeQuery().getSize();
-			if (aQuery.isApplicable() && (aSize < aBestSize)) {
-				aBestSize = aSize;
-				aBestQuery = aQuery;
-			}
-		}
-		return aBestQuery;
-	}
-	
-	/*
+            if (aQuery.isApplicable() && (aSize < aBestSize)) {
+                aBestSize = aSize;
+                aBestQuery = aQuery;
+            }
+        }
+        return aBestQuery;
+    }
+
+    /*
 	 * Returns the vicinity of the Variable v when it exists, otherwise - null.
-	 */
-	private final OrderedSet<Variable> getVicinity(Variable v, OrderedSet<Variable> varsleft) {
-		OrderedSet<Variable> aVicinity = null;
-		Variable aVar;
-		Iterator<Object> allConstraints = v.getConstraints();
-		while (allConstraints.hasNext()) {
-			aVar = getOtherVariable((BinaryConstraint) allConstraints
-					.next(), v);
-			if (varsleft.indexOf(aVar, 0) != -1) {
-				if (aVicinity == null)
-					aVicinity = new OrderedSet<Variable>(theirVariableOrder);
-				aVicinity.add(aVar);
-			}
-		}
-		return aVicinity;
-	}
-	
-	/*
+     */
+    private final OrderedSet<Variable> getVicinity(Variable v, OrderedSet<Variable> varsleft) {
+        OrderedSet<Variable> aVicinity = null;
+        Variable aVar;
+        Iterator<Object> allConstraints = v.getConstraints();
+        while (allConstraints.hasNext()) {
+            aVar = getOtherVariable((BinaryConstraint) allConstraints
+                    .next(), v);
+            if (varsleft.indexOf(aVar, 0) != -1) {
+                if (aVicinity == null) {
+                    aVicinity = new OrderedSet<Variable>(theirVariableOrder);
+                }
+                aVicinity.add(aVar);
+            }
+        }
+        return aVicinity;
+    }
+
+    /*
 	 * Returns the first variable if it represents an edge,
 	 * otherwise - the next first variable which represents an edge.
-	 */
-	private final Variable getBestVar(OrderedSet<Variable> vars) {
-		vars.start();
-		
-		Variable v = vars.get();
-		while ((v.getKind() != Variable.ARC) && vars.hasNext()) {
-			v = vars.get();
-		}
-		return v;
-	}
-	
-	private final Variable getOtherVariable(BinaryConstraint bc, Variable v) {
-		return v.equals(bc.getVar1()) ? bc.getVar2() : bc.getVar1();
-	}
+     */
+    private final Variable getBestVar(OrderedSet<Variable> vars) {
+        vars.start();
 
-	
-/*	
+        Variable v = vars.get();
+        while ((v.getKind() != Variable.ARC) && vars.hasNext()) {
+            v = vars.get();
+        }
+        return v;
+    }
+
+    private final Variable getOtherVariable(BinaryConstraint bc, Variable v) {
+        return v.equals(bc.getVar1()) ? bc.getVar2() : bc.getVar1();
+    }
+
+    /*	
 	private void showQueries(Vector<Query> aQueryVec, String text) {
 		System.out.println(text+"\n*** Search_BreadthFirst: QUERIES *** count: "
 				+ aQueryVec.size());
@@ -323,5 +324,5 @@ public class Search_BreadthFirst implements SearchStrategy {
 		}
 		System.out.println();
 	}
-	*/
+     */
 }

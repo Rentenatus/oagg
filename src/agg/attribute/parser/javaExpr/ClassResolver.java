@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 import java.lang.reflect.Array;
@@ -19,168 +20,168 @@ import java.util.Vector;
  */
 public class ClassResolver implements java.io.Serializable {
 
-	protected Vector<String> packages = new Vector<String>(16);
+    protected Vector<String> packages = new Vector<String>(16);
 
-	final static protected Hashtable<String, Object> primitives = new Hashtable<String, Object>(
-			16);
+    final static protected Hashtable<String, Object> primitives = new Hashtable<String, Object>(
+            16);
 
-	public static final long serialVersionUID = 5146841301451537847L;
+    public static final long serialVersionUID = 5146841301451537847L;
 
-	public ClassResolver() {
-		init();
-		this.packages.addElement("java.lang");
-		this.packages.addElement("java.util");
+    public ClassResolver() {
+        init();
+        this.packages.addElement("java.lang");
+        this.packages.addElement("java.util");
 //		this.packages.addElement("com.objectspace.jgl");
-	}
+    }
 
-	private void init() {
-		if (primitives.isEmpty()) {
-			primitives.put("byte", Byte.TYPE);
-			primitives.put("short", Short.TYPE);
-			primitives.put("int", Integer.TYPE);
-			primitives.put("long", Long.TYPE);
-			primitives.put("float", Float.TYPE);
-			primitives.put("double", Double.TYPE);
-			primitives.put("char", Character.TYPE);
-			primitives.put("boolean", Boolean.TYPE);
-			primitives.put("void", Void.TYPE);
-		}
-	}
+    private void init() {
+        if (primitives.isEmpty()) {
+            primitives.put("byte", Byte.TYPE);
+            primitives.put("short", Short.TYPE);
+            primitives.put("int", Integer.TYPE);
+            primitives.put("long", Long.TYPE);
+            primitives.put("float", Float.TYPE);
+            primitives.put("double", Double.TYPE);
+            primitives.put("char", Character.TYPE);
+            primitives.put("boolean", Boolean.TYPE);
+            primitives.put("void", Void.TYPE);
+        }
+    }
 
-	protected int[] getArrayDimensions(String text) {
-		int[] dimArray;
-		int nDimensions = 0;
-		int ptr = 0;
+    protected int[] getArrayDimensions(String text) {
+        int[] dimArray;
+        int nDimensions = 0;
+        int ptr = 0;
 
-		while (ptr < text.length()) {
-			// Skipping ignorable characters:
-			while (ptr < text.length()
-					&& Character.isWhitespace(text.charAt(ptr))) {
-				ptr++;
-			}
+        while (ptr < text.length()) {
+            // Skipping ignorable characters:
+            while (ptr < text.length()
+                    && Character.isWhitespace(text.charAt(ptr))) {
+                ptr++;
+            }
 
-			// More input left ?
-			if (ptr < text.length()) {
+            // More input left ?
+            if (ptr < text.length()) {
 
-				// Beginning of another dimension parameter ?
-				if (text.charAt(ptr++) == '[') {
-					// Skipping ignorable characters:
-					while (ptr < text.length()
-							&& (Character.isWhitespace(text.charAt(ptr)) || Character
-									.isDigit(text.charAt(ptr)))) {
-						ptr++;
-					}
-					// Legal termination character at the end of dimension
-					// parameter ?
-					if (ptr < text.length() && text.charAt(ptr++) == ']') {
-						// Dimension parameter processed correctly.
-						nDimensions++;
-					} else {
-						// Syntax error.
-						return null;
-					}
-				} else {
-					// Wrong character, syntax error
-					return null;
-				}
-			}
-		}
-		// No input left, all dimension parameters were successfully processed.
-		dimArray = new int[nDimensions];
-		for (int i = 0; i < nDimensions; i++) {
-			dimArray[i] = 1;
-		}
-		return dimArray;
-	}
+                // Beginning of another dimension parameter ?
+                if (text.charAt(ptr++) == '[') {
+                    // Skipping ignorable characters:
+                    while (ptr < text.length()
+                            && (Character.isWhitespace(text.charAt(ptr)) || Character
+                            .isDigit(text.charAt(ptr)))) {
+                        ptr++;
+                    }
+                    // Legal termination character at the end of dimension
+                    // parameter ?
+                    if (ptr < text.length() && text.charAt(ptr++) == ']') {
+                        // Dimension parameter processed correctly.
+                        nDimensions++;
+                    } else {
+                        // Syntax error.
+                        return null;
+                    }
+                } else {
+                    // Wrong character, syntax error
+                    return null;
+                }
+            }
+        }
+        // No input left, all dimension parameters were successfully processed.
+        dimArray = new int[nDimensions];
+        for (int i = 0; i < nDimensions; i++) {
+            dimArray[i] = 1;
+        }
+        return dimArray;
+    }
 
-	protected Class<?> getArrayClass(String name) {
+    protected Class<?> getArrayClass(String name) {
 
-		Class<?> arrayClass;
-		Class<?> componentClass;
-		Object arrayInst;
-		int dimensions[];
-		String componentText, dimensionText;
-		int iBeginDim;
+        Class<?> arrayClass;
+        Class<?> componentClass;
+        Object arrayInst;
+        int dimensions[];
+        String componentText, dimensionText;
+        int iBeginDim;
 
-		iBeginDim = name.indexOf("[");
-		componentText = name.substring(0, iBeginDim).trim();
-		dimensionText = name.substring(iBeginDim, name.length());
+        iBeginDim = name.indexOf("[");
+        componentText = name.substring(0, iBeginDim).trim();
+        dimensionText = name.substring(iBeginDim, name.length());
 
-		componentClass = forName(componentText);
-		if (componentClass == null)
-			return null;
+        componentClass = forName(componentText);
+        if (componentClass == null) {
+            return null;
+        }
 
-		dimensions = getArrayDimensions(dimensionText);
-		if (dimensions == null) {
-			throw new ClassResolverException(
-					"Syntax error in array dimensions.");
-		}
-		arrayInst = Array.newInstance(componentClass, dimensions);
-		arrayClass = arrayInst.getClass();
+        dimensions = getArrayDimensions(dimensionText);
+        if (dimensions == null) {
+            throw new ClassResolverException(
+                    "Syntax error in array dimensions.");
+        }
+        arrayInst = Array.newInstance(componentClass, dimensions);
+        arrayClass = arrayInst.getClass();
 
-		return arrayClass;
-	}
+        return arrayClass;
+    }
 
-	@SuppressWarnings("rawtypes")
-	public Class<?> forName(String name) {
-		Class<?> c;
+    @SuppressWarnings("rawtypes")
+    public Class<?> forName(String name) {
+        Class<?> c;
 
-		init();
-		
-		if (name.indexOf("[") != -1) {
-			// it's an array class
-			return getArrayClass(name);
-		}
+        init();
 
-		if (name.indexOf('.') != -1) {
-			// The name is a complete path
-			try {
-				return Class.forName(name);
-			} catch (ClassNotFoundException e) {
+        if (name.indexOf("[") != -1) {
+            // it's an array class
+            return getArrayClass(name);
+        }
+
+        if (name.indexOf('.') != -1) {
+            // The name is a complete path
+            try {
+                return Class.forName(name);
+            } catch (ClassNotFoundException e) {
 //				System.out.println(this.getClass().getName()+" :: ClassNotFoundException: "+e.getMessage());				
-				return null;
-			}
-		}
+                return null;
+            }
+        }
 
-		// Is a primitive type?
-		if (Character.isLowerCase(name.charAt(0))) {
-			c = (Class) primitives.get(name);
-			if (c != null) {
-				return c;
-			}
-		}
-		else {
-			// Try if the class is at root
-			try {
-				return Class.forName(name);
-			} catch (ClassNotFoundException e) {
+        // Is a primitive type?
+        if (Character.isLowerCase(name.charAt(0))) {
+            c = (Class) primitives.get(name);
+            if (c != null) {
+                return c;
+            }
+        } else {
+            // Try if the class is at root
+            try {
+                return Class.forName(name);
+            } catch (ClassNotFoundException e) {
 //				System.out.println("###  "+this.getClass().getName()+" :: ClassNotFoundException: "+e.getMessage());
-			}			
-			// Try every import package
-			for (int i = 0; i < this.packages.size(); i++) {
-				try {
-					return Class.forName(this.packages.elementAt(i) + "." + name);
-				} catch (ClassNotFoundException e) {
+            }
+            // Try every import package
+            for (int i = 0; i < this.packages.size(); i++) {
+                try {
+                    return Class.forName(this.packages.elementAt(i) + "." + name);
+                } catch (ClassNotFoundException e) {
 //					System.out.println("######  "+this.getClass().getName()+" :: ClassNotFoundException: "+this.packages.elementAt(i)+"     "+e.getMessage());
-				}
-			}	
-		}
-		// Once here, abandon all hope
+                }
+            }
+        }
+        // Once here, abandon all hope
 //		System.out.println(this.getClass().getName()+" :: ClassNotFoundException:  "+name);
-		return null;
-	}
-	
-	public Vector<String> getPackages() {
-		return this.packages;
-	}
+        return null;
+    }
 
-	public void setPackages(Vector<String> packs) {
-		this.packages = packs;
-	}
+    public Vector<String> getPackages() {
+        return this.packages;
+    }
 
-	public String toString() {
-		return hashCode() + " " + getPackages().toString();
-	}
+    public void setPackages(Vector<String> packs) {
+        this.packages = packs;
+    }
+
+    public String toString() {
+        return hashCode() + " " + getPackages().toString();
+    }
 }
 /*
  * $Log: ClassResolver.java,v $

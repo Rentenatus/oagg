@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Vector;
@@ -19,293 +20,307 @@ import agg.util.Disposable;
 
 /**
  * Partial implementation of the interface agg.attribute.AttrTuple.
- * 
+ *
  * @see agg.attribute.AttrTuple
  * @author $Author: olga $
  * @version $Id: TupleObject.java,v 1.13 2010/09/23 08:14:08 olga Exp $
  */
 @SuppressWarnings("serial")
 public abstract class TupleObject extends ChainedObserver implements AttrTuple,
-		Disposable {
+        Disposable {
 
-	/** Parent of this type. All parent entries are "inherited". */
-	protected TupleObject parent;
+    /**
+     * Parent of this type. All parent entries are "inherited".
+     */
+    protected TupleObject parent;
 
-	/* Parent list of this type. All parent entries are "inherited". */
+    /* Parent list of this type. All parent entries are "inherited". */
 //	 protected Vector<TupleObject> parents = new Vector<TupleObject>(2);
-	
-	
-	
-	/**
-	 * Container with members, all of which implement the AttrMember interface.
-	 * 
-	 * @see agg.attribute.AttrMember
-	 */
-	protected final Vector<AttrMember> members = new Vector<AttrMember>();
+    /**
+     * Container with members, all of which implement the AttrMember interface.
+     *
+     * @see agg.attribute.AttrMember
+     */
+    protected final Vector<AttrMember> members = new Vector<AttrMember>();
 
-	public TupleObject(AttrTupleManager manager, TupleObject parent) {
-		super(manager);
-		assignParent(parent);
-	}
+    public TupleObject(AttrTupleManager manager, TupleObject parent) {
+        super(manager);
+        assignParent(parent);
+    }
 
-	protected void finalize() {
-	}
+    protected void finalize() {
+    }
 
-	public void dispose() {
-		if (this.parent != null)
-			this.parent.removeObserver(this);
-		this.members.clear();
-	}
+    public void dispose() {
+        if (this.parent != null) {
+            this.parent.removeObserver(this);
+        }
+        this.members.clear();
+    }
 
-	/**
-	 * @param newParent
-	 */
-	protected void assignParent(TupleObject newParent) {
-		if (this.parent != null)
-			this.parent.removeObserver(this);
+    /**
+     * @param newParent
+     */
+    protected void assignParent(TupleObject newParent) {
+        if (this.parent != null) {
+            this.parent.removeObserver(this);
+        }
 
-		this.parent = newParent;
-		if (this.parent != null)
-			this.parent.addObserver(this);
-	}
-	
-	/** Propagates the event to the observers, pretending to be the source. */
-	protected void propagateEvent(TupleEvent e) {
-		fireAttrChanged(e.cloneWithNewSource(this));
-	}
+        this.parent = newParent;
+        if (this.parent != null) {
+            this.parent.addObserver(this);
+        }
+    }
 
-	public void memberChanged(int code, AttrMember member) {
-		fireAttrChanged(code, getIndexForMember(member));
-	}
+    /**
+     * Propagates the event to the observers, pretending to be the source.
+     */
+    protected void propagateEvent(TupleEvent e) {
+        fireAttrChanged(e.cloneWithNewSource(this));
+    }
 
-	//
-	// Container-specific access to the container of [members].
-	// Singling these methods out allows for easy replacement of the
-	// container, e.g. by a more efficient one.
+    public void memberChanged(int code, AttrMember member) {
+        fireAttrChanged(code, getIndexForMember(member));
+    }
 
-	protected synchronized int rawGetSize() {
-		return this.members.size();
-	}
+    //
+    // Container-specific access to the container of [members].
+    // Singling these methods out allows for easy replacement of the
+    // container, e.g. by a more efficient one.
+    protected synchronized int rawGetSize() {
+        return this.members.size();
+    }
 
-	protected synchronized AttrMember rawGetMemberAt(int index) {
-		int indx = index;
-		if ((this.members.size() == 0) || (indx < 0))
-			return null;
+    protected synchronized AttrMember rawGetMemberAt(int index) {
+        int indx = index;
+        if ((this.members.size() == 0) || (indx < 0)) {
+            return null;
+        }
 
-		if (indx >= this.members.size()) {
-			// warn("index="+index+" >= size=" + this.members.size()+"\nSetting to
-			// 0.", true );
-			indx = 0;
-		}
+        if (indx >= this.members.size()) {
+            // warn("index="+index+" >= size=" + this.members.size()+"\nSetting to
+            // 0.", true );
+            indx = 0;
+        }
 
-		return this.members.elementAt(indx);
-	}
+        return this.members.elementAt(indx);
+    }
 
-	protected synchronized void rawAddMember(AttrMember member) {
-		if (member != null)
-			this.members.add(member);
-	}
+    protected synchronized void rawAddMember(AttrMember member) {
+        if (member != null) {
+            this.members.add(member);
+        }
+    }
 
-	protected synchronized void rawAddMember(int index, AttrMember member) {
-		if (member != null)
-			this.members.add(index, member);
-	}
+    protected synchronized void rawAddMember(int index, AttrMember member) {
+        if (member != null) {
+            this.members.add(index, member);
+        }
+    }
 
-	protected synchronized void rawDeleteMemberAt(int index) {
-		if (index == -1 || index >= this.members.size()) {
-			// warn("index="+index+" >= size=" + this.members.size()+"\nReturning.",
-			// true );
-			return;
-		}
-		this.members.removeElementAt(index);
-	}
+    protected synchronized void rawDeleteMemberAt(int index) {
+        if (index == -1 || index >= this.members.size()) {
+            // warn("index="+index+" >= size=" + this.members.size()+"\nReturning.",
+            // true );
+            return;
+        }
+        this.members.removeElementAt(index);
+    }
 
-	// End of container-specific access.
-	//
+    // End of container-specific access.
+    //
+    /**
+     * This method interface is needed in order to treat attribute types and instances uniformly.
+     */
+    public abstract DeclTuple getTupleType();
 
-	/**
-	 * This method interface is needed in order to treat attribute types and
-	 * instances uniformly.
-	 */
-	public abstract DeclTuple getTupleType();
+    public AttrType getType() {
+        return getTupleType();
+    }
 
-	public AttrType getType() {
-		return getTupleType();
-	}
+    //
+    // Fixed form.
+    protected AttrViewSetting getForm() {
+        return getTupleType().getForm();
+    }
 
-	//
-	// Fixed form.
+    protected void setForm(AttrViewSetting formSetting) {
+        getTupleType().setForm(formSetting);
+    }
 
-	protected AttrViewSetting getForm() {
-		return getTupleType().getForm();
-	}
+    protected AttrViewSetting ensureNonNull(AttrViewSetting viewSetting) {
+        if (viewSetting == null) {
+            return this.manager.getDefaultMaskedView();
+        }
+        return viewSetting;
+    }
 
-	protected void setForm(AttrViewSetting formSetting) {
-		getTupleType().setForm(formSetting);
-	}
+    /**
+     * Transforming a mask entry index into the real index.
+     */
+    protected int getIndexInView(AttrViewSetting viewSetting, int slot) {
+        return ensureNonNull(viewSetting).convertSlotToIndex(this, slot);
+    }
 
-	protected AttrViewSetting ensureNonNull(AttrViewSetting viewSetting) {
-		if (viewSetting == null)
-			return this.manager.getDefaultMaskedView();
-		return viewSetting;
-	}
+    /**
+     * @return parent TupleObject
+     */
+    protected TupleObject getParent() {
+        return this.parent;
+    }
 
-	/** Transforming a mask entry index into the real index. */
-	protected int getIndexInView(AttrViewSetting viewSetting, int slot) {
-		return ensureNonNull(viewSetting).convertSlotToIndex(this, slot);
-	}
+    /**
+     * Obtaining the size of the current parent.
+     */
+    public int getParentSize() {
+        if (this.parent == null) {
+            return 0;
+        }
 
-	/**
-	 * @return parent TupleObject
-	 */
-	protected TupleObject getParent() {
-		return this.parent;
-	}
+        return this.parent.getSize();
+    }
 
-	/**
-	 * Obtaining the size of the current parent.
-	 */
-	public int getParentSize() {
-		if (this.parent == null)
-			return 0;
-	
-		return this.parent.getSize();
-	}
+    /**
+     * @return The ancestor that originated the member at 'index'.
+     */
+    protected TupleObject getParentInCharge(int index) {
+        if ((index >= getParentSize())) {
+            return this;
+        }
+        return this.parent.getParentInCharge(index);
+    }
 
-	/** @return The ancestor that originated the member at 'index'. */
-	protected TupleObject getParentInCharge(int index) {
-		if ((index >= getParentSize()))
-			return this;
-		return this.parent.getParentInCharge(index);
-	}
+    protected void addMember(AttrMember member) {
+        rawAddMember(member);
+    }
 
-	protected void addMember(AttrMember member) {
-		rawAddMember(member);
-	}
+    protected void addMember(int index, AttrMember member) {
+        rawAddMember(index, member);
+    }
 
-	protected void addMember(int index, AttrMember member) {
-		rawAddMember(index, member);
-	}
+    protected void deleteMemberAt(int index) {
+        rawDeleteMemberAt(index);
+    }
 
-	protected void deleteMemberAt(int index) {
-		rawDeleteMemberAt(index);
-	}
+    //
+    // Implementation of the inheritance mechanism.
+    // 
+    /**
+     * Inheritance mechanism: Checking inheritance relation.
+     */
+    public boolean isSubclassOf(TupleObject maybeParent) {
+        if (this.parent == null) {
+            return false;
+        }
+        if (this.parent == maybeParent) {
+            return true;
+        }
+        return this.parent.isSubclassOf(maybeParent);
+    }
 
-	//
-	// Implementation of the inheritance mechanism.
-	// 
+    //
+    // Querying the state. Implementation of agg.attribute.AttrTuple
+    //
+    public int getSize() {
+        return rawGetSize();
+    }
 
-	/**
-	 * Inheritance mechanism: Checking inheritance relation.
-	 */
-	public boolean isSubclassOf(TupleObject maybeParent) {
-		if (this.parent == null)
-			return false;
-		if (this.parent == maybeParent)
-			return true;
-		return this.parent.isSubclassOf(maybeParent);
-	}
+    public boolean isValid() {
+        for (int i = 0; i < getSize(); i++) {
+            if (getMemberAt(i) == null || !getMemberAt(i).isValid()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	//
-	// Querying the state. Implementation of agg.attribute.AttrTuple
-	//
+    public AttrMember getMemberAt(int index) {
+        return rawGetMemberAt(index);
+    }
 
-	public int getSize() {
-		return rawGetSize();
-	}
+    public AttrMember getMemberAt(AttrViewSetting viewSetting, int slot) {
+        return getMemberAt(ensureNonNull(viewSetting).convertSlotToIndex(this,
+                slot));
+    }
 
-	public boolean isValid() {
-		for (int i = 0; i < getSize(); i++) {
-			if (getMemberAt(i) == null || !getMemberAt(i).isValid())
-				return false;
-		}
-		return true;
-	}
-	
-	public AttrMember getMemberAt(int index) {
-		return rawGetMemberAt(index);
-	}
+    public AttrMember getMemberAt(String name) {
+        return getMemberAt(getIndexForName(name));
+    }
 
-	public AttrMember getMemberAt(AttrViewSetting viewSetting, int slot) {
-		return getMemberAt(ensureNonNull(viewSetting).convertSlotToIndex(this,
-				slot));
-	}
+    /**
+     * Translation between number- and name-oriented access.
+     *
+     * @return The corresponding index if the name is declared within the tuple, -1 otherwise.
+     */
+    public int getIndexForName(String name) {
+        return getTupleType().getIndexForName(name);
+    }
 
-	public AttrMember getMemberAt(String name) {
-		return getMemberAt(getIndexForName(name));
-	}
+    /**
+     * Translation between address- and number-oriented access.
+     *
+     * @return The corresponding index if the member is within the tuple, -1 otherwise.
+     */
+    public int getIndexForMember(AttrMember m) {
+        if (m == null) {
+            return -1;
+        }
+        int size = getSize();
 
-	/**
-	 * Translation between number- and name-oriented access.
-	 * 
-	 * @return The corresponding index if the name is declared within the tuple,
-	 *         -1 otherwise.
-	 */
-	public int getIndexForName(String name) {
-		return getTupleType().getIndexForName(name);
-	}
+        for (int i = 0; i < size; i++) {
+            if (m == getMemberAt(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
-	/**
-	 * Translation between address- and number-oriented access.
-	 * 
-	 * @return The corresponding index if the member is within the tuple, -1
-	 *         otherwise.
-	 */
-	public int getIndexForMember(AttrMember m) {
-		if (m == null)
-			return -1;
-		int size = getSize();
+    //
+    // Simple representation.
+    //
+    /**
+     * *************************************************************************
+     * Getting the total number of shown attribute entries (lines); The retrieval index range is [0 ..
+     * (getNumberOfEntries() - 1)].
+     */
+    public int getNumberOfEntries() {
+        return getSize();
+    }
 
-		for (int i = 0; i < size; i++) {
-			if (m == getMemberAt(i))
-				return i;
-		}
-		return -1;
-	}
+    /**
+     * Getting a simple representation of a type as String.
+     */
+    public String getTypeAsString(int index) {
+        return getType().getTypeAsString(index);
+    }
 
-	//
-	// Simple representation.
-	//
+    /**
+     * Getting a simple representation of a name as String.
+     */
+    public String getNameAsString(int index) {
+        return getType().getNameAsString(index);
+    }
 
-	/***************************************************************************
-	 * Getting the total number of shown attribute entries (lines); The
-	 * retrieval index range is [0 .. (getNumberOfEntries() - 1)].
-	 */
-	public int getNumberOfEntries() {
-		return getSize();
-	}
+    public String getValueAsString(int index) {
+        return "";
+    }
 
-	/** Getting a simple representation of a type as String. */
-	public String getTypeAsString(int index) {
-		return getType().getTypeAsString(index);
-	}
+    //
+    public int getNumberOfEntries(AttrViewSetting viewSetting) {
+        return ensureNonNull(viewSetting).getSize(this);
+    }
 
-	/** Getting a simple representation of a name as String. */
-	public String getNameAsString(int index) {
-		return getType().getNameAsString(index);
-	}
+    public String getTypeAsString(AttrViewSetting viewSetting, int entryIndex) {
+        return getTypeAsString(getIndexInView(viewSetting, entryIndex));
+    }
 
-	public String getValueAsString(int index) {
-		return "";
-	}
+    public String getNameAsString(AttrViewSetting viewSetting, int entryIndex) {
+        return getNameAsString(getIndexInView(viewSetting, entryIndex));
+    }
 
-	//
-
-	public int getNumberOfEntries(AttrViewSetting viewSetting) {
-		return ensureNonNull(viewSetting).getSize(this);
-	}
-
-	public String getTypeAsString(AttrViewSetting viewSetting, int entryIndex) {
-		return getTypeAsString(getIndexInView(viewSetting, entryIndex));
-	}
-
-	public String getNameAsString(AttrViewSetting viewSetting, int entryIndex) {
-		return getNameAsString(getIndexInView(viewSetting, entryIndex));
-	}
-
-	public String getValueAsString(AttrViewSetting viewSetting, int entryIndex) {
-		return getValueAsString(getIndexInView(viewSetting, entryIndex));
-	}
+    public String getValueAsString(AttrViewSetting viewSetting, int entryIndex) {
+        return getValueAsString(getIndexInView(viewSetting, entryIndex));
+    }
 }
 /*
  * $Log: TupleObject.java,v $

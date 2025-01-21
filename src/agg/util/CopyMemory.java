@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.util;
 
 import java.util.Hashtable;
@@ -16,97 +17,98 @@ import java.util.Hashtable;
  * @version $Id: CopyMemory.java,v 1.2 2010/03/08 15:47:55 olga Exp $
  */
 public class CopyMemory {
-	private static Hashtable<Object, Object> MEMO1;
 
-	private static Hashtable<Object, Object> MEMO2;
+    private static Hashtable<Object, Object> MEMO1;
 
-	public static void RESET(int n) // NEU
-	{
-		if (n == 1) {
-			MEMO1 = null;
-			return;
-		}
-		if (n == 2) {
-			MEMO2 = null;
-			return;
-		} 
-		System.out.println("CopyMemory.RESET:  error: illegal paramer!  n="
-					+ n);
-		return;
-	}
+    private static Hashtable<Object, Object> MEMO2;
 
-	public static void UNSET() {
-		if (MEMO1 != null) {
-			MEMO1.clear();
-			MEMO1 = null;
-		}
-		if (MEMO2 != null) {
-			MEMO2.clear();
-			MEMO2 = null;
-		}
-	}
+    public static void RESET(int n) // NEU
+    {
+        if (n == 1) {
+            MEMO1 = null;
+            return;
+        }
+        if (n == 2) {
+            MEMO2 = null;
+            return;
+        }
+        System.out.println("CopyMemory.RESET:  error: illegal paramer!  n="
+                + n);
+        return;
+    }
 
-	public static void INSTALL(int n) {
-		if (n == 1) {
-			if (MEMO1 == null) {
-				MEMO1 = new Hashtable<Object, Object>();
-				return;
-			} 
-			// System.out.println("CopyMemory: MEMO already exists!");
-			return;
-		}
-		if (n == 2) {
-			if (MEMO2 == null) {
-				MEMO2 = new Hashtable<Object, Object>();
-				return;
-			} 
-			// System.out.println("CopyMemory.INSTALL: MEMO already
-			// exists!");
-			return;
-		} 
-		System.out
-					.println("CopyMemory.INSTALL:  error: illegal parameter! (n="
-							+ n);
-		return;
-	}
+    public static void UNSET() {
+        if (MEMO1 != null) {
+            MEMO1.clear();
+            MEMO1 = null;
+        }
+        if (MEMO2 != null) {
+            MEMO2.clear();
+            MEMO2 = null;
+        }
+    }
 
-	public static void STORE(Object one, Object two, int n) {
-		if ((n == 1) && (MEMO1 != null)) {
-			MEMO1.put(one, two);
-			return;
-		}
-		if ((n == 2) && (MEMO2 != null)) {
-			MEMO2.put(one, two);
-			return;
-		}
-		System.out
-					.println("CopyMemory.STORE:  error: illegal parameter or MEMO undefined!");
-		return;
-	}
+    public static void INSTALL(int n) {
+        if (n == 1) {
+            if (MEMO1 == null) {
+                MEMO1 = new Hashtable<Object, Object>();
+                return;
+            }
+            // System.out.println("CopyMemory: MEMO already exists!");
+            return;
+        }
+        if (n == 2) {
+            if (MEMO2 == null) {
+                MEMO2 = new Hashtable<Object, Object>();
+                return;
+            }
+            // System.out.println("CopyMemory.INSTALL: MEMO already
+            // exists!");
+            return;
+        }
+        System.out
+                .println("CopyMemory.INSTALL:  error: illegal parameter! (n="
+                        + n);
+        return;
+    }
 
-	public static Object SELECT(Object o, int n) {
-		if ((n == 1) && (MEMO1 != null)) {
-			return (MEMO1.get(o));
-		}
-		if ((n == 2) && (MEMO2 != null)) {
-			return (MEMO2.get(o));
-		}
-		System.out
-					.println("CopyMemory.SELECT:  error: illegal parameter or MEMO undefined!");
-		return null;
-	}
+    public static void STORE(Object one, Object two, int n) {
+        if ((n == 1) && (MEMO1 != null)) {
+            MEMO1.put(one, two);
+            return;
+        }
+        if ((n == 2) && (MEMO2 != null)) {
+            MEMO2.put(one, two);
+            return;
+        }
+        System.out
+                .println("CopyMemory.STORE:  error: illegal parameter or MEMO undefined!");
+        return;
+    }
 
-	public static Hashtable<Object, Object> REQUEST(int n) {
-		if ((n == 1) && (MEMO1 != null)) {
-			return (MEMO1);
-		}
-		if ((n == 2) && (MEMO2 != null)) {
-			return (MEMO2);
-		}
-		System.out
-					.println("CopyMemory.REQUEST:  error: illegal parameter or MEMO undefined!");
-		return null;
-	}
+    public static Object SELECT(Object o, int n) {
+        if ((n == 1) && (MEMO1 != null)) {
+            return (MEMO1.get(o));
+        }
+        if ((n == 2) && (MEMO2 != null)) {
+            return (MEMO2.get(o));
+        }
+        System.out
+                .println("CopyMemory.SELECT:  error: illegal parameter or MEMO undefined!");
+        return null;
+    }
+
+    public static Hashtable<Object, Object> REQUEST(int n) {
+        if ((n == 1) && (MEMO1 != null)) {
+            return (MEMO1);
+        }
+        if ((n == 2) && (MEMO2 != null)) {
+            return (MEMO2);
+        }
+        System.out
+                .println("CopyMemory.REQUEST:  error: illegal parameter or MEMO undefined!");
+        return null;
+    }
 
 }
 

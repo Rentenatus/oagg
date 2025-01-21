@@ -1,39 +1,39 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler;
 
 /**
- * This interface is implemented by Attribute Handlers; provides services for
- * the Attribute Manager. It is used in the "SymbolTable".
- * 
+ * This interface is implemented by Attribute Handlers; provides services for the Attribute Manager. It is used in the
+ * "SymbolTable".
+ *
  * @see SymbolTable
  * @version $Id: HandlerType.java,v 1.3 2007/11/01 09:58:20 olga Exp $
  * @author $Author: olga $
  */
 public interface HandlerType extends java.io.Serializable {
-	static final long serialVersionUID = 247608297125283454L;
 
-	/**
-	 * Getting the string representation of this type. Overrides the
-	 * "toString()" method of the "Object" class.
-	 */
-	public String toString();
+    static final long serialVersionUID = 247608297125283454L;
 
-	/**
-	 * Obtaining the actual class rather than just its textual representation.
-	 * The name is funny because getClass() is already defined in Object as a
-	 * 'final' method.
-	 * 
-	 * @return A class handle.
-	 */
-	public Class<?> getClazz();
+    /**
+     * Getting the string representation of this type. Overrides the "toString()" method of the "Object" class.
+     */
+    public String toString();
+
+    /**
+     * Obtaining the actual class rather than just its textual representation. The name is funny because getClass() is
+     * already defined in Object as a 'final' method.
+     *
+     * @return A class handle.
+     */
+    public Class<?> getClazz();
 }
 /*
  * $Log: HandlerType.java,v $

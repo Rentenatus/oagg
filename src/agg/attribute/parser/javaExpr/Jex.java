@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 import java.awt.Frame;
@@ -29,196 +30,198 @@ import agg.attribute.handler.SymbolTable;
  */
 public class Jex implements ActionListener {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	static public final int PARSE_ERROR = 0;
+    static public final int PARSE_ERROR = 0;
 
-	static public final int IS_CONSTANT = 1;
+    static public final int IS_CONSTANT = 1;
 
-	static public final int IS_VARIABLE = 2;
+    static public final int IS_VARIABLE = 2;
 
-	static public final int IS_COMPLEX = 3;
+    static public final int IS_COMPLEX = 3;
 
-	protected TextField typeTF;
+    protected TextField typeTF;
 
-	static protected JexParser parser;
+    static protected JexParser parser;
 
-	protected PrintStream out, err;
+    protected PrintStream out, err;
 
-	protected ByteArrayOutputStream redirect;
+    protected ByteArrayOutputStream redirect;
 
-	protected PrintStream redirectOut;
+    protected PrintStream redirectOut;
 
-	protected boolean isOutput = false; // true;
+    protected boolean isOutput = false; // true;
 
-	protected Object variableExpression;
+    protected Object variableExpression;
 
-	public Jex() {
-	}
+    public Jex() {
+    }
 
-	/* Testing environment */
+    /* Testing environment */
+    public static void main(String args[]) {
+        Jex me = new Jex();
+        SimpleNode.setClassResolver(new ClassResolver());
 
-	public static void main(String args[]) {
-		Jex me = new Jex();
-		SimpleNode.setClassResolver(new ClassResolver());
+        Frame frame = new Frame("Jex-Test");
+        me.typeTF = new TextField("", 30);
+        me.typeTF.setBackground(Color.WHITE);
+        me.typeTF.addActionListener(me);
+        frame.add(me.typeTF);
+        frame.pack();
+        frame.setVisible(true);
+    }
 
-		Frame frame = new Frame("Jex-Test");
-		me.typeTF = new TextField("", 30);
-		me.typeTF.setBackground(Color.WHITE);
-		me.typeTF.addActionListener(me);
-		frame.add(me.typeTF);
-		frame.pack();
-		frame.setVisible(true);
-	}
+    public void fullTest(String line) {
+        try {
+            test_interpret(line, null, null);
+        } catch (AttrHandlerException ex1) {
+            System.out.println(ex1.getMessage());
+            ex1.printStackTrace();
+        }
+    }
 
-	public void fullTest(String line) {
-		try {
-			test_interpret(line, null, null);
-		} catch (AttrHandlerException ex1) {
-			System.out.println(ex1.getMessage());
-			ex1.printStackTrace();
-		}
-	}
+    public void actionPerformed(ActionEvent e) {
+        String line = this.typeTF.getText();
+        if (line.compareTo("q") == 0) {
+            System.exit(0);
+        }
+        fullTest(line);
+    }
 
-	public void actionPerformed(ActionEvent e) {
-		String line = this.typeTF.getText();
-		if (line.compareTo("q") == 0) {
-			System.exit(0);
-		}
-		fullTest(line);
-	}
+    protected int getExprProperty() {
+        synchronized (JexParser.jjtree) {
+            SimpleNode node = (SimpleNode) JexParser.jjtree.rootNode();
+            int result = IS_COMPLEX;
 
-	protected int getExprProperty() {
-		synchronized (JexParser.jjtree) {
-		SimpleNode node = (SimpleNode) JexParser.jjtree.rootNode();
-		int result = IS_COMPLEX;
+            if (node.isConstantExpr()) {
+                result = IS_CONSTANT;
+            } else if (node.jjtGetNumChildren() == 1) {
+                node = (SimpleNode) node.jjtGetChild(0);
+                if (node.identifier.equals("PrimaryExpression")
+                        && node.jjtGetNumChildren() == 1) {
+                    node = (SimpleNode) node.jjtGetChild(0);
+                    if (node.identifier.equals("Id")) {
+                        result = IS_VARIABLE;
+                    }
+                }
+            }
+            return result;
+        }
+    }
 
-		if (node.isConstantExpr()) {
-			result = IS_CONSTANT;
-		} else if (node.jjtGetNumChildren() == 1) {
-			node = (SimpleNode) node.jjtGetChild(0);
-			if (node.identifier.equals("PrimaryExpression")
-					&& node.jjtGetNumChildren() == 1) {
-				node = (SimpleNode) node.jjtGetChild(0);
-				if (node.identifier.equals("Id")) {
-					result = IS_VARIABLE;
-				}
-			}
-		}
-		return result;
-		}
-	}
+    protected void newStdOutStream() {
+        FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);
+        System.setOut(new PrintStream(new BufferedOutputStream(fdOut, 128),
+                true));
+    }
 
-	protected void newStdOutStream() {
-		FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);
-		System.setOut(new PrintStream(new BufferedOutputStream(fdOut, 128),
-				true));
-	}
+    protected void newStdErrStream() {
+        FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);
+        System.setErr(new PrintStream(new BufferedOutputStream(fdErr, 128),
+                true));
+    }
 
-	protected void newStdErrStream() {
-		FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);
-		System.setErr(new PrintStream(new BufferedOutputStream(fdErr, 128),
-				true));
-	}
+    protected void antiRedirect() {
+        newStdOutStream();
+        newStdErrStream();
+    }
 
-	protected void antiRedirect() {
-		newStdOutStream();
-		newStdErrStream();
-	}
+    /**
+     * Swaps StdOut and StdErr to ByteStream and vice versa
+     *
+     * @see #redirectToString
+     * @see #restoreOutputStream
+     */
+    protected void swapPrintStream() {
+        PrintStream swapOut = System.out;
+        PrintStream swapErr = System.err;
+        System.setOut(this.out);
+        System.setErr(this.err);
+        this.out = swapOut;
+        this.err = swapErr;
+    }
 
-	/**
-	 * Swaps StdOut and StdErr to ByteStream and vice versa
-	 * 
-	 * @see #redirectToString
-	 * @see #restoreOutputStream
-	 */
-	protected void swapPrintStream() {
-		PrintStream swapOut = System.out;
-		PrintStream swapErr = System.err;
-		System.setOut(this.out);
-		System.setErr(this.err);
-		this.out = swapOut;
-		this.err = swapErr;
-	}
+    protected void redirectToString() {
+        this.out = System.out;
+        this.err = System.err;
+        this.redirect = new ByteArrayOutputStream();
+        this.redirectOut = new PrintStream(this.redirect);
+        System.setOut(this.redirectOut);
+        System.setErr(this.redirectOut);
+    }
 
-	protected void redirectToString() {
-		this.out = System.out;
-		this.err = System.err;
-		this.redirect = new ByteArrayOutputStream();
-		this.redirectOut = new PrintStream(this.redirect);
-		System.setOut(this.redirectOut);
-		System.setErr(this.redirectOut);
-	}
+    protected void restoreOutputStream() {
+        if (this.redirect != null && this.redirectOut != null) {
+            System.setOut(this.out);
+            System.setErr(this.err);
+            if (this.isOutput) {
+                System.out.println(this.redirect.toString());
+            }
+            this.redirect = null;
+            this.redirectOut = null;
+        }
+    }
 
-	protected void restoreOutputStream() {
-		if (this.redirect != null && this.redirectOut != null) {
-			System.setOut(this.out);
-			System.setErr(this.err);
-			if (this.isOutput) {
-				System.out.println(this.redirect.toString());
-			}
-			this.redirect = null;
-			this.redirectOut = null;
-		}
-	}
+    static public String addMessage(Exception ex) {
+        String msg = ex.getMessage();
+        if (msg == null || msg.equals("null")) {
+            return "";
+        }
+        return "\n  (" + msg + ")";
+    }
 
-	static public String addMessage(Exception ex) {
-		String msg = ex.getMessage();
-		if (msg == null || msg.equals("null")) {
-			return "";
-		} 
-		return "\n  (" + msg + ")";
-	}
+    /* Services for JexHandler */
+    public void parseOutputOn() {
+        this.isOutput = true;
+    }
 
-	/* Services for JexHandler */
+    public void parseOutputOff() {
+        this.isOutput = false;
+    }
 
-	public void parseOutputOn() {
-		this.isOutput = true;
-	}
-
-	public void parseOutputOff() {
-		this.isOutput = false;
-	}
-
-	public int parse(String text) throws AttrHandlerException {
-		// swapPrintStream();
+    public int parse(String text) throws AttrHandlerException {
+        // swapPrintStream();
 //		AttrSession.logPrintln(VerboseControl.logTrace, "Jex:\n->parse");
 //		AttrSession.logPrintln(VerboseControl.logTrace, "Jex: text " + text);
 //		// only Jex parser tracing
 //		AttrSession.logPrintln(VerboseControl.logJexParser, "Jex:\n->parse");
 //		AttrSession
 //				.logPrintln(VerboseControl.logJexParser, "Jex: text " + text);
-		// swapPrintStream();
-		// redirectToString();
-		try {
-			return parse_(text);
-		} catch (Exception ex1) {
-			if (this.redirect != null)
-				throw new AttrHandlerException(this.redirect.toString()
-						+ addMessage(ex1));
-			throw new AttrHandlerException(addMessage(ex1));
-		} finally {
-			// restoreOutputStream();
+        // swapPrintStream();
+        // redirectToString();
+        try {
+            return parse_(text);
+        } catch (Exception ex1) {
+            if (this.redirect != null) {
+                throw new AttrHandlerException(this.redirect.toString()
+                        + addMessage(ex1));
+            }
+            throw new AttrHandlerException(addMessage(ex1));
+        } finally {
+            // restoreOutputStream();
 //			AttrSession.logPrintln(VerboseControl.logTrace, "Jex:\n<-parse");
-			// only Jex parser tracing
+            // only Jex parser tracing
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Jex:\n<-parse");
-		}
-	}
+        }
+    }
 
-	protected String getPropertyText(int code) {
-		synchronized (this) {
-		if (code == IS_CONSTANT)
-			return "Constant expression";
-		if (code == IS_VARIABLE)
-			return "Variable";
-		if (code == IS_COMPLEX)
-			return "Complex expression";
-		return "Parse error";
-		}
-	}
+    protected String getPropertyText(int code) {
+        synchronized (this) {
+            if (code == IS_CONSTANT) {
+                return "Constant expression";
+            }
+            if (code == IS_VARIABLE) {
+                return "Variable";
+            }
+            if (code == IS_COMPLEX) {
+                return "Complex expression";
+            }
+            return "Parse error";
+        }
+    }
 
-	protected int parse_(String text) throws ParseError {
-		// swapPrintStream();
+    protected int parse_(String text) throws ParseError {
+        // swapPrintStream();
 //		AttrSession.logPrintln(VerboseControl.logTrace, "Jex:\n->\tparse_");
 //		AttrSession.logPrintln(VerboseControl.logTrace, "Jex: text " + text);
 //		// only Jex parser tracing
@@ -226,68 +229,68 @@ public class Jex implements ActionListener {
 //		AttrSession
 //				.logPrintln(VerboseControl.logJexParser, "Jex: text " + text);
 
-		// swapPrintStream();
-		int result = PARSE_ERROR;
+        // swapPrintStream();
+        int result = PARSE_ERROR;
 
-		String line = text + " ";
-		byte bytes[] = line.getBytes();
+        String line = text + " ";
+        byte bytes[] = line.getBytes();
 
-		java.io.ByteArrayInputStream stream = new java.io.ByteArrayInputStream(
-				bytes);
+        java.io.ByteArrayInputStream stream = new java.io.ByteArrayInputStream(
+                bytes);
 
-		synchronized (JexParser.jjtree) {
+        synchronized (JexParser.jjtree) {
 //		if (parser == null) {
 //			parser = new JexParser(stream);
 //		} else 
-		{
-			JexParser.ReInit(stream);
-			JexParser.jjtree.reset();
-				
+            {
+                JexParser.ReInit(stream);
+                JexParser.jjtree.reset();
+
 //			System.out.println("parse text: "+text+"    stack: "+SimpleNode.stack.size()+"   top: "+SimpleNode.top+"    :::: "+SimpleNode.stack.hashCode());
-			SimpleNode.top = -1;
-			SimpleNode.stack.clear();
+                SimpleNode.top = -1;
+                SimpleNode.stack.clear();
 //			System.out.println("parse text: "+text+"    stack: "+SimpleNode.stack.size()+"   top: "+SimpleNode.top+"    :::: "+SimpleNode.stack.hashCode());
-		}
-		try {
+            }
+            try {
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Parsing ["
 //					+ text + "] ...");
-			JexParser.CompilationUnit();
-			JexParser.jjtree.rootNode().dump("  ");
-			result = getExprProperty();
-			
+                JexParser.CompilationUnit();
+                JexParser.jjtree.rootNode().dump("  ");
+                result = getExprProperty();
+
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					" Expression property: " + getPropertyText(result));
 //			// swapPrintStream();
 //			AttrSession.logPrintln(VerboseControl.logTrace, "Jex:\n<-\tparse_");
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Jex:\n<-\tparse_");
-			// swapPrintStream();
-			return result;
-		} catch (ParseError ex1) {
-			throw ex1;
-		}
-		}
-	}
+                // swapPrintStream();
+                return result;
+            } catch (ParseError ex1) {
+                throw ex1;
+            }
+        }
+    }
 
-	public void check(Node ast, Class<?> type, SymbolTable symtab)
-			throws AttrHandlerException {
+    public void check(Node ast, Class<?> type, SymbolTable symtab)
+            throws AttrHandlerException {
 //		AttrSession.logPrintln(VerboseControl.logJexParser, "Jex.check:   "
 //				+ ast + "   " + type);
-		// redirectToString();
-		try {
-			SimpleNode.setSymbolTable(symtab);
-			try {
+        // redirectToString();
+        try {
+            SimpleNode.setSymbolTable(symtab);
+            try {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Type-Checking ...");
-				ast.checkContext();
-				this.variableExpression = ast;
-			} catch (ASTIdNotDeclaredException ex1) {
+                ast.checkContext();
+                this.variableExpression = ast;
+            } catch (ASTIdNotDeclaredException ex1) {
 //				AttrSession
 //						.logPrintln(VerboseControl.logJexParser, "Variable \""
 //								+ ex1.getMessage() + "\" is not declared");
-				
-				throw ex1;
-			} catch (ASTWrongTypeException ex2) {
+
+                throw ex1;
+            } catch (ASTWrongTypeException ex2) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Wrong type.\n");
 //				if (ex2.getExpected() != null) {
@@ -296,86 +299,87 @@ public class Jex implements ActionListener {
 //				}
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Encountered: " + ex2.getFound());
-				
-				throw ex2;
-			} catch (ASTMemberException ex3) {
+
+                throw ex2;
+            } catch (ASTMemberException ex3) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Exception:\n" + ex3.getMessage());
-				
-				throw ex3;
-			} catch (Exception ex) {
+
+                throw ex3;
+            } catch (Exception ex) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Exception:\n" + ex.getMessage());
-				
-				throw new RuntimeException(ex.getMessage());
-			}
 
-			if (type != null && type != Void.TYPE) {
-				Class<?> resultType = ((SimpleNode) ast).getNodeClass();
-				boolean assignable = isAssignable(type, resultType);
-				if (assignable) {
+                throw new RuntimeException(ex.getMessage());
+            }
+
+            if (type != null && type != Void.TYPE) {
+                Class<?> resultType = ((SimpleNode) ast).getNodeClass();
+                boolean assignable = isAssignable(type, resultType);
+                if (assignable) {
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
 //							"Types are assignable");
-				} else {
-					
+                } else {
+
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
 //							"Wrong expression type.");
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
 //							"Required: " + type.getName());
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
 //							"Found: " + resultType.getName());
-					// unerklaerliches Ereignis.
-					new ASTWrongTypeException();
-				}
-			}
-		} catch (Exception ex1) {
-			if (this.redirect != null)
-				throw new AttrHandlerException(this.redirect.toString());
-			
-			throw new AttrHandlerException(ex1.getMessage());
-		} finally {
-			// restoreOutputStream();
-		}
-	}
+                    // unerklaerliches Ereignis.
+                    new ASTWrongTypeException();
+                }
+            }
+        } catch (Exception ex1) {
+            if (this.redirect != null) {
+                throw new AttrHandlerException(this.redirect.toString());
+            }
 
-	public void check(String text, Class<?> type, SymbolTable symtab)
-			throws AttrHandlerException {
-		// redirectToString();
-		try {
-			check_(text, type, symtab);
-		} catch (Exception ex1) {
-			if (this.redirect != null) {
-				// System.out.println("Jex.check:: 1) AttrHandlerException:
-				// "+ex1.getMessage() );
-				throw new AttrHandlerException(this.redirect.toString());
-			} 
-				// System.out.println("Jex.check:: 2) AttrHandlerException:
-				// "+ex1.getMessage() );
-			throw new AttrHandlerException(ex1.getMessage());
-			
-		} finally {
-			// restoreOutputStream();
-		}
-	}
+            throw new AttrHandlerException(ex1.getMessage());
+        } finally {
+            // restoreOutputStream();
+        }
+    }
 
-	public void check_(String text, Class<?> type, SymbolTable symtab)
-			throws ParseError {
+    public void check(String text, Class<?> type, SymbolTable symtab)
+            throws AttrHandlerException {
+        // redirectToString();
+        try {
+            check_(text, type, symtab);
+        } catch (Exception ex1) {
+            if (this.redirect != null) {
+                // System.out.println("Jex.check:: 1) AttrHandlerException:
+                // "+ex1.getMessage() );
+                throw new AttrHandlerException(this.redirect.toString());
+            }
+            // System.out.println("Jex.check:: 2) AttrHandlerException:
+            // "+ex1.getMessage() );
+            throw new AttrHandlerException(ex1.getMessage());
 
-		parse_(text);
-		SimpleNode.setSymbolTable(symtab);
+        } finally {
+            // restoreOutputStream();
+        }
+    }
 
-		synchronized (JexParser.jjtree) {
-		try {
+    public void check_(String text, Class<?> type, SymbolTable symtab)
+            throws ParseError {
+
+        parse_(text);
+        SimpleNode.setSymbolTable(symtab);
+
+        synchronized (JexParser.jjtree) {
+            try {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Type-Checking ...");
-			JexParser.jjtree.rootNode().checkContext();
-			JexParser.jjtree.rootNode().dump("  ");
-		} catch (ASTIdNotDeclaredException ex1) {
+                JexParser.jjtree.rootNode().checkContext();
+                JexParser.jjtree.rootNode().dump("  ");
+            } catch (ASTIdNotDeclaredException ex1) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Variable \""
 //					+ ex1.getMessage() + "\" is not declared");
-			throw new ASTIdNotDeclaredException("Variable \""
-					+ ex1.getMessage() + "\" is not declared");
-		} catch (ASTWrongTypeException ex2) {
+                throw new ASTIdNotDeclaredException("Variable \""
+                        + ex1.getMessage() + "\" is not declared");
+            } catch (ASTWrongTypeException ex2) {
 //			AttrSession
 //					.logPrintln(VerboseControl.logJexParser, "Wrong type.\n");
 //			if (ex2.getExpected() != null) {
@@ -384,230 +388,233 @@ public class Jex implements ActionListener {
 //			}
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Encountered: "
 //					+ ex2.getFound());
-			
-			throw new ASTWrongTypeException(
-					"Wrong expression type.  Required signature: "
-							+ ex2.getExpected() + "   Encountered: "
-							+ ex2.getFound());
-		} catch (ASTMemberException ex3) {
+
+                throw new ASTWrongTypeException(
+                        "Wrong expression type.  Required signature: "
+                        + ex2.getExpected() + "   Encountered: "
+                        + ex2.getFound());
+            } catch (ASTMemberException ex3) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Exception:\n"
 //					+ ex3.getMessage());
-			
-			throw new ASTMemberException("Member Exception:  "
-					+ ex3.getMessage());
-		} catch (Exception ex) {
+
+                throw new ASTMemberException("Member Exception:  "
+                        + ex3.getMessage());
+            } catch (Exception ex) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Exception:\n"
 //					+ ex.getMessage());
-			throw new RuntimeException("Exception:  " + ex.getMessage());
-		}
+                throw new RuntimeException("Exception:  " + ex.getMessage());
+            }
 
-		if (type != null && type != Void.TYPE) {
-			Class<?> resultType = ((SimpleNode) JexParser.jjtree.rootNode())
-					.getNodeClass();
-			if (!isAssignable(type, resultType)) {
+            if (type != null && type != Void.TYPE) {
+                Class<?> resultType = ((SimpleNode) JexParser.jjtree.rootNode())
+                        .getNodeClass();
+                if (!isAssignable(type, resultType)) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Wrong expression type.\n Required: " + type.getName()
 //								+ "\n Found: " + resultType.getName());
-				throw new ASTWrongTypeException(
-						"Wrong expression type.  Required: " + type.getName()
-								+ "  Found: " + resultType.getName());
-			}
-		}
-		}
-	}
+                    throw new ASTWrongTypeException(
+                            "Wrong expression type.  Required: " + type.getName()
+                            + "  Found: " + resultType.getName());
+                }
+            }
+        }
+    }
 
-	protected static Object refObj = new Object();
+    protected static Object refObj = new Object();
 
-	protected boolean isAssignable(Class<?> to, Class<?> from) {
-		// System.out.println("agg.parser.javaExpr.Jex.isAssignable
-		// "+from.getName()+" to "+to.getName());
-		if (to.isPrimitive() || from.isPrimitive()) {
-			// System.out.println("check: to.isPrimitive() ||
-			// from.isPrimitive()");
-			if (to == Byte.TYPE || to == Short.TYPE || to == Integer.TYPE
-					|| to == Long.TYPE) {
-				if (from == Byte.TYPE || from == Short.TYPE
-						|| from == Integer.TYPE || from == Long.TYPE) {
-					return true;
-				} 
-				return false;
-			} else if (to == Float.TYPE || to == Double.TYPE) {
-				if (from == Float.TYPE || from == Double.TYPE) {
-					return true;
-				} 
-				return false;
-			} else
-				return (to == from);
-		} 
-		
-		return to.isAssignableFrom(from) || from.isInstance(refObj);
-	}
+    protected boolean isAssignable(Class<?> to, Class<?> from) {
+        // System.out.println("agg.parser.javaExpr.Jex.isAssignable
+        // "+from.getName()+" to "+to.getName());
+        if (to.isPrimitive() || from.isPrimitive()) {
+            // System.out.println("check: to.isPrimitive() ||
+            // from.isPrimitive()");
+            if (to == Byte.TYPE || to == Short.TYPE || to == Integer.TYPE
+                    || to == Long.TYPE) {
+                if (from == Byte.TYPE || from == Short.TYPE
+                        || from == Integer.TYPE || from == Long.TYPE) {
+                    return true;
+                }
+                return false;
+            } else if (to == Float.TYPE || to == Double.TYPE) {
+                if (from == Float.TYPE || from == Double.TYPE) {
+                    return true;
+                }
+                return false;
+            } else {
+                return (to == from);
+            }
+        }
 
-	protected Object test_interpret(String text, Class<?> type, SymbolTable symtab)
-			throws AttrHandlerException {
-		Object result;
+        return to.isAssignableFrom(from) || from.isInstance(refObj);
+    }
 
-		// redirectToString();//
-		try {
-			result = interpret_(text, type, symtab);
-		} catch (ParseError ex1) {
-			if (this.redirect != null)
-				throw new AttrHandlerException(this.redirect.toString()
-						+ addMessage(ex1));
-			
-			throw new AttrHandlerException(addMessage(ex1));
-		} finally {
-			// restoreOutputStream();//
-		}
-		return result;
-	}
+    protected Object test_interpret(String text, Class<?> type, SymbolTable symtab)
+            throws AttrHandlerException {
+        Object result;
 
-	/* ******************************************************************************* */
+        // redirectToString();//
+        try {
+            result = interpret_(text, type, symtab);
+        } catch (ParseError ex1) {
+            if (this.redirect != null) {
+                throw new AttrHandlerException(this.redirect.toString()
+                        + addMessage(ex1));
+            }
 
-	/**
-	 * Interprets an expression.
-	 */
-	public Object interpret(Node ast, Class<?> type, SymbolTable symtab)
-			throws AttrHandlerException {
+            throw new AttrHandlerException(addMessage(ex1));
+        } finally {
+            // restoreOutputStream();//
+        }
+        return result;
+    }
+
+    /* ******************************************************************************* */
+    /**
+     * Interprets an expression.
+     */
+    public Object interpret(Node ast, Class<?> type, SymbolTable symtab)
+            throws AttrHandlerException {
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"Jex: \n->interpret(ast)");
 //		AttrSession.logPrintln(VerboseControl.logJexParser,
 //				"Jex: \n->interpret(ast)");
-		try {
-			Object result = null;
+        try {
+            Object result = null;
 
-			check(ast, type, symtab);
-			// redirectToString();
-			try {
+            check(ast, type, symtab);
+            // redirectToString();
+            try {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Evaluating ..." + ast);
-				ast.interpret();
-				result = ast.getRootResult();
-				/* If here, success */
-				return result;
-			} catch (ASTIdNotDeclaredException ex1) {
+                ast.interpret();
+                result = ast.getRootResult();
+                /* If here, success */
+                return result;
+            } catch (ASTIdNotDeclaredException ex1) {
 //				AttrSession
 //						.logPrintln(VerboseControl.logJexParser, "Variable \""
 //								+ ex1.getMessage() + "\" is not declared");
-				
-				throw ex1;
-			} catch (ASTMissingValueException ex2) {
-				if (ast.getString().indexOf("==null") != -1) {
-					result = new Boolean(true); // ast.getRootResult();
-					return result;
-				} 
+
+                throw ex1;
+            } catch (ASTMissingValueException ex2) {
+                if (ast.getString().indexOf("==null") != -1) {
+                    result = new Boolean(true); // ast.getRootResult();
+                    return result;
+                }
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //							"Missing value for variable \"" + ex2.getMessage()
 //									+ "\".");
-				
-				throw ex2;
-				
-			} catch (ASTMemberException ex3) {
+
+                throw ex2;
+
+            } catch (ASTMemberException ex3) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"ASTMemberException " + ex3.getMessage());
-				
-				throw ex3;
-			} catch (Exception ex) {
+
+                throw ex3;
+            } catch (Exception ex) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Exception:\n" + ex.getMessage());
-				
-				throw new AttrHandlerException("AttrHandlerException  : "
-						+ ex.getMessage());
+
+                throw new AttrHandlerException("AttrHandlerException  : "
+                        + ex.getMessage());
 //				throw new RuntimeException(ex.getMessage());
-			}
-		} catch (Exception ex1) {
-			// swapPrintStream();
+            }
+        } catch (Exception ex1) {
+            // swapPrintStream();
 //			AttrSession.logPrintln(VerboseControl.logTrace,
 //					"Jex.interpret : AttrHandlerException geworfen");
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Jex.interpret: AttrHandlerException geworfen");
-			// swapPrintStream();
+            // swapPrintStream();
 //			if (this.redirect != null)
 //				throw new AttrHandlerException(this.redirect.toString());
-			
-			throw new AttrHandlerException("AttrHandlerException  : "
-						+ ex1.getMessage());
-		} finally {
-			// restoreOutputStream();
+
+            throw new AttrHandlerException("AttrHandlerException  : "
+                    + ex1.getMessage());
+        } finally {
+            // restoreOutputStream();
 //			AttrSession.logPrintln(VerboseControl.logTrace,
 //					"Jex: \n<-interpret(ast)");
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Jex: \n<-interpret(ast)");
-		}
-	}
+        }
+    }
 
-	/**
-	 * Interprets an expression.
-	 * 
-	 * @deprecated Strings are NOT sufficent to represent expressions
-	 */
-	public Object interpret(String text, Class<?> type, SymbolTable symtab)
-			throws AttrHandlerException {
-		
+    /**
+     * Interprets an expression.
+     *
+     * @deprecated Strings are NOT sufficent to represent expressions
+     */
+    public Object interpret(String text, Class<?> type, SymbolTable symtab)
+            throws AttrHandlerException {
+
 //		AttrSession.logPrintln(VerboseControl.logTrace, "Jex: \n->interpret()");
 //		AttrSession.logPrintln(VerboseControl.logJexParser,
 //				"Jex: \n->interpret()");
-		// redirectToString();
-		try {
-			return interpret_(text, type, symtab);
-		} catch (Exception ex1) {
-			// swapPrintStream();
+        // redirectToString();
+        try {
+            return interpret_(text, type, symtab);
+        } catch (Exception ex1) {
+            // swapPrintStream();
 //			AttrSession.logPrintln(VerboseControl.logTrace,
 //					"Jex: AttrHandlerException geworfen");
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Jex: AttrHandlerException geworfen");
-			// swapPrintStream();
-			if (this.redirect != null)
-				throw new AttrHandlerException(this.redirect.toString());
-			
-			throw new AttrHandlerException(ex1.getMessage());
-		} finally {
-			// restoreOutputStream();
+            // swapPrintStream();
+            if (this.redirect != null) {
+                throw new AttrHandlerException(this.redirect.toString());
+            }
+
+            throw new AttrHandlerException(ex1.getMessage());
+        } finally {
+            // restoreOutputStream();
 //			AttrSession.logPrintln(VerboseControl.logTrace,
 //					"Jex: \n<-interpret()");
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Jex: \n<-interpret()");
-		}
-	}
+        }
+    }
 
-	public Object interpret_(String text, Class<?> type, SymbolTable symtab)
-			throws ParseError {
-		// swapPrintStream();
-		// AttrSession.logPrintln(VerboseControl.logTrace,"Jex:\n->interpret_");
-		// AttrSession.logPrintln(VerboseControl.logJexParser,
-		// "Jex:\n->interpret_");
-		synchronized (JexParser.jjtree) {
-		if (JexParser.jjtree.rootNode() != null)
-			JexParser.jjtree.rootNode().dump("");
-		// swapPrintStream();
+    public Object interpret_(String text, Class<?> type, SymbolTable symtab)
+            throws ParseError {
+        // swapPrintStream();
+        // AttrSession.logPrintln(VerboseControl.logTrace,"Jex:\n->interpret_");
+        // AttrSession.logPrintln(VerboseControl.logJexParser,
+        // "Jex:\n->interpret_");
+        synchronized (JexParser.jjtree) {
+            if (JexParser.jjtree.rootNode() != null) {
+                JexParser.jjtree.rootNode().dump("");
+            }
+            // swapPrintStream();
 
-		check_(text, type, symtab);
+            check_(text, type, symtab);
 
-		try {
+            try {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Evaluating ...");
-			JexParser.jjtree.rootNode().interpret();
-			Object result = JexParser.jjtree.rootNode().getRootResult();
+                JexParser.jjtree.rootNode().interpret();
+                Object result = JexParser.jjtree.rootNode().getRootResult();
 //			String resultString = result == null ? "null" : result.toString();			
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Result = "
 //					+ resultString);
-			// swapPrintStream();
-			JexParser.jjtree.rootNode().dump("");
-			
+                // swapPrintStream();
+                JexParser.jjtree.rootNode().dump("");
+
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Result = "
 //					+ resultString);
-			// swapPrintStream();
-			/* If here, success */
-			return result;
-		} catch (ASTIdNotDeclaredException ex1) {
+                // swapPrintStream();
+                /* If here, success */
+                return result;
+            } catch (ASTIdNotDeclaredException ex1) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Variable \""
 //					+ ex1.getMessage() + "\" is not declared");
-			throw ex1;
-		} catch (ASTMissingValueException ex2) {
+                throw ex1;
+            } catch (ASTMissingValueException ex2) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Missing value for variable \"" + ex2.getMessage() + "\".");
-			
-			/*
+
+                /*
 			 * ContextView cv = (ContextView) symtab; VarMember vm =
 			 * ((VarTuple)cv.getVariables()).getVarMemberAt("x");
 			 * System.out.println(vm.getExprAsText());
@@ -618,56 +625,61 @@ public class Jex implements ActionListener {
 			 * parser.jjtree.rootNode().rewrite();
 			 * System.out.println(parser.jjtree.rootNode().getClass());
 			 * getAST().dump("ast: "); swapPrintStream(); return null; }else
-			 */
-			throw ex2;
-		} catch (ASTMemberException ex3) {
+                 */
+                throw ex2;
+            } catch (ASTMemberException ex3) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"ASTMemberException " + ex3.getMessage());
-			throw ex3;
-		} catch (Exception ex) {
+                throw ex3;
+            } catch (Exception ex) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Exception:\n"
 //					+ ex.getMessage());
-			throw new RuntimeException(ex.getMessage());
-		} finally {
-			// swapPrintStream();
+                throw new RuntimeException(ex.getMessage());
+            } finally {
+                // swapPrintStream();
 //			AttrSession.logPrintln(VerboseControl.logTrace,
 //					"Jex:\n<-interpret_");
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Jex:\n<-interpret_");
-			// swapPrintStream();
-		}
-		}
-	}
+                // swapPrintStream();
+            }
+        }
+    }
 
-	/** Rewrites all variables */
-	public void rewrite(Node ast, Class<?> type, SymbolTable symtab)
-			throws AttrHandlerException {
-		// redirectToString();
-		try {
-			check(ast, type, symtab);
-		} catch (AttrHandlerException ahe) {
+    /**
+     * Rewrites all variables
+     */
+    public void rewrite(Node ast, Class<?> type, SymbolTable symtab)
+            throws AttrHandlerException {
+        // redirectToString();
+        try {
+            check(ast, type, symtab);
+        } catch (AttrHandlerException ahe) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Type-checking causes an error. Rewriting failed. "
 //							+ ahe.getMessage());
-			// restoreOutputStream();
-			throw ahe;
-		} finally {
-			// restoreOutputStream();
-		}
-		ast.rewrite();
+            // restoreOutputStream();
+            throw ahe;
+        } finally {
+            // restoreOutputStream();
+        }
+        ast.rewrite();
 
-		if (ast.getError().length() != 0)
-			throw new AttrHandlerException(ast.getError());
-	}
+        if (ast.getError().length() != 0) {
+            throw new AttrHandlerException(ast.getError());
+        }
+    }
 
-	/** returns root node of the abstract syntax tree */
-	public Node getAST() {
-		return JexParser.jjtree.rootNode();
-	}
+    /**
+     * returns root node of the abstract syntax tree
+     */
+    public Node getAST() {
+        return JexParser.jjtree.rootNode();
+    }
 
-	public Object getVariableExpression() {
-		return this.variableExpression;
-	}
+    public Object getVariableExpression() {
+        return this.variableExpression;
+    }
 
 }
 /*

@@ -1,52 +1,53 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.util;
 
 import java.util.EventObject;
 
 /**
  * Listener for dragging of table rows.
- * 
+ *
  * @version $Id: RowDragEvent.java,v 1.3 2010/09/23 08:15:16 olga Exp $
  * @author $Author: olga $
  */
 public class RowDragEvent extends EventObject {
 
-	static final long serialVersionUID = 5394805885112306429L;
+    static final long serialVersionUID = 5394805885112306429L;
 
-	public static final int STARTED = 0;
+    public static final int STARTED = 0;
 
-	public static final int STOPPED = 0;
+    public static final int STOPPED = 0;
 
-	public static final int MOVED = 0;
+    public static final int MOVED = 0;
 
-	int src, tar, eventID;
+    int src, tar, eventID;
 
-	public RowDragEvent(TableRowDragger dr, int id, int s, int t) {
-		super(dr);
-		this.src = s;
-		this.tar = t;
-		this.eventID = id;
-	}
+    public RowDragEvent(TableRowDragger dr, int id, int s, int t) {
+        super(dr);
+        this.src = s;
+        this.tar = t;
+        this.eventID = id;
+    }
 
-	public int getID() {
-		return this.eventID;
-	}
+    public int getID() {
+        return this.eventID;
+    }
 
-	public int getSourceRow() {
-		return this.src;
-	}
+    public int getSourceRow() {
+        return this.src;
+    }
 
-	public int getTargetRow() {
-		return this.tar;
-	}
+    public int getTargetRow() {
+        return this.tar;
+    }
 }
 
 /*

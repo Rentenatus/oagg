@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.cpa;
 
 import java.awt.Dimension;
@@ -22,113 +23,108 @@ import agg.gui.parser.event.ParserGUIListener;
 import agg.xt_basis.GraGra;
 
 /**
- * This class provides a tree that displays all rules from a selected graph
- * grammar.
- * 
+ * This class provides a tree that displays all rules from a selected graph grammar.
+ *
  * @version $Id: RuleTree.java,v 1.2 2010/09/23 08:18:50 olga Exp $
  * @author $Author: olga $
  */
 public class RuleTree implements TreeSelectionListener {
-	JTree treeView;
 
-	Vector<ParserGUIListener> listeners;
+    JTree treeView;
 
-	boolean showAtomics, withNACs;
+    Vector<ParserGUIListener> listeners;
 
-	/**
-	 * Creates a new tree with the selected graph grammar. The graph grammar
-	 * provides the set of rules which are displayed.
-	 * 
-	 * @param grammar
-	 *            The selected grammar.
-	 */
-	public RuleTree(GraGra grammar) {
-		this(grammar, false, true);
-	}
+    boolean showAtomics, withNACs;
 
-	/**
-	 * Creates a new tree with the selected graph grammar. The graph grammar
-	 * provides the set of rules which are displayed.
-	 * 
-	 * @param grammar
-	 *            The selected grammar.
-	 */
-	public RuleTree(GraGra grammar, boolean atomics, boolean nacs) {
-		this.treeView = new JTree(new RuleModel(grammar, atomics, nacs));
-		this.treeView.addTreeSelectionListener(this);
-		this.treeView.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		this.treeView.setEditable(false);
-		this.treeView.setShowsRootHandles(false);
-		this.treeView.setMinimumSize(new Dimension(100, 100));
-		this.treeView.setCellRenderer(new RuleTreeCellRenderer());
-		this.listeners = new Vector<ParserGUIListener>();
-		this.showAtomics = atomics;
-		this.withNACs = nacs;
-	}
+    /**
+     * Creates a new tree with the selected graph grammar. The graph grammar provides the set of rules which are
+     * displayed.
+     *
+     * @param grammar The selected grammar.
+     */
+    public RuleTree(GraGra grammar) {
+        this(grammar, false, true);
+    }
 
-	/**
-	 * Sets a grammar for the tree.
-	 * 
-	 * @param gragra
-	 *            The new grammar.
-	 */
-	public void setGrammar(GraGra gragra) {
-		this.treeView.setModel(new RuleModel(gragra, this.showAtomics, this.withNACs));
-	}
+    /**
+     * Creates a new tree with the selected graph grammar. The graph grammar provides the set of rules which are
+     * displayed.
+     *
+     * @param grammar The selected grammar.
+     */
+    public RuleTree(GraGra grammar, boolean atomics, boolean nacs) {
+        this.treeView = new JTree(new RuleModel(grammar, atomics, nacs));
+        this.treeView.addTreeSelectionListener(this);
+        this.treeView.getSelectionModel().setSelectionMode(
+                TreeSelectionModel.SINGLE_TREE_SELECTION);
+        this.treeView.setEditable(false);
+        this.treeView.setShowsRootHandles(false);
+        this.treeView.setMinimumSize(new Dimension(100, 100));
+        this.treeView.setCellRenderer(new RuleTreeCellRenderer());
+        this.listeners = new Vector<ParserGUIListener>();
+        this.showAtomics = atomics;
+        this.withNACs = nacs;
+    }
 
-	/**
-	 * Returns the tree for the display in a frame or panel.
-	 * 
-	 * @return The returned graph is a JTree.
-	 */
-	public JTree getTree() {
-		return this.treeView;
-	}
+    /**
+     * Sets a grammar for the tree.
+     *
+     * @param gragra The new grammar.
+     */
+    public void setGrammar(GraGra gragra) {
+        this.treeView.setModel(new RuleModel(gragra, this.showAtomics, this.withNACs));
+    }
 
-	/**
-	 * Register here a new listener to receive events.
-	 * 
-	 * @param listener
-	 *            The listener.
-	 */
-	public void addParserGUIListener(ParserGUIListener listener) {
-		this.listeners.addElement(listener);
-	}
+    /**
+     * Returns the tree for the display in a frame or panel.
+     *
+     * @return The returned graph is a JTree.
+     */
+    public JTree getTree() {
+        return this.treeView;
+    }
 
-	/**
-	 * Remove a listener here and stop getting messages.
-	 * 
-	 * @param listener
-	 *            The listener.
-	 */
-	public void removeParserGUIListener(ParserGUIListener listener) {
-		this.listeners.removeElement(listener);
-	}
+    /**
+     * Register here a new listener to receive events.
+     *
+     * @param listener The listener.
+     */
+    public void addParserGUIListener(ParserGUIListener listener) {
+        this.listeners.addElement(listener);
+    }
 
-	private void fireParserGUIEvent(Object data) {
-		ParserGUIEvent event = new ParserGUIEvent(this, data);
-		for (int i = 0; i < this.listeners.size(); i++) {
-			ParserGUIListener l = this.listeners.elementAt(i);
-			l.occured(event);
-		}
-	}
+    /**
+     * Remove a listener here and stop getting messages.
+     *
+     * @param listener The listener.
+     */
+    public void removeParserGUIListener(ParserGUIListener listener) {
+        this.listeners.removeElement(listener);
+    }
 
-	// Implementierung des TreeSelectionListener
-	/**
-	 * If a value of a tree changes this method has to handle this change.
-	 * 
-	 * @param e
-	 *            The event from the changing object.
-	 */
-	public void valueChanged(TreeSelectionEvent e) {
-		RuleModel.TreeData node = (RuleModel.TreeData) getTree()
-				.getLastSelectedPathComponent();
+    private void fireParserGUIEvent(Object data) {
+        ParserGUIEvent event = new ParserGUIEvent(this, data);
+        for (int i = 0; i < this.listeners.size(); i++) {
+            ParserGUIListener l = this.listeners.elementAt(i);
+            l.occured(event);
+        }
+    }
 
-		if (node == null)
-			return;
-		fireParserGUIEvent(node);
-	}
+    // Implementierung des TreeSelectionListener
+    /**
+     * If a value of a tree changes this method has to handle this change.
+     *
+     * @param e The event from the changing object.
+     */
+    public void valueChanged(TreeSelectionEvent e) {
+        RuleModel.TreeData node = (RuleModel.TreeData) getTree()
+                .getLastSelectedPathComponent();
+
+        if (node == null) {
+            return;
+        }
+        fireParserGUIEvent(node);
+    }
 }
 /*
  * $Log: RuleTree.java,v $

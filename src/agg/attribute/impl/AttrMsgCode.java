@@ -1,49 +1,50 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 /**
  * This interface sets some constants for status codes.
- * 
+ *
  * @version $Id: AttrMsgCode.java,v 1.2 2007/09/10 13:05:18 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrMsgCode {
 
-	static public final int OK = 0;
+    static public final int OK = 0;
 
-	static public final int NO_SUCH_TYPE = 1;
+    static public final int NO_SUCH_TYPE = 1;
 
-	static public final int NAME_DUPLICATION = 2;
+    static public final int NAME_DUPLICATION = 2;
 
-	static public final int BAD_EXPR_TYPE = 3;
+    static public final int BAD_EXPR_TYPE = 3;
 
-	static public final int EXPR_MUST_BE_CONST = 4;
+    static public final int EXPR_MUST_BE_CONST = 4;
 
-	static public final int EXPR_MUST_BE_CONST_OR_VAR = 5;
+    static public final int EXPR_MUST_BE_CONST_OR_VAR = 5;
 
-	static public final int VAR_NOT_DECLARED = 6;
+    static public final int VAR_NOT_DECLARED = 6;
 
-	static public final int EXPR_PARSE_ERR = 7;
+    static public final int EXPR_PARSE_ERR = 7;
 
-	static public final int EXPR_EVAL_ERR = 8;
+    static public final int EXPR_EVAL_ERR = 8;
 
-	static public final int ATTR_DONT_MATCH = 9;
+    static public final int ATTR_DONT_MATCH = 9;
 
-	static public final int RULE_SOURCES_DIFFER = 10;
+    static public final int RULE_SOURCES_DIFFER = 10;
 
-	static public final int MATCH_TARGETS_DIFFER = 11;
+    static public final int MATCH_TARGETS_DIFFER = 11;
 
-	static public final int NO_SUCH_NAME = 12;
+    static public final int NO_SUCH_NAME = 12;
 
-	static public final int EXPR_REQUIRED = 13;
+    static public final int EXPR_REQUIRED = 13;
 }
 
 /*

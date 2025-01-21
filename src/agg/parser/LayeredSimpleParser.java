@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.EmptyStackException;
@@ -26,102 +27,94 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
 
-
 // ---------------------------------------------------------------------------+
 /**
- * This class provides a parser which works without critical pair analysis. So a
- * simple backtracking algorithm is implemented. The only optimization can made
- * by the layer function.
- * 
+ * This class provides a parser which works without critical pair analysis. So a simple backtracking algorithm is
+ * implemented. The only optimization can made by the layer function.
+ *
  * @see ParserFactory#createParser createParser(...)
  * @author $Author: olga $ Parser Group
  * @version $Id: LayeredSimpleParser.java,v 1.14 2010/08/18 09:26:52 olga Exp $
  */
 public class LayeredSimpleParser extends SimpleParser {
 
-	/**
-	 * The layer function for the parser.
-	 */
-	protected RuleLayer layer;
+    /**
+     * The layer function for the parser.
+     */
+    protected RuleLayer layer;
 
-	/**
-	 * Creates a new parser.
-	 * 
-	 * @param grammar
-	 *            The graph grammar.
-	 * @param hostGraph
-	 *            The host graph.
-	 * @param stopGraph
-	 *            The stop graph.
-	 * @param layer
-	 *            The layer function.
-	 * @deprecated
-	 */
-	public LayeredSimpleParser(GraGra grammar, Graph hostGraph,
-			Graph stopGraph, LayerFunction layer) {
-		super(grammar, hostGraph, stopGraph);
-		// this.layer = layer;
-	}
+    /**
+     * Creates a new parser.
+     *
+     * @param grammar The graph grammar.
+     * @param hostGraph The host graph.
+     * @param stopGraph The stop graph.
+     * @param layer The layer function.
+     * @deprecated
+     */
+    public LayeredSimpleParser(GraGra grammar, Graph hostGraph,
+            Graph stopGraph, LayerFunction layer) {
+        super(grammar, hostGraph, stopGraph);
+        // this.layer = layer;
+    }
 
-	/**
-	 * Creates a new parser.
-	 * 
-	 * @param grammar
-	 *            The graph grammar.
-	 * @param hostGraph
-	 *            The host graph.
-	 * @param stopGraph
-	 *            The stop graph.
-	 */
-	public LayeredSimpleParser(GraGra grammar, Graph hostGraph,
-			Graph stopGraph, RuleLayer layer) {
-		super(grammar, hostGraph, stopGraph);
-		this.layer = layer;
-	}
+    /**
+     * Creates a new parser.
+     *
+     * @param grammar The graph grammar.
+     * @param hostGraph The host graph.
+     * @param stopGraph The stop graph.
+     */
+    public LayeredSimpleParser(GraGra grammar, Graph hostGraph,
+            Graph stopGraph, RuleLayer layer) {
+        super(grammar, hostGraph, stopGraph);
+        this.layer = layer;
+    }
 
-	// -----------------------------------------------------------------------+
-	/**
-	 * Starts the parser.
-	 * 
-	 * @return true if the graph can be parsed.
-	 */
-	@SuppressWarnings("rawtypes")
-	public boolean parse() {
+    // -----------------------------------------------------------------------+
+    /**
+     * Starts the parser.
+     *
+     * @return true if the graph can be parsed.
+     */
+    @SuppressWarnings("rawtypes")
+    public boolean parse() {
 //		System.out.println("### Starting layered simple parser ...");
-		fireParserEvent(new ParserMessageEvent(this,
-		"Starting layered simple parser ..."));
-		
-		Stack<TripleData> stack = new Stack<TripleData>();
-		this.correct = true;
-		
-		Hashtable<Integer, HashSet<Rule>>  invertedRuleLayer = this.layer.invertLayer();		
-		OrderedSet<Integer> ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
-		for (Enumeration<Integer> en = invertedRuleLayer.keys(); en.hasMoreElements();)
-			ruleLayer.add(en.nextElement());
-		
-		Integer currentLayer = this.layer.getStartLayer();
-		int i=0;
+        fireParserEvent(new ParserMessageEvent(this,
+                "Starting layered simple parser ..."));
 
-		/*
+        Stack<TripleData> stack = new Stack<TripleData>();
+        this.correct = true;
+
+        Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer();
+        OrderedSet<Integer> ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
+        for (Enumeration<Integer> en = invertedRuleLayer.keys(); en.hasMoreElements();) {
+            ruleLayer.add(en.nextElement());
+        }
+
+        Integer currentLayer = this.layer.getStartLayer();
+        int i = 0;
+
+        /*
 		 * haelt alle Matche, die kritisch sind, damit nicht an einer Stelle
 		 * immer wieder angesetzt wird
-		 */
-		RuleInstances eri = new RuleInstances();
-		boolean ruleApplied = false;
-		while (!getHostGraph().isIsomorphicTo(this.stopGraph) && this.correct
-				&& (currentLayer != null) && !this.stop) {
-			ruleApplied = false;
-			fireParserEvent(new ParserMessageEvent(this, "Searching for match"));
-			HashSet rulesForLayer = invertedRuleLayer.get(currentLayer);
-			Match m = findMatch(getHostGraph(), rulesForLayer.iterator(), eri);
+         */
+        RuleInstances eri = new RuleInstances();
+        boolean ruleApplied = false;
+        while (!getHostGraph().isIsomorphicTo(this.stopGraph) && this.correct
+                && (currentLayer != null) && !this.stop) {
+            ruleApplied = false;
+            fireParserEvent(new ParserMessageEvent(this, "Searching for match"));
+            HashSet rulesForLayer = invertedRuleLayer.get(currentLayer);
+            Match m = findMatch(getHostGraph(), rulesForLayer.iterator(), eri);
 
-			if (m != null) {
-				/* auf Stack pushen */
-				OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
-				if (copyMorph != null) {
-					fireParserEvent(new ParserMessageEvent(copyMorph, "IsoCopy"));
-					eri.add(m);
-					/*
+            if (m != null) {
+                /* auf Stack pushen */
+                OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
+                if (copyMorph != null) {
+                    fireParserEvent(new ParserMessageEvent(copyMorph, "IsoCopy"));
+                    eri.add(m);
+                    /*
 					 * ERI muss nicht kopiert werden, da nur an Entscheidungsstellen
 					 * der Match/die Matches gemerkt werden mssen, die uns
 					 * moeglicherweise auf einen Holzweg fuehren. Der Match in ERI
@@ -129,80 +122,80 @@ public class LayeredSimpleParser extends SimpleParser {
 					 * l&ouml;schen) nicht mehr verfgbar. Dadurch kann ein neues ERI
 					 * erzeugt werden. Auf dem Stack liegen dann nur die
 					 * Ableitungen, die uns in eine Sackgasse gefhrt haben.
-					 */
-					TripleData tmpTriple = new TripleData(getHostGraph(), eri, currentLayer);
-					stack.push(tmpTriple);
-					eri = new RuleInstances();
-					/*
+                     */
+                    TripleData tmpTriple = new TripleData(getHostGraph(), eri, currentLayer);
+                    stack.push(tmpTriple);
+                    eri = new RuleInstances();
+                    /*
 					 * Die Regel muss auf den kopierten Graphen mit DEMSELBEN
 					 * kopierten Match angewendet werden.
-					 */
-					setHostGraph(copyMorph.getImage());
-					OrdinaryMorphism tmpMorph = m.compose(copyMorph);
-					Match n = tmpMorph.makeMatch(m.getRule());
-					n.setCompletionStrategy((MorphCompletionStrategy) this.grammar
-							.getMorphismCompletionStrategy().clone(), true);
-	
-					boolean found = true;
-					while (!this.stop && !n.isValid() && found) {
-						if (!n.nextCompletion())
-							found = false;
-					}
-	
-					if (found) {
-						if (applyRule(n)) {
-							ruleApplied = true;
-							try {
-								Thread.sleep(this.delay);
-							} catch (InterruptedException ex1) {
-							}
-						}
-					}
-				}
-			}
-			if (m == null || !ruleApplied) {
-				i++;
-				boolean nextLayerExists = true;
-				if (i < ruleLayer.size()) {
-					currentLayer = ruleLayer.get(i);
-				}
-				else {
-					nextLayerExists = false;
-				}
-				
-				/* backtracking*/
-				if (!nextLayerExists) {
-					try {
-						TripleData tmpTriple = stack.pop();
-						/* backtrack */
-						setHostGraph(tmpTriple.getHostGraph());
-						eri = tmpTriple.getRuleInstance();
-						currentLayer = tmpTriple.getLayer();
-					} catch (EmptyStackException ioe) {
-						/* Stack ist leer */
-						fireParserEvent(new ParserErrorEvent(this,
-								"ERROR: This graph is not part of the language"));
-						this.correct = false;
-					}
-				}
-			}
-		}
-		while (!stack.empty()) {
-			try {
-				fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
-				TripleData tmpTriple = stack.pop();
-				Graph g = tmpTriple.getHostGraph();
-				BaseFactory.theFactory().destroyGraph(g);
-			} catch (EmptyStackException ioe) {
-			}
-		}
-		fireParserEvent(new ParserMessageEvent(this,
-				"Stopping parser. Result is " + this.correct + "."));
-		System.out
-				.println("### LayeredSimpleParser ... Stopping parser. Result is "
-						+ this.correct + ".");
-		return this.correct;
-	}
+                     */
+                    setHostGraph(copyMorph.getImage());
+                    OrdinaryMorphism tmpMorph = m.compose(copyMorph);
+                    Match n = tmpMorph.makeMatch(m.getRule());
+                    n.setCompletionStrategy((MorphCompletionStrategy) this.grammar
+                            .getMorphismCompletionStrategy().clone(), true);
+
+                    boolean found = true;
+                    while (!this.stop && !n.isValid() && found) {
+                        if (!n.nextCompletion()) {
+                            found = false;
+                        }
+                    }
+
+                    if (found) {
+                        if (applyRule(n)) {
+                            ruleApplied = true;
+                            try {
+                                Thread.sleep(this.delay);
+                            } catch (InterruptedException ex1) {
+                            }
+                        }
+                    }
+                }
+            }
+            if (m == null || !ruleApplied) {
+                i++;
+                boolean nextLayerExists = true;
+                if (i < ruleLayer.size()) {
+                    currentLayer = ruleLayer.get(i);
+                } else {
+                    nextLayerExists = false;
+                }
+
+                /* backtracking*/
+                if (!nextLayerExists) {
+                    try {
+                        TripleData tmpTriple = stack.pop();
+                        /* backtrack */
+                        setHostGraph(tmpTriple.getHostGraph());
+                        eri = tmpTriple.getRuleInstance();
+                        currentLayer = tmpTriple.getLayer();
+                    } catch (EmptyStackException ioe) {
+                        /* Stack ist leer */
+                        fireParserEvent(new ParserErrorEvent(this,
+                                "ERROR: This graph is not part of the language"));
+                        this.correct = false;
+                    }
+                }
+            }
+        }
+        while (!stack.empty()) {
+            try {
+                fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
+                TripleData tmpTriple = stack.pop();
+                Graph g = tmpTriple.getHostGraph();
+                BaseFactory.theFactory().destroyGraph(g);
+            } catch (EmptyStackException ioe) {
+            }
+        }
+        fireParserEvent(new ParserMessageEvent(this,
+                "Stopping parser. Result is " + this.correct + "."));
+        System.out
+                .println("### LayeredSimpleParser ... Stopping parser. Result is "
+                        + this.correct + ".");
+        return this.correct;
+    }
 
 }
 

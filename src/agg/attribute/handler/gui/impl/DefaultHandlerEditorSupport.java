@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.gui.impl;
 
 import java.awt.Component;
@@ -19,73 +20,71 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
- * @version $Id: DefaultHandlerEditorSupport.java,v 1.1 2005/08/25 11:56:58
- *          enrico Exp $
+ * @version $Id: DefaultHandlerEditorSupport.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
  * @author $Author: olga $
  */
 public abstract class DefaultHandlerEditorSupport extends AbstractHandlerEditor
-		implements CellEditorListener {
+        implements CellEditorListener {
 
-	protected transient DefaultCellEditor cellEditor;
+    protected transient DefaultCellEditor cellEditor;
 
-	protected transient DefaultTableCellRenderer cellRenderer;
+    protected transient DefaultTableCellRenderer cellRenderer;
 
-	protected transient JTextField editorField;
+    protected transient JTextField editorField;
 
-	protected Object editedObject = null;
+    protected Object editedObject = null;
 
-	public DefaultHandlerEditorSupport() {
-		super();
-		JTextField editorF = new JTextField();
-		this.cellEditor = new DefaultCellEditor(editorF);
-		this.cellEditor.addCellEditorListener(this);
-		this.cellRenderer = new DefaultTableCellRenderer();
-	}
+    public DefaultHandlerEditorSupport() {
+        super();
+        JTextField editorF = new JTextField();
+        this.cellEditor = new DefaultCellEditor(editorF);
+        this.cellEditor.addCellEditorListener(this);
+        this.cellRenderer = new DefaultTableCellRenderer();
+    }
 
-	/** This method is for overriding with additional behaviour. */
-	protected void updateEditedObject(Object newObject) {
-		this.editedObject = newObject;
-	}
+    /**
+     * This method is for overriding with additional behaviour.
+     */
+    protected void updateEditedObject(Object newObject) {
+        this.editedObject = newObject;
+    }
 
-	public void editingStopped(ChangeEvent e) {
-		updateEditedObject(this.cellEditor.getCellEditorValue());
-		fireEditingStopped();
-	}
+    public void editingStopped(ChangeEvent e) {
+        updateEditedObject(this.cellEditor.getCellEditorValue());
+        fireEditingStopped();
+    }
 
-	public void editingCanceled(ChangeEvent e) {
-		fireEditingCancelled();
-	}
+    public void editingCanceled(ChangeEvent e) {
+        fireEditingCancelled();
+    }
 
-	/**
-	 * Returns a graphical component for displaying the specified type. The
-	 * 'availableSpace' limit should be honoured, since this is a service for
-	 * displaying the type in a table cell. However, the renderer can contain
-	 * tools (e.g. buttons) for invoking its larger custom renderer. Either
-	 * 'handler or 'typeToRender' cannot be null.
-	 */
-	public Component getRendererComponent(Object obj, Dimension availableSpace) {
-		return this.cellRenderer.getTableCellRendererComponent(null, // JTable table,
-				obj.toString(), // Object value,
-				true, // boolean isSelected,
-				true, // boolean hasFocus,
-				0, // int row,
-				0); // int column)
-	}
+    /**
+     * Returns a graphical component for displaying the specified type. The 'availableSpace' limit should be honoured,
+     * since this is a service for displaying the type in a table cell. However, the renderer can contain tools (e.g.
+     * buttons) for invoking its larger custom renderer. Either 'handler or 'typeToRender' cannot be null.
+     */
+    public Component getRendererComponent(Object obj, Dimension availableSpace) {
+        return this.cellRenderer.getTableCellRendererComponent(null, // JTable table,
+                obj.toString(), // Object value,
+                true, // boolean isSelected,
+                true, // boolean hasFocus,
+                0, // int row,
+                0); // int column)
+    }
 
-	/**
-	 * Returns a graphical component for editing the specified type. The
-	 * 'availableSpace' is a recommendation when the editor wishes to be
-	 * operatable in a compact table cell and needs not be taken into account.
-	 * Either 'handler or 'typeToRender' cannot be null.
-	 */
-	public Component getEditorComponent(Object obj, Dimension availableSpace) {
-		this.editedObject = obj;
-		return this.cellEditor.getTableCellEditorComponent(null, // JTable table,
-				obj.toString(), // Object value,
-				true, // boolean isSelected,
-				0, // int row,
-				0); // int column)
-	}
+    /**
+     * Returns a graphical component for editing the specified type. The 'availableSpace' is a recommendation when the
+     * editor wishes to be operatable in a compact table cell and needs not be taken into account. Either 'handler or
+     * 'typeToRender' cannot be null.
+     */
+    public Component getEditorComponent(Object obj, Dimension availableSpace) {
+        this.editedObject = obj;
+        return this.cellEditor.getTableCellEditorComponent(null, // JTable table,
+                obj.toString(), // Object value,
+                true, // boolean isSelected,
+                0, // int row,
+                0); // int column)
+    }
 }
 /*
  * $Log: DefaultHandlerEditorSupport.java,v $

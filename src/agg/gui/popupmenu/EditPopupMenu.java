@@ -1,12 +1,12 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- *******************************************************************************/
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * </copyright> *****************************************************************************
+ */
 package agg.gui.popupmenu;
 
 import java.util.List;
@@ -45,1086 +45,1131 @@ import agg.layout.evolutionary.EvolutionaryGraphLayout;
 /**
  * @author $Author: olga $
  * @version $Id: EditPopupMenu.java,v 1.26 2010/10/16 22:44:43 olga Exp $
- * 
+ *
  */
 @SuppressWarnings("serial")
 public class EditPopupMenu extends JPopupMenu {
-	
-	public EditPopupMenu() {
-		super("Operations");
+
+    public EditPopupMenu() {
+        super("Operations");
 //		setLabel("Operations");
-		setBorderPainted(true);
+        setBorderPainted(true);
 
-		this.deleteMenu = createDeleteMenu();
-		this.useDeleteMenu = false;
+        this.deleteMenu = createDeleteMenu();
+        this.useDeleteMenu = false;
 
-		this.mi = add(new JMenuItem("      Operations"));
+        this.mi = add(new JMenuItem("      Operations"));
 //		miOperations = this.mi;
-		// this.mi.setEnabled(false);
-		addSeparator();
-		
-		this.mi = add(new JMenuItem("Attributes ..."));
-		// this.mi.setMnemonic('A');
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
-				EditPopupMenu.this.mapping = false;
-				// gp.getCanvas().saveScrollBarValue();
+        // this.mi.setEnabled(false);
+        addSeparator();
 
-				if (EditPopupMenu.this.ruleEditor == null)
-					EditPopupMenu.this.editor.setAttrEditorOnTopForGraphObject(EditPopupMenu.this.ego);
-				else
-					EditPopupMenu.this.editor.setAttrEditorOnBottomForGraphObject(EditPopupMenu.this.ego);
-				EditPopupMenu.this.ego.setWeakselected(true);
-			}
-		});
+        this.mi = add(new JMenuItem("Attributes ..."));
+        // this.mi.setMnemonic('A');
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
+                EditPopupMenu.this.mapping = false;
+                // gp.getCanvas().saveScrollBarValue();
 
-		this.miObjName = new JMenuItem("Object Name");
-		add(this.miObjName);
-		this.miObjName.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
-				EditPopupMenu.this.mapping = false;
-				setObjectName(EditPopupMenu.this.ego);
-			}
-		});
+                if (EditPopupMenu.this.ruleEditor == null) {
+                    EditPopupMenu.this.editor.setAttrEditorOnTopForGraphObject(EditPopupMenu.this.ego);
+                } else {
+                    EditPopupMenu.this.editor.setAttrEditorOnBottomForGraphObject(EditPopupMenu.this.ego);
+                }
+                EditPopupMenu.this.ego.setWeakselected(true);
+            }
+        });
 
-		
-		addSeparator();
+        this.miObjName = new JMenuItem("Object Name");
+        add(this.miObjName);
+        this.miObjName.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
+                EditPopupMenu.this.mapping = false;
+                setObjectName(EditPopupMenu.this.ego);
+            }
+        });
 
-		this.mi = add(new JMenuItem("Copy"));
-		// this.mi.setMnemonic('C');
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
-				EditPopupMenu.this.mapping = false;
-				EditPopupMenu.this.gp.setLastEditMode(EditPopupMenu.this.gp.getEditMode());
-				EditPopupMenu.this.gp.setLastEditCursor(EditPopupMenu.this.gp.getEditCursor());
-				EditPopupMenu.this.gp.getGraph().eraseSelected(EditPopupMenu.this.gp.getCanvas().getGraphics(), true);
-				EditPopupMenu.this.gp.getGraph().deselectAll();
-				EditPopupMenu.this.gp.getGraph().select(EditPopupMenu.this.xPos, EditPopupMenu.this.yPos);
-				EditPopupMenu.this.gp.getGraph().drawSelected(EditPopupMenu.this.gp.getCanvas().getGraphics());
-				// EditPopupMenu.this.gp.updateGraphics();
-				if (EditPopupMenu.this.ego.isNode()) {
-					EditPopupMenu.this.editor.copyProc();
+        addSeparator();
+
+        this.mi = add(new JMenuItem("Copy"));
+        // this.mi.setMnemonic('C');
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
+                EditPopupMenu.this.mapping = false;
+                EditPopupMenu.this.gp.setLastEditMode(EditPopupMenu.this.gp.getEditMode());
+                EditPopupMenu.this.gp.setLastEditCursor(EditPopupMenu.this.gp.getEditCursor());
+                EditPopupMenu.this.gp.getGraph().eraseSelected(EditPopupMenu.this.gp.getCanvas().getGraphics(), true);
+                EditPopupMenu.this.gp.getGraph().deselectAll();
+                EditPopupMenu.this.gp.getGraph().select(EditPopupMenu.this.xPos, EditPopupMenu.this.yPos);
+                EditPopupMenu.this.gp.getGraph().drawSelected(EditPopupMenu.this.gp.getCanvas().getGraphics());
+                // EditPopupMenu.this.gp.updateGraphics();
+                if (EditPopupMenu.this.ego.isNode()) {
+                    EditPopupMenu.this.editor.copyProc();
 //					EditPopupMenu.this.gp.setEditMode(EditorConstants.COPY);
 //					if (EditPopupMenu.this.editor != null)
 //						EditPopupMenu.this.editor
 //								.setMsg("To place a copy click on the background of the panel.");
-				} else {
+                } else {
 //					EditPopupMenu.this.editor.copyProc();
-					EditPopupMenu.this.gp.setEditMode(EditorConstants.COPY_ARC);
-					if (EditPopupMenu.this.editor != null)
-						EditPopupMenu.this.editor
-								.setMsg("To place a copy of an edge click on a source and a target node of the same panel.");
-				}
-				AGGAppl.getInstance().setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-			}
-		});
+                    EditPopupMenu.this.gp.setEditMode(EditorConstants.COPY_ARC);
+                    if (EditPopupMenu.this.editor != null) {
+                        EditPopupMenu.this.editor
+                                .setMsg("To place a copy of an edge click on a source and a target node of the same panel.");
+                    }
+                }
+                AGGAppl.getInstance().setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+            }
+        });
 
-		this.mi = add(new JMenuItem("Select"));
-		// this.mi.setMnemonic('S');
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditPopupMenu.this.gp == null 
-						|| EditPopupMenu.this.gp.getGraph() == null 
-						|| EditPopupMenu.this.ego == null)
-					return;
+        this.mi = add(new JMenuItem("Select"));
+        // this.mi.setMnemonic('S');
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditPopupMenu.this.gp == null
+                        || EditPopupMenu.this.gp.getGraph() == null
+                        || EditPopupMenu.this.ego == null) {
+                    return;
+                }
 
-				EditPopupMenu.this.mapping = false;
-				ego = EditPopupMenu.this.gp.select(EditPopupMenu.this.xPos, EditPopupMenu.this.yPos);
-				if (ego.isNode()) {
-					EditPopupMenu.this.gp.getGraph().drawNode(EditPopupMenu.this.gp.getCanvas().getGraphics(), (EdNode) ego);
-					EditPopupMenu.this.gp.getCanvas().setPickedPoint(EditPopupMenu.this.xPos, EditPopupMenu.this.yPos);
-				}
-				else
-					EditPopupMenu.this.gp.getGraph().drawArc(EditPopupMenu.this.gp.getCanvas().getGraphics(), (EdArc) ego);
-				
-				if (editor != null && editor.getEditMode() != EditorConstants.SELECT) {
-					editor.forwardModeCommand(EditorConstants.getModeOfID(EditorConstants.SELECT));
-					editor.setEditMode(EditorConstants.SELECT);
-					editor.resetSelectEditMode();
-				}
-				// gp.updateGraphics();
-			}
-		});
+                EditPopupMenu.this.mapping = false;
+                ego = EditPopupMenu.this.gp.select(EditPopupMenu.this.xPos, EditPopupMenu.this.yPos);
+                if (ego.isNode()) {
+                    EditPopupMenu.this.gp.getGraph().drawNode(EditPopupMenu.this.gp.getCanvas().getGraphics(), (EdNode) ego);
+                    EditPopupMenu.this.gp.getCanvas().setPickedPoint(EditPopupMenu.this.xPos, EditPopupMenu.this.yPos);
+                } else {
+                    EditPopupMenu.this.gp.getGraph().drawArc(EditPopupMenu.this.gp.getCanvas().getGraphics(), (EdArc) ego);
+                }
 
-		this.mi = add(new JMenuItem("Select All"));
-		// this.mi.setMnemonic('l');
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditPopupMenu.this.gp == null || EditPopupMenu.this.gp.getGraph() == null)
-					return;
-				EditPopupMenu.this.mapping = false;
-				EditPopupMenu.this.gp.selectAll();
-				if (editor != null && editor.getEditMode() != EditorConstants.SELECT) {
-					editor.resetSelectEditMode();
-				}
-			}
-		});
-		addSeparator();
+                if (editor != null && editor.getEditMode() != EditorConstants.SELECT) {
+                    editor.forwardModeCommand(EditorConstants.getModeOfID(EditorConstants.SELECT));
+                    editor.setEditMode(EditorConstants.SELECT);
+                    editor.resetSelectEditMode();
+                }
+                // gp.updateGraphics();
+            }
+        });
 
-		this.miDelete = createDeleteItem();
-		this.deleteMenu = createDeleteMenu();
-		add(this.miDelete);
-		if (this.useDeleteMenu)
-			add(this.deleteMenu);
-		addSeparator();
+        this.mi = add(new JMenuItem("Select All"));
+        // this.mi.setMnemonic('l');
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditPopupMenu.this.gp == null || EditPopupMenu.this.gp.getGraph() == null) {
+                    return;
+                }
+                EditPopupMenu.this.mapping = false;
+                EditPopupMenu.this.gp.selectAll();
+                if (editor != null && editor.getEditMode() != EditorConstants.SELECT) {
+                    editor.resetSelectEditMode();
+                }
+            }
+        });
+        addSeparator();
 
-		this.miStraighten = add(new JMenuItem("Straighten"));
-		// this.mi.setMnemonic('g');
-		this.miStraighten.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+        this.miDelete = createDeleteItem();
+        this.deleteMenu = createDeleteMenu();
+        add(this.miDelete);
+        if (this.useDeleteMenu) {
+            add(this.deleteMenu);
+        }
+        addSeparator();
 
-				EditPopupMenu.this.mapping = false;
+        this.miStraighten = add(new JMenuItem("Straighten"));
+        // this.mi.setMnemonic('g');
+        this.miStraighten.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
+
+                EditPopupMenu.this.mapping = false;
 
 //				EditPopupMenu.this.gp.getGraph().addMovedToUndo(ego);
-				EditPopupMenu.this.gp.getGraph().straightArc(EditPopupMenu.this.ego);
+                EditPopupMenu.this.gp.getGraph().straightArc(EditPopupMenu.this.ego);
 //				EditPopupMenu.this.gp.getGraph().undoManagerEndEdit();
 //				EditPopupMenu.this.gp.getCanvas().updateUndoButton();
 
-				EditPopupMenu.this.gp.updateGraphics();
-			}
-		});
+                EditPopupMenu.this.gp.updateGraphics();
+            }
+        });
 
-		this.miVisibility = add(new JMenuItem("Hide Objects of Type"));
-		this.miVisibility.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+        this.miVisibility = add(new JMenuItem("Hide Objects of Type"));
+        this.miVisibility.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
 
-				EditPopupMenu.this.mapping = false;
-				
-				if (((JMenuItem)e.getSource()).getText().indexOf("Hide") == 0) {
-					EditPopupMenu.this.gp.getGraph().setVisibilityOfGraphObjectsOfType(EditPopupMenu.this.ego, false);
-				} else if (((JMenuItem)e.getSource()).getText().indexOf("Show") == 0) {
-					EditPopupMenu.this.gp.getGraph().setVisibilityOfGraphObjectsOfType(EditPopupMenu.this.ego, true);
-				}
-				
-				EditPopupMenu.this.gp.updateGraphics();
-			}
-		});
-		
-		this.layout = new JMenu("Graph Layout");
-		// layout.setMnemonic('y');
-		add(this.layout);
-		this.miFrozen = (JCheckBoxMenuItem) this.layout.add(new JCheckBoxMenuItem(
-				"Static Position"));
-		this.miFrozen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+                EditPopupMenu.this.mapping = false;
 
-				if (EditPopupMenu.this.ego instanceof EdNode) {
-					if (EditPopupMenu.this.ego.getBasisObject().getContext().isTypeGraph()) {
-						if (EditPopupMenu.this.layouter != null 
-								&& EditPopupMenu.this.editor != null) {
-							EditPopupMenu.this.editor.getGraGra().createLayoutPattern(
-									"Freezing",
-									"node",
-									EditPopupMenu.this.ego.getBasisObject().getType(),
-									((JCheckBoxMenuItem) e.getSource())
-											.isSelected());
-						}
-					} else {
-						if (((JCheckBoxMenuItem) e.getSource()).isSelected())
-							((EdNode) EditPopupMenu.this.ego).getLNode().setFrozen(true);
-						else
-							((EdNode) EditPopupMenu.this.ego).getLNode().setFrozen(false);
-					}
-				}
-			}
-		});
+                if (((JMenuItem) e.getSource()).getText().indexOf("Hide") == 0) {
+                    EditPopupMenu.this.gp.getGraph().setVisibilityOfGraphObjectsOfType(EditPopupMenu.this.ego, false);
+                } else if (((JMenuItem) e.getSource()).getText().indexOf("Show") == 0) {
+                    EditPopupMenu.this.gp.getGraph().setVisibilityOfGraphObjectsOfType(EditPopupMenu.this.ego, true);
+                }
 
-		addSeparator();
+                EditPopupMenu.this.gp.updateGraphics();
+            }
+        });
 
-		this.addIdentic = new JMenu("Add Identic To");
-		add(this.addIdentic);
-		this.mi = this.addIdentic.add(new JMenuItem("Rule RHS"));
-		miAddIdenticToRule = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+        this.layout = new JMenu("Graph Layout");
+        // layout.setMnemonic('y');
+        add(this.layout);
+        this.miFrozen = (JCheckBoxMenuItem) this.layout.add(new JCheckBoxMenuItem(
+                "Static Position"));
+        this.miFrozen.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
 
-				if (EditPopupMenu.this.ruleEditor != null) {
-					if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
-						EdGraphObject img = null;
-						if (EditPopupMenu.this.ego.isNode()) {
-							img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(EditPopupMenu.this.ego);
-							if (img != null) {
-								EditPopupMenu.this.ruleEditor.getRule().updateRule();
-								EditPopupMenu.this.ruleEditor.updateGraphics();
-							}
-						} else {
-							Node src = (Node) EditPopupMenu.this.ruleEditor.getRule()
-									.getBasisRule().getImage(
-											((Arc) EditPopupMenu.this.ego.getBasisObject())
-													.getSource());
-							Node tar = (Node) EditPopupMenu.this.ruleEditor.getRule()
-									.getBasisRule().getImage(
-											((Arc) EditPopupMenu.this.ego.getBasisObject())
-													.getTarget());
-							Object[] options = { "Yes", "No" };
+                if (EditPopupMenu.this.ego instanceof EdNode) {
+                    if (EditPopupMenu.this.ego.getBasisObject().getContext().isTypeGraph()) {
+                        if (EditPopupMenu.this.layouter != null
+                                && EditPopupMenu.this.editor != null) {
+                            EditPopupMenu.this.editor.getGraGra().createLayoutPattern(
+                                    "Freezing",
+                                    "node",
+                                    EditPopupMenu.this.ego.getBasisObject().getType(),
+                                    ((JCheckBoxMenuItem) e.getSource())
+                                            .isSelected());
+                        }
+                    } else {
+                        if (((JCheckBoxMenuItem) e.getSource()).isSelected()) {
+                            ((EdNode) EditPopupMenu.this.ego).getLNode().setFrozen(true);
+                        } else {
+                            ((EdNode) EditPopupMenu.this.ego).getLNode().setFrozen(false);
+                        }
+                    }
+                }
+            }
+        });
 
-							if (src == null && tar != null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The source node is not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should it be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
-											((EdArc) EditPopupMenu.this.ego).getSource());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
-												EditPopupMenu.this.ego);
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateRule();
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else if (src != null && tar == null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The target node is not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should it be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
-											((EdArc) EditPopupMenu.this.ego).getTarget());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
-												EditPopupMenu.this.ego);
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateRule();
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else if (src == null && tar == null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The source and target nodes are not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should they be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
-											((EdArc) EditPopupMenu.this.ego).getSource());
-									if (((EdArc) EditPopupMenu.this.ego).getSource() != ((EdArc) EditPopupMenu.this.ego)
-											.getTarget()
-											&& img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
-												((EdArc) EditPopupMenu.this.ego).getTarget());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
-												EditPopupMenu.this.ego);
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateRule();
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else {
-								img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(EditPopupMenu.this.ego);
-								EditPopupMenu.this.ruleEditor.getRule().updateRule();
-								EditPopupMenu.this.ruleEditor.updateGraphics();
-							}
-						}
-					}
-				}
-			}
-		});
+        addSeparator();
 
-		this.mi = this.addIdentic.add(new JMenuItem("NAC"));
-		this.miAddIdenticToNAC = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+        this.addIdentic = new JMenu("Add Identic To");
+        add(this.addIdentic);
+        this.mi = this.addIdentic.add(new JMenuItem("Rule RHS"));
+        miAddIdenticToRule = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
 
-				if (EditPopupMenu.this.ruleEditor != null) {
-					if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
-						if (EditPopupMenu.this.ruleEditor.getNAC() == null) {
-							JOptionPane
-									.showMessageDialog(
-											null,
-											"Cannot create an identic object!"
-													+ System
-															.getProperty("line.separator")
-													+ "Please create and open an empty NAC graph first.",
-											"Identic Node/Edge",
-											JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-						EdGraphObject img = null;
-						if (EditPopupMenu.this.ego.isNode()) {
-							img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(EditPopupMenu.this.ego,
-									EditPopupMenu.this.ruleEditor.getNAC());
-							if (img != null) {
-								EditPopupMenu.this.ruleEditor.getRule().updateNAC(
-										EditPopupMenu.this.ruleEditor.getNAC());
-								EditPopupMenu.this.ruleEditor.updateGraphics();
-							}
-						} else {
-							Node src = (Node) EditPopupMenu.this.ruleEditor.getNAC().getMorphism()
-									.getImage(
-											((Arc) EditPopupMenu.this.ego.getBasisObject())
-													.getSource());
-							Node tar = (Node) EditPopupMenu.this.ruleEditor.getNAC().getMorphism()
-									.getImage(
-											((Arc) EditPopupMenu.this.ego.getBasisObject())
-													.getTarget());
-							Object[] options = { "Yes", "No" };
+                if (EditPopupMenu.this.ruleEditor != null) {
+                    if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
+                        EdGraphObject img = null;
+                        if (EditPopupMenu.this.ego.isNode()) {
+                            img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(EditPopupMenu.this.ego);
+                            if (img != null) {
+                                EditPopupMenu.this.ruleEditor.getRule().updateRule();
+                                EditPopupMenu.this.ruleEditor.updateGraphics();
+                            }
+                        } else {
+                            Node src = (Node) EditPopupMenu.this.ruleEditor.getRule()
+                                    .getBasisRule().getImage(
+                                            ((Arc) EditPopupMenu.this.ego.getBasisObject())
+                                                    .getSource());
+                            Node tar = (Node) EditPopupMenu.this.ruleEditor.getRule()
+                                    .getBasisRule().getImage(
+                                            ((Arc) EditPopupMenu.this.ego.getBasisObject())
+                                                    .getTarget());
+                            Object[] options = {"Yes", "No"};
 
-							if (src == null && tar != null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The source node is not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should it be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(
-											((EdArc) EditPopupMenu.this.ego).getSource(),
-											EditPopupMenu.this.ruleEditor.getNAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToNAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getNAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateNAC(
-												EditPopupMenu.this.ruleEditor.getNAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else if (src != null && tar == null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The target node is not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should it be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(
-											((EdArc) EditPopupMenu.this.ego).getTarget(),
-											EditPopupMenu.this.ruleEditor.getNAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToNAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getNAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateNAC(
-												EditPopupMenu.this.ruleEditor.getNAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else if (src == null && tar == null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The source and target nodes are not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should they be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(
-											((EdArc) EditPopupMenu.this.ego).getSource(),
-											EditPopupMenu.this.ruleEditor.getNAC());
-									if (((EdArc) EditPopupMenu.this.ego).getSource() != ((EdArc) EditPopupMenu.this.ego)
-											.getTarget()
-											&& img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToNAC(
-														((EdArc) EditPopupMenu.this.ego)
-																.getTarget(),
-																EditPopupMenu.this.ruleEditor.getNAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToNAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getNAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateNAC(
-												EditPopupMenu.this.ruleEditor.getNAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else {
-								img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(EditPopupMenu.this.ego,
-										EditPopupMenu.this.ruleEditor.getNAC());
-								if (img != null) {
-									EditPopupMenu.this.ruleEditor.getRule().updateNAC(
-											EditPopupMenu.this.ruleEditor.getNAC());
-									EditPopupMenu.this.ruleEditor.updateGraphics();
-								}
-							}
-						}
-					}
-				}
-			}
-		});
+                            if (src == null && tar != null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The source node is not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should it be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
+                                            ((EdArc) EditPopupMenu.this.ego).getSource());
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
+                                                EditPopupMenu.this.ego);
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateRule();
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else if (src != null && tar == null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The target node is not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should it be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
+                                            ((EdArc) EditPopupMenu.this.ego).getTarget());
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
+                                                EditPopupMenu.this.ego);
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateRule();
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else if (src == null && tar == null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The source and target nodes are not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should they be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
+                                            ((EdArc) EditPopupMenu.this.ego).getSource());
+                                    if (((EdArc) EditPopupMenu.this.ego).getSource() != ((EdArc) EditPopupMenu.this.ego)
+                                            .getTarget()
+                                            && img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
+                                                ((EdArc) EditPopupMenu.this.ego).getTarget());
+                                    }
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(
+                                                EditPopupMenu.this.ego);
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateRule();
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else {
+                                img = EditPopupMenu.this.ruleEditor.getRule().addIdentic(EditPopupMenu.this.ego);
+                                EditPopupMenu.this.ruleEditor.getRule().updateRule();
+                                EditPopupMenu.this.ruleEditor.updateGraphics();
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-		this.mi = this.addIdentic.add(new JMenuItem("PAC"));
-		this.miAddIdenticToPAC = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+        this.mi = this.addIdentic.add(new JMenuItem("NAC"));
+        this.miAddIdenticToNAC = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
 
-				if (EditPopupMenu.this.ruleEditor != null) {
-					if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
-						if (EditPopupMenu.this.ruleEditor.getPAC() == null) {
-							JOptionPane
-									.showMessageDialog(
-											null,
-											"Cannot create an identic object!"
-													+ System
-															.getProperty("line.separator")
-													+ "Please create and open an empty PAC graph first.",
-											"Identic Node/Edge",
-											JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-						EdGraphObject img = null;
-						if (EditPopupMenu.this.ego.isNode()) {
-							img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(EditPopupMenu.this.ego,
-									EditPopupMenu.this.ruleEditor.getPAC());
-							if (img != null) {
-								EditPopupMenu.this.ruleEditor.getRule().updatePAC(
-										EditPopupMenu.this.ruleEditor.getPAC());
-								EditPopupMenu.this.ruleEditor.updateGraphics();
-							}
-						} else {
-							Node src = (Node) EditPopupMenu.this.ruleEditor.getPAC().getMorphism()
-									.getImage(
-											((Arc) EditPopupMenu.this.ego.getBasisObject())
-													.getSource());
-							Node tar = (Node) EditPopupMenu.this.ruleEditor.getPAC().getMorphism()
-									.getImage(
-											((Arc) EditPopupMenu.this.ego.getBasisObject())
-													.getTarget());
-							Object[] options = { "Yes", "No" };
+                if (EditPopupMenu.this.ruleEditor != null) {
+                    if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
+                        if (EditPopupMenu.this.ruleEditor.getNAC() == null) {
+                            JOptionPane
+                                    .showMessageDialog(
+                                            null,
+                                            "Cannot create an identic object!"
+                                            + System
+                                                    .getProperty("line.separator")
+                                            + "Please create and open an empty NAC graph first.",
+                                            "Identic Node/Edge",
+                                            JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        EdGraphObject img = null;
+                        if (EditPopupMenu.this.ego.isNode()) {
+                            img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(EditPopupMenu.this.ego,
+                                    EditPopupMenu.this.ruleEditor.getNAC());
+                            if (img != null) {
+                                EditPopupMenu.this.ruleEditor.getRule().updateNAC(
+                                        EditPopupMenu.this.ruleEditor.getNAC());
+                                EditPopupMenu.this.ruleEditor.updateGraphics();
+                            }
+                        } else {
+                            Node src = (Node) EditPopupMenu.this.ruleEditor.getNAC().getMorphism()
+                                    .getImage(
+                                            ((Arc) EditPopupMenu.this.ego.getBasisObject())
+                                                    .getSource());
+                            Node tar = (Node) EditPopupMenu.this.ruleEditor.getNAC().getMorphism()
+                                    .getImage(
+                                            ((Arc) EditPopupMenu.this.ego.getBasisObject())
+                                                    .getTarget());
+                            Object[] options = {"Yes", "No"};
 
-							if (src == null && tar != null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The source node is not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should it be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(
-											((EdArc) EditPopupMenu.this.ego).getSource(),
-											EditPopupMenu.this.ruleEditor.getPAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToPAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getPAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updatePAC(
-												EditPopupMenu.this.ruleEditor.getPAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else if (src != null && tar == null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The target node is not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should it be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(
-											((EdArc) EditPopupMenu.this.ego).getTarget(),
-											EditPopupMenu.this.ruleEditor.getPAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToPAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getPAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updatePAC(
-												EditPopupMenu.this.ruleEditor.getPAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else if (src == null && tar == null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The source and target nodes are not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should they be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(
-											((EdArc) EditPopupMenu.this.ego).getSource(),
-											EditPopupMenu.this.ruleEditor.getPAC());
-									if (((EdArc) EditPopupMenu.this.ego).getSource() != ((EdArc) EditPopupMenu.this.ego)
-											.getTarget()
-											&& img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToPAC(
-														((EdArc) EditPopupMenu.this.ego)
-																.getTarget(),
-																EditPopupMenu.this.ruleEditor.getPAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToPAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getPAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updatePAC(
-												EditPopupMenu.this.ruleEditor.getPAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else {
-								img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(EditPopupMenu.this.ego,
-										EditPopupMenu.this.ruleEditor.getPAC());
-								if (img != null) {
-									EditPopupMenu.this.ruleEditor.getRule().updatePAC(
-											EditPopupMenu.this.ruleEditor.getPAC());
-									EditPopupMenu.this.ruleEditor.updateGraphics();
-								}
-							}
-						}
-					}
-				}
-			}
-		});
+                            if (src == null && tar != null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The source node is not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should it be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getSource(),
+                                            EditPopupMenu.this.ruleEditor.getNAC());
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToNAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getNAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateNAC(
+                                                EditPopupMenu.this.ruleEditor.getNAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else if (src != null && tar == null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The target node is not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should it be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getTarget(),
+                                            EditPopupMenu.this.ruleEditor.getNAC());
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToNAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getNAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateNAC(
+                                                EditPopupMenu.this.ruleEditor.getNAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else if (src == null && tar == null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The source and target nodes are not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should they be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getSource(),
+                                            EditPopupMenu.this.ruleEditor.getNAC());
+                                    if (((EdArc) EditPopupMenu.this.ego).getSource() != ((EdArc) EditPopupMenu.this.ego)
+                                            .getTarget()
+                                            && img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToNAC(
+                                                        ((EdArc) EditPopupMenu.this.ego)
+                                                                .getTarget(),
+                                                        EditPopupMenu.this.ruleEditor.getNAC());
+                                    }
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToNAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getNAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateNAC(
+                                                EditPopupMenu.this.ruleEditor.getNAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else {
+                                img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNAC(EditPopupMenu.this.ego,
+                                        EditPopupMenu.this.ruleEditor.getNAC());
+                                if (img != null) {
+                                    EditPopupMenu.this.ruleEditor.getRule().updateNAC(
+                                            EditPopupMenu.this.ruleEditor.getNAC());
+                                    EditPopupMenu.this.ruleEditor.updateGraphics();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-		this.mi = this.addIdentic.add(new JMenuItem("General AC"));
-		this.miAddIdenticToGAC = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+        this.mi = this.addIdentic.add(new JMenuItem("PAC"));
+        this.miAddIdenticToPAC = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
 
-				if (EditPopupMenu.this.ruleEditor != null) {
-					if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
-						if (EditPopupMenu.this.ruleEditor.getNestedAC() == null) {
-							JOptionPane
-									.showMessageDialog(
-											null,
-											"Cannot create an identic object!"
-													+ System
-															.getProperty("line.separator")
-													+ "Please create and open an empty General AC graph first.",
-											"Identic Node/Edge",
-											JOptionPane.WARNING_MESSAGE);
-							return;
-						}
-						EdGraphObject img = null;
-						if (EditPopupMenu.this.ego.isNode()) {
-							img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(EditPopupMenu.this.ego,
-									EditPopupMenu.this.ruleEditor.getNestedAC());
-							if (img != null) {
-								EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
-										EditPopupMenu.this.ruleEditor.getNestedAC());
-								EditPopupMenu.this.ruleEditor.updateGraphics();
-							}
-						} else {
-							Node src = (Node) EditPopupMenu.this.ruleEditor.getNestedAC().getMorphism()
-									.getImage(
-											((Arc) EditPopupMenu.this.ego.getBasisObject())
-													.getSource());
-							Node tar = (Node) EditPopupMenu.this.ruleEditor.getNestedAC().getMorphism()
-									.getImage(
-											((Arc) EditPopupMenu.this.ego.getBasisObject())
-													.getTarget());
-							Object[] options = { "Yes", "No" };
+                if (EditPopupMenu.this.ruleEditor != null) {
+                    if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
+                        if (EditPopupMenu.this.ruleEditor.getPAC() == null) {
+                            JOptionPane
+                                    .showMessageDialog(
+                                            null,
+                                            "Cannot create an identic object!"
+                                            + System
+                                                    .getProperty("line.separator")
+                                            + "Please create and open an empty PAC graph first.",
+                                            "Identic Node/Edge",
+                                            JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        EdGraphObject img = null;
+                        if (EditPopupMenu.this.ego.isNode()) {
+                            img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(EditPopupMenu.this.ego,
+                                    EditPopupMenu.this.ruleEditor.getPAC());
+                            if (img != null) {
+                                EditPopupMenu.this.ruleEditor.getRule().updatePAC(
+                                        EditPopupMenu.this.ruleEditor.getPAC());
+                                EditPopupMenu.this.ruleEditor.updateGraphics();
+                            }
+                        } else {
+                            Node src = (Node) EditPopupMenu.this.ruleEditor.getPAC().getMorphism()
+                                    .getImage(
+                                            ((Arc) EditPopupMenu.this.ego.getBasisObject())
+                                                    .getSource());
+                            Node tar = (Node) EditPopupMenu.this.ruleEditor.getPAC().getMorphism()
+                                    .getImage(
+                                            ((Arc) EditPopupMenu.this.ego.getBasisObject())
+                                                    .getTarget());
+                            Object[] options = {"Yes", "No"};
 
-							if (src == null && tar != null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The source node is not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should it be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(
-											((EdArc) EditPopupMenu.this.ego).getSource(),
-											EditPopupMenu.this.ruleEditor.getNestedAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToNestedAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getNestedAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
-												EditPopupMenu.this.ruleEditor.getNestedAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else if (src != null && tar == null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The target node is not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should it be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(
-											((EdArc) EditPopupMenu.this.ego).getTarget(),
-											EditPopupMenu.this.ruleEditor.getNestedAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToNestedAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getNestedAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
-												EditPopupMenu.this.ruleEditor.getNestedAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else if (src == null && tar == null) {
-								int answer = JOptionPane
-										.showOptionDialog(
-												null,
-												"Cannot create an identic edge!"
-														+ System
-																.getProperty("line.separator")
-														+ "The source and target nodes are not defined."
-														+ System
-																.getProperty("line.separator")
-														+ "Should they be created now?",
-												"Identic Edge",
-												JOptionPane.DEFAULT_OPTION,
-												JOptionPane.QUESTION_MESSAGE,
-												null, options, options[0]);
-								if (answer == JOptionPane.YES_OPTION) {
-									img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(
-											((EdArc) EditPopupMenu.this.ego).getSource(),
-											EditPopupMenu.this.ruleEditor.getNestedAC());
-									if (((EdArc) EditPopupMenu.this.ego).getSource() != ((EdArc) EditPopupMenu.this.ego)
-											.getTarget()
-											&& img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToNestedAC(
-														((EdArc) EditPopupMenu.this.ego)
-																.getTarget(),
-																EditPopupMenu.this.ruleEditor.getNestedAC());
-									if (img != null)
-										img = EditPopupMenu.this.ruleEditor.getRule()
-												.addIdenticToNestedAC(EditPopupMenu.this.ego,
-														EditPopupMenu.this.ruleEditor.getNestedAC());
-									if (img != null) {
-										EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
-												EditPopupMenu.this.ruleEditor.getNestedAC());
-										EditPopupMenu.this.ruleEditor.updateGraphics();
-									}
-								}
-							} else {
-								img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(EditPopupMenu.this.ego,
-										EditPopupMenu.this.ruleEditor.getNestedAC());
-								if (img != null) {
-									EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
-											EditPopupMenu.this.ruleEditor.getNestedAC());
-									EditPopupMenu.this.ruleEditor.updateGraphics();
-								}
-							}
-						}
-					}
-				}
-			}
-		});
+                            if (src == null && tar != null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The source node is not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should it be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getSource(),
+                                            EditPopupMenu.this.ruleEditor.getPAC());
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToPAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getPAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updatePAC(
+                                                EditPopupMenu.this.ruleEditor.getPAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else if (src != null && tar == null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The target node is not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should it be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getTarget(),
+                                            EditPopupMenu.this.ruleEditor.getPAC());
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToPAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getPAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updatePAC(
+                                                EditPopupMenu.this.ruleEditor.getPAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else if (src == null && tar == null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The source and target nodes are not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should they be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getSource(),
+                                            EditPopupMenu.this.ruleEditor.getPAC());
+                                    if (((EdArc) EditPopupMenu.this.ego).getSource() != ((EdArc) EditPopupMenu.this.ego)
+                                            .getTarget()
+                                            && img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToPAC(
+                                                        ((EdArc) EditPopupMenu.this.ego)
+                                                                .getTarget(),
+                                                        EditPopupMenu.this.ruleEditor.getPAC());
+                                    }
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToPAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getPAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updatePAC(
+                                                EditPopupMenu.this.ruleEditor.getPAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else {
+                                img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToPAC(EditPopupMenu.this.ego,
+                                        EditPopupMenu.this.ruleEditor.getPAC());
+                                if (img != null) {
+                                    EditPopupMenu.this.ruleEditor.getRule().updatePAC(
+                                            EditPopupMenu.this.ruleEditor.getPAC());
+                                    EditPopupMenu.this.ruleEditor.updateGraphics();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-		this.mi = add(new JMenuItem("Map"));
-		this.miMap = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditPopupMenu.this.gp == null 
-						|| EditPopupMenu.this.gp.getGraph() == null
-						|| EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
+        this.mi = this.addIdentic.add(new JMenuItem("General AC"));
+        this.miAddIdenticToGAC = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
 
-				EditPopupMenu.this.mapping = true;
-				setLastEditModeBeforMapping(EditPopupMenu.this.gp);
+                if (EditPopupMenu.this.ruleEditor != null) {
+                    if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
+                        if (EditPopupMenu.this.ruleEditor.getNestedAC() == null) {
+                            JOptionPane
+                                    .showMessageDialog(
+                                            null,
+                                            "Cannot create an identic object!"
+                                            + System
+                                                    .getProperty("line.separator")
+                                            + "Please create and open an empty General AC graph first.",
+                                            "Identic Node/Edge",
+                                            JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        EdGraphObject img = null;
+                        if (EditPopupMenu.this.ego.isNode()) {
+                            img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(EditPopupMenu.this.ego,
+                                    EditPopupMenu.this.ruleEditor.getNestedAC());
+                            if (img != null) {
+                                EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
+                                        EditPopupMenu.this.ruleEditor.getNestedAC());
+                                EditPopupMenu.this.ruleEditor.updateGraphics();
+                            }
+                        } else {
+                            Node src = (Node) EditPopupMenu.this.ruleEditor.getNestedAC().getMorphism()
+                                    .getImage(
+                                            ((Arc) EditPopupMenu.this.ego.getBasisObject())
+                                                    .getSource());
+                            Node tar = (Node) EditPopupMenu.this.ruleEditor.getNestedAC().getMorphism()
+                                    .getImage(
+                                            ((Arc) EditPopupMenu.this.ego.getBasisObject())
+                                                    .getTarget());
+                            Object[] options = {"Yes", "No"};
 
-				if (EditPopupMenu.this.editor != null) {
-					EditPopupMenu.this.editor.getGraphEditor().setEditMode(EditorConstants.MAP);
-					EditPopupMenu.this.editor.getRuleEditor().setEditMode(EditorConstants.MAP);
-					EditPopupMenu.this.editor.getRuleEditor().setObjMapping(true);
-					EditPopupMenu.this.editor
-							.setMsg("Click on a target object you want to map or click on the background to break the mapping.");
-				} else if (EditPopupMenu.this.ruleEditor != null) {
-					EditPopupMenu.this.ruleEditor.setEditMode(EditorConstants.MAP);
-					EditPopupMenu.this.ruleEditor.setObjMapping(true);
-					EditPopupMenu.this.ruleEditor
-							.setMsg("Click on a target object you want to map or click on the background to break the mapping");
-				}
-				EditPopupMenu.this.ego.setWeakselected(true);
-				EditPopupMenu.this.gp.updateGraphics();
-			}
-		});
+                            if (src == null && tar != null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The source node is not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should it be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getSource(),
+                                            EditPopupMenu.this.ruleEditor.getNestedAC());
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToNestedAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getNestedAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
+                                                EditPopupMenu.this.ruleEditor.getNestedAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else if (src != null && tar == null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The target node is not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should it be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getTarget(),
+                                            EditPopupMenu.this.ruleEditor.getNestedAC());
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToNestedAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getNestedAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
+                                                EditPopupMenu.this.ruleEditor.getNestedAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else if (src == null && tar == null) {
+                                int answer = JOptionPane
+                                        .showOptionDialog(
+                                                null,
+                                                "Cannot create an identic edge!"
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "The source and target nodes are not defined."
+                                                + System
+                                                        .getProperty("line.separator")
+                                                + "Should they be created now?",
+                                                "Identic Edge",
+                                                JOptionPane.DEFAULT_OPTION,
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null, options, options[0]);
+                                if (answer == JOptionPane.YES_OPTION) {
+                                    img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(
+                                            ((EdArc) EditPopupMenu.this.ego).getSource(),
+                                            EditPopupMenu.this.ruleEditor.getNestedAC());
+                                    if (((EdArc) EditPopupMenu.this.ego).getSource() != ((EdArc) EditPopupMenu.this.ego)
+                                            .getTarget()
+                                            && img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToNestedAC(
+                                                        ((EdArc) EditPopupMenu.this.ego)
+                                                                .getTarget(),
+                                                        EditPopupMenu.this.ruleEditor.getNestedAC());
+                                    }
+                                    if (img != null) {
+                                        img = EditPopupMenu.this.ruleEditor.getRule()
+                                                .addIdenticToNestedAC(EditPopupMenu.this.ego,
+                                                        EditPopupMenu.this.ruleEditor.getNestedAC());
+                                    }
+                                    if (img != null) {
+                                        EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
+                                                EditPopupMenu.this.ruleEditor.getNestedAC());
+                                        EditPopupMenu.this.ruleEditor.updateGraphics();
+                                    }
+                                }
+                            } else {
+                                img = EditPopupMenu.this.ruleEditor.getRule().addIdenticToNestedAC(EditPopupMenu.this.ego,
+                                        EditPopupMenu.this.ruleEditor.getNestedAC());
+                                if (img != null) {
+                                    EditPopupMenu.this.ruleEditor.getRule().updateNestedAC(
+                                            EditPopupMenu.this.ruleEditor.getNestedAC());
+                                    EditPopupMenu.this.ruleEditor.updateGraphics();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-		this.mi = add(new JMenuItem("Unmap"));
-		this.miUnmap = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditPopupMenu.this.gp == null 
-						|| EditPopupMenu.this.gp.getGraph() == null
-						|| EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
+        this.mi = add(new JMenuItem("Map"));
+        this.miMap = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditPopupMenu.this.gp == null
+                        || EditPopupMenu.this.gp.getGraph() == null
+                        || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
 
-				EditPopupMenu.this.mapping = false;
-				unmapGraphObject(false);
-			}
-		});
+                EditPopupMenu.this.mapping = true;
+                setLastEditModeBeforMapping(EditPopupMenu.this.gp);
 
-		addSeparator();
+                if (EditPopupMenu.this.editor != null) {
+                    EditPopupMenu.this.editor.getGraphEditor().setEditMode(EditorConstants.MAP);
+                    EditPopupMenu.this.editor.getRuleEditor().setEditMode(EditorConstants.MAP);
+                    EditPopupMenu.this.editor.getRuleEditor().setObjMapping(true);
+                    EditPopupMenu.this.editor
+                            .setMsg("Click on a target object you want to map or click on the background to break the mapping.");
+                } else if (EditPopupMenu.this.ruleEditor != null) {
+                    EditPopupMenu.this.ruleEditor.setEditMode(EditorConstants.MAP);
+                    EditPopupMenu.this.ruleEditor.setObjMapping(true);
+                    EditPopupMenu.this.ruleEditor
+                            .setMsg("Click on a target object you want to map or click on the background to break the mapping");
+                }
+                EditPopupMenu.this.ego.setWeakselected(true);
+                EditPopupMenu.this.gp.updateGraphics();
+            }
+        });
 
-		this.mi = add(new JMenuItem("Multiplicity"));
-		this.miMultiplicity = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				setMultiplicityOfType();
-				if (EditPopupMenu.this.graphEditor != null) {
-					EditPopupMenu.this.graphEditor.getGraph().update();
-					EditPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
-				}
-			}
-		});
+        this.mi = add(new JMenuItem("Unmap"));
+        this.miUnmap = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditPopupMenu.this.gp == null
+                        || EditPopupMenu.this.gp.getGraph() == null
+                        || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
 
-		this.mi = add(new JMenuItem("Set Parent"));
-		this.miSetParent = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditPopupMenu.this.gp == null 
-						|| EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
-				
-				if (EditPopupMenu.this.ego instanceof EdNode) {					
-					Node bNode = EditPopupMenu.this.ego.getNode().getBasisNode();
-					Graph bGraph = bNode.getContext();
-					if (bGraph.isTypeGraph()) {
-						if (EditPopupMenu.this.editor != null) {
-							EditPopupMenu.this.editor.getGraphEditor().setEditMode(
-									EditorConstants.SET_PARENT);
-							EditPopupMenu.this.ego.setWeakselected(true);
-							EditPopupMenu.this.gp.getCanvas().getGraph().drawNode(
-									EditPopupMenu.this.gp.getCanvas().getGraphics(), (EdNode)EditPopupMenu.this.ego);
-							EditPopupMenu.this.editor.setMsg("Click on a node to add inheritance relation.");
-						}
-					}
-				}
-			}
-		});
+                EditPopupMenu.this.mapping = false;
+                unmapGraphObject(false);
+            }
+        });
 
-		this.mi = add(new JMenuItem("Unset Parent"));
-		this.miUnsetParent = this.mi;
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditPopupMenu.this.gp == null 
-						|| EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW
-						|| !EditPopupMenu.this.gp.getGraph().isEditable())
-					return;
-				
-				if (EditPopupMenu.this.ego instanceof EdNode) {
-					Node bNode = EditPopupMenu.this.ego.getNode().getBasisNode();
-					Graph bGraph = bNode.getContext();
-					if (bGraph.isTypeGraph()) {
-						if (EditPopupMenu.this.editor != null) {
-							if (EditPopupMenu.this.graphEditor.getGraph().getBasisGraph()
-									.getTypeSet().getLevelOfTypeGraphCheck() != TypeSet.DISABLED) {
-								if (EditPopupMenu.this.graphEditor.getGraph().getTypeSet()
-										.isTypeUsed(EditPopupMenu.this.ego.getType())) {
-									JOptionPane
-											.showMessageDialog(
-													EditPopupMenu.this.applFrame,
-													"Cannot unset inheritance relation."
-															+ "\nPlease disable the type graph first.",
-													"Unset Parent",
-													JOptionPane.ERROR_MESSAGE);
-									return;
-								}
-							}
+        addSeparator();
 
-							if (bNode.getType().getParents().size() == 1) {
-								EditPopupMenu.this.graphEditor.getGraph().addChangedParentToUndo(
-										EditPopupMenu.this.ego);
-								EditPopupMenu.this.gp.getCanvas().updateUndoButton();
-								
-								EditPopupMenu.this.gp.getCanvas().performDeleteInheritanceRel((EdNode) EditPopupMenu.this.ego);
-		
-								EditPopupMenu.this.graphEditor.getGraph().undoManagerEndEdit();
+        this.mi = add(new JMenuItem("Multiplicity"));
+        this.miMultiplicity = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setMultiplicityOfType();
+                if (EditPopupMenu.this.graphEditor != null) {
+                    EditPopupMenu.this.graphEditor.getGraph().update();
+                    EditPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
+                }
+            }
+        });
 
-								EditPopupMenu.this.graphEditor.getGraph().updateGraph();
-								EditPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
-							} else {
-								EditPopupMenu.this.editor.getGraphEditor().setEditMode(
-										EditorConstants.UNSET_PARENT);
-								EditPopupMenu.this.editor.setMsg("Click on a parent node to remove inheritance relation.");
-							}
-						}
-					}
-				}
-			}
-		});
+        this.mi = add(new JMenuItem("Set Parent"));
+        this.miSetParent = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditPopupMenu.this.gp == null
+                        || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
 
-		this.miAbstract = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem("Abstract"));
-		this.miAbstract.setSelected(false);
-		this.miAbstract.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditPopupMenu.this.gp == null 
-						|| EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
-				
-				if (EditPopupMenu.this.ego instanceof EdNode) {
-					EditPopupMenu.this.gp.getGraph().addChangedTypeToUndo(EditPopupMenu.this.ego);
-					EditPopupMenu.this.gp.getCanvas().updateUndoButton();
+                if (EditPopupMenu.this.ego instanceof EdNode) {
+                    Node bNode = EditPopupMenu.this.ego.getNode().getBasisNode();
+                    Graph bGraph = bNode.getContext();
+                    if (bGraph.isTypeGraph()) {
+                        if (EditPopupMenu.this.editor != null) {
+                            EditPopupMenu.this.editor.getGraphEditor().setEditMode(
+                                    EditorConstants.SET_PARENT);
+                            EditPopupMenu.this.ego.setWeakselected(true);
+                            EditPopupMenu.this.gp.getCanvas().getGraph().drawNode(
+                                    EditPopupMenu.this.gp.getCanvas().getGraphics(), (EdNode) EditPopupMenu.this.ego);
+                            EditPopupMenu.this.editor.setMsg("Click on a node to add inheritance relation.");
+                        }
+                    }
+                }
+            }
+        });
 
-					if (((JCheckBoxMenuItem) e.getSource()).isSelected())
-						EditPopupMenu.this.ego.getBasisObject().getType().setAbstract(true);
-					else
-						EditPopupMenu.this.ego.getBasisObject().getType().setAbstract(false);
+        this.mi = add(new JMenuItem("Unset Parent"));
+        this.miUnsetParent = this.mi;
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditPopupMenu.this.gp == null
+                        || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW
+                        || !EditPopupMenu.this.gp.getGraph().isEditable()) {
+                    return;
+                }
 
-					if (EditPopupMenu.this.editor != null) {
-						EditPopupMenu.this.editor.updateGraphics();						
-					}
-					else 
-						EditPopupMenu.this.gp.updateGraphics();
-					
-					EditPopupMenu.this.gp.getGraph().undoManagerEndEdit();
-				}
-			}
-		});
+                if (EditPopupMenu.this.ego instanceof EdNode) {
+                    Node bNode = EditPopupMenu.this.ego.getNode().getBasisNode();
+                    Graph bGraph = bNode.getContext();
+                    if (bGraph.isTypeGraph()) {
+                        if (EditPopupMenu.this.editor != null) {
+                            if (EditPopupMenu.this.graphEditor.getGraph().getBasisGraph()
+                                    .getTypeSet().getLevelOfTypeGraphCheck() != TypeSet.DISABLED) {
+                                if (EditPopupMenu.this.graphEditor.getGraph().getTypeSet()
+                                        .isTypeUsed(EditPopupMenu.this.ego.getType())) {
+                                    JOptionPane
+                                            .showMessageDialog(
+                                                    EditPopupMenu.this.applFrame,
+                                                    "Cannot unset inheritance relation."
+                                                    + "\nPlease disable the type graph first.",
+                                                    "Unset Parent",
+                                                    JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
+                            }
 
-		addSeparator();
+                            if (bNode.getType().getParents().size() == 1) {
+                                EditPopupMenu.this.graphEditor.getGraph().addChangedParentToUndo(
+                                        EditPopupMenu.this.ego);
+                                EditPopupMenu.this.gp.getCanvas().updateUndoButton();
 
-		this.mi = add(new JMenuItem("Textual Comments"));
-		this.miComment = this.mi;
-		this.mi.setActionCommand("commentType");
-		this.mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (EditPopupMenu.this.gp == null || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW)
-					return;
+                                EditPopupMenu.this.gp.getCanvas().performDeleteInheritanceRel((EdNode) EditPopupMenu.this.ego);
 
-				if (EditPopupMenu.this.gp.getGraph().isTypeGraph()) {
-					String oldcomment = EditPopupMenu.this.ego.getType()
-							.getBasisType().getTextualComment();
-					EditPopupMenu.this.gp.getGraph().addChangedTypeToUndo(EditPopupMenu.this.ego);
+                                EditPopupMenu.this.graphEditor.getGraph().undoManagerEndEdit();
 
-					Point p = EditPopupMenu.this.applFrame.getLocation();
-					GraGraTextualComment comments = new GraGraTextualComment(
-							EditPopupMenu.this.applFrame, 
-							p.x + EditPopupMenu.this.location.x, 
-							p.y + EditPopupMenu.this.location.y, 
-							EditPopupMenu.this.ego.getType().getBasisType());
-					comments.setModal(true);
-					comments.setVisible(true);
-					String newcomment = EditPopupMenu.this.ego.getType()
-							.getBasisType().getTextualComment();
+                                EditPopupMenu.this.graphEditor.getGraph().updateGraph();
+                                EditPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
+                            } else {
+                                EditPopupMenu.this.editor.getGraphEditor().setEditMode(
+                                        EditorConstants.UNSET_PARENT);
+                                EditPopupMenu.this.editor.setMsg("Click on a parent node to remove inheritance relation.");
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
-					if (oldcomment.equals(newcomment))
-						EditPopupMenu.this.gp.getGraph().undoManagerLastEditDie();
-					else
-						EditPopupMenu.this.gp.getGraph().undoManagerEndEdit();
-					EditPopupMenu.this.gp.getCanvas().updateUndoButton();
-				}
-			}
-		});
+        this.miAbstract = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem("Abstract"));
+        this.miAbstract.setSelected(false);
+        this.miAbstract.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditPopupMenu.this.gp == null
+                        || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
+
+                if (EditPopupMenu.this.ego instanceof EdNode) {
+                    EditPopupMenu.this.gp.getGraph().addChangedTypeToUndo(EditPopupMenu.this.ego);
+                    EditPopupMenu.this.gp.getCanvas().updateUndoButton();
+
+                    if (((JCheckBoxMenuItem) e.getSource()).isSelected()) {
+                        EditPopupMenu.this.ego.getBasisObject().getType().setAbstract(true);
+                    } else {
+                        EditPopupMenu.this.ego.getBasisObject().getType().setAbstract(false);
+                    }
+
+                    if (EditPopupMenu.this.editor != null) {
+                        EditPopupMenu.this.editor.updateGraphics();
+                    } else {
+                        EditPopupMenu.this.gp.updateGraphics();
+                    }
+
+                    EditPopupMenu.this.gp.getGraph().undoManagerEndEdit();
+                }
+            }
+        });
+
+        addSeparator();
+
+        this.mi = add(new JMenuItem("Textual Comments"));
+        this.miComment = this.mi;
+        this.mi.setActionCommand("commentType");
+        this.mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (EditPopupMenu.this.gp == null || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
+                    return;
+                }
+
+                if (EditPopupMenu.this.gp.getGraph().isTypeGraph()) {
+                    String oldcomment = EditPopupMenu.this.ego.getType()
+                            .getBasisType().getTextualComment();
+                    EditPopupMenu.this.gp.getGraph().addChangedTypeToUndo(EditPopupMenu.this.ego);
+
+                    Point p = EditPopupMenu.this.applFrame.getLocation();
+                    GraGraTextualComment comments = new GraGraTextualComment(
+                            EditPopupMenu.this.applFrame,
+                            p.x + EditPopupMenu.this.location.x,
+                            p.y + EditPopupMenu.this.location.y,
+                            EditPopupMenu.this.ego.getType().getBasisType());
+                    comments.setModal(true);
+                    comments.setVisible(true);
+                    String newcomment = EditPopupMenu.this.ego.getType()
+                            .getBasisType().getTextualComment();
+
+                    if (oldcomment.equals(newcomment)) {
+                        EditPopupMenu.this.gp.getGraph().undoManagerLastEditDie();
+                    } else {
+                        EditPopupMenu.this.gp.getGraph().undoManagerEndEdit();
+                    }
+                    EditPopupMenu.this.gp.getCanvas().updateUndoButton();
+                }
+            }
+        });
 
 //		addSeparator();
 //		statistic = createGraphStatisticMenu();
 //		add(statistic);
-		
-		pack();
-		setBorderPainted(true);
-		setDefaultLightWeightPopupEnabled(false);
-	}
+        pack();
+        setBorderPainted(true);
+        setDefaultLightWeightPopupEnabled(false);
+    }
 
-	public void showMe(Component comp, int x, int y) {
-		if (this.editor != null && this.editor.getRuleEditor().getRule() == null)
-			setUnmapEnabled(false);
-		else if (this.gp.getGraph() != null && this.gp.getGraph().isTypeGraph())
-			setUnmapEnabled(false);
-		if (this.useDeleteMenu) {
-			int indx = this.getComponentIndex(this.deleteMenu);
-			if (indx == -1) {
-				indx = this.getComponentIndex(this.miDelete);
-				if (indx != -1)
-					add(this.deleteMenu, indx + 1);
-			}
-		} else {
-			int indx = this.getComponentIndex(this.deleteMenu);
-			if (indx != -1)
-				remove(indx);
-		}
-		show(comp, x, y);
-	}
+    public void showMe(Component comp, int x, int y) {
+        if (this.editor != null && this.editor.getRuleEditor().getRule() == null) {
+            setUnmapEnabled(false);
+        } else if (this.gp.getGraph() != null && this.gp.getGraph().isTypeGraph()) {
+            setUnmapEnabled(false);
+        }
+        if (this.useDeleteMenu) {
+            int indx = this.getComponentIndex(this.deleteMenu);
+            if (indx == -1) {
+                indx = this.getComponentIndex(this.miDelete);
+                if (indx != -1) {
+                    add(this.deleteMenu, indx + 1);
+                }
+            }
+        } else {
+            int indx = this.getComponentIndex(this.deleteMenu);
+            if (indx != -1) {
+                remove(indx);
+            }
+        }
+        show(comp, x, y);
+    }
 
-	boolean canDo() {
-		if ((this.gp == null) || (this.gp.getEditMode() == EditorConstants.VIEW)
-				|| (this.gp.getGraph() == null) || (this.ego == null))
-			return false;
-		
-		return true;
-	}
+    boolean canDo() {
+        if ((this.gp == null) || (this.gp.getEditMode() == EditorConstants.VIEW)
+                || (this.gp.getGraph() == null) || (this.ego == null)) {
+            return false;
+        }
 
-	void doUpdateAfterDelete() {
-		if (this.gp.isMappedObjDeleted()) {
-			this.gp.setMappedObjDeleted(false);
-			if (this.editor != null) {
-				this.editor.getRuleEditor().getRule().update();
-				this.editor.getRuleEditor().getLeftPanel().updateGraphics();
-				this.editor.getRuleEditor().getRightPanel().updateGraphics();
-				this.editor.getRuleEditor().getLeftCondPanel().updateGraphics();
-				this.editor.getGraphEditor().getGraph().update();
-				this.editor.getGraphEditor().getGraphPanel().updateGraphics();
-			} else if (this.ruleEditor != null) {
-				this.ruleEditor.getRule().update();
-				this.ruleEditor.getLeftPanel().updateGraphics();
-				this.ruleEditor.getRightPanel().updateGraphics();
-				this.ruleEditor.getLeftCondPanel().updateGraphics();
-				if (this.graphEditor != null) {
-					this.graphEditor.getGraph().update();
-					this.graphEditor.getGraphPanel().updateGraphics();
-				}
-			} else if (this.graphEditor != null) {
-				this.graphEditor.getGraph().update();
-				this.graphEditor.getGraphPanel().updateGraphics();
-			}
-		} else {
-			this.gp.getGraph().update();
-			this.gp.updateGraphicsAfterDelete();
-		}
-	}
+        return true;
+    }
 
-	void showMessageDialog(List<String> failed, boolean node) {
-		if (failed == null)
-			return;
-		if (!failed.isEmpty()) {
-			String str = "Cannot delete objects of this type from  \n";
-			for (int i = 0; i < failed.size(); i++) {
-				String s = "\t" + failed.get(i) + "\n";
-				str = str + s;
-			}
-			JOptionPane.showMessageDialog(this.applFrame, str);
-		}
-	}
+    void doUpdateAfterDelete() {
+        if (this.gp.isMappedObjDeleted()) {
+            this.gp.setMappedObjDeleted(false);
+            if (this.editor != null) {
+                this.editor.getRuleEditor().getRule().update();
+                this.editor.getRuleEditor().getLeftPanel().updateGraphics();
+                this.editor.getRuleEditor().getRightPanel().updateGraphics();
+                this.editor.getRuleEditor().getLeftCondPanel().updateGraphics();
+                this.editor.getGraphEditor().getGraph().update();
+                this.editor.getGraphEditor().getGraphPanel().updateGraphics();
+            } else if (this.ruleEditor != null) {
+                this.ruleEditor.getRule().update();
+                this.ruleEditor.getLeftPanel().updateGraphics();
+                this.ruleEditor.getRightPanel().updateGraphics();
+                this.ruleEditor.getLeftCondPanel().updateGraphics();
+                if (this.graphEditor != null) {
+                    this.graphEditor.getGraph().update();
+                    this.graphEditor.getGraphPanel().updateGraphics();
+                }
+            } else if (this.graphEditor != null) {
+                this.graphEditor.getGraph().update();
+                this.graphEditor.getGraphPanel().updateGraphics();
+            }
+        } else {
+            this.gp.getGraph().update();
+            this.gp.updateGraphicsAfterDelete();
+        }
+    }
 
-	private JMenuItem createDeleteItem() {
-		JMenuItem m = add(new JMenuItem("Delete"));
-		// m.setMnemonic('D');
-		m.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
+    void showMessageDialog(List<String> failed, boolean node) {
+        if (failed == null) {
+            return;
+        }
+        if (!failed.isEmpty()) {
+            String str = "Cannot delete objects of this type from  \n";
+            for (int i = 0; i < failed.size(); i++) {
+                String s = "\t" + failed.get(i) + "\n";
+                str = str + s;
+            }
+            JOptionPane.showMessageDialog(this.applFrame, str);
+        }
+    }
 
-				EditPopupMenu.this.mapping = false;
-				if (!EditPopupMenu.this.ego.getMorphismMark().equals("")) {
-					EditPopupMenu.this.gp.setMappedObjDeleted(true);
-					unmapGraphObject(true);
-				}
-				EditPopupMenu.this.gp.deleteObj(EditPopupMenu.this.ego);				
-				doUpdateAfterDelete();
-				EditPopupMenu.this.ego = null;
-			}
-		});
-		return m;
-	}
+    private JMenuItem createDeleteItem() {
+        JMenuItem m = add(new JMenuItem("Delete"));
+        // m.setMnemonic('D');
+        m.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
 
-	private JMenu createDeleteMenu() {
-		JMenu m = new JMenu("Delete Objects of Type");
-		JMenuItem jmi = m.add(new JMenuItem("Delete All Objects"));
-		jmi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// System.out.println("Delete All Objects");
-				if (!canDo())
-					return;
-				EditPopupMenu.this.mapping = false;
-				int ok = 0;
+                EditPopupMenu.this.mapping = false;
+                if (!EditPopupMenu.this.ego.getMorphismMark().equals("")) {
+                    EditPopupMenu.this.gp.setMappedObjDeleted(true);
+                    unmapGraphObject(true);
+                }
+                EditPopupMenu.this.gp.deleteObj(EditPopupMenu.this.ego);
+                doUpdateAfterDelete();
+                EditPopupMenu.this.ego = null;
+            }
+        });
+        return m;
+    }
+
+    private JMenu createDeleteMenu() {
+        JMenu m = new JMenu("Delete Objects of Type");
+        JMenuItem jmi = m.add(new JMenuItem("Delete All Objects"));
+        jmi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // System.out.println("Delete All Objects");
+                if (!canDo()) {
+                    return;
+                }
+                EditPopupMenu.this.mapping = false;
+                int ok = 0;
 //				String failStr = EditPopupMenu.this.gp.getGraph().getGraGra().kernelRuleContainsObjsOfType(EditPopupMenu.this.ego);
 //				if (failStr != null) {
 //					String str = "The kernel rule:  "+failStr+"  \n"
@@ -1137,44 +1182,47 @@ public class EditPopupMenu extends JPopupMenu {
 //							"Delete Objects of Type", JOptionPane.WARNING_MESSAGE);
 //				}
 //				boolean addToUndo = (failStr == null);
-				
-				boolean addToUndo = true;
-				if (ok == 0) {
-					List<String> failed = EditPopupMenu.this.gp.getGraph().getGraGra()
-									.deleteGraphObjectsOfType(EditPopupMenu.this.ego, false, addToUndo);
-					
-					showMessageDialog(failed, EditPopupMenu.this.ego.isNode());
-		
-					doUpdateAfterDelete();
-					EditPopupMenu.this.gp.getCanvas().updateUndoButton();
-					EditPopupMenu.this.gp.getGraph().getGraGra().update();
-					if (EditPopupMenu.this.editor != null)
-						EditPopupMenu.this.editor.getRuleEditor().updateGraphics();
-					
-//					System.out.println("undo stored::  "+EditPopupMenu.storeVec.size());
-				}
-			}
-		});
-		jmi = m.add(new JMenuItem("Delete Objects of Host Graph"));
-		jmi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (!canDo())
-					return;
-				EditPopupMenu.this.mapping = false;
 
-				if (!EditPopupMenu.this.gp.getGraph().getGraGra()
-							.deleteGraphObjectsOfTypeFromHostGraph(
-									EditPopupMenu.this.ego, true)) 
-					JOptionPane.showMessageDialog(EditPopupMenu.this.applFrame,
-										"Cannot delete objects of this type from host graph.");
-	
-				doUpdateAfterDelete();
-				EditPopupMenu.this.gp.getCanvas().updateUndoButton();
-				EditPopupMenu.this.gp.getGraph().getGraGra().getGraph().update();
-			}
-		});
-		
-		/*
+                boolean addToUndo = true;
+                if (ok == 0) {
+                    List<String> failed = EditPopupMenu.this.gp.getGraph().getGraGra()
+                            .deleteGraphObjectsOfType(EditPopupMenu.this.ego, false, addToUndo);
+
+                    showMessageDialog(failed, EditPopupMenu.this.ego.isNode());
+
+                    doUpdateAfterDelete();
+                    EditPopupMenu.this.gp.getCanvas().updateUndoButton();
+                    EditPopupMenu.this.gp.getGraph().getGraGra().update();
+                    if (EditPopupMenu.this.editor != null) {
+                        EditPopupMenu.this.editor.getRuleEditor().updateGraphics();
+                    }
+
+//					System.out.println("undo stored::  "+EditPopupMenu.storeVec.size());
+                }
+            }
+        });
+        jmi = m.add(new JMenuItem("Delete Objects of Host Graph"));
+        jmi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!canDo()) {
+                    return;
+                }
+                EditPopupMenu.this.mapping = false;
+
+                if (!EditPopupMenu.this.gp.getGraph().getGraGra()
+                        .deleteGraphObjectsOfTypeFromHostGraph(
+                                EditPopupMenu.this.ego, true)) {
+                    JOptionPane.showMessageDialog(EditPopupMenu.this.applFrame,
+                            "Cannot delete objects of this type from host graph.");
+                }
+
+                doUpdateAfterDelete();
+                EditPopupMenu.this.gp.getCanvas().updateUndoButton();
+                EditPopupMenu.this.gp.getGraph().getGraGra().getGraph().update();
+            }
+        });
+
+        /*
 		 * jmi = m.add(new JMenuItem("Delete Objects of Rules"));
 		 * jmi.addActionListener(new ActionListener() {public void
 		 * actionPerformed(ActionEvent e) { //System.out.println("Delete Objects
@@ -1197,503 +1245,512 @@ public class EditPopupMenu extends JPopupMenu {
 		 * 
 		 * doAfterDelete(); gp.getGraph().getGraGra().updateConstraints(); if
 		 * (editor != null) editor.getRuleEditor().updateGraphics(); }});
-		 */
-		return m;
-	}
+         */
+        return m;
+    }
 
-	public void setEditor(GraGraEditor ed) {
-		this.editor = ed;
-		this.ruleEditor = this.editor.getRuleEditor();
-		this.graphEditor = this.editor.getGraphEditor();
-	}
+    public void setEditor(GraGraEditor ed) {
+        this.editor = ed;
+        this.ruleEditor = this.editor.getRuleEditor();
+        this.graphEditor = this.editor.getGraphEditor();
+    }
 
-	public void setEditor(RuleEditor re) {
-		this.ruleEditor = re;
-		this.graphEditor = null;
-	}
+    public void setEditor(RuleEditor re) {
+        this.ruleEditor = re;
+        this.graphEditor = null;
+    }
 
-	public void setEditor(GraphEditor ge) {
-		this.graphEditor = ge;
-		this.ruleEditor = null;
-	}
+    public void setEditor(GraphEditor ge) {
+        this.graphEditor = ge;
+        this.ruleEditor = null;
+    }
 
-	public void setGraphLayouter(EvolutionaryGraphLayout l) {
-		this.layouter = l;
-	}
+    public void setGraphLayouter(EvolutionaryGraphLayout l) {
+        this.layouter = l;
+    }
 
-	public EdGraphObject getPickedObj() {
-		return this.ego;
-	}
+    public EdGraphObject getPickedObj() {
+        return this.ego;
+    }
 
-	public boolean isMapping() {
-		return this.mapping;
-	}
+    public boolean isMapping() {
+        return this.mapping;
+    }
 
-	public void setParentFrame(JFrame pf) {
-		this.applFrame = pf;
-	}
+    public void setParentFrame(JFrame pf) {
+        this.applFrame = pf;
+    }
 
-	public void setMapEnabled(boolean b) {
-		this.miMap.setEnabled(b);
-	}
+    public void setMapEnabled(boolean b) {
+        this.miMap.setEnabled(b);
+    }
 
-	public void setUnmapEnabled(boolean b) {
-		this.miUnmap.setEnabled(b);
-	}
+    public void setUnmapEnabled(boolean b) {
+        this.miUnmap.setEnabled(b);
+    }
 
-	public boolean invoked(GraphPanel p, int x, int y) {
-		this.gp = p;
-		
-		if (this.gp.getGraph() != null) {
-			if (this.gp.getCanvas().getPickedObject() != null
-					&& this.gp.getCanvas().getPickedObject().isWeakselected()) {
-				this.gp.getCanvas().getPickedObject().setWeakselected(false);
-				this.gp.updateGraphics();
-			}
-			if (!this.gp.getCanvas().isLeftPressed()) {
-				this.ego = this.gp.getGraph().getPicked(x, y);
-				if (this.ego == null) {
-					this.ego = this.gp.getGraph().getPickedTextOfArc(x, y,
-							this.gp.getCanvas().getGraphics().getFontMetrics());
-				}
-				
-				if (this.ego != null && this.ego.isVisible()) {
-	//				if (gp.getGraph().isTargetObjOfGraphEmbedding(ego)) {
-	//					return false;
-	//				}
-									
-					this.location = new Point(x, y);
-					if (this.ego.isArc()) {
-						Arc bArc = this.ego.getArc().getBasisArc();
-						if (bArc.isInheritance()) {
-							return false;
-						}
-					}
-					
-					this.layout.setEnabled(false);
-					this.miComment.setEnabled(false);
-	
-					if (this.ruleEditor != null) {
-						if (this.ruleEditor.getRule().getLeft() == this.gp.getGraph())
-							this.miAddIdenticToRule.setEnabled(true);
-						else
-							this.miAddIdenticToRule.setEnabled(false);
-						if (this.ruleEditor.getNAC() != null) {
-							this.miAddIdenticToNAC.setEnabled(true);
-							this.miAddIdenticToPAC.setEnabled(false);
-							this.miAddIdenticToGAC.setEnabled(false);
-						} else if (this.ruleEditor.getPAC() != null) {
-							this.miAddIdenticToNAC.setEnabled(false);
-							this.miAddIdenticToPAC.setEnabled(true);
-							this.miAddIdenticToGAC.setEnabled(false);
-						} else if (this.ruleEditor.getNestedAC() != null) {
-							this.miAddIdenticToNAC.setEnabled(false);
-							this.miAddIdenticToPAC.setEnabled(false);
-							this.miAddIdenticToGAC.setEnabled(true);
-						} else {
-							this.miAddIdenticToNAC.setEnabled(false);
-							this.miAddIdenticToPAC.setEnabled(false);
-							this.miAddIdenticToGAC.setEnabled(false);
-						}
-					} 
-	
-					if (!this.ego.getContext().isTypeGraph()) {
-						this.miVisibility.setEnabled(false);
-	//					if (this.ego instanceof EdNode)
-							this.miObjName.setEnabled(true);
-	//					else
-	//						this.miObjName.setEnabled(false);
-					} else {
-						this.miVisibility.setEnabled(true);
-						this.miObjName.setEnabled(false);
-						if (this.ego.isNode()) {
-							if (this.ego.getType().getBasisType().isObjectOfTypeGraphNodeVisible()) {
-								this.miVisibility.setText("Hide Objects of Type");
-							} else {
-								this.miVisibility.setText("Show Objects of Type");
-							}
-						} else {
-							if (this.ego.getType().getBasisType().isObjectOfTypeGraphArcVisible(
-									((EdArc)this.ego).getSource().getType().getBasisType(),
-									((EdArc)this.ego).getTarget().getType().getBasisType())) {
-								this.miVisibility.setText("Hide Objects of Type");
-							} else {
-								this.miVisibility.setText("Show Objects of Type");
-							}
-						}
-					}
-					
-					if (this.ego.isNode()) {
-						this.miStraighten.setEnabled(false);
-						if (this.ego.isElementOfTypeGraph()) {
-							this.miComment.setEnabled(true);
-							this.useDeleteMenu = true;
-							this.addIdentic.setEnabled(false);
-							this.miUnmap.setEnabled(false);
-							this.miMultiplicity.setEnabled(true);
-							this.miAbstract.setEnabled(true);
-							if (this.ego.getBasisObject().getType().isAbstract())
-								this.miAbstract.setSelected(true);
-							else
-								this.miAbstract.setSelected(false);
-							this.miSetParent.setEnabled(true);
-							if (!this.ego.getNode().getBasisNode().getType()
-									.getParents().isEmpty())
-								this.miUnsetParent.setEnabled(true);
-							else
-								this.miUnsetParent.setEnabled(false);
-	
-							this.layout.setEnabled(true);
-							if (this.layouter != null) {
-								if (this.layouter.getLayoutPatternForType(this.ego
-										.getBasisObject().getType(), "Freezing") != null) {
-									this.miFrozen.setSelected(true);
-								} else {
-									this.miFrozen.setSelected(false);
-								}
-							}
-						} else {
-							if (this.graphEditor != null
-									&& this.graphEditor.getGraphPanel() == this.gp)
-								this.layout.setEnabled(true);
-	
-							this.miFrozen.setSelected(((EdNode) this.ego).getLNode().isFrozen());
-							this.useDeleteMenu = false;
-							this.addIdentic.setEnabled(false);
-							this.miMultiplicity.setEnabled(false);
-							this.miAbstract.setEnabled(false);
-							this.miAbstract.setSelected(false);
-							this.miSetParent.setEnabled(false);
-							this.miUnsetParent.setEnabled(false);
-						}
-						if (this.ruleEditor != null 
-								&& this.gp == this.ruleEditor.getLeftPanel())
-							this.addIdentic.setEnabled(true);
-					} else {
-						this.miStraighten.setEnabled(true);
-						this.miSetParent.setEnabled(false);
-						this.miUnsetParent.setEnabled(false);
-						this.miAbstract.setEnabled(false);
-						this.miAbstract.setSelected(false);
-						if (this.ego.isElementOfTypeGraph()) {
-							this.miComment.setEnabled(true);
-							this.useDeleteMenu = true;
-							this.addIdentic.setEnabled(false);
-							this.miUnmap.setEnabled(false);
-							this.miMultiplicity.setEnabled(true);
-						} else {
-							this.useDeleteMenu = false;
-							this.addIdentic.setEnabled(false);
-							this.miMultiplicity.setEnabled(false);
-						}
-						if (this.ruleEditor != null 
-								&& this.gp == this.ruleEditor.getLeftPanel())
-							this.addIdentic.setEnabled(true);
-					}
-					if (!this.ego.isSelected()) {
-						this.xPos = x;
-						this.yPos = y;
-						requestFocusInWindow();
-						return true;
-					} 
-					return false;
-				} 
-				return false;
-			}
-		} 
-		return false;
-	}
+    public boolean invoked(GraphPanel p, int x, int y) {
+        this.gp = p;
 
-	void setLastEditModeBeforMapping(GraphPanel gp) {
-		if (gp.getEditMode() == EditorConstants.DRAW
-				|| gp.getEditMode() == EditorConstants.ARC
-				|| gp.getEditMode() == EditorConstants.SELECT
-				|| gp.getEditMode() == EditorConstants.MOVE
-				|| gp.getEditMode() == EditorConstants.ATTRIBUTES
-				|| gp.getEditMode() == EditorConstants.MAP
-				|| gp.getEditMode() == EditorConstants.UNMAP
-				|| gp.getEditMode() == EditorConstants.SET_PARENT
-				|| gp.getEditMode() == EditorConstants.UNSET_PARENT
-				|| gp.getEditMode() == EditorConstants.INTERACT_RULE
-				|| gp.getEditMode() == EditorConstants.INTERACT_NAC
-				|| gp.getEditMode() == EditorConstants.INTERACT_PAC
-				|| gp.getEditMode() == EditorConstants.INTERACT_AC
-				|| gp.getEditMode() == EditorConstants.INTERACT_MATCH) {
+        if (this.gp.getGraph() != null) {
+            if (this.gp.getCanvas().getPickedObject() != null
+                    && this.gp.getCanvas().getPickedObject().isWeakselected()) {
+                this.gp.getCanvas().getPickedObject().setWeakselected(false);
+                this.gp.updateGraphics();
+            }
+            if (!this.gp.getCanvas().isLeftPressed()) {
+                this.ego = this.gp.getGraph().getPicked(x, y);
+                if (this.ego == null) {
+                    this.ego = this.gp.getGraph().getPickedTextOfArc(x, y,
+                            this.gp.getCanvas().getGraphics().getFontMetrics());
+                }
 
-			gp.setLastEditMode(gp.getEditMode());
-			gp.setLastEditCursor(gp.getEditCursor());
-		}
-	}
+                if (this.ego != null && this.ego.isVisible()) {
+                    //				if (gp.getGraph().isTargetObjOfGraphEmbedding(ego)) {
+                    //					return false;
+                    //				}
 
-	/* Draws graphic of the graphobject go in the panel p */
-	/*
+                    this.location = new Point(x, y);
+                    if (this.ego.isArc()) {
+                        Arc bArc = this.ego.getArc().getBasisArc();
+                        if (bArc.isInheritance()) {
+                            return false;
+                        }
+                    }
+
+                    this.layout.setEnabled(false);
+                    this.miComment.setEnabled(false);
+
+                    if (this.ruleEditor != null) {
+                        if (this.ruleEditor.getRule().getLeft() == this.gp.getGraph()) {
+                            this.miAddIdenticToRule.setEnabled(true);
+                        } else {
+                            this.miAddIdenticToRule.setEnabled(false);
+                        }
+                        if (this.ruleEditor.getNAC() != null) {
+                            this.miAddIdenticToNAC.setEnabled(true);
+                            this.miAddIdenticToPAC.setEnabled(false);
+                            this.miAddIdenticToGAC.setEnabled(false);
+                        } else if (this.ruleEditor.getPAC() != null) {
+                            this.miAddIdenticToNAC.setEnabled(false);
+                            this.miAddIdenticToPAC.setEnabled(true);
+                            this.miAddIdenticToGAC.setEnabled(false);
+                        } else if (this.ruleEditor.getNestedAC() != null) {
+                            this.miAddIdenticToNAC.setEnabled(false);
+                            this.miAddIdenticToPAC.setEnabled(false);
+                            this.miAddIdenticToGAC.setEnabled(true);
+                        } else {
+                            this.miAddIdenticToNAC.setEnabled(false);
+                            this.miAddIdenticToPAC.setEnabled(false);
+                            this.miAddIdenticToGAC.setEnabled(false);
+                        }
+                    }
+
+                    if (!this.ego.getContext().isTypeGraph()) {
+                        this.miVisibility.setEnabled(false);
+                        //					if (this.ego instanceof EdNode)
+                        this.miObjName.setEnabled(true);
+                        //					else
+                        //						this.miObjName.setEnabled(false);
+                    } else {
+                        this.miVisibility.setEnabled(true);
+                        this.miObjName.setEnabled(false);
+                        if (this.ego.isNode()) {
+                            if (this.ego.getType().getBasisType().isObjectOfTypeGraphNodeVisible()) {
+                                this.miVisibility.setText("Hide Objects of Type");
+                            } else {
+                                this.miVisibility.setText("Show Objects of Type");
+                            }
+                        } else {
+                            if (this.ego.getType().getBasisType().isObjectOfTypeGraphArcVisible(
+                                    ((EdArc) this.ego).getSource().getType().getBasisType(),
+                                    ((EdArc) this.ego).getTarget().getType().getBasisType())) {
+                                this.miVisibility.setText("Hide Objects of Type");
+                            } else {
+                                this.miVisibility.setText("Show Objects of Type");
+                            }
+                        }
+                    }
+
+                    if (this.ego.isNode()) {
+                        this.miStraighten.setEnabled(false);
+                        if (this.ego.isElementOfTypeGraph()) {
+                            this.miComment.setEnabled(true);
+                            this.useDeleteMenu = true;
+                            this.addIdentic.setEnabled(false);
+                            this.miUnmap.setEnabled(false);
+                            this.miMultiplicity.setEnabled(true);
+                            this.miAbstract.setEnabled(true);
+                            if (this.ego.getBasisObject().getType().isAbstract()) {
+                                this.miAbstract.setSelected(true);
+                            } else {
+                                this.miAbstract.setSelected(false);
+                            }
+                            this.miSetParent.setEnabled(true);
+                            if (!this.ego.getNode().getBasisNode().getType()
+                                    .getParents().isEmpty()) {
+                                this.miUnsetParent.setEnabled(true);
+                            } else {
+                                this.miUnsetParent.setEnabled(false);
+                            }
+
+                            this.layout.setEnabled(true);
+                            if (this.layouter != null) {
+                                if (this.layouter.getLayoutPatternForType(this.ego
+                                        .getBasisObject().getType(), "Freezing") != null) {
+                                    this.miFrozen.setSelected(true);
+                                } else {
+                                    this.miFrozen.setSelected(false);
+                                }
+                            }
+                        } else {
+                            if (this.graphEditor != null
+                                    && this.graphEditor.getGraphPanel() == this.gp) {
+                                this.layout.setEnabled(true);
+                            }
+
+                            this.miFrozen.setSelected(((EdNode) this.ego).getLNode().isFrozen());
+                            this.useDeleteMenu = false;
+                            this.addIdentic.setEnabled(false);
+                            this.miMultiplicity.setEnabled(false);
+                            this.miAbstract.setEnabled(false);
+                            this.miAbstract.setSelected(false);
+                            this.miSetParent.setEnabled(false);
+                            this.miUnsetParent.setEnabled(false);
+                        }
+                        if (this.ruleEditor != null
+                                && this.gp == this.ruleEditor.getLeftPanel()) {
+                            this.addIdentic.setEnabled(true);
+                        }
+                    } else {
+                        this.miStraighten.setEnabled(true);
+                        this.miSetParent.setEnabled(false);
+                        this.miUnsetParent.setEnabled(false);
+                        this.miAbstract.setEnabled(false);
+                        this.miAbstract.setSelected(false);
+                        if (this.ego.isElementOfTypeGraph()) {
+                            this.miComment.setEnabled(true);
+                            this.useDeleteMenu = true;
+                            this.addIdentic.setEnabled(false);
+                            this.miUnmap.setEnabled(false);
+                            this.miMultiplicity.setEnabled(true);
+                        } else {
+                            this.useDeleteMenu = false;
+                            this.addIdentic.setEnabled(false);
+                            this.miMultiplicity.setEnabled(false);
+                        }
+                        if (this.ruleEditor != null
+                                && this.gp == this.ruleEditor.getLeftPanel()) {
+                            this.addIdentic.setEnabled(true);
+                        }
+                    }
+                    if (!this.ego.isSelected()) {
+                        this.xPos = x;
+                        this.yPos = y;
+                        requestFocusInWindow();
+                        return true;
+                    }
+                    return false;
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+
+    void setLastEditModeBeforMapping(GraphPanel gp) {
+        if (gp.getEditMode() == EditorConstants.DRAW
+                || gp.getEditMode() == EditorConstants.ARC
+                || gp.getEditMode() == EditorConstants.SELECT
+                || gp.getEditMode() == EditorConstants.MOVE
+                || gp.getEditMode() == EditorConstants.ATTRIBUTES
+                || gp.getEditMode() == EditorConstants.MAP
+                || gp.getEditMode() == EditorConstants.UNMAP
+                || gp.getEditMode() == EditorConstants.SET_PARENT
+                || gp.getEditMode() == EditorConstants.UNSET_PARENT
+                || gp.getEditMode() == EditorConstants.INTERACT_RULE
+                || gp.getEditMode() == EditorConstants.INTERACT_NAC
+                || gp.getEditMode() == EditorConstants.INTERACT_PAC
+                || gp.getEditMode() == EditorConstants.INTERACT_AC
+                || gp.getEditMode() == EditorConstants.INTERACT_MATCH) {
+
+            gp.setLastEditMode(gp.getEditMode());
+            gp.setLastEditCursor(gp.getEditCursor());
+        }
+    }
+
+    /* Draws graphic of the graphobject go in the panel p */
+ /*
 	private void drawGraphic(EdGraphObject go, GraphPanel p) {
 		if (go.isNode())
 			p.getGraph().drawNode(p.getCanvas().getGraphics(), (EdNode) go);
 		else
 			p.getGraph().drawArc(p.getCanvas().getGraphics(), (EdArc) go);
 	}
-*/
-	
-	void setMultiplicityOfType() {
-		if (this.ego != null) {
-			this.gp.getGraph().addChangedMultiplicityToUndo(this.ego);
+     */
+    void setMultiplicityOfType() {
+        if (this.ego != null) {
+            this.gp.getGraph().addChangedMultiplicityToUndo(this.ego);
 
-			if (!this.ego.isNode()) {
-				this.multiplicity = new TypeCardinalityDialog(null, this.ego.getType()
-						.getBasisType(), ((EdArc) this.ego).getSource().getType()
-						.getBasisType(), ((EdArc) this.ego).getTarget().getType()
-						.getBasisType());
-			}
-			else {
-				this.multiplicity = new TypeCardinalityDialog(null, this.ego.getType()
-						.getBasisType());
-			}
-			this.multiplicity.showGUI();
-			
-			if (this.editor != null) {
-				if (!this.multiplicity.isChanged()) {
-					this.gp.getGraph().undoManagerLastEditDie();
-				}
-				else if (this.ego.isNode()) {
-					String errors = this.gp.getGraph().getGraGra()
-									.checkNodeTypeMultiplicity((EdNode) this.ego);					
-					if (errors != null) {
-						errors = errors.replaceAll(",", ",\n");
-						
-						JOptionPane.showMessageDialog(
-								null,
-								"<html><body>"
-								+"Please check the graph(s): \n"
-								+errors+".\n"
-								+"\nMultiplicity constraint of the node type:\n"
-								+"\""+this.ego.getType().getBasisType().getName()+"\"  \n"
-								+"is not satisfied.",
-								"Checking Node Type Multiplicity",
-								JOptionPane.WARNING_MESSAGE
-								);
-					}
-				} else {
-					String errors = this.gp.getGraph().getGraGra()
-									.checkEdgeTypeMultiplicity((EdArc) this.ego);	
-					if (errors != null) {
-						errors = errors.replaceAll(",", ",\n");
+            if (!this.ego.isNode()) {
+                this.multiplicity = new TypeCardinalityDialog(null, this.ego.getType()
+                        .getBasisType(), ((EdArc) this.ego).getSource().getType()
+                                .getBasisType(), ((EdArc) this.ego).getTarget().getType()
+                                .getBasisType());
+            } else {
+                this.multiplicity = new TypeCardinalityDialog(null, this.ego.getType()
+                        .getBasisType());
+            }
+            this.multiplicity.showGUI();
 
-						JOptionPane.showMessageDialog(
-								null,
-								"<html><body>"
-								+"Please check the graph(s): \n"
-								+errors+".\n"
-								+"\nMultiplicity constraint of the edge type:\n"
-								+"\""+this.ego.getType().getBasisType().getName()+"\"  \n"
-								+"is not satisfied.",
-								"Checking Edge Type Multiplicity",
-								JOptionPane.WARNING_MESSAGE
-								);
-					}
-				}
-			}
-			
-			this.gp.getCanvas().updateUndoButton();
-			this.gp.getGraph().undoManagerEndEdit();
-		}
-	}
+            if (this.editor != null) {
+                if (!this.multiplicity.isChanged()) {
+                    this.gp.getGraph().undoManagerLastEditDie();
+                } else if (this.ego.isNode()) {
+                    String errors = this.gp.getGraph().getGraGra()
+                            .checkNodeTypeMultiplicity((EdNode) this.ego);
+                    if (errors != null) {
+                        errors = errors.replaceAll(",", ",\n");
 
-	
-	protected void unmapGraphObject(boolean wantDeleteGraphObject) {
-		boolean unmapdone = false;
-		if (this.editor != null 
-				&& this.editor.getRuleEditor().getRule() != null) {
-			EdRule rule = this.editor.getRuleEditor().getRule();
-			boolean isLeftRuleObj = this.ego.getContext() == rule.getLeft();
-			
-			if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftPanel()) {
-				unmapdone = this.leftPanelUnmap(this.editor.getRuleEditor(), rule, wantDeleteGraphObject);
-				
-				if (unmapdone && isLeftRuleObj && rule.getMatch() != null) {
-					this.editor.getGraphEditor().updateGraphics();				
-				}
-			} 
-			else if (this.editor.getActivePanel() == this.editor.getRuleEditor().getRightPanel()) {
-				unmapdone = this.rightPanelUnmap(this.editor.getRuleEditor(), rule, wantDeleteGraphObject);
-			} 
-			else if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftCondPanel()) {
-				unmapdone = this.leftCondPanelUnmap(this.editor.getRuleEditor(), rule);
-			} 
-			else if (this.editor.getActivePanel() == this.editor.getGraphEditor().getGraphPanel()
-							&& rule.getMatch() != null) {
-				if (this.editor.getRuleEditor().removeMatchMapping(this.ego, false))
-					unmapdone = true;
-				if (unmapdone) {
-					this.editor.getRuleEditor().getLeftPanel().updateGraphics();
-					this.editor.getGraphEditor().getGraphPanel().updateGraphics();
-				}
-			}
-		} 
-		else if (this.ruleEditor != null && this.ruleEditor.getRule() != null) {
-			EdRule rule = this.ruleEditor.getRule();
-			if (this.gp == this.ruleEditor.getLeftPanel()) {
-				unmapdone = this.leftPanelUnmap(this.ruleEditor, rule, wantDeleteGraphObject);
-				if (unmapdone) {					
-					if (this.graphEditor != null)
-						this.graphEditor.getGraphPanel().updateGraphics();
-				}						
-			} 
-			else if (this.gp == this.ruleEditor.getRightPanel()) {
-				unmapdone = this.rightPanelUnmap(this.editor.getRuleEditor(), rule, wantDeleteGraphObject);
-			} 
-			else if (this.gp == this.ruleEditor.getLeftCondPanel()) {
-				unmapdone = this.leftCondPanelUnmap(this.editor.getRuleEditor(), rule);
-			}
-		} else if (this.graphEditor != null 
-				&& this.gp == this.graphEditor.getGraphPanel()) {
-			if (this.ruleEditor != null) {
-				this.ruleEditor.getRule().removeMapping(this.ego, this.ruleEditor.getRule().getMatch());
-				if (this.ruleEditor.getLeftPanel().getGraph() == this.ruleEditor.getRule().getLeft())
-					this.ruleEditor.getLeftPanel().updateGraphics();
-				this.graphEditor.getGraphPanel().updateGraphics();
-			}
-		}
-	}
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "<html><body>"
+                                + "Please check the graph(s): \n"
+                                + errors + ".\n"
+                                + "\nMultiplicity constraint of the node type:\n"
+                                + "\"" + this.ego.getType().getBasisType().getName() + "\"  \n"
+                                + "is not satisfied.",
+                                "Checking Node Type Multiplicity",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    }
+                } else {
+                    String errors = this.gp.getGraph().getGraGra()
+                            .checkEdgeTypeMultiplicity((EdArc) this.ego);
+                    if (errors != null) {
+                        errors = errors.replaceAll(",", ",\n");
 
-	private boolean leftPanelUnmap(final RuleEditor rEditor, final EdRule rule, boolean wantDelete) {
-		boolean unmapdone = false;
-		boolean isLeftRuleObj = this.ego.getContext() == rule.getLeft();
-		if (wantDelete) {
-			if (isLeftRuleObj) {
-				if (!(rule instanceof EdAtomic)) {
-					if (rEditor.removeNacMapping(this.ego)
-							|| rEditor.removePacMapping(this.ego)
-							|| rEditor.removeNestedACMapping(this.ego))
-						unmapdone = true;
-				}
-				if (rEditor.removeRuleMapping(this.ego, true))
-					unmapdone = true;
-			} else if (rEditor.getNestedAC() != null) {
-				if (rEditor.getNestedAC().getParent()  == null) {
-					if (rEditor.removeNestedACMapping(this.ego, true))
-						unmapdone = true;
-				} else {
-					if (rEditor.getNestedAC().getParent()
-							.removeNestedACMapping(this.ego, rEditor.getNestedAC()));
-						unmapdone = true;
-					if (rEditor.removeNestedACMapping(this.ego, 
-							rEditor.getNestedAC().getParent(), 
-							rEditor.getNestedAC().getParent().getNestedACs()))
-						unmapdone = true;
-				}
-			}
-			if (unmapdone) {
-				rule.update();
-				if (rEditor.getNestedAC() != null) {
-					rEditor.updateNestedAC(rEditor.getNestedAC());
-				}
-				rEditor.updateGraphics();
-			}
-		} else {
-			if (isLeftRuleObj) {
-				if (!(rule instanceof EdAtomic)) {
-					if (rEditor.removeNacMapping(this.ego, true)
-							|| rEditor.removePacMapping(this.ego, true)
-							|| rEditor.removeNestedACMapping(this.ego, true)) {
-						unmapdone = true;
-					}
-				}
-				if (rEditor.removeRuleMapping(this.ego, true))
-					unmapdone = true;
-			} else if (rEditor.getNestedAC() != null) {
-				if (rEditor.getNestedAC().getParent()  == null) {
-					if (rEditor.removeNestedACMapping(this.ego, true))
-						unmapdone = true;
-				} else {
-					if (rEditor.getNestedAC().getParent()
-							.removeNestedACMapping(this.ego, rEditor.getNestedAC()));
-						unmapdone = true;
-					if (rEditor.removeNestedACMapping(this.ego, true))
-						unmapdone = true;
-				}
-			}
-			if (unmapdone) {
-				if (rEditor.getNestedAC() == null) {
-					rule.update();
-					rEditor.updateGraphics();
-				}
-				else {
-					rEditor.updateNestedAC(rEditor.getNestedAC());
-					rEditor.updateGraphics();
-				}
-			}
-		} 
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "<html><body>"
+                                + "Please check the graph(s): \n"
+                                + errors + ".\n"
+                                + "\nMultiplicity constraint of the edge type:\n"
+                                + "\"" + this.ego.getType().getBasisType().getName() + "\"  \n"
+                                + "is not satisfied.",
+                                "Checking Edge Type Multiplicity",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+                    }
+                }
+            }
 
-		if (rule.getMatch() != null && isLeftRuleObj) {
-			if (rEditor.removeMatchMapping(this.ego, true)) {
-				unmapdone = true;
-			}
-			if (wantDelete) {
-				rule.getMatch().getCompletionStrategy().removeFromObjectVarMap(this.ego.getBasisObject());
-			}
-		}
+            this.gp.getCanvas().updateUndoButton();
+            this.gp.getGraph().undoManagerEndEdit();
+        }
+    }
 
-		return unmapdone;
-	}
-	
-	private boolean rightPanelUnmap(final RuleEditor rEditor, final EdRule rule, boolean wantDelete) {
-		boolean unmapdone = false;
-		boolean isLeftRuleObj = this.ego.getContext() == rule.getLeft();
-		if (!wantDelete) {
-			if (isLeftRuleObj) {
-				if (!(rule instanceof EdAtomic)) {
-					if (rEditor.removeNacMapping(this.ego))
-						unmapdone = true;
-					if (rEditor.removePacMapping(this.ego))
-						unmapdone = true;
-					if (rEditor.removeNestedACMapping(this.ego))
-						unmapdone = true;
-				}
-				if (rEditor.removeRuleMapping(this.ego, true))
-					unmapdone = true;
-			} else if (this.ego.getContext() == rule.getRight()) {
-				if (rEditor.removeRuleMapping(this.ego, false))
-					unmapdone = true;
-			}
-		}
-		if (unmapdone) {
-			if (rEditor.getNestedAC() == null) {
-				rule.update();
-			}
-			else {
-				rule.updateRule();
-				rEditor.updateNestedAC(rEditor.getNestedAC());
-			}
-			rEditor.updateGraphics();
-		}
-		return unmapdone;
-	}
-	
-	private boolean leftCondPanelUnmap(final RuleEditor rEditor, final EdRule rule) {
-		boolean unmapdone = false;
-		if (rEditor.removeNacMapping(this.ego, false))
-				unmapdone = true;
-		else if (rEditor.removePacMapping(this.ego, false))
-				unmapdone = true;
-		else if (rEditor.removeNestedACMapping(this.ego, false))
-				unmapdone = true;
-		
-		if (unmapdone) {
-			if (rEditor.getNestedAC() == null) {
-				rule.update();
-			}
-			else {
-				rule.updateRule();
-				rEditor.updateNestedAC(rEditor.getNestedAC());
-			}
-			rEditor.getLeftPanel().updateGraphics();
-			rEditor.getLeftCondPanel().updateGraphics();
-		}
-		return unmapdone;
-	}
-	
-	/*
+    protected void unmapGraphObject(boolean wantDeleteGraphObject) {
+        boolean unmapdone = false;
+        if (this.editor != null
+                && this.editor.getRuleEditor().getRule() != null) {
+            EdRule rule = this.editor.getRuleEditor().getRule();
+            boolean isLeftRuleObj = this.ego.getContext() == rule.getLeft();
+
+            if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftPanel()) {
+                unmapdone = this.leftPanelUnmap(this.editor.getRuleEditor(), rule, wantDeleteGraphObject);
+
+                if (unmapdone && isLeftRuleObj && rule.getMatch() != null) {
+                    this.editor.getGraphEditor().updateGraphics();
+                }
+            } else if (this.editor.getActivePanel() == this.editor.getRuleEditor().getRightPanel()) {
+                unmapdone = this.rightPanelUnmap(this.editor.getRuleEditor(), rule, wantDeleteGraphObject);
+            } else if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftCondPanel()) {
+                unmapdone = this.leftCondPanelUnmap(this.editor.getRuleEditor(), rule);
+            } else if (this.editor.getActivePanel() == this.editor.getGraphEditor().getGraphPanel()
+                    && rule.getMatch() != null) {
+                if (this.editor.getRuleEditor().removeMatchMapping(this.ego, false)) {
+                    unmapdone = true;
+                }
+                if (unmapdone) {
+                    this.editor.getRuleEditor().getLeftPanel().updateGraphics();
+                    this.editor.getGraphEditor().getGraphPanel().updateGraphics();
+                }
+            }
+        } else if (this.ruleEditor != null && this.ruleEditor.getRule() != null) {
+            EdRule rule = this.ruleEditor.getRule();
+            if (this.gp == this.ruleEditor.getLeftPanel()) {
+                unmapdone = this.leftPanelUnmap(this.ruleEditor, rule, wantDeleteGraphObject);
+                if (unmapdone) {
+                    if (this.graphEditor != null) {
+                        this.graphEditor.getGraphPanel().updateGraphics();
+                    }
+                }
+            } else if (this.gp == this.ruleEditor.getRightPanel()) {
+                unmapdone = this.rightPanelUnmap(this.editor.getRuleEditor(), rule, wantDeleteGraphObject);
+            } else if (this.gp == this.ruleEditor.getLeftCondPanel()) {
+                unmapdone = this.leftCondPanelUnmap(this.editor.getRuleEditor(), rule);
+            }
+        } else if (this.graphEditor != null
+                && this.gp == this.graphEditor.getGraphPanel()) {
+            if (this.ruleEditor != null) {
+                this.ruleEditor.getRule().removeMapping(this.ego, this.ruleEditor.getRule().getMatch());
+                if (this.ruleEditor.getLeftPanel().getGraph() == this.ruleEditor.getRule().getLeft()) {
+                    this.ruleEditor.getLeftPanel().updateGraphics();
+                }
+                this.graphEditor.getGraphPanel().updateGraphics();
+            }
+        }
+    }
+
+    private boolean leftPanelUnmap(final RuleEditor rEditor, final EdRule rule, boolean wantDelete) {
+        boolean unmapdone = false;
+        boolean isLeftRuleObj = this.ego.getContext() == rule.getLeft();
+        if (wantDelete) {
+            if (isLeftRuleObj) {
+                if (!(rule instanceof EdAtomic)) {
+                    if (rEditor.removeNacMapping(this.ego)
+                            || rEditor.removePacMapping(this.ego)
+                            || rEditor.removeNestedACMapping(this.ego)) {
+                        unmapdone = true;
+                    }
+                }
+                if (rEditor.removeRuleMapping(this.ego, true)) {
+                    unmapdone = true;
+                }
+            } else if (rEditor.getNestedAC() != null) {
+                if (rEditor.getNestedAC().getParent() == null) {
+                    if (rEditor.removeNestedACMapping(this.ego, true)) {
+                        unmapdone = true;
+                    }
+                } else {
+                    if (rEditor.getNestedAC().getParent()
+                            .removeNestedACMapping(this.ego, rEditor.getNestedAC()));
+                    unmapdone = true;
+                    if (rEditor.removeNestedACMapping(this.ego,
+                            rEditor.getNestedAC().getParent(),
+                            rEditor.getNestedAC().getParent().getNestedACs())) {
+                        unmapdone = true;
+                    }
+                }
+            }
+            if (unmapdone) {
+                rule.update();
+                if (rEditor.getNestedAC() != null) {
+                    rEditor.updateNestedAC(rEditor.getNestedAC());
+                }
+                rEditor.updateGraphics();
+            }
+        } else {
+            if (isLeftRuleObj) {
+                if (!(rule instanceof EdAtomic)) {
+                    if (rEditor.removeNacMapping(this.ego, true)
+                            || rEditor.removePacMapping(this.ego, true)
+                            || rEditor.removeNestedACMapping(this.ego, true)) {
+                        unmapdone = true;
+                    }
+                }
+                if (rEditor.removeRuleMapping(this.ego, true)) {
+                    unmapdone = true;
+                }
+            } else if (rEditor.getNestedAC() != null) {
+                if (rEditor.getNestedAC().getParent() == null) {
+                    if (rEditor.removeNestedACMapping(this.ego, true)) {
+                        unmapdone = true;
+                    }
+                } else {
+                    if (rEditor.getNestedAC().getParent()
+                            .removeNestedACMapping(this.ego, rEditor.getNestedAC()));
+                    unmapdone = true;
+                    if (rEditor.removeNestedACMapping(this.ego, true)) {
+                        unmapdone = true;
+                    }
+                }
+            }
+            if (unmapdone) {
+                if (rEditor.getNestedAC() == null) {
+                    rule.update();
+                    rEditor.updateGraphics();
+                } else {
+                    rEditor.updateNestedAC(rEditor.getNestedAC());
+                    rEditor.updateGraphics();
+                }
+            }
+        }
+
+        if (rule.getMatch() != null && isLeftRuleObj) {
+            if (rEditor.removeMatchMapping(this.ego, true)) {
+                unmapdone = true;
+            }
+            if (wantDelete) {
+                rule.getMatch().getCompletionStrategy().removeFromObjectVarMap(this.ego.getBasisObject());
+            }
+        }
+
+        return unmapdone;
+    }
+
+    private boolean rightPanelUnmap(final RuleEditor rEditor, final EdRule rule, boolean wantDelete) {
+        boolean unmapdone = false;
+        boolean isLeftRuleObj = this.ego.getContext() == rule.getLeft();
+        if (!wantDelete) {
+            if (isLeftRuleObj) {
+                if (!(rule instanceof EdAtomic)) {
+                    if (rEditor.removeNacMapping(this.ego)) {
+                        unmapdone = true;
+                    }
+                    if (rEditor.removePacMapping(this.ego)) {
+                        unmapdone = true;
+                    }
+                    if (rEditor.removeNestedACMapping(this.ego)) {
+                        unmapdone = true;
+                    }
+                }
+                if (rEditor.removeRuleMapping(this.ego, true)) {
+                    unmapdone = true;
+                }
+            } else if (this.ego.getContext() == rule.getRight()) {
+                if (rEditor.removeRuleMapping(this.ego, false)) {
+                    unmapdone = true;
+                }
+            }
+        }
+        if (unmapdone) {
+            if (rEditor.getNestedAC() == null) {
+                rule.update();
+            } else {
+                rule.updateRule();
+                rEditor.updateNestedAC(rEditor.getNestedAC());
+            }
+            rEditor.updateGraphics();
+        }
+        return unmapdone;
+    }
+
+    private boolean leftCondPanelUnmap(final RuleEditor rEditor, final EdRule rule) {
+        boolean unmapdone = false;
+        if (rEditor.removeNacMapping(this.ego, false)) {
+            unmapdone = true;
+        } else if (rEditor.removePacMapping(this.ego, false)) {
+            unmapdone = true;
+        } else if (rEditor.removeNestedACMapping(this.ego, false)) {
+            unmapdone = true;
+        }
+
+        if (unmapdone) {
+            if (rEditor.getNestedAC() == null) {
+                rule.update();
+            } else {
+                rule.updateRule();
+                rEditor.updateNestedAC(rEditor.getNestedAC());
+            }
+            rEditor.getLeftPanel().updateGraphics();
+            rEditor.getLeftCondPanel().updateGraphics();
+        }
+        return unmapdone;
+    }
+
+    /*
 	private JMenu createGraphStatisticMenu() {
 		JMenu statistMenu = new JMenu("Graph Statistic");
 		
@@ -1731,69 +1788,66 @@ public class EditPopupMenu extends JPopupMenu {
 		
 		return statistMenu;
 	}
-	*/
-	
-	public void activateObjectNameMenuItem(boolean b) {
-		if (b && this.getComponent(3) != this.miObjName) {
-			this.insert(this.miObjName, 3);
-		}
-		else {
-			this.remove(this.miObjName);
-		}
-	}
-	
-	protected void setObjectName(final EdGraphObject go) {	
-		go.setWeakselected(true);
-		this.gp.updateGraphics();
-		String objname = JOptionPane.showInputDialog(this.applFrame, 
-				" Please set the object name: ", go.getBasisObject().getObjectName());
-		
-		if (objname != null) {
-			go.getBasisObject().setObjectName(objname);
+     */
+    public void activateObjectNameMenuItem(boolean b) {
+        if (b && this.getComponent(3) != this.miObjName) {
+            this.insert(this.miObjName, 3);
+        } else {
+            this.remove(this.miObjName);
+        }
+    }
+
+    protected void setObjectName(final EdGraphObject go) {
+        go.setWeakselected(true);
+        this.gp.updateGraphics();
+        String objname = JOptionPane.showInputDialog(this.applFrame,
+                " Please set the object name: ", go.getBasisObject().getObjectName());
+
+        if (objname != null) {
+            go.getBasisObject().setObjectName(objname);
 //			this.gp.updateGraphics();	
-		}
-		go.setWeakselected(false);
-		this.gp.updateGraphics();
-	}
-	
-	
-	JFrame applFrame;
+        }
+        go.setWeakselected(false);
+        this.gp.updateGraphics();
+    }
 
-	private JMenuItem mi;
+    JFrame applFrame;
 
-	final private JMenuItem //miOperations, 
-			miDelete, miMap, miUnmap, miStraighten, miVisibility,
-			miAddIdenticToRule, 
-			miAddIdenticToNAC, miAddIdenticToPAC, miAddIdenticToGAC,
-			miMultiplicity, miSetParent, miUnsetParent, miComment, miObjName;
+    private JMenuItem mi;
 
-	private JMenu deleteMenu, addIdentic,
-//			statistic,
-			layout;
+    final private JMenuItem //miOperations, 
+            miDelete, miMap, miUnmap, miStraighten, miVisibility,
+            miAddIdenticToRule,
+            miAddIdenticToNAC, miAddIdenticToPAC, miAddIdenticToGAC,
+            miMultiplicity, miSetParent, miUnsetParent, miComment, miObjName;
 
-	private JCheckBoxMenuItem miAbstract, miFrozen;
+    private JMenu deleteMenu, addIdentic,
+            //			statistic,
+            layout;
 
-	boolean mapping = false;
+    private JCheckBoxMenuItem miAbstract, miFrozen;
 
-	GraGraEditor editor;
+    boolean mapping = false;
 
-	RuleEditor ruleEditor;
+    GraGraEditor editor;
 
-	GraphEditor graphEditor;
+    RuleEditor ruleEditor;
 
-	GraphPanel gp;
+    GraphEditor graphEditor;
 
-	EdGraphObject ego;
+    GraphPanel gp;
 
-	int xPos, yPos;
+    EdGraphObject ego;
 
-	private TypeCardinalityDialog multiplicity;
+    int xPos, yPos;
 
-	private boolean useDeleteMenu = false;
+    private TypeCardinalityDialog multiplicity;
 
-	EvolutionaryGraphLayout layouter;
+    private boolean useDeleteMenu = false;
 
-	Point location;
+    EvolutionaryGraphLayout layouter;
+
+    Point location;
 }
 
 // $Log: EditPopupMenu.java,v $

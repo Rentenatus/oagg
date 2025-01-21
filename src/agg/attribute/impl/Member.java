@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import agg.attribute.AttrMember;
@@ -17,29 +18,31 @@ import agg.attribute.AttrTuple;
  * @author $Author: olga $
  */
 public abstract class Member extends AttrObject implements AttrMember {
-	static final long serialVersionUID = -1564021289077614857L;
 
-	public Member() {
-		super();
-	}
+    static final long serialVersionUID = -1564021289077614857L;
 
-	public abstract AttrTuple getHoldingTuple();
+    public Member() {
+        super();
+    }
 
-	public int getIndexInTuple() {
-		if (getHoldingTuple() == null)
-			return -1;
-		return ((TupleObject) getHoldingTuple()).getIndexForName(getName());
-	}
+    public abstract AttrTuple getHoldingTuple();
 
-	// 
-	// Internal Methods:
-	//
+    public int getIndexInTuple() {
+        if (getHoldingTuple() == null) {
+            return -1;
+        }
+        return ((TupleObject) getHoldingTuple()).getIndexForName(getName());
+    }
 
-	protected void fireChanged(int code) {
-		if (getHoldingTuple() == null)
-			return;
-		((TupleObject) getHoldingTuple()).memberChanged(code, this);
-	}
+    // 
+    // Internal Methods:
+    //
+    protected void fireChanged(int code) {
+        if (getHoldingTuple() == null) {
+            return;
+        }
+        ((TupleObject) getHoldingTuple()).memberChanged(code, this);
+    }
 
 }
 /*

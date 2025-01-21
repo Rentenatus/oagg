@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.editor.impl;
 
 import java.awt.Component;
@@ -21,47 +22,48 @@ import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class EdFormula extends JDialog {
-	JButton Ok = new JButton();
 
-	JButton Cancel = new JButton();
+    JButton Ok = new JButton();
 
-	Component component1;
+    JButton Cancel = new JButton();
 
-	@SuppressWarnings("rawtypes")
-	JList jList1 = new JList();
+    Component component1;
 
-	JTextField jTextField1 = new JTextField();
+    @SuppressWarnings("rawtypes")
+    JList jList1 = new JList();
 
-	public EdFormula() {
-		try {
-			jbInit();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    JTextField jTextField1 = new JTextField();
 
-	private void jbInit() throws Exception {
-		this.component1 = Box.createHorizontalStrut(8);
-		this.Ok.setActionCommand("Ok");
-		this.Ok.setText("jButton1");
-		this.Ok.addActionListener(new java.awt.event.ActionListener() {
+    public EdFormula() {
+        try {
+            jbInit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-			public void actionPerformed(ActionEvent e) {
-				Ok_actionPerformed(e);
-			}
-		});
-		this.Cancel.setActionCommand("Cancel");
-		this.Cancel.setText("jButton1");
-		this.jList1.setMaximumSize(new Dimension(32000, 32000));
-		this.jTextField1.setText("jTextField1");
-		this.add(this.Ok, null);
-		this.add(this.jList1, null);
-		this.add(this.component1, null);
-		this.add(this.Cancel, null);
-		this.add(this.jTextField1, null);
-	}
+    private void jbInit() throws Exception {
+        this.component1 = Box.createHorizontalStrut(8);
+        this.Ok.setActionCommand("Ok");
+        this.Ok.setText("jButton1");
+        this.Ok.addActionListener(new java.awt.event.ActionListener() {
 
-	void Ok_actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
+                Ok_actionPerformed(e);
+            }
+        });
+        this.Cancel.setActionCommand("Cancel");
+        this.Cancel.setText("jButton1");
+        this.jList1.setMaximumSize(new Dimension(32000, 32000));
+        this.jTextField1.setText("jTextField1");
+        this.add(this.Ok, null);
+        this.add(this.jList1, null);
+        this.add(this.component1, null);
+        this.add(this.Cancel, null);
+        this.add(this.jTextField1, null);
+    }
 
-	}
+    void Ok_actionPerformed(ActionEvent e) {
+
+    }
 }

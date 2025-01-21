@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.browser;
 
 import javax.swing.JFrame;
@@ -18,64 +19,78 @@ import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 
 /**
- * The interface that defines a graph browser for viewing graphs. The graph can
- * be one of types: <code>editor.impl.EdGraph</code> or
- * <code>agg.xt_basis.Graph</code> ,
- * 
+ * The interface that defines a graph browser for viewing graphs. The graph can be one of types:
+ * <code>editor.impl.EdGraph</code> or <code>agg.xt_basis.Graph</code> ,
+ *
  * @author $Author: olga $
  * @version $Id: GraphBrowser.java,v 1.2 2007/09/10 13:05:53 olga Exp $
  */
 public interface GraphBrowser {
 
-	/** Return my <code>JPanel</code>. */
-	public abstract JPanel getPanel();
+    /**
+     * Return my <code>JPanel</code>.
+     */
+    public abstract JPanel getPanel();
 
-	/** Return my graph. */
-	public abstract Object getGraph();
+    /**
+     * Return my graph.
+     */
+    public abstract Object getGraph();
 
-	/** Set <code>EdGraph</code> to show. */
-	public abstract void setGraph(EdGraph g);
+    /**
+     * Set <code>EdGraph</code> to show.
+     */
+    public abstract void setGraph(EdGraph g);
 
-	/** Set <code>Graph</code> to show. */
-	public abstract void setGraph(Graph g);
+    /**
+     * Set <code>Graph</code> to show.
+     */
+    public abstract void setGraph(Graph g);
 
-	/** Show graph. */
-	public abstract void showGraph();
+    /**
+     * Show graph.
+     */
+    public abstract void showGraph();
 
-	/**
-	 * Return gragra. The gragra is of type
-	 * <code>agg.editor.impl.EdGraGra</code>.
-	 */
-	public abstract EdGraGra getGraGra();
+    /**
+     * Return gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
+     */
+    public abstract EdGraGra getGraGra();
 
-	/**
-	 * Return gragra. The gragra is of type <code>agg.xt_basis.GraGra</code>.
-	 */
-	public abstract GraGra getBaseGraGra();
+    /**
+     * Return gragra. The gragra is of type <code>agg.xt_basis.GraGra</code>.
+     */
+    public abstract GraGra getBaseGraGra();
 
-	/**
-	 * Set gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
-	 */
-	public abstract void setGraGra(EdGraGra gragra);
+    /**
+     * Set gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
+     */
+    public abstract void setGraGra(EdGraGra gragra);
 
-	/**
-	 * Set gragra. The gragra is of type <code>agg.xt_basis.GraGra</code>.
-	 */
-	public abstract void setGraGra(GraGra gragra);
+    /**
+     * Set gragra. The gragra is of type <code>agg.xt_basis.GraGra</code>.
+     */
+    public abstract void setGraGra(GraGra gragra);
 
-	/** Load gragra. */
-	public abstract EdGraGra loadGraGra(JFrame frame);
+    /**
+     * Load gragra.
+     */
+    public abstract EdGraGra loadGraGra(JFrame frame);
 
-	/** Load base gragra. */
-	public abstract GraGra loadBaseGraGra(JFrame frame);
+    /**
+     * Load base gragra.
+     */
+    public abstract GraGra loadBaseGraGra(JFrame frame);
 
-	/**
-	 * Save gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
-	 */
-	public abstract void saveAs(JFrame frame);
+    /**
+     * Save gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
+     */
+    public abstract void saveAs(JFrame frame);
 
-	/** Read base graph and update graphics. */
-	public abstract void updateGraphics();
+    /**
+     * Read base graph and update graphics.
+     */
+    public abstract void updateGraphics();
 
 }
 // $Log: GraphBrowser.java,v $

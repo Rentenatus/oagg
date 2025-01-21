@@ -1,44 +1,44 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: NUMtoNUMnode.java,v 1.3 2010/03/31 21:10:49 olga Exp $
  * @author $Author: olga $
  */
 public class NUMtoNUMnode extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	NUMtoNUMnode(String id) {
-		super(id);
-	}
+    NUMtoNUMnode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new NUMtoNUMnode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new NUMtoNUMnode(id);
+    }
 
-	public void checkContext() throws ASTWrongTypeException {
-		Node child1 = jjtGetChild(0);
+    public void checkContext() throws ASTWrongTypeException {
+        Node child1 = jjtGetChild(0);
 
-		child1.checkContext();
+        child1.checkContext();
 
-		if (((SimpleNode)child1).hasNumberType()) {
-			setNodeClass(((SimpleNode)child1).getNodeClass());
-		} else {
-			throw new ASTWrongTypeException("[Number -> Number]", "["
-					+ ((SimpleNode)child1).getNodeClass().getName() + "]");
-		}
-	}
+        if (((SimpleNode) child1).hasNumberType()) {
+            setNodeClass(((SimpleNode) child1).getNodeClass());
+        } else {
+            throw new ASTWrongTypeException("[Number -> Number]", "["
+                    + ((SimpleNode) child1).getNodeClass().getName() + "]");
+        }
+    }
 }
 /*
  * $Log: NUMtoNUMnode.java,v $

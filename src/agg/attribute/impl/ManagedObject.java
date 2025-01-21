@@ -1,50 +1,58 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import agg.attribute.AttrManager;
 
 /**
- * This intermediate class was designed without a special purpose. It was
- * thought, at one point all the attributes might want to access a central
- * institution. Till now no need has occured.
- * 
+ * This intermediate class was designed without a special purpose. It was thought, at one point all the attributes might
+ * want to access a central institution. Till now no need has occured.
+ *
  * @author $Author: olga $
  * @version $Id: ManagedObject.java,v 1.3 2010/09/23 08:14:09 olga Exp $
  */
 public class ManagedObject extends AttrObject {
 
-	/** A reference to the manager in case something is needed. */
-	protected AttrTupleManager manager;
+    /**
+     * A reference to the manager in case something is needed.
+     */
+    protected AttrTupleManager manager;
 
-	/** A common constructor, so everybody knows where he belongs. */
-	public ManagedObject(AttrTupleManager m) {
-		super();
-		this.manager = m;
-		// ValueTuple brauchen keinen TupleManager
-		// allerdings laeuft noch was bei den condTuple falsch
-		// System.out.println(this);
-		// if(this instanceof ValueTuple){
-		// this.manager = null;
-		// }
-	}
+    /**
+     * A common constructor, so everybody knows where he belongs.
+     */
+    public ManagedObject(AttrTupleManager m) {
+        super();
+        this.manager = m;
+        // ValueTuple brauchen keinen TupleManager
+        // allerdings laeuft noch was bei den condTuple falsch
+        // System.out.println(this);
+        // if(this instanceof ValueTuple){
+        // this.manager = null;
+        // }
+    }
 
-	/** Retrieving the manager of others might also be necessary one day. */
-	public AttrTupleManager getManager() {
-		return this.manager;
-	}
+    /**
+     * Retrieving the manager of others might also be necessary one day.
+     */
+    public AttrTupleManager getManager() {
+        return this.manager;
+    }
 
-	/** For TupleObject's implementation of the AttrTuple interface. */
-	public AttrManager getAttrManager() {
-		return this.manager;
-	}
+    /**
+     * For TupleObject's implementation of the AttrTuple interface.
+     */
+    public AttrManager getAttrManager() {
+        return this.manager;
+    }
 }
 /*
  * $Log: ManagedObject.java,v $

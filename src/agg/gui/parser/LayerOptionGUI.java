@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser;
 
 import java.awt.Dimension;
@@ -25,73 +26,72 @@ import agg.parser.LayerOption;
 import agg.parser.OptionEventListener;
 
 /**
- * This gui shows the preferences for the layer function. The user can choose
- * between a basic function and a function with NAC check.
- * 
+ * This gui shows the preferences for the layer function. The user can choose between a basic function and a function
+ * with NAC check.
+ *
  * @version $Id: LayerOptionGUI.java,v 1.4 2010/09/23 08:20:54 olga Exp $
  * @author $Author: olga $
  */
 @SuppressWarnings("serial")
 public class LayerOptionGUI extends AbstractOptionGUI implements ItemListener,
-		OptionEventListener {
+        OptionEventListener {
 
-	/**
-	 * the choice of the different function
-	 */
-	@SuppressWarnings("rawtypes")
-	JComboBox layerType;
+    /**
+     * the choice of the different function
+     */
+    @SuppressWarnings("rawtypes")
+    JComboBox layerType;
 
-	public static final String RCD_LAYER = "Rule, Creation, Deletion, Rule must delete";
+    public static final String RCD_LAYER = "Rule, Creation, Deletion, Rule must delete";
 
-	public static final String RCDN_LAYER = RCD_LAYER + ", NAC check";
+    public static final String RCDN_LAYER = RCD_LAYER + ", NAC check";
 
-	public static final String WEAK_RCD_LAYER = "Rule, Creation, Deletion";
+    public static final String WEAK_RCD_LAYER = "Rule, Creation, Deletion";
 
-	public static final String WEAK_RCDN_LAYER = WEAK_RCD_LAYER + ", NAC check";
+    public static final String WEAK_RCDN_LAYER = WEAK_RCD_LAYER + ", NAC check";
 
-	/**
-	 * The option
-	 * 
-	 * @serial this is serializable because a super class is serializable
-	 */
-	private LayerOption lOption;
+    /**
+     * The option
+     *
+     * @serial this is serializable because a super class is serializable
+     */
+    private LayerOption lOption;
 
-	/**
-	 * Creates a new gui with specified settings.
-	 * 
-	 * @param lOption
-	 *            specifies the option to modify
-	 */
-	public LayerOptionGUI(LayerOption lOption) {
-		super();
-		this.lOption = lOption;
+    /**
+     * Creates a new gui with specified settings.
+     *
+     * @param lOption specifies the option to modify
+     */
+    public LayerOptionGUI(LayerOption lOption) {
+        super();
+        this.lOption = lOption;
 
-		GridBagLayout gridbag = new GridBagLayout();
-		GridBagConstraints c = new GridBagConstraints();
+        GridBagLayout gridbag = new GridBagLayout();
+        GridBagConstraints c = new GridBagConstraints();
 
-		setLayout(gridbag);
+        setLayout(gridbag);
 
-		c.fill = GridBagConstraints.BOTH;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.weighty = 0.0;
-		c.weightx = 1.0;
-		add(makeLayerType(), c);
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.weighty = 0.0;
+        c.weightx = 1.0;
+        add(makeLayerType(), c);
 
-		c.fill = GridBagConstraints.BOTH;
-		c.anchor = GridBagConstraints.NORTHWEST;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.weighty = 1.0;
-		c.weightx = 1.0;
-		add(new JPanel(), c);
-		validate();
-	}
+        c.fill = GridBagConstraints.BOTH;
+        c.anchor = GridBagConstraints.NORTHWEST;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.weighty = 1.0;
+        c.weightx = 1.0;
+        add(new JPanel(), c);
+        validate();
+    }
 
-	public Dimension getPreferredSize() {
-		return new Dimension(350, 480);
-	}
+    public Dimension getPreferredSize() {
+        return new Dimension(350, 480);
+    }
 
-	/*
+    /*
 	 * private void addIcon(JPanel optionPanel){ GridBagConstraints c = new
 	 * GridBagConstraints(); c.fill = GridBagConstraints.NONE; c.gridwidth = 1;
 	 * c.gridheight = 2; c.weightx = 0.0; c.weighty = 0.0; c.insets = new
@@ -102,116 +102,116 @@ public class LayerOptionGUI extends AbstractOptionGUI implements ItemListener,
 	 * optionLabel.setHorizontalTextPosition(JLabel.CENTER);
 	 * optionLabel.setVerticalTextPosition(JLabel.CENTER);
 	 * optionPanel.add(optionLabel,c); }
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private JPanel makeLayerType() {
-		GridBagConstraints c = new GridBagConstraints();
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private JPanel makeLayerType() {
+        GridBagConstraints c = new GridBagConstraints();
 
-		c.fill = GridBagConstraints.BOTH;
-		c.gridwidth = GridBagConstraints.RELATIVE;
-		c.gridheight = 1;
-		c.weightx = 0.0;
-		c.anchor = GridBagConstraints.WEST;
+        c.fill = GridBagConstraints.BOTH;
+        c.gridwidth = GridBagConstraints.RELATIVE;
+        c.gridheight = 1;
+        c.weightx = 0.0;
+        c.anchor = GridBagConstraints.WEST;
 
-		JPanel optionPanel = makeInitialOptionPanel(true, 
-				"Select algorithm for layer function", c);
+        JPanel optionPanel = makeInitialOptionPanel(true,
+                "Select algorithm for layer function", c);
 
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.weightx = 1.0;
-		optionPanel.add(new JPanel(), c);
-		c.gridwidth = 1;
-		c.weightx = 0.0;
-		c.anchor = GridBagConstraints.WEST;
-		this.layerType = new JComboBox();
-		this.layerType.addItem(RCDN_LAYER);
-		this.layerType.addItem(WEAK_RCDN_LAYER);
-		this.layerType.addItem(RCD_LAYER);
-		this.layerType.addItem(WEAK_RCD_LAYER);
-		this.layerType.addItemListener(this);
-		optionPanel.add(this.layerType, c);
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.weightx = 1.0;
-		optionPanel.add(new JPanel(), c);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.weightx = 1.0;
+        optionPanel.add(new JPanel(), c);
+        c.gridwidth = 1;
+        c.weightx = 0.0;
+        c.anchor = GridBagConstraints.WEST;
+        this.layerType = new JComboBox();
+        this.layerType.addItem(RCDN_LAYER);
+        this.layerType.addItem(WEAK_RCDN_LAYER);
+        this.layerType.addItem(RCD_LAYER);
+        this.layerType.addItem(WEAK_RCD_LAYER);
+        this.layerType.addItemListener(this);
+        optionPanel.add(this.layerType, c);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.weightx = 1.0;
+        optionPanel.add(new JPanel(), c);
 
-		return optionPanel;
-	}
+        return optionPanel;
+    }
 
-	/**
-	 * Receives events if another layer function is selected in the gui.
-	 * 
-	 * @param e
-	 *            the event for the change
-	 */
-	public void itemStateChanged(ItemEvent e) {
-		Object source = e.getSource();
-		if (source == this.layerType) {
-			if (this.layerType.getSelectedItem().equals(RCDN_LAYER)) {
-				this.lOption.setLayer(LayerOption.RCDN_LAYER);
-			} else if (this.layerType.getSelectedItem().equals(WEAK_RCDN_LAYER)) {
-				this.lOption.setLayer(LayerOption.WEAK_RCDN_LAYER);
-			} else if (this.layerType.getSelectedItem().equals(RCD_LAYER)) {
-				this.lOption.setLayer(LayerOption.RCD_LAYER);
-			} else if (this.layerType.getSelectedItem().equals(WEAK_RCD_LAYER)) {
-				this.lOption.setLayer(LayerOption.WEAK_RCD_LAYER);
-			}
-		}
-	}
+    /**
+     * Receives events if another layer function is selected in the gui.
+     *
+     * @param e the event for the change
+     */
+    public void itemStateChanged(ItemEvent e) {
+        Object source = e.getSource();
+        if (source == this.layerType) {
+            if (this.layerType.getSelectedItem().equals(RCDN_LAYER)) {
+                this.lOption.setLayer(LayerOption.RCDN_LAYER);
+            } else if (this.layerType.getSelectedItem().equals(WEAK_RCDN_LAYER)) {
+                this.lOption.setLayer(LayerOption.WEAK_RCDN_LAYER);
+            } else if (this.layerType.getSelectedItem().equals(RCD_LAYER)) {
+                this.lOption.setLayer(LayerOption.RCD_LAYER);
+            } else if (this.layerType.getSelectedItem().equals(WEAK_RCD_LAYER)) {
+                this.lOption.setLayer(LayerOption.WEAK_RCD_LAYER);
+            }
+        }
+    }
 
-	/**
-	 * Returns a icon for the tab.
-	 * 
-	 * @return the icon
-	 */
-	public Icon getIcon() {
-		return null;
-	}
+    /**
+     * Returns a icon for the tab.
+     *
+     * @return the icon
+     */
+    public Icon getIcon() {
+        return null;
+    }
 
-	/**
-	 * Returns the text for the tab title.
-	 * 
-	 * @return <I>Layer</I> is returned
-	 */
-	public String getTabTitle() {
-		return "Layer";
-	}
+    /**
+     * Returns the text for the tab title.
+     *
+     * @return <I>Layer</I> is returned
+     */
+    public String getTabTitle() {
+        return "Layer";
+    }
 
-	/**
-	 * Returns the text for the tab tip.
-	 * 
-	 * @return <I>Layer Function</I> is returned
-	 */
-	public String getTabTip() {
-		return "Layer Function";
-	}
+    /**
+     * Returns the text for the tab tip.
+     *
+     * @return <I>Layer Function</I> is returned
+     */
+    public String getTabTip() {
+        return "Layer Function";
+    }
 
-	/**
-	 * Updates the gui to the setting of the option.
-	 */
-	public void update() {
-		switch (this.lOption.getLayer()) {
-		case LayerOption.RCDN_LAYER:
-			this.layerType.setSelectedItem(RCDN_LAYER);
-			break;
-		case LayerOption.WEAK_RCDN_LAYER:
-			this.layerType.setSelectedItem(WEAK_RCDN_LAYER);
-			break;
-		case LayerOption.RCD_LAYER:
-			this.layerType.setSelectedItem(RCD_LAYER);
-			break;
-		case LayerOption.WEAK_RCD_LAYER:
-			this.layerType.setSelectedItem(WEAK_RCD_LAYER);
-			break;
-		default:
-			break;
-		}
-	}
+    /**
+     * Updates the gui to the setting of the option.
+     */
+    public void update() {
+        switch (this.lOption.getLayer()) {
+            case LayerOption.RCDN_LAYER:
+                this.layerType.setSelectedItem(RCDN_LAYER);
+                break;
+            case LayerOption.WEAK_RCDN_LAYER:
+                this.layerType.setSelectedItem(WEAK_RCDN_LAYER);
+                break;
+            case LayerOption.RCD_LAYER:
+                this.layerType.setSelectedItem(RCD_LAYER);
+                break;
+            case LayerOption.WEAK_RCD_LAYER:
+                this.layerType.setSelectedItem(WEAK_RCD_LAYER);
+                break;
+            default:
+                break;
+        }
+    }
 
-	/* Implements java.util.EventListener */
-	public void optionEventOccurred(EventObject e) {
-		System.out.println("LayerOptionGUI.optionEventOccurred");
-		if (e.getSource() instanceof LayerOption)
-			update();
-		/*
+    /* Implements java.util.EventListener */
+    public void optionEventOccurred(EventObject e) {
+        System.out.println("LayerOptionGUI.optionEventOccurred");
+        if (e.getSource() instanceof LayerOption) {
+            update();
+        }
+        /*
 		 * if(this.layerType.getSelectedItem().equals(RCDN_LAYER)){
 		 * this.lOption.setLayer(LayerOption.RCDN_LAYER); } else
 		 * if(this.layerType.getSelectedItem().equals(WEAK_RCDN_LAYER)){
@@ -220,13 +220,13 @@ public class LayerOptionGUI extends AbstractOptionGUI implements ItemListener,
 		 * this.lOption.setLayer(LayerOption.RCD_LAYER); } else
 		 * if(this.layerType.getSelectedItem().equals(WEAK_RCD_LAYER)){
 		 * this.lOption.setLayer(LayerOption.WEAK_RCD_LAYER); }
-		 */
-		// System.out.println(this.lOption.getLayer()+"
-		// "+this.layerType.getSelectedItem());
-	}
+         */
+        // System.out.println(this.lOption.getLayer()+"
+        // "+this.layerType.getSelectedItem());
+    }
 
-	public void executeOnClose() {}
-	
+    public void executeOnClose() {
+    }
 
 }
 /*

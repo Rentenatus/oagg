@@ -1,170 +1,177 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 // $Id: NestedACTreeNodeData.java,v 1.3 2010/09/23 08:23:32 olga Exp $
-
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import agg.editor.impl.EdNestedApplCond;
 
-
 /**
- * The PACTreeNodeData implements an user object of a tree node in the
- * GraGraTreeModel.
- * 
+ * The PACTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ *
  * @author $Author: olga $
  * @version $Id: NestedACTreeNodeData.java,v 1.3 2010/09/23 08:23:32 olga Exp $
  */
 public class NestedACTreeNodeData extends GraGraTreeNodeDataAdapter {
-	
-	private Object data;
-	
-	private EdNestedApplCond eAC;
 
-	/** Value to display. */
-	private String string = "";
+    private Object data;
 
-	/** My tree node in a tree */
-	private DefaultMutableTreeNode treeNode;
+    private EdNestedApplCond eAC;
 
-	public NestedACTreeNodeData(final EdNestedApplCond ac) {
-		setAC(ac);
-	}
+    /**
+     * Value to display.
+     */
+    private String string = "";
 
-	private void setAC(final EdNestedApplCond ac) {
-		this.data = ac;
-		this.eAC = ac;
-		if (!ac.getMorphism().isEnabled())
-			this.string = "[D]" + ac.getName();
-		else
-			this.string = ac.getName();
-	}
-	
-	public NestedACTreeNodeData(String s) {
-		this.data = s;
-		this.string = s;
-	}
+    /**
+     * My tree node in a tree
+     */
+    private DefaultMutableTreeNode treeNode;
 
-	public NestedACTreeNodeData(Object obj) {
-		if (obj instanceof EdNestedApplCond)
-			setAC((EdNestedApplCond) obj);
-		else if (obj instanceof String)
-			new NestedACTreeNodeData((String) obj);
-	}
+    public NestedACTreeNodeData(final EdNestedApplCond ac) {
+        setAC(ac);
+    }
 
-	public void dispose() {
-		this.data = null;
-		this.eAC = null;
-		this.string = null;
-		this.treeNode = null;
-	}
-	
-	/* Set data object of this tree node data */
-	public void setData(final Object obj) {
-		if (obj instanceof EdNestedApplCond)
-			setAC((EdNestedApplCond) obj);
-		else if (obj instanceof String) {
-			this.string = (String) obj;
-			this.data = obj;
-			this.eAC = null;
-		}
-		else {
-			this.data = null;
-			this.eAC = null;
-			this.string = null;		
-		}
-	}
+    private void setAC(final EdNestedApplCond ac) {
+        this.data = ac;
+        this.eAC = ac;
+        if (!ac.getMorphism().isEnabled()) {
+            this.string = "[D]" + ac.getName();
+        } else {
+            this.string = ac.getName();
+        }
+    }
 
-	public Object getData() {
-		return this.data;
-	}
-	
-	/**
-	 * Sets the string to display for this object.
-	 */
-	public void setString(String str) {
-		if (str == null) {
-			return;
-		}
-		String newString = str.replaceAll(" ", "");
-		this.string = newString;
-		String newName = "";
-		String sD = "";
-		if (!this.eAC.getMorphism().isEnabled())
-			sD = "[D]";
-		if (newString.indexOf("[D]") != -1)
-			newString = newString.substring(3, newString.length());
-		newName = newString;
-		if (!this.eAC.getName().equals(newName)) {
-			this.eAC.setName(newName);
-			this.eAC.getGraGra().setChanged(true);
-		}
-		this.string = sD + this.eAC.getBasisGraph().getName();
-	}
+    public NestedACTreeNodeData(String s) {
+        this.data = s;
+        this.string = s;
+    }
 
-	public void setString(String tag, String newString) {
-		if (tag.equals("[]"))
-			tag = "";
-		this.string = tag + newString;		
-		if (!this.eAC.getName().equals(newString)) {
-			this.eAC.setName(newString);
-			this.eAC.getGraGra().setChanged(true);
-		}
-	}
+    public NestedACTreeNodeData(Object obj) {
+        if (obj instanceof EdNestedApplCond) {
+            setAC((EdNestedApplCond) obj);
+        } else if (obj instanceof String) {
+            new NestedACTreeNodeData((String) obj);
+        }
+    }
 
-	/**
-	 * Returns the string to display for this object.
-	 */
-	public String string() {
-		return this.string;
-	}
+    public void dispose() {
+        this.data = null;
+        this.eAC = null;
+        this.string = null;
+        this.treeNode = null;
+    }
 
-	public String toString() {
-		return string();
-	}
+    /* Set data object of this tree node data */
+    public void setData(final Object obj) {
+        if (obj instanceof EdNestedApplCond) {
+            setAC((EdNestedApplCond) obj);
+        } else if (obj instanceof String) {
+            this.string = (String) obj;
+            this.data = obj;
+            this.eAC = null;
+        } else {
+            this.data = null;
+            this.eAC = null;
+            this.string = null;
+        }
+    }
 
-	public EdNestedApplCond getNestedAC() {
-		return this.eAC;
-	}
+    public Object getData() {
+        return this.data;
+    }
 
-	public void setTreeNode(DefaultMutableTreeNode node) {
-		this.treeNode = node;
-	}
+    /**
+     * Sets the string to display for this object.
+     */
+    public void setString(String str) {
+        if (str == null) {
+            return;
+        }
+        String newString = str.replaceAll(" ", "");
+        this.string = newString;
+        String newName = "";
+        String sD = "";
+        if (!this.eAC.getMorphism().isEnabled()) {
+            sD = "[D]";
+        }
+        if (newString.indexOf("[D]") != -1) {
+            newString = newString.substring(3, newString.length());
+        }
+        newName = newString;
+        if (!this.eAC.getName().equals(newName)) {
+            this.eAC.setName(newName);
+            this.eAC.getGraGra().setChanged(true);
+        }
+        this.string = sD + this.eAC.getBasisGraph().getName();
+    }
 
-	public DefaultMutableTreeNode getTreeNode() {
-		return this.treeNode;
-	}
+    public void setString(String tag, String newString) {
+        if (tag.equals("[]")) {
+            tag = "";
+        }
+        this.string = tag + newString;
+        if (!this.eAC.getName().equals(newString)) {
+            this.eAC.setName(newString);
+            this.eAC.getGraGra().setChanged(true);
+        }
+    }
 
-	/* (non-Javadoc)
+    /**
+     * Returns the string to display for this object.
+     */
+    public String string() {
+        return this.string;
+    }
+
+    public String toString() {
+        return string();
+    }
+
+    public EdNestedApplCond getNestedAC() {
+        return this.eAC;
+    }
+
+    public void setTreeNode(DefaultMutableTreeNode node) {
+        this.treeNode = node;
+    }
+
+    public DefaultMutableTreeNode getTreeNode() {
+        return this.treeNode;
+    }
+
+    /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isNestedAC()
-	 */
-	public boolean isNestedAC() {
-		return true;
-	}
+     */
+    public boolean isNestedAC() {
+        return true;
+    }
 
-	public void update() {
-		if (this.eAC != null) {
-			if (!this.eAC.getMorphism().isEnabled())
-				this.string = "[D]" + this.eAC.getName();
-			else {
-				this.string = this.eAC.getName();
-			}
-		}
-	}
-	
-	public String getToolTipText() {
-		String toolTipText = " General Application condition ";
-		if (!this.eAC.getMorphism().getTextualComment().equals(""))
-			toolTipText = " "+ this.eAC.getMorphism().getTextualComment();
-		return toolTipText;
-	}
-	
+    public void update() {
+        if (this.eAC != null) {
+            if (!this.eAC.getMorphism().isEnabled()) {
+                this.string = "[D]" + this.eAC.getName();
+            } else {
+                this.string = this.eAC.getName();
+            }
+        }
+    }
+
+    public String getToolTipText() {
+        String toolTipText = " General Application condition ";
+        if (!this.eAC.getMorphism().getTextualComment().equals("")) {
+            toolTipText = " " + this.eAC.getMorphism().getTextualComment();
+        }
+        return toolTipText;
+    }
+
 }

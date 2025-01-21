@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.browser.impl;
 
 import java.awt.BorderLayout;
@@ -46,225 +47,225 @@ import agg.xt_basis.TypeException;
 @SuppressWarnings("serial")
 public class TestBrowser extends JPanel {
 
-	static int ITS_WIDTH = 500;
+    static int ITS_WIDTH = 500;
 
-	static int ITS_HEIGHT = 300;
+    static int ITS_HEIGHT = 300;
 
-	JFrame f;
+    JFrame f;
 
-	GraphBrowser browser;
+    GraphBrowser browser;
 
-	EdGraGra gragra;
+    EdGraGra gragra;
 
-	public TestBrowser(JFrame frame) {
-		super(true);
-		setLayout(new BorderLayout());
+    public TestBrowser(JFrame frame) {
+        super(true);
+        setLayout(new BorderLayout());
 
-		this.f = frame;
+        this.f = frame;
 
-		// create menubar
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.add(createFileMenu());
-		menuBar.add(createLayoutMenu());
-		menuBar.add(createBasisMenu());
-		add(menuBar, BorderLayout.NORTH);
+        // create menubar
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(createFileMenu());
+        menuBar.add(createLayoutMenu());
+        menuBar.add(createBasisMenu());
+        add(menuBar, BorderLayout.NORTH);
 
-		// create graph browser
-		this.browser = new GraphBrowserImpl();
-		add(this.browser.getPanel(), BorderLayout.CENTER);
-		// oder so
-		// add((GraphBrowserImpl) browser, BorderLayout.CENTER);
+        // create graph browser
+        this.browser = new GraphBrowserImpl();
+        add(this.browser.getPanel(), BorderLayout.CENTER);
+        // oder so
+        // add((GraphBrowserImpl) browser, BorderLayout.CENTER);
 
-	}
+    }
 
-	JMenu createFileMenu() {
-		JMenu file = new JMenu("File", true);
-		JMenuItem mi = file.add(new JMenuItem("Load GraGra"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TestBrowser.this.gragra = TestBrowser.this.browser.loadGraGra(TestBrowser.this.f);
-				if (TestBrowser.this.gragra != null) {
-					TestBrowser.this.browser.setGraph(TestBrowser.this.gragra.getGraph());
-					TestBrowser.this.browser.showGraph();
-				}
-			}
-		});
-		/*
+    JMenu createFileMenu() {
+        JMenu file = new JMenu("File", true);
+        JMenuItem mi = file.add(new JMenuItem("Load GraGra"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                TestBrowser.this.gragra = TestBrowser.this.browser.loadGraGra(TestBrowser.this.f);
+                if (TestBrowser.this.gragra != null) {
+                    TestBrowser.this.browser.setGraph(TestBrowser.this.gragra.getGraph());
+                    TestBrowser.this.browser.showGraph();
+                }
+            }
+        });
+        /*
 		 * mi = (JMenuItem) file.add(new JMenuItem("Load Base GraGra"));
 		 * mi.addActionListener(new ActionListener() {public void
 		 * actionPerformed(ActionEvent e) { GraGra base =
 		 * browser.loadBaseGraGra(f); if (base != null) { gragra = new
 		 * EdGraGra(base); browser.setGraph(gragra.getGraph());
 		 * browser.showGraph(); } }});
-		 */
-		mi = file.add(new JMenuItem("Save As"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TestBrowser.this.browser.saveAs(TestBrowser.this.f);
-			}
-		});
+         */
+        mi = file.add(new JMenuItem("Save As"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                TestBrowser.this.browser.saveAs(TestBrowser.this.f);
+            }
+        });
 
-		file.add(new JSeparator());
+        file.add(new JSeparator());
 
-		mi = file.add(new JMenuItem("Show Graph"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TestBrowser.this.browser.setGraph(TestBrowser.this.gragra.getGraph());
-				TestBrowser.this.browser.showGraph();
-			}
-		});
+        mi = file.add(new JMenuItem("Show Graph"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                TestBrowser.this.browser.setGraph(TestBrowser.this.gragra.getGraph());
+                TestBrowser.this.browser.showGraph();
+            }
+        });
 
-		file.add(new JSeparator());
+        file.add(new JSeparator());
 
-		mi = file.add(new JMenuItem("Update"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TestBrowser.this.browser.updateGraphics();
-			}
-		});
+        mi = file.add(new JMenuItem("Update"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                TestBrowser.this.browser.updateGraphics();
+            }
+        });
 
-		file.add(new JSeparator());
+        file.add(new JSeparator());
 
-		mi = file.add(new JMenuItem("Exit"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
-		return file;
-	}
+        mi = file.add(new JMenuItem("Exit"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        return file;
+    }
 
-	JMenu createLayoutMenu() {
-		JMenu layout = new JMenu("Layout", true);
-		JMenuItem mi = layout.add(new JMenuItem("Default"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				defaultLayout();
-			}
-		});
-		return layout;
-	}
+    JMenu createLayoutMenu() {
+        JMenu layout = new JMenu("Layout", true);
+        JMenuItem mi = layout.add(new JMenuItem("Default"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                defaultLayout();
+            }
+        });
+        return layout;
+    }
 
-	void defaultLayout() {
-		this.browser.setGraph(this.gragra.getBasisGraGra().getGraph());
-		this.browser.showGraph();
-	}
+    void defaultLayout() {
+        this.browser.setGraph(this.gragra.getBasisGraGra().getGraph());
+        this.browser.showGraph();
+    }
 
-	JMenu createBasisMenu() {
-		JMenu basis = new JMenu("Basis", true);
-		JMenuItem mi = basis.add(new JMenuItem("Modify Graph"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				modifyBaseGraGra();
-			}
-		});
+    JMenu createBasisMenu() {
+        JMenu basis = new JMenu("Basis", true);
+        JMenuItem mi = basis.add(new JMenuItem("Modify Graph"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                modifyBaseGraGra();
+            }
+        });
 
-		mi = basis.add(new JMenuItem("Show graph"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showLG();
-			}
-		});
+        mi = basis.add(new JMenuItem("Show graph"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showLG();
+            }
+        });
 
-		mi = basis.add(new JMenuItem("Show left rule side"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showLRS();
-			}
-		});
+        mi = basis.add(new JMenuItem("Show left rule side"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showLRS();
+            }
+        });
 
-		mi = basis.add(new JMenuItem("Show right rule side"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showRRS();
-			}
-		});
+        mi = basis.add(new JMenuItem("Show right rule side"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showRRS();
+            }
+        });
 
-		mi = basis.add(new JMenuItem("Show NAC"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				showNAC();
-			}
-		});
+        mi = basis.add(new JMenuItem("Show NAC"));
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showNAC();
+            }
+        });
 
-		return basis;
-	}
+        return basis;
+    }
 
-	void modifyBaseGraGra() {
-		JOptionPane.showMessageDialog(this.f, "All arcs will be removed.");
-		Graph graph = this.gragra.getBasisGraGra().getGraph();
+    void modifyBaseGraGra() {
+        JOptionPane.showMessageDialog(this.f, "All arcs will be removed.");
+        Graph graph = this.gragra.getBasisGraGra().getGraph();
 
-		Iterator<Arc> arcs = graph.getArcsSet().iterator();
-		while (arcs.hasNext()) {
-			try {
-				graph.destroyArc(arcs.next(), true, false);
-			} catch (TypeException e) {
-				e.printStackTrace();
-			}
-		}
-		this.browser.setGraph(graph);
-		this.browser.showGraph();
-	}
+        Iterator<Arc> arcs = graph.getArcsSet().iterator();
+        while (arcs.hasNext()) {
+            try {
+                graph.destroyArc(arcs.next(), true, false);
+            } catch (TypeException e) {
+                e.printStackTrace();
+            }
+        }
+        this.browser.setGraph(graph);
+        this.browser.showGraph();
+    }
 
-	void showLG() {
-		this.browser.setGraph(this.gragra.getBasisGraGra().getGraph());
-		this.browser.showGraph();
-	}
+    void showLG() {
+        this.browser.setGraph(this.gragra.getBasisGraGra().getGraph());
+        this.browser.showGraph();
+    }
 
-	void showLRS() {
-		List<Rule> rules = this.gragra.getBasisGraGra().getListOfRules();
-		if (!rules.isEmpty()) {
-			Rule r = rules.get(0);
-			this.browser.setGraph(r.getLeft());
-			this.browser.showGraph();
-		}
-	}
+    void showLRS() {
+        List<Rule> rules = this.gragra.getBasisGraGra().getListOfRules();
+        if (!rules.isEmpty()) {
+            Rule r = rules.get(0);
+            this.browser.setGraph(r.getLeft());
+            this.browser.showGraph();
+        }
+    }
 
-	void showRRS() {
-		List<Rule> rules = this.gragra.getBasisGraGra().getListOfRules();
-		if (!rules.isEmpty()) {
-			Rule r = rules.get(0);
-			this.browser.setGraph(r.getRight());
-			this.browser.showGraph();
-		}
-	}
+    void showRRS() {
+        List<Rule> rules = this.gragra.getBasisGraGra().getListOfRules();
+        if (!rules.isEmpty()) {
+            Rule r = rules.get(0);
+            this.browser.setGraph(r.getRight());
+            this.browser.showGraph();
+        }
+    }
 
-	void showNAC() {
-		List<Rule> rules = this.gragra.getBasisGraGra().getListOfRules();
-		if (!rules.isEmpty()) {
-			Rule r = rules.get(0);
-			Enumeration<OrdinaryMorphism> nacs = r.getNACs();
-			if (nacs.hasMoreElements()) {
-				OrdinaryMorphism nac = nacs.nextElement();
-				this.browser.setGraph(nac.getImage());
-				this.browser.showGraph();
-			}
-		}
-	}
+    void showNAC() {
+        List<Rule> rules = this.gragra.getBasisGraGra().getListOfRules();
+        if (!rules.isEmpty()) {
+            Rule r = rules.get(0);
+            Enumeration<OrdinaryMorphism> nacs = r.getNACs();
+            if (nacs.hasMoreElements()) {
+                OrdinaryMorphism nac = nacs.nextElement();
+                this.browser.setGraph(nac.getImage());
+                this.browser.showGraph();
+            }
+        }
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		WindowListener l = new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		};
+        WindowListener l = new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        };
 
-		JFrame frame = new JFrame("AGG Graph Browser (extended)");
-		frame.addWindowListener(l);
-		frame.setBackground(Color.white);
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation(screenSize.width / 2 - ITS_WIDTH / 2, screenSize.height
-				/ 2 - ITS_HEIGHT / 2);
-		frame.setSize(ITS_WIDTH, ITS_HEIGHT);
+        JFrame frame = new JFrame("AGG Graph Browser (extended)");
+        frame.addWindowListener(l);
+        frame.setBackground(Color.white);
+        frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(screenSize.width / 2 - ITS_WIDTH / 2, screenSize.height
+                / 2 - ITS_HEIGHT / 2);
+        frame.setSize(ITS_WIDTH, ITS_HEIGHT);
 
-		TestBrowser testbrowser = new TestBrowser(frame);
+        TestBrowser testbrowser = new TestBrowser(frame);
 
-		frame.getContentPane().add(testbrowser, BorderLayout.CENTER);
+        frame.getContentPane().add(testbrowser, BorderLayout.CENTER);
 
-		frame.setVisible(true);
-	}
+        frame.setVisible(true);
+    }
 }
 // $Log: TestBrowser.java,v $
 // Revision 1.8  2010/09/23 08:18:19  olga

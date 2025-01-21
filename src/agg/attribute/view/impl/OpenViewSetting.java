@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.view.impl;
 
 import java.lang.ref.WeakReference;
@@ -31,239 +32,242 @@ import agg.attribute.view.AttrViewSetting;
  */
 public class OpenViewSetting extends ViewSetting implements AttrObserver {
 
-	/** Table of tuple formats for (type) tuples. */
-	protected Hashtable<DeclTuple, TupleFormat> formatTab;
+    /**
+     * Table of tuple formats for (type) tuples.
+     */
+    protected Hashtable<DeclTuple, TupleFormat> formatTab;
 
-	protected MaskedViewSetting maskedView;
+    protected MaskedViewSetting maskedView;
 
-	protected int lastOpenDeletedSlot0 = -1;
+    protected int lastOpenDeletedSlot0 = -1;
 
-	protected int lastOpenDeletedSlot1 = -1;
+    protected int lastOpenDeletedSlot1 = -1;
 
-	protected int lastMaskedDeletedSlot0 = -1;
+    protected int lastMaskedDeletedSlot0 = -1;
 
-	protected int lastMaskedDeletedSlot1 = -1;
+    protected int lastMaskedDeletedSlot1 = -1;
 
-	static final long serialVersionUID = 4242537253046200014L;
+    static final long serialVersionUID = 4242537253046200014L;
 
-	public OpenViewSetting(AttrTupleManager m) {
-		super(m);
-		this.maskedView = new MaskedViewSetting(this);
-		this.formatTab = new Hashtable<DeclTuple, TupleFormat>(50);
-	}
+    public OpenViewSetting(AttrTupleManager m) {
+        super(m);
+        this.maskedView = new MaskedViewSetting(this);
+        this.formatTab = new Hashtable<DeclTuple, TupleFormat>(50);
+    }
 
-	/** Getting the tuple format for a (type) tuple, raw style. */
-	protected TupleFormat rawGetFormat(AttrTuple attr) {
-		DeclTuple type = ((TupleObject) attr).getTupleType();
-		TupleFormat format = this.formatTab.get(type);
-		return format;
-	}
+    /**
+     * Getting the tuple format for a (type) tuple, raw style.
+     */
+    protected TupleFormat rawGetFormat(AttrTuple attr) {
+        DeclTuple type = ((TupleObject) attr).getTupleType();
+        TupleFormat format = this.formatTab.get(type);
+        return format;
+    }
 
-	/** Getting the tuple format for a (type) tuple, raw style. */
-	protected TupleFormat rawAddFormatFor(AttrTuple attr) {
-		DeclTuple type = ((TupleObject) attr).getTupleType();
-		TupleFormat format = new TupleFormat(type.getNumberOfEntries());
-		this.formatTab.put(type, format);
-		return format;
-	}
+    /**
+     * Getting the tuple format for a (type) tuple, raw style.
+     */
+    protected TupleFormat rawAddFormatFor(AttrTuple attr) {
+        DeclTuple type = ((TupleObject) attr).getTupleType();
+        TupleFormat format = new TupleFormat(type.getNumberOfEntries());
+        this.formatTab.put(type, format);
+        return format;
+    }
 
-	/**
-	 * Getting the tuple format for a (type) tuple. Format tuples are created
-	 * lazily "on demand". It means that when there is no format for the
-	 * specified AttrTuple yet, it is created and returned.
-	 */
-	protected TupleFormat getFormat(AttrTuple attr) {
-		TupleFormat format = rawGetFormat(attr);
-		if (format == null) {
-			format = rawAddFormatFor(attr);
-		}
-		return format;
-	}
+    /**
+     * Getting the tuple format for a (type) tuple. Format tuples are created lazily "on demand". It means that when
+     * there is no format for the specified AttrTuple yet, it is created and returned.
+     */
+    protected TupleFormat getFormat(AttrTuple attr) {
+        TupleFormat format = rawGetFormat(attr);
+        if (format == null) {
+            format = rawAddFormatFor(attr);
+        }
+        return format;
+    }
 
-	/** Removing the format for a (type) tuple. */
-	public synchronized void removeFormat(AttrType type) {
-		DeclTuple typ = ((TupleObject) type).getTupleType();
-		this.formatTab.remove(typ);
-	}
+    /**
+     * Removing the format for a (type) tuple.
+     */
+    public synchronized void removeFormat(AttrType type) {
+        DeclTuple typ = ((TupleObject) type).getTupleType();
+        this.formatTab.remove(typ);
+    }
 
-	// protected ViewSetting getSharingView(){ return maskedView; }
+    // protected ViewSetting getSharingView(){ return maskedView; }
+    protected boolean hasObserversForTuple(AttrTuple attr) {
+        Vector<WeakReference<AttrViewObserver>> observers1 = getObserversForTuple(attr);
+        Vector<WeakReference<AttrViewObserver>> observers2 = this.maskedView.getObserversForTuple(attr);
+        if ((observers1 == null || observers1.isEmpty())
+                && (observers2 == null || observers2.isEmpty())) {
+            return false;
+        }
+        return true;
+    }
 
-	protected boolean hasObserversForTuple(AttrTuple attr) {
-		Vector<WeakReference<AttrViewObserver>> observers1 = getObserversForTuple(attr);
-		Vector<WeakReference<AttrViewObserver>> observers2 = this.maskedView.getObserversForTuple(attr);
-		if ((observers1 == null || observers1.isEmpty())
-				&& (observers2 == null || observers2.isEmpty())) {
-			return false;
-		} 
-		return true;
-	}
+    //
+    // Public methods
+    //
+    /**
+     * Called by addObserver(), from MaskedViewSetting as well as from this class.
+     */
+    public void ensureBeingAttrObserver(AttrTuple attr) {
+        // System.out.println("OpenViewSetting.ensureBeingAttrObserver vor
+        // getFormat...");
+        if (attr == null) {
+            return;
+        }
 
-	//
-	// Public methods
-	//
+        DeclTuple type = ((TupleObject) attr).getTupleType();
+        if (!hasObserversForTuple(attr)) {
+            type.addObserver(this);
+            attr.addObserver(this);
+            getFormat(attr);
+        }
+    }
 
-	/**
-	 * Called by addObserver(), from MaskedViewSetting as well as from this
-	 * class.
-	 */
-	public void ensureBeingAttrObserver(AttrTuple attr) {
-		// System.out.println("OpenViewSetting.ensureBeingAttrObserver vor
-		// getFormat...");
-		if (attr == null)
-			return;
-
-		DeclTuple type = ((TupleObject) attr).getTupleType();
-		if (!hasObserversForTuple(attr)) {
-			type.addObserver(this);
-			attr.addObserver(this);
-			getFormat(attr);
-		}
-	}
-
-	/**
-	 * Called by removeObserver(), from MaskedViewSetting as well as from this
-	 * class.
-	 */
-	public void stopObservingIfNeedless(AttrTuple attr) {
+    /**
+     * Called by removeObserver(), from MaskedViewSetting as well as from this class.
+     */
+    public void stopObservingIfNeedless(AttrTuple attr) {
 //		DeclTuple type = ((TupleObject) attr).getTupleType();
-		if (!hasObserversForTuple(attr)) {
-			attr.removeObserver(this);
-			// To do:
-			// type.removeObserver( this )
-			// if we're not observating any instances of 'type' anymore.
-			// Not urgent.
-		}
-	}
+        if (!hasObserversForTuple(attr)) {
+            attr.removeObserver(this);
+            // To do:
+            // type.removeObserver( this )
+            // if we're not observating any instances of 'type' anymore.
+            // Not urgent.
+        }
+    }
 
-	//
-	// AttrViewSetting interface implementation
-	//
+    //
+    // AttrViewSetting interface implementation
+    //
+    public AttrViewSetting getOpenView() {
+        return this;
+    }
 
-	public AttrViewSetting getOpenView() {
-		return this;
-	}
+    public AttrViewSetting getMaskedView() {
+        return this.maskedView;
+    }
 
-	public AttrViewSetting getMaskedView() {
-		return this.maskedView;
-	}
+    public void addObserver(AttrViewObserver o, AttrTuple attr) {
+        if (attr == null) {
+            return;
+        }
 
-	public void addObserver(AttrViewObserver o, AttrTuple attr) {
-		if (attr == null)
-			return;
+        ensureBeingAttrObserver(attr);
+        addObserverForTuple(o, attr);
+    }
 
-		ensureBeingAttrObserver(attr);
-		addObserverForTuple(o, attr);
-	}
+    public void removeObserver(AttrViewObserver o, AttrTuple attr) {
+        // System.out.println("OpenViewSetting.removeObserver ...");
+        removeObserverForTuple(o, attr);
+        // If 'attr' has no more view observers, there's no point observing it.
+        stopObservingIfNeedless(attr);
+    }
 
-	public void removeObserver(AttrViewObserver o, AttrTuple attr) {
-		// System.out.println("OpenViewSetting.removeObserver ...");
-		removeObserverForTuple(o, attr);
-		// If 'attr' has no more view observers, there's no point observing it.
-		stopObservingIfNeedless(attr);
-	}
+    public boolean hasObserver(AttrTuple attr) {
+        Vector<WeakReference<AttrViewObserver>> observers = getObserversForTuple(attr);
+        return (observers == null || observers.isEmpty()) ? false : true;
+    }
 
-	public boolean hasObserver(AttrTuple attr) {
-		Vector<WeakReference<AttrViewObserver>> observers =  getObserversForTuple(attr);
-		return (observers == null || observers.isEmpty())?false:true;
-	}
-	
-	public int convertIndexToSlot(AttrTuple attr, int index) {
-		TupleFormat f = getFormat(attr);
-		return f.getTotalSlotForIndex(index);
-	}
+    public int convertIndexToSlot(AttrTuple attr, int index) {
+        TupleFormat f = getFormat(attr);
+        return f.getTotalSlotForIndex(index);
+    }
 
-	public int convertSlotToIndex(AttrTuple attr, int slot) {
-		TupleFormat f = getFormat(attr);
-		return f.getIndexAtTotalSlot(slot);
-	}
+    public int convertSlotToIndex(AttrTuple attr, int slot) {
+        TupleFormat f = getFormat(attr);
+        return f.getIndexAtTotalSlot(slot);
+    }
 
-	public int getSize(AttrTuple attr) {
-		return attr.getNumberOfEntries();
-	}
+    public int getSize(AttrTuple attr) {
+        return attr.getNumberOfEntries();
+    }
 
-	public boolean isVisible(AttrTuple attr, int slot) {
-		TupleFormat f = getFormat(attr);
-		return f.isVisible(slot);
-	}
+    public boolean isVisible(AttrTuple attr, int slot) {
+        TupleFormat f = getFormat(attr);
+        return f.isVisible(slot);
+    }
 
-	public void setVisibleAt(AttrTuple attr, boolean b, int slot) {
-		TupleFormat f = getFormat(attr);
-		synchronized (f) {
-			f.setVisible(b, slot);
+    public void setVisibleAt(AttrTuple attr, boolean b, int slot) {
+        TupleFormat f = getFormat(attr);
+        synchronized (f) {
+            f.setVisible(b, slot);
 
-			((DeclMember) (((TupleObject) attr).getTupleType())
-					.getMemberAt(slot)).setVisible(b);
+            ((DeclMember) (((TupleObject) attr).getTupleType())
+                    .getMemberAt(slot)).setVisible(b);
 
-			fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrViewEvent.MEMBER_VISIBILITY, slot, slot);
-			this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrEvent.GENERAL_CHANGE, 0, 0);
-		}
-	}
+            fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrViewEvent.MEMBER_VISIBILITY, slot, slot);
+            this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrEvent.GENERAL_CHANGE, 0, 0);
+        }
+    }
 
-	public void setAllVisible(AttrTuple attr, boolean b) {
-		TupleFormat f = getFormat(attr);
-		synchronized (f) {
-			for (int i = 0; i < attr.getNumberOfEntries(); i++) {
-				f.setVisible(b, i);
-				((DeclMember) (((TupleObject) attr).getTupleType())
-						.getMemberAt(i)).setVisible(b);
-			}
-			fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrEvent.GENERAL_CHANGE, 0, 0);
-			this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrEvent.GENERAL_CHANGE, 0, 0);
-		}
-	}
+    public void setAllVisible(AttrTuple attr, boolean b) {
+        TupleFormat f = getFormat(attr);
+        synchronized (f) {
+            for (int i = 0; i < attr.getNumberOfEntries(); i++) {
+                f.setVisible(b, i);
+                ((DeclMember) (((TupleObject) attr).getTupleType())
+                        .getMemberAt(i)).setVisible(b);
+            }
+            fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrEvent.GENERAL_CHANGE, 0, 0);
+            this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrEvent.GENERAL_CHANGE, 0, 0);
+        }
+    }
 
-	public void setVisible(AttrTuple attr) {
-		TupleFormat f = getFormat(attr);
-		synchronized (f) {
-			for (int i = 0; i < attr.getNumberOfEntries(); i++) {
-				boolean b = ((DeclMember) (((TupleObject) attr).getTupleType())
-						.getMemberAt(i)).isVisible();
-				f.setVisible(b, i);
-			}
-			fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrEvent.GENERAL_CHANGE, 0, 0);
-			this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrEvent.GENERAL_CHANGE, 0, 0);
-		}
-	}
+    public void setVisible(AttrTuple attr) {
+        TupleFormat f = getFormat(attr);
+        synchronized (f) {
+            for (int i = 0; i < attr.getNumberOfEntries(); i++) {
+                boolean b = ((DeclMember) (((TupleObject) attr).getTupleType())
+                        .getMemberAt(i)).isVisible();
+                f.setVisible(b, i);
+            }
+            fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrEvent.GENERAL_CHANGE, 0, 0);
+            this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrEvent.GENERAL_CHANGE, 0, 0);
+        }
+    }
 
-	public void moveSlotInserting(AttrTuple attr, int srcSlot, int destSlot) {
-		getFormat(attr).moveSlotInserting(srcSlot, destSlot);
+    public void moveSlotInserting(AttrTuple attr, int srcSlot, int destSlot) {
+        getFormat(attr).moveSlotInserting(srcSlot, destSlot);
 
-		fireAttrChanged(((TupleObject) attr).getTupleType(),
-				AttrViewEvent.MEMBER_MOVED, srcSlot, destSlot);
-		if (isVisible(attr, destSlot)) {
-			this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
-					AttrEvent.GENERAL_CHANGE, 0, 0);
-		}
-	}
+        fireAttrChanged(((TupleObject) attr).getTupleType(),
+                AttrViewEvent.MEMBER_MOVED, srcSlot, destSlot);
+        if (isVisible(attr, destSlot)) {
+            this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
+                    AttrEvent.GENERAL_CHANGE, 0, 0);
+        }
+    }
 
-	public void resetTuple(AttrTuple attr) {
-		// Thread.dumpStack();
-		// System.out.println("OpenViewSetting.resetTuple... "+
-		// attr.hashCode());
-		DeclTuple type = ((TupleObject) attr).getTupleType();
+    public void resetTuple(AttrTuple attr) {
+        // Thread.dumpStack();
+        // System.out.println("OpenViewSetting.resetTuple... "+
+        // attr.hashCode());
+        DeclTuple type = ((TupleObject) attr).getTupleType();
 
-		removeFormat(type);
+        removeFormat(type);
 
 //		TupleFormat format = 
-		getFormat(type);
+        getFormat(type);
 
-		// Hashtable t = getIndexOfSameMember(attr); // -olga
-		// System.out.println("after getFormat: "+type.getSize()+"
-		// "+type.getNumberOfEntries());
+        // Hashtable t = getIndexOfSameMember(attr); // -olga
+        // System.out.println("after getFormat: "+type.getSize()+"
+        // "+type.getNumberOfEntries());
+        fireAttrChanged(((TupleObject) attr).getTupleType(),
+                AttrEvent.GENERAL_CHANGE, 0, 0);
+        this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
+                AttrEvent.GENERAL_CHANGE, 0, 0);
+    }
 
-		fireAttrChanged(((TupleObject) attr).getTupleType(),
-				AttrEvent.GENERAL_CHANGE, 0, 0);
-		this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
-				AttrEvent.GENERAL_CHANGE, 0, 0);
-	}
-
-/*
+    /*
 	private Hashtable<DeclMember, Vector<Integer>> getIndexOfSameMember(AttrTuple attr) {
 		DeclTuple type = ((TupleObject) attr).getTupleType();
 		Hashtable<DeclMember, Vector<Integer>> t = new Hashtable<DeclMember, Vector<Integer>>();
@@ -294,82 +298,82 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
 		}
 		return t;
 	}
-*/
-	
-	public void reorderTuple(AttrTuple attr) {
-		// System.out.println("OpenViewSetting.reorderTuple..."+
-		// attr.hashCode());
-		DeclTuple type = ((TupleObject) attr).getTupleType();
-		// removeFormat( type );
+     */
+    public void reorderTuple(AttrTuple attr) {
+        // System.out.println("OpenViewSetting.reorderTuple..."+
+        // attr.hashCode());
+        DeclTuple type = ((TupleObject) attr).getTupleType();
+        // removeFormat( type );
 
-		// multiple inheritance - olga
-		removeFormat(type);
-		getFormat(type);
-		//	    
-		fireAttrChanged(((TupleObject) attr).getTupleType(),
-				AttrEvent.GENERAL_CHANGE, 0, 0);
-		this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
-				AttrEvent.GENERAL_CHANGE, 0, 0);
-	}
+        // multiple inheritance - olga
+        removeFormat(type);
+        getFormat(type);
+        //	    
+        fireAttrChanged(((TupleObject) attr).getTupleType(),
+                AttrEvent.GENERAL_CHANGE, 0, 0);
+        this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
+                AttrEvent.GENERAL_CHANGE, 0, 0);
+    }
 
-	/**
-	 * AttrObserver implementation; Attribute event handling relies on the fact
-	 * that an AttrType always sends its MEMBER_ADDED and MEMBER_DELETED events
-	 * before his AttrInstance.
-	 */
-	public void attributeChanged(AttrEvent event) {
-		// System.out.println(this+ " attributeChanged "+event+")");
-		AttrTuple attr = event.getSource();
-		int id = event.getID();
-		int index0 = event.getIndex0();
-		int index1 = event.getIndex1();
+    /**
+     * AttrObserver implementation; Attribute event handling relies on the fact that an AttrType always sends its
+     * MEMBER_ADDED and MEMBER_DELETED events before his AttrInstance.
+     */
+    public void attributeChanged(AttrEvent event) {
+        // System.out.println(this+ " attributeChanged "+event+")");
+        AttrTuple attr = event.getSource();
+        int id = event.getID();
+        int index0 = event.getIndex0();
+        int index1 = event.getIndex1();
 
-		switch (id) {
-		case AttrEvent.MEMBER_ADDED:
-			if (attr instanceof AttrType) { // Only for types
-				// System.out.println(this+ " attributeChanged "+attr);
-				TupleFormat form = getFormat(attr);
-				for (int i = index0; i <= index1; i++) {
-					form.addMember(i);
-				}
-			}
-			propagateAttrEvent(event);
-			this.maskedView.propagateAttrEvent(event);
-			break;
-		case AttrEvent.MEMBER_DELETED:
-			if (attr instanceof AttrType) { // Only for types
-				TupleFormat form = getFormat(attr);
-				this.lastOpenDeletedSlot0 = convertIndexToSlot(attr, index0);
-				this.lastOpenDeletedSlot1 = convertIndexToSlot(attr, index1);
-				this.lastMaskedDeletedSlot0 = this.maskedView.convertIndexToSlot(attr,
-						index0);
-				this.lastMaskedDeletedSlot1 = this.maskedView.convertIndexToSlot(attr,
-						index1);
-				for (int i = index0; i <= index1; i++) {
-					form.deleteMember(i);
-				}
-			}
-			/*
+        switch (id) {
+            case AttrEvent.MEMBER_ADDED:
+                if (attr instanceof AttrType) { // Only for types
+                    // System.out.println(this+ " attributeChanged "+attr);
+                    TupleFormat form = getFormat(attr);
+                    for (int i = index0; i <= index1; i++) {
+                        form.addMember(i);
+                    }
+                }
+                propagateAttrEvent(event);
+                this.maskedView.propagateAttrEvent(event);
+                break;
+            case AttrEvent.MEMBER_DELETED:
+                if (attr instanceof AttrType) { // Only for types
+                    TupleFormat form = getFormat(attr);
+                    this.lastOpenDeletedSlot0 = convertIndexToSlot(attr, index0);
+                    this.lastOpenDeletedSlot1 = convertIndexToSlot(attr, index1);
+                    this.lastMaskedDeletedSlot0 = this.maskedView.convertIndexToSlot(attr,
+                            index0);
+                    this.lastMaskedDeletedSlot1 = this.maskedView.convertIndexToSlot(attr,
+                            index1);
+                    for (int i = index0; i <= index1; i++) {
+                        form.deleteMember(i);
+                    }
+                }
+                /*
 			 * log( "converted slots: ("+lastOpenDeletedSlot0+", "+
 			 * lastOpenDeletedSlot1+"); ("+lastMaskedDeletedSlot0+", "+
 			 * lastMaskedDeletedSlot1+")");
-			 */
+                 */
 
-			notifyObservers(attr, id, this.lastOpenDeletedSlot0,
-					this.lastOpenDeletedSlot1);
-			this.maskedView.notifyObservers(attr, id, this.lastMaskedDeletedSlot0,
-					this.lastMaskedDeletedSlot1);
-			break;
-		default:
-			propagateAttrEvent(event);
-			this.maskedView.propagateAttrEvent(event);
-		} // switch( id )
-	}
+                notifyObservers(attr, id, this.lastOpenDeletedSlot0,
+                        this.lastOpenDeletedSlot1);
+                this.maskedView.notifyObservers(attr, id, this.lastMaskedDeletedSlot0,
+                        this.lastMaskedDeletedSlot1);
+                break;
+            default:
+                propagateAttrEvent(event);
+                this.maskedView.propagateAttrEvent(event);
+        } // switch( id )
+    }
 
-	/** AttrObserver implementation */
-	public boolean isPersistentFor(AttrTuple at) {
-		return true;
-	}
+    /**
+     * AttrObserver implementation
+     */
+    public boolean isPersistentFor(AttrTuple at) {
+        return true;
+    }
 
 }
 /*

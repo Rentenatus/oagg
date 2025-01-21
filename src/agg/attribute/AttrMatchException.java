@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 /**
@@ -16,25 +17,25 @@ package agg.attribute;
 @SuppressWarnings("serial")
 public class AttrMatchException extends AttrException {
 
-	public static int VARIABLE_BINDING = 10;
+    public static int VARIABLE_BINDING = 10;
 
-	protected int id;
+    protected int id;
 
-	protected AttrInstance firstBindingTuple;
+    protected AttrInstance firstBindingTuple;
 
-	public AttrMatchException(String msg, int id, AttrInstance firstBindingTuple) {
-		super(msg);
-		this.id = id;
-		this.firstBindingTuple = firstBindingTuple;
-	}
+    public AttrMatchException(String msg, int id, AttrInstance firstBindingTuple) {
+        super(msg);
+        this.id = id;
+        this.firstBindingTuple = firstBindingTuple;
+    }
 
-	public int getID() {
-		return this.id;
-	}
+    public int getID() {
+        return this.id;
+    }
 
-	public AttrInstance getFirstBindingTuple() {
-		return this.firstBindingTuple;
-	}
+    public AttrInstance getFirstBindingTuple() {
+        return this.firstBindingTuple;
+    }
 }
 /*
  * $Log: AttrMatchException.java,v $

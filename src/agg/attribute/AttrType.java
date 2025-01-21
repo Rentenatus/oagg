@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 import agg.attribute.handler.AttrHandler;
@@ -15,104 +16,89 @@ import agg.util.XMLObject;
 
 /**
  * A tuple of declarations each consisting of a type and name.
- * 
+ *
  * @version $Id: AttrType.java,v 1.3 2008/10/15 07:51:22 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrType extends AttrTuple, XMLObject {
 
-	/**
-	 * Adding a declaration.
-	 * 
-	 * @param handler
-	 *            attribute handler for the entry type;
-	 * @param type
-	 *            textual representation of the entry type;
-	 * @param name
-	 *            name (selector) of the entry within the attribute tuple.
-	 * @return The newly created member declaration.
-	 */
-	public AttrTypeMember addMember(AttrHandler handler, String type,
-			String name);
+    /**
+     * Adding a declaration.
+     *
+     * @param handler attribute handler for the entry type;
+     * @param type textual representation of the entry type;
+     * @param name name (selector) of the entry within the attribute tuple.
+     * @return The newly created member declaration.
+     */
+    public AttrTypeMember addMember(AttrHandler handler, String type,
+            String name);
 
-	/**
-	 * Adding an empty declaration. The new declaration member is returned and
-	 * can be extended by calling the respective AttrTypeMember methods.
-	 */
-	public AttrTypeMember addMember();
+    /**
+     * Adding an empty declaration. The new declaration member is returned and can be extended by calling the respective
+     * AttrTypeMember methods.
+     */
+    public AttrTypeMember addMember();
 
-	/**
-	 * Delete a declaration.
-	 * 
-	 * @param name
-	 *            name (selector) of the entry within the attribute tuple.
-	 */
-	public void deleteMemberAt(String name);
+    /**
+     * Delete a declaration.
+     *
+     * @param name name (selector) of the entry within the attribute tuple.
+     */
+    public void deleteMemberAt(String name);
 
-	/**
-	 * Compares an attribute type with the current one.
-	 * 
-	 * @param type
-	 *            attribute type to be compared with.
-	 */
-	public boolean compareTo(AttrType type);
+    /**
+     * Compares an attribute type with the current one.
+     *
+     * @param type attribute type to be compared with.
+     */
+    public boolean compareTo(AttrType type);
 
-	/**
-	 * Delete a declaration.
-	 * 
-	 * @param index
-	 *            index of the member within the attribute tuple.
-	 */
-	public void deleteMemberAt(int index);
+    /**
+     * Delete a declaration.
+     *
+     * @param index index of the member within the attribute tuple.
+     */
+    public void deleteMemberAt(int index);
 
-	/**
-	 * Delete a declaration.
-	 * 
-	 * @param viewSetting
-	 *            view setting to relate to.
-	 * @param slot
-	 *            slot of the member within the view of the attribute tuple.
-	 */
-	public void deleteMemberAt(AttrViewSetting viewSetting, int slot);
+    /**
+     * Delete a declaration.
+     *
+     * @param viewSetting view setting to relate to.
+     * @param slot slot of the member within the view of the attribute tuple.
+     */
+    public void deleteMemberAt(AttrViewSetting viewSetting, int slot);
 
-	/**
-	 * Returns true when the member of the slot belongs to this attribute type,
-	 * false - when the member belongs to a parent type. 
-	 * 
-	 * @param viewSetting 
-	 * 				view setting to relate to
-	 * @param slot
-	 * 				slot of the member within the view of the attribute tuple
-	 */
-	public boolean isOwnMemberAt(AttrViewSetting viewSetting, int slot);
-	
-	//
-	// Deprecated
-	//
+    /**
+     * Returns true when the member of the slot belongs to this attribute type, false - when the member belongs to a
+     * parent type.
+     *
+     * @param viewSetting view setting to relate to
+     * @param slot slot of the member within the view of the attribute tuple
+     */
+    public boolean isOwnMemberAt(AttrViewSetting viewSetting, int slot);
 
-	/**
-	 * Adding a declaration.
-	 * 
-	 * @param handler
-	 *            attribute handler for the entry type;
-	 * @param type
-	 *            textual representation of the entry type;
-	 * @param name
-	 *            name (selector) of the entry within the attribute tuple.
-	 * @deprecated
-	 * @see #addMember
-	 */
-	public void addEntry(AttrHandler handler, String type, String name);
+    //
+    // Deprecated
+    //
+    /**
+     * Adding a declaration.
+     *
+     * @param handler attribute handler for the entry type;
+     * @param type textual representation of the entry type;
+     * @param name name (selector) of the entry within the attribute tuple.
+     * @deprecated
+     * @see #addMember
+     */
+    public void addEntry(AttrHandler handler, String type, String name);
 
-	/**
-	 * Delete a declaration.
-	 * 
-	 * @param name
-	 *            name (selector) of the entry within the attribute tuple.
-	 * @deprecated
-	 * @see #deleteMemberAt( String )
-	 */
-	public void deleteEntry(String name);
+    /**
+     * Delete a declaration.
+     *
+     * @param name name (selector) of the entry within the attribute tuple.
+     * @deprecated
+     * @see #deleteMemberAt( String )
+     */
+    public void deleteEntry(String name);
 }
 
 /*

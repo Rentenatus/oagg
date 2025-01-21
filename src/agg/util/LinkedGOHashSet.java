@@ -1,17 +1,17 @@
-/*******************************************************************************
- * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- *******************************************************************************/
 /**
- * 
+ **
+ * ***************************************************************************
+ * <copyright>
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * </copyright>
+ ******************************************************************************
+ */
+/**
+ *
  */
 package agg.util;
-
 
 import java.util.Collection;
 import java.util.Enumeration;
@@ -21,36 +21,32 @@ import java.util.Vector;
 
 import agg.xt_basis.GraphObject;
 
-
 /**
  * @author olga
  *
  */
 @SuppressWarnings("serial")
-public class LinkedGOHashSet<T extends GraphObject> extends 
-//java.util.HashSet<T>
-java.util.LinkedHashSet<T> 
-{
-	
-	public LinkedGOHashSet() {
-		super(5, .75f); //3.f); 
-	}
-	
-	public LinkedGOHashSet(int initialCapacity) {
-		super(initialCapacity, .75f); //3.f);
-	}
-		
-	public LinkedGOHashSet(int initialCapacity, float loadFactor) {
+public class LinkedGOHashSet<T extends GraphObject> extends
+        //java.util.HashSet<T>
+        java.util.LinkedHashSet<T> {
+
+    public LinkedGOHashSet() {
+        super(5, .75f); //3.f); 
+    }
+
+    public LinkedGOHashSet(int initialCapacity) {
+        super(initialCapacity, .75f); //3.f);
+    }
+
+    public LinkedGOHashSet(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);
     }
-	
-	public LinkedGOHashSet(Collection<? extends T> c, float loadFactor) {
-		super(c.size(), loadFactor);
-		addAll(c);
-	}
-	
 
-	
+    public LinkedGOHashSet(Collection<? extends T> c, float loadFactor) {
+        super(c.size(), loadFactor);
+        addAll(c);
+    }
+
 //	private T get(int indx) {		
 //		T obj = null;
 //		int i = 0;
@@ -65,32 +61,29 @@ java.util.LinkedHashSet<T>
 //		}
 //		return obj;
 //	}
-	
-	public int indexOf(T obj, int startIndx)  {
-		int i = startIndx;
-		final Iterator<T> iter = this.iterator();
-		while (iter.hasNext()) {
-			if (obj == iter.next()) {
-				break;
-			}
-			iter.next();
-			i++;
-		}
-		return i;
-	}
-	
-	public int indexOf(T obj)  {
-		return this.indexOf(obj, 0);
-	}
-	
-	
-	public Enumeration<T> elements() {
-		return (new Vector<T>(this)).elements();
-	}
+    public int indexOf(T obj, int startIndx) {
+        int i = startIndx;
+        final Iterator<T> iter = this.iterator();
+        while (iter.hasNext()) {
+            if (obj == iter.next()) {
+                break;
+            }
+            iter.next();
+            i++;
+        }
+        return i;
+    }
 
-	public List<T> list() {
-		return (new Vector<T>(this));
-	}
-	
-	
+    public int indexOf(T obj) {
+        return this.indexOf(obj, 0);
+    }
+
+    public Enumeration<T> elements() {
+        return (new Vector<T>(this)).elements();
+    }
+
+    public List<T> list() {
+        return (new Vector<T>(this));
+    }
+
 }

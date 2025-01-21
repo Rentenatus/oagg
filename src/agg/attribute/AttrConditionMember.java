@@ -1,30 +1,37 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute;
 
 /**
  * The interface for an instance tuple member.
- * 
+ *
  * @version $Id: AttrConditionMember.java,v 1.3 2007/09/10 13:05:31 olga Exp $
  * @author $Author: olga $
  */
 public interface AttrConditionMember extends AttrInstanceMember {
 
-	/** Removes this member from its tuple. */
-	public void delete();
+    /**
+     * Removes this member from its tuple.
+     */
+    public void delete();
 
-	/** Test, if the expression can yield true or false. */
-	public boolean isDefinite();
+    /**
+     * Test, if the expression can yield true or false.
+     */
+    public boolean isDefinite();
 
-	/** Test, if the expression yields true. */
-	public boolean isTrue();
+    /**
+     * Test, if the expression yields true.
+     */
+    public boolean isTrue();
 
 }
 /*

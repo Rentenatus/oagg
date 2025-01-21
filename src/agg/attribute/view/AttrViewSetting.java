@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.view;
 
 import java.io.Serializable;
@@ -15,113 +16,112 @@ import agg.attribute.AttrTuple;
 import agg.util.Disposable;
 
 /**
- * Mediator interface, facilitating view-dependent access to attribute objects.
- * The "Mediator" design pattern was chosen for a loose and lightweight coupling
- * of attribute objects and their visual representation. It also allows
- * view-dependent (editor) and view-independent (graph transformation unit)
- * users of the attribute component to identify their attribute objects by the
- * same handles.
- * 
- * Please pay attention that the integer selectors for attribute tuple members
- * are not absolute indexes as in the AttrTuple interface. Rather, they are
- * "slots", member positions in respect to this view.
- * 
- * There can be an arbitrary number of views, each holding exactly one
- * (changeable) representation of an attribute tuple (order of members, hiding
- * of members).
- * 
- * Each view has two 'subviews', an 'open view' and a 'masked view'. They
- * basically share the same tuple layout information, with one exception. Tuple
- * access using the subview obtained by calling getOpenView() does not hide the
- * 'hidden' members, although they can be hidden by invoking setVisibleAt(
- * aTuple, false, aSlot ). The hiding effect only occurs when using the subview
- * obtained by calling getMaskedView(). The order of members is consistent, i.e.
- * if <CODE> memberA == aTuple.getMember( slotA1, aViewSetting.getOpenView()) &&
+ * Mediator interface, facilitating view-dependent access to attribute objects. The "Mediator" design pattern was chosen
+ * for a loose and lightweight coupling of attribute objects and their visual representation. It also allows
+ * view-dependent (editor) and view-independent (graph transformation unit) users of the attribute component to identify
+ * their attribute objects by the same handles.
+ *
+ * Please pay attention that the integer selectors for attribute tuple members are not absolute indexes as in the
+ * AttrTuple interface. Rather, they are "slots", member positions in respect to this view.
+ *
+ * There can be an arbitrary number of views, each holding exactly one (changeable) representation of an attribute tuple
+ * (order of members, hiding of members).
+ *
+ * Each view has two 'subviews', an 'open view' and a 'masked view'. They basically share the same tuple layout
+ * information, with one exception. Tuple access using the subview obtained by calling getOpenView() does not hide the
+ * 'hidden' members, although they can be hidden by invoking setVisibleAt( aTuple, false, aSlot ). The hiding effect
+ * only occurs when using the subview obtained by calling getMaskedView(). The order of members is consistent, i.e. if <CODE> memberA == aTuple.getMember( slotA1, aViewSetting.getOpenView()) &&
  * mamberB == aTuple.getMember( slotB1, aViewSetting.getOpenView()) && memberA ==
  * aTuple.getMember( slotA2, aViewSetting.getMaskedView()) && memberB ==
  * aTuple.getMember( slotB2, aViewSetting.getMaskedView()) && slotA1 < slotB1
  * </CODE> then <CODE> slotA2 < slotB2 </CODE>
- * 
- * The event indices (slots) are delivered according to the view for which the
- * observer registered. When accessing a tuple using these slots always remember
- * to supply the appropriate view. It can be obtained by invoking getView() on
+ *
+ * The event indices (slots) are delivered according to the view for which the observer registered. When accessing a
+ * tuple using these slots always remember to supply the appropriate view. It can be obtained by invoking getView() on
  * the delivered event.
- * 
+ *
  * @version $Id: AttrViewSetting.java,v 1.3 2008/04/07 09:36:56 olga Exp $
  * @author $Author: olga $
- * 
+ *
  */
 public interface AttrViewSetting extends Serializable, Disposable {
 
-	static final long serialVersionUID = 1401064072022382181L;
+    static final long serialVersionUID = 1401064072022382181L;
 
-	/**
-	 * Returns the 'open subview', manipulating of visibility of members
-	 * (setVisibleAt(...)) only affects the other subview.
-	 * 
-	 * @see agg.attribute.view.AttrViewSetting#getMaskedView().
-	 */
-	public AttrViewSetting getOpenView();
+    /**
+     * Returns the 'open subview', manipulating of visibility of members (setVisibleAt(...)) only affects the other
+     * subview.
+     *
+     * @see agg.attribute.view.AttrViewSetting#getMaskedView().
+     */
+    public AttrViewSetting getOpenView();
 
-	/**
-	 * Returns the 'masked subview', manipulating of visibility of members
-	 * (setVisibleAt(...)) affects this subview.
-	 */
-	public AttrViewSetting getMaskedView();
+    /**
+     * Returns the 'masked subview', manipulating of visibility of members (setVisibleAt(...)) affects this subview.
+     */
+    public AttrViewSetting getMaskedView();
 
-	/** Adding an observer for an attribute tuple's representation. */
-	public void addObserver(AttrViewObserver o, AttrTuple attr);
+    /**
+     * Adding an observer for an attribute tuple's representation.
+     */
+    public void addObserver(AttrViewObserver o, AttrTuple attr);
 
-	/** Removing an observer for an attribute tuple's representation. */
-	public void removeObserver(AttrViewObserver o, AttrTuple attr);
+    /**
+     * Removing an observer for an attribute tuple's representation.
+     */
+    public void removeObserver(AttrViewObserver o, AttrTuple attr);
 
-	
-	public boolean hasObserver(AttrTuple attr);
-	
-	/** Returns the slot position in the view layout for 'attr' at 'index'. */
-	public int convertIndexToSlot(AttrTuple attr, int index);
+    public boolean hasObserver(AttrTuple attr);
 
-	/** Returns the index for 'attr' at 'slot', as set in this view layout. */
-	public int convertSlotToIndex(AttrTuple attr, int slot);
+    /**
+     * Returns the slot position in the view layout for 'attr' at 'index'.
+     */
+    public int convertIndexToSlot(AttrTuple attr, int index);
 
-	/** Returns the number of members that are visible in this view. */
-	public int getSize(AttrTuple attr);
+    /**
+     * Returns the index for 'attr' at 'slot', as set in this view layout.
+     */
+    public int convertSlotToIndex(AttrTuple attr, int slot);
 
-	/**
-	 * Testing if the attribute member at the specified slot is visible in this
-	 * view.
-	 */
-	public boolean isVisible(AttrTuple attr, int slot);
+    /**
+     * Returns the number of members that are visible in this view.
+     */
+    public int getSize(AttrTuple attr);
 
-	/**
-	 * Setting, if the attribute member at the specified slot of this view
-	 * should be visible or not.
-	 */
-	public void setVisibleAt(AttrTuple attr, boolean b, int slot);
+    /**
+     * Testing if the attribute member at the specified slot is visible in this view.
+     */
+    public boolean isVisible(AttrTuple attr, int slot);
 
-	/**
-	 * Setting, if all attribute members of 'attr' should either be at once made
-	 * visible or hidden.
-	 */
-	public void setAllVisible(AttrTuple attr, boolean b);
+    /**
+     * Setting, if the attribute member at the specified slot of this view should be visible or not.
+     */
+    public void setVisibleAt(AttrTuple attr, boolean b, int slot);
 
-	/**
-	 * Set visibility to true, if declaration type member of AttrTuple attr is
-	 * visible, else - to false.
-	 */
-	public void setVisible(AttrTuple attr);
+    /**
+     * Setting, if all attribute members of 'attr' should either be at once made visible or hidden.
+     */
+    public void setAllVisible(AttrTuple attr, boolean b);
 
-	/** Moves the member at "srcSlot" to "destSlot", inserting-wise. */
-	public void moveSlotInserting(AttrTuple attr, int srcSlot, int destSlot);
+    /**
+     * Set visibility to true, if declaration type member of AttrTuple attr is visible, else - to false.
+     */
+    public void setVisible(AttrTuple attr);
 
-	/** Moves the member at "srcSlot" to "destSlot", appending-wise. */
-	public void moveSlotAppending(AttrTuple attr, int srcSlot, int destSlot);
+    /**
+     * Moves the member at "srcSlot" to "destSlot", inserting-wise.
+     */
+    public void moveSlotInserting(AttrTuple attr, int srcSlot, int destSlot);
 
-	/**
-	 * Reset the tuple layout, so each slot number is the same as the index it
-	 * contains, with all slots visible.
-	 */
-	public void resetTuple(AttrTuple attr);
+    /**
+     * Moves the member at "srcSlot" to "destSlot", appending-wise.
+     */
+    public void moveSlotAppending(AttrTuple attr, int srcSlot, int destSlot);
+
+    /**
+     * Reset the tuple layout, so each slot number is the same as the index it contains, with all slots visible.
+     */
+    public void resetTuple(AttrTuple attr);
 }
 /*
  * $Log: AttrViewSetting.java,v $

@@ -1,95 +1,97 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTOrNode.java,v 1.5 2010/07/29 10:09:23 olga Exp $
  * @author $Author: olga $
  */
 public class ASTOrNode extends BOOLxBOOLtoBOOLnode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTOrNode(String id) {
-		super(id);
-	}
+    ASTOrNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTOrNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTOrNode(id);
+    }
 
-	public void interpret() {
-		// System.out.println("ASTOrNode.interpret() ...");
-		Object result;
-		// jjtGetChild(0).interpret();
-		try {
-			jjtGetChild(0).interpret();
-		} catch (Exception e) {
-			// System.out.println("ASTOrNode.interpret() ... ex:
-			// "+jjtGetChild(0)+" :: "+e);
-			if (e instanceof ASTMissingValueException) {
-			} else
-				throw (RuntimeException) e;
-		}
+    public void interpret() {
+        // System.out.println("ASTOrNode.interpret() ...");
+        Object result;
+        // jjtGetChild(0).interpret();
+        try {
+            jjtGetChild(0).interpret();
+        } catch (Exception e) {
+            // System.out.println("ASTOrNode.interpret() ... ex:
+            // "+jjtGetChild(0)+" :: "+e);
+            if (e instanceof ASTMissingValueException) {
+            } else {
+                throw (RuntimeException) e;
+            }
+        }
 
-		if (((Boolean) stack.get(top)).booleanValue()) {
-			stack.set(top, new Boolean(true));
-			return;
-		}
+        if (((Boolean) stack.get(top)).booleanValue()) {
+            stack.set(top, new Boolean(true));
+            return;
+        }
 
-		// jjtGetChild(1).interpret();
-		try {
-			jjtGetChild(1).interpret();
-		} catch (Exception e) {
-			// System.out.println("ASTOrNode.interpret() ... ex:
-			// "+jjtGetChild(1)+" :: "+e);
-			if (e instanceof ASTMissingValueException) {
-			} else
-				throw (RuntimeException) e;
-		}
+        // jjtGetChild(1).interpret();
+        try {
+            jjtGetChild(1).interpret();
+        } catch (Exception e) {
+            // System.out.println("ASTOrNode.interpret() ... ex:
+            // "+jjtGetChild(1)+" :: "+e);
+            if (e instanceof ASTMissingValueException) {
+            } else {
+                throw (RuntimeException) e;
+            }
+        }
 
-		// System.out.println("ASTOrNode.interpret() stack[top]: "+stack[top]);
-		// System.out.println("ASTOrNode.interpret() stack[top+1]:
-		// "+stack[top+1]);
+        // System.out.println("ASTOrNode.interpret() stack[top]: "+stack[top]);
+        // System.out.println("ASTOrNode.interpret() stack[top+1]:
+        // "+stack[top+1]);
+        if (stack.get(top + 1) instanceof Boolean) {
+            result = new Boolean(((Boolean) stack.get(top)).booleanValue()
+                    || ((Boolean) stack.get(top + 1)).booleanValue());
+        } else if ((top > 0) && (stack.get(top - 1) instanceof Boolean)) {
+            result = new Boolean(((Boolean) stack.get(top)).booleanValue()
+                    || ((Boolean) stack.get(top - 1)).booleanValue());
+        } else {
+            result = new Boolean(((Boolean) stack.get(top)).booleanValue());
+        }
 
-		if (stack.get(top+1) instanceof Boolean)
-			result = new Boolean(((Boolean) stack.get(top)).booleanValue()
-					|| ((Boolean) stack.get(top+1)).booleanValue());
-		else if ((top > 0) && (stack.get(top-1) instanceof Boolean))
-			result = new Boolean(((Boolean) stack.get(top)).booleanValue()
-					|| ((Boolean) stack.get(top-1)).booleanValue());
-		else
-			result = new Boolean(((Boolean) stack.get(top)).booleanValue());
-
-		/*
+        /*
 		 * result = new Boolean(((Boolean)stack[top]).booleanValue() ||
 		 * ((Boolean)stack[top - 1]).booleanValue()); //((Boolean)stack[top +
 		 * 1]).booleanValue());
-		 */
+         */
+        if (top > 0) {
+            stack.set(--top, result);
+        } else {
+            stack.set(top, result);
+        }
 
-		if (top > 0)
-			stack.set(--top, result);
-		else
-			stack.set(top, result);
+        // System.out.println("ASTOrNode.interpret() result: "+result);
+    }
 
-		// System.out.println("ASTOrNode.interpret() result: "+result);
-	}
-
-	public String getString() {
-		Node left = jjtGetChild(0);
-		Node right = jjtGetChild(1);
-		return left.getString() + "||" + right.getString();
-	}
+    public String getString() {
+        Node left = jjtGetChild(0);
+        Node right = jjtGetChild(1);
+        return left.getString() + "||" + right.getString();
+    }
 }
 /*
  * $Log: ASTOrNode.java,v $

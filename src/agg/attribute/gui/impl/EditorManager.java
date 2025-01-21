@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import agg.attribute.AttrInstance;
@@ -22,51 +23,48 @@ import agg.attribute.view.AttrViewSetting;
 //import javax.swing.table.*;
 //import javax.swing.border.*;
 //import java.awt.*;
-
 /**
  * @version $Id: EditorManager.java,v 1.3 2010/08/25 08:22:29 olga Exp $
  * @author $Author: olga $
  */
 public class EditorManager extends Object implements AttrEditorManager {
 
-	// Initialization
+    // Initialization
+    protected static EditorManager myOnlyInstance = new EditorManager();
 
-	protected static EditorManager myOnlyInstance = new EditorManager();
+    protected HandlerEditorManager handlerManager = SampleHandlerEditorManager
+            .self();
 
-	protected HandlerEditorManager handlerManager = SampleHandlerEditorManager
-			.self();
+    protected EditorManager() {
+        super();
+    }
 
-	protected EditorManager() {
-		super();
-	}
+    public static EditorManager self() {
+        return myOnlyInstance;
+    }
 
-	public static EditorManager self() {
-		return myOnlyInstance;
-	}
+    // Interface implementation
+    public AttrTopEditor getTopEditor(AttrManager m, AttrViewSetting v) {
+        AttrTopEditor ed = new TopEditor(m, this);
+        ed.setViewSetting(v);
+        return ed;
+    }
 
-	// Interface implementation
+    public AttrTupleEditor getSmallEditorForInstance(AttrManager m,
+            AttrViewSetting v, AttrInstance inst) {
+        AttrTupleEditor ed = new LightInstanceEditor(m, this);
+        ed.setViewSetting(v);
+        ed.setTuple(inst);
+        return ed;
+    }
 
-	public AttrTopEditor getTopEditor(AttrManager m, AttrViewSetting v) {
-		AttrTopEditor ed = new TopEditor(m, this);
-		ed.setViewSetting(v);
-		return ed;
-	}
+    public HandlerEditorManager getHandlerEditorManager() {
+        return this.handlerManager;
+    }
 
-	public AttrTupleEditor getSmallEditorForInstance(AttrManager m,
-			AttrViewSetting v, AttrInstance inst) {
-		AttrTupleEditor ed = new LightInstanceEditor(m, this);
-		ed.setViewSetting(v);
-		ed.setTuple(inst);
-		return ed;
-	}
-
-	public HandlerEditorManager getHandlerEditorManager() {
-		return this.handlerManager;
-	}
-
-	public InputParameterEditor getInputParameterEditor(AttrManager m) {
-		return new InputParameterEditor(m, this);
-	}
+    public InputParameterEditor getInputParameterEditor(AttrManager m) {
+        return new InputParameterEditor(m, this);
+    }
 }
 /*
  * $Log: EditorManager.java,v $

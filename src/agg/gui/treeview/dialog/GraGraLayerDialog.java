@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.treeview.dialog;
 
 import java.awt.BorderLayout;
@@ -43,337 +44,322 @@ import agg.util.OrderedSet;
 import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
 
-
 /**
- * This class provides a window for a user dialog. This dialog is necessary to
- * enter the grammar layers.
- * 
+ * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers.
+ *
  * @author $Author: olga $
  * @version $Id: GraGraLayerDialog.java,v 1.3 2010/09/23 08:23:05 olga Exp $
  */
 @SuppressWarnings("serial")
 public class GraGraLayerDialog extends JDialog implements ActionListener {
 
-	private JPanel contentPane;
+    private JPanel contentPane;
 
-	private JPanel rulePanel;
+    private JPanel rulePanel;
 
-	private JPanel buttonPanel;
+    private JPanel buttonPanel;
 
-	private JScrollPane ruleScrollPane;
+    private JScrollPane ruleScrollPane;
 
-	private JTable ruleTable;
+    private JTable ruleTable;
 
-	private JButton closeButton;
+    private JButton closeButton;
 
-	private JButton cancelButton;
+    private JButton cancelButton;
 
-	private boolean isCancelled;
+    private boolean isCancelled;
 
-	private RuleLayer layer;
+    private RuleLayer layer;
 
 //	private EdGraGra gragra;
+    boolean changed = false;
 
-	boolean changed = false;
+    /**
+     * This class models a hashtable for a table.
+     */
+    public class HashTableModel extends DefaultTableModel {
 
-	/** This class models a hashtable for a table. */
-	public class HashTableModel extends DefaultTableModel {
+        Hashtable<Rule, Integer> table;
 
-		Hashtable<Rule, Integer> table;
+        RuleLayer ruleLayer;
 
-		RuleLayer ruleLayer;
+        /**
+         * Creates a new model with hashtable and the title for the column of the table.
+         *
+         * @param table The hashtable for the modle.
+         * @param columnNames The array with the column names.
+         */
+        public HashTableModel(Hashtable<Rule, Integer> table,
+                String[] columnNames) {
+            super();
+            for (int i = 0; i < columnNames.length; i++) {
+                addColumn(columnNames[i]);
+            }
+            this.table = table;
+            Enumeration<?> keys = this.table.keys();
+            while (keys.hasMoreElements()) {
+                Object key = keys.nextElement();
+                Object value = this.table.get(key);
+                Vector<Object> tmpVector = new Vector<Object>();
+                tmpVector.addElement(key);
+                tmpVector.addElement(value);
+                addRow(tmpVector);
+            }
+        }
 
-		/**
-		 * Creates a new model with hashtable and the title for the column of
-		 * the table.
-		 * 
-		 * @param table
-		 *            The hashtable for the modle.
-		 * @param columnNames
-		 *            The array with the column names.
-		 */
-		public HashTableModel(Hashtable<Rule, Integer> table,
-				String[] columnNames) {
-			super();
-			for (int i = 0; i < columnNames.length; i++) {
-				addColumn(columnNames[i]);
-			}
-			this.table = table;
-			Enumeration<?> keys = this.table.keys();
-			while (keys.hasMoreElements()) {
-				Object key = keys.nextElement();
-				Object value = this.table.get(key);
-				Vector<Object> tmpVector = new Vector<Object>();
-				tmpVector.addElement(key);
-				tmpVector.addElement(value);
-				addRow(tmpVector);
-			}
-		}
+        /**
+         * Creates a new model with hashtable and the title for the column of the table.
+         *
+         * @param layer The rule layer with hashtable for the model.
+         * @param columnNames The array with the column names.
+         */
+        public HashTableModel(RuleLayer layer, String[] columnNames) {
+            super();
+            for (int i = 0; i < columnNames.length; i++) {
+                addColumn(columnNames[i]);
+            }
+            this.table = layer.getRuleLayer();
+            this.ruleLayer = layer;
+            Integer startLayer = layer.getStartLayer();
+            Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
 
-		/**
-		 * Creates a new model with hashtable and the title for the column of
-		 * the table.
-		 * 
-		 * @param layer
-		 *            The rule layer with hashtable for the model.
-		 * @param columnNames
-		 *            The array with the column names.
-		 */
-		public HashTableModel(RuleLayer layer, String[] columnNames) {
-			super();
-			for (int i = 0; i < columnNames.length; i++) {
-				addColumn(columnNames[i]);
-			}
-			this.table = layer.getRuleLayer();
-			this.ruleLayer = layer;
-			Integer startLayer = layer.getStartLayer();
-			Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
-			
-			OrderedSet<Integer> ruleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
-			for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
-					.hasMoreElements();) {
-				ruleLayerSet.add(en.nextElement());
-			}
-			int i = 0;
+            OrderedSet<Integer> ruleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
+            for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
+                    .hasMoreElements();) {
+                ruleLayerSet.add(en.nextElement());
+            }
+            int i = 0;
 
-			Integer currentLayer = startLayer;
-			boolean nextLayerExists = true;
-			while (nextLayerExists && (currentLayer != null)) {
-				HashSet<Rule> rulesForLayer = invertedRuleLayer.get(currentLayer);
-				Iterator<Rule> en = rulesForLayer.iterator();
-				while (en.hasNext()) {
-					Rule rule = en.next();
-					Vector<Object> tmpVector = new Vector<Object>();
-					tmpVector.addElement(rule);
-					tmpVector.addElement(Integer.valueOf(rule.getLayer()));
-					addRow(tmpVector);
-				}
-				// set next Layer				
-				i++;
-				if (i < ruleLayerSet.size()) {
-					currentLayer = ruleLayerSet.get(i);
-				}
-				else {
-					nextLayerExists = false;
-				}
-			}
-		}
+            Integer currentLayer = startLayer;
+            boolean nextLayerExists = true;
+            while (nextLayerExists && (currentLayer != null)) {
+                HashSet<Rule> rulesForLayer = invertedRuleLayer.get(currentLayer);
+                Iterator<Rule> en = rulesForLayer.iterator();
+                while (en.hasNext()) {
+                    Rule rule = en.next();
+                    Vector<Object> tmpVector = new Vector<Object>();
+                    tmpVector.addElement(rule);
+                    tmpVector.addElement(Integer.valueOf(rule.getLayer()));
+                    addRow(tmpVector);
+                }
+                // set next Layer				
+                i++;
+                if (i < ruleLayerSet.size()) {
+                    currentLayer = ruleLayerSet.get(i);
+                } else {
+                    nextLayerExists = false;
+                }
+            }
+        }
 
-		/**
-		 * This method decides if a cell of a table is editable or not.
-		 * 
-		 * @param rowIndex
-		 *            The index of the row of the cell.
-		 * @param columnIndex
-		 *            The index of the column of the cell.
-		 * @return The layer function can only entered in the second column. So
-		 *         for any other column <CODE>false</CODE> is returned.
-		 */
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			return columnIndex == 1;
-		}
+        /**
+         * This method decides if a cell of a table is editable or not.
+         *
+         * @param rowIndex The index of the row of the cell.
+         * @param columnIndex The index of the column of the cell.
+         * @return The layer function can only entered in the second column. So for any other column <CODE>false</CODE>
+         * is returned.
+         */
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 1;
+        }
 
-		/**
-		 * Returns the value of a cell.
-		 * 
-		 * @param row
-		 *            The index of the row of the cell.
-		 * @param column
-		 *            The index of the column of the cell.
-		 * @return The object of the underlaying model of this table.
-		 */
-		public Object getValueAt(int row, int column) {
-			Object result = super.getValueAt(row, column);
-			if (result instanceof Rule) {
-				result = ((Rule) result).getName();
-			}
-			return result;
-		}
+        /**
+         * Returns the value of a cell.
+         *
+         * @param row The index of the row of the cell.
+         * @param column The index of the column of the cell.
+         * @return The object of the underlaying model of this table.
+         */
+        public Object getValueAt(int row, int column) {
+            Object result = super.getValueAt(row, column);
+            if (result instanceof Rule) {
+                result = ((Rule) result).getName();
+            }
+            return result;
+        }
 
-		/**
-		 * Sets a new value to a cell.
-		 * 
-		 * @param aValue
-		 *            The new value of a cell.
-		 * @param row
-		 *            The index of the row of the cell.
-		 * @param column
-		 *            The index of the column of the cell.
-		 */
-		public void setValueAt(Object aValue, int row, int column) {
-			Object key = super.getValueAt(row, 0);
-			try {
-				Integer i = Integer.valueOf((String) aValue);
-				super.setValueAt(i, row, column);
-				if (key instanceof Rule)
-					this.table.put((Rule) key, i);
-			} catch (NumberFormatException nfe) {
-			}
-		}
+        /**
+         * Sets a new value to a cell.
+         *
+         * @param aValue The new value of a cell.
+         * @param row The index of the row of the cell.
+         * @param column The index of the column of the cell.
+         */
+        public void setValueAt(Object aValue, int row, int column) {
+            Object key = super.getValueAt(row, 0);
+            try {
+                Integer i = Integer.valueOf((String) aValue);
+                super.setValueAt(i, row, column);
+                if (key instanceof Rule) {
+                    this.table.put((Rule) key, i);
+                }
+            } catch (NumberFormatException nfe) {
+            }
+        }
 
-		public Hashtable<Rule, Integer> getTable() {
-			return this.table;
-		}
+        public Hashtable<Rule, Integer> getTable() {
+            return this.table;
+        }
 
-	}
+    }
 
-	/**
-	 * Creates new form GraGraLayerGUI
-	 * 
-	 * @param parent
-	 *            The parent frame of this gui.
-	 * @param layer
-	 *            The layer function must be changed.
-	 */
-	public GraGraLayerDialog(JFrame parent, RuleLayer layer) {
-		super(parent, true);
-		// System.out.println("GraGraLayerGUI parent: "+parent);
-		setTitle("Rule Layer");
-		addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent evt) {
-				exitForm(evt);
-			}
-		});
-		this.layer = layer;
-		if (parent != null)
-			setLocationRelativeTo(parent);
-		else
-			setLocation(300, 100);
-		initComponents();
-	}
+    /**
+     * Creates new form GraGraLayerGUI
+     *
+     * @param parent The parent frame of this gui.
+     * @param layer The layer function must be changed.
+     */
+    public GraGraLayerDialog(JFrame parent, RuleLayer layer) {
+        super(parent, true);
+        // System.out.println("GraGraLayerGUI parent: "+parent);
+        setTitle("Rule Layer");
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent evt) {
+                exitForm(evt);
+            }
+        });
+        this.layer = layer;
+        if (parent != null) {
+            setLocationRelativeTo(parent);
+        } else {
+            setLocation(300, 100);
+        }
+        initComponents();
+    }
 
-	/**
-	 * This method is called from within the constructor to initialize the
-	 * dialog.
-	 */
-	private void initComponents() {
-		this.contentPane = new JPanel(new BorderLayout());
-		this.contentPane.setBackground(Color.lightGray);
+    /**
+     * This method is called from within the constructor to initialize the dialog.
+     */
+    private void initComponents() {
+        this.contentPane = new JPanel(new BorderLayout());
+        this.contentPane.setBackground(Color.lightGray);
 
-		this.rulePanel = new JPanel(new BorderLayout());
-		this.rulePanel.setBackground(Color.orange);
-		this.rulePanel.setBorder(new TitledBorder("Set Rule Layer"));
-		// ruleTable = new JTable(new HashTableModel(layer.getRuleLayer(),new
-		// String [] {"Rule Name", "Layer Number"}));
-		this.ruleTable = new JTable(new HashTableModel(this.layer, new String[] { "Rule",
-				"Layer" }));
-		TableColumn layerColumn = this.ruleTable.getColumn("Layer");
-		layerColumn.setMaxWidth(50);
-		int hght = getHeight(this.ruleTable.getRowCount(), this.ruleTable.getRowHeight()) + 10;
-		// System.out.println("this.ruleTable Height: "+hght);
-		this.ruleTable.doLayout();
-		this.ruleScrollPane = new JScrollPane(this.ruleTable);
-		this.ruleScrollPane.setPreferredSize(new Dimension(200, hght));
-		this.rulePanel.add(this.ruleScrollPane);
+        this.rulePanel = new JPanel(new BorderLayout());
+        this.rulePanel.setBackground(Color.orange);
+        this.rulePanel.setBorder(new TitledBorder("Set Rule Layer"));
+        // ruleTable = new JTable(new HashTableModel(layer.getRuleLayer(),new
+        // String [] {"Rule Name", "Layer Number"}));
+        this.ruleTable = new JTable(new HashTableModel(this.layer, new String[]{"Rule",
+            "Layer"}));
+        TableColumn layerColumn = this.ruleTable.getColumn("Layer");
+        layerColumn.setMaxWidth(50);
+        int hght = getHeight(this.ruleTable.getRowCount(), this.ruleTable.getRowHeight()) + 10;
+        // System.out.println("this.ruleTable Height: "+hght);
+        this.ruleTable.doLayout();
+        this.ruleScrollPane = new JScrollPane(this.ruleTable);
+        this.ruleScrollPane.setPreferredSize(new Dimension(200, hght));
+        this.rulePanel.add(this.ruleScrollPane);
 
-		this.buttonPanel = new JPanel(new GridBagLayout());
-		this.closeButton = new JButton();
-		this.closeButton.setActionCommand("close");
-		this.closeButton.setText("Close");
-		this.closeButton.setToolTipText("Accept entries and close dialog.");
-		this.closeButton.addActionListener(this);
+        this.buttonPanel = new JPanel(new GridBagLayout());
+        this.closeButton = new JButton();
+        this.closeButton.setActionCommand("close");
+        this.closeButton.setText("Close");
+        this.closeButton.setToolTipText("Accept entries and close dialog.");
+        this.closeButton.addActionListener(this);
 
-		this.cancelButton = new JButton();
-		this.isCancelled = false;
-		this.cancelButton.setActionCommand("cancel");
-		this.cancelButton.setText("Cancel");
-		this.cancelButton.setToolTipText("Reject entries and close dialog.");
-		this.cancelButton.addActionListener(this);
+        this.cancelButton = new JButton();
+        this.isCancelled = false;
+        this.cancelButton.setActionCommand("cancel");
+        this.cancelButton.setText("Cancel");
+        this.cancelButton.setToolTipText("Reject entries and close dialog.");
+        this.cancelButton.addActionListener(this);
 
-		constrainBuild(this.buttonPanel, this.closeButton, 0, 0, 1, 1,
-				GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
-				5, 10, 10, 5);
-		constrainBuild(this.buttonPanel, this.cancelButton, 1, 0, 1, 1,
-				GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
-				5, 5, 10, 10);
-		this.contentPane.add(this.rulePanel, BorderLayout.CENTER);
-		this.contentPane.add(this.buttonPanel, BorderLayout.SOUTH);
-		this.contentPane.revalidate();
+        constrainBuild(this.buttonPanel, this.closeButton, 0, 0, 1, 1,
+                GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
+                5, 10, 10, 5);
+        constrainBuild(this.buttonPanel, this.cancelButton, 1, 0, 1, 1,
+                GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
+                5, 5, 10, 10);
+        this.contentPane.add(this.rulePanel, BorderLayout.CENTER);
+        this.contentPane.add(this.buttonPanel, BorderLayout.SOUTH);
+        this.contentPane.revalidate();
 
-		setContentPane(this.contentPane);
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		validate();
-		pack();
-	}
+        setContentPane(this.contentPane);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        validate();
+        pack();
+    }
 
-	/** Exit the Application */
-	void exitForm(WindowEvent evt) {
-		setVisible(false);
-		dispose();
-	}
+    /**
+     * Exit the Application
+     */
+    void exitForm(WindowEvent evt) {
+        setVisible(false);
+        dispose();
+    }
 
-	public void showGUI() {
-		setVisible(true);
-	}
+    public void showGUI() {
+        setVisible(true);
+    }
 
-	public boolean hasChanged() {
-		return this.changed;
-	}
+    public boolean hasChanged() {
+        return this.changed;
+    }
 
-	private void acceptValues() {
-		Hashtable<Rule, Integer> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
-		for (Enumeration<?> e = table.keys(); e.hasMoreElements();) {
-			Object key = e.nextElement();
-			Integer l = table.get(key);
-			if (l.intValue() != ((Rule) key).getLayer()) {
-				((Rule) key).setLayer(l.intValue());
-				this.changed = true;
-			}
-		}
-	}
+    private void acceptValues() {
+        Hashtable<Rule, Integer> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
+        for (Enumeration<?> e = table.keys(); e.hasMoreElements();) {
+            Object key = e.nextElement();
+            Integer l = table.get(key);
+            if (l.intValue() != ((Rule) key).getLayer()) {
+                ((Rule) key).setLayer(l.intValue());
+                this.changed = true;
+            }
+        }
+    }
 
-	/**
-	 * This handels the clicks on the different buttons.
-	 * 
-	 * @param e
-	 *            The event from the buttons.
-	 */
-	public void actionPerformed(ActionEvent e) {
-		Object source = e.getSource();
-		if (source == this.closeButton) {
-			acceptValues();
-			setVisible(false);
-			dispose();
-		} else if (source == this.cancelButton) {
-			this.isCancelled = true;
-			setVisible(false);
-			dispose();
-		}
-	}
+    /**
+     * This handels the clicks on the different buttons.
+     *
+     * @param e The event from the buttons.
+     */
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == this.closeButton) {
+            acceptValues();
+            setVisible(false);
+            dispose();
+        } else if (source == this.cancelButton) {
+            this.isCancelled = true;
+            setVisible(false);
+            dispose();
+        }
+    }
 
 //	public void setGraGra(EdGraGra gra) {
 //		gragra = gra;
 //	}
+    public boolean isCancelled() {
+        return this.isCancelled;
+    }
 
-	public boolean isCancelled() {
-		return this.isCancelled;
-	}
+    private int getHeight(int rowCount, int rowHeight) {
+        int h = (rowCount + 1) * rowHeight;
+        if (rowCount > 10) {
+            h = (10 + 2) * rowHeight;
+        }
+        return h;
+    }
 
-	private int getHeight(int rowCount, int rowHeight) {
-		int h = (rowCount + 1) * rowHeight;
-		if (rowCount > 10)
-			h = (10 + 2) * rowHeight;
-		return h;
-	}
-
-	// constrainBuild() method
-	private void constrainBuild(Container container, Component component,
-			int grid_x, int grid_y, int grid_width, int grid_height, int fill,
-			int anchor, double weight_x, double weight_y, int top, int left,
-			int bottom, int right) {
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = grid_x;
-		c.gridy = grid_y;
-		c.gridwidth = grid_width;
-		c.gridheight = grid_height;
-		c.fill = fill;
-		c.anchor = anchor;
-		c.weightx = weight_x;
-		c.weighty = weight_y;
-		c.insets = new Insets(top, left, bottom, right);
-		((GridBagLayout) container.getLayout()).setConstraints(component, c);
-		container.add(component);
-	}
+    // constrainBuild() method
+    private void constrainBuild(Container container, Component component,
+            int grid_x, int grid_y, int grid_width, int grid_height, int fill,
+            int anchor, double weight_x, double weight_y, int top, int left,
+            int bottom, int right) {
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = grid_x;
+        c.gridy = grid_y;
+        c.gridwidth = grid_width;
+        c.gridheight = grid_height;
+        c.fill = fill;
+        c.anchor = anchor;
+        c.weightx = weight_x;
+        c.weighty = weight_y;
+        c.insets = new Insets(top, left, bottom, right);
+        ((GridBagLayout) container.getLayout()).setConstraints(component, c);
+        container.add(component);
+    }
 
 }
 /*

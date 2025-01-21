@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.editor.impl;
 
 import java.awt.Font;
@@ -51,1224 +52,1266 @@ import agg.layout.evolutionary.LayoutNode;
 
 /**
  * EdNode specifies a node layout of an agg.xt_basis.Node object
- * 
+ *
  * @author $Author: olga $
  * @version $Id: EdNode.java,v 1.61 2010/11/14 12:59:11 olga Exp $
  */
 public class EdNode extends EdGraphObject implements AttrViewObserver,
-		XMLObject, StateEditable {
-	
-	private Node bNode;
+        XMLObject, StateEditable {
 
-	private LayoutNode lNode;
+    private Node bNode;
 
-	private int nodeid;
+    private LayoutNode lNode;
 
-	private Vector<Integer> cluster, oldcluster;
-		
-	private Color ownColor = null;
-	
-	
-	/**
-	 * Creates a node layout specified by the EdType eType for an used object
-	 * specified by the Node bNode.
-	 */
-	public EdNode(Node bNode, EdType eType) {
-		super(eType);
-		this.bNode = bNode;
+    private int nodeid;
 
-		if (this.bNode != null) {
-			this.contextUsage = String.valueOf(this.hashCode());
+    private Vector<Integer> cluster, oldcluster;
 
-			// this as AttrViewObserver register
-			if (this.bNode.getAttribute() != null) {
-				addToAttributeViewObserver();
-			}
-		}
-		
-		this.lNode = new LayoutNode(this);
-		this.nodeid = -1;
-		
-		this.x = 100;
-		this.y = 100;
-		this.w = 20;
-		this.h = 20;
-	}
+    private Color ownColor = null;
 
-	/**
-	 * Creates a node layout specified by the EdType eType for an used object of
-	 * the class agg.xt_basis.Node that would be created from the graph
-	 * specified by the Graph bGraph
-	 */
-	public EdNode(Graph bGraph, EdType eType) throws TypeException {
-		this((bGraph != null) ? bGraph.createNode(eType.bType) : null, eType);
-	}
+    /**
+     * Creates a node layout specified by the EdType eType for an used object specified by the Node bNode.
+     */
+    public EdNode(Node bNode, EdType eType) {
+        super(eType);
+        this.bNode = bNode;
 
-	
-	/** Disposes myself */
-	public void dispose() {
-		if (this.attrObserver) {
-			removeFromAttributeViewObserver();	
-		}
-		this.view = null;
-		if (this.lNode != null)
-			this.lNode.dispose();
-		this.lNode = null;
-		this.eGraph = null;
-		this.eType = null;
-		this.bNode = null;
-		this.myGraphPanel = null;
+        if (this.bNode != null) {
+            this.contextUsage = String.valueOf(this.hashCode());
+
+            // this as AttrViewObserver register
+            if (this.bNode.getAttribute() != null) {
+                addToAttributeViewObserver();
+            }
+        }
+
+        this.lNode = new LayoutNode(this);
+        this.nodeid = -1;
+
+        this.x = 100;
+        this.y = 100;
+        this.w = 20;
+        this.h = 20;
+    }
+
+    /**
+     * Creates a node layout specified by the EdType eType for an used object of the class agg.xt_basis.Node that would
+     * be created from the graph specified by the Graph bGraph
+     */
+    public EdNode(Graph bGraph, EdType eType) throws TypeException {
+        this((bGraph != null) ? bGraph.createNode(eType.bType) : null, eType);
+    }
+
+    /**
+     * Disposes myself
+     */
+    public void dispose() {
+        if (this.attrObserver) {
+            removeFromAttributeViewObserver();
+        }
+        this.view = null;
+        if (this.lNode != null) {
+            this.lNode.dispose();
+        }
+        this.lNode = null;
+        this.eGraph = null;
+        this.eType = null;
+        this.bNode = null;
+        this.myGraphPanel = null;
 //		System.out.println("EdNode.dispose:: DONE  "+this);
-	}
+    }
 
-	public void finalize() {
+    public void finalize() {
 //		System.out.println("EdNode.finalize()  called  "+this);
-	}
-	
-	
-	public void storeState(Hashtable<Object, Object> state) {
-		NodeReprData data = new NodeReprData(this);
-		state.put(Integer.valueOf(this.hashCode()), data);			
-		state.put(Integer.valueOf(data.hashCode()), data);
-		this.itsUndoReprDataHC = Integer.valueOf(data.hashCode());
-	}
+    }
 
-	public void restoreState(Hashtable<?, ?> state) {
+    public void storeState(Hashtable<Object, Object> state) {
+        NodeReprData data = new NodeReprData(this);
+        state.put(Integer.valueOf(this.hashCode()), data);
+        state.put(Integer.valueOf(data.hashCode()), data);
+        this.itsUndoReprDataHC = Integer.valueOf(data.hashCode());
+    }
+
+    public void restoreState(Hashtable<?, ?> state) {
 //		System.out.println("EdNode.restoreState:: "+state.get(Integer.valueOf(this.hashCode()))+"   "+state.get(this.itsUndoReprDataHC));
-		NodeReprData data = (NodeReprData) state.get(Integer.valueOf(this.hashCode()));	
-		if (data == null) {
-			data = (NodeReprData) state.get(this.itsUndoReprDataHC);	
-		}
-		if (data != null) {
-			data.restoreNodeFromNodeRepr(this);
-			this.attrChanged = false;
-		}
-	}
+        NodeReprData data = (NodeReprData) state.get(Integer.valueOf(this.hashCode()));
+        if (data == null) {
+            data = (NodeReprData) state.get(this.itsUndoReprDataHC);
+        }
+        if (data != null) {
+            data.restoreNodeFromNodeRepr(this);
+            this.attrChanged = false;
+        }
+    }
 
-	public void restoreState(Hashtable<?, ?> state, String hashCode) {
+    public void restoreState(Hashtable<?, ?> state, String hashCode) {
 //		System.out.println("### EdNode.restoreState:: "+state.get(Integer.valueOf(hashCode))+"   "+state.get(this.itsUndoReprDataHC));
-		NodeReprData data = (NodeReprData) state.get(Integer.valueOf(hashCode));
-		if (data == null) {
-			data = (NodeReprData) state.get(this.itsUndoReprDataHC);
-		}
-		if (data == null) {
-			data = (NodeReprData) state.get(Integer.valueOf(this.hashCode()));
-		}
-		
-		if (data != null) {
-			data.restoreNodeFromNodeRepr(this);
-			this.attrChanged = false;
-		}
-	}
-	
-	public void restoreState(NodeReprData data) {
-		data.restoreNodeFromNodeRepr(this);
-		this.attrChanged = false;
-	}
-	
-	/** Returns an open view of my attribute */
-	protected AttrViewSetting getView() { 
-		if (!this.init || this.view == null) {
-			this.view = ((AttrTupleManager)AttrTupleManager.getDefaultManager()).getDefaultOpenView();
+        NodeReprData data = (NodeReprData) state.get(Integer.valueOf(hashCode));
+        if (data == null) {
+            data = (NodeReprData) state.get(this.itsUndoReprDataHC);
+        }
+        if (data == null) {
+            data = (NodeReprData) state.get(Integer.valueOf(this.hashCode()));
+        }
+
+        if (data != null) {
+            data.restoreNodeFromNodeRepr(this);
+            this.attrChanged = false;
+        }
+    }
+
+    public void restoreState(NodeReprData data) {
+        data.restoreNodeFromNodeRepr(this);
+        this.attrChanged = false;
+    }
+
+    /**
+     * Returns an open view of my attribute
+     */
+    protected AttrViewSetting getView() {
+        if (!this.init || this.view == null) {
+            this.view = ((AttrTupleManager) AttrTupleManager.getDefaultManager()).getDefaultOpenView();
 //			this.view.setAllVisible(this.bNode.getAttribute(), true);
-			this.view.setVisible(this.bNode.getAttribute());
-			this.init = true;
-		} 
-		return this.view;
-	}
-	
-	public void setAttrViewSetting(AttrViewSetting aView) {
-		this.view = aView;
-		if (!this.attrObserver) {
-			this.view.addObserver(this, this.bNode.getAttribute());
-			this.attrObserver = true;
-		}
-		this.init = true;
-	}
-	
-	public void addToAttributeViewObserver() {
-		getView().addObserver(this, this.bNode.getAttribute());
-		this.attrObserver = true;
-	}
-	
-	public void removeFromAttributeViewObserver() {
-		if (this.view != null
-				&& this.bNode != null 
-				&& this.bNode.getAttribute() != null) {
-			this.view.removeObserver(this, this.bNode.getAttribute());
-			this.view.getMaskedView()
-					.removeObserver(this, this.bNode.getAttribute());
-		}
-	}
-	
-	public void createAttributeInstance() {
-		if (this.bNode != null && this.bNode.getAttribute() == null) {
-			this.bNode.createAttributeInstance();
-			addToAttributeViewObserver();
-		}
-	}
+            this.view.setVisible(this.bNode.getAttribute());
+            this.init = true;
+        }
+        return this.view;
+    }
 
-	public void refreshAttributeInstance() {
-		if (this.bNode != null && this.bNode.getAttribute() != null) {
-			((ValueTuple) this.bNode.getAttribute()).getTupleType().refreshParents();
-			addToAttributeViewObserver();
-		}
-	}
+    public void setAttrViewSetting(AttrViewSetting aView) {
+        this.view = aView;
+        if (!this.attrObserver) {
+            this.view.addObserver(this, this.bNode.getAttribute());
+            this.attrObserver = true;
+        }
+        this.init = true;
+    }
 
-	/**
-	 * Returns the layout node of this node.
-	 */
-	public LayoutNode getLNode() {
-		return this.lNode;
-	}
+    public void addToAttributeViewObserver() {
+        getView().addObserver(this, this.bNode.getAttribute());
+        this.attrObserver = true;
+    }
 
-	/** Returns the used object */
-	public Node getBasisNode() {
-		return this.bNode;
-	}
+    public void removeFromAttributeViewObserver() {
+        if (this.view != null
+                && this.bNode != null
+                && this.bNode.getAttribute() != null) {
+            this.view.removeObserver(this, this.bNode.getAttribute());
+            this.view.getMaskedView()
+                    .removeObserver(this, this.bNode.getAttribute());
+        }
+    }
 
-	/** Returns the used object */
-	public GraphObject getBasisObject() {
-		return this.bNode;
-	}
+    public void createAttributeInstance() {
+        if (this.bNode != null && this.bNode.getAttribute() == null) {
+            this.bNode.createAttributeInstance();
+            addToAttributeViewObserver();
+        }
+    }
 
-	/** Returns TRUE */
-	public boolean isNode() {
-		return true;
-	}
+    public void refreshAttributeInstance() {
+        if (this.bNode != null && this.bNode.getAttribute() != null) {
+            ((ValueTuple) this.bNode.getAttribute()).getTupleType().refreshParents();
+            addToAttributeViewObserver();
+        }
+    }
 
-	/** Returns FALSE */
-	public boolean isArc() {
-		return false;
-	}
+    /**
+     * Returns the layout node of this node.
+     */
+    public LayoutNode getLNode() {
+        return this.lNode;
+    }
 
-	public void setCritical(boolean b) {
-		this.bNode.setCritical(b);
-	}
+    /**
+     * Returns the used object
+     */
+    public Node getBasisNode() {
+        return this.bNode;
+    }
 
-	public boolean isCritical() {
-		return this.bNode.isCritical();
-	}
+    /**
+     * Returns the used object
+     */
+    public GraphObject getBasisObject() {
+        return this.bNode;
+    }
 
-	/**
-	 * States how to draw critical objects of CPA critical overlapping graphs:
-	 * <code>EdGraphObject.CRITICAL_GREEN</code> or
-	 * <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
-	 */
-	public void setDrawingStyleOfCriticalObject(int criticalStyle) {
-		this.criticalStyle = criticalStyle;
-	}
-	
-	public boolean isVisible() {
-		if (this.bNode != null) {			
-			this.visible = this.bNode.isVisible();
-			
-			if (this.getContext().getBasisGraph().isCompleteGraph()) {
-				this.visible = this.visible
-					&& this.getType().getBasisType().isObjectOfTypeGraphNodeVisible();
-			}
-			
-			return this.visible;
-		} 
-		return this.visible;
-	}
+    /**
+     * Returns TRUE
+     */
+    public boolean isNode() {
+        return true;
+    }
 
-	/** Returns this */
-	public EdNode getNode() {
-		return this;
-	}
+    /**
+     * Returns FALSE
+     */
+    public boolean isArc() {
+        return false;
+    }
 
-	/** Returns NULL */
-	public EdArc getArc() {
-		return null;
-	}
+    public void setCritical(boolean b) {
+        this.bNode.setCritical(b);
+    }
 
-	/**
-	 * @return count of all incoming edges (also loops)
-	 */
-	public int getInArcsCount() {
-		return this.bNode.getIncomingArcsSet().size();
-	}
+    public boolean isCritical() {
+        return this.bNode.isCritical();
+    }
 
-	/**
-	 * @return count of all outgoing edges (also loops)
-	 */
-	public int getOutArcsCount() {
-		return this.bNode.getOutgoingArcsSet().size();
-	}
+    /**
+     * States how to draw critical objects of CPA critical overlapping graphs: <code>EdGraphObject.CRITICAL_GREEN</code>
+     * or <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
+     */
+    public void setDrawingStyleOfCriticalObject(int criticalStyle) {
+        this.criticalStyle = criticalStyle;
+    }
 
-	/**
-	 * @return count of all incoming and outgoing edges (without loops!)
-	 */
-	public int getInOutArcsCount() {
-		return this.bNode.getOutgoingArcsSet().size()
-				+this.bNode.getIncomingArcsSet().size();
-	}
+    public boolean isVisible() {
+        if (this.bNode != null) {
+            this.visible = this.bNode.isVisible();
 
-	/**
-	 * @return count of all loop edges
-	 */
-	public int getLoopArcsCount() {
-		int c = 0;
-		Iterator<Arc> e = this.bNode.getOutgoingArcsSet().iterator();
-		while (e.hasNext()) {
-			if (e.next().isLoop())
-				c++;
-		}
-		return c;
-	}
+            if (this.getContext().getBasisGraph().isCompleteGraph()) {
+                this.visible = this.visible
+                        && this.getType().getBasisType().isObjectOfTypeGraphNodeVisible();
+            }
 
-	/**
-	 * Returns the attributes which are shown
-	 */
-	public Vector<Vector<String>> getAttributes() {
-		Vector<Vector<String>> attrs = new Vector<Vector<String>>();
-		if (this.bNode != null) {
-			AttrInstance attributes = this.bNode.getAttribute();
-			if (attributes != null && getView() != null) {
-				AttrViewSetting mvs = this.view.getMaskedView();
-				
-				int number = mvs.getSize(attributes);								
-				for (int i = 0; i < number; i++) {
-					Vector<String> tmpAttrVector = new Vector<String>(3);
-					int index = mvs.convertSlotToIndex(attributes, i);
-					DeclMember currentMember = (DeclMember) attributes
-							.getType().getMemberAt(index);
-					
-					if (this.elemOfTG
-							&& (currentMember != null)
-							&& (currentMember.getHoldingTuple() != attributes
-									.getType())) {
-						
+            return this.visible;
+        }
+        return this.visible;
+    }
+
+    /**
+     * Returns this
+     */
+    public EdNode getNode() {
+        return this;
+    }
+
+    /**
+     * Returns NULL
+     */
+    public EdArc getArc() {
+        return null;
+    }
+
+    /**
+     * @return count of all incoming edges (also loops)
+     */
+    public int getInArcsCount() {
+        return this.bNode.getIncomingArcsSet().size();
+    }
+
+    /**
+     * @return count of all outgoing edges (also loops)
+     */
+    public int getOutArcsCount() {
+        return this.bNode.getOutgoingArcsSet().size();
+    }
+
+    /**
+     * @return count of all incoming and outgoing edges (without loops!)
+     */
+    public int getInOutArcsCount() {
+        return this.bNode.getOutgoingArcsSet().size()
+                + this.bNode.getIncomingArcsSet().size();
+    }
+
+    /**
+     * @return count of all loop edges
+     */
+    public int getLoopArcsCount() {
+        int c = 0;
+        Iterator<Arc> e = this.bNode.getOutgoingArcsSet().iterator();
+        while (e.hasNext()) {
+            if (e.next().isLoop()) {
+                c++;
+            }
+        }
+        return c;
+    }
+
+    /**
+     * Returns the attributes which are shown
+     */
+    public Vector<Vector<String>> getAttributes() {
+        Vector<Vector<String>> attrs = new Vector<Vector<String>>();
+        if (this.bNode != null) {
+            AttrInstance attributes = this.bNode.getAttribute();
+            if (attributes != null && getView() != null) {
+                AttrViewSetting mvs = this.view.getMaskedView();
+
+                int number = mvs.getSize(attributes);
+                for (int i = 0; i < number; i++) {
+                    Vector<String> tmpAttrVector = new Vector<String>(3);
+                    int index = mvs.convertSlotToIndex(attributes, i);
+                    DeclMember currentMember = (DeclMember) attributes
+                            .getType().getMemberAt(index);
+
+                    if (this.elemOfTG
+                            && (currentMember != null)
+                            && (currentMember.getHoldingTuple() != attributes
+                            .getType())) {
+
 //						if (!((ValueMember)attributes.getMemberAt(index)).isSet()) 
-							continue;
-					}
-					
-					if ("".equals(attributes.getTypeAsString(index))
-							|| "".equals(attributes.getNameAsString(index))) {
-						continue;
-					}
-					
-					tmpAttrVector.addElement(attributes.getTypeAsString(index));
-					tmpAttrVector.addElement(attributes.getNameAsString(index));
-					tmpAttrVector
-							.addElement(attributes.getValueAsString(index));
-					attrs.addElement(tmpAttrVector);
-				}
-			} else {
-				attrs = setAttributes(this.bNode);
-			}
-		}
-		return attrs;
-	}
+                        continue;
+                    }
 
-	/** Sets my attribute value to the attributes specified by the Node.
-	 *  Returns a list of lists with type, name, value of attribute members.
-	 */
-	public Vector<Vector<String>> setAttributes(Node bNode) {
-		Vector<Vector<String>> attrs = new Vector<Vector<String>>();
-		if (bNode == null)
-			return attrs;
-		if (bNode.getAttribute() == null)
-			return attrs;
+                    if ("".equals(attributes.getTypeAsString(index))
+                            || "".equals(attributes.getNameAsString(index))) {
+                        continue;
+                    }
 
-		int nattrs = bNode.getAttribute().getNumberOfEntries();
-		if (nattrs != 0) {
-			for (int i = 0; i < nattrs; i++) {
-				Vector<String> attr = new Vector<String>();
-				attr.addElement(bNode.getAttribute().getTypeAsString(i));
-				attr.addElement(bNode.getAttribute().getNameAsString(i));
-				attr.addElement(bNode.getAttribute().getValueAsString(i));
-				attrs.addElement(attr);
-			}
-		}
-		return attrs;
-	}
+                    tmpAttrVector.addElement(attributes.getTypeAsString(index));
+                    tmpAttrVector.addElement(attributes.getNameAsString(index));
+                    tmpAttrVector
+                            .addElement(attributes.getValueAsString(index));
+                    attrs.addElement(tmpAttrVector);
+                }
+            } else {
+                attrs = setAttributes(this.bNode);
+            }
+        }
+        return attrs;
+    }
 
-	/** Sets my attributes to the attributes specified by the GraphObject*/
-	public Vector<Vector<String>> setAttributes(GraphObject obj) {
-		return setAttributes((Node) obj);
-	}
+    /**
+     * Sets my attribute value to the attributes specified by the Node. Returns a list of lists with type, name, value
+     * of attribute members.
+     */
+    public Vector<Vector<String>> setAttributes(Node bNode) {
+        Vector<Vector<String>> attrs = new Vector<Vector<String>>();
+        if (bNode == null) {
+            return attrs;
+        }
+        if (bNode.getAttribute() == null) {
+            return attrs;
+        }
 
-	/** Sets my used object specified by the Node bNode */
-	public void setBasisNode(Node bNode) {
-		this.bNode = bNode;
-	}
+        int nattrs = bNode.getAttribute().getNumberOfEntries();
+        if (nattrs != 0) {
+            for (int i = 0; i < nattrs; i++) {
+                Vector<String> attr = new Vector<String>();
+                attr.addElement(bNode.getAttribute().getTypeAsString(i));
+                attr.addElement(bNode.getAttribute().getNameAsString(i));
+                attr.addElement(bNode.getAttribute().getValueAsString(i));
+                attrs.addElement(attr);
+            }
+        }
+        return attrs;
+    }
 
-	/** Sets a new basis node */
-	public void changeBasisNode(Node newNode) {
-		this.bNode = newNode;
-		/*
+    /**
+     * Sets my attributes to the attributes specified by the GraphObject
+     */
+    public Vector<Vector<String>> setAttributes(GraphObject obj) {
+        return setAttributes((Node) obj);
+    }
+
+    /**
+     * Sets my used object specified by the Node bNode
+     */
+    public void setBasisNode(Node bNode) {
+        this.bNode = bNode;
+    }
+
+    /**
+     * Sets a new basis node
+     */
+    public void changeBasisNode(Node newNode) {
+        this.bNode = newNode;
+        /*
 		 * der alte basis knoten darf nicht zerstoert werden, da er vielleicht
 		 * noch in einem anderen graphen existiert.
-		 */
-	}
+         */
+    }
 
-	/** Sets my position, visibility, selection */
-	public void setReps(int nX, int nY, boolean nVisible, boolean nSelect) {
-		setXY(nX, nY);
-		setVisible(nVisible);
-		setSelected(nSelect);
-	}
+    /**
+     * Sets my position, visibility, selection
+     */
+    public void setReps(int nX, int nY, boolean nVisible, boolean nSelect) {
+        setXY(nX, nY);
+        setVisible(nVisible);
+        setSelected(nSelect);
+    }
 
-	/**
-	 * Makes a copy based on the same basis node.
-	 */
-	public EdNode copy() {
-		EdNode newNode = new EdNode(this.bNode, this.eType);
-		newNode.myGraphPanel = this.myGraphPanel;
-		newNode.x = this.x;
-		newNode.y = this.y;
-		newNode.w = this.w;
-		newNode.h = this.h;
-		return newNode;
-	}
+    /**
+     * Makes a copy based on the same basis node.
+     */
+    public EdNode copy() {
+        EdNode newNode = new EdNode(this.bNode, this.eType);
+        newNode.myGraphPanel = this.myGraphPanel;
+        newNode.x = this.x;
+        newNode.y = this.y;
+        newNode.w = this.w;
+        newNode.h = this.h;
+        return newNode;
+    }
 
-	/**
-	 * Returns TRUE if the specified point (X, Y) is inside of my shape.
-	 */
-	public boolean inside(int X, int Y) {
-		Rectangle r = new Rectangle(this.x - this.w/2, this.y - this.h/2, this.w, this.h);
-		if (r.contains(X, Y))
-			return true;
-		
-		return false;
-	}
+    /**
+     * Returns TRUE if the specified point (X, Y) is inside of my shape.
+     */
+    public boolean inside(int X, int Y) {
+        Rectangle r = new Rectangle(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h);
+        if (r.contains(X, Y)) {
+            return true;
+        }
 
-	public void applyScale(double scale) {
+        return false;
+    }
+
+    public void applyScale(double scale) {
 //		System.out.println("EdNode.applyScale::  "+this.itsScale+"   to  "+scale);
-		if (scale != this.itsScale) {
-			setX((int) ((this.x/this.itsScale) * scale));
-			setY((int) ((this.y/this.itsScale) * scale));		
-			this.itsScale = scale;
-		}
+        if (scale != this.itsScale) {
+            setX((int) ((this.x / this.itsScale) * scale));
+            setY((int) ((this.y / this.itsScale) * scale));
+            this.itsScale = scale;
+        }
 //		System.out.println("EdNode.applyScale::  "+this.itsScale);
-	}
-	
-	public void drawShadowGraphic(Graphics grs) {
-		if (this.visible) {
-			Graphics2D g = (Graphics2D) grs;
-			// save color, font style
-			Color lastColor = g.getColor();
-			
-			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-					RenderingHints.VALUE_ANTIALIAS_ON);			
-			g.setPaint(Color.LIGHT_GRAY);
-			g.setStroke(EditorConstants.defaultStroke);
-			g.draw(new Rectangle2D.Double(this.x-10, this.y-10, 20, 20));
-			// reset font style, color
-			g.setFont(EditorConstants.defaultFont);
-			g.setPaint(lastColor);
-		}
-	}
-	
-	
-	/** Draws myself in the graphics specified by the Graphics g */
-	public void drawGraphic(Graphics grs) {
+    }
+
+    public void drawShadowGraphic(Graphics grs) {
+        if (this.visible) {
+            Graphics2D g = (Graphics2D) grs;
+            // save color, font style
+            Color lastColor = g.getColor();
+
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setPaint(Color.LIGHT_GRAY);
+            g.setStroke(EditorConstants.defaultStroke);
+            g.draw(new Rectangle2D.Double(this.x - 10, this.y - 10, 20, 20));
+            // reset font style, color
+            g.setFont(EditorConstants.defaultFont);
+            g.setPaint(lastColor);
+        }
+    }
+
+    /**
+     * Draws myself in the graphics specified by the Graphics g
+     */
+    public void drawGraphic(Graphics grs) {
 //		synchronized (this) 
-		{
-		if (!this.visible || this.bNode == null || this.bNode.getType() == null) {
-			return;
-		} 
+        {
+            if (!this.visible || this.bNode == null || this.bNode.getType() == null) {
+                return;
+            }
 
-		this.criticalStyle = this.eGraph.criticalStyle;
-		
-		Graphics2D g = (Graphics2D) grs;
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setStroke(EditorConstants.defaultStroke);
-		
-		// save the old color
-		Color lastColor = g.getColor();
-		
-		myUpdate(g.getFontMetrics());
+            this.criticalStyle = this.eGraph.criticalStyle;
 
-		if (getType().isIconable()) {
-			String fname = getType().imageFileName;
-			URL url = ClassLoader.getSystemClassLoader().getResource(fname);
-			if (url != null) {
-				ImageIcon icon = new ImageIcon(url);
-				if (selected) {
-					g.setPaint(EditorConstants.selectColor);
-					g.fill(new Rectangle2D.Double(this.x - this.w/2 - 2, this.y - this.h/2 - 2,
-							this.w + 4, this.h + 4));
-				} else if (isCritical()) {
-					if (this.criticalStyle == 0) {
-						g.setPaint(EditorConstants.criticalColor);	
-						g.setStroke(EditorConstants.criticalStroke);
-						g.draw(new Rectangle2D.Double(this.x - this.w/2 - 2, this.y - this.h/2 - 2,
-								this.w + 4, this.h + 4));
-					}
-					else { //if (this.criticalStyle == 1) {
-						g.setPaint(Color.BLACK);
-						g.setStroke(EditorConstants.criticalStroke);
-						g.draw(new Rectangle2D.Double(this.x - this.w/2 - 2, this.y - this.h/2 - 2, 
-								this.w+4, this.h+4 ));
-					} 
-				}
-				g.setPaint(this.getColor());
-				g.drawImage(icon.getImage(), this.x - this.w/2, this.y - this.h/2, null);
-				return;
-			} 
-		}
+            Graphics2D g = (Graphics2D) grs;
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setStroke(EditorConstants.defaultStroke);
 
-		if (this.backgroundColor != null && this.backgroundColor != Color.white) {
-			g.setPaint(this.backgroundColor);
-			g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w + 6, this.h + 6));
-		}
+            // save the old color
+            Color lastColor = g.getColor();
 
-		int sh = getShape();
-		
-		boolean hiddenObjOfType = this.eGraph.isTypeGraph() 
-						&& !this.eType.getBasisType().isObjectOfTypeGraphNodeVisible();
-		switch (sh) {
-		case EditorConstants.RECT:
-			if (selected) {
-				g.setPaint(EditorConstants.selectColor);
-				g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-				g.setPaint(this.getColor());
-				g.draw(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-			} else if (weakselected) {
-				g.setPaint(Color.white);
-				g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-				g.setPaint(EditorConstants.weakselectColor);
-				g.draw(new Rectangle2D.Double(this.x - this.w/2-1, this.y - this.h/2-1, this.w+2, this.h+2));
-				g.draw(new Rectangle2D.Double(this.x - this.w/2+1, this.y - this.h/2+1, this.w-2, this.h-2));
-				g.setPaint(this.getColor());
-				g.draw(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-			} else if (hiddenObjOfType) {
-				g.setPaint(EditorConstants.hideColor);
-				g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-				g.setPaint(this.getColor());
-				g.draw(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-			} else if (isCritical()) {
-				if (this.criticalStyle == 0) {
-					if (this.eType.filled) 
-						g.setPaint(this.getColor());
-					else
-						g.setPaint(Color.white);
-					g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-					g.setPaint(EditorConstants.criticalColor);	
-	//				g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-	//				g.setPaint(this.getColor());
-	//				g.draw(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-					g.setStroke(EditorConstants.criticalStroke);
-					g.setFont(EditorConstants.criticalFont);
-					g.draw(new Rectangle2D.Double(this.x - this.w/2 - 4, this.y - this.h/2 - 4,
-								this.w + 8, this.h + 8));
-					if (this.eType.filled) 
-						g.setPaint(Color.white);
-				}
-				else {//if (this.criticalStyle == 1) {
-					g.setPaint(Color.BLACK);
-					g.setStroke(EditorConstants.criticalStroke);
-					g.draw(new Rectangle2D.Double(this.x - this.w/2 -2, this.y - this.h/2 -2, this.w+4, this.h+4));
-				} 
-			} else if (this.ownColor != null) {
-				g.setPaint(this.ownColor);
-				g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-				g.setPaint(Color.white);
-			} else if (this.eType.filled) {
-				g.setPaint(this.getColor());
-				g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-				g.setPaint(Color.white);
-			} else {
-				g.setPaint(Color.white);
-				g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-				g.setPaint(this.getColor());
-				g.draw(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
-			}
-			break;
-		case EditorConstants.ROUNDRECT:
-			if (selected) {
-				g.setPaint(EditorConstants.selectColor);
-				g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-				g.setPaint(this.getColor());
-				g.drawRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-			}
-			else if (weakselected) {
-				g.setPaint(Color.white);
-				g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-				g.setPaint(EditorConstants.weakselectColor);
-				g.drawRoundRect(this.x - this.w/2-1, this.y - this.h/2-1, this.w+2, this.h+2, 10, 10);
-				g.drawRoundRect(this.x - this.w/2+1, this.y - this.h/2+1, this.w-2, this.h-2, 10, 10);
-				g.setPaint(this.getColor());
-				g.drawRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-			}
-			else if (hiddenObjOfType) {
-				g.setPaint(EditorConstants.hideColor);
-				g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-				g.setPaint(this.getColor());
-				g.drawRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-			}
-			else if (isCritical()) {
-				if (this.criticalStyle == 0) {
-					if (this.eType.filled)
-						g.setPaint(this.getColor());
-					else
-						g.setPaint(Color.white);					
-					g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-					g.setPaint(EditorConstants.criticalColor);
-	//				g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);					
-	//				g.setPaint(this.getColor());
-	//				g.drawRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-					g.setStroke(EditorConstants.criticalStroke);
-					g.setFont(EditorConstants.criticalFont);
-					g.drawRoundRect(this.x - this.w/2 -4, this.y - this.h/2 -4, this.w+8, this.h+8, 10, 10);
-					if (this.eType.filled)
-						g.setPaint(Color.white);
-				}
-				else { //if (this.criticalStyle == 1) {
-					g.setStroke(EditorConstants.criticalStroke);
-					g.setPaint(Color.BLACK);
-					g.drawRoundRect(this.x - this.w/2 -2, this.y - this.h/2 -2, this.w+4, this.h+4, 10, 10);
-				} 
-			} else if (this.ownColor != null) {
-				g.setPaint(this.ownColor);
-				g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-				g.setPaint(Color.white);
-			} else if (this.eType.filled) {
-				g.setPaint(this.getColor());
-				g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-				g.setPaint(Color.white);
-			} else {
-				g.setPaint(Color.white);
-				g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-				g.setPaint(this.getColor());
-				g.drawRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-			}
-			break;
-		case EditorConstants.CIRCLE:
-			int d = this.w-2;
-			if (selected) {
-				g.setPaint(EditorConstants.selectColor);
-				g.fillOval(this.x - d/2, this.y - d/2, d, d);
-				g.setPaint(this.getColor());
-				g.drawOval(this.x - d/2, this.y - d/2, d, d);
-			}
-			else if (weakselected) {
-				g.setPaint(Color.white);
-				g.fillOval(this.x - d/2, this.y - d/2, d, d);
-				g.setPaint(EditorConstants.weakselectColor);
-				g.drawOval(this.x - d/2-1, this.y - d/2-1, d+2, d+2);
-				g.drawOval(this.x - d/2+1, this.y - d/2+1, d-2, d-2);
-				g.setPaint(this.getColor());
-				g.drawOval(this.x - d/2, this.y - d/2, d, d);
-			}
-			else if (hiddenObjOfType) {
-				g.setPaint(EditorConstants.hideColor);
-				g.fillOval(this.x - d/2, this.y - d/2, d, d);
-				g.setPaint(this.getColor());
-				g.drawOval(this.x - d/2, this.y - d/2, d, d);
-			}
-			else if (isCritical()) {
-				if (this.criticalStyle == 0) {
-					if (this.eType.filled)
-						g.setPaint(this.getColor());
-					else
-						g.setPaint(Color.white);						
-					g.fillOval(this.x - d/2, this.y - d/2, d, d);
-					g.setPaint(EditorConstants.criticalColor);
-	//				g.fillOval(this.x - d/2, this.y - d/2, d, d);
-	//				g.setPaint(this.getColor());
-	//				g.drawOval(this.x - d/2, this.y - d/2, d, d);
-					g.setStroke(EditorConstants.criticalStroke);
-					g.setFont(EditorConstants.criticalFont);
-					g.drawOval(this.x - d/2 -4, this.y - d/2 -4, d+8, d+8);
-					if (this.eType.filled)
-						g.setPaint(Color.white);
-				}
-				else { //if (this.criticalStyle == 1) {
-					g.setStroke(EditorConstants.criticalStroke);
-					g.setPaint(Color.BLACK);
-					g.drawOval(this.x - d/2 -2, this.y - d/2 -2, d+4, d+4);
-				} 
-			} else if (this.ownColor != null) {
-				g.setPaint(this.ownColor);
-				g.fillOval(this.x - d/2, this.y - d/2, d, d);
-				g.setPaint(Color.white);
-			} else if (this.eType.filled) {
-				g.setPaint(this.getColor());
-				g.fillOval(this.x - d/2, this.y - d/2, d, d);
-				g.setPaint(Color.white);
-			} else {
-				g.setPaint(Color.white);
-				g.fillOval(this.x - d/2, this.y - d/2, d, d);
-				g.setPaint(this.getColor());
-				g.drawOval(this.x - d/2, this.y - d/2, d, d);
-			}
-			break;
-		case EditorConstants.OVAL:
-			d = this.w-2;
-			if (selected) {
-				g.setPaint(EditorConstants.selectColor);
-				g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
-				g.setPaint(this.getColor());
-				g.drawOval(this.x - d/2, this.y - this.h/2, d, this.h);
-			}
-			else if (weakselected) {
-				g.setPaint(Color.white);
-				g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
-				g.setPaint(EditorConstants.weakselectColor);
-				g.drawOval(this.x - d/2-1, this.y - this.h/2-1, d+2, this.h+2);
-				g.drawOval(this.x - d/2+1, this.y - this.h/2+1, d-2, this.h-2);
-				g.setPaint(this.getColor());
-				g.drawOval(this.x - d/2, this.y - this.h/2, d, this.h);
-			}
-			else if (hiddenObjOfType) {
-				g.setPaint(EditorConstants.hideColor);
-				g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
-				g.setPaint(this.getColor());
-				g.drawOval(this.x - d/2, this.y - this.h/2, d, this.h);
-			}
-			else if (isCritical()) {
-				if (this.criticalStyle == 0) {
-					if (this.eType.filled) 
-						g.setPaint(this.getColor());
-					else
-						g.setPaint(Color.white);
-					g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
-					g.setPaint(EditorConstants.criticalColor);
-	//				g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
-	//				g.setPaint(this.getColor());
-	//				g.drawOval(this.x - d/2, this.y - this.h/2, d, this.h);
-					g.setStroke(EditorConstants.criticalStroke);
-					g.setFont(EditorConstants.criticalFont);
-					g.drawOval(this.x - d/2 -4, this.y - this.h/2 -4, d+8, this.h+8);
-					if (this.eType.filled)
-						g.setPaint(Color.white);
-				}
-				else if (this.criticalStyle == 1) {
-					g.setStroke(EditorConstants.criticalStroke);
-					g.setPaint(Color.BLACK);
-					g.drawOval(this.x - d/2 -2, this.y - this.h/2 -2, d+4, this.h+4);
-				}
-			} else if (this.ownColor != null) {
-				g.setPaint(this.ownColor);
-				g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
-				g.setPaint(Color.white);
-			} else if (this.eType.filled) {
-				g.setPaint(this.getColor());
-				g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
-				g.setPaint(Color.white);
-			} else {
-				g.setPaint(Color.white);
-				g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
-				g.setPaint(this.getColor());
-				g.drawOval(this.x - d/2, this.y - this.h/2, d, this.h);
-			}
-			break;
-		default:
-			break;
-		} 
+            myUpdate(g.getFontMetrics());
 
-		if (this.errorMode) {
-			// if there was an error print in green
-			g.setPaint(Color.green);
-		}
+            if (getType().isIconable()) {
+                String fname = getType().imageFileName;
+                URL url = ClassLoader.getSystemClassLoader().getResource(fname);
+                if (url != null) {
+                    ImageIcon icon = new ImageIcon(url);
+                    if (selected) {
+                        g.setPaint(EditorConstants.selectColor);
+                        g.fill(new Rectangle2D.Double(this.x - this.w / 2 - 2, this.y - this.h / 2 - 2,
+                                this.w + 4, this.h + 4));
+                    } else if (isCritical()) {
+                        if (this.criticalStyle == 0) {
+                            g.setPaint(EditorConstants.criticalColor);
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.draw(new Rectangle2D.Double(this.x - this.w / 2 - 2, this.y - this.h / 2 - 2,
+                                    this.w + 4, this.h + 4));
+                        } else { //if (this.criticalStyle == 1) {
+                            g.setPaint(Color.BLACK);
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.draw(new Rectangle2D.Double(this.x - this.w / 2 - 2, this.y - this.h / 2 - 2,
+                                    this.w + 4, this.h + 4));
+                        }
+                    }
+                    g.setPaint(this.getColor());
+                    g.drawImage(icon.getImage(), this.x - this.w / 2, this.y - this.h / 2, null);
+                    return;
+                }
+            }
 
-		// Text		
-		if (this.bNode.getType().isAbstract()) 
-			g.setFont(new Font("Dialog", Font.ITALIC, g.getFont().getSize()));
+            if (this.backgroundColor != null && this.backgroundColor != Color.white) {
+                g.setPaint(this.backgroundColor);
+                g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w + 6, this.h + 6));
+            }
 
-		g.setStroke(EditorConstants.defaultStroke);
-		drawText(g, this.x, this.y);
+            int sh = getShape();
 
-		g.setFont(EditorConstants.defaultFont);
-		g.setPaint(lastColor);
-		}
-	}
+            boolean hiddenObjOfType = this.eGraph.isTypeGraph()
+                    && !this.eType.getBasisType().isObjectOfTypeGraphNodeVisible();
+            switch (sh) {
+                case EditorConstants.RECT:
+                    if (selected) {
+                        g.setPaint(EditorConstants.selectColor);
+                        g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                        g.setPaint(this.getColor());
+                        g.draw(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                    } else if (weakselected) {
+                        g.setPaint(Color.white);
+                        g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                        g.setPaint(EditorConstants.weakselectColor);
+                        g.draw(new Rectangle2D.Double(this.x - this.w / 2 - 1, this.y - this.h / 2 - 1, this.w + 2, this.h + 2));
+                        g.draw(new Rectangle2D.Double(this.x - this.w / 2 + 1, this.y - this.h / 2 + 1, this.w - 2, this.h - 2));
+                        g.setPaint(this.getColor());
+                        g.draw(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                    } else if (hiddenObjOfType) {
+                        g.setPaint(EditorConstants.hideColor);
+                        g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                        g.setPaint(this.getColor());
+                        g.draw(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                    } else if (isCritical()) {
+                        if (this.criticalStyle == 0) {
+                            if (this.eType.filled) {
+                                g.setPaint(this.getColor());
+                            } else {
+                                g.setPaint(Color.white);
+                            }
+                            g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                            g.setPaint(EditorConstants.criticalColor);
+                            //				g.fill(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
+                            //				g.setPaint(this.getColor());
+                            //				g.draw(new Rectangle2D.Double(this.x - this.w/2, this.y - this.h/2, this.w, this.h));
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.setFont(EditorConstants.criticalFont);
+                            g.draw(new Rectangle2D.Double(this.x - this.w / 2 - 4, this.y - this.h / 2 - 4,
+                                    this.w + 8, this.h + 8));
+                            if (this.eType.filled) {
+                                g.setPaint(Color.white);
+                            }
+                        } else {//if (this.criticalStyle == 1) {
+                            g.setPaint(Color.BLACK);
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.draw(new Rectangle2D.Double(this.x - this.w / 2 - 2, this.y - this.h / 2 - 2, this.w + 4, this.h + 4));
+                        }
+                    } else if (this.ownColor != null) {
+                        g.setPaint(this.ownColor);
+                        g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                        g.setPaint(Color.white);
+                    } else if (this.eType.filled) {
+                        g.setPaint(this.getColor());
+                        g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                        g.setPaint(Color.white);
+                    } else {
+                        g.setPaint(Color.white);
+                        g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                        g.setPaint(this.getColor());
+                        g.draw(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h));
+                    }
+                    break;
+                case EditorConstants.ROUNDRECT:
+                    if (selected) {
+                        g.setPaint(EditorConstants.selectColor);
+                        g.fillRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                        g.setPaint(this.getColor());
+                        g.drawRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                    } else if (weakselected) {
+                        g.setPaint(Color.white);
+                        g.fillRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                        g.setPaint(EditorConstants.weakselectColor);
+                        g.drawRoundRect(this.x - this.w / 2 - 1, this.y - this.h / 2 - 1, this.w + 2, this.h + 2, 10, 10);
+                        g.drawRoundRect(this.x - this.w / 2 + 1, this.y - this.h / 2 + 1, this.w - 2, this.h - 2, 10, 10);
+                        g.setPaint(this.getColor());
+                        g.drawRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                    } else if (hiddenObjOfType) {
+                        g.setPaint(EditorConstants.hideColor);
+                        g.fillRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                        g.setPaint(this.getColor());
+                        g.drawRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                    } else if (isCritical()) {
+                        if (this.criticalStyle == 0) {
+                            if (this.eType.filled) {
+                                g.setPaint(this.getColor());
+                            } else {
+                                g.setPaint(Color.white);
+                            }
+                            g.fillRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                            g.setPaint(EditorConstants.criticalColor);
+                            //				g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);					
+                            //				g.setPaint(this.getColor());
+                            //				g.drawRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.setFont(EditorConstants.criticalFont);
+                            g.drawRoundRect(this.x - this.w / 2 - 4, this.y - this.h / 2 - 4, this.w + 8, this.h + 8, 10, 10);
+                            if (this.eType.filled) {
+                                g.setPaint(Color.white);
+                            }
+                        } else { //if (this.criticalStyle == 1) {
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.setPaint(Color.BLACK);
+                            g.drawRoundRect(this.x - this.w / 2 - 2, this.y - this.h / 2 - 2, this.w + 4, this.h + 4, 10, 10);
+                        }
+                    } else if (this.ownColor != null) {
+                        g.setPaint(this.ownColor);
+                        g.fillRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                        g.setPaint(Color.white);
+                    } else if (this.eType.filled) {
+                        g.setPaint(this.getColor());
+                        g.fillRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                        g.setPaint(Color.white);
+                    } else {
+                        g.setPaint(Color.white);
+                        g.fillRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                        g.setPaint(this.getColor());
+                        g.drawRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+                    }
+                    break;
+                case EditorConstants.CIRCLE:
+                    int d = this.w - 2;
+                    if (selected) {
+                        g.setPaint(EditorConstants.selectColor);
+                        g.fillOval(this.x - d / 2, this.y - d / 2, d, d);
+                        g.setPaint(this.getColor());
+                        g.drawOval(this.x - d / 2, this.y - d / 2, d, d);
+                    } else if (weakselected) {
+                        g.setPaint(Color.white);
+                        g.fillOval(this.x - d / 2, this.y - d / 2, d, d);
+                        g.setPaint(EditorConstants.weakselectColor);
+                        g.drawOval(this.x - d / 2 - 1, this.y - d / 2 - 1, d + 2, d + 2);
+                        g.drawOval(this.x - d / 2 + 1, this.y - d / 2 + 1, d - 2, d - 2);
+                        g.setPaint(this.getColor());
+                        g.drawOval(this.x - d / 2, this.y - d / 2, d, d);
+                    } else if (hiddenObjOfType) {
+                        g.setPaint(EditorConstants.hideColor);
+                        g.fillOval(this.x - d / 2, this.y - d / 2, d, d);
+                        g.setPaint(this.getColor());
+                        g.drawOval(this.x - d / 2, this.y - d / 2, d, d);
+                    } else if (isCritical()) {
+                        if (this.criticalStyle == 0) {
+                            if (this.eType.filled) {
+                                g.setPaint(this.getColor());
+                            } else {
+                                g.setPaint(Color.white);
+                            }
+                            g.fillOval(this.x - d / 2, this.y - d / 2, d, d);
+                            g.setPaint(EditorConstants.criticalColor);
+                            //				g.fillOval(this.x - d/2, this.y - d/2, d, d);
+                            //				g.setPaint(this.getColor());
+                            //				g.drawOval(this.x - d/2, this.y - d/2, d, d);
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.setFont(EditorConstants.criticalFont);
+                            g.drawOval(this.x - d / 2 - 4, this.y - d / 2 - 4, d + 8, d + 8);
+                            if (this.eType.filled) {
+                                g.setPaint(Color.white);
+                            }
+                        } else { //if (this.criticalStyle == 1) {
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.setPaint(Color.BLACK);
+                            g.drawOval(this.x - d / 2 - 2, this.y - d / 2 - 2, d + 4, d + 4);
+                        }
+                    } else if (this.ownColor != null) {
+                        g.setPaint(this.ownColor);
+                        g.fillOval(this.x - d / 2, this.y - d / 2, d, d);
+                        g.setPaint(Color.white);
+                    } else if (this.eType.filled) {
+                        g.setPaint(this.getColor());
+                        g.fillOval(this.x - d / 2, this.y - d / 2, d, d);
+                        g.setPaint(Color.white);
+                    } else {
+                        g.setPaint(Color.white);
+                        g.fillOval(this.x - d / 2, this.y - d / 2, d, d);
+                        g.setPaint(this.getColor());
+                        g.drawOval(this.x - d / 2, this.y - d / 2, d, d);
+                    }
+                    break;
+                case EditorConstants.OVAL:
+                    d = this.w - 2;
+                    if (selected) {
+                        g.setPaint(EditorConstants.selectColor);
+                        g.fillOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                        g.setPaint(this.getColor());
+                        g.drawOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                    } else if (weakselected) {
+                        g.setPaint(Color.white);
+                        g.fillOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                        g.setPaint(EditorConstants.weakselectColor);
+                        g.drawOval(this.x - d / 2 - 1, this.y - this.h / 2 - 1, d + 2, this.h + 2);
+                        g.drawOval(this.x - d / 2 + 1, this.y - this.h / 2 + 1, d - 2, this.h - 2);
+                        g.setPaint(this.getColor());
+                        g.drawOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                    } else if (hiddenObjOfType) {
+                        g.setPaint(EditorConstants.hideColor);
+                        g.fillOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                        g.setPaint(this.getColor());
+                        g.drawOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                    } else if (isCritical()) {
+                        if (this.criticalStyle == 0) {
+                            if (this.eType.filled) {
+                                g.setPaint(this.getColor());
+                            } else {
+                                g.setPaint(Color.white);
+                            }
+                            g.fillOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                            g.setPaint(EditorConstants.criticalColor);
+                            //				g.fillOval(this.x - d/2, this.y - this.h/2, d, this.h);
+                            //				g.setPaint(this.getColor());
+                            //				g.drawOval(this.x - d/2, this.y - this.h/2, d, this.h);
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.setFont(EditorConstants.criticalFont);
+                            g.drawOval(this.x - d / 2 - 4, this.y - this.h / 2 - 4, d + 8, this.h + 8);
+                            if (this.eType.filled) {
+                                g.setPaint(Color.white);
+                            }
+                        } else if (this.criticalStyle == 1) {
+                            g.setStroke(EditorConstants.criticalStroke);
+                            g.setPaint(Color.BLACK);
+                            g.drawOval(this.x - d / 2 - 2, this.y - this.h / 2 - 2, d + 4, this.h + 4);
+                        }
+                    } else if (this.ownColor != null) {
+                        g.setPaint(this.ownColor);
+                        g.fillOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                        g.setPaint(Color.white);
+                    } else if (this.eType.filled) {
+                        g.setPaint(this.getColor());
+                        g.fillOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                        g.setPaint(Color.white);
+                    } else {
+                        g.setPaint(Color.white);
+                        g.fillOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                        g.setPaint(this.getColor());
+                        g.drawOval(this.x - d / 2, this.y - this.h / 2, d, this.h);
+                    }
+                    break;
+                default:
+                    break;
+            }
 
-	/** Updates my width and height */
-	public void myUpdate(FontMetrics fm) {
-		prepareGraphics(fm);
-	}
+            if (this.errorMode) {
+                // if there was an error print in green
+                g.setPaint(Color.green);
+            }
 
-	/** Erases my graphic */
-	public void eraseGraphic(Graphics grs) {
-		Color c = grs.getColor();
-		grs.setColor(Color.white);
-		grs.fillRect(this.x - this.w/2 - 1, this.y - this.h/2 - 1, this.w + 2, this.h + 2);
-		grs.setColor(c);
-	}
+            // Text		
+            if (this.bNode.getType().isAbstract()) {
+                g.setFont(new Font("Dialog", Font.ITALIC, g.getFont().getSize()));
+            }
 
-	/**
-	 * Implements the AttrViewObserver. Makes update graphics if the attributes
-	 * of my used object are changed.
-	 */
-	public void attributeChanged(AttrViewEvent ev) {
+            g.setStroke(EditorConstants.defaultStroke);
+            drawText(g, this.x, this.y);
+
+            g.setFont(EditorConstants.defaultFont);
+            g.setPaint(lastColor);
+        }
+    }
+
+    /**
+     * Updates my width and height
+     */
+    public void myUpdate(FontMetrics fm) {
+        prepareGraphics(fm);
+    }
+
+    /**
+     * Erases my graphic
+     */
+    public void eraseGraphic(Graphics grs) {
+        Color c = grs.getColor();
+        grs.setColor(Color.white);
+        grs.fillRect(this.x - this.w / 2 - 1, this.y - this.h / 2 - 1, this.w + 2, this.h + 2);
+        grs.setColor(c);
+    }
+
+    /**
+     * Implements the AttrViewObserver. Makes update graphics if the attributes of my used object are changed.
+     */
+    public void attributeChanged(AttrViewEvent ev) {
 //		 System.out.println("EdNode.attributeChanged: "+ev.getID());		
 //		 ((ValueTuple)this.bNode.getAttribute()).showValue();
-		 
-		if (ev.getID() == AttrEvent.GENERAL_CHANGE // 0
-				||ev.getID() == AttrEvent.MEMBER_RETYPED 
-				|| ev.getID() == AttrEvent.MEMBER_RENAMED
-				|| ev.getID() == AttrEvent.MEMBER_DELETED 
-				|| ev.getID() == AttrViewEvent.MEMBER_VISIBILITY 
-				|| ev.getID() == AttrViewEvent.MEMBER_MOVED) {
-			
-			if (ev.getSource().getTupleType().isValid()) {
-				this.attrChanged = true;
-			}
-			
-		} else if (ev.getID() == AttrEvent.MEMBER_VALUE_CORRECTNESS // 70
-				|| ev.getID() == AttrEvent.MEMBER_VALUE_MODIFIED) { // 80
-		
-			if (ev.getSource().isValid()) {
-				this.attrChanged = true;
-				if (this.myGraphPanel != null) {
-					if (this.myGraphPanel.isAttrEditorActivated()) {
-						if (this.bNode.getContext().getAttrContext() != null) {
-							ValueMember val = ((ValueTuple) this.bNode
-									.getAttribute()).getValueMemberAt(ev
-									.getIndex());
-							if (val.isSet() && val.getExpr().isVariable()) {
-								ContextView viewContext = (ContextView) ((ValueTuple) val
-										.getHoldingTuple()).getContext();
-								VarTuple variable = (VarTuple) viewContext
-										.getVariables();
-								VarMember var = variable.getVarMemberAt(val
-										.getExprAsText());
-								if (var == null)
-									return;
-						
-								if (this.bNode.getContext().isNacGraph())
-									var.setMark(VarMember.NAC);
-								else if (this.bNode.getContext().isPacGraph())
-									var.setMark(VarMember.PAC);
-								else if (viewContext
-										.doesAllowComplexExpressions())
-									var.setMark(VarMember.RHS);
-								else
-									var.setMark(VarMember.LHS);
-							}
-						}
-					}
-				}
-			} else {
-				ValueTuple attr = (ValueTuple) this.bNode.getAttribute();
-				for (int i = 0; i < attr.getSize(); i++) {
-					ValueMember am = (ValueMember) attr.getMemberAt(i);
-					if (!am.isValid())
-						break;
-				}
-			}
-		}
-	}
 
-	public void setGraphPanel(GraphPanel gp) {
-		this.myGraphPanel = gp;
-	}
+        if (ev.getID() == AttrEvent.GENERAL_CHANGE // 0
+                || ev.getID() == AttrEvent.MEMBER_RETYPED
+                || ev.getID() == AttrEvent.MEMBER_RENAMED
+                || ev.getID() == AttrEvent.MEMBER_DELETED
+                || ev.getID() == AttrViewEvent.MEMBER_VISIBILITY
+                || ev.getID() == AttrViewEvent.MEMBER_MOVED) {
 
-	/** Gets the bounding rectangle around myself */
-	public Rectangle toRectangle() {
-		return new Rectangle(getX() - getWidth()/2, getY() - getHeight()/2,
-				getWidth(), getHeight());
-	}
-	
-	/** Prepares my graphics */
-	private void prepareGraphics(FontMetrics fm) {
-		int h1 = getTextHeight(fm) + 4;
-		if (h1 < 20)
-			h1 = 20; // min height = 20
-		int w1 = getTextWidth(fm) + 6;
-		if (w1 < 20)
-			w1 = h1; // min width 20
-		setWidth(w1);
-		setHeight(h1);
+            if (ev.getSource().getTupleType().isValid()) {
+                this.attrChanged = true;
+            }
 
-		if (getType().isIconable()) {
-			// String fname = getType().resourcesPath+getType().imageFileName;
-			// URL url = ClassLoader.getSystemClassLoader().getResource(fname);
-			String fname = getType().imageFileName;
-			URL url = ClassLoader.getSystemClassLoader().getResource(fname);
-			// System.out.println("URL: "+url);
-			if (url != null) {
-				ImageIcon icon = new ImageIcon(url);
-				h1 = icon.getIconHeight();
-				w1 = icon.getIconWidth();
-				setWidth(w1);
-				setHeight(h1);
-				return;
+        } else if (ev.getID() == AttrEvent.MEMBER_VALUE_CORRECTNESS // 70
+                || ev.getID() == AttrEvent.MEMBER_VALUE_MODIFIED) { // 80
 
-			}
-		}
+            if (ev.getSource().isValid()) {
+                this.attrChanged = true;
+                if (this.myGraphPanel != null) {
+                    if (this.myGraphPanel.isAttrEditorActivated()) {
+                        if (this.bNode.getContext().getAttrContext() != null) {
+                            ValueMember val = ((ValueTuple) this.bNode
+                                    .getAttribute()).getValueMemberAt(ev
+                                            .getIndex());
+                            if (val.isSet() && val.getExpr().isVariable()) {
+                                ContextView viewContext = (ContextView) ((ValueTuple) val
+                                        .getHoldingTuple()).getContext();
+                                VarTuple variable = (VarTuple) viewContext
+                                        .getVariables();
+                                VarMember var = variable.getVarMemberAt(val
+                                        .getExprAsText());
+                                if (var == null) {
+                                    return;
+                                }
 
-		int sh = getShape();
-		switch (sh) {
-		case EditorConstants.RECT:
-			break;
-		case EditorConstants.ROUNDRECT:
-			break;
-		case EditorConstants.CIRCLE:
-			int d1 = (int) Math.sqrt((double) (this.w * this.w) + (double) (this.h * this.h));
-			int d2 = this.w;
-			if (this.h > this.w)
-				d2 = this.h;
-			int d = (d1 + d2)/2;
-			setWidth(d);
-			setHeight(d);
-			break;
-		case EditorConstants.OVAL:
-			int hor = 0,
-			ver = 0;
-			hor = (int) Math.sqrt((double) (this.w * this.w) + (double) (this.h * this.h));
-			if (this.w == this.h) {
-				ver = hor - hor/4;
-			} else if (this.h > this.w) {
-				ver = hor;
-				hor = ver + ver/4;
-			} else if (this.w > this.h) {
-				ver = hor - hor/4;
-			}
-			setWidth(hor);
-			setHeight(ver);
-			break;
-		default:
-			break;
-		}
-	}
+                                if (this.bNode.getContext().isNacGraph()) {
+                                    var.setMark(VarMember.NAC);
+                                } else if (this.bNode.getContext().isPacGraph()) {
+                                    var.setMark(VarMember.PAC);
+                                } else if (viewContext
+                                        .doesAllowComplexExpressions()) {
+                                    var.setMark(VarMember.RHS);
+                                } else {
+                                    var.setMark(VarMember.LHS);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                ValueTuple attr = (ValueTuple) this.bNode.getAttribute();
+                for (int i = 0; i < attr.getSize(); i++) {
+                    ValueMember am = (ValueMember) attr.getMemberAt(i);
+                    if (!am.isValid()) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
-	protected String getMultiplicityString() {
-		String s = "";
-		int min = this.bNode.getType().getSourceMin();
-		int max = this.bNode.getType().getSourceMax();
+    public void setGraphPanel(GraphPanel gp) {
+        this.myGraphPanel = gp;
+    }
+
+    /**
+     * Gets the bounding rectangle around myself
+     */
+    public Rectangle toRectangle() {
+        return new Rectangle(getX() - getWidth() / 2, getY() - getHeight() / 2,
+                getWidth(), getHeight());
+    }
+
+    /**
+     * Prepares my graphics
+     */
+    private void prepareGraphics(FontMetrics fm) {
+        int h1 = getTextHeight(fm) + 4;
+        if (h1 < 20) {
+            h1 = 20; // min height = 20
+        }
+        int w1 = getTextWidth(fm) + 6;
+        if (w1 < 20) {
+            w1 = h1; // min width 20
+        }
+        setWidth(w1);
+        setHeight(h1);
+
+        if (getType().isIconable()) {
+            // String fname = getType().resourcesPath+getType().imageFileName;
+            // URL url = ClassLoader.getSystemClassLoader().getResource(fname);
+            String fname = getType().imageFileName;
+            URL url = ClassLoader.getSystemClassLoader().getResource(fname);
+            // System.out.println("URL: "+url);
+            if (url != null) {
+                ImageIcon icon = new ImageIcon(url);
+                h1 = icon.getIconHeight();
+                w1 = icon.getIconWidth();
+                setWidth(w1);
+                setHeight(h1);
+                return;
+
+            }
+        }
+
+        int sh = getShape();
+        switch (sh) {
+            case EditorConstants.RECT:
+                break;
+            case EditorConstants.ROUNDRECT:
+                break;
+            case EditorConstants.CIRCLE:
+                int d1 = (int) Math.sqrt((double) (this.w * this.w) + (double) (this.h * this.h));
+                int d2 = this.w;
+                if (this.h > this.w) {
+                    d2 = this.h;
+                }
+                int d = (d1 + d2) / 2;
+                setWidth(d);
+                setHeight(d);
+                break;
+            case EditorConstants.OVAL:
+                int hor = 0,
+                 ver = 0;
+                hor = (int) Math.sqrt((double) (this.w * this.w) + (double) (this.h * this.h));
+                if (this.w == this.h) {
+                    ver = hor - hor / 4;
+                } else if (this.h > this.w) {
+                    ver = hor;
+                    hor = ver + ver / 4;
+                } else if (this.w > this.h) {
+                    ver = hor - hor / 4;
+                }
+                setWidth(hor);
+                setHeight(ver);
+                break;
+            default:
+                break;
+        }
+    }
+
+    protected String getMultiplicityString() {
+        String s = "";
+        int min = this.bNode.getType().getSourceMin();
+        int max = this.bNode.getType().getSourceMax();
 //		System.out.println("EdNode.getMultiplicityString:: "+min+"   "+max);
-		if (min != -1) {
-			s = s.concat(String.valueOf(min));
-			s = s.concat("..");
-			if (max == -1)
-				s = s.concat("*");
-		} else { // min == -1
-			if (max != -1)
-				s = s.concat("0..");
-			else
-				s = "*";
-		}
-		if (max != -1) {
-			if (min != max)
-				s = s.concat(String.valueOf(max));
-			else
-				s = String.valueOf(max);
-		}
-		return s;
-	}
+        if (min != -1) {
+            s = s.concat(String.valueOf(min));
+            s = s.concat("..");
+            if (max == -1) {
+                s = s.concat("*");
+            }
+        } else { // min == -1
+            if (max != -1) {
+                s = s.concat("0..");
+            } else {
+                s = "*";
+            }
+        }
+        if (max != -1) {
+            if (min != max) {
+                s = s.concat(String.valueOf(max));
+            } else {
+                s = String.valueOf(max);
+            }
+        }
+        return s;
+    }
 
-	private void drawText(Graphics grs, int centerX, int centerY) {
-		// System.out.println("EdNode.showText ");
-		Graphics2D g = (Graphics2D) grs;
-		boolean underlined = false;
-		int tx1, ty1;
-		FontMetrics fm = g.getFontMetrics();
-		// System.out.println("FontWidth (m): "+ fm.stringWidth("m"));
-		// System.out.println("FontHeight: "+ fm.getHeight());
-		// System.out.println("FontDescent: "+ fm.getDescent());
-		// System.out.println("FontAscent: "+ fm.getAscent());
-		int tw = getTextWidth(fm);
-		int th = getTextHeight(fm);
-		int tx = centerX - tw/2;
-		int ty = centerY - th/2;
-		// System.out.println("h: "+th);
-		// type name string
-		String typeStr = getTypeString();
-		
-		if (this.elemOfTG) {
-			if (this.bNode.getType().isAbstract()) {
-				if (!typeStr.equals(""))
-					typeStr = "{" + typeStr + "}";
-				else
-					typeStr = "{ }";
-			}
-			String multiplicityStr = getMultiplicityString();
-			if (!multiplicityStr.equals("")) {
-				tx1 = centerX + tw/2 - fm.stringWidth(multiplicityStr);
-				ty1 = ty + fm.getHeight()/2 + fm.getDescent()/2;
-				g.drawString(multiplicityStr, tx1, ty1);
-			}
-		}
-		if (!typeStr.equals("")) {
-			tx1 = tx;
-			ty1 = ty + (fm.getHeight() - fm.getDescent());
-			g.drawString(typeStr, tx1, ty1);
-			ty = ty + fm.getHeight();
-		} else
-			ty = ty + fm.getHeight() + fm.getDescent()/4;
+    private void drawText(Graphics grs, int centerX, int centerY) {
+        // System.out.println("EdNode.showText ");
+        Graphics2D g = (Graphics2D) grs;
+        boolean underlined = false;
+        int tx1, ty1;
+        FontMetrics fm = g.getFontMetrics();
+        // System.out.println("FontWidth (m): "+ fm.stringWidth("m"));
+        // System.out.println("FontHeight: "+ fm.getHeight());
+        // System.out.println("FontDescent: "+ fm.getDescent());
+        // System.out.println("FontAscent: "+ fm.getAscent());
+        int tw = getTextWidth(fm);
+        int th = getTextHeight(fm);
+        int tx = centerX - tw / 2;
+        int ty = centerY - th / 2;
+        // System.out.println("h: "+th);
+        // type name string
+        String typeStr = getTypeString();
 
-		if ((g.getFont().getSize() < 8)
-				|| !this.attrVisible)
-			return;
+        if (this.elemOfTG) {
+            if (this.bNode.getType().isAbstract()) {
+                if (!typeStr.equals("")) {
+                    typeStr = "{" + typeStr + "}";
+                } else {
+                    typeStr = "{ }";
+                }
+            }
+            String multiplicityStr = getMultiplicityString();
+            if (!multiplicityStr.equals("")) {
+                tx1 = centerX + tw / 2 - fm.stringWidth(multiplicityStr);
+                ty1 = ty + fm.getHeight() / 2 + fm.getDescent() / 2;
+                g.drawString(multiplicityStr, tx1, ty1);
+            }
+        }
+        if (!typeStr.equals("")) {
+            tx1 = tx;
+            ty1 = ty + (fm.getHeight() - fm.getDescent());
+            g.drawString(typeStr, tx1, ty1);
+            ty = ty + fm.getHeight();
+        } else {
+            ty = ty + fm.getHeight() + fm.getDescent() / 4;
+        }
 
-		// Attribute anzeigen
-		Vector<Vector<String>>attrs = getAttributes();
-		if (attrs != null && !attrs.isEmpty()) {
-			for (int i = 0; i < attrs.size(); i++) {
-				Vector<String> attr = attrs.elementAt(i);
-				if (!this.elemOfTG && (attr.elementAt(2).length() != 0)) {
-					String attrStr = attr.elementAt(1);
-					attrStr = attr.elementAt(1) + "=";
-					attrStr = attrStr + attr.elementAt(2);
-					if (!underlined) {
-						g.drawLine(tx, ty, tx + tw, ty);
-						underlined = true;
-					}
-					ty1 = ty + (fm.getHeight() - fm.getDescent());
-					g.drawString(attrStr, tx, ty1);
-					ty = ty + fm.getHeight();
-				} 
-				else if (this.elemOfTG && (attr.elementAt(1) != null)) {
-					String attrStr = attr.elementAt(0);
-					attrStr = attrStr + "  ";
-					attrStr = attrStr + attr.elementAt(1);
-					// Type graph: default attr value 
-					if (attr.elementAt(2).length() != 0) {
-						attrStr = attrStr + "=" + attr.elementAt(2);
-					}
-					
-					if (!underlined) {
-						g.drawLine(tx, ty, tx + tw, ty);
-						underlined = true;
-					}
-					ty1 = ty + (fm.getHeight() - fm.getDescent());
-					g.drawString(attrStr, tx, ty1);
-					ty = ty + fm.getHeight();
-				}
-			}
-		}
-	}
+        if ((g.getFont().getSize() < 8)
+                || !this.attrVisible) {
+            return;
+        }
 
-	public void drawNameAttrOnly(Graphics grs) {		
+        // Attribute anzeigen
+        Vector<Vector<String>> attrs = getAttributes();
+        if (attrs != null && !attrs.isEmpty()) {
+            for (int i = 0; i < attrs.size(); i++) {
+                Vector<String> attr = attrs.elementAt(i);
+                if (!this.elemOfTG && (attr.elementAt(2).length() != 0)) {
+                    String attrStr = attr.elementAt(1);
+                    attrStr = attr.elementAt(1) + "=";
+                    attrStr = attrStr + attr.elementAt(2);
+                    if (!underlined) {
+                        g.drawLine(tx, ty, tx + tw, ty);
+                        underlined = true;
+                    }
+                    ty1 = ty + (fm.getHeight() - fm.getDescent());
+                    g.drawString(attrStr, tx, ty1);
+                    ty = ty + fm.getHeight();
+                } else if (this.elemOfTG && (attr.elementAt(1) != null)) {
+                    String attrStr = attr.elementAt(0);
+                    attrStr = attrStr + "  ";
+                    attrStr = attrStr + attr.elementAt(1);
+                    // Type graph: default attr value 
+                    if (attr.elementAt(2).length() != 0) {
+                        attrStr = attrStr + "=" + attr.elementAt(2);
+                    }
+
+                    if (!underlined) {
+                        g.drawLine(tx, ty, tx + tw, ty);
+                        underlined = true;
+                    }
+                    ty1 = ty + (fm.getHeight() - fm.getDescent());
+                    g.drawString(attrStr, tx, ty1);
+                    ty = ty + fm.getHeight();
+                }
+            }
+        }
+    }
+
+    public void drawNameAttrOnly(Graphics grs) {
 //		if (!this.isVisible()) {
-		if (!this.visible) {
-			return;
-		} 
-			
-		this.criticalStyle = this.eGraph.criticalStyle;
-		
-		Graphics2D g = (Graphics2D) grs;
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-		// g.setStroke(stroke);
-		g.setStroke(new BasicStroke(2.0f));
-		updateNameAttrOnly(g.getFontMetrics());
-		g.setPaint(Color.white);
-		g.fillRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-		g.setPaint(this.getColor());
-		g.drawRoundRect(this.x - this.w/2, this.y - this.h/2, this.w, this.h, 10, 10);
-		showNameAttrOnly(g, this.x, this.y);
-		g.setStroke(EditorConstants.defaultStroke);
-	}
+        if (!this.visible) {
+            return;
+        }
 
-	public void updateNameAttrOnly(FontMetrics fm) {
-		Vector<Vector<String>> attrs = getAttributes();
-		int nn = 1; // attrs number always 1
-		int h1 = 0;
-		// die Hoehe einer Zeile
-		if (fm == null)
-			h1 = 17; // default
-		else
-			h1 = fm.getHeight();
-		// gesamte Hoehe
-		if (h1 < 20)
-			h1 = 30;
+        this.criticalStyle = this.eGraph.criticalStyle;
 
-		nn = 6; // default char width
-		int w1 = 0;
-		if (attrs != null) {
-			for (int i = 0; i < attrs.size(); i++) {
-				Vector<String> attr = attrs.elementAt(i);
-				if (attr.elementAt(1).equals("name")) {
-					if (attr.elementAt(2).length() != 0) {
-						String tstStr = attr.elementAt(2);
-						if (fm == null)
-							w1 = nn * tstStr.length() + 6;
-						else
-							w1 = fm.stringWidth(tstStr) + 6;
-					}
-				}
-			}
-		}
-		if (w1 < 20)
-			w1 = h1; // min width 20
-		setWidth(w1);
-		setHeight(h1);
-	}
+        Graphics2D g = (Graphics2D) grs;
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        // g.setStroke(stroke);
+        g.setStroke(new BasicStroke(2.0f));
+        updateNameAttrOnly(g.getFontMetrics());
+        g.setPaint(Color.white);
+        g.fillRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+        g.setPaint(this.getColor());
+        g.drawRoundRect(this.x - this.w / 2, this.y - this.h / 2, this.w, this.h, 10, 10);
+        showNameAttrOnly(g, this.x, this.y);
+        g.setStroke(EditorConstants.defaultStroke);
+    }
 
-	private void showNameAttrOnly(Graphics grs, int centerX, int centerY) {
-		// System.out.println("EdNode.showAttrNameOnly ");
-		Graphics2D g = (Graphics2D) grs;
-		g.setStroke(new BasicStroke(2.0f));
-		FontMetrics fm = g.getFontMetrics();
-		Vector<Vector<String>> attrs = getAttributes();
-		int th = getHeight();
-		int tw = getWidth();
-		int tx = centerX - tw/2 + 9;
-		int ty = centerY - th/2 + 5;
-		ty = ty + fm.getHeight(); // + fm.getDescent()/4;
-		// Attribute anzeigen
-		if (attrs != null && !attrs.isEmpty()) {
-			for (int i = 0; i < attrs.size(); i++) {
-				Vector<String> attr = attrs.elementAt(i);
-				if (attr.elementAt(1).equals("name")) {
-					if (attr.elementAt(2).length() != 0) {
-						String attrStr = attr.elementAt(2);
-						// ty1 = ty+(fm.getHeight()-fm.getDescent());
-						g.drawString(
-								attrStr.substring(1, attrStr.length() - 1), tx,
-								ty);
-						return;
-					}
-				}
-			}
-		}
-	}
+    public void updateNameAttrOnly(FontMetrics fm) {
+        Vector<Vector<String>> attrs = getAttributes();
+        int nn = 1; // attrs number always 1
+        int h1 = 0;
+        // die Hoehe einer Zeile
+        if (fm == null) {
+            h1 = 17; // default
+        } else {
+            h1 = fm.getHeight();
+        }
+        // gesamte Hoehe
+        if (h1 < 20) {
+            h1 = 30;
+        }
 
-	public void XwriteObject(XMLHelper xmlh) {
-		if (xmlh.openObject(this.bNode, this)) {
-			xmlh.openSubTag("NodeLayout");
-			
-			int outX = (int) (this.x/this.itsScale);
-			int outY = (int) (this.y/this.itsScale);
+        nn = 6; // default char width
+        int w1 = 0;
+        if (attrs != null) {
+            for (int i = 0; i < attrs.size(); i++) {
+                Vector<String> attr = attrs.elementAt(i);
+                if (attr.elementAt(1).equals("name")) {
+                    if (attr.elementAt(2).length() != 0) {
+                        String tstStr = attr.elementAt(2);
+                        if (fm == null) {
+                            w1 = nn * tstStr.length() + 6;
+                        } else {
+                            w1 = fm.stringWidth(tstStr) + 6;
+                        }
+                    }
+                }
+            }
+        }
+        if (w1 < 20) {
+            w1 = h1; // min width 20
+        }
+        setWidth(w1);
+        setHeight(h1);
+    }
 
-			xmlh.addAttr("X", outX);
-			xmlh.addAttr("Y", outY);
+    private void showNameAttrOnly(Graphics grs, int centerX, int centerY) {
+        // System.out.println("EdNode.showAttrNameOnly ");
+        Graphics2D g = (Graphics2D) grs;
+        g.setStroke(new BasicStroke(2.0f));
+        FontMetrics fm = g.getFontMetrics();
+        Vector<Vector<String>> attrs = getAttributes();
+        int th = getHeight();
+        int tw = getWidth();
+        int tx = centerX - tw / 2 + 9;
+        int ty = centerY - th / 2 + 5;
+        ty = ty + fm.getHeight(); // + fm.getDescent()/4;
+        // Attribute anzeigen
+        if (attrs != null && !attrs.isEmpty()) {
+            for (int i = 0; i < attrs.size(); i++) {
+                Vector<String> attr = attrs.elementAt(i);
+                if (attr.elementAt(1).equals("name")) {
+                    if (attr.elementAt(2).length() != 0) {
+                        String attrStr = attr.elementAt(2);
+                        // ty1 = ty+(fm.getHeight()-fm.getDescent());
+                        g.drawString(
+                                attrStr.substring(1, attrStr.length() - 1), tx,
+                                ty);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    public void XwriteObject(XMLHelper xmlh) {
+        if (xmlh.openObject(this.bNode, this)) {
+            xmlh.openSubTag("NodeLayout");
+
+            int outX = (int) (this.x / this.itsScale);
+            int outY = (int) (this.y / this.itsScale);
+
+            xmlh.addAttr("X", outX);
+            xmlh.addAttr("Y", outY);
 
 //			System.out.println("EdNode.XwriteObject:: X,Y: "+outX+" , "+outY);
-			xmlh.close();
-			// LayoutNode speichern:
-			if (this.lNode != null) {
-				xmlh.addObject("", this.lNode, true);
-			}
-			xmlh.close();
-		}
-	}
+            xmlh.close();
+            // LayoutNode speichern:
+            if (this.lNode != null) {
+                xmlh.addObject("", this.lNode, true);
+            }
+            xmlh.close();
+        }
+    }
 
-	public void XreadObject(XMLHelper xmlh) {		
-		xmlh.peekObject(this.bNode, this);
-					
-		if (xmlh.readSubTag("NodeLayout")) {
-			this.hasDefaultLayout = true;
-			String s = xmlh.readAttr("X");
-			if (s.length() == 0) {
-				this.x = 20;
-			} else {
-				this.x = (new Integer(s)).intValue();
-			}
-			s = xmlh.readAttr("Y");
-			if (s.length() == 0) {
-				this.y = 20;
-			}
-			else {
-				this.y = (new Integer(s)).intValue();
-			}
-			xmlh.close();
-		} else {
-			this.x = 20;
-			this.y = 20;
-		}
+    public void XreadObject(XMLHelper xmlh) {
+        xmlh.peekObject(this.bNode, this);
 
-		// layoutNode einlesen:
-		xmlh.enrichObject(this.lNode);
-		
-		xmlh.close();
+        if (xmlh.readSubTag("NodeLayout")) {
+            this.hasDefaultLayout = true;
+            String s = xmlh.readAttr("X");
+            if (s.length() == 0) {
+                this.x = 20;
+            } else {
+                this.x = (new Integer(s)).intValue();
+            }
+            s = xmlh.readAttr("Y");
+            if (s.length() == 0) {
+                this.y = 20;
+            } else {
+                this.y = (new Integer(s)).intValue();
+            }
+            xmlh.close();
+        } else {
+            this.x = 20;
+            this.y = 20;
+        }
 
-		if (this.bNode.xyAttr && this.getContext().getBasisGraph().isCompleteGraph()) {
-			ValueMember xattr = ((ValueTuple)this.bNode.getAttribute()).getValueMemberAt("thisX");
-			if (!xattr.isSet())
-				((ValueTuple)this.bNode.getAttribute()).getValueMemberAt("thisX").setExprAsObject(this.x);
-			ValueMember yattr = ((ValueTuple)this.bNode.getAttribute()).getValueMemberAt("thisY");
-			if (!yattr.isSet())
-				((ValueTuple)this.bNode.getAttribute()).getValueMemberAt("thisY").setExprAsObject(this.y);
-		}
-		
-		this.attrVisible = true;
-		this.attrChanged = false;
-				
-	}
+        // layoutNode einlesen:
+        xmlh.enrichObject(this.lNode);
 
-	/**
-	 * Checks whether the basis Nodes of this EdNode and the specified EdNode
-	 * <code>enode</code> are equal.
-	 * 
-	 * @param enode
-	 * @return true, if the basis nodes are equal, otherwise - false
-	 */
-	public boolean equalByBasisNode(EdNode enode) {
-		if (this.getBasisNode().equals(enode.getBasisNode())) {
-			return true;
-		} 
-		return false;
-	}
+        xmlh.close();
 
-	/**
-	 * Searchs through the specified vector for an EdNode with the same ID
-	 * number. Such ID is set by the method <code>setNodeID(int)</code>.
-	 * 
-	 * @param enodes
-	 *            nodes to search
-	 * @return index of a node with the same ID, if found, otherwise returns -1.
-	 */
-	public int isInVectorByBasisNode(List<EdNode> enodes) {
-		int ret = -1;
-		EdNode node;
-		for (int i = 0; i < enodes.size(); i++) {
-			node = enodes.get(i);
-			if (this.getNodeID() == node.getNodeID()) {
-				ret = i;
-				break;
-			}
-		}
-		return ret;
-	}
+        if (this.bNode.xyAttr && this.getContext().getBasisGraph().isCompleteGraph()) {
+            ValueMember xattr = ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisX");
+            if (!xattr.isSet()) {
+                ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisX").setExprAsObject(this.x);
+            }
+            ValueMember yattr = ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisY");
+            if (!yattr.isSet()) {
+                ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisY").setExprAsObject(this.y);
+            }
+        }
 
-	public void setNodeID(int id) {
-		this.nodeid = id;
-	}
+        this.attrVisible = true;
+        this.attrChanged = false;
 
-	public void setOwnColor(final Color c) {
-		this.ownColor = c;
-	}
-	
-	public Color getOwnColor() {
-		return this.ownColor;
-	}
-	
-	public int getNodeID() {
-		return this.nodeid;
-	}
+    }
 
-	public void setCluster(Vector<Integer> clus) {
-		this.cluster = new Vector<Integer>(clus);
-	}
+    /**
+     * Checks whether the basis Nodes of this EdNode and the specified EdNode <code>enode</code> are equal.
+     *
+     * @param enode
+     * @return true, if the basis nodes are equal, otherwise - false
+     */
+    public boolean equalByBasisNode(EdNode enode) {
+        if (this.getBasisNode().equals(enode.getBasisNode())) {
+            return true;
+        }
+        return false;
+    }
 
-	public Vector<Integer> getCluster() {
-		return this.cluster;
-	}
+    /**
+     * Searchs through the specified vector for an EdNode with the same ID number. Such ID is set by the method
+     * <code>setNodeID(int)</code>.
+     *
+     * @param enodes nodes to search
+     * @return index of a node with the same ID, if found, otherwise returns -1.
+     */
+    public int isInVectorByBasisNode(List<EdNode> enodes) {
+        int ret = -1;
+        EdNode node;
+        for (int i = 0; i < enodes.size(); i++) {
+            node = enodes.get(i);
+            if (this.getNodeID() == node.getNodeID()) {
+                ret = i;
+                break;
+            }
+        }
+        return ret;
+    }
 
-	public void calculateCluster(int epsilon, List<EdNode> nodes) {
-		EdNode node;
-		int xdist, ydist, dist;
-		this.oldcluster = this.cluster;
-		this.cluster = new Vector<Integer>();
-		for (int i = 0; i < nodes.size(); i++) {
-			node = nodes.get(i);
-			if (!this.equals(node)) {
-				xdist = Math.abs(node.getX() - this.getX());
-				ydist = Math.abs(node.getY() - this.getY());
-				// if(xdist > 0 || ydist > 0)
-				{
-					dist = (int) Math.round(Math.sqrt((xdist * xdist)
-							+ (ydist * ydist)));
-					if (dist <= epsilon)
-						this.cluster.addElement(new Integer(node.getNodeID()));
-				}
-			}
-		}
+    public void setNodeID(int id) {
+        this.nodeid = id;
+    }
 
-	}
+    public void setOwnColor(final Color c) {
+        this.ownColor = c;
+    }
 
-	public Vector<Integer> getOldCluster() {
-		return this.oldcluster;
-	}
+    public Color getOwnColor() {
+        return this.ownColor;
+    }
+
+    public int getNodeID() {
+        return this.nodeid;
+    }
+
+    public void setCluster(Vector<Integer> clus) {
+        this.cluster = new Vector<Integer>(clus);
+    }
+
+    public Vector<Integer> getCluster() {
+        return this.cluster;
+    }
+
+    public void calculateCluster(int epsilon, List<EdNode> nodes) {
+        EdNode node;
+        int xdist, ydist, dist;
+        this.oldcluster = this.cluster;
+        this.cluster = new Vector<Integer>();
+        for (int i = 0; i < nodes.size(); i++) {
+            node = nodes.get(i);
+            if (!this.equals(node)) {
+                xdist = Math.abs(node.getX() - this.getX());
+                ydist = Math.abs(node.getY() - this.getY());
+                // if(xdist > 0 || ydist > 0)
+                {
+                    dist = (int) Math.round(Math.sqrt((xdist * xdist)
+                            + (ydist * ydist)));
+                    if (dist <= epsilon) {
+                        this.cluster.addElement(new Integer(node.getNodeID()));
+                    }
+                }
+            }
+        }
+
+    }
+
+    public Vector<Integer> getOldCluster() {
+        return this.oldcluster;
+    }
 
 }
 // $Log: EdNode.java,v $

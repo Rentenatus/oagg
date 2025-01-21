@@ -1,44 +1,44 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTBitwiseComplNode.java,v 1.3 2010/07/29 10:09:24 olga Exp $
  * @author $Author: olga $
  */
 public class ASTBitwiseComplNode extends NUMtoNUMnode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTBitwiseComplNode(String id) {
-		super(id);
-	}
+    ASTBitwiseComplNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTBitwiseComplNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTBitwiseComplNode(id);
+    }
 
-	public void interpret() {
-		jjtGetChild(0).interpret();
+    public void interpret() {
+        jjtGetChild(0).interpret();
 
 //		stack[top] = new Integer(~((Integer) stack[top]).intValue());
-		stack.set(top, new Integer(~((Integer) stack.get(top)).intValue()));
-	}
+        stack.set(top, new Integer(~((Integer) stack.get(top)).intValue()));
+    }
 
-	public String getString() {
-		Node left = jjtGetChild(0);
-		return "~" + left.getString();
-	}
+    public String getString() {
+        Node left = jjtGetChild(0);
+        return "~" + left.getString();
+    }
 }
 /*
  * $Log: ASTBitwiseComplNode.java,v $

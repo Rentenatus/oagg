@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.parser;
 
 import java.io.File;
@@ -23,208 +24,212 @@ import agg.parser.ConflictsDependenciesContainer;
 import agg.util.XMLHelper;
 
 /**
- * This class controlls the load and save process. The choice of xml format for
- * saving needs some preparation for the load process. For the load process the
- * creation of an empty object of the correct type is needed.
- * 
+ * This class controlls the load and save process. The choice of xml format for saving needs some preparation for the
+ * load process. For the load process the creation of an empty object of the correct type is needed.
+ *
  * @author $Author: olga $
  * @version $Id: PairIOGUI.java,v 1.14 2010/09/23 08:20:54 olga Exp $
  */
 public class PairIOGUI {
 
-	private JFrame frame;
+    private JFrame frame;
 
-	private JFileChooser chooser;
+    private JFileChooser chooser;
 
-	private PairContainer pc;
+    private PairContainer pc;
 
-	private ConflictsDependenciesContainer cdContainer;
-	private ConflictsDependenciesContainerSaveLoad cdContainerSaveLoad;
-	
-	private String directory = "";
+    private ConflictsDependenciesContainer cdContainer;
+    private ConflictsDependenciesContainerSaveLoad cdContainerSaveLoad;
+
+    private String directory = "";
 
 //	private String currentDir = "";
+    private String fileName = "";
 
-	private String fileName = "";
+    private PairFileFilter filter;
 
-	private PairFileFilter filter;
+    private boolean isSaved;
 
-	private boolean isSaved;
+    private boolean combined = false;
 
-	private boolean combined = false;
+    /**
+     * Creates a new object. The method decides if user interaction is needed.
+     *
+     * @param parent The parent frame for this gui.
+     */
+    public PairIOGUI(JFrame parent) {
+        this.frame = parent;
+        this.pc = null;
+        this.cdContainer = null;
+        this.combined = false;
+        this.chooser = new JFileChooser(System.getProperty("user.dir"));
+        this.filter = new PairFileFilter();
+        this.chooser.addChoosableFileFilter(this.filter);
+        this.chooser.setFileFilter(this.filter);
+    }
 
-	/**
-	 * Creates a new object. The method decides if user interaction is needed.
-	 * 
-	 * @param parent
-	 *            The parent frame for this gui.
-	 */
-	public PairIOGUI(JFrame parent) {
-		this.frame = parent;
-		this.pc = null;
-		this.cdContainer = null;
-		this.combined = false;
-		this.chooser = new JFileChooser(System.getProperty("user.dir"));
-		this.filter = new PairFileFilter();
-		this.chooser.addChoosableFileFilter(this.filter);
-		this.chooser.setFileFilter(this.filter);
-	}
+    /**
+     * Creates a new object. The method decides if user interaction is needed.
+     *
+     * @param parent The parent frame for this gui.
+     * @param pairs The critical pair container will be loaded or saved.
+     */
+    public PairIOGUI(JFrame parent, PairContainer pairs) {
+        this.frame = parent;
+        this.pc = pairs;
+        this.cdContainer = null;
+        this.combined = false;
+        this.chooser = new JFileChooser(System.getProperty("user.dir"));
+        this.filter = new PairFileFilter();
+        this.chooser.addChoosableFileFilter(this.filter);
+        this.chooser.setFileFilter(this.filter);
+    }
 
-	/**
-	 * Creates a new object. The method decides if user interaction is needed.
-	 * 
-	 * @param parent
-	 *            The parent frame for this gui.
-	 * @param pairs
-	 *            The critical pair container will be loaded or saved.
-	 */
-	public PairIOGUI(JFrame parent, PairContainer pairs) {
-		this.frame = parent;
-		this.pc = pairs;
-		this.cdContainer = null;
-		this.combined = false;
-		this.chooser = new JFileChooser(System.getProperty("user.dir"));
-		this.filter = new PairFileFilter();
-		this.chooser.addChoosableFileFilter(this.filter);
-		this.chooser.setFileFilter(this.filter);
-	}
+    public PairIOGUI(JFrame parent, PairContainer pairs, String dname,
+            String fname) {
+        this.frame = parent;
+        this.pc = pairs;
+        this.cdContainer = null;
+        this.combined = false;
+        this.directory = dname;
+        this.fileName = fname;
+        // create a file chooser
+        if (!this.directory.equals("")) {
+            this.chooser = new JFileChooser(this.directory);
+        } else {
+            this.chooser = new JFileChooser(System.getProperty("user.dir"));
+        }
+        this.filter = new PairFileFilter();
+        this.chooser.addChoosableFileFilter(this.filter);
+        this.chooser.setFileFilter(this.filter);
+    }
 
-	public PairIOGUI(JFrame parent, PairContainer pairs, String dname,
-			String fname) {
-		this.frame = parent;
-		this.pc = pairs;
-		this.cdContainer = null;
-		this.combined = false;
-		this.directory = dname;
-		this.fileName = fname;
-		// create a file chooser
-		if (!this.directory.equals(""))
-			this.chooser = new JFileChooser(this.directory);
-		else
-			this.chooser = new JFileChooser(System.getProperty("user.dir"));
-		this.filter = new PairFileFilter();
-		this.chooser.addChoosableFileFilter(this.filter);
-		this.chooser.setFileFilter(this.filter);
-	}
+    public PairIOGUI(JFrame parent, ConflictsDependenciesContainer pairs) {
+        this.frame = parent;
+        this.cdContainer = pairs;
+        this.pc = null;
+        this.combined = true;
+        this.chooser = new JFileChooser(System.getProperty("user.dir"));
+        this.filter = new PairFileFilter();
+        this.chooser.addChoosableFileFilter(this.filter);
+        this.chooser.setFileFilter(this.filter);
+    }
 
-	public PairIOGUI(JFrame parent, ConflictsDependenciesContainer pairs) {
-		this.frame = parent;
-		this.cdContainer = pairs;
-		this.pc = null;
-		this.combined = true;
-		this.chooser = new JFileChooser(System.getProperty("user.dir"));
-		this.filter = new PairFileFilter();
-		this.chooser.addChoosableFileFilter(this.filter);
-		this.chooser.setFileFilter(this.filter);
-	}
+    public PairIOGUI(JFrame parent, ConflictsDependenciesContainer pairs,
+            String dname, String fname) {
+        this.frame = parent;
+        this.cdContainer = pairs;
+        this.pc = null;
+        this.combined = true;
+        this.directory = dname;
+        this.fileName = fname;
+        // create a file chooser
+        if (!this.directory.equals("")) {
+            this.chooser = new JFileChooser(this.directory);
+        } else {
+            this.chooser = new JFileChooser(System.getProperty("user.dir"));
+        }
+        this.filter = new PairFileFilter();
+        this.chooser.addChoosableFileFilter(this.filter);
+        this.chooser.setFileFilter(this.filter);
+    }
 
-	public PairIOGUI(JFrame parent, ConflictsDependenciesContainer pairs,
-						String dname, String fname) {
-		this.frame = parent;
-		this.cdContainer = pairs;
-		this.pc = null;
-		this.combined = true;
-		this.directory = dname;
-		this.fileName = fname;
-		// create a file chooser
-		if (!this.directory.equals(""))
-			this.chooser = new JFileChooser(this.directory);
-		else
-			this.chooser = new JFileChooser(System.getProperty("user.dir"));
-		this.filter = new PairFileFilter();
-		this.chooser.addChoosableFileFilter(this.filter);
-		this.chooser.setFileFilter(this.filter);
-	}
+    private Vector<String> getFileFilter(PairContainer pairs) {
+        Vector<String> ff = new Vector<String>(2);
+        ff.add(".cpx");
+        ff.add("Conflict Pairs XML (.cpx)");
+        if (pairs == null) {
+            return ff;
+        }
+        if (pairs.getKindOfConflict() == CriticalPair.TRIGGER_DEPENDENCY) {
+            ff.removeAllElements();
+            ff.add(".dpx");
+            ff.add("Dependency Pairs XML (.dpx)");
+        }
+        return ff;
+    }
 
-	private Vector<String> getFileFilter(PairContainer pairs) {
-		Vector<String> ff = new Vector<String>(2);
-		ff.add(".cpx");
-		ff.add("Conflict Pairs XML (.cpx)");
-		if (pairs == null)
-			return ff;
-		if (pairs.getKindOfConflict() == CriticalPair.TRIGGER_DEPENDENCY) {
-			ff.removeAllElements();
-			ff.add(".dpx");
-			ff.add("Dependency Pairs XML (.dpx)");
-		}
-		return ff;
-	}
+    private void resetFileFilter(PairContainer pairs) {
+        this.chooser.removeChoosableFileFilter(this.filter);
+        Vector<String> ff = getFileFilter(pairs);
+        this.filter = new PairFileFilter(ff.get(0), ff.get(1));
+        this.chooser.addChoosableFileFilter(this.filter);
+        this.chooser.setFileFilter(this.filter);
+    }
 
-	private void resetFileFilter(PairContainer pairs) {
-		this.chooser.removeChoosableFileFilter(this.filter);
-		Vector<String> ff = getFileFilter(pairs);
-		this.filter = new PairFileFilter(ff.get(0), ff.get(1));
-		this.chooser.addChoosableFileFilter(this.filter);
-		this.chooser.setFileFilter(this.filter);
-	}
+    public String getFileFilter() {
+        return this.filter.getExtension();
+    }
 
-	public String getFileFilter() {
-		return this.filter.getExtension();
-	}
+    public void setFileFilter(String ff) {
+        if (!ff.equals(this.filter.getExtension())) {
+            this.chooser.removeChoosableFileFilter(this.filter);
+            String descr = "Conflicts Pairs XML (.cpx)";
+            if (ff.equals(".dpx")) {
+                descr = "Dependency Pairs XML (.dpx)";
+            }
+            this.filter = new PairFileFilter(ff, descr);
+            this.chooser.addChoosableFileFilter(this.filter);
+            this.chooser.setFileFilter(this.filter);
+        }
+    }
 
-	public void setFileFilter(String ff) {
-		if (!ff.equals(this.filter.getExtension())) {
-			this.chooser.removeChoosableFileFilter(this.filter);
-			String descr = "Conflicts Pairs XML (.cpx)";
-			if (ff.equals(".dpx"))
-				descr = "Dependency Pairs XML (.dpx)";
-			this.filter = new PairFileFilter(ff, descr);
-			this.chooser.addChoosableFileFilter(this.filter);
-			this.chooser.setFileFilter(this.filter);
-		}
-	}
+    public void setCriticalPairContainer(PairContainer pairs) {
+        this.pc = pairs;
+        this.combined = false;
+        resetFileFilter(this.pc);
+    }
 
-	public void setCriticalPairContainer(PairContainer pairs) {
-		this.pc = pairs;
-		this.combined = false;
-		resetFileFilter(this.pc);
-	}
+    public void setCriticalPairContainer(ConflictsDependenciesContainer pairs) {
+        this.pc = null;
+        this.cdContainer = pairs;
+        this.combined = true;
+        setFileFilter(".cpx");
+    }
 
-	public void setCriticalPairContainer(ConflictsDependenciesContainer pairs) {
-		this.pc = null;
-		this.cdContainer = pairs;
-		this.combined = true;		
-		setFileFilter(".cpx");
-	}
+    public void setCriticalPairContainer(ConflictsDependenciesContainerSaveLoad pairs) {
+        this.cdContainerSaveLoad = pairs;
 
-	public void setCriticalPairContainer(ConflictsDependenciesContainerSaveLoad pairs) {
-		this.cdContainerSaveLoad = pairs;
-		
-		this.pc = null;
-		this.cdContainer = null;
-		this.combined = true;	
-		setFileFilter(".cpx");		
-	}
-	
-	/**
-	 * This method provides a convenient way to get a graphical save interface.
-	 * This interface lets the user choose the file easily.
-	 */
-	public void save() {
-		this.isSaved = false;
-		if (this.cdContainerSaveLoad == null
-				&& this.cdContainer == null
-				&& this.pc == null) {
-			return;
-		}
-		
-		int returnVal = this.chooser.showSaveDialog(this.frame);
-		this.directory = this.chooser.getCurrentDirectory().toString();
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			if (this.chooser.getSelectedFile() != null
-					&& !this.chooser.getSelectedFile().getName().equals("")) {
-				this.directory = this.chooser.getCurrentDirectory().toString();
-				this.fileName = this.chooser.getSelectedFile().getName();
-				if (!this.directory.endsWith(File.separator))
-					this.directory += File.separator;
-				File f = new File(this.directory + this.fileName);
-				if (!this.chooser.getFileFilter().accept(f)) {
-					this.fileName += ((ExtensionFileFilter) this.chooser.getFileFilter())
-							.getExtension();
-				}
-				save(this.directory, this.fileName);
+        this.pc = null;
+        this.cdContainer = null;
+        this.combined = true;
+        setFileFilter(".cpx");
+    }
+
+    /**
+     * This method provides a convenient way to get a graphical save interface. This interface lets the user choose the
+     * file easily.
+     */
+    public void save() {
+        this.isSaved = false;
+        if (this.cdContainerSaveLoad == null
+                && this.cdContainer == null
+                && this.pc == null) {
+            return;
+        }
+
+        int returnVal = this.chooser.showSaveDialog(this.frame);
+        this.directory = this.chooser.getCurrentDirectory().toString();
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            if (this.chooser.getSelectedFile() != null
+                    && !this.chooser.getSelectedFile().getName().equals("")) {
+                this.directory = this.chooser.getCurrentDirectory().toString();
+                this.fileName = this.chooser.getSelectedFile().getName();
+                if (!this.directory.endsWith(File.separator)) {
+                    this.directory += File.separator;
+                }
+                File f = new File(this.directory + this.fileName);
+                if (!this.chooser.getFileFilter().accept(f)) {
+                    this.fileName += ((ExtensionFileFilter) this.chooser.getFileFilter())
+                            .getExtension();
+                }
+                save(this.directory, this.fileName);
 //				if (this.isSaved) {
-////					currentDir = directory;
+            
+        
+    
+
+    ////					currentDir = directory;
 //				}
 			}
 		}
@@ -240,194 +245,192 @@ public class PairIOGUI {
 	 *            The destination file name.
 	 */
 	public void save(String dir, String file) {
-		XMLHelper xmlh = new XMLHelper();
-		// file = XMLHelper.replaceGermanSpecialCh(file);
-		
-		if (this.combined) {
-			if (this.cdContainerSaveLoad != null) {
-				xmlh.addTopObject(this.cdContainerSaveLoad);
-				xmlh.save_to_xml(dir + file);
-				this.isSaved = true;
-			}
-			else if (this.cdContainer != null) {
-				xmlh.addTopObject(this.cdContainer);
-				xmlh.save_to_xml(dir + file);
-				this.isSaved = true;
-			} 
-		} else if (this.pc != null) {
-			xmlh.addTopObject(this.pc);
-			xmlh.save_to_xml(dir + file);
-			this.isSaved = true;
-		} 
-	}
+        XMLHelper xmlh = new XMLHelper();
+        // file = XMLHelper.replaceGermanSpecialCh(file);
 
-	public boolean fileIsSaved() {
-		return this.isSaved;
-	}
+        if (this.combined) {
+            if (this.cdContainerSaveLoad != null) {
+                xmlh.addTopObject(this.cdContainerSaveLoad);
+                xmlh.save_to_xml(dir + file);
+                this.isSaved = true;
+            } else if (this.cdContainer != null) {
+                xmlh.addTopObject(this.cdContainer);
+                xmlh.save_to_xml(dir + file);
+                this.isSaved = true;
+            }
+        } else if (this.pc != null) {
+            xmlh.addTopObject(this.pc);
+            xmlh.save_to_xml(dir + file);
+            this.isSaved = true;
+        }
+    }
 
-	/**
-	 * This method provides a convenient way to get a graphical load interface.
-	 * This interface lets the user enter a file name easily.
-	 * 
-	 * @return The loaded object.
-	 */
-	public Object load() {
-		if (this.pc == null)
-			return null;
+    public boolean fileIsSaved() {
+        return this.isSaved;
+    }
 
-		Object result = null;
-		int returnVal = this.chooser.showOpenDialog(this.frame);
-		this.directory = this.chooser.getCurrentDirectory().toString();
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			if (this.chooser.getSelectedFile() != null
-					&& !this.chooser.getSelectedFile().getName().equals("")) {
-				this.directory = this.chooser.getCurrentDirectory().toString();
-				this.fileName = this.chooser.getSelectedFile().getName();
-				if (!this.directory.endsWith(File.separator))
-					this.directory += File.separator;
-				File f = new File(this.directory + this.fileName);
-				if (!this.chooser.getFileFilter().accept(f)) {
-					this.fileName += ((ExtensionFileFilter) this.chooser.getFileFilter())
-							.getExtension();
-				}
-				result = load(this.directory, this.fileName);
+    /**
+     * This method provides a convenient way to get a graphical load interface. This interface lets the user enter a
+     * file name easily.
+     *
+     * @return The loaded object.
+     */
+    public Object load() {
+        if (this.pc == null) {
+            return null;
+        }
+
+        Object result = null;
+        int returnVal = this.chooser.showOpenDialog(this.frame);
+        this.directory = this.chooser.getCurrentDirectory().toString();
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            if (this.chooser.getSelectedFile() != null
+                    && !this.chooser.getSelectedFile().getName().equals("")) {
+                this.directory = this.chooser.getCurrentDirectory().toString();
+                this.fileName = this.chooser.getSelectedFile().getName();
+                if (!this.directory.endsWith(File.separator)) {
+                    this.directory += File.separator;
+                }
+                File f = new File(this.directory + this.fileName);
+                if (!this.chooser.getFileFilter().accept(f)) {
+                    this.fileName += ((ExtensionFileFilter) this.chooser.getFileFilter())
+                            .getExtension();
+                }
+                result = load(this.directory, this.fileName);
 //				currentDir = directory;
-			}
-		}
-		return result;
-	}
+            }
+        }
+        return result;
+    }
 
-	public Object load(boolean combi) {
-		if (!combi) {
-			return load();
-		}
-		
-		this.cdContainerSaveLoad = new ConflictsDependenciesContainerSaveLoad();
-		
-		Object result = null;
-		int returnVal = this.chooser.showOpenDialog(this.frame);
-		this.directory = this.chooser.getCurrentDirectory().toString();
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			if (this.chooser.getSelectedFile() != null
-					&& !this.chooser.getSelectedFile().getName().equals("")) {
-				this.directory = this.chooser.getCurrentDirectory().toString();
-				this.fileName = this.chooser.getSelectedFile().getName();
-				if (!this.directory.endsWith(File.separator))
-					this.directory += File.separator;
-				File f = new File(this.directory + this.fileName);
-				if (!this.chooser.getFileFilter().accept(f))
-					this.fileName += ((ExtensionFileFilter) this.chooser.getFileFilter())
-							.getExtension();
+    public Object load(boolean combi) {
+        if (!combi) {
+            return load();
+        }
 
-				result = load(this.directory, this.fileName);
+        this.cdContainerSaveLoad = new ConflictsDependenciesContainerSaveLoad();
+
+        Object result = null;
+        int returnVal = this.chooser.showOpenDialog(this.frame);
+        this.directory = this.chooser.getCurrentDirectory().toString();
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            if (this.chooser.getSelectedFile() != null
+                    && !this.chooser.getSelectedFile().getName().equals("")) {
+                this.directory = this.chooser.getCurrentDirectory().toString();
+                this.fileName = this.chooser.getSelectedFile().getName();
+                if (!this.directory.endsWith(File.separator)) {
+                    this.directory += File.separator;
+                }
+                File f = new File(this.directory + this.fileName);
+                if (!this.chooser.getFileFilter().accept(f)) {
+                    this.fileName += ((ExtensionFileFilter) this.chooser.getFileFilter())
+                            .getExtension();
+                }
+
+                result = load(this.directory, this.fileName);
 //				currentDir = directory;
-			}
-		}
-		return result;
-	}
+            }
+        }
+        return result;
+    }
 
-	/**
-	 * This method controlls the process of loading. Therefor a directory and a
-	 * file name is needed.
-	 * 
-	 * @param dir
-	 *            The destination directory of the file.
-	 * @param file
-	 *            The destination file name.
-	 * @return The loaded object.
-	 */
-	public Object load(String dir, String file) {
-		if (this.cdContainerSaveLoad == null 
-				&& this.cdContainer == null 
-				&& this.pc == null) {
-			return null;
-		}
-		
-		Object result = null;
-		this.directory = dir;
-		this.fileName = file;
-		XMLHelper h = new XMLHelper();
-		/*
+    /**
+     * This method controlls the process of loading. Therefor a directory and a file name is needed.
+     *
+     * @param dir The destination directory of the file.
+     * @param file The destination file name.
+     * @return The loaded object.
+     */
+    public Object load(String dir, String file) {
+        if (this.cdContainerSaveLoad == null
+                && this.cdContainer == null
+                && this.pc == null) {
+            return null;
+        }
+
+        Object result = null;
+        this.directory = dir;
+        this.fileName = file;
+        XMLHelper h = new XMLHelper();
+        /*
 		 * if(XMLHelper.hasGermanSpecialCh(fileName)){ System.out.println(" Read
 		 * file name exception occurred! " +"\n Maybe the German characters like
 		 * ä, ö, ü, ß or spase were used. " +"\n Please rename the file " +"\n
 		 * and try again."); return null; }
-		 */
-		if (h.read_from_xml(this.directory + this.fileName)) {
-		
-			if (this.cdContainerSaveLoad != null) {
-				this.combined = true;
-				result = h.getTopObject(this.cdContainerSaveLoad);
-			} 
-			else if (this.cdContainer != null) {
-				this.combined = true;
-				result = h.getTopObject(this.cdContainer);
-			} 
-			else if (this.pc != null) {
-				this.combined = false;
-				result = h.getTopObject(this.pc);
-			}
-		}
-		return result;
-	}
+         */
+        if (h.read_from_xml(this.directory + this.fileName)) {
 
-	public Object reload(String fullFileName) {
-		if (this.cdContainerSaveLoad == null 
-				&& this.cdContainer == null 
-				&& this.pc == null) {
-			return null;
-		}
-		
-		Object result = null;
-		XMLHelper h = new XMLHelper();
-		/*
+            if (this.cdContainerSaveLoad != null) {
+                this.combined = true;
+                result = h.getTopObject(this.cdContainerSaveLoad);
+            } else if (this.cdContainer != null) {
+                this.combined = true;
+                result = h.getTopObject(this.cdContainer);
+            } else if (this.pc != null) {
+                this.combined = false;
+                result = h.getTopObject(this.pc);
+            }
+        }
+        return result;
+    }
+
+    public Object reload(String fullFileName) {
+        if (this.cdContainerSaveLoad == null
+                && this.cdContainer == null
+                && this.pc == null) {
+            return null;
+        }
+
+        Object result = null;
+        XMLHelper h = new XMLHelper();
+        /*
 		 * if(XMLHelper.hasGermanSpecialCh(fullFileName)){
 		 * System.out.println("Read file name exception occurred! " +"\nMaybe
 		 * the German characters like ä, ö, ü, ß or space were used. "
 		 * +"\nPlease rename the file " +"\nand try again."); return null; }
-		 */
-		if (h.read_from_xml(fullFileName)) {
-			
-			if (this.cdContainerSaveLoad != null) {
-				this.combined = true;
-				result = h.getTopObject(this.cdContainerSaveLoad);
-			} 
-			else if (this.cdContainer != null) {
-				this.combined = true;
-				result = h.getTopObject(this.cdContainer);
-			} else if (this.pc != null) {
-				this.combined = false;
-				result = h.getTopObject(this.pc);
-			}
-		}
-		return result;
-	}
+         */
+        if (h.read_from_xml(fullFileName)) {
 
-	public String getFileName() {
-		return this.fileName;
-	}
+            if (this.cdContainerSaveLoad != null) {
+                this.combined = true;
+                result = h.getTopObject(this.cdContainerSaveLoad);
+            } else if (this.cdContainer != null) {
+                this.combined = true;
+                result = h.getTopObject(this.cdContainer);
+            } else if (this.pc != null) {
+                this.combined = false;
+                result = h.getTopObject(this.pc);
+            }
+        }
+        return result;
+    }
 
-	public void setDirectoryName(String dir) {
-		this.directory = dir;
-		this.chooser.setCurrentDirectory(new File(this.directory));
-	}
+    public String getFileName() {
+        return this.fileName;
+    }
 
-	public void setDirectoryName(String dir, String file) {
-		this.directory = dir;
-		this.fileName = file;
-		this.chooser.setCurrentDirectory(new File(this.directory));
-		if (this.fileName.equals(""))
-			this.chooser.setSelectedFile(null);
-		
-	}
+    public void setDirectoryName(String dir) {
+        this.directory = dir;
+        this.chooser.setCurrentDirectory(new File(this.directory));
+    }
 
-	public String getDirectoryName() {
-		return this.directory;
-	}
+    public void setDirectoryName(String dir, String file) {
+        this.directory = dir;
+        this.fileName = file;
+        this.chooser.setCurrentDirectory(new File(this.directory));
+        if (this.fileName.equals("")) {
+            this.chooser.setSelectedFile(null);
+        }
 
-	public boolean isCombined() {
-		return this.combined;
-	}
+    }
+
+    public String getDirectoryName() {
+        return this.directory;
+    }
+
+    public boolean isCombined() {
+        return this.combined;
+    }
 
 }
 /*

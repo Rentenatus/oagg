@@ -1,98 +1,96 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.xt_basis;
-
 
 /**
  * @version $Id: TypeGraphNode.java,v 1.15 2010/09/23 08:27:31 olga Exp $
  */
 public class TypeGraphNode {
-	/**
-	 * true, if this node type is contained in the type graph
-	 */
-	private boolean typeGraphObjectDefined = false;
 
-	/**
-	 * its node object inside of a type graph
-	 */
-	private Node itsNode;
-	
-	private boolean visible = true;
-	
-	/**
-	 * minimum number of nodes of this type
-	 */
-	private short sourceMin = Type.UNDEFINED;
+    /**
+     * true, if this node type is contained in the type graph
+     */
+    private boolean typeGraphObjectDefined = false;
 
-	/**
-	 * maximum number of nodes of this type
-	 */
-	private short sourceMax = Type.UNDEFINED;
+    /**
+     * its node object inside of a type graph
+     */
+    private Node itsNode;
 
-	
-	TypeGraphNode() {}
+    private boolean visible = true;
 
-	
-	public void dispose() {
-		this.itsNode = null;
-	}
-	
-	
-	Node addTypeGraphObject(Node n) {
-		this.itsNode = n;
-		this.typeGraphObjectDefined = (n != null);		
-		return this.itsNode;
-	}
+    /**
+     * minimum number of nodes of this type
+     */
+    private short sourceMin = Type.UNDEFINED;
 
-	boolean hasTypeGraphObject() {
-		return this.typeGraphObjectDefined;
-	}
+    /**
+     * maximum number of nodes of this type
+     */
+    private short sourceMax = Type.UNDEFINED;
 
-	boolean removeTypeGraphObject() {
-		this.typeGraphObjectDefined = false;
-		this.itsNode = null;
-		return true;
-	}
+    TypeGraphNode() {
+    }
 
-	void forceRemoveTypeGraphObject() {
-		this.typeGraphObjectDefined = false;
-		this.itsNode = null;
-	}
+    public void dispose() {
+        this.itsNode = null;
+    }
 
-	public Node getNode()   {
-		return this.itsNode;
-	} 
-	
-	public void setVisible(boolean vis) {
-		this.visible = vis;
-	}
-	
-	public boolean isVisible() {
-		return this.visible;		
-	}
-	
-	public void setSourceMin(int value) {
-		this.sourceMin = (short) value;
-	}
+    Node addTypeGraphObject(Node n) {
+        this.itsNode = n;
+        this.typeGraphObjectDefined = (n != null);
+        return this.itsNode;
+    }
 
-	public void setSourceMax(int value) {
-		this.sourceMax = (short) value;
-	}
+    boolean hasTypeGraphObject() {
+        return this.typeGraphObjectDefined;
+    }
 
-	public int getSourceMin() {
-		return this.sourceMin;
-	}
+    boolean removeTypeGraphObject() {
+        this.typeGraphObjectDefined = false;
+        this.itsNode = null;
+        return true;
+    }
 
-	public int getSourceMax() {
-		return this.sourceMax;
-	}
+    void forceRemoveTypeGraphObject() {
+        this.typeGraphObjectDefined = false;
+        this.itsNode = null;
+    }
 
+    public Node getNode() {
+        return this.itsNode;
+    }
+
+    public void setVisible(boolean vis) {
+        this.visible = vis;
+    }
+
+    public boolean isVisible() {
+        return this.visible;
+    }
+
+    public void setSourceMin(int value) {
+        this.sourceMin = (short) value;
+    }
+
+    public void setSourceMax(int value) {
+        this.sourceMax = (short) value;
+    }
+
+    public int getSourceMin() {
+        return this.sourceMin;
+    }
+
+    public int getSourceMax() {
+        return this.sourceMax;
+    }
 
 }

@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.typeeditor;
 
 import java.awt.BorderLayout;
@@ -27,87 +28,85 @@ import javax.swing.JButton;
 @SuppressWarnings("serial")
 public class ColorChooserDialog extends JPanel {
 
-	JDialog dialog;
+    JDialog dialog;
 
-	private JColorChooser tcc;
+    private JColorChooser tcc;
 
 //	private JLabel banner;
-
 //	private Color color;
+    private JButton closeButton;
 
-	private JButton closeButton;
+    public ColorChooserDialog() {
+        super(new BorderLayout());
 
-	public ColorChooserDialog() {
-		super(new BorderLayout());
+        // Set up color chooser for setting type color
+        this.tcc = new JColorChooser(Color.yellow);
 
-		// Set up color chooser for setting type color
-		this.tcc = new JColorChooser(Color.yellow);
+        this.closeButton = new JButton();
+        this.closeButton.setActionCommand("close");
+        this.closeButton.setText("Close");
+        this.closeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ColorChooserDialog.this.dialog.setVisible(false);
+            }
+        });
 
-		this.closeButton = new JButton();
-		this.closeButton.setActionCommand("close");
-		this.closeButton.setText("Close");
-		this.closeButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ColorChooserDialog.this.dialog.setVisible(false);
-			}
-		});
+        add(this.tcc, BorderLayout.CENTER);
+        add(this.closeButton, BorderLayout.PAGE_END);
 
-		add(this.tcc, BorderLayout.CENTER);
-		add(this.closeButton, BorderLayout.PAGE_END);
+        setOpaque(true);
+    }
 
-		setOpaque(true);
-	}
-
-	public void showColorDialog(Frame parent, String title, Color initColor) {
+    public void showColorDialog(Frame parent, String title, Color initColor) {
 //		color = 
-		JColorChooser.showDialog(parent, title, initColor);
-	}
+        JColorChooser.showDialog(parent, title, initColor);
+    }
 
-	public void showColorDialog(Dialog parent, String title, Color initColor) {
+    public void showColorDialog(Dialog parent, String title, Color initColor) {
 //		color = 
-		JColorChooser.showDialog(parent, title, initColor);
-	}
+        JColorChooser.showDialog(parent, title, initColor);
+    }
 
-	public void showColorDialog(Frame parent, Point location) {
-		if (this.dialog == null) {
-			this.dialog = new JDialog(parent);
-			this.dialog.setModal(true);
-			this.dialog.addWindowListener(new WindowAdapter() {
-				public void windowClosing(WindowEvent evt) {
-					ColorChooserDialog.this.dialog.setVisible(false);
-				}
-			});
-			this.dialog.setContentPane(this);
-			this.dialog.validate();
-			this.dialog.pack();
-		}
-		this.dialog.setLocation(location);
-		this.dialog.setVisible(true);
-	}
+    public void showColorDialog(Frame parent, Point location) {
+        if (this.dialog == null) {
+            this.dialog = new JDialog(parent);
+            this.dialog.setModal(true);
+            this.dialog.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent evt) {
+                    ColorChooserDialog.this.dialog.setVisible(false);
+                }
+            });
+            this.dialog.setContentPane(this);
+            this.dialog.validate();
+            this.dialog.pack();
+        }
+        this.dialog.setLocation(location);
+        this.dialog.setVisible(true);
+    }
 
-	public void showColorDialog(Dialog parent, Point location) {
-		if (this.dialog == null) {
-			this.dialog = new JDialog(parent);
-			this.dialog.setModal(true);
-			this.dialog.addWindowListener(new WindowAdapter() {
-				public void windowClosing(WindowEvent evt) {
-					ColorChooserDialog.this.dialog.setVisible(false);
-				}
-			});
-			this.dialog.setContentPane(this);
-			this.dialog.validate();
-			this.dialog.pack();
-		}
-		this.dialog.setLocation(location);
-		this.dialog.setVisible(true);
-	}
+    public void showColorDialog(Dialog parent, Point location) {
+        if (this.dialog == null) {
+            this.dialog = new JDialog(parent);
+            this.dialog.setModal(true);
+            this.dialog.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent evt) {
+                    ColorChooserDialog.this.dialog.setVisible(false);
+                }
+            });
+            this.dialog.setContentPane(this);
+            this.dialog.validate();
+            this.dialog.pack();
+        }
+        this.dialog.setLocation(location);
+        this.dialog.setVisible(true);
+    }
 
-	public void addChangeListener(ChangeListener l) {
-		this.tcc.getSelectionModel().addChangeListener(l);
-	}
+    public void addChangeListener(ChangeListener l) {
+        this.tcc.getSelectionModel().addChangeListener(l);
+    }
 
-	public Color getColor() {
-		return this.tcc.getColor();
-	}
+    public Color getColor() {
+        return this.tcc.getColor();
+    }
 
 }

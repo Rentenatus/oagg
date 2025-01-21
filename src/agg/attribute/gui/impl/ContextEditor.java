@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -30,142 +31,142 @@ import agg.attribute.gui.AttrEditorManager;
 
 /**
  * Editor for a context (rule, match etc.).
- * 
+ *
  * @author $Author: olga $
  * @version $Id: ContextEditor.java,v 1.4 2010/08/18 09:24:53 olga Exp $
  */
 public class ContextEditor extends AbstractEditor implements AttrContextEditor,
-		ScrollPaneConstants {
+        ScrollPaneConstants {
 
-	protected AttrContext attrContext;
+    protected AttrContext attrContext;
 
-	protected JPanel condPanel, varPanel;
+    protected JPanel condPanel, varPanel;
 
-	protected JSplitPane varAndCondSplitPane;
+    protected JSplitPane varAndCondSplitPane;
 
-	protected JTextArea outputTextArea;
+    protected JTextArea outputTextArea;
 
-	protected JScrollPane outputScrollPane;
+    protected JScrollPane outputScrollPane;
 
-	protected ConditionTupleEditor conditionEditor;
+    protected ConditionTupleEditor conditionEditor;
 
-	protected VariableTupleEditor variableEditor;
+    protected VariableTupleEditor variableEditor;
 
-	public ContextEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-	}
+    public ContextEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+    }
 
-	/** Creates all subviews. */
-	protected void genericCreateAllViews() {
+    /**
+     * Creates all subviews.
+     */
+    protected void genericCreateAllViews() {
 
-		// Variables
+        // Variables
+        this.variableEditor = new VariableTupleEditor(getAttrManager(),
+                getEditorManager());
+        this.varPanel = new JPanel(new BorderLayout());
+        this.varPanel.setBackground(new Color(205, 230, 205));
+        this.varPanel.add(this.variableEditor.getComponent(), BorderLayout.CENTER);
+        this.variableEditor.getComponent().setBackground(new Color(205, 230, 205));
+        this.varPanel.setBorder(BorderFactory.createTitledBorder(new BevelBorder(
+                BevelBorder.RAISED), "Parameters and Variables",
+                TitledBorder.CENTER, TitledBorder.TOP));
+        // varPanel.setPreferredSize( new Dimension( 300, 300 ));
 
-		this.variableEditor = new VariableTupleEditor(getAttrManager(),
-				getEditorManager());
-		this.varPanel = new JPanel(new BorderLayout());
-		this.varPanel.setBackground(new Color(205, 230, 205));
-		this.varPanel.add(this.variableEditor.getComponent(), BorderLayout.CENTER);
-		this.variableEditor.getComponent().setBackground(new Color(205, 230, 205));
-		this.varPanel.setBorder(BorderFactory.createTitledBorder(new BevelBorder(
-				BevelBorder.RAISED), "Parameters and Variables",
-				TitledBorder.CENTER, TitledBorder.TOP));
-		// varPanel.setPreferredSize( new Dimension( 300, 300 ));
+        // Conditions
+        this.conditionEditor = new ConditionTupleEditor(getAttrManager(),
+                getEditorManager());
+        this.condPanel = new JPanel(new BorderLayout());
+        this.condPanel.setBackground(new Color(205, 230, 205));
+        this.condPanel.add(this.conditionEditor.getComponent(), BorderLayout.CENTER);
+        this.conditionEditor.getComponent().setBackground(new Color(205, 230, 205));
+        this.condPanel.setBorder(BorderFactory.createTitledBorder(new BevelBorder(
+                BevelBorder.RAISED), "Conditions", TitledBorder.CENTER,
+                TitledBorder.TOP));
+        // condPanel.setPreferredSize( new Dimension( 100, 300 ));
 
-		// Conditions
+        // Context mappings information.
+        createOutputTextArea();
+    }
 
-		this.conditionEditor = new ConditionTupleEditor(getAttrManager(),
-				getEditorManager());
-		this.condPanel = new JPanel(new BorderLayout());
-		this.condPanel.setBackground(new Color(205, 230, 205));
-		this.condPanel.add(this.conditionEditor.getComponent(), BorderLayout.CENTER);
-		this.conditionEditor.getComponent().setBackground(new Color(205, 230, 205));
-		this.condPanel.setBorder(BorderFactory.createTitledBorder(new BevelBorder(
-				BevelBorder.RAISED), "Conditions", TitledBorder.CENTER,
-				TitledBorder.TOP));
-		// condPanel.setPreferredSize( new Dimension( 100, 300 ));
+    protected void arrangeMainPanel() {
+    }
 
-		// Context mappings information.
+    /**
+     * Must create mainPanel and set it up.
+     */
+    protected void genericCustomizeMainLayout() {
+        this.varAndCondSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                this.varPanel, this.condPanel);
+        // Box mappingBox = Box.createHorizontalBox();
+        // mappingBox.add( outputScrollPane );
 
-		createOutputTextArea();
-	}
+        this.mainPanel = new JPanel(new BorderLayout());
+        this.mainPanel.add(this.varAndCondSplitPane, BorderLayout.CENTER);
+        // mainPanel.add( mappingBox, BorderLayout.SOUTH );
+        this.mainPanel.setPreferredSize(new Dimension(500, 400));
+        this.mainPanel.addComponentListener(this);
+        resize();
+    }
 
-	protected void arrangeMainPanel() {
-	}
+    protected void createOutputTextArea() {
+        this.outputTextArea = new JTextArea(5, 10);
+        this.outputTextArea.setEditable(false);
+        this.outputTextArea.setLineWrap(false);
+        this.outputScrollPane = new JScrollPane(this.outputTextArea,
+                VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        // outputTA.setBackground( Color.gray );
+        this.outputScrollPane.setPreferredSize(new Dimension(300, 50));
+    }
 
-	/** Must create mainPanel and set it up. */
-	protected void genericCustomizeMainLayout() {
-		this.varAndCondSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				this.varPanel, this.condPanel);
-		// Box mappingBox = Box.createHorizontalBox();
-		// mappingBox.add( outputScrollPane );
+    protected void resize() {
+        this.varAndCondSplitPane.setDividerLocation(0.67);
+        this.mainPanel.revalidate();
+        this.mainPanel.repaint();
+    }
 
-		this.mainPanel = new JPanel(new BorderLayout());
-		this.mainPanel.add(this.varAndCondSplitPane, BorderLayout.CENTER);
-		// mainPanel.add( mappingBox, BorderLayout.SOUTH );
-		this.mainPanel.setPreferredSize(new Dimension(500, 400));
-		this.mainPanel.addComponentListener(this);
-		resize();
-	}
+    public void componentResized(ComponentEvent e) {
+        resize();
+    }
 
-	protected void createOutputTextArea() {
-		this.outputTextArea = new JTextArea(5, 10);
-		this.outputTextArea.setEditable(false);
-		this.outputTextArea.setLineWrap(false);
-		this.outputScrollPane = new JScrollPane(this.outputTextArea,
-				VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		// outputTA.setBackground( Color.gray );
-		this.outputScrollPane.setPreferredSize(new Dimension(300, 50));
-	}
+    public void componentShown(ComponentEvent e) {
+        resize();
+    }
 
-	protected void resize() {
-		this.varAndCondSplitPane.setDividerLocation(0.67);
-		this.mainPanel.revalidate();
-		this.mainPanel.repaint();
-	}
+    // AttrContextEditor interface
+    public void setContext(AttrContext anAttrContext) {
+        this.attrContext = anAttrContext;
+        this.conditionEditor.setTuple(this.attrContext.getConditions());
+        this.variableEditor.setTuple(this.attrContext.getVariables());
+    }
 
-	public void componentResized(ComponentEvent e) {
-		resize();
-	}
+    public AttrContext getContext() {
+        return this.attrContext;
+    }
 
-	public void componentShown(ComponentEvent e) {
-		resize();
-	}
+    public ConditionTupleEditor getConditionEditor() {
+        return this.conditionEditor;
+    }
 
-	// AttrContextEditor interface
+    public VariableTupleEditor getVariableEditor() {
+        return this.variableEditor;
+    }
 
-	public void setContext(AttrContext anAttrContext) {
-		this.attrContext = anAttrContext;
-		this.conditionEditor.setTuple(this.attrContext.getConditions());
-		this.variableEditor.setTuple(this.attrContext.getVariables());		
-	}
+    public void resetVariableEditorComponent() {
+        this.varPanel.add(this.variableEditor.getComponent(), BorderLayout.CENTER);
+    }
 
-	public AttrContext getContext() {
-		return this.attrContext;
-	}
+    public void setAttrManager(AttrManager m) {
+        super.setAttrManager(m);
+        this.conditionEditor.setAttrManager(m);
+        this.variableEditor.setAttrManager(m);
+    }
 
-	public ConditionTupleEditor getConditionEditor() {
-		return this.conditionEditor;
-	}
-
-	public VariableTupleEditor getVariableEditor() {
-		return this.variableEditor;
-	}
-	
-	public void resetVariableEditorComponent() {
-		this.varPanel.add(this.variableEditor.getComponent(), BorderLayout.CENTER);
-	}
-	
-	public void setAttrManager(AttrManager m) {
-		super.setAttrManager(m);
-		this.conditionEditor.setAttrManager(m);
-		this.variableEditor.setAttrManager(m);
-	}
-
-	public void setEditorManager(AttrEditorManager m) {
-		super.setEditorManager(m);
-		this.conditionEditor.setEditorManager(m);
-		this.variableEditor.setEditorManager(m);
-	}
+    public void setEditorManager(AttrEditorManager m) {
+        super.setEditorManager(m);
+        this.conditionEditor.setEditorManager(m);
+        this.variableEditor.setEditorManager(m);
+    }
 }
 /*
  * $Log: ContextEditor.java,v $

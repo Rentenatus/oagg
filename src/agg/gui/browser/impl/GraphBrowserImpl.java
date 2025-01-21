@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.gui.browser.impl;
 
 import java.awt.BorderLayout;
@@ -47,313 +48,330 @@ import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 
 /**
- * A graph browser for viewing graphs. A graph can be one of types:
- * <code>agg.editor.impl.EdGraph</code> or <code>agg.xt_basis.Graph</code>
- * 
+ * A graph browser for viewing graphs. A graph can be one of types: <code>agg.editor.impl.EdGraph</code> or
+ * <code>agg.xt_basis.Graph</code>
+ *
  * @author $Author: olga $
  * @version $Id: GraphBrowserImpl.java,v 1.10 2010/09/23 08:18:19 olga Exp $
  */
 @SuppressWarnings("serial")
 public class GraphBrowserImpl extends JPanel implements GraphBrowser,
-		SaveEventListener, LoadEventListener {
+        SaveEventListener, LoadEventListener {
 
-	static int ITS_WIDTH = 500;
+    static int ITS_WIDTH = 500;
 
-	static int ITS_HEIGHT = 300;
+    static int ITS_HEIGHT = 300;
 
-	GraphEditor editor;
+    GraphEditor editor;
 
-	ModePopupMenu modePopupMenu; // select + move
+    ModePopupMenu modePopupMenu; // select + move
 
-	private EdGraGra gragra;
+    private EdGraGra gragra;
 
-	private EdGraph graph;
+    private EdGraph graph;
 
 //	private EdTypeSet types;
+    private Object myObject;
 
-	private Object myObject;
+    private String msg;
 
-	private String msg;
+    public GraphBrowserImpl() {
+        super(true);
+        setLayout(new BorderLayout());
 
-	public GraphBrowserImpl() {
-		super(true);
-		setLayout(new BorderLayout());
+        // create graph editor
+        this.editor = new GraphEditor(null);
+        add(this.editor, BorderLayout.CENTER);
 
-		// create graph editor
-		this.editor = new GraphEditor(null);
-		add(this.editor, BorderLayout.CENTER);
+        // create and set popup menu
+        this.modePopupMenu = new ModePopupMenu();
+        this.modePopupMenu.setViewModel(true);
+        this.modePopupMenu.setLabel("Edit Modes");
+        this.modePopupMenu.setEditor(this.editor);
 
-		// create and set popup menu
-		this.modePopupMenu = new ModePopupMenu();
-		this.modePopupMenu.setViewModel(true);
-		this.modePopupMenu.setLabel("Edit Modes");
-		this.modePopupMenu.setEditor(this.editor);
+        this.editor.setEditMode(EditorConstants.SELECT);
+        this.editor.setEditCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-		this.editor.setEditMode(EditorConstants.SELECT);
-		this.editor.setEditCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        MouseListener ml = new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.getSource() == GraphBrowserImpl.this.editor.getGraphPanel().getCanvas()
+                        && e.isPopupTrigger()) {
+                    if (GraphBrowserImpl.this.modePopupMenu.invoked(GraphBrowserImpl.this.editor, GraphBrowserImpl.this.editor.getGraphPanel(), e
+                            .getX(), e.getY())) {
+                        GraphBrowserImpl.this.modePopupMenu
+                                .show(e.getComponent(), e.getX(), e.getY());
+                    }
+                }
+            }
 
-		MouseListener ml = new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.getSource() == GraphBrowserImpl.this.editor.getGraphPanel().getCanvas()
-						&& e.isPopupTrigger()) {
-					if (GraphBrowserImpl.this.modePopupMenu.invoked(GraphBrowserImpl.this.editor, GraphBrowserImpl.this.editor.getGraphPanel(), e
-							.getX(), e.getY()))
-						GraphBrowserImpl.this.modePopupMenu
-								.show(e.getComponent(), e.getX(), e.getY());
-				}
-			}
+            public void mouseReleased(MouseEvent e) {
+                if (e.getSource() == GraphBrowserImpl.this.editor.getGraphPanel().getCanvas()
+                        && e.isPopupTrigger()) {
+                    if (GraphBrowserImpl.this.modePopupMenu.invoked(GraphBrowserImpl.this.editor, GraphBrowserImpl.this.editor.getGraphPanel(), e
+                            .getX(), e.getY())) {
+                        GraphBrowserImpl.this.modePopupMenu
+                                .show(e.getComponent(), e.getX(), e.getY());
+                    }
+                }
+            }
+        };
+        this.editor.getGraphPanel().getCanvas().addMouseListener(ml);
+    }
 
-			public void mouseReleased(MouseEvent e) {
-				if (e.getSource() == GraphBrowserImpl.this.editor.getGraphPanel().getCanvas()
-						&& e.isPopupTrigger()) {
-					if (GraphBrowserImpl.this.modePopupMenu.invoked(GraphBrowserImpl.this.editor, GraphBrowserImpl.this.editor.getGraphPanel(), e
-							.getX(), e.getY()))
-						GraphBrowserImpl.this.modePopupMenu
-								.show(e.getComponent(), e.getX(), e.getY());
-				}
-			}
-		};
-		this.editor.getGraphPanel().getCanvas().addMouseListener(ml);
-	}
+    /* Implementing of save / load event listeners */
+    public void saveEventOccurred(SaveEvent e) {
+        // System.out.println("GraphBrowser.saveEventOccurred " +e.getMsg());
+        int msgkey = e.getMsg();
+        this.msg = "";
+        if ((msgkey == SaveEvent.PROGRESS_BEGIN)
+                || (msgkey == SaveEvent.PROGRESS_FINISHED)
+                || (msgkey == SaveEvent.SAVED)) {
+            this.msg = "";
+            return;
+        }
+        this.msg = e.getMessage();
+        // System.out.println("SaveEvent msg: "+msg);
+    }
 
-	/* Implementing of save / load event listeners */
+    public void loadEventOccurred(LoadEvent e) {
+        // System.out.println("GraphBrowser.loadEventOccurred " +e.getMsg());
+        int msgkey = e.getMsg();
+        this.msg = "";
+        if ((msgkey == LoadEvent.PROGRESS_BEGIN)
+                || (msgkey == LoadEvent.PROGRESS_FINISHED)
+                || (msgkey == LoadEvent.LOADED)) {
+            this.msg = "";
+            return;
+        }
+        this.msg = e.getMessage();
+        // System.out.println("LoadEvent this.msg: "+this.msg);
+    }
 
-	public void saveEventOccurred(SaveEvent e) {
-		// System.out.println("GraphBrowser.saveEventOccurred " +e.getMsg());
-		int msgkey = e.getMsg();
-		this.msg = "";
-		if ((msgkey == SaveEvent.PROGRESS_BEGIN)
-				|| (msgkey == SaveEvent.PROGRESS_FINISHED)
-				|| (msgkey == SaveEvent.SAVED)) {
-			this.msg = "";
-			return;
-		}
-		this.msg = e.getMessage();
-		// System.out.println("SaveEvent msg: "+msg);
-	}
+    /**
+     * Return my <code>JPanel</code>.
+     */
+    public JPanel getPanel() {
+        return this;
+    }
 
-	public void loadEventOccurred(LoadEvent e) {
-		// System.out.println("GraphBrowser.loadEventOccurred " +e.getMsg());
-		int msgkey = e.getMsg();
-		this.msg = "";
-		if ((msgkey == LoadEvent.PROGRESS_BEGIN)
-				|| (msgkey == LoadEvent.PROGRESS_FINISHED)
-				|| (msgkey == LoadEvent.LOADED)) {
-			this.msg = "";
-			return;
-		}
-		this.msg = e.getMessage();
-		// System.out.println("LoadEvent this.msg: "+this.msg);
-	}
+    /**
+     * Return my graph.
+     */
+    public Object getGraph() {
+        return this.myObject;
+    }
 
-	/** Return my <code>JPanel</code>. */
-	public JPanel getPanel() {
-		return this;
-	}
+    /**
+     * Set <code>EdGraph</code> to show.
+     */
+    public void setGraph(EdGraph g) {
+        this.myObject = g;
+        this.graph = g;
+        // this.graph.setTypeSet(types);
+        this.editor.setGraph(this.graph);
+    }
 
-	/** Return my graph. */
-	public Object getGraph() {
-		return this.myObject;
-	}
+    /**
+     * Set <code>Graph</code> to show.
+     */
+    public void setGraph(Graph g) {
+        this.myObject = g;
+        this.graph = new EdGraph(g);
+        // this.graph.setTypeSet(types);
+        this.editor.setGraph(this.graph);
+    }
 
-	/** Set <code>EdGraph</code> to show. */
-	public void setGraph(EdGraph g) {
-		this.myObject = g;
-		this.graph = g;
-		// this.graph.setTypeSet(types);
-		this.editor.setGraph(this.graph);
-	}
+    /**
+     * Show graph.
+     */
+    public void showGraph() {
+        this.graph.update();
+        this.editor.getGraphPanel().updateGraphics(true);
+    }
 
-	/** Set <code>Graph</code> to show. */
-	public void setGraph(Graph g) {
-		this.myObject = g;
-		this.graph = new EdGraph(g);
-		// this.graph.setTypeSet(types);
-		this.editor.setGraph(this.graph);
-	}
+    /**
+     * Return gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
+     */
+    public EdGraGra getGraGra() {
+        return this.gragra;
+    }
 
-	/** Show graph. */
-	public void showGraph() {
-		this.graph.update();
-		this.editor.getGraphPanel().updateGraphics(true);
-	}
+    /**
+     * Return gragra. The gragra is of type <code>agg.xt_basis.GraGra</code>.
+     */
+    public GraGra getBaseGraGra() {
+        return this.gragra.getBasisGraGra();
+    }
 
-	/**
-	 * Return gragra. The gragra is of type
-	 * <code>agg.editor.impl.EdGraGra</code>.
-	 */
-	public EdGraGra getGraGra() {
-		return this.gragra;
-	}
-
-	/**
-	 * Return gragra. The gragra is of type <code>agg.xt_basis.GraGra</code>.
-	 */
-	public GraGra getBaseGraGra() {
-		return this.gragra.getBasisGraGra();
-	}
-
-	/**
-	 * Set gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
-	 */
-	public void setGraGra(EdGraGra gra) {
-		this.gragra = gra;
+    /**
+     * Set gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
+     */
+    public void setGraGra(EdGraGra gra) {
+        this.gragra = gra;
 //		types = this.gragra.getTypeSet();
-		this.graph = this.gragra.getGraph();
-	}
+        this.graph = this.gragra.getGraph();
+    }
 
-	/**
-	 * Set gragra. The gragra is of type <code>agg.xt_basis.GraGra</code>.
-	 */
-	public void setGraGra(GraGra gragra) {
-		this.gragra = new EdGraGra(gragra);
+    /**
+     * Set gragra. The gragra is of type <code>agg.xt_basis.GraGra</code>.
+     */
+    public void setGraGra(GraGra gragra) {
+        this.gragra = new EdGraGra(gragra);
 //		types = this.gragra.getTypeSet();
-		this.graph = this.gragra.getGraph();
-	}
+        this.graph = this.gragra.getGraph();
+    }
 
-	/** Load gragra. */
-	public EdGraGra loadGraGra(JFrame frame) {
+    /**
+     * Load gragra.
+     */
+    public EdGraGra loadGraGra(JFrame frame) {
 //		String dirName = "";
 //		String fileName = "";
-		// get load dialog
-		GraGraLoad gragraLoad = new GraGraLoad(frame);
-		gragraLoad.addLoadEventListener(this);
-		gragraLoad.load();
-		if (!this.msg.equals("")) {
+        // get load dialog
+        GraGraLoad gragraLoad = new GraGraLoad(frame);
+        gragraLoad.addLoadEventListener(this);
+        gragraLoad.load();
+        if (!this.msg.equals("")) {
 //			dirName = gragraLoad.getDirName();
-			JOptionPane.showMessageDialog(frame, this.msg);
-		} else if (gragraLoad.getGraGra() != null) {
+            JOptionPane.showMessageDialog(frame, this.msg);
+        } else if (gragraLoad.getGraGra() != null) {
 //			dirName = gragraLoad.getDirName();
 //			fileName = gragraLoad.getFileName();
-			// System.out.println(dirName+"/"+fileName);
-			// get gragra
-			this.gragra = gragraLoad.getGraGra();
-			this.gragra.update();
-			// BaseFactory.theFactory().notify(this.gragra.getBasisGraGra());
+            // System.out.println(dirName+"/"+fileName);
+            // get gragra
+            this.gragra = gragraLoad.getGraGra();
+            this.gragra.update();
+            // BaseFactory.theFactory().notify(this.gragra.getBasisGraGra());
 
-			// set types
+            // set types
 //			types = this.gragra.getTypeSet();
+            // set graph
+            this.graph = this.gragra.getGraph();
 
-			// set graph
-			this.graph = this.gragra.getGraph();
+            JOptionPane.showMessageDialog(frame, "Loading is finished");
+        }
+        return this.gragra;
+    }
 
-			JOptionPane.showMessageDialog(frame, "Loading is finished");
-		}
-		return this.gragra;
-	}
-
-	/** Load base gragra. */
-	public GraGra loadBaseGraGra(JFrame frame) {
+    /**
+     * Load base gragra.
+     */
+    public GraGra loadBaseGraGra(JFrame frame) {
 //		String dirName = "";
 //		String fileName = "";
 
-		// load dialog
-		GraGraLoad gragraLoad = new GraGraLoad(frame);
-		gragraLoad.addLoadEventListener(this);
-		gragraLoad.loadBase();
-		if (!this.msg.equals("")) {
+        // load dialog
+        GraGraLoad gragraLoad = new GraGraLoad(frame);
+        gragraLoad.addLoadEventListener(this);
+        gragraLoad.loadBase();
+        if (!this.msg.equals("")) {
 //			dirName = gragraLoad.getDirName();
-			JOptionPane.showMessageDialog(frame, "Loading is failed");
-			return null;
-		} else if (gragraLoad.getBaseGraGra() != null) {
+            JOptionPane.showMessageDialog(frame, "Loading is failed");
+            return null;
+        } else if (gragraLoad.getBaseGraGra() != null) {
 //			dirName = gragraLoad.getDirName();
 //			fileName = gragraLoad.getFileName();
 
-			// get base gragra
-			GraGra basis = gragraLoad.getBaseGraGra();
-			BaseFactory.theFactory().notify(basis);
+            // get base gragra
+            GraGra basis = gragraLoad.getBaseGraGra();
+            BaseFactory.theFactory().notify(basis);
 
-			JOptionPane.showMessageDialog(frame, "Loading is finished");
-			return basis;
-		} else
-			return null;
-	}
+            JOptionPane.showMessageDialog(frame, "Loading is finished");
+            return basis;
+        } else {
+            return null;
+        }
+    }
 
-	/**
-	 * Save gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
-	 */
-	public void saveAs(JFrame frame) {
-		// get save dialog
-		GraGraSave gragraSave = new GraGraSave(frame, "", "");
-		gragraSave.addSaveEventListener(this);
-		gragraSave.setGraGra(this.gragra);
-		gragraSave.saveAs();
-		if (!this.msg.equals(""))
-			JOptionPane.showMessageDialog(frame, "Saving is failed");
-		else
-			JOptionPane.showMessageDialog(frame, "Saving was successful.");
-	}
+    /**
+     * Save gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
+     */
+    public void saveAs(JFrame frame) {
+        // get save dialog
+        GraGraSave gragraSave = new GraGraSave(frame, "", "");
+        gragraSave.addSaveEventListener(this);
+        gragraSave.setGraGra(this.gragra);
+        gragraSave.saveAs();
+        if (!this.msg.equals("")) {
+            JOptionPane.showMessageDialog(frame, "Saving is failed");
+        } else {
+            JOptionPane.showMessageDialog(frame, "Saving was successful.");
+        }
+    }
 
-	/** Read base graph and update graphics. */
-	public void updateGraphics() {
-		if (this.editor.getGraph() != null) {
-			this.editor.getGraph().update();
-			this.editor.getGraphPanel().updateGraphics(true);
-		}
-	}
+    /**
+     * Read base graph and update graphics.
+     */
+    public void updateGraphics() {
+        if (this.editor.getGraph() != null) {
+            this.editor.getGraph().update();
+            this.editor.getGraphPanel().updateGraphics(true);
+        }
+    }
 
-	public static void main(String[] args) {
-		// create frame
-		JFrame frame = new JFrame("AGG Graph Browser");
+    public static void main(String[] args) {
+        // create frame
+        JFrame frame = new JFrame("AGG Graph Browser");
 
-		WindowListener l = new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		};
-		frame.addWindowListener(l);
+        WindowListener l = new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        };
+        frame.addWindowListener(l);
 
-		frame.setBackground(Color.white);
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation(screenSize.width / 2 - ITS_WIDTH / 2, screenSize.height
-				/ 2 - ITS_HEIGHT / 2);
-		frame.setSize(ITS_WIDTH, ITS_HEIGHT);
+        frame.setBackground(Color.white);
+        frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        frame.setLocation(screenSize.width / 2 - ITS_WIDTH / 2, screenSize.height
+                / 2 - ITS_HEIGHT / 2);
+        frame.setSize(ITS_WIDTH, ITS_HEIGHT);
 
-		ImageIcon icon = makeIcon("AGG_ICON64.gif");
-		if (icon != null)
-			frame.setIconImage(icon.getImage());
-		else
-			System.out.println("AGG_ICON64.gif not found!");
+        ImageIcon icon = makeIcon("AGG_ICON64.gif");
+        if (icon != null) {
+            frame.setIconImage(icon.getImage());
+        } else {
+            System.out.println("AGG_ICON64.gif not found!");
+        }
 
-		// create browser
-		GraphBrowserImpl browser = new GraphBrowserImpl();
+        // create browser
+        GraphBrowserImpl browser = new GraphBrowserImpl();
 
-		frame.getContentPane().add(browser, BorderLayout.CENTER);
-		frame.setVisible(true);
-	}
+        frame.getContentPane().add(browser, BorderLayout.CENTER);
+        frame.setVisible(true);
+    }
 
-	public static ImageIcon makeIcon(String gifFile) {
-		byte[] buffer = null;
-		try {
-			Class<?> baseClass = Class.forName("agg.gui.AGGAppl");
-			InputStream resource = baseClass.getResourceAsStream(gifFile);
-			if (resource == null) {
-				System.err.println(baseClass.getName() + "/" + gifFile
-						+ " not found.");
-				return null;
-			}
-			BufferedInputStream in = new BufferedInputStream(resource);
-			ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
-			buffer = new byte[1024];
-			int n;
-			while ((n = in.read(buffer)) > 0) {
-				out.write(buffer, 0, n);
-			}
-			in.close();
-			out.flush();
+    public static ImageIcon makeIcon(String gifFile) {
+        byte[] buffer = null;
+        try {
+            Class<?> baseClass = Class.forName("agg.gui.AGGAppl");
+            InputStream resource = baseClass.getResourceAsStream(gifFile);
+            if (resource == null) {
+                System.err.println(baseClass.getName() + "/" + gifFile
+                        + " not found.");
+                return null;
+            }
+            BufferedInputStream in = new BufferedInputStream(resource);
+            ByteArrayOutputStream out = new ByteArrayOutputStream(1024);
+            buffer = new byte[1024];
+            int n;
+            while ((n = in.read(buffer)) > 0) {
+                out.write(buffer, 0, n);
+            }
+            in.close();
+            out.flush();
 
-			buffer = out.toByteArray();
-			if (buffer.length == 0) {
-				System.err.println("warning: " + gifFile + " is zero-length");
-				return null;
-			}
-		} catch (Exception ioe) {
-			System.err.println(ioe.toString());
-			return null;
-		}
-		return new ImageIcon(buffer);
-	}
+            buffer = out.toByteArray();
+            if (buffer.length == 0) {
+                System.err.println("warning: " + gifFile + " is zero-length");
+                return null;
+            }
+        } catch (Exception ioe) {
+            System.err.println(ioe.toString());
+            return null;
+        }
+        return new ImageIcon(buffer);
+    }
 
 }
 // $Log: GraphBrowserImpl.java,v $

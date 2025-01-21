@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 /* JJT: 0.2.2 */
 package agg.attribute.parser.javaExpr;
 
@@ -18,116 +19,117 @@ import java.lang.reflect.Array;
  */
 public class ASTArrayAllocation extends SimpleNode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	Class<?> componentClass = null;
+    Class<?> componentClass = null;
 
-	int nDimensions = 0;
+    int nDimensions = 0;
 
-	ASTArrayAllocation(String id) {
-		super(id);
-	}
+    ASTArrayAllocation(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTArrayAllocation(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTArrayAllocation(id);
+    }
 
-	protected boolean isConstantExpr() {
-		return false;
-	}
+    protected boolean isConstantExpr() {
+        return false;
+    }
 
-	public void checkContext() {
-		int nChildren = jjtGetNumChildren();
-		Node componentNode = jjtGetChild(0);
-		Node lengthNode;
-		Object arrayInst;
-		Class<?> resultClass;
-		int dimArray[];
+    public void checkContext() {
+        int nChildren = jjtGetNumChildren();
+        Node componentNode = jjtGetChild(0);
+        Node lengthNode;
+        Object arrayInst;
+        Class<?> resultClass;
+        int dimArray[];
 
-		componentNode.checkContext();
-		this.componentClass = ((SimpleNode)componentNode).getNodeClass();
-		this.nDimensions = nChildren - 1;
+        componentNode.checkContext();
+        this.componentClass = ((SimpleNode) componentNode).getNodeClass();
+        this.nDimensions = nChildren - 1;
 
-		for (int i = 1; i < nChildren; i++) {
-			lengthNode = jjtGetChild(i);
-			lengthNode.checkContext();
-			if (((SimpleNode)lengthNode).getNodeClass() != Integer.TYPE) {
-				String reqSig = "An array length must be of type integer (int).";
-				String foundSig = "Tried to pass an object of type\n'"
-						+ ((SimpleNode)lengthNode).getNodeClass() + "' as array length.";
-				throw new ASTWrongTypeException(reqSig, foundSig);
-			}
-		}
+        for (int i = 1; i < nChildren; i++) {
+            lengthNode = jjtGetChild(i);
+            lengthNode.checkContext();
+            if (((SimpleNode) lengthNode).getNodeClass() != Integer.TYPE) {
+                String reqSig = "An array length must be of type integer (int).";
+                String foundSig = "Tried to pass an object of type\n'"
+                        + ((SimpleNode) lengthNode).getNodeClass() + "' as array length.";
+                throw new ASTWrongTypeException(reqSig, foundSig);
+            }
+        }
 
-		dimArray = new int[this.nDimensions];
-		dimArray[0] = 1;
-		for (int i = 1; i < this.nDimensions; i++) {
-			dimArray[i] = 0;
-		}
-		arrayInst = Array.newInstance(this.componentClass, dimArray);
-		resultClass = arrayInst.getClass();
-		setNodeClass(resultClass);
-	}
+        dimArray = new int[this.nDimensions];
+        dimArray[0] = 1;
+        for (int i = 1; i < this.nDimensions; i++) {
+            dimArray[i] = 0;
+        }
+        arrayInst = Array.newInstance(this.componentClass, dimArray);
+        resultClass = arrayInst.getClass();
+        setNodeClass(resultClass);
+    }
 
-	public void interpret() {
-		int nChildren = jjtGetNumChildren();
-		Node componentNode = jjtGetChild(0);
-		Node lengthNode;
-		boolean isLengthAllowed = true;
-		int length;
-		int lengthList[] = new int[nChildren - 1];
+    public void interpret() {
+        int nChildren = jjtGetNumChildren();
+        Node componentNode = jjtGetChild(0);
+        Node lengthNode;
+        boolean isLengthAllowed = true;
+        int length;
+        int lengthList[] = new int[nChildren - 1];
 
-		componentNode.interpret();
-		this.componentClass = (Class<?>) stack.get(top--);
+        componentNode.interpret();
+        this.componentClass = (Class<?>) stack.get(top--);
 
-		for (int i = 1; i < nChildren; i++) {
-			lengthNode = jjtGetChild(i);
-			lengthNode.interpret();
-			length = ((Integer) stack.get(top--)).intValue();
-			lengthList[i - 1] = length;
-			if (length < 0) {
-				throw new RuntimeException(
-						"An array length must be a non-negative integer number (int)"
-								+ " or empty." + "\nTried to pass a value of "
-								+ length + " as length.");
-			}
-			if (length == 0) {
-				if (i == 1) {
-					throw new RuntimeException(
-							"A positive array length value is required\n"
-									+ "at least for the first dimension.");
-				} 
-				isLengthAllowed = false;
-			
-			} else if (!isLengthAllowed) {
-				throw new RuntimeException(
-						"A positive array length value is illegal after a previous\n"
-								+ "dimension length was empty.");
-			}
-		}
-		stack.add(++top, Array.newInstance(this.componentClass, lengthList));
-	}
+        for (int i = 1; i < nChildren; i++) {
+            lengthNode = jjtGetChild(i);
+            lengthNode.interpret();
+            length = ((Integer) stack.get(top--)).intValue();
+            lengthList[i - 1] = length;
+            if (length < 0) {
+                throw new RuntimeException(
+                        "An array length must be a non-negative integer number (int)"
+                        + " or empty." + "\nTried to pass a value of "
+                        + length + " as length.");
+            }
+            if (length == 0) {
+                if (i == 1) {
+                    throw new RuntimeException(
+                            "A positive array length value is required\n"
+                            + "at least for the first dimension.");
+                }
+                isLengthAllowed = false;
 
-	public String getString() {
-		String dimString = "";
-		Node constructorName = jjtGetChild(0);
-		int nChildren = jjtGetNumChildren();
-		for (int i = 1; i < nChildren; i++) {
-			Node dimension = jjtGetChild(i);
-			if (dimension instanceof ASTEmptyDimension)
-				dimString += "[]";
-			else
-				dimString += "[" + dimension.getString() + "]";
-		}
-		return "new " + constructorName.getString() + dimString;
-	}
+            } else if (!isLengthAllowed) {
+                throw new RuntimeException(
+                        "A positive array length value is illegal after a previous\n"
+                        + "dimension length was empty.");
+            }
+        }
+        stack.add(++top, Array.newInstance(this.componentClass, lengthList));
+    }
 
-	public Node copy() {
-		Node copy = super.copy();
-		((ASTArrayAllocation) copy).componentClass = this.componentClass;
-		((ASTArrayAllocation) copy).nDimensions = this.nDimensions;
-		return copy;
-	}
+    public String getString() {
+        String dimString = "";
+        Node constructorName = jjtGetChild(0);
+        int nChildren = jjtGetNumChildren();
+        for (int i = 1; i < nChildren; i++) {
+            Node dimension = jjtGetChild(i);
+            if (dimension instanceof ASTEmptyDimension) {
+                dimString += "[]";
+            } else {
+                dimString += "[" + dimension.getString() + "]";
+            }
+        }
+        return "new " + constructorName.getString() + dimString;
+    }
+
+    public Node copy() {
+        Node copy = super.copy();
+        ((ASTArrayAllocation) copy).componentClass = this.componentClass;
+        ((ASTArrayAllocation) copy).nDimensions = this.nDimensions;
+        return copy;
+    }
 }
 /*
  * $Log: ASTArrayAllocation.java,v $

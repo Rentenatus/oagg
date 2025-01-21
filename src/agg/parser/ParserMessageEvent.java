@@ -1,58 +1,56 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 //****************************************************************************+
 /**
  * ParserMessageEvent sends messages.
- * 
+ *
  * @author $Author: olga $ Parser Group
  * @version $Id: ParserMessageEvent.java,v 1.4 2010/09/23 08:25:00 olga Exp $
  */
 @SuppressWarnings("serial")
 public class ParserMessageEvent extends ParserEvent {
 
-	int key = -1;
+    int key = -1;
 
-	/**
-	 * This constructor is inherited. The message must be set.
-	 * 
-	 * @param source
-	 *            The source of the event.
-	 */
-	public ParserMessageEvent(Object source) {
-		this(source, "");
-	}
+    /**
+     * This constructor is inherited. The message must be set.
+     *
+     * @param source The source of the event.
+     */
+    public ParserMessageEvent(Object source) {
+        this(source, "");
+    }
 
-	/**
-	 * Creates a new message event to inform about interessting stuff.
-	 * 
-	 * @param _message
-	 *            The message.
-	 * @param source
-	 *            The source of the event.
-	 */
-	public ParserMessageEvent(Object source, String _message) {
-		super(source);
-		setMessage(_message);
-	}
+    /**
+     * Creates a new message event to inform about interessting stuff.
+     *
+     * @param _message The message.
+     * @param source The source of the event.
+     */
+    public ParserMessageEvent(Object source, String _message) {
+        super(source);
+        setMessage(_message);
+    }
 
-	public ParserMessageEvent(Object source, int _key, String _message) {
-		super(source);
-		this.key = _key;
-		setMessage(_message);
-	}
+    public ParserMessageEvent(Object source, int _key, String _message) {
+        super(source);
+        this.key = _key;
+        setMessage(_message);
+    }
 
-	public int getKey() {
-		return this.key;
-	}
+    public int getKey() {
+        return this.key;
+    }
 
 }
 

@@ -1,26 +1,26 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.handler.gui;
 
 /**
- * This interface is extended by handler editors, so clients can be notified of
- * occuring changes.
- * 
+ * This interface is extended by handler editors, so clients can be notified of occuring changes.
+ *
  * @version $Id: HandlerEditor.java,v 1.2 2007/09/10 13:05:51 olga Exp $
  * @author $Author: olga $
  */
 public interface HandlerEditor {
 
-	public void addEditorObserver(HandlerEditorObserver obs);
+    public void addEditorObserver(HandlerEditorObserver obs);
 
-	public void removeEditorObserver(HandlerEditorObserver obs);
+    public void removeEditorObserver(HandlerEditorObserver obs);
 }
 /*
  * $Log: HandlerEditor.java,v $

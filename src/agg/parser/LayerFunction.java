@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.Enumeration;
@@ -20,86 +21,89 @@ import agg.xt_basis.GraGra;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 
-
 /**
  * This layer function layers a set of rules of a given graph grammar.
- * 
+ *
  * @deprecated
  * @author $Author: olga $
  * @version $Id: LayerFunction.java,v 1.9 2010/09/23 08:25:00 olga Exp $
  */
 public class LayerFunction implements XMLObject {
 
-	/** The graph grammar. */
-	protected GraGra grammar;
+    /**
+     * The graph grammar.
+     */
+    protected GraGra grammar;
 
-	protected Hashtable<Rule, Integer> ruleLayer;
+    protected Hashtable<Rule, Integer> ruleLayer;
 
-	protected Hashtable<Type, Integer> creationLayer;
+    protected Hashtable<Type, Integer> creationLayer;
 
-	protected Hashtable<Type, Integer> deletionLayer;
+    protected Hashtable<Type, Integer> deletionLayer;
 
-	/** The error message if this layer function is not valid. */
-	protected String errMsg;
+    /**
+     * The error message if this layer function is not valid.
+     */
+    protected String errMsg;
 
-	/** true if this layer function is valid. */
-	protected boolean valid;
+    /**
+     * true if this layer function is valid.
+     */
+    protected boolean valid;
 
-	protected String option;
+    protected String option;
 
-	/**
-	 * Creates a new layer function for a given graph grammar. Initially this
-	 * layer function is invalid.
-	 * 
-	 * @param gragra
-	 *            The graph grammar.
-	 */
-	public LayerFunction(GraGra gragra) {
-		this.grammar = gragra;
-		initRuleLayer(this.grammar);
-		initCreationLayer(this.grammar);
-		initDeletionLayer(this.grammar);
-		this.valid = true; // false;
-		this.errMsg = "";
-		// System.out.println("LayerFunction created");
-	}
+    /**
+     * Creates a new layer function for a given graph grammar. Initially this layer function is invalid.
+     *
+     * @param gragra The graph grammar.
+     */
+    public LayerFunction(GraGra gragra) {
+        this.grammar = gragra;
+        initRuleLayer(this.grammar);
+        initCreationLayer(this.grammar);
+        initDeletionLayer(this.grammar);
+        this.valid = true; // false;
+        this.errMsg = "";
+        // System.out.println("LayerFunction created");
+    }
 
-	private void initRuleLayer(GraGra gragra) {
-		this.ruleLayer = new Hashtable<Rule, Integer>();
-		for (int i = 0; i < gragra.getListOfRules().size(); i++) {
-			Rule rule = gragra.getListOfRules().get(i);
-			this.ruleLayer.put(rule, new Integer(rule.getLayer()));
-		}
-	}
+    private void initRuleLayer(GraGra gragra) {
+        this.ruleLayer = new Hashtable<Rule, Integer>();
+        for (int i = 0; i < gragra.getListOfRules().size(); i++) {
+            Rule rule = gragra.getListOfRules().get(i);
+            this.ruleLayer.put(rule, new Integer(rule.getLayer()));
+        }
+    }
 
-	private void initCreationLayer(GraGra gragra) {
-		this.creationLayer = new Hashtable<Type, Integer>();
-		Enumeration<Type> types = gragra.getTypes();
-		while (types.hasMoreElements()) {
-			Type type = types.nextElement();
-			this.creationLayer.put(type, new Integer(0));
-		}
-	}
+    private void initCreationLayer(GraGra gragra) {
+        this.creationLayer = new Hashtable<Type, Integer>();
+        Enumeration<Type> types = gragra.getTypes();
+        while (types.hasMoreElements()) {
+            Type type = types.nextElement();
+            this.creationLayer.put(type, new Integer(0));
+        }
+    }
 
-	private void initDeletionLayer(GraGra gragra) {
-		this.deletionLayer = new Hashtable<Type, Integer>();
-		Enumeration<Type> types = gragra.getTypes();
-		while (types.hasMoreElements()) {
-			Type type = types.nextElement();
-			this.deletionLayer.put(type, new Integer(0));
-		}
-	}
+    private void initDeletionLayer(GraGra gragra) {
+        this.deletionLayer = new Hashtable<Type, Integer>();
+        Enumeration<Type> types = gragra.getTypes();
+        while (types.hasMoreElements()) {
+            Type type = types.nextElement();
+            this.deletionLayer.put(type, new Integer(0));
+        }
+    }
 
-	/**
-	 * Checks the layer function.
-	 * 
-	 * @return true if the layer function is valid.
-	 */
-	public boolean checkLayer() {
-		return true;
-	}
+    /**
+     * Checks the layer function.
+     *
+     * @return true if the layer function is valid.
+     */
+    public boolean checkLayer() {
+        return true;
+    }
 
-	/*
+    /*
 	private boolean checkLayer_OLD() {
 		// System.out.println("LayerFunction checkLayer");
 		Report.trace("starte ckeckLayer()", 2);
@@ -235,241 +239,232 @@ public class LayerFunction implements XMLObject {
 		Report.trace("beende checkLayer mit result = " + result, -2);
 		return result;
 	}
-*/
+     */
+    /**
+     * A fast check on validity.
+     *
+     * @return true if the layer function is valid.
+     */
+    public boolean isValid() {
+        return true; // this.valid;
+    }
 
-	/**
-	 * A fast check on validity.
-	 * 
-	 * @return true if the layer function is valid.
-	 */
-	public boolean isValid() {
-		return true; // this.valid;
-	}
+    /**
+     * Returns an error message if the layer function is not valid.
+     *
+     * @return The error message.
+     */
+    public String getErrorMessage() {
+        return this.errMsg;
+    }
 
-	/**
-	 * Returns an error message if the layer function is not valid.
-	 * 
-	 * @return The error message.
-	 */
-	public String getErrorMessage() {
-		return this.errMsg;
-	}
+    /**
+     * Returns the rule layer of the layer function.
+     *
+     * @return The rule layer.
+     */
+    public Hashtable<Rule, Integer> getRuleLayer() {
+        int size = 0;
+        Iterator<Rule> en = this.grammar.getListOfRules().iterator();
+        while (en.hasNext()) {
+            en.next();
+            size++;
+        }
 
-	/**
-	 * Returns the rule layer of the layer function.
-	 * 
-	 * @return The rule layer.
-	 */
-	public Hashtable<Rule, Integer> getRuleLayer() {
-		int size = 0;
-		Iterator<Rule> en = this.grammar.getListOfRules().iterator();
-		while (en.hasNext()) {
-			en.next();
-			size++;
-		}
+        if (size != this.ruleLayer.size()) {
+            initRuleLayer(this.grammar);
+            return this.ruleLayer;
+        }
 
-		if (size != this.ruleLayer.size()) {
-			initRuleLayer(this.grammar);
-			return this.ruleLayer;
-		}
+        en = this.grammar.getListOfRules().iterator();
+        while (en.hasNext()) {
+            Object key = en.next();
+            if (!this.ruleLayer.containsKey(key)) {
+                initRuleLayer(this.grammar);
+                return this.ruleLayer;
+            }
+        }
 
-		en = this.grammar.getListOfRules().iterator();
-		while (en.hasNext()) {
-			Object key = en.next();
-			if (!this.ruleLayer.containsKey(key)) {
-				initRuleLayer(this.grammar);
-				return this.ruleLayer;
-			}
-		}
+        return this.ruleLayer;
+    }
 
-		return this.ruleLayer;
-	}
+    /**
+     * Returns the creation layer of the layer function.
+     *
+     * @return The creation layer.
+     */
+    public Hashtable<Type, Integer> getCreationLayer() {
+        int size = 0;
+        Enumeration<Type> en = this.grammar.getTypes();
+        while (en.hasMoreElements()) {
+            en.nextElement();
+            size++;
+        }
+        if (size != this.creationLayer.size()) {
+            initCreationLayer(this.grammar);
+            return this.creationLayer;
+        }
 
-	/**
-	 * Returns the creation layer of the layer function.
-	 * 
-	 * @return The creation layer.
-	 */
-	public Hashtable<Type, Integer> getCreationLayer() {
-		int size = 0;
-		Enumeration<Type> en = this.grammar.getTypes();
-		while (en.hasMoreElements()) {
-			en.nextElement();
-			size++;
-		}
-		if (size != this.creationLayer.size()) {
-			initCreationLayer(this.grammar);
-			return this.creationLayer;
-		}
+        en = this.grammar.getTypes();
+        while (en.hasMoreElements()) {
+            Object key = en.nextElement();
+            if (!this.creationLayer.containsKey(key)) {
+                initCreationLayer(this.grammar);
+                return this.creationLayer;
+            }
+        }
+        return this.creationLayer;
+    }
 
-		en = this.grammar.getTypes();
-		while (en.hasMoreElements()) {
-			Object key = en.nextElement();
-			if (!this.creationLayer.containsKey(key)) {
-				initCreationLayer(this.grammar);
-				return this.creationLayer;
-			}
-		}
-		return this.creationLayer;
-	}
+    /**
+     * Returns the deletion layer of the layer function.
+     *
+     * @return The deletion layer.
+     */
+    public Hashtable<Type, Integer> getDeletionLayer() {
+        int size = 0;
+        Enumeration<Type> en = this.grammar.getTypes();
+        while (en.hasMoreElements()) {
+            en.nextElement();
+            size++;
+        }
 
-	/**
-	 * Returns the deletion layer of the layer function.
-	 * 
-	 * @return The deletion layer.
-	 */
-	public Hashtable<Type, Integer> getDeletionLayer() {
-		int size = 0;
-		Enumeration<Type> en = this.grammar.getTypes();
-		while (en.hasMoreElements()) {
-			en.nextElement();
-			size++;
-		}
+        if (size != this.deletionLayer.size()) {
+            initDeletionLayer(this.grammar);
+            return this.deletionLayer;
+        }
 
-		if (size != this.deletionLayer.size()) {
-			initDeletionLayer(this.grammar);
-			return this.deletionLayer;
-		}
+        en = this.grammar.getTypes();
+        while (en.hasMoreElements()) {
+            Object key = en.nextElement();
+            if (!this.deletionLayer.containsKey(key)) {
+                initDeletionLayer(this.grammar);
+                return this.deletionLayer;
+            }
+        }
+        return this.deletionLayer;
+    }
 
-		en = this.grammar.getTypes();
-		while (en.hasMoreElements()) {
-			Object key = en.nextElement();
-			if (!this.deletionLayer.containsKey(key)) {
-				initDeletionLayer(this.grammar);
-				return this.deletionLayer;
-			}
-		}
-		return this.deletionLayer;
-	}
+    /**
+     * Returns the smallest layer of the rule layer.
+     *
+     * @return The smallest layer.
+     */
+    public Integer getStartLayer() {
+        int startLayer = Integer.MAX_VALUE;
+        Integer result = null;
+        /* RuleLayer sind fuer das Parsieren noetig */
+        for (Enumeration<?> keys = getRuleLayer().keys(); keys.hasMoreElements();) {
+            Object key = keys.nextElement();
+            Integer layer = getRuleLayer().get(key);
+            if (layer.intValue() < startLayer) {
+                startLayer = layer.intValue();
+                result = layer;
+            }
+        }
+        return result;
+    }
 
-	/**
-	 * Returns the smallest layer of the rule layer.
-	 * 
-	 * @return The smallest layer.
-	 */
-	public Integer getStartLayer() {
-		int startLayer = Integer.MAX_VALUE;
-		Integer result = null;
-		/* RuleLayer sind fuer das Parsieren noetig */
-		for (Enumeration<?> keys = getRuleLayer().keys(); keys.hasMoreElements();) {
-			Object key = keys.nextElement();
-			Integer layer = getRuleLayer().get(key);
-			if (layer.intValue() < startLayer) {
-				startLayer = layer.intValue();
-				result = layer;
-			}
-		}
-		return result;
-	}
+    /**
+     * Inverts a layer function so that the layer is the key and the value is a set.
+     *
+     * @param layer The layer function will be inverted.
+     * @return The inverted layer function.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Hashtable<Integer, HashSet> invertLayer(Hashtable<?, ?> layer) {
+        Hashtable<Integer, HashSet> inverted = new Hashtable<Integer, HashSet>();
+        for (Enumeration<?> keys = layer.keys(); keys.hasMoreElements();) {
+            Object key = keys.nextElement();
+            Integer value = (Integer) layer.get(key);
+            HashSet invertedValue = inverted.get(value);
+            if (invertedValue == null) {
+                invertedValue = new HashSet();
+                invertedValue.add(key);
+                inverted.put(value, invertedValue);
+            } else {
+                invertedValue.add(key);
+            }
+        }
+        return inverted;
+    }
 
-	/**
-	 * Inverts a layer function so that the layer is the key and the value is a
-	 * set.
-	 * 
-	 * @param layer
-	 *            The layer function will be inverted.
-	 * @return The inverted layer function.
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Hashtable<Integer, HashSet> invertLayer(Hashtable<?,?> layer) {
-		Hashtable<Integer, HashSet> inverted = new Hashtable<Integer, HashSet>();
-		for (Enumeration<?> keys = layer.keys(); keys.hasMoreElements();) {
-			Object key = keys.nextElement();
-			Integer value = (Integer) layer.get(key);
-			HashSet invertedValue = inverted.get(value);
-			if (invertedValue == null) {
-				invertedValue = new HashSet();
-				invertedValue.add(key);
-				inverted.put(value, invertedValue);
-			} else {
-				invertedValue.add(key);
-			}
-		}
-		return inverted;
-	}
+    /**
+     * Returns layer option. The layer option will be initialized during loading of critical pairs file. This option can
+     * be used in the method setLayer(String l) of the LayerOption class.
+     */
+    public String getOption() {
+        return this.option;
+    }
 
-	/**
-	 * Returns layer option. The layer option will be initialized during loading
-	 * of critical pairs file. This option can be used in the method
-	 * setLayer(String l) of the LayerOption class.
-	 */
-	public String getOption() {
-		return this.option;
-	}
+    /**
+     * Writes a hash table to a xml file.
+     *
+     * @param xmlObjects <CODE>this</CODE>
+     * @param h A helper object.
+     */
+    protected void writeHashtableToXML(Hashtable<?, ?> xmlObjects, XMLHelper h) {
+        for (Enumeration<?> keys = xmlObjects.keys(); keys.hasMoreElements();) {
+            XMLObject r1 = (XMLObject) keys.nextElement();
+            h.openSubTag("Datum");
+            h.addObject("key", r1, false);
+            h.addAttr("value", "" + xmlObjects.get(r1));
+            h.close();
+        }
+    }
 
-	/**
-	 * Writes a hash table to a xml file.
-	 * 
-	 * @param xmlObjects
-	 *            <CODE>this</CODE>
-	 * @param h
-	 *            A helper object.
-	 */
-	protected void writeHashtableToXML(Hashtable<?,?> xmlObjects, XMLHelper h) {
-		for (Enumeration<?> keys = xmlObjects.keys(); keys.hasMoreElements();) {
-			XMLObject r1 = (XMLObject) keys.nextElement();
-			h.openSubTag("Datum");
-			h.addObject("key", r1, false);
-			h.addAttr("value", "" + xmlObjects.get(r1));
-			h.close();
-		}
-	}
-
-	/**
-	 * Writes the layer function to a file in a xml format.
-	 * 
-	 * @param h
-	 *            A helper object for storing.
-	 */
-	public void XwriteObject(XMLHelper h) {
-		h.openNewElem("LayerFunction", this);
-		// h.addAttr("valid",""+isValid());
-		/*
+    /**
+     * Writes the layer function to a file in a xml format.
+     *
+     * @param h A helper object for storing.
+     */
+    public void XwriteObject(XMLHelper h) {
+        h.openNewElem("LayerFunction", this);
+        // h.addAttr("valid",""+isValid());
+        /*
 		 * if(this instanceof ExtendedLayerFunction)
 		 * h.addAttr("option","RCDN_LAYER"); else if(this instanceof
 		 * WeakExtendedLayerFunction) h.addAttr("option","WEAK_RCDN_LAYER");
 		 * else if(this instanceof WeakLayerFunction)
 		 * h.addAttr("option","WEAK_RCD_LAYER"); else if(this instanceof
 		 * LayerFunction) h.addAttr("option","RCD_LAYER");
-		 */
-		h.addObject("GraGra", this.grammar, false);
+         */
+        h.addObject("GraGra", this.grammar, false);
 
-		/*
+        /*
 		 * if(isValid()){ h.openSubTag("ruleLayer");
 		 * writeHashtableToXML(getRuleLayer(),h); h.close();
 		 * h.openSubTag("deletionLayer");
 		 * writeHashtableToXML(getDeletionLayer(),h); h.close();
 		 * h.openSubTag("creationLayer");
 		 * writeHashtableToXML(getCreationLayer(),h); h.close(); }
-		 */
-		h.close();
-	}
+         */
+        h.close();
+    }
 
-	/**
-	 * Reads the contents of a xml file.
-	 * 
-	 * @param h
-	 *            A helper object.
-	 */
-	public void XreadObject(XMLHelper h) {
-		if (h.isTag("LayerFunction", this)) {
-			// System.out.println("LayerFunction: wird gelesen");
-			this.grammar = (GraGra) h.getObject("GraGra", null, false);
-			// System.out.println("LayerFunction: CP this.grammar gelesen:
-			// "+this.grammar);
-			// String v = h.readAttr("valid");
-			// System.out.println("LayerFunction: valid gelesen");
+    /**
+     * Reads the contents of a xml file.
+     *
+     * @param h A helper object.
+     */
+    public void XreadObject(XMLHelper h) {
+        if (h.isTag("LayerFunction", this)) {
+            // System.out.println("LayerFunction: wird gelesen");
+            this.grammar = (GraGra) h.getObject("GraGra", null, false);
+            // System.out.println("LayerFunction: CP this.grammar gelesen:
+            // "+this.grammar);
+            // String v = h.readAttr("valid");
+            // System.out.println("LayerFunction: valid gelesen");
 
-			// option = h.readAttr("option");
-			// System.out.println("LayerFunction: option gelesen: "+option);
+            // option = h.readAttr("option");
+            // System.out.println("LayerFunction: option gelesen: "+option);
+            this.valid = true; // false;
+            this.option = "";
+            initRuleLayer(this.grammar);
+            initCreationLayer(this.grammar);
+            initDeletionLayer(this.grammar);
 
-			this.valid = true; // false;
-			this.option = "";
-			initRuleLayer(this.grammar);
-			initCreationLayer(this.grammar);
-			initDeletionLayer(this.grammar);
-
-			/*
+            /*
 			 * if(v.equals("true")){ this.valid = true; if
 			 * (h.readSubTag("ruleLayer")) { if(ruleLayer == null) ruleLayer =
 			 * new Hashtable(); Enumeration data = h.getEnumeration("", null,
@@ -495,29 +490,30 @@ public class LayerFunction implements XMLObject {
 			 * Integer(h.readIAttr("value")); if((t != null) && (i != null))
 			 * getCreationLayer().put(t,i); h.close(); } h.close();
 			 * //System.out.println("LayerFunction: creationLayer gelesen"); } }
-			 */
-			h.close();
-			;
-		} else
-			this.option = "";
-		// System.out.println("LayerFunction: gelesen");
-	}
+             */
+            h.close();
+            ;
+        } else {
+            this.option = "";
+        }
+        // System.out.println("LayerFunction: gelesen");
+    }
 
-	/**
-	 * Returns the layer function in a human readable way.
-	 * 
-	 * @return The text.
-	 */
-	public String toString() {
-		String resultString = super.toString() + " LayerFunction:\n";
-		resultString += "\tRuleLayer:\n";
-		resultString += getRuleLayer().toString() + "\n";
-		resultString += "\tCreationLayer:\n";
-		resultString += getCreationLayer().toString() + "\n";
-		resultString += "\tDeletionLayer:\n";
-		resultString += getDeletionLayer().toString() + "\n";
-		return resultString;
-	}
+    /**
+     * Returns the layer function in a human readable way.
+     *
+     * @return The text.
+     */
+    public String toString() {
+        String resultString = super.toString() + " LayerFunction:\n";
+        resultString += "\tRuleLayer:\n";
+        resultString += getRuleLayer().toString() + "\n";
+        resultString += "\tCreationLayer:\n";
+        resultString += getCreationLayer().toString() + "\n";
+        resultString += "\tDeletionLayer:\n";
+        resultString += getDeletionLayer().toString() + "\n";
+        return resultString;
+    }
 }
 /*
  * $Log: LayerFunction.java,v $

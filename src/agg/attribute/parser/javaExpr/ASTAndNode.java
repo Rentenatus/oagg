@@ -1,114 +1,113 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
-
 /* JJT: 0.2.2 */
-
 /**
  * @version $Id: ASTAndNode.java,v 1.5 2010/07/29 10:09:18 olga Exp $
  * @author $Author: olga $
  */
 public class ASTAndNode extends BOOLxBOOLtoBOOLnode {
 
-	static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-	ASTAndNode(String id) {
-		super(id);
-	}
+    ASTAndNode(String id) {
+        super(id);
+    }
 
-	public static Node jjtCreate(String id) {
-		return new ASTAndNode(id);
-	}
+    public static Node jjtCreate(String id) {
+        return new ASTAndNode(id);
+    }
 
-	public void interpret() {
-		// System.out.println("ASTAndNode.interpret() .......... ");
-		Object result;
+    public void interpret() {
+        // System.out.println("ASTAndNode.interpret() .......... ");
+        Object result;
 
-		// jjtGetChild(0).interpret();
-		try {
-			// System.out.println("ASTAndNode.interpret() try jjtGetChild(0):
-			// "+jjtGetChild(0));
-			jjtGetChild(0).interpret();
-		} catch (Exception e) {
-			// System.out.println("ASTAndNode.interpret() ... ex:
-			// "+jjtGetChild(0)+" :: "+e);
-			if (e instanceof ASTMissingValueException) {
-			} else
-				throw (RuntimeException) e;
-		}
+        // jjtGetChild(0).interpret();
+        try {
+            // System.out.println("ASTAndNode.interpret() try jjtGetChild(0):
+            // "+jjtGetChild(0));
+            jjtGetChild(0).interpret();
+        } catch (Exception e) {
+            // System.out.println("ASTAndNode.interpret() ... ex:
+            // "+jjtGetChild(0)+" :: "+e);
+            if (e instanceof ASTMissingValueException) {
+            } else {
+                throw (RuntimeException) e;
+            }
+        }
 
-		// System.out.println("ASTAndNode.interpret() stack[top] booleanValue():
-		// "+((Boolean)stack[top]).booleanValue());
+        // System.out.println("ASTAndNode.interpret() stack[top] booleanValue():
+        // "+((Boolean)stack[top]).booleanValue());
 //		if (!((Boolean) stack[top]).booleanValue())
-		if (!((Boolean) stack.get(top)).booleanValue()) {
-			result = new Boolean(false);
+        if (!((Boolean) stack.get(top)).booleanValue()) {
+            result = new Boolean(false);
 //			stack[top] = result;
-			stack.set(top, result);
-			// System.out.println("ASTAndNode.interpret() result: "+result);
-			return;
-		}
+            stack.set(top, result);
+            // System.out.println("ASTAndNode.interpret() result: "+result);
+            return;
+        }
 
-		// jjtGetChild(1).interpret();
-		try {
-			// System.out.println("ASTAndNode.interpret() try jjtGetChild(1):
-			// "+jjtGetChild(1));
-			jjtGetChild(1).interpret();
-			// System.out.println("ASTAndNode.interpret() stack[top+1]
-			// booleanValue(): "+((Boolean)stack[top+1]).booleanValue());
-		} catch (Exception e) {
-			// System.out.println("ASTAndNode.interpret() ... ex:
-			// "+jjtGetChild(1)+" :: "+e);
-			if (e instanceof ASTMissingValueException) {
-			} else
-				throw (RuntimeException) e;
-		}
+        // jjtGetChild(1).interpret();
+        try {
+            // System.out.println("ASTAndNode.interpret() try jjtGetChild(1):
+            // "+jjtGetChild(1));
+            jjtGetChild(1).interpret();
+            // System.out.println("ASTAndNode.interpret() stack[top+1]
+            // booleanValue(): "+((Boolean)stack[top+1]).booleanValue());
+        } catch (Exception e) {
+            // System.out.println("ASTAndNode.interpret() ... ex:
+            // "+jjtGetChild(1)+" :: "+e);
+            if (e instanceof ASTMissingValueException) {
+            } else {
+                throw (RuntimeException) e;
+            }
+        }
 
-		// System.out.println("ASTAndNode.interpret() stack[top]: "+top+"
-		// "+stack[top]);
-		// System.out.println("ASTAndNode.interpret() stack[top-1]: "+(top-1)+"
-		// "+stack[top-1]);
-		// System.out.println("ASTAndNode.interpret() stack[top+1]: "+(top+1)+"
-		// "+stack[top+1]);
-
-		if (stack.get(top+1) instanceof Boolean)
-			result = new Boolean(((Boolean) stack.get(top)).booleanValue()
-					&& ((Boolean) stack.get(top+1)).booleanValue());
-		else if ((top > 0) && (stack.get(top-1) instanceof Boolean))
-			result = new Boolean(((Boolean) stack.get(top)).booleanValue()
-					&& ((Boolean) stack.get(top-1)).booleanValue());
-		else
-			result = new Boolean(false); // ((Boolean)stack[top]).booleanValue());
-
-		/*
+        // System.out.println("ASTAndNode.interpret() stack[top]: "+top+"
+        // "+stack[top]);
+        // System.out.println("ASTAndNode.interpret() stack[top-1]: "+(top-1)+"
+        // "+stack[top-1]);
+        // System.out.println("ASTAndNode.interpret() stack[top+1]: "+(top+1)+"
+        // "+stack[top+1]);
+        if (stack.get(top + 1) instanceof Boolean) {
+            result = new Boolean(((Boolean) stack.get(top)).booleanValue()
+                    && ((Boolean) stack.get(top + 1)).booleanValue());
+        } else if ((top > 0) && (stack.get(top - 1) instanceof Boolean)) {
+            result = new Boolean(((Boolean) stack.get(top)).booleanValue()
+                    && ((Boolean) stack.get(top - 1)).booleanValue());
+        } else {
+            result = new Boolean(false); // ((Boolean)stack[top]).booleanValue());
+        }
+        /*
 		 * result = new Boolean(((Boolean)stack[top]).booleanValue() &&
 		 * ((Boolean)stack[top - 1]).booleanValue()); //((Boolean)stack[top +
 		 * 1]).booleanValue());
-		 */
-		if (top > 0) {
+         */
+        if (top > 0) {
 //			stack[--top] = result;
-			stack.set(--top, result);
-		}
-		else {
+            stack.set(--top, result);
+        } else {
 //			stack[top] = result;
-			stack.set(top, result);
-		}
-		// System.out.println("stack[top] "+stack[top]);
-		// System.out.println("ASTAndNode.interpret() result: "+result);
-	}
+            stack.set(top, result);
+        }
+        // System.out.println("stack[top] "+stack[top]);
+        // System.out.println("ASTAndNode.interpret() result: "+result);
+    }
 
-	public String getString() {
-		Node left = jjtGetChild(0);
-		Node right = jjtGetChild(1);
-		return left.getString() + "&&" + right.getString();
-	}
+    public String getString() {
+        Node left = jjtGetChild(0);
+        Node right = jjtGetChild(1);
+        return left.getString() + "&&" + right.getString();
+    }
 
 }
 /*

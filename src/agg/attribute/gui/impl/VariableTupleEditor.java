@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
@@ -21,56 +22,54 @@ import agg.attribute.gui.AttrEditorManager;
 
 /**
  * Editor for a variable-tuple.
- * 
+ *
  * @version $Id: VariableTupleEditor.java,v 1.3 2010/09/20 14:27:59 olga Exp $
  * @author $Author: olga $
  */
 public class VariableTupleEditor extends TabMesTool_TupleEditor {
 
-	public VariableTupleEditor(AttrManager m, AttrEditorManager em) {
-		super(m, em);
-	}
+    public VariableTupleEditor(AttrManager m, AttrEditorManager em) {
+        super(m, em);
+    }
 
-	//
-	// Overriding...
+    //
+    // Overriding...
+    /**
+     * The heart of the matter. Columns are: [ IS_INPUT_PARAMETER, IS_OUTPUT_PARAMETER, HANDLER, TYPE, NAME, VALUE,
+     * CORRECTNESS ] Extensible: true. Titles: default. Editable: Only EXPR.
+     */
+    protected TupleTableModel createTableModel() {
+        int columns[] = {IS_INPUT_PARAMETER, IS_OUTPUT_PARAMETER, HANDLER,
+            TYPE, NAME, EXPR, CORRECTNESS};
+        TupleTableModel tm = new TupleTableModel(this);
+        tm.setColumnArray(columns);
+        tm.setExtensible(true);
+        return tm;
+    }
 
-	/**
-	 * The heart of the matter. Columns are: [ IS_INPUT_PARAMETER,
-	 * IS_OUTPUT_PARAMETER, HANDLER, TYPE, NAME, VALUE, CORRECTNESS ]
-	 * Extensible: true. Titles: default. Editable: Only EXPR.
-	 */
-	protected TupleTableModel createTableModel() {
-		int columns[] = { IS_INPUT_PARAMETER, IS_OUTPUT_PARAMETER, HANDLER,
-				TYPE, NAME, EXPR, CORRECTNESS };
-		TupleTableModel tm = new TupleTableModel(this);
-		tm.setColumnArray(columns);
-		tm.setExtensible(true);
-		return tm;
-	}
+    protected void createToolBar() {
+        JLabel label1 = new JLabel("Tuple:");
+        JLabel label2 = new JLabel("Member:");
 
-	protected void createToolBar() {
-		JLabel label1 = new JLabel("Tuple:");
-		JLabel label2 = new JLabel("Member:");
+        JToolBar toolBar1 = new JToolBar();
+        toolBar1.setFloatable(false);
+        toolBar1.add(getResetAction());
 
-		JToolBar toolBar1 = new JToolBar();
-		toolBar1.setFloatable(false);
-		toolBar1.add(getResetAction());
+        JToolBar toolBar2 = new JToolBar();
+        toolBar2.setFloatable(false);
+        toolBar2.add(getDeleteAction());
+        toolBar2.addSeparator();
+        toolBar2.add(getEvaluateAction());
 
-		JToolBar toolBar2 = new JToolBar();
-		toolBar2.setFloatable(false);
-		toolBar2.add(getDeleteAction());
-		toolBar2.addSeparator();
-		toolBar2.add(getEvaluateAction());
-
-		Box hBox = Box.createHorizontalBox();
-		hBox.add(label1);
-		hBox.add(toolBar1);
-		hBox.add(Box.createGlue());
-		hBox.add(label2);
-		hBox.add(toolBar2);
-		this.toolBarPanel = new JPanel(new BorderLayout());
-		this.toolBarPanel.add(hBox, BorderLayout.CENTER);
-	}
+        Box hBox = Box.createHorizontalBox();
+        hBox.add(label1);
+        hBox.add(toolBar1);
+        hBox.add(Box.createGlue());
+        hBox.add(label2);
+        hBox.add(toolBar2);
+        this.toolBarPanel = new JPanel(new BorderLayout());
+        this.toolBarPanel.add(hBox, BorderLayout.CENTER);
+    }
 }
 /*
  * $Log: VariableTupleEditor.java,v $

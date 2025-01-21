@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.parser.javaExpr;
 
 /* Do not edit this line. ParseError.java Version 0.5 */
@@ -15,16 +16,17 @@ package agg.attribute.parser.javaExpr;
  * @author $Author: olga $
  */
 public class ParseError extends Exception {
-	static final long serialVersionUID = 1015230336800481404L;
-	
-	public ParseError() {
+
+    static final long serialVersionUID = 1015230336800481404L;
+
+    public ParseError() {
         super();
     }
-	
-	public ParseError(String message) {
+
+    public ParseError(String message) {
         super(message);
     }
-	
+
 }
 /*
  * $Log: ParseError.java,v $

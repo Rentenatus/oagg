@@ -1,135 +1,132 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.parser;
 
 import java.util.EventObject;
 import java.util.Vector;
 
 /**
- * The parser option provides some settings for the parser. So the parser
- * algorithm can be chosen.
- * 
+ * The parser option provides some settings for the parser. So the parser algorithm can be chosen.
+ *
  * @version $Id: ParserOption.java,v 1.3 2010/09/23 08:25:00 olga Exp $
  * @author $Author: olga $
  */
 public class ParserOption {
 
-	/**
-	 * A simple backtracking.
-	 */
-	public static final int SIMPLEPARSER = 0;
+    /**
+     * A simple backtracking.
+     */
+    public static final int SIMPLEPARSER = 0;
 
-	/**
-	 * Parsing with critical pairs.
-	 */
-	public static final int EXCLUDEPARSER = 1;
+    /**
+     * Parsing with critical pairs.
+     */
+    public static final int EXCLUDEPARSER = 1;
 
-	/**
-	 * A simple algorithm with critical pair analysis.
-	 */
-	public static final int SIMPLEEXCLUDEPARSER = 2;
+    /**
+     * A simple algorithm with critical pair analysis.
+     */
+    public static final int SIMPLEEXCLUDEPARSER = 2;
 
-	private static final int DEFAULTPARSER = EXCLUDEPARSER;
+    private static final int DEFAULTPARSER = EXCLUDEPARSER;
 
-	private int selectedParser;
+    private int selectedParser;
 
-	private Vector<OptionEventListener> listener;
+    private Vector<OptionEventListener> listener;
 
-	private boolean layered;
+    private boolean layered;
 
-	/**
-	 * Creates new option with default settings.
-	 */
-	public ParserOption() {
-		this.selectedParser = DEFAULTPARSER;
-		this.layered = false;
-		this.listener = new Vector<OptionEventListener>(2);
-	}
+    /**
+     * Creates new option with default settings.
+     */
+    public ParserOption() {
+        this.selectedParser = DEFAULTPARSER;
+        this.layered = false;
+        this.listener = new Vector<OptionEventListener>(2);
+    }
 
-	/**
-	 * Sets the algorithm for the parser.
-	 * 
-	 * @param parser
-	 *            The algorithm.
-	 */
-	public void setSelectedParser(int parser) {
-		if (parser == EXCLUDEPARSER || parser == SIMPLEPARSER
-				|| parser == SIMPLEEXCLUDEPARSER) {
-			this.selectedParser = parser;
-		}
-	}
+    /**
+     * Sets the algorithm for the parser.
+     *
+     * @param parser The algorithm.
+     */
+    public void setSelectedParser(int parser) {
+        if (parser == EXCLUDEPARSER || parser == SIMPLEPARSER
+                || parser == SIMPLEEXCLUDEPARSER) {
+            this.selectedParser = parser;
+        }
+    }
 
-	/**
-	 * Returns the algorithm of the selected parser.
-	 * 
-	 * @return The algorithm.
-	 */
-	public int getSelectedParser() {
-		return this.selectedParser;
-	}
+    /**
+     * Returns the algorithm of the selected parser.
+     *
+     * @return The algorithm.
+     */
+    public int getSelectedParser() {
+        return this.selectedParser;
+    }
 
-	/**
-	 * Returns if layers are used.
-	 * 
-	 * @return true if layers are used.
-	 */
-	public boolean layerEnabled() {
-		return this.layered;
-	}
+    /**
+     * Returns if layers are used.
+     *
+     * @return true if layers are used.
+     */
+    public boolean layerEnabled() {
+        return this.layered;
+    }
 
-	/**
-	 * Enables if layers are used.
-	 * 
-	 * @param enable
-	 *            true if layers are used.
-	 */
-	public void enableLayer(boolean enable) {
-		if (this.layered != enable) {
-			this.layered = enable;
-			fireOptionEvent(new EventObject(this));
-		}
-	}
+    /**
+     * Enables if layers are used.
+     *
+     * @param enable true if layers are used.
+     */
+    public void enableLayer(boolean enable) {
+        if (this.layered != enable) {
+            this.layered = enable;
+            fireOptionEvent(new EventObject(this));
+        }
+    }
 
-	/**
-	 * Adds an option listener.
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void addOptionListener(OptionEventListener l) {
-		if (!this.listener.contains(l))
-			this.listener.addElement(l);
-	}
+    /**
+     * Adds an option listener.
+     *
+     * @param l The listener.
+     */
+    public void addOptionListener(OptionEventListener l) {
+        if (!this.listener.contains(l)) {
+            this.listener.addElement(l);
+        }
+    }
 
-	/**
-	 * Removes an option listener
-	 * 
-	 * @param l
-	 *            The listener.
-	 */
-	public void removeOptionListener(OptionEventListener l) {
-		if (this.listener.contains(l))
-			this.listener.removeElement(l);
-	}
+    /**
+     * Removes an option listener
+     *
+     * @param l The listener.
+     */
+    public void removeOptionListener(OptionEventListener l) {
+        if (this.listener.contains(l)) {
+            this.listener.removeElement(l);
+        }
+    }
 
-	/**
-	 * Sends a event to all its listeners.
-	 * 
-	 * @param event
-	 *            The event which will be sent
-	 */
-	private synchronized void fireOptionEvent(EventObject event) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			this.listener.elementAt(i).optionEventOccurred(event);
-		}
-	}
+    /**
+     * Sends a event to all its listeners.
+     *
+     * @param event The event which will be sent
+     */
+    private synchronized void fireOptionEvent(EventObject event) {
+        for (int i = 0; i < this.listener.size(); i++) {
+            this.listener.elementAt(i).optionEventOccurred(event);
+        }
+    }
 
 }
 /*

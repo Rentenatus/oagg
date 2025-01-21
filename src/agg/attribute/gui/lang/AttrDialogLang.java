@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.gui.lang;
 
 /**
@@ -14,44 +15,45 @@ package agg.attribute.gui.lang;
  * @author $Author: olga $
  */
 public interface AttrDialogLang {
-	static final String ATTR_INSTANCE_EDITOR_TITLE = "Attribute Editor";
 
-	static final String ATTR_HELP_TITLE = "Help";
+    static final String ATTR_INSTANCE_EDITOR_TITLE = "Attribute Editor";
 
-	static final String ATTR_WARNING_TITLE = "Warning!";
+    static final String ATTR_HELP_TITLE = "Help";
 
-	static final String ACCEPT_BUTTON_LABEL = "Accept";
+    static final String ATTR_WARNING_TITLE = "Warning!";
 
-	static final String CANCEL_BUTTON_LABEL = "Cancel";
+    static final String ACCEPT_BUTTON_LABEL = "Accept";
 
-	static final String CHANGE_VALUE_BUTTON_LABEL = "Change Value";
+    static final String CANCEL_BUTTON_LABEL = "Cancel";
 
-	static final String CLEAR_BUTTON_LABEL = "Clear";
+    static final String CHANGE_VALUE_BUTTON_LABEL = "Change Value";
 
-	static final String CLOSE_BUTTON_LABEL = "Close";
+    static final String CLEAR_BUTTON_LABEL = "Clear";
 
-	static final String HANDLER_CONFIG_BUTTON_LABEL = "Config";
+    static final String CLOSE_BUTTON_LABEL = "Close";
 
-	static final String HELP_BUTTON_LABEL = "Help";
+    static final String HANDLER_CONFIG_BUTTON_LABEL = "Config";
 
-	static final String NEW_ENTRY_BUTTON_LABEL = "New Entry";
+    static final String HELP_BUTTON_LABEL = "Help";
 
-	static final String STACK_BUTTON_LABEL = "See Stack-Trace";
+    static final String NEW_ENTRY_BUTTON_LABEL = "New Entry";
 
-	static final String EDIT_TYPE_LABEL = "Type:";
+    static final String STACK_BUTTON_LABEL = "See Stack-Trace";
 
-	static final String EDIT_NAME_LABEL = "Name:";
+    static final String EDIT_TYPE_LABEL = "Type:";
 
-	static final String EDIT_VALUE_LABEL = "Value:";
+    static final String EDIT_NAME_LABEL = "Name:";
 
-	static final String EDIT_INSTANCE_HELP = "<New Entry>\t Add a new attribute entry;\n"
-			+ "<Change Value>\t Edit selected entry value;\n"
-			+ "\"Double-click a line\"\t Edit selected entry value;\n"
-			+ "<Config>   \t Configure selected Handler;\n"
-			+ "<Accept>   \t Accept input as the new entry;\n"
-			+ "<Cancel>   \t Stop editing, discard input;\n"
-			+ "<Help>     \t This dialog;\n"
-			+ "<Close>    \t Close this Attribute Editor window;\n";
+    static final String EDIT_VALUE_LABEL = "Value:";
+
+    static final String EDIT_INSTANCE_HELP = "<New Entry>\t Add a new attribute entry;\n"
+            + "<Change Value>\t Edit selected entry value;\n"
+            + "\"Double-click a line\"\t Edit selected entry value;\n"
+            + "<Config>   \t Configure selected Handler;\n"
+            + "<Accept>   \t Accept input as the new entry;\n"
+            + "<Cancel>   \t Stop editing, discard input;\n"
+            + "<Help>     \t This dialog;\n"
+            + "<Close>    \t Close this Attribute Editor window;\n";
 }
 /*
  * $Log: AttrDialogLang.java,v $

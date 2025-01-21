@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.util.Hashtable;
@@ -21,449 +22,429 @@ import agg.attribute.handler.HandlerType;
 import agg.attribute.handler.SymbolTable;
 
 /**
- * This is a view onto an underlying ContextCore class object; By this
- * delegation, views with different access rights can share the same context; At
- * this stage, just two access modes are implemented: "LeftRuleSide" and
- * "RightRuleSide"; "RightRuleSide" access does not allow adding or removing of
- * variable declarations;
- * 
+ * This is a view onto an underlying ContextCore class object; By this delegation, views with different access rights
+ * can share the same context; At this stage, just two access modes are implemented: "LeftRuleSide" and "RightRuleSide";
+ * "RightRuleSide" access does not allow adding or removing of variable declarations;
+ *
  * @see ContextCore
  * @author $Author: olga $
  * @version $Id: ContextView.java,v 1.14 2010/08/23 07:30:49 olga Exp $
  */
 public class ContextView extends ManagedObject implements AttrContext,
-		SymbolTable {
+        SymbolTable {
 
-	static final long serialVersionUID = 6106321395444330038L;
+    static final long serialVersionUID = 6106321395444330038L;
 
+    /**
+     * Handle to the actual context core.
+     */
+    protected ContextCore core;
 
-	/** Handle to the actual context core. */
-	protected ContextCore core;
+    /**
+     * Describes the access mode.
+     */
+    protected boolean canDeclareVar = true;
 
-	/** Describes the access mode. */
-	protected boolean canDeclareVar = true;
+    /**
+     * Describes the access mode.
+     */
+    protected boolean canUseComplexExpr = true;
 
-	/** Describes the access mode. */
-	protected boolean canUseComplexExpr = true;
+    /**
+     * Describes the access mode.
+     */
+    protected boolean canHaveEmptyValues = true;
 
-	/** Describes the access mode. */
-	protected boolean canHaveEmptyValues = true;
+    /**
+     * Describes the access mode.
+     */
+    protected boolean canUseInitialExpr = true;
 
-	/** Describes the access mode. */
-	protected boolean canUseInitialExpr = true;
+    /**
+     * Creates a new root context and returns a full access view for it;
+     *
+     * @param manager The calling Attribute Manager
+     * @param mapStyle The kind of mapping that is allowed within this context; it is one of:
+     * <dl>
+     * <dt> -
+     * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule mapping
+     * <dt> -
+     * <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation: matching
+     * </dl>
+     */
+    public ContextView(AttrTupleManager manager, int mapStyle) {
+        this(manager, mapStyle, null);
+    }
 
-	
-	/**
-	 * Creates a new root context and returns a full access view for it;
-	 * 
-	 * @param manager
-	 *            The calling Attribute Manager
-	 * @param mapStyle
-	 *            The kind of mapping that is allowed within this context; it is
-	 *            one of:
-	 *            <dl>
-	 *            <dt> -
-	 *            <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule
-	 *            mapping
-	 *            <dt> -
-	 *            <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation:
-	 *            matching
-	 *            </dl>
-	 */
-	public ContextView(AttrTupleManager manager, int mapStyle) {
-		this(manager, mapStyle, null);
-	}
+    /**
+     * Creates a new child context and returns a full access view for it;
+     *
+     * @param manager The calling Attribute Manager
+     * @param mapStyle The kind of mapping that is allowed within this context; it is one of:
+     * <dl>
+     * <dt> -
+     * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule mapping
+     * <dt> -
+     * <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation: matching
+     * </dl>
+     * @param parent The view whose context is to be the parent for this view's context
+     */
+    public ContextView(AttrTupleManager manager, int mapStyle,
+            AttrContext parent) {
+        super(manager);
+        ContextCore parentCore = null;
+        if (parent != null) {
+            parentCore = ((ContextView) parent).core;
+        }
 
-	/**
-	 * Creates a new child context and returns a full access view for it;
-	 * 
-	 * @param manager
-	 *            The calling Attribute Manager
-	 * @param mapStyle
-	 *            The kind of mapping that is allowed within this context; it is
-	 *            one of:
-	 *            <dl>
-	 *            <dt> -
-	 *            <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule
-	 *            mapping
-	 *            <dt> -
-	 *            <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation:
-	 *            matching
-	 *            </dl>
-	 * @param parent
-	 *            The view whose context is to be the parent for this view's
-	 *            context
-	 */
-	public ContextView(AttrTupleManager manager, int mapStyle,
-			AttrContext parent) {
-		super(manager);
-		ContextCore parentCore = null;
-		if (parent != null) {
-			parentCore = ((ContextView) parent).core;
-		}
-		
-		this.core = new ContextCore(manager, mapStyle, parentCore);
-	}
+        this.core = new ContextCore(manager, mapStyle, parentCore);
+    }
 
+    /**
+     * Returns a new view which shares another view's context and has the specified access mode;
+     *
+     * @param manager The calling Attribute Manager
+     * @param source The view to share the context with
+     * @param leftRuleSide Convenience parameter, sets access control appropriately.
+     */
+    public ContextView(AttrTupleManager manager, AttrContext source,
+            boolean leftRuleSide) {
+        this(manager, ((ContextView) source).core);
+        if (leftRuleSide) {
+            this.canDeclareVar = true;
+            this.canUseComplexExpr = false;
+            this.canUseInitialExpr = true;
+        } else {
+            this.canDeclareVar = true;
+            this.canUseComplexExpr = true;
+            this.canUseInitialExpr = true;
+        }
+    }
 
-	
-	/**
-	 * Returns a new view which shares another view's context and has the
-	 * specified access mode;
-	 * 
-	 * @param manager
-	 *            The calling Attribute Manager
-	 * @param source
-	 *            The view to share the context with
-	 * @param leftRuleSide
-	 *            Convenience parameter, sets access control appropriately.
-	 */
-	public ContextView(AttrTupleManager manager, AttrContext source,
-			boolean leftRuleSide) {
-		this(manager, ((ContextView) source).core);
-		if (leftRuleSide) {
-			this.canDeclareVar = true;
-			this.canUseComplexExpr = false;
-			this.canUseInitialExpr = true;
-		} else {
-			this.canDeclareVar = true;
-			this.canUseComplexExpr = true;
-			this.canUseInitialExpr = true;
-		}
-	}
+    /**
+     * Returns a new view for the specified context.
+     *
+     * @param manager The calling Attribute Manager
+     * @param source The context to view at.
+     */
+    public ContextView(AttrTupleManager manager, ContextCore source) {
+        super(manager);
+        this.core = source;
+    }
 
-	/**
-	 * Returns a new view for the specified context.
-	 * 
-	 * @param manager
-	 *            The calling Attribute Manager
-	 * @param source
-	 *            The context to view at.
-	 */
-	public ContextView(AttrTupleManager manager, ContextCore source) {
-		super(manager);
-		this.core = source;
-	}
+    public void dispose() {
+        if (this.core != null) {
+            this.core.dispose();
+        }
+        this.core = null;
+    }
 
+    protected final void finalize() {
+    }
 
-	public void dispose() {
-		if (this.core != null)
-			this.core.dispose();
-		this.core = null;
-	}
+    /**
+     * Creates a new VarTuple instance and rewrites the already existing VarTuple instance.
+     */
+    public void resetVariableTuple() {
+        this.core.resetVariableTuple();
+    }
 
-	protected final void finalize() {
-	}
+    /**
+     * Creates a new CondTuple instance and rewrites the already existing CondTuple instance.
+     */
+    public void resetConditionTuple() {
+        this.core.resetConditionTuple();
+    }
 
-	/** 
-	 * Creates a new VarTuple instance and rewrites the already existing VarTuple instance.
-	 */
-	public void resetVariableTuple() {
-		this.core.resetVariableTuple();
-	}
-	
-	/**
-	 * Creates a new CondTuple instance and rewrites the already existing CondTuple instance.
-	 */
-	public void resetConditionTuple() {
-		this.core.resetConditionTuple();
-	}
-	
-	/*
+    /*
 	 * public boolean isCorrectInputEnforced(){ return
 	 * getManager().isCorrectInputEnforced(); }
-	 */
+     */
+    public String getErrorMsg() {
+        return this.core.getErrorMsg();
+    }
 
-	public String getErrorMsg() {
-		return this.core.getErrorMsg();
-	}
+    public void clearErrorMsg() {
+        this.core.clearErrorMsg();
+    }
 
-	public void clearErrorMsg() {
-		this.core.clearErrorMsg();
-	}
+    /**
+     * A variable context mins that mainly variables will be used as values of the graph objects of a graph, so if a
+     * rule / match attribute context has an attribute condition, it cannot be evaluated and will get TRUE as result.
+     * This feature is mainly used for critical pair analysis, where the attribute conditions will be handled
+     * especially. Do not use this setting for common transformation.
+     */
+    public void setVariableContext(boolean b) {
+        this.core.setVariableContext(b);
+    }
 
-	/**
-	 * A variable context mins that mainly variables will be used as values of
-	 * the graph objects of a graph, so if a rule / match attribute context has
-	 * an attribute condition, it cannot be evaluated and will get TRUE as
-	 * result. This feature is mainly used for critical pair analysis, where the
-	 * attribute conditions will be handled especially. Do not use this setting
-	 * for common transformation.
-	 */
-	public void setVariableContext(boolean b) {
-		this.core.setVariableContext(b);
-	}
+    /**
+     * @see agg.attribute.impl#setVariableContext(boolean b)
+     */
+    public boolean isVariableContext() {
+        return this.core.isVariableContext();
+    }
 
-	/**
-	 * @see agg.attribute.impl#setVariableContext(boolean b)
-	 */
-	public boolean isVariableContext() {
-		return this.core.isVariableContext();
-	}
-	
-	public boolean isIgnoreConstContext() {
-		return this.core.isIgnoreOfConstContext();
-	}
+    public boolean isIgnoreConstContext() {
+        return this.core.isIgnoreOfConstContext();
+    }
 
-	public void setIgnoreOfConstContext(boolean b) {
-		this.core.setIgnoreOfConstContext(b);
-	}
+    public void setIgnoreOfConstContext(boolean b) {
+        this.core.setIgnoreOfConstContext(b);
+    }
 
-	
-	// ////////////////////////////////////
-	// Begin of AttrContext implementation:
+    // ////////////////////////////////////
+    // Begin of AttrContext implementation:
+    public AttrConditionTuple getConditions() {
+        return this.core.getConditions();
+    }
 
-	public AttrConditionTuple getConditions() {
-		return this.core.getConditions();
-	}
+    public AttrVariableTuple getVariables() {
+        return this.core.getVariables();
+    }
 
-	public AttrVariableTuple getVariables() {
-		return this.core.getVariables();
-	}
+    /**
+     * Returns Vector of mappings (TupleMapping) to a target object.
+     */
+    public Vector<TupleMapping> getMappingsToTarget(ValueTuple target) {
+        return this.core.getMappingsToTarget(target);
+    }
 
-	/**
-	 * Returns Vector of mappings (TupleMapping) to a target object.
-	 */
-	public Vector<TupleMapping> getMappingsToTarget(ValueTuple target) {
-		return this.core.getMappingsToTarget(target);
-	}
-	
-	/** Query if we're on the right rule side. */
-	public boolean doesAllowComplexExpressions() {
-		return (this.canUseComplexExpr);
-	}
+    /**
+     * Query if we're on the right rule side.
+     */
+    public boolean doesAllowComplexExpressions() {
+        return (this.canUseComplexExpr);
+    }
 
-	/** Query if we're on the left or right rule side. */
-	public boolean doesAllowInitialExpressions() {
-		return (this.canUseInitialExpr);
-	}
+    /**
+     * Query if we're on the left or right rule side.
+     */
+    public boolean doesAllowInitialExpressions() {
+        return (this.canUseInitialExpr);
+    }
 
-	/** Query if we're on the left rule side. */
-	public boolean doesAllowNewVariables() {
-		return (this.canDeclareVar);
-	}
+    /**
+     * Query if we're on the left rule side.
+     */
+    public boolean doesAllowNewVariables() {
+        return (this.canDeclareVar);
+    }
 
-	/** Query if we're on the left rule side. */
-	public boolean doesAllowEmptyValues() {
-		return (this.canHaveEmptyValues);
-	}
+    /**
+     * Query if we're on the left rule side.
+     */
+    public boolean doesAllowEmptyValues() {
+        return (this.canHaveEmptyValues);
+    }
 
-	public void setAllowVarDeclarations(boolean isAllowed) {
-		this.canDeclareVar = isAllowed;
-	}
+    public void setAllowVarDeclarations(boolean isAllowed) {
+        this.canDeclareVar = isAllowed;
+    }
 
-	public void setAllowComplexExpr(boolean isAllowed) {
-		this.canUseComplexExpr = isAllowed;
-	}
+    public void setAllowComplexExpr(boolean isAllowed) {
+        this.canUseComplexExpr = isAllowed;
+    }
 
-	public void setAllowInitialExpr(boolean isAllowed) {
-		this.canUseInitialExpr = isAllowed;
-	}
+    public void setAllowInitialExpr(boolean isAllowed) {
+        this.canUseInitialExpr = isAllowed;
+    }
 
-	public void setAllowEmptyValues(boolean isAllowed) {
-		this.canHaveEmptyValues = isAllowed;
-	}
+    public void setAllowEmptyValues(boolean isAllowed) {
+        this.canHaveEmptyValues = isAllowed;
+    }
 
-	/**
-	 * Maybe a distributed graph wants to set an attribute context
-	 * 
-	 * @param source
-	 *            the object to take the information from
-	 */
-	public void setAttrContext(AttrContext source) {
-		ContextView cv = (ContextView) source;
-		this.core = cv.core;
-		this.canDeclareVar = cv.canDeclareVar;
-		this.canUseComplexExpr = cv.canUseComplexExpr;
-		this.canHaveEmptyValues = cv.canHaveEmptyValues;
-		this.canUseInitialExpr = cv.canUseInitialExpr;
-	}
+    /**
+     * Maybe a distributed graph wants to set an attribute context
+     *
+     * @param source the object to take the information from
+     */
+    public void setAttrContext(AttrContext source) {
+        ContextView cv = (ContextView) source;
+        this.core = cv.core;
+        this.canDeclareVar = cv.canDeclareVar;
+        this.canUseComplexExpr = cv.canUseComplexExpr;
+        this.canHaveEmptyValues = cv.canHaveEmptyValues;
+        this.canUseInitialExpr = cv.canUseInitialExpr;
+    }
 
-	public void copyAttrContext(AttrContext context) {
-		ContextView cv = (ContextView) context;
-		this.core.makeCopyOf(((ContextView) context).core);
-		
-		this.canDeclareVar = cv.canDeclareVar;
-		this.canUseComplexExpr = cv.canUseComplexExpr;
-		this.canHaveEmptyValues = cv.canHaveEmptyValues;
-		this.canUseInitialExpr = cv.canUseInitialExpr;
-	}
-	
-	/**
-	 * Switching on of the freeze mode; mapping removals are deferred until
-	 * 'defreeze()' is called.
-	 */
-	public void freeze() {
-		this.core.freeze();
-	}
+    public void copyAttrContext(AttrContext context) {
+        ContextView cv = (ContextView) context;
+        this.core.makeCopyOf(((ContextView) context).core);
 
-	/** Perform mapping removals which were delayed during the freeze mode. */
-	public void defreeze() {
-		this.core.defreeze();
-	}
+        this.canDeclareVar = cv.canDeclareVar;
+        this.canUseComplexExpr = cv.canUseComplexExpr;
+        this.canHaveEmptyValues = cv.canHaveEmptyValues;
+        this.canUseInitialExpr = cv.canUseInitialExpr;
+    }
 
-	// End of AttrContext interface implementation.
-	// ////////////////////////////////////////////////
+    /**
+     * Switching on of the freeze mode; mapping removals are deferred until 'defreeze()' is called.
+     */
+    public void freeze() {
+        this.core.freeze();
+    }
 
-	// ////////////////////////////////////
-	// Begin of SymbolTable implementation:
+    /**
+     * Perform mapping removals which were delayed during the freeze mode.
+     */
+    public void defreeze() {
+        this.core.defreeze();
+    }
 
-	/**
-	 * Implementing the SymbolTable interface for type retrieval.
-	 * 
-	 * @see SymbolTable
-	 */
-	public HandlerType getType(String name) {
-		if (!isDeclared(name))
-			return null;
-		return this.core.getDecl(name).getType();
-	}
+    // End of AttrContext interface implementation.
+    // ////////////////////////////////////////////////
+    // ////////////////////////////////////
+    // Begin of SymbolTable implementation:
+    /**
+     * Implementing the SymbolTable interface for type retrieval.
+     *
+     * @see SymbolTable
+     */
+    public HandlerType getType(String name) {
+        if (!isDeclared(name)) {
+            return null;
+        }
+        return this.core.getDecl(name).getType();
+    }
 
-	/**
-	 * Implementing the SymbolTable interface for value retrieval.
-	 * 
-	 * @see SymbolTable
-	 */
-	public HandlerExpr getExpr(String name) {
-		if (!isDeclared(name))
-			return null;
-		return this.core.getValue(name).getExpr();
-	}
+    /**
+     * Implementing the SymbolTable interface for value retrieval.
+     *
+     * @see SymbolTable
+     */
+    public HandlerExpr getExpr(String name) {
+        if (!isDeclared(name)) {
+            return null;
+        }
+        return this.core.getValue(name).getExpr();
+    }
 
-	// End of SymbolTable interface implementation.
-	// ////////////////////////////////////////////////
+    // End of SymbolTable interface implementation.
+    // ////////////////////////////////////////////////
+    // /////////////////////////////////////////////
+    // Wrapping methods
+    /**
+     * Getting the mapping style:<br>
+     * AttrMapping.PLAIN_MAP, AttrMapping.MATCH_MAP AttrMapping.GRAPH_MAP, AttrMapping.OBJECT_FLOW_MAP
+     *
+     */
+    public int getAllowedMapping() {
+        return this.core.getAllowedMapping();
+    }
 
-	// /////////////////////////////////////////////
-	// Wrapping methods
+    public void changeAllowedMapping(int otherMapStyle) {
+        this.core.mapStyle = otherMapStyle;
+    }
 
-	/** Getting the mapping style:<br>
-	 *  AttrMapping.PLAIN_MAP, AttrMapping.MATCH_MAP
-	 *  AttrMapping.GRAPH_MAP, AttrMapping.OBJECT_FLOW_MAP
-	 *  
-	 */
-	public int getAllowedMapping() {
-		return this.core.getAllowedMapping();
-	}
+    /**
+     * Adding another Mapped pair to the actual context.
+     */
+    public void addMapping(TupleMapping mapping) {
+        this.core.addMapping(mapping);
+    }
 
-	public void changeAllowedMapping(int otherMapStyle) {
-		this.core.mapStyle = otherMapStyle;
-	}
-	
-	/** Adding another Mapped pair to the actual context. */
-	public void addMapping(TupleMapping mapping) {
-		this.core.addMapping(mapping);
-	}
+    /**
+     * returns all Mappings
+     */
+    public Hashtable<ValueTuple, Vector<TupleMapping>> getMapping() {
+        return this.core.getMapping();
+    }
 
-	/** returns all Mappings */
-	public Hashtable<ValueTuple, Vector<TupleMapping>> getMapping() {
-		return this.core.getMapping();
-	}
+    /**
+     * Removing a Mapped pair from the actual context.
+     */
+    public boolean removeMapping(TupleMapping mapping) {
+        return this.core.removeMapping(mapping);
+    }
 
-	/** Removing a Mapped pair from the actual context. */
-	public boolean removeMapping(TupleMapping mapping) {
-		return this.core.removeMapping(mapping);
-	}
+    public void removeAllMappings() {
+        this.core.removeAllMappings();
+    }
 
-	public void removeAllMappings() {
-		this.core.removeAllMappings();
-	}
+    public int getMapStyle() {
+        return this.core.mapStyle;
+    }
 
-	public int getMapStyle() {
-		return this.core.mapStyle;
-	}
-	
-	/**
-	 * Tests if a variable has already been declared in this context or in any
-	 * of its parents;
-	 * 
-	 * @param name
-	 *            The name of the variable
-	 * @return 'true' if "name" is declared, 'false' otherwise
-	 */
-	public boolean isDeclared(String name) {
-		return this.core.isDeclared(name);
-	}
+    /**
+     * Tests if a variable has already been declared in this context or in any of its parents;
+     *
+     * @param name The name of the variable
+     * @return 'true' if "name" is declared, 'false' otherwise
+     */
+    public boolean isDeclared(String name) {
+        return this.core.isDeclared(name);
+    }
 
-	/**
-	 * Adding a new declaration; "name" is a key and must not have been
-	 * previously used for a declaration in this context or any of its parents
-	 * before;
-	 * 
-	 * @param name
-	 *            The name of the variable to declare
-	 * @param type
-	 *            The type of the variable
-	 * @return 'true' on success, 'false' otherwise
-	 * @exception ContextRestrictedException
-	 *                If this view is restricted
-	 */
-	public boolean addDecl(AttrHandler handler, String type, String name)
-			throws ContextRestrictedException {
-		if (!this.canDeclareVar)
-			throw new ContextRestrictedException();
-		boolean result = this.core.addDecl(handler, type, name);
-		/*
+    /**
+     * Adding a new declaration; "name" is a key and must not have been previously used for a declaration in this
+     * context or any of its parents before;
+     *
+     * @param name The name of the variable to declare
+     * @param type The type of the variable
+     * @return 'true' on success, 'false' otherwise
+     * @exception ContextRestrictedException If this view is restricted
+     */
+    public boolean addDecl(AttrHandler handler, String type, String name)
+            throws ContextRestrictedException {
+        if (!this.canDeclareVar) {
+            throw new ContextRestrictedException();
+        }
+        boolean result = this.core.addDecl(handler, type, name);
+        /*
 		 * if(result) fireAttrChanged( new TupleViewEvent(getVariables(),
 		 * AttrEvent.MEMBER_VALUE_AS_VARIABLE,
 		 * getVariables().getIndexForMember(getVariables().getVarMemberAt(name))) );
-		 */
-		return result;
-	}
+         */
+        return result;
+    }
 
-	/**
-	 * Removing a declaration from this context; Parent contextes are NOT
-	 * considered; Does nothing if the variable "name" is not declared;
-	 * 
-	 * @param name
-	 *            The name of the variable to remove
-	 * @exception ContextRestrictedException
-	 *                If this view is restricted
-	 */
-	public void removeDecl(String name) throws ContextRestrictedException {
-		if (!this.canDeclareVar)
-			throw new ContextRestrictedException();
-		this.core.removeDecl(name);
-	}
+    /**
+     * Removing a declaration from this context; Parent contextes are NOT considered; Does nothing if the variable
+     * "name" is not declared;
+     *
+     * @param name The name of the variable to remove
+     * @exception ContextRestrictedException If this view is restricted
+     */
+    public void removeDecl(String name) throws ContextRestrictedException {
+        if (!this.canDeclareVar) {
+            throw new ContextRestrictedException();
+        }
+        this.core.removeDecl(name);
+    }
 
-	/**
-	 * Checking if a variable can be set to a given value without violating the
-	 * application conditions. Note: if the conditions are violated already,
-	 * this method returns 'true' for any 'value', unless 'value' contradicts a
-	 * previously set non-null value for the variable.
-	 */
-	public boolean canSetValue(String name, ValueMember value) {
-		return this.core.canSetValue(name, value);
-	}
+    /**
+     * Checking if a variable can be set to a given value without violating the application conditions. Note: if the
+     * conditions are violated already, this method returns 'true' for any 'value', unless 'value' contradicts a
+     * previously set non-null value for the variable.
+     */
+    public boolean canSetValue(String name, ValueMember value) {
+        return this.core.canSetValue(name, value);
+    }
 
-	/**
-	 * Appending a value to a variable; This will be the current value until a
-	 * new value will be appended or this one removed
-	 * 
-	 * @param name
-	 *            The name of the variable
-	 * @param value
-	 *            The value to append to the variable
-	 * @exception NoSuchVariableException
-	 *                If no variable 'name' is declared
-	 */
-	public void setValue(String name, ValueMember value)
-			throws NoSuchVariableException {
-		this.core.setValue(name, value);
-	}
+    /**
+     * Appending a value to a variable; This will be the current value until a new value will be appended or this one
+     * removed
+     *
+     * @param name The name of the variable
+     * @param value The value to append to the variable
+     * @exception NoSuchVariableException If no variable 'name' is declared
+     */
+    public void setValue(String name, ValueMember value)
+            throws NoSuchVariableException {
+        this.core.setValue(name, value);
+    }
 
-	/**
-	 * Removing the value of the specified variable name from this context;
-	 * 
-	 * @param name
-	 *            The name of the variable
-	 * @exception NoSuchVariableException
-	 *                If no variable 'name' is declared
-	 * @exception WrongContextException
-	 *                If the value was not assigned in this context
-	 */
-	public void removeValue(String name) throws NoSuchVariableException {
-		this.core.removeValue(name);
-	}
+    /**
+     * Removing the value of the specified variable name from this context;
+     *
+     * @param name The name of the variable
+     * @exception NoSuchVariableException If no variable 'name' is declared
+     * @exception WrongContextException If the value was not assigned in this context
+     */
+    public void removeValue(String name) throws NoSuchVariableException {
+        this.core.removeValue(name);
+    }
 
 }
 /*

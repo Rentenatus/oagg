@@ -1,12 +1,13 @@
-/*******************************************************************************
+/**
+ **
+ * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- *******************************************************************************/
+ ******************************************************************************
+ */
 package agg.attribute.impl;
 
 import java.io.Serializable;
@@ -19,467 +20,461 @@ import agg.attribute.handler.HandlerExpr;
 import agg.util.Disposable;
 
 /**
- * Contains declarations and values of context variables; Note that this class
- * does NOT implement the AttrContext interface; The actual implementation for
- * it is the wrapper class ContextView, which allows to restrict access to a
- * context while sharing actual state (variables, conditions, mappings). An
- * example are the different access rights of the left and the right rule side
- * in graph transformation.
- * 
+ * Contains declarations and values of context variables; Note that this class does NOT implement the AttrContext
+ * interface; The actual implementation for it is the wrapper class ContextView, which allows to restrict access to a
+ * context while sharing actual state (variables, conditions, mappings). An example are the different access rights of
+ * the left and the right rule side in graph transformation.
+ *
  * @see ContextView
  * @author $Author: olga $
  * @version $Id: ContextCore.java,v 1.23 2010/08/23 07:30:49 olga Exp $
  */
 public class ContextCore extends ManagedObject implements Serializable,
-		Disposable {
+        Disposable {
 
-	static final long serialVersionUID = 4267479295340570839L;
+    static final long serialVersionUID = 4267479295340570839L;
 
+    /**
+     * Kind of mapping in this context, PLAIN_MAP or MATCH_MAP.
+     */
+    protected int mapStyle;
 
-	/** Kind of mapping in this context, PLAIN_MAP or MATCH_MAP. */
-	protected int mapStyle;
+    /**
+     * Parent context of this context, chain of inheritance.
+     */
+    protected ContextCore parent = null;
 
-	/** Parent context of this context, chain of inheritance. */
-	protected ContextCore parent = null;
+    /**
+     * Table of mappings. (Hashtable of Vectors of TupleMapping, key is the target object)
+     */
+    protected Hashtable<ValueTuple, Vector<TupleMapping>> mappings = new Hashtable<ValueTuple, Vector<TupleMapping>>();
 
-	/**
-	 * Table of mappings. (Hashtable of Vectors of TupleMapping, key is the
-	 * target object)
-	 */
-	protected Hashtable<ValueTuple, Vector<TupleMapping>> mappings = new Hashtable<ValueTuple, Vector<TupleMapping>>();
+    /**
+     * Conditions of this context.
+     */
+    protected CondTuple conditions;
 
-	/** Conditions of this context. */
-	protected CondTuple conditions;
+    /**
+     * Variables and parameters of this context.
+     */
+    protected VarTuple variables;
 
-	/** Variables and parameters of this context. */
-	protected VarTuple variables;
+    /**
+     * Flag; when set, mapping removals are deferred.
+     */
+    transient protected boolean isFrozen = false;
 
-	/** Flag; when set, mapping removals are deferred. */
-	transient protected boolean isFrozen = false;
+    /**
+     * Container with deferred mapping removals.
+     */
+    transient protected Vector<TupleMapping> delayedMappingRemovals = null;
 
-	/** Container with deferred mapping removals. */
-	transient protected Vector<TupleMapping> delayedMappingRemovals = null;
+    transient private String errorMsg;
 
-	transient private String errorMsg;
-
-	transient private boolean variableContext = false;
-	transient private boolean ignoreConstContext = false;
+    transient private boolean variableContext = false;
+    transient private boolean ignoreConstContext = false;
 
 //	/** Zaehlt die Objekte */
-	// transient private static int COUNTER = 0;
-	
-	/**
-	 * Creating a new root context.
-	 * 
-	 * @param mapStyle
-	 *            The kind of mapping that is done within this context; it is
-	 *            one of:
-	 *            <dl>
-	 *            <dt> -
-	 *            <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule
-	 *            mapping
-	 *            <dt> -
-	 *            <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation:
-	 *            matching
-	 *            </dl>
-	 */
-	public ContextCore(AttrTupleManager manager, int mapStyle) {
-		this(manager, mapStyle, null);
-	}
+    // transient private static int COUNTER = 0;
+    /**
+     * Creating a new root context.
+     *
+     * @param mapStyle The kind of mapping that is done within this context; it is one of:
+     * <dl>
+     * <dt> -
+     * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule mapping
+     * <dt> -
+     * <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation: matching
+     * </dl>
+     */
+    public ContextCore(AttrTupleManager manager, int mapStyle) {
+        this(manager, mapStyle, null);
+    }
 
-	/**
-	 * Creating a new child context.
-	 * 
-	 * @param mapStyle
-	 *            The kind of mapping that is allowed within this context; it is
-	 *            one of:
-	 *            <dl>
-	 *            <dt> -
-	 *            <dd> 'AttrMapping.PLAIN_MAP': In Graph Transformation: rule
-	 *            mapping
-	 *            <dt> -
-	 *            <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation:
-	 *            match mapping
-	 *            </dl>
-	 * @param parent
-	 *            The parent of the new context
-	 */
-	public ContextCore(AttrTupleManager manager, int mapStyle,
-			ContextCore parent) {
-		super(manager);
-		this.mapStyle = mapStyle;
-		this.parent = parent;
-		this.errorMsg = "";
-		VarTuple parentVars = null;
-		CondTuple parentCond = null;
-		if (parent != null) {
-			this.variableContext = parent.isVariableContext();
-			parentVars = parent.getVariables();
-			parentCond = parent.getConditions();
-		}
-				
-		this.variables = new VarTuple(manager, new ContextView(manager, this),
-				parentVars);
-		this.conditions = new CondTuple(manager, new ContextView(manager, this),
-				parentCond);
-		// COUNTER++;
-	}
-	
-	/** 
-	 * Creates a new VarTuple instance and rewrites the already existing VarTuple instance.
-	 */
-	public void resetVariableTuple() {
-		VarTuple parentVars = this.parent != null? this.parent.getVariables(): null;
-		this.variables = new VarTuple(this.manager, new ContextView(this.manager, this), parentVars);
-	}
-	
-	/**
-	 * Creates a new CondTuple instance and rewrites the already existing CondTuple instance.
-	 */
-	public void resetConditionTuple() {
-		CondTuple parentCond = this.parent != null? this.parent.getConditions(): null;
-		this.conditions = new CondTuple(this.manager, new ContextView(this.manager, this), parentCond);
-	}
+    /**
+     * Creating a new child context.
+     *
+     * @param mapStyle The kind of mapping that is allowed within this context; it is one of:
+     * <dl>
+     * <dt> -
+     * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transformation: rule mapping
+     * <dt> -
+     * <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation: match mapping
+     * </dl>
+     * @param parent The parent of the new context
+     */
+    public ContextCore(AttrTupleManager manager, int mapStyle,
+            ContextCore parent) {
+        super(manager);
+        this.mapStyle = mapStyle;
+        this.parent = parent;
+        this.errorMsg = "";
+        VarTuple parentVars = null;
+        CondTuple parentCond = null;
+        if (parent != null) {
+            this.variableContext = parent.isVariableContext();
+            parentVars = parent.getVariables();
+            parentCond = parent.getConditions();
+        }
 
-	public void makeCopyOf(ContextCore context) {
-		this.mapStyle = context.mapStyle;
-		this.errorMsg = "";
-		this.variableContext = context.isVariableContext();
-				
-		this.variables = new VarTuple(this.manager, new ContextView(this.manager, this), null);
-		this.variables.makeCopyOf(context.getVariables());
-		
-		this.conditions = new CondTuple(this.manager, new ContextView(this.manager, this), null);
-		this.conditions.makeCopyOf(context.getConditions());
-	}
-	
-	public void dispose() {
-		if (this.delayedMappingRemovals != null)
-			this.delayedMappingRemovals.removeAllElements();
-		this.delayedMappingRemovals = null;
-		this.manager = null;
-		this.parent = null;
-		if (this.conditions != null) {
-			this.conditions.dispose();
-			this.conditions = null;
-		}
-		if (this.variables != null) {
-			this.variables.dispose();
-			this.variables = null;
-		}
-	}
+        this.variables = new VarTuple(manager, new ContextView(manager, this),
+                parentVars);
+        this.conditions = new CondTuple(manager, new ContextView(manager, this),
+                parentCond);
+        // COUNTER++;
+    }
 
-	protected final void finalize() {
-		if (this.delayedMappingRemovals != null || this.manager != null || this.parent != null
-				|| this.conditions != null || this.variables != null)
-			dispose();
-		// COUNTER--;
-	}
+    /**
+     * Creates a new VarTuple instance and rewrites the already existing VarTuple instance.
+     */
+    public void resetVariableTuple() {
+        VarTuple parentVars = this.parent != null ? this.parent.getVariables() : null;
+        this.variables = new VarTuple(this.manager, new ContextView(this.manager, this), parentVars);
+    }
 
-	public String getErrorMsg() {
-		return this.errorMsg;
-	}
+    /**
+     * Creates a new CondTuple instance and rewrites the already existing CondTuple instance.
+     */
+    public void resetConditionTuple() {
+        CondTuple parentCond = this.parent != null ? this.parent.getConditions() : null;
+        this.conditions = new CondTuple(this.manager, new ContextView(this.manager, this), parentCond);
+    }
 
-	public void clearErrorMsg() {
-		this.errorMsg = "";
-	}
+    public void makeCopyOf(ContextCore context) {
+        this.mapStyle = context.mapStyle;
+        this.errorMsg = "";
+        this.variableContext = context.isVariableContext();
 
-	public CondTuple getConditions() {
-		return this.conditions;
-	}
+        this.variables = new VarTuple(this.manager, new ContextView(this.manager, this), null);
+        this.variables.makeCopyOf(context.getVariables());
 
-	public VarTuple getVariables() {
-		return this.variables;
-	}
+        this.conditions = new CondTuple(this.manager, new ContextView(this.manager, this), null);
+        this.conditions.makeCopyOf(context.getConditions());
+    }
 
-	/** Checking if this context is "frozen". */
-	public boolean isFrozen() {
-		return this.isFrozen;
-	}
+    public void dispose() {
+        if (this.delayedMappingRemovals != null) {
+            this.delayedMappingRemovals.removeAllElements();
+        }
+        this.delayedMappingRemovals = null;
+        this.manager = null;
+        this.parent = null;
+        if (this.conditions != null) {
+            this.conditions.dispose();
+            this.conditions = null;
+        }
+        if (this.variables != null) {
+            this.variables.dispose();
+            this.variables = null;
+        }
+    }
 
-	/**
-	 * Switching on of the freeze mode; mapping removals are deferred until
-	 * 'defreeze()' is called.
-	 */
-	public void freeze() {
-		if (this.delayedMappingRemovals == null) {
-			this.delayedMappingRemovals = new Vector<TupleMapping>(30);
-		}
-		this.isFrozen = true;
-	}
+    protected final void finalize() {
+        if (this.delayedMappingRemovals != null || this.manager != null || this.parent != null
+                || this.conditions != null || this.variables != null) {
+            dispose();
+        }
+        // COUNTER--;
+    }
 
-	/** Perform mapping removals which were delayed during the freeze mode. */
-	public void defreeze() {
-		this.isFrozen = false;
-		performDelayedRemove();
-	}
+    public String getErrorMsg() {
+        return this.errorMsg;
+    }
 
-	/**
-	 * A variable context mins that mainly variables will be used as values of
-	 * the graph objects of a graph, so if a rule / match attribute context has
-	 * an attribute condition, it cannot be evaluated and will get TRUE as
-	 * result. This feature is mainly used for critical pair analysis, where the
-	 * attribute conditions will be handled especially. Do not use this setting
-	 * for common transformation.
-	 */
-	public void setVariableContext(boolean b) {
-		this.variableContext = b;
-		if (this.parent != null) {
-			this.parent.setVariableContext(b);
-		}
-	}
+    public void clearErrorMsg() {
+        this.errorMsg = "";
+    }
 
-	/**
-	 * @see agg.attribute.impl#setVariableContext(boolean b)
-	 */
-	public boolean isVariableContext() {
-		return this.variableContext;
-	}
+    public CondTuple getConditions() {
+        return this.conditions;
+    }
 
-	public void setIgnoreOfConstContext(boolean b) {
-		this.ignoreConstContext = b;
-		if (this.parent != null) {
-			this.parent.setVariableContext(b);
-		}
-	}
-	
-	public boolean isIgnoreOfConstContext() {
-		return this.ignoreConstContext;
-	}
-	
-	/** Getting the mapping style (match or plain). */
-	public int getAllowedMapping() {
-		return this.mapStyle;
-	}
+    public VarTuple getVariables() {
+        return this.variables;
+    }
 
-	/** Adding a new mapping to this context. */
-	public void addMapping(TupleMapping mapping) {
-		// Thread.dumpStack();
-		ValueTuple target = mapping.getTarget();
-		Vector<TupleMapping> mappingsToTarget = this.mappings.get(target);
-		if (mappingsToTarget == null) {
-			mappingsToTarget = new Vector<TupleMapping>();
-			this.mappings.put(target, mappingsToTarget);
-		}
-		mappingsToTarget.addElement(mapping);
-	}
+    /**
+     * Checking if this context is "frozen".
+     */
+    public boolean isFrozen() {
+        return this.isFrozen;
+    }
 
-	/** returns all mappings */
-	protected Hashtable<ValueTuple, Vector<TupleMapping>> getMapping() {
-		return this.mappings;
-	}
+    /**
+     * Switching on of the freeze mode; mapping removals are deferred until 'defreeze()' is called.
+     */
+    public void freeze() {
+        if (this.delayedMappingRemovals == null) {
+            this.delayedMappingRemovals = new Vector<TupleMapping>(30);
+        }
+        this.isFrozen = true;
+    }
 
-	/**
-	 * Returns Vector of mappings (TupleMapping) to a target object.
-	 */
-	public Vector<TupleMapping> getMappingsToTarget(ValueTuple target) {
-		Vector<TupleMapping> mappingsToValue = this.mappings.get(target);
-		return mappingsToValue;
-	}
-	
-	/**
-	 * Removing a mapping.
-	 * 
-	 * @return 'true' if the mapping was contained in this context at all,
-	 *         'false' otherwise.
-	 */
-	public boolean removeMapping(TupleMapping mapping) {
-		ValueTuple target = mapping.getTarget();
-		Vector<TupleMapping> mappingsToTarget = this.mappings.get(target);
-		if (mappingsToTarget == null) {
-			return false;
-		}
-		if (this.isFrozen()) {
-			if (!mappingsToTarget.contains(mapping)) {
-				return false;
-			} 
-			this.delayedMappingRemovals.addElement(mapping);
-			
-		} else {
-			mapping.removeNow();
-		}
-		return mappingsToTarget.removeElement(mapping);
-	}
+    /**
+     * Perform mapping removals which were delayed during the freeze mode.
+     */
+    public void defreeze() {
+        this.isFrozen = false;
+        performDelayedRemove();
+    }
 
-	public void removeAllMappings() {
-		final Enumeration<ValueTuple> keys = this.mappings.keys();
-		while (keys.hasMoreElements()) {
-			ValueTuple key = keys.nextElement();
-			Vector<TupleMapping> mappingsToTarget = this.mappings.get(key);
-			for (int i=0; i<mappingsToTarget.size(); i++) {
-				TupleMapping mapping = mappingsToTarget.get(i);
-				mapping.removeNow();
-			}
-			mappingsToTarget.clear();
-		}
-		this.mappings.clear();
-	}
+    /**
+     * A variable context mins that mainly variables will be used as values of the graph objects of a graph, so if a
+     * rule / match attribute context has an attribute condition, it cannot be evaluated and will get TRUE as result.
+     * This feature is mainly used for critical pair analysis, where the attribute conditions will be handled
+     * especially. Do not use this setting for common transformation.
+     */
+    public void setVariableContext(boolean b) {
+        this.variableContext = b;
+        if (this.parent != null) {
+            this.parent.setVariableContext(b);
+        }
+    }
 
-	/** Removing the mappings in the 'delayedMappingRemovals' container. */
-	private void performDelayedRemove() {
-		if (this.delayedMappingRemovals != null) {
-			int size = this.delayedMappingRemovals.size();
-			for (int i = 0; i < size; i++) {
-				this.delayedMappingRemovals.elementAt(i).removeNow();
-			}
-			this.delayedMappingRemovals.removeAllElements();
-		}
-	}
+    /**
+     * @see agg.attribute.impl#setVariableContext(boolean b)
+     */
+    public boolean isVariableContext() {
+        return this.variableContext;
+    }
 
-	/**
-	 * Tests if a variable has already been declared in this context or in any
-	 * of its parents;
-	 * 
-	 * @param name
-	 *            The name of the variable
-	 * @return 'true' if "name" is declared, 'false' otherwise
-	 */
-	public boolean isDeclared(String name) {
-		return (getVariables() != null && getVariables().isDeclared(name));
-	}
+    public void setIgnoreOfConstContext(boolean b) {
+        this.ignoreConstContext = b;
+        if (this.parent != null) {
+            this.parent.setVariableContext(b);
+        }
+    }
 
-	/**
-	 * Adding a new declaration; "name" is a key and must not have been
-	 * previously used for a declaration in this context or any of its parents.
-	 * 
-	 * @param name
-	 *            The name of the variable to declare
-	 * @param type
-	 *            The type of the variable
-	 * @return 'true' on success, 'false' otherwise
-	 */
-	public boolean addDecl(AttrHandler handler, String type, String name) {
-		if (this.variables != null) {
-			try {
-				this.variables.declare(handler, type, name);
-					return true;
-			} catch (AttrImplException ex) {
-				return false;
-			}
-		}
-		return false;
-	}
+    public boolean isIgnoreOfConstContext() {
+        return this.ignoreConstContext;
+    }
 
-	/**
-	 * Removing a declaration from this context; Parent contextes are NOT
-	 * considered; Does nothing if the variable "name" is not declared;
-	 * 
-	 * @param name
-	 *            The name of the variable to remove
-	 */
-	public void removeDecl(String name) {
-		getVariables().deleteLeafDeclaration(name);
-	}
+    /**
+     * Getting the mapping style (match or plain).
+     */
+    public int getAllowedMapping() {
+        return this.mapStyle;
+    }
 
-	/**
-	 * Getting the declaration (type) of a variable;
-	 * 
-	 * @param name
-	 *            The name of the variable
-	 * @return Type of the specified variable
-	 * @exception NoSuchVariableException
-	 *                If no variable 'name' is declared
-	 */
-	public DeclMember getDecl(String name) throws NoSuchVariableException {
-		DeclMember t = getVariables().getTupleType().getDeclMemberAt(name);
-		return t;
-	}
+    /**
+     * Adding a new mapping to this context.
+     */
+    public void addMapping(TupleMapping mapping) {
+        // Thread.dumpStack();
+        ValueTuple target = mapping.getTarget();
+        Vector<TupleMapping> mappingsToTarget = this.mappings.get(target);
+        if (mappingsToTarget == null) {
+            mappingsToTarget = new Vector<TupleMapping>();
+            this.mappings.put(target, mappingsToTarget);
+        }
+        mappingsToTarget.addElement(mapping);
+    }
 
-	/**
-	 * Checking if a variable can be set to a given value without violating the
-	 * application conditions. Note: if the conditions are violated already,
-	 * this method returns 'true' for any 'value', unless 'value' contradicts a
-	 * previously set non-null value for the variable.
-	 */
-	public boolean canSetValue(String name, ValueMember value) {
-		ValueMember prevValue;
-		boolean doesBreakCondition = false;
-		this.errorMsg = "";
-		prevValue = getVariables().getVarMemberAt(name);
-		if (prevValue == null) {
-			if (this.variableContext)
-				return true;
-			else {
-				this.errorMsg = "No such variable: " + name;
-				return false;
-			}
-		}
-		if (prevValue.getExpr() == null) {
-			// CONDITION CHECK WIRD HIER NICHT MEHR GEMACHT,
-			// SONDERN IN Completion_CSP
-			/*
+    /**
+     * returns all mappings
+     */
+    protected Hashtable<ValueTuple, Vector<TupleMapping>> getMapping() {
+        return this.mappings;
+    }
+
+    /**
+     * Returns Vector of mappings (TupleMapping) to a target object.
+     */
+    public Vector<TupleMapping> getMappingsToTarget(ValueTuple target) {
+        Vector<TupleMapping> mappingsToValue = this.mappings.get(target);
+        return mappingsToValue;
+    }
+
+    /**
+     * Removing a mapping.
+     *
+     * @return 'true' if the mapping was contained in this context at all, 'false' otherwise.
+     */
+    public boolean removeMapping(TupleMapping mapping) {
+        ValueTuple target = mapping.getTarget();
+        Vector<TupleMapping> mappingsToTarget = this.mappings.get(target);
+        if (mappingsToTarget == null) {
+            return false;
+        }
+        if (this.isFrozen()) {
+            if (!mappingsToTarget.contains(mapping)) {
+                return false;
+            }
+            this.delayedMappingRemovals.addElement(mapping);
+
+        } else {
+            mapping.removeNow();
+        }
+        return mappingsToTarget.removeElement(mapping);
+    }
+
+    public void removeAllMappings() {
+        final Enumeration<ValueTuple> keys = this.mappings.keys();
+        while (keys.hasMoreElements()) {
+            ValueTuple key = keys.nextElement();
+            Vector<TupleMapping> mappingsToTarget = this.mappings.get(key);
+            for (int i = 0; i < mappingsToTarget.size(); i++) {
+                TupleMapping mapping = mappingsToTarget.get(i);
+                mapping.removeNow();
+            }
+            mappingsToTarget.clear();
+        }
+        this.mappings.clear();
+    }
+
+    /**
+     * Removing the mappings in the 'delayedMappingRemovals' container.
+     */
+    private void performDelayedRemove() {
+        if (this.delayedMappingRemovals != null) {
+            int size = this.delayedMappingRemovals.size();
+            for (int i = 0; i < size; i++) {
+                this.delayedMappingRemovals.elementAt(i).removeNow();
+            }
+            this.delayedMappingRemovals.removeAllElements();
+        }
+    }
+
+    /**
+     * Tests if a variable has already been declared in this context or in any of its parents;
+     *
+     * @param name The name of the variable
+     * @return 'true' if "name" is declared, 'false' otherwise
+     */
+    public boolean isDeclared(String name) {
+        return (getVariables() != null && getVariables().isDeclared(name));
+    }
+
+    /**
+     * Adding a new declaration; "name" is a key and must not have been previously used for a declaration in this
+     * context or any of its parents.
+     *
+     * @param name The name of the variable to declare
+     * @param type The type of the variable
+     * @return 'true' on success, 'false' otherwise
+     */
+    public boolean addDecl(AttrHandler handler, String type, String name) {
+        if (this.variables != null) {
+            try {
+                this.variables.declare(handler, type, name);
+                return true;
+            } catch (AttrImplException ex) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Removing a declaration from this context; Parent contextes are NOT considered; Does nothing if the variable
+     * "name" is not declared;
+     *
+     * @param name The name of the variable to remove
+     */
+    public void removeDecl(String name) {
+        getVariables().deleteLeafDeclaration(name);
+    }
+
+    /**
+     * Getting the declaration (type) of a variable;
+     *
+     * @param name The name of the variable
+     * @return Type of the specified variable
+     * @exception NoSuchVariableException If no variable 'name' is declared
+     */
+    public DeclMember getDecl(String name) throws NoSuchVariableException {
+        DeclMember t = getVariables().getTupleType().getDeclMemberAt(name);
+        return t;
+    }
+
+    /**
+     * Checking if a variable can be set to a given value without violating the application conditions. Note: if the
+     * conditions are violated already, this method returns 'true' for any 'value', unless 'value' contradicts a
+     * previously set non-null value for the variable.
+     */
+    public boolean canSetValue(String name, ValueMember value) {
+        ValueMember prevValue;
+        boolean doesBreakCondition = false;
+        this.errorMsg = "";
+        prevValue = getVariables().getVarMemberAt(name);
+        if (prevValue == null) {
+            if (this.variableContext) {
+                return true;
+            } else {
+                this.errorMsg = "No such variable: " + name;
+                return false;
+            }
+        }
+        if (prevValue.getExpr() == null) {
+            // CONDITION CHECK WIRD HIER NICHT MEHR GEMACHT,
+            // SONDERN IN Completion_CSP
+            /*
 			 * if(!getConditions().isDefinite(name) ||
 			 * getConditions().isTrue(name)){ setValue( name, value );
 			 * if(getConditions().isDefinite(name) &&
 			 * !getConditions().isTrue(name)){ this.errorMsg = "Attribute condition [
 			 * "+getConditions().getFailedConditionAsString()+ " ] failed.";
 			 * doesBreakCondition = true; } removeValue( name ); }
-			 */
-			return !doesBreakCondition;
-		} else if (prevValue.equals(value)) {
-			return true;
-		} else {
-			this.errorMsg = "Cannot set attribute value.";
-			return false;
-		}
-	}
+             */
+            return !doesBreakCondition;
+        } else if (prevValue.equals(value)) {
+            return true;
+        } else {
+            this.errorMsg = "Cannot set attribute value.";
+            return false;
+        }
+    }
 
-	/**
-	 * Setting a variable value.
-	 * 
-	 * @param name
-	 *            Name of the variable to assign to
-	 * @param value
-	 *            Value to assign
-	 * @exception NoSuchVariableException
-	 *                If the name is not declared in this context.
-	 */
-	public void setValue(String name, ValueMember value)
-			throws NoSuchVariableException {
-		
-		VarMember vm = getVariables().getVarMemberAt(name);
-		if (vm == null)
-			throw new NoSuchVariableException(name);
-		
-		
-		HandlerExpr he = value.getExpr();
-		vm.unifyWith(he);
-		if (value.getExprAsText().equals("null")) {
-			vm.setExprAsText("null");
-		}
-		
-	}
+    /**
+     * Setting a variable value.
+     *
+     * @param name Name of the variable to assign to
+     * @param value Value to assign
+     * @exception NoSuchVariableException If the name is not declared in this context.
+     */
+    public void setValue(String name, ValueMember value)
+            throws NoSuchVariableException {
 
-	/**
-	 * Removing a variable
-	 * 
-	 * @param name
-	 *            Name of the variable to remove
-	 * @exception NoSuchVariableException
-	 *                If the name is not declared in this context.
-	 */
-	public void removeValue(String name) throws NoSuchVariableException {
-		if (isDeclared(name))
-			getVariables().getVarMemberAt(name).undoUnification();
-		else
+        VarMember vm = getVariables().getVarMemberAt(name);
+        if (vm == null) {
+            throw new NoSuchVariableException(name);
+        }
+
+        HandlerExpr he = value.getExpr();
+        vm.unifyWith(he);
+        if (value.getExprAsText().equals("null")) {
+            vm.setExprAsText("null");
+        }
+
+    }
+
+    /**
+     * Removing a variable
+     *
+     * @param name Name of the variable to remove
+     * @exception NoSuchVariableException If the name is not declared in this context.
+     */
+    public void removeValue(String name) throws NoSuchVariableException {
+        if (isDeclared(name)) {
+            getVariables().getVarMemberAt(name).undoUnification();
+        } else
 			; // throw new NoSuchVariableException( name );
-	}
+    }
 
-	/**
-	 * Getting the value of a variable.
-	 * 
-	 * @param name
-	 *            Name of the variable to get the value from
-	 * @exception NoSuchVariableException
-	 *                If the name is not declared in this context.
-	 */
-	public ValueMember getValue(String name) {
-		ValueMember value;
-		value = getVariables().getVarMemberAt(name);
-		if (value == null)
-			throw new NoSuchVariableException(name);
-		return value;
-	}
+    /**
+     * Getting the value of a variable.
+     *
+     * @param name Name of the variable to get the value from
+     * @exception NoSuchVariableException If the name is not declared in this context.
+     */
+    public ValueMember getValue(String name) {
+        ValueMember value;
+        value = getVariables().getVarMemberAt(name);
+        if (value == null) {
+            throw new NoSuchVariableException(name);
+        }
+        return value;
+    }
 
 }
 /*
