@@ -9,7 +9,7 @@ as a general purpose graph transformation engine in high level JAVA applications
 
 The work on AGG started in the beginning of 1997. The system is developed and managed by Olga Runge (https://www.user.tu-berlin.de/o.runge/AGG/WWW/agg.html) at Technische Universität Berlin (https://www.tu.berlin/).
 
-The Mirror oAGG is managed by Janusch Rentenatus, providing code review since 2021 and Java upgrades.
+The Mirror Open AGG is managed by Janusch Rentenatus, providing code review since 2021 and Java upgrades.
 
 ---
 
