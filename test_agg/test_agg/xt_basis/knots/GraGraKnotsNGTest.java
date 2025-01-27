@@ -7,12 +7,15 @@
  */
 package test_agg.xt_basis.knots;
 
+import java.util.Map;
+import java.util.TreeMap;
 import test_agg.xt_basis.tictactoe.*;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import test_agg.rulesystem.AggRuleSystem;
+import test_agg.rulesystem.param.ParameterInteger;
 
 /**
  *
@@ -20,15 +23,21 @@ import test_agg.rulesystem.AggRuleSystem;
  */
 public class GraGraKnotsNGTest {
 
+    public final static String START_GRAPH = "startGraph";
+
     public GraGraKnotsNGTest() {
     }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        System.out.println("===============================================");
+        System.out.println("## Start GraGraKnotsNGTest.");
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        System.out.println("## End GraGraKnotsNGTest.");
+        System.out.println("===============================================");
     }
 
     @Test
@@ -38,6 +47,33 @@ public class GraGraKnotsNGTest {
         if (!okay) {
             fail("Grama not loaded.");
         }
+        okay = ars.useGraph(START_GRAPH);
+        if (!okay) {
+            fail("Start graph not found.");
+        }
+        okay = ars.execute("prodRope");
+        if (!okay) {
+            fail("Can naot set rope.");
+        }
+
+        okay = ars.execute("prodBand");
+        if (!okay) {
+            fail("Can naot set band.");
+        }
+
+        okay = ars.execute("thinkReidermeister1p");
+        if (!okay) {
+            fail("thinkReidermeister1p failed.");
+        }
+        okay = ars.execute("thinkReidermeister2m");
+        if (okay) {
+            fail("Unexpected thinkReidermeister2m.");
+        }
+        okay = ars.execute("thinkReidermeister2p");
+        if (!okay) {
+            fail("thinkReidermeister2p failed.");
+        }
+
     }
 
 }

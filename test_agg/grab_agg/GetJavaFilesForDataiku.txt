@@ -1,0 +1,54 @@
+/**
+ * <copyright>
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ * </copyright>
+ */
+package grab_agg;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.io.FileUtils;
+
+/**
+ *
+* @author Janusch Rentenatus
+ */
+public class GetJavaFilesForDataiku {
+
+    public static void main(String[] args) {
+
+        String directoryPath = "D:\\git_oagg\\src\\agg";
+        List<File> javaFiles = new ArrayList<>();
+        collectJavaFiles(new File(directoryPath), javaFiles);
+        for (File file : javaFiles) {
+            String p = file.getAbsolutePath();
+            int indexOf = p.indexOf("\\agg\\");
+            p = p.substring(0, indexOf) + "\\flach\\"
+                    + p.substring(indexOf + "agg".length() + 2).replace('\\', '.');
+            try {
+                FileUtils.copyFile(file, new File(p));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void collectJavaFiles(final File directory, final List<File> javaFiles) {
+        if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        collectJavaFiles(file, javaFiles);
+                    } else if (file.getName().endsWith(".java")) {
+                        javaFiles.add(file);
+                    }
+                }
+            }
+        }
+    }
+}

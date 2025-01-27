@@ -12,7 +12,6 @@ import agg.attribute.AttrMember;
 import agg.attribute.AttrVariableTuple;
 import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.VarMember;
-import agg.xt_basis.Arc;
 import agg.xt_basis.CompletionStrategySelector;
 import agg.xt_basis.DefaultGraTraImpl;
 import agg.xt_basis.GraGra;
@@ -21,14 +20,9 @@ import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Match;
 import agg.xt_basis.MorphCompletionStrategy;
-import agg.xt_basis.Morphism;
 import agg.xt_basis.Rule;
-import agg.xt_basis.StaticStep;
-import agg.xt_basis.TypeException;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,8 +33,6 @@ import test_agg.rulesystem.param.Parameter;
  * @author Janusch Rentenatus
  */
 public class AggRuleSystem {
-
-    public final static String START_GRAPH = "startGraph";
 
     private GraGra graphGrammar;
     private String semanticsName;
@@ -63,11 +55,32 @@ public class AggRuleSystem {
         return true;
     }
 
+    public boolean useGraph(String graphName) {
+        Graph g = graphGrammar.getGraph(graphName);
+        if (g == null) {
+            return false;
+        }
+        dataGraph = g.graphcopy();
+        return dataGraph != null;
+    }
+
+    public String getSemanticsName() {
+        return semanticsName;
+    }
+
+    public Graph getDataGraph() {
+        return dataGraph;
+    }
+
     public Rule getRule(String ruleName) {
         return graphGrammar.getRule(ruleName);
     }
 
-    public boolean execute(Rule rule, Parameter<?>[] values) {
+    public boolean execute(String ruleName, Parameter<?>... values) {
+        return execute(getRule(ruleName), values);
+    }
+
+    public boolean execute(Rule rule, Parameter<?>... values) {
         GraTra graTra = new DefaultGraTraImpl();
         graTra.setGraGra(graphGrammar);
         graTra.setHostGraph(dataGraph);
@@ -91,67 +104,11 @@ public class AggRuleSystem {
         return graTra.apply(rule);
     }
 
-    public List<String> scriptExecute(Rule rule) {
-        Match match = graphGrammar.createMatchIndependent(rule, dataGraph);
-        List<String> out = null;
-        try {
-            match.setCompletionStrategy((MorphCompletionStrategy) CompletionStrategySelector.getDefault().clone(), true);
-            //match.getDomainObjects().addAll(aMatch.getLinkerRegelgraph());
-            //match.getDomainObjects().addAll(aMatch.getDataMatchgraph());
-
-            //System.out.println("------------------------");
-            if (match.isValid()) {
-                try {
-
-                    Morphism co = StaticStep.execute(match);
-                    out = calculateOutput(co);
-                    co.dispose();
-                } catch (TypeException ex) {
-                    Logger.getGlobal().log(Level.SEVERE, "Rule " + rule.getName() + " : match failed.", ex);
-                }
-            } else {
-                Logger.getGlobal().log(Level.SEVERE, "Rule {0} : match is not valid.", rule.getName());
-            }
-        } finally {
-            graphGrammar.destroyMatch(match);
-        }
-        return out;
-    }
-
-    protected List<String> calculateOutput(Morphism co) {
-        List<String> ret = new ArrayList<String>();
-        Enumeration<GraphObject> codomainObjects = co.getCodomain();
-        // Zuerst schreiben wir alles auf:
-        while (codomainObjects.hasMoreElements()) {
-            GraphObject graphObject = codomainObjects.nextElement();
-            AttrInstance attr = graphObject.getAttribute();
-            if (attr != null) {
-                AttrMember memParam = attr.getMemberAt("param");
-                if (graphObject.isArc() && memParam != null && memParam instanceof ValueMember && "msg".equals(graphObject.getType().getName())) {
-                    String param1 = String.valueOf(((ValueMember) memParam).getExprAsObject());
-                    Arc a = (Arc) graphObject;
-                    GraphObject aTarget = a.getTarget();
-                    AttrInstance attrTarget = aTarget.getAttribute();
-                    int number = attrTarget.getNumberOfEntries();
-                    for (int i = 0; i < number; i++) {
-                        AttrMember memN = attrTarget.getMemberAt(i);
-                        if (memN != null && memN instanceof ValueMember) {
-                            ValueMember memVal = (ValueMember) memN;
-                            Object value1 = memVal.getExprAsObject();
-                            ret.add(param1 + "." + memN.getName() + "=" + value1);
-                        }
-                    }
-                }
-            }
-        }
-        return ret;
-    }
-
-    public void reduce(String ruleName, HashMap<String, Object> returnMapOrNull) {
+    public void reduce(String ruleName, Map<String, Object> returnMapOrNull) {
         reduce(getRule(ruleName), returnMapOrNull);
     }
 
-    public void reduce(Rule rule, HashMap<String, Object> returnMapOrNull) {
+    public void reduce(Rule rule, Map<String, Object> returnMapOrNull) {
         Match match = graphGrammar.createMatchIndependent(rule, dataGraph);
         try {
             int matchIndex = 0;
@@ -169,7 +126,7 @@ public class AggRuleSystem {
         }
     }
 
-    protected void reduce(Vector<GraphObject> codomainObjects, String matchNameIndex, HashMap<String, Object> returnMapOrNull) {
+    protected void reduce(Vector<GraphObject> codomainObjects, String matchNameIndex, Map<String, Object> returnMapOrNull) {
         for (GraphObject graphObject : codomainObjects) {
             AttrInstance attr = graphObject.getAttribute();
             if (attr != null) {
@@ -187,4 +144,5 @@ public class AggRuleSystem {
             }
         }
     }
+
 }
