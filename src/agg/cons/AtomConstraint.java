@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.cons;
 
@@ -41,6 +42,8 @@ import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Type;
+import java.util.List;
+import org.w3c.dom.Element;
 
 public class AtomConstraint extends OrdinaryMorphism
         implements Evaluable, XMLObject {
@@ -262,7 +265,7 @@ public class AtomConstraint extends OrdinaryMorphism
         this.evaluable = true;
 
         VarTuple vars = (VarTuple) m.getAttrContext().getVariables();
-        Vector<String> varnames = g.getVariableNamesOfAttributes();
+        List<String> varnames = g.getVariableNamesOfAttributes();
         CondTuple conds = (CondTuple) m.getAttrContext().getConditions();
 
         for (int i = 0; i < conds.getSize() && this.evaluable; i++) {
@@ -426,8 +429,7 @@ public class AtomConstraint extends OrdinaryMorphism
                 if (t != null) {
                     t.adaptAttrContextValues(matchP.getAttrContext());
 
-                    Vector<String> varNames = t.getImage()
-                            .getVariableNamesOfAttributes();
+                    List<String> varNames = t.getImage().getVariableNamesOfAttributes();
                     if ((varNames.size() != 0)) {
                         ((ContextView) t.getAttrContext())
                                 .setVariableContext(true);
@@ -546,9 +548,9 @@ public class AtomConstraint extends OrdinaryMorphism
     }
 
     private void fillFailedObjects(OrdinaryMorphism matchP) {
-        Enumeration<GraphObject> codom = matchP.getCodomain();
-        while (codom.hasMoreElements()) {
-            this.failedObjs.add(codom.nextElement());
+        Iterator<GraphObject> codom = matchP.getCodomain();
+        while (codom.hasNext()) {
+            this.failedObjs.add(codom.next());
         }
     }
 
@@ -666,9 +668,9 @@ public class AtomConstraint extends OrdinaryMorphism
         Enumeration<AtomConstraint> concls = this.getConclusions();
         while (concls.hasMoreElements()) {
             OrdinaryMorphism morph = concls.nextElement();
-            Enumeration<GraphObject> e = morph.getDomain();
-            while (e.hasMoreElements()) {
-                GraphObject obj = e.nextElement();
+            Iterator<GraphObject> e = morph.getDomain();
+            while (e.hasNext()) {
+                GraphObject obj = e.next();
                 if (obj.getAttribute() == null) {
                     continue;
                 }
@@ -759,7 +761,6 @@ public class AtomConstraint extends OrdinaryMorphism
      * Trims the capacity of used vectors to be the vector's current size.
      */
     public void trimToSize() {
-        super.trimToSize();
         for (int i = 0; i < this.conclusions.size(); i++) {
             this.conclusions.get(i).trimToSize();
         }
@@ -809,9 +810,9 @@ public class AtomConstraint extends OrdinaryMorphism
                 // clear this.conclusions because one empty conclusion is created by default!
                 this.conclusions.clear();
 
-                Enumeration<?> en = h.getEnumeration("", null, true, "Conclusion");
-                while (en.hasMoreElements()) {
-                    h.peekElement(en.nextElement());
+                Iterator<Element> en = h.getEnumeration("", null, true, "Conclusion");
+                while (en.hasNext()) {
+                    h.peekElement(en.next());
 
                     Graph target = BaseFactory.theFactory().createGraph(getSource().getTypeSet());
                     AtomConstraint concl = createNextConclusion(target);

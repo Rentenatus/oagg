@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.xt_basis;
 
@@ -37,6 +35,7 @@ import agg.cons.Formula;
 import agg.util.Pair;
 import agg.util.Triple;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import java.util.ArrayList;
 
 /**
  * @author olga
@@ -59,7 +58,7 @@ public final class MatchHelper {
         final Iterator<Node> en = cond.getTarget().getNodesSet().iterator();
         while (en.hasNext()) {
             Node go = en.next();
-            if (!cond.getInverseImage(go).hasMoreElements()) {
+            if (!cond.hasInverseImage(go)) {
                 HashSet<GraphObject> v = match.getTarget().getTypeObjectsMap().get(go.convertToKey());
                 if (v == null || v.isEmpty()) {
                     return true;
@@ -69,7 +68,7 @@ public final class MatchHelper {
         final Iterator<Arc> en1 = cond.getTarget().getArcsSet().iterator();
         while (en1.hasNext()) {
             Arc go = en1.next();
-            if (!cond.getInverseImage(go).hasMoreElements()) {
+            if (!cond.hasInverseImage(go)) {
                 if (go.isArc()) {
                     String keystr = go.convertToKey();
                     HashSet<GraphObject> v = match.getTarget().getTypeObjectsMap().get(keystr);
@@ -139,16 +138,16 @@ public final class MatchHelper {
                         } else { // match is non-injective	
                             Iterator<Arc> arcs = y.getIncomingArcs();
                             while (arcs.hasNext()) {
-                                Enumeration<GraphObject> en = match.getInverseImage(arcs.next());
-                                if (!en.hasMoreElements()) {
+                                Iterator<GraphObject> en = match.getInverseImage(arcs.next());
+                                if (!en.hasNext()) {
                                     errorMsg = "Dangling condition isn't satisfied! ( node: " + x.getType().getName() + " )";
                                     return errorMsg;
                                 }
                             }
                             arcs = y.getOutgoingArcs();
                             while (arcs.hasNext()) {
-                                Enumeration<GraphObject> en = match.getInverseImage(arcs.next());
-                                if (!en.hasMoreElements()) {
+                                Iterator<GraphObject> en = match.getInverseImage(arcs.next());
+                                if (!en.hasNext()) {
                                     errorMsg = "Dangling condition isn't satisfied! ( node: " + x.getType().getName() + " )";
                                     return errorMsg;
                                 }
@@ -181,10 +180,10 @@ public final class MatchHelper {
                 int k = 0;
                 boolean preserved = true;
 
-                final Enumeration<GraphObject> en = match.getInverseImage(match.getImage(nodes.next()));
+                final Iterator<GraphObject> en = match.getInverseImage(match.getImage(nodes.next()));
                 int del = 0;
-                while (en.hasMoreElements()) {
-                    final GraphObject xx = en.nextElement();
+                while (en.hasNext()) {
+                    final GraphObject xx = en.next();
                     k++;
                     if (itsRule.getImage(xx) == null) {
                         preserved = false;
@@ -202,10 +201,10 @@ public final class MatchHelper {
                 int k = 0;
                 boolean preserved = true;
 
-                final Enumeration<GraphObject> en = match.getInverseImage(match.getImage(arcs.next()));
+                final Iterator<GraphObject> en = match.getInverseImage(match.getImage(arcs.next()));
                 int del = 0;
-                while (en.hasMoreElements()) {
-                    final GraphObject xx = en.nextElement();
+                while (en.hasNext()) {
+                    final GraphObject xx = en.next();
                     k++;
                     if (itsRule.getImage(xx) == null) {
                         preserved = false;
@@ -233,7 +232,7 @@ public final class MatchHelper {
             final OrdinaryMorphism testMatch) {
         // check consistency
         errorMsg = "";
-        Vector<Formula> constraints = rule.getConstraints();
+        List<Formula> constraints = rule.getConstraints();
         if (!constraints.isEmpty()) {
             boolean good = true;
             for (int i = 0; i < constraints.size(); i++) {
@@ -242,16 +241,16 @@ public final class MatchHelper {
                     continue;
                 }
 
-                Vector<Evaluable> vec = new Vector<Evaluable>();
+                List<Evaluable> vec = new ArrayList<>();
                 String form = f.getAsString(vec);
                 // do copy of vec into v
-                Vector<Evaluable> v = new Vector<Evaluable>();
+                List<Evaluable> v = new ArrayList<>();
                 for (int j = 0; j < vec.size(); j++) {
                     EvalSet evalset = (EvalSet) vec.get(j);
-                    Vector<Object> set = evalset.getSet();
-                    Vector<Object> v1 = new Vector<Object>();
+                    List<Object> set = evalset.getSet();
+                    List<Object> v1 = new ArrayList<>();
                     for (int k = 0; k < set.size(); k++) {
-                        Vector<Object> es = ((EvalSet) set.get(k)).getSet();
+                        List<Object> es = ((EvalSet) set.get(k)).getSet();
                         AtomApplConstraint aaConstr = new AtomApplConstraint(es);
                         v1.add(aaConstr);
                     }
@@ -306,36 +305,36 @@ public final class MatchHelper {
                 continue;
             }
 
-            final Enumeration<GraphObject> invers = match.getInverseImage(go);
-            final Vector<GraphObject> origs = new Vector<GraphObject>(2);
-            while (invers.hasMoreElements()) {
-                origs.addElement(invers.nextElement());
+            final Iterator<GraphObject> invers = match.getInverseImage(go);
+            final List<GraphObject> origs = new ArrayList<>(2);
+            while (invers.hasNext()) {
+                origs.add(invers.next());
             }
             if (origs.size() <= 1) {
                 continue;
             }
 
-            final Vector<GraphObject> ruleImgs = new Vector<GraphObject>(2);
+            final List<GraphObject> ruleImgs = new ArrayList<>(2);
             for (int i = 0; i < origs.size(); i++) {
-                GraphObject ruleImg = match.getRule().getImage(origs.elementAt(i));
+                GraphObject ruleImg = match.getRule().getImage(origs.get(i));
                 if (ruleImg != null) {
-                    ruleImgs.addElement(ruleImg);
+                    ruleImgs.add(ruleImg);
                 }
             }
             if (ruleImgs.size() <= 1) {
                 continue;
             }
 
-            GraphObject ruleImg = ruleImgs.elementAt(0);
+            GraphObject ruleImg = ruleImgs.get(0);
             if (ruleImg.getAttribute() == null) {
                 continue;
             }
 
             ValueTuple imgAttrs = (ValueTuple) ruleImg.getAttribute();
-            GraphObject ruleOrig = match.getRule().getInverseImage(ruleImg).nextElement();
+            GraphObject ruleOrig = match.getRule().firstOfInverseImage(ruleImg);
 
             for (int i = 1; i < ruleImgs.size(); i++) {
-                GraphObject otherRuleImg = ruleImgs.elementAt(i);
+                GraphObject otherRuleImg = ruleImgs.get(i);
                 if (otherRuleImg.getAttribute() == null) {
                     continue;
                 }
@@ -343,7 +342,7 @@ public final class MatchHelper {
                 boolean replace1 = true;
 
                 ValueTuple otherAttrs = (ValueTuple) otherRuleImg.getAttribute();
-                GraphObject otherOrig = match.getRule().getInverseImage(otherRuleImg).nextElement();
+                GraphObject otherOrig = match.getRule().firstOfInverseImage(otherRuleImg);
 
                 for (int j = 0; j < imgAttrs.getNumberOfEntries(); j++) {
                     ValueMember vmImg = imgAttrs.getValueMemberAt(j);
@@ -438,7 +437,7 @@ public final class MatchHelper {
                 if ((i < ruleImgs.size()) && replace1) {
                     ruleImg = otherRuleImg;
                     imgAttrs = (ValueTuple) ruleImg.getAttribute();
-                    ruleOrig = match.getRule().getInverseImage(ruleImg).nextElement();
+                    ruleOrig = match.getRule().firstOfInverseImage(ruleImg);
                 }
 
             }
@@ -446,11 +445,10 @@ public final class MatchHelper {
         return "";
     }
 
-    private static boolean isVariableUsed(final ValueMember vm,
-            final Vector<GraphObject> objs) {
+    private static boolean isVariableUsed(final ValueMember vm, final List<GraphObject> objs) {
         boolean varUsed = false;
         for (int i = 1; i < objs.size(); i++) {
-            GraphObject go = objs.elementAt(i);
+            GraphObject go = objs.get(i);
             ValueTuple goAttr = (ValueTuple) go.getAttribute();
             if (go.getAttribute() == null) {
                 continue;
@@ -526,7 +524,7 @@ public final class MatchHelper {
         en = itsRule.getRight().getNodesSet().iterator();
         while (en.hasNext()) {
             GraphObject go = (GraphObject) en.next();
-            if (!itsRule.getInverseImage(go).hasMoreElements()) {
+            if (!itsRule.hasInverseImage(go)) {
                 nodestocreate.add((Node) go);
             }
         }
@@ -534,9 +532,9 @@ public final class MatchHelper {
         en = itsRule.getRight().getArcsSet().iterator();
         while (en.hasNext()) {
             final Arc go = (Arc) en.next();
-            if (!itsRule.getInverseImage(go).hasMoreElements()
-                    && (itsRule.getInverseImage(go.getSource()).hasMoreElements()
-                    || itsRule.getInverseImage(go.getTarget()).hasMoreElements())) {
+            if (!itsRule.hasInverseImage(go)
+                    && (itsRule.hasInverseImage(go.getSource())
+                    || itsRule.hasInverseImage(go.getTarget()))) {
                 arcstocreate.add(go);
             }
         }
@@ -748,9 +746,9 @@ public final class MatchHelper {
                     final List<Arc> newarcs = type2newarcs.get(typekey);
                     int nn = 0;
                     if (newarcs != null) {
-                        if (match.getInverseImage(a.getSource()).hasMoreElements()) {
+                        if (match.hasInverseImage(a.getSource())) {
                             nn = getCountOfArcsWithTypeAndSource(typekey,
-                                    match.getRule().getImage(match.getInverseImage(a.getSource()).nextElement()),
+                                    match.getRule().getImage(match.firstOfInverseImage(a.getSource())),
                                     newarcs, arcstocreate);
                         }
                     }
@@ -774,7 +772,7 @@ public final class MatchHelper {
 
                 Type targetNodeType = a.getTarget().getType();
 
-                Vector<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
+                List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
                 if (vec != null) {
                     if (vec.size() == 1) {
                         Arc typeArc = vec.get(0);
@@ -797,7 +795,7 @@ public final class MatchHelper {
                 if (tgchecklevel > TypeSet.ENABLED_MAX
                         && tarMinMax.get(indx).first.intValue() > 0
                         && (outs - nn) < tarMinMax.get(indx).first.intValue()) {
-                    if (match.getRule().getImage(match.getInverseImage(a.getSource()).nextElement()) != null) {
+                    if (match.getRule().getImage(match.firstOfInverseImage(a.getSource())) != null) {
                         // source node preserved, the edge deleted
                         errorMsg = "Target multiplicity of edge type failed!"
                                 + "\nType  \"" + a.getType().getName() + "\""
@@ -849,9 +847,9 @@ public final class MatchHelper {
                     int nn = 0;
                     if (newarcs != null && newarcs.size() > 0) {
                         // check inverse image of a match object because dangling condition can be OFF
-                        if (match.getInverseImage(a.getTarget()).hasMoreElements()) {
+                        if (match.hasInverseImage(a.getTarget())) {
                             nn = getCountOfArcsWithTypeAndTarget(typekey,
-                                    match.getRule().getImage(match.getInverseImage(a.getTarget()).nextElement()),
+                                    match.getRule().getImage(match.firstOfInverseImage(a.getTarget())),
                                     newarcs, arcstocreate);
                         }
                     }
@@ -875,7 +873,7 @@ public final class MatchHelper {
 
                 Type sourceNodeType = a.getSource().getType();
 
-                final Vector<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
+                final List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
                 if (vec != null) {
                     if (vec.size() == 1) {
                         Arc typeArc = vec.get(0);
@@ -898,7 +896,7 @@ public final class MatchHelper {
                 if (tgchecklevel > TypeSet.ENABLED_MAX
                         && srcMinMax.get(indx).first.intValue() > 0
                         && (ins - nn) < srcMinMax.get(indx).first.intValue()) {
-                    if (match.getRule().getImage(match.getInverseImage(a.getTarget()).nextElement()) != null) {
+                    if (match.getRule().getImage(match.firstOfInverseImage(a.getTarget())) != null) {
                         // target node is preserved, the edge will be deleted
                         errorMsg = "Source multiplicity of edge type failed!"
                                 + "\nType  \"" + a.getType().getName() + "\""
@@ -992,14 +990,14 @@ public final class MatchHelper {
             final Arc a = arcstocreate.get(i);
 
             // Arc a must preserve its source or target
-            if (!match.getRule().getInverseImage(a.getSource()).hasMoreElements()
+            if (!match.getRule().hasInverseImage(a.getSource())
                     || !typesNeedMultiplicityCheck.contains(a.convertToKey())) {
                 continue;
             }
 
 //			final String typekey = a.convertToKey();
             final Node src = (Node) match.getImage(
-                    match.getRule().getInverseImage(a.getSource()).nextElement());
+                    match.getRule().firstOfInverseImage(a.getSource()));
             if (src == null) {
                 continue;
             }
@@ -1026,7 +1024,7 @@ public final class MatchHelper {
 
             Type targetNodeType = a.getTarget().getType();
 
-            Vector<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
+            List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
             if (vec != null) {
                 if (vec.size() == 1) {
                     Arc typeArc = vec.get(0);
@@ -1048,16 +1046,16 @@ public final class MatchHelper {
             int outs = outarcs.size();
             for (int k = 0; k < outarcs.size(); k++) {
                 Arc outarc = outarcs.get(k);
-                if (match.getInverseImage(outarc).hasMoreElements()
-                        && match.getRule().getImage(match.getInverseImage(outarc).nextElement()) == null) {
+                if (match.hasInverseImage(outarc)
+                        && match.getRule().getImage(match.firstOfInverseImage(outarc)) == null) {
                     outs--;
                 } else if (match.getTarget().getTypeSet().isOutgoingArcOfClan(
                         src.getType(),
                         outarc.getType(),
                         outarc.getTarget().getType())) {
 
-                    if (match.getInverseImage(outarc).hasMoreElements()
-                            && match.getRule().getImage(match.getInverseImage(outarc).nextElement()) == null) {
+                    if (match.hasInverseImage(outarc)
+                            && match.getRule().getImage(match.firstOfInverseImage(outarc)) == null) {
                         outs--;
                     }
                 }
@@ -1110,7 +1108,7 @@ public final class MatchHelper {
         for (int i = 0; i < arcstocreate.size(); i++) {
             final Arc a = arcstocreate.get(i);
             // Arc a must preserve its source and target
-            if (!match.getRule().getInverseImage(a.getTarget()).hasMoreElements()
+            if (!match.getRule().hasInverseImage(a.getTarget())
                     || !typesNeedMultiplicityCheck.contains(a.convertToKey())) {
                 continue;
             }
@@ -1118,7 +1116,7 @@ public final class MatchHelper {
 //			final String typekey = a.convertToKey();
             // target node in a host graph
             final Node tar = (Node) match.getImage(
-                    match.getRule().getInverseImage(a.getTarget()).nextElement());
+                    match.getRule().firstOfInverseImage(a.getTarget()));
             if (tar == null) {
                 continue;
             }
@@ -1144,7 +1142,7 @@ public final class MatchHelper {
 
             Type sourceNodeType = a.getSource().getType();
 
-            final Vector<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
+            final List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
             if (vec != null) {
                 if (vec.size() == 1) {
                     Arc typeArc = vec.get(0);
@@ -1166,16 +1164,16 @@ public final class MatchHelper {
 
             for (int k = 0; k < inarcs.size(); k++) {
                 Arc inarc = inarcs.get(k);
-                if (match.getInverseImage(inarc).hasMoreElements()
-                        && match.getRule().getImage(match.getInverseImage(inarc).nextElement()) == null) {
+                if (match.hasInverseImage(inarc)
+                        && match.getRule().getImage(match.firstOfInverseImage(inarc)) == null) {
                     ins--;
                 } else if (match.getTarget().getTypeSet().isIncomingArcOfClan(
                         tar.getType(),
                         inarc.getType(),
                         inarc.getSource().getType())) {
 
-                    if (match.getInverseImage(inarc).hasMoreElements()
-                            && match.getRule().getImage(match.getInverseImage(inarc).nextElement()) == null) {
+                    if (match.hasInverseImage(inarc)
+                            && match.getRule().getImage(match.firstOfInverseImage(inarc)) == null) {
                         ins--;
                     }
                 }
@@ -1339,9 +1337,9 @@ public final class MatchHelper {
             final OrdinaryMorphism match,
             final OrdinaryMorphism cond) {
         boolean result = true;
-        final Enumeration<GraphObject> dom = cond.getDomain();
-        while (dom.hasMoreElements() && result) {
-            final GraphObject goL = dom.nextElement();
+        final Iterator<GraphObject> dom = cond.getDomain();
+        while (dom.hasNext() && result) {
+            final GraphObject goL = dom.next();
             final GraphObject imgC = cond.getImage(goL);
             final GraphObject imgG = match.getImage(goL);
 
@@ -1372,9 +1370,9 @@ public final class MatchHelper {
     private static boolean checkConstantAttrValueFromSourceToTarget(
             final OrdinaryMorphism morph) {
         boolean result = true;
-        final Enumeration<GraphObject> dom = morph.getDomain();
-        while (dom.hasMoreElements() && result) {
-            final GraphObject go = dom.nextElement();
+        final Iterator<GraphObject> dom = morph.getDomain();
+        while (dom.hasNext() && result) {
+            final GraphObject go = dom.next();
             final GraphObject img = morph.getImage(go);
 
             if (go.getAttribute() != null
@@ -1408,9 +1406,9 @@ public final class MatchHelper {
         final Vector<ValueMember> varToNull = new Vector<ValueMember>(2);
 
         final VarTuple vars = (VarTuple) match.getAttrContext().getVariables();
-        final Enumeration<GraphObject> en = match.getDomain();
-        while (en.hasMoreElements()) {
-            final GraphObject obj = en.nextElement();
+        final Iterator<GraphObject> en = match.getDomain();
+        while (en.hasNext()) {
+            final GraphObject obj = en.next();
             if (obj.getAttribute() == null) {
                 continue;
             }
@@ -1727,13 +1725,13 @@ public final class MatchHelper {
             return oSet;
         }
 
-        Vector<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
-        Enumeration<GraphObject> itsGOs = null;
+        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
+        Iterator<GraphObject> itsGOs = null;
 
         if (left) {
-            itsGOs = morph.getSource().getElements();
+            itsGOs = morph.getSource().iteratorOfElems();
         } else {
-            itsGOs = morph.getTarget().getElements();
+            itsGOs = morph.getTarget().iteratorOfElems();
         }
 
         final Vector<GraphObject> itsGOSet = new Vector<GraphObject>();
@@ -1746,8 +1744,8 @@ public final class MatchHelper {
             minGraphSize = 1;
         }
 
-        while (itsGOs.hasMoreElements()) {
-            itsGOSet.addElement(itsGOs.nextElement());
+        while (itsGOs.hasNext()) {
+            itsGOSet.addElement(itsGOs.next());
         }
         if (sizeOfInclusions >= minGraphSize) {
             boolean withIsomorphicInclusions = true;
@@ -1763,7 +1761,7 @@ public final class MatchHelper {
         Completion_InjCSP strategy = new Completion_InjCSP();
 
         for (int j = 0; j < subs.size(); j++) {
-            OrdinaryMorphism h = subs.elementAt(j);
+            OrdinaryMorphism h = subs.get(j);
 
             Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>> rulePair = (BaseFactory
                     .theFactory()).constructIsomorphicRule(h);
@@ -1913,7 +1911,7 @@ public final class MatchHelper {
                     }
                 }
             } // while
-            subs.removeElement(h);
+            subs.remove(h);
             j--;
 
             testm.dispose();
@@ -1994,9 +1992,9 @@ public final class MatchHelper {
         }
     }
 
-    public static Vector<CondMember> getConditionsOfNAC(final OrdinaryMorphism nacStar,
+    public static List<CondMember> getConditionsOfNAC(final OrdinaryMorphism nacStar,
             final OrdinaryMorphism nac) {
-        final Vector<CondMember> condsNAC = new Vector<CondMember>();
+        final List<CondMember> condsNAC = new Vector<CondMember>();
         final VarTuple vart = (VarTuple) nacStar.getAttrContext().getVariables();
 //		vart.showVariables();
         if (vart.getSize() == 0) {
@@ -2004,13 +2002,13 @@ public final class MatchHelper {
         }
 
         final CondTuple condt = (CondTuple) nacStar.getAttrContext().getConditions();
-        final Vector<String> varNames = nac.getImage().getVariableNamesOfAttributes();
-        final Vector<VarMember> varsOfNAC = new Vector<VarMember>();
+        final List<String> varNames = nac.getImage().getVariableNamesOfAttributes();
+        final List<VarMember> varsOfNAC = new Vector<VarMember>();
         for (int k = 0; k < vart.getSize(); k++) {
             final VarMember vm = vart.getVarMemberAt(k);
             if (varNames.contains(vm.getName())) {
                 if (!varsOfNAC.contains(vm)) {
-                    varsOfNAC.addElement(vm);
+                    varsOfNAC.add(vm);
                 }
             }
         }
@@ -2018,11 +2016,11 @@ public final class MatchHelper {
             final CondMember cm = condt.getCondMemberAt(k);
             final Vector<String> condVars = cm.getAllVariables();
             for (int l = 0; l < varsOfNAC.size(); l++) {
-                final VarMember vm = varsOfNAC.elementAt(l);
+                final VarMember vm = varsOfNAC.get(l);
                 if (((cm.getMark() == CondMember.NAC) || (cm.getMark() == CondMember.NAC_LHS))
                         && condVars.contains(vm.getName())) {
                     if (!condsNAC.contains(cm)) {
-                        condsNAC.addElement(cm);
+                        condsNAC.add(cm);
                     }
                 }
             }
@@ -2030,34 +2028,34 @@ public final class MatchHelper {
         return condsNAC;
     }
 
-    public static Vector<CondMember> getConditionsOfPAC(final OrdinaryMorphism pacStar,
+    public static List<CondMember> getConditionsOfPAC(final OrdinaryMorphism pacStar,
             final OrdinaryMorphism pac) {
-        final Vector<CondMember> condsPAC = new Vector<CondMember>();
+        final List<CondMember> condsPAC = new Vector<CondMember>();
         final VarTuple vart = (VarTuple) pacStar.getAttrContext().getVariables();
         if (vart.getSize() == 0) {
             return condsPAC;
         }
 
         final CondTuple condt = (CondTuple) pacStar.getAttrContext().getConditions();
-        final Vector<String> varNames = pac.getImage().getVariableNamesOfAttributes();
-        final Vector<VarMember> varsOfPAC = new Vector<VarMember>();
+        final List<String> varNames = pac.getImage().getVariableNamesOfAttributes();
+        final List<VarMember> varsOfPAC = new Vector<VarMember>();
         for (int k = 0; k < vart.getSize(); k++) {
             VarMember vm = vart.getVarMemberAt(k);
             if (varNames.contains(vm.getName())) {
                 if (!varsOfPAC.contains(vm)) {
-                    varsOfPAC.addElement(vm);
+                    varsOfPAC.add(vm);
                 }
             }
         }
         for (int k = 0; k < condt.getSize(); k++) {
             final CondMember cm = condt.getCondMemberAt(k);
-            final Vector<String> condVars = cm.getAllVariables();
+            final List<String> condVars = cm.getAllVariables();
             for (int l = 0; l < varsOfPAC.size(); l++) {
-                final VarMember vm = varsOfPAC.elementAt(l);
+                final VarMember vm = varsOfPAC.get(l);
                 if (((cm.getMark() == CondMember.PAC) || (cm.getMark() == CondMember.PAC_LHS))
                         && condVars.contains(vm.getName())) {
                     if (!condsPAC.contains(cm)) {
-                        condsPAC.addElement(cm);
+                        condsPAC.add(cm);
                     }
                 }
             }
@@ -2073,7 +2071,7 @@ public final class MatchHelper {
      */
     public static boolean isAttrConditionOfNACSatisfied(final NACStarMorphism nacStar,
             final OrdinaryMorphism nac,
-            final Vector<CondMember> condsNAC) {
+            final List<CondMember> condsNAC) {
 
 //		System.out.println("MatchHelper.isAttrConditionOfNACSatisfied ");
 //		((VarTuple)getAttrContext().getVariables()).showVariables();
@@ -2083,7 +2081,7 @@ public final class MatchHelper {
         errorMsg = "NAC  \"" + nac.getName() + "\"  failed.";
         boolean nacCondTrue = false;
         for (int k = 0; k < condsNAC.size(); k++) {
-            CondMember cm = condsNAC.elementAt(k);
+            CondMember cm = condsNAC.get(k);
             if (cm.areVariablesSet()) {
                 if (cm.isEnabled() && cm.isTrue()) {
                     nacCondTrue = true;
@@ -2113,7 +2111,7 @@ public final class MatchHelper {
      */
     public static boolean isAttrConditionOfPACSatisfied(final PACStarMorphism pacStar,
             final OrdinaryMorphism pac,
-            final Vector<CondMember> condsPAC) {
+            final List<CondMember> condsPAC) {
 //		((VarTuple)getAttrContext().getVariables()).showVariables();
 
         ((VarTuple) pacStar.getAttrContext().getVariables()).propagateValueFromParent();
@@ -2122,7 +2120,7 @@ public final class MatchHelper {
         errorMsg = "PAC  \"" + pac.getName() + "\"  failed.";
         boolean pacCondTrue = true;
         for (int k = 0; k < condsPAC.size(); k++) {
-            CondMember cm = condsPAC.elementAt(k);
+            CondMember cm = condsPAC.get(k);
             if (cm.areVariablesSet()) {
                 if (cm.isEnabled() && !cm.isTrue()) {
                     pacCondTrue = false;
@@ -2283,7 +2281,7 @@ public final class MatchHelper {
         Morphism result = null;
         boolean attrCondsExist = !((CondTuple) match.getAttrContext()
                 .getConditions()).isEmpty();
-        Vector<CondMember> condsNAC = getConditionsOfNAC(nacStar, nac);
+        List<CondMember> condsNAC = getConditionsOfNAC(nacStar, nac);
         boolean attrCondsNacExist = !condsNAC.isEmpty();
 
         if (nacStar.isTotal()) {
@@ -2346,7 +2344,7 @@ public final class MatchHelper {
 
         boolean attrCondsExist = !((CondTuple) match.getAttrContext()
                 .getConditions()).isEmpty();
-        Vector<CondMember> condsNAC = getConditionsOfNAC(nacStar, nac);
+        List<CondMember> condsNAC = getConditionsOfNAC(nacStar, nac);
         boolean attrCondsNacExist = !condsNAC.isEmpty();
 
         if (nacStar.isTotal()) {
@@ -2403,7 +2401,7 @@ public final class MatchHelper {
             GraphObject nacObj = (GraphObject) e.next();
             if (nac.hasInverseImage(nacObj)) {
                 // check commutativity
-                GraphObject leftObj = nac.getInverseImage(nacObj).nextElement();
+                GraphObject leftObj = nac.firstOfInverseImage(nacObj);
                 GraphObject nacStarImgObj = aNACstar.getImage(nacObj);
                 GraphObject graphObj = match.getImage(leftObj);
                 if (nacStarImgObj != graphObj) {
@@ -2438,7 +2436,7 @@ public final class MatchHelper {
 
             if (nac.hasInverseImage(nacObj)) {
                 // check commutativity
-                GraphObject leftObj = nac.getInverseImage(nacObj).nextElement();
+                GraphObject leftObj = nac.firstOfInverseImage(nacObj);
                 GraphObject nacStarImgObj = aNACstar.getImage(nacObj);
                 GraphObject graphObj = match.getImage(leftObj);
                 if (nacStarImgObj != graphObj) {
@@ -2495,9 +2493,9 @@ public final class MatchHelper {
         Iterator<?> e = aPACstar.getSource().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject pacObj = (GraphObject) e.next();
-            if (pac.getInverseImage(pacObj).hasMoreElements()) {
+            if (pac.hasInverseImage(pacObj)) {
                 // check commutativity
-                GraphObject leftObj = pac.getInverseImage(pacObj).nextElement();
+                GraphObject leftObj = pac.firstOfInverseImage(pacObj);
                 GraphObject pacStarImgObj = aPACstar.getImage(pacObj);
                 GraphObject graphObj = match.getImage(leftObj);
                 if (pacStarImgObj != graphObj) {
@@ -2510,7 +2508,7 @@ public final class MatchHelper {
             } else {
                 // check injectivity
                 GraphObject pacStarImgObj = aPACstar.getImage(pacObj);
-                if (match.getInverseImage(pacStarImgObj).hasMoreElements()) {
+                if (match.hasInverseImage(pacStarImgObj)) {
                     return false;
                 }
             }
@@ -2528,9 +2526,9 @@ public final class MatchHelper {
         e = aPACstar.getSource().getArcsSet().iterator();
         while (e.hasNext()) {
             GraphObject pacObj = (GraphObject) e.next();
-            if (pac.getInverseImage(pacObj).hasMoreElements()) {
+            if (pac.hasInverseImage(pacObj)) {
                 // check commutativity
-                GraphObject leftObj = pac.getInverseImage(pacObj).nextElement();
+                GraphObject leftObj = pac.firstOfInverseImage(pacObj);
                 GraphObject pacStarImgObj = aPACstar.getImage(pacObj);
                 GraphObject graphObj = match.getImage(leftObj);
                 if (pacStarImgObj != graphObj) {
@@ -2539,7 +2537,7 @@ public final class MatchHelper {
             } else {
                 // check injectivity
                 GraphObject pacStarImgObj = aPACstar.getImage(pacObj);
-                if (match.getInverseImage(pacStarImgObj).hasMoreElements()) {
+                if (match.hasInverseImage(pacStarImgObj)) {
                     return false;
                 }
             }
@@ -2558,7 +2556,7 @@ public final class MatchHelper {
 //		((CondTuple) match.getAttrContext().getConditions()).showConditions();
         boolean attrCondsExist = !((CondTuple) match.getAttrContext()
                 .getConditions()).isEmpty();
-        Vector<CondMember> condsPAC = getConditionsOfPAC(pacStar, pac);
+        List<CondMember> condsPAC = getConditionsOfPAC(pacStar, pac);
         boolean attrCondsPacExist = !condsPAC.isEmpty();
 
         if (pacStar.isTotal()) {
@@ -2618,7 +2616,7 @@ public final class MatchHelper {
 
         boolean attrCondsExist = !((CondTuple) match.getAttrContext()
                 .getConditions()).isEmpty();
-        Vector<CondMember> condsPAC = getConditionsOfPAC(pacStar, pac);
+        List<CondMember> condsPAC = getConditionsOfPAC(pacStar, pac);
         boolean attrCondsPacExist = !condsPAC.isEmpty();
 
         if (pacStar.isTotal()) {
@@ -2726,7 +2724,7 @@ public final class MatchHelper {
     protected static void unsetVariablesOfNAC(final AttrContext attrContext,
             final OrdinaryMorphism nac) {
         final VarTuple vars = (VarTuple) attrContext.getVariables();
-        final Vector<String> nacVars = nac.getTarget().getVariableNamesOfAttributes();
+        final List<String> nacVars = nac.getTarget().getVariableNamesOfAttributes();
         for (int i = 0; i < vars.getSize(); i++) {
             VarMember vm = vars.getVarMemberAt(i);
             if (nacVars.contains(vm.getName())
@@ -2740,7 +2738,7 @@ public final class MatchHelper {
     protected static void unsetVariablesOfPAC(final AttrContext attrContext,
             final OrdinaryMorphism pac) {
         final VarTuple vars = (VarTuple) attrContext.getVariables();
-        final Vector<String> pacVars = pac.getTarget().getVariableNamesOfAttributes();
+        final List<String> pacVars = pac.getTarget().getVariableNamesOfAttributes();
         for (int i = 0; i < vars.getSize(); i++) {
             VarMember vm = vars.getVarMemberAt(i);
             if (pacVars.contains(vm.getName())
@@ -2951,7 +2949,7 @@ public final class MatchHelper {
         OrdinaryMorphism result = null;
 //		boolean attrCondsExist = !((CondTuple) relatedMorph.getAttrContext()
 //										.getConditions()).isEmpty();		
-        Vector<CondMember> condsAC = getConditionsOfNestedAC(acStar, acMorph);
+        List<CondMember> condsAC = getConditionsOfNestedAC(acStar, acMorph);
         boolean attrCondsACexist = !condsAC.isEmpty();
 
         if (acStar.isTotal()) {
@@ -3015,35 +3013,35 @@ public final class MatchHelper {
         return result;
     }
 
-    public static Vector<CondMember> getConditionsOfNestedAC(final OrdinaryMorphism acStar,
+    public static List<CondMember> getConditionsOfNestedAC(final OrdinaryMorphism acStar,
             final OrdinaryMorphism ac) {
-        final Vector<CondMember> condsAC = new Vector<CondMember>();
+        final List<CondMember> condsAC = new Vector<CondMember>();
         final VarTuple vart = (VarTuple) acStar.getAttrContext().getVariables();
         if (vart.getSize() == 0) {
             return condsAC;
         }
 
         final CondTuple condt = (CondTuple) acStar.getAttrContext().getConditions();
-        final Vector<String> varNames = ac.getImage().getVariableNamesOfAttributes();
-        final Vector<VarMember> varsOfAC = new Vector<VarMember>();
+        final List<String> varNames = ac.getImage().getVariableNamesOfAttributes();
+        final List<VarMember> varsOfAC = new Vector<VarMember>();
         for (int k = 0; k < vart.getSize(); k++) {
             VarMember vm = vart.getVarMemberAt(k);
             if (varNames.contains(vm.getName())) {
                 if (!varsOfAC.contains(vm)) {
-                    varsOfAC.addElement(vm);
+                    varsOfAC.add(vm);
                 }
             }
         }
         for (int k = 0; k < condt.getSize(); k++) {
             final CondMember cm = condt.getCondMemberAt(k);
-            final Vector<String> condVars = cm.getAllVariables();
+            final List<String> condVars = cm.getAllVariables();
             for (int l = 0; l < varsOfAC.size(); l++) {
-                final VarMember vm = varsOfAC.elementAt(l);
+                final VarMember vm = varsOfAC.get(l);
                 if (((cm.getMark() == CondMember.PAC) || (cm.getMark() == CondMember.PAC_LHS)
                         || (cm.getMark() == CondMember.NAC) || (cm.getMark() == CondMember.NAC_LHS))
                         && condVars.contains(vm.getName())) {
                     if (!condsAC.contains(cm)) {
-                        condsAC.addElement(cm);
+                        condsAC.add(cm);
                     }
                 }
             }
@@ -3053,7 +3051,7 @@ public final class MatchHelper {
 
     public static boolean isAttrConditionOfNestedACSatisfied(final PACStarMorphism acStar,
             final OrdinaryMorphism ac,
-            final Vector<CondMember> condsAC) {
+            final List<CondMember> condsAC) {
 //		((VarTuple)getAttrContext().getVariables()).showVariables();
 
         ((VarTuple) acStar.getAttrContext().getVariables()).propagateValueFromParent();
@@ -3062,7 +3060,7 @@ public final class MatchHelper {
         errorMsg = "Appl Cond  \"" + ac.getName() + "\"  failed.";
         boolean acCondTrue = true;
         for (int k = 0; k < condsAC.size(); k++) {
-            CondMember cm = condsAC.elementAt(k);
+            CondMember cm = condsAC.get(k);
             if (cm.areVariablesSet()) {
                 if (cm.isEnabled() && !cm.isTrue()) {
                     acCondTrue = false;
@@ -3087,9 +3085,9 @@ public final class MatchHelper {
         Iterator<?> e = acStar.getSource().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject acObj = (GraphObject) e.next();
-            if (acMorph.getInverseImage(acObj).hasMoreElements()) {
+            if (acMorph.hasInverseImage(acObj)) {
                 // check commutativity
-                GraphObject leftObj = acMorph.getInverseImage(acObj).nextElement();
+                GraphObject leftObj = acMorph.firstOfInverseImage(acObj);
                 GraphObject acStarImgObj = acStar.getImage(acObj);
                 GraphObject graphObj = match.getImage(leftObj);
                 if (acStarImgObj != graphObj) {
@@ -3098,7 +3096,7 @@ public final class MatchHelper {
             } else {
                 // check injectivity
                 GraphObject acStarImgObj = acStar.getImage(acObj);
-                if (match.getInverseImage(acStarImgObj).hasMoreElements()) {
+                if (match.hasInverseImage(acStarImgObj)) {
                     return false;
                 }
             }
@@ -3106,9 +3104,9 @@ public final class MatchHelper {
         e = acStar.getSource().getArcsSet().iterator();
         while (e.hasNext()) {
             GraphObject pacObj = (GraphObject) e.next();
-            if (acMorph.getInverseImage(pacObj).hasMoreElements()) {
+            if (acMorph.hasInverseImage(pacObj)) {
                 // check commutativity
-                GraphObject leftObj = acMorph.getInverseImage(pacObj).nextElement();
+                GraphObject leftObj = acMorph.firstOfInverseImage(pacObj);
                 GraphObject acStarImgObj = acStar.getImage(pacObj);
                 GraphObject graphObj = match.getImage(leftObj);
                 if (acStarImgObj != graphObj) {
@@ -3155,7 +3153,7 @@ public final class MatchHelper {
         Iterator<Node> elems = acMorph.getTarget().getNodesSet().iterator();
         while (elems.hasNext() && result) {
             GraphObject go = elems.next();
-            if (!acMorph.getInverseImage(go).hasMoreElements()) {
+            if (!acMorph.hasInverseImage(go)) {
                 result = checkElemOfNestedCodomain(go, acMorph, acStar);
             }
         }
@@ -3163,7 +3161,7 @@ public final class MatchHelper {
         Iterator<Arc> elems1 = acMorph.getTarget().getArcsSet().iterator();
         while (elems1.hasNext() && result) {
             GraphObject go = elems1.next();
-            if (!acMorph.getInverseImage(go).hasMoreElements()) {
+            if (!acMorph.hasInverseImage(go)) {
                 result = checkElemOfNestedCodomain(go, acMorph, acStar);
             }
         }
@@ -3173,7 +3171,7 @@ public final class MatchHelper {
     protected static void unsetVariablesOfNestedAC(final AttrContext attrContext,
             final OrdinaryMorphism ac) {
         final VarTuple vars = (VarTuple) attrContext.getVariables();
-        final Vector<String> acVars = ac.getTarget().getVariableNamesOfAttributes();
+        final List<String> acVars = ac.getTarget().getVariableNamesOfAttributes();
         for (int i = 0; i < vars.getSize(); i++) {
             VarMember vm = vars.getVarMemberAt(i);
             if (acVars.contains(vm.getName())

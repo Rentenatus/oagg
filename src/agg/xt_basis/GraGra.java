@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -48,6 +49,7 @@ import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.xt_basis.csp.Completion_CSP_NoBJ;
+import org.w3c.dom.Element;
 
 /**
  * This class provides functionality of a graph grammar, consisting of an arbitrary number of graphs (the "host
@@ -269,18 +271,13 @@ public class GraGra implements Disposable, XMLObject {
     public void trimToSize() {
         this.typeSet.trimToSize();
         this.itsGraphs.trimToSize();
-        for (int i = 0; i < this.itsGraphs.size(); i++) {
-            this.itsGraphs.get(i).trimToSize();
-        }
+
         this.itsRules.trimToSize();
         for (int i = 0; i < this.itsRules.size(); i++) {
             this.itsRules.get(i).trimToSize();
         }
         synchronized (itsMatches) {
             this.itsMatches.trimToSize();
-            for (int i = 0; i < this.itsMatches.size(); i++) {
-                this.itsMatches.get(i).trimToSize();
-            }
         }
         this.itsAtomics.trimToSize();
         for (int i = 0; i < this.itsAtomics.size(); i++) {
@@ -296,9 +293,7 @@ public class GraGra implements Disposable, XMLObject {
         }
         this.itsPackages.trimToSize();
         this.gratraOptions.trimToSize();
-        if (this.itsStartGraph != null) {
-            this.itsStartGraph.trimToSize();
-        }
+
     }
 
     public Vector<Pair<String, List<String>>> getPackages() {
@@ -678,9 +673,9 @@ public class GraGra implements Disposable, XMLObject {
     private Map<ValueTuple, ValueTuple> storeAttrValueOfAttrTypeObserver() {
 //		System.out.println("######  storeAttrValueOfAttrTypeObserver......");
         final Map<ValueTuple, ValueTuple> attrStore = new Hashtable<ValueTuple, ValueTuple>();
-        final Enumeration<Type> types = this.typeSet.getTypes();
-        while (types.hasMoreElements()) {
-            final Type t = types.nextElement();
+        final Iterator<Type> types = this.typeSet.getTypes();
+        while (types.hasNext()) {
+            final Type t = types.next();
             if (t.getAttrType() != null) {
 
                 final DeclTuple dt = (DeclTuple) t.getAttrType();
@@ -718,9 +713,9 @@ public class GraGra implements Disposable, XMLObject {
 
     private void restoreAttrValueOfObserver(final Map<ValueTuple, ValueTuple> attrStore) {
 //		System.out.println("######  restoreAttrValueOfAttrTypeObserver......");
-        final Enumeration<Type> types = this.typeSet.getTypes();
-        while (types.hasMoreElements()) {
-            final Type t = types.nextElement();
+        final Iterator<Type> types = this.typeSet.getTypes();
+        while (types.hasNext()) {
+            final Type t = types.next();
             if (t.getAttrType() == null) {
                 continue;
             }
@@ -833,18 +828,18 @@ public class GraGra implements Disposable, XMLObject {
             } else if ((this.typeSet.getTypeGraph() == null)
                     || (this.typeSet.getLevelOfTypeGraphCheck() == TypeSet.DISABLED)) {
                 final Vector<Type> typesToAdopt = new Vector<Type>(1);
-                final Enumeration<Type> other = g.getTypeSet().getTypes();
-                while (other.hasMoreElements()) {
-                    final Type tOther = other.nextElement();
+                final Iterator<Type> other = g.getTypeSet().getTypes();
+                while (other.hasNext()) {
+                    final Type tOther = other.next();
                     if (!this.typeSet.containsType(tOther)
-                            && g.getElementsOfType(tOther).hasMoreElements()) {
+                            && g.getElementsOfType(tOther).hasNext()) {
                         typesToAdopt.add(tOther);
                     }
                 }
                 if (adapt) {
                     this.typeSet.adaptTypes(g.getTypeSet().getTypes(), false);
                     impGraph = g.copyLight(this.typeSet);
-                } else if (adoptTypes(typesToAdopt.elements())) {
+                } else if (adoptTypes(typesToAdopt.iterator())) {
                     impGraph = g.copy(this.typeSet);
                 }
             }
@@ -913,10 +908,10 @@ public class GraGra implements Disposable, XMLObject {
 	 * types which will be added to my types. Returns false, if at least one of
 	 * the new types has failed, otherwise true.
      */
-    public boolean adoptTypes(final Enumeration<Type> types) {
+    public boolean adoptTypes(final Iterator<Type> types) {
         boolean result = true;
-        while (types.hasMoreElements()) {
-            final Type t = types.nextElement();
+        while (types.hasNext()) {
+            final Type t = types.next();
             if (this.typeSet.adoptType(t) == null) {
                 result = false;
                 break;
@@ -1963,15 +1958,15 @@ public class GraGra implements Disposable, XMLObject {
      * @param fromTypeGraph Is to destroy the graph objects from the Type Graph or not
      * @return <code>null</code> if destroying was successful, otherwise - a list with failed types.
      */
-    public Vector<String> destroyGraphObjectsOfTypes(final Vector<Type> ts,
+    public List<String> destroyGraphObjectsOfTypes(final Vector<Type> ts,
             final boolean fromTypeGraph) {
-        Vector<String> failed = null;
+        List<String> failed = null;
 
         if (this.itsStartGraph != null) {
             this.itsStartGraph.destroyObjectsOfTypes(ts);
         }
 
-        Vector<String> v = null;
+        List<String> v = null;
         // delete from host graph
         for (int i = 0; i < this.itsGraphs.size(); i++) {
             Graph g = this.itsGraphs.get(i);
@@ -2048,8 +2043,8 @@ public class GraGra implements Disposable, XMLObject {
      * @param ts A type list
      * @return <code>null</code> if destroying was successful, otherwise - a list with failed types.
      */
-    public Vector<String> destroyGraphObjectsOfTypesFromHostGraph(
-            final Vector<Type> ts) {
+    public List<String> destroyGraphObjectsOfTypesFromHostGraph(
+            final List<Type> ts) {
         // delete from host graph
         return this.itsGraph.destroyObjectsOfTypes(ts);
     }
@@ -2081,7 +2076,7 @@ public class GraGra implements Disposable, XMLObject {
         Iterator<Rule> rules = this.itsRules.iterator();
         while (rules.hasNext()) {
             Rule r = rules.next();
-            Vector<String> v = r.destroyObjectsOfTypes(ts);
+            List<String> v = r.destroyObjectsOfTypes(ts);
             if (!v.isEmpty()) {
                 failed.addAll(v);
             }
@@ -2117,14 +2112,14 @@ public class GraGra implements Disposable, XMLObject {
      * @return <code>empty list</code> if destroying was successful, otherwise - a list with names of failed graph
      * constraints.
      */
-    public Vector<String> destroyGraphObjectsOfTypesFromGraphConstraints(
+    public List<String> destroyGraphObjectsOfTypesFromGraphConstraints(
             final Vector<Type> ts) {
-        Vector<String> failed = null;
+        List<String> failed = null;
         // delete from atomic graph constraints
         Enumeration<AtomConstraint> atomics = getAtomics();
         while (atomics.hasMoreElements()) {
             AtomConstraint a = atomics.nextElement();
-            Vector<String> v = a.getSource().destroyObjectsOfTypes(ts);
+            List<String> v = a.getSource().destroyObjectsOfTypes(ts);
             if (v != null) {
                 if (failed == null) {
                     failed = new Vector<String>(5);
@@ -2154,8 +2149,8 @@ public class GraGra implements Disposable, XMLObject {
      *
      * @return Enumeration with elements of the type <code>Match</code>.
      */
-    public final Enumeration<Match> getMatches(Rule rule) {
-        Vector<Match> mtchs = new Vector<Match>();
+    public final Iterator<Match> getMatches(Rule rule) {
+        List<Match> mtchs = new Vector<Match>();
         synchronized (itsMatches) {
             for (int i = 0; i < this.itsMatches.size(); i++) {
                 Match m = this.itsMatches.get(i);
@@ -2164,7 +2159,7 @@ public class GraGra implements Disposable, XMLObject {
                 }
             }
         }
-        return mtchs.elements();
+        return mtchs.iterator();
     }// getMatches
 
     /**
@@ -2436,7 +2431,7 @@ public class GraGra implements Disposable, XMLObject {
      *
      * @see agg.xt_basis.Type
      */
-    public Enumeration<Type> getTypes() {
+    public Iterator<Type> getTypes() {
         return this.typeSet.getTypes();
     }
 
@@ -3360,8 +3355,8 @@ public class GraGra implements Disposable, XMLObject {
         return true;
     }
 
-    public Vector<Rule> getNonInjectiveRules() {
-        final Vector<Rule> result = new Vector<Rule>(1);
+    public List<Rule> getNonInjectiveRules() {
+        final List<Rule> result = new Vector<Rule>(1);
         for (int i = 0; i < this.itsRules.size(); i++) {
             Rule r = this.itsRules.get(i);
             if (r.isEnabled() && !r.isInjective()) {
@@ -3410,9 +3405,9 @@ public class GraGra implements Disposable, XMLObject {
     public Pair<Object, String> isReadyToTransform() {
         String msg = "";
         // check attr. types exist
-        Enumeration<Type> e = this.typeSet.getTypes();
-        while (e.hasMoreElements()) {
-            Type t = e.nextElement();
+        Iterator<Type> e = this.typeSet.getTypes();
+        while (e.hasNext()) {
+            Type t = e.next();
             if (!doesAttrTypeExist(t)) {
                 msg = "Not all attribute members of the type :  \""
                         + t.getName() + "\"  are declared correctly.";
@@ -3474,9 +3469,9 @@ public class GraGra implements Disposable, XMLObject {
      */
     public Type doAttrTypesExist() {
         // check attr. types exist
-        Enumeration<Type> e = this.typeSet.getTypes();
-        while (e.hasMoreElements()) {
-            Type t = e.nextElement();
+        Iterator<Type> e = this.typeSet.getTypes();
+        while (e.hasNext()) {
+            Type t = e.next();
             if (!doesAttrTypeExist(t)) {
                 return t;
             }
@@ -3547,9 +3542,9 @@ public class GraGra implements Disposable, XMLObject {
     public Pair<Object, String> checkInheritedAttributesValid() {
         if (this.typeSet.getLevelOfTypeGraphCheck() <= TypeSet.DISABLED
                 && this.typeSet.hasInheritance()) {
-            Enumeration<Type> e = this.typeSet.getTypes();
-            while (e.hasMoreElements()) {
-                Type t = e.nextElement();
+            Iterator<Type> e = this.typeSet.getTypes();
+            while (e.hasNext()) {
+                Type t = e.next();
                 // hier multiple inheritance!!!
                 for (int i = 0; i < t.getParents().size(); i++) {
                     Type p = t.getParents().get(i);
@@ -4433,10 +4428,10 @@ public class GraGra implements Disposable, XMLObject {
             Type t = null;
             // read all Types
             // first the unspecified types (old format)
-            Enumeration<?> en = h.getEnumeration("", null, true, "Type");
-            while (en.hasMoreElements()) {
+            Iterator<Element> en = h.getEnumeration("", null, true, "Type");
+            while (en.hasNext()) {
                 System.out.println(this.itsName + "   old format  Type  !");
-                h.peekElement(en.nextElement());
+                h.peekElement(en.next());
                 t = createType();
                 h.loadObject(t);
                 h.close();
@@ -4448,8 +4443,8 @@ public class GraGra implements Disposable, XMLObject {
 
             // the node types
             en = h.getEnumeration("", null, true, "NodeType");
-            while (en.hasMoreElements()) {
-                h.peekElement(en.nextElement());
+            while (en.hasNext()) {
+                h.peekElement(en.next());
                 t = createNodeType(false);
                 h.loadObject(t);
                 h.close();
@@ -4465,8 +4460,8 @@ public class GraGra implements Disposable, XMLObject {
 
             // the edge type
             en = h.getEnumeration("", null, true, "EdgeType");
-            while (en.hasMoreElements()) {
-                h.peekElement(en.nextElement());
+            while (en.hasNext()) {
+                h.peekElement(en.next());
                 t = createArcType(false);
                 h.loadObject(t);
                 h.close();
@@ -4531,13 +4526,13 @@ public class GraGra implements Disposable, XMLObject {
         // first try to read Graphconstraint_Atomic and Formula of AGG V1.2.0b
         boolean gcAtomicsLoaded = false;
         // read atomic constraints
-        Enumeration<?> en = h.getEnumeration("", null, true,
+        Iterator<Element> en = h.getEnumeration("", null, true,
                 "Graphconstraint_Atomic");
-        if (en.hasMoreElements()) {
+        if (en.hasNext()) {
             gcAtomicsLoaded = true;
         }
-        while (en.hasMoreElements()) {
-            h.peekElement(en.nextElement());
+        while (en.hasNext()) {
+            h.peekElement(en.next());
             AtomConstraint ac = createAtomic("");
             h.loadObject(ac);
             h.close();
@@ -4548,8 +4543,8 @@ public class GraGra implements Disposable, XMLObject {
             if (h.readSubTag("Constraints")) {
                 // read formulas
                 en = h.getEnumeration("", null, true, "Formula");
-                while (en.hasMoreElements()) {
-                    h.peekElement(en.nextElement());
+                while (en.hasNext()) {
+                    h.peekElement(en.next());
                     Formula f;
                     f = (Formula) h.loadObject(createConstraint(""));
                     if (f != null) {
@@ -4568,8 +4563,8 @@ public class GraGra implements Disposable, XMLObject {
             if (h.readSubTag("Constraints")) {
                 // read atomic constraints
                 en = h.getEnumeration("", null, true, "Graphconstraint_Atomic");
-                while (en.hasMoreElements()) {
-                    h.peekElement(en.nextElement());
+                while (en.hasNext()) {
+                    h.peekElement(en.next());
                     AtomConstraint ac = createAtomic("");
                     h.loadObject(ac);
                     h.close();
@@ -4577,8 +4572,8 @@ public class GraGra implements Disposable, XMLObject {
                 this.itsAtomics.trimToSize();
                 // read formulas
                 en = h.getEnumeration("", null, true, "Formula");
-                while (en.hasMoreElements()) {
-                    h.peekElement(en.nextElement());
+                while (en.hasNext()) {
+                    h.peekElement(en.next());
                     Formula f;
                     f = (Formula) h.loadObject(createConstraint(""));
                     if (f != null) {
@@ -4596,9 +4591,9 @@ public class GraGra implements Disposable, XMLObject {
         boolean hasGACs = false;
         List<Rule> rulesWithGC = new Vector<Rule>();
         this.itsRules.clear();
-        Enumeration<?> en1 = h.getEnumeration("", null, true, "Rule");
-        while (en1.hasMoreElements()) {
-            h.peekElement(en1.nextElement());
+        Iterator<Element> en1 = h.getEnumeration("", null, true, "Rule");
+        while (en1.hasNext()) {
+            h.peekElement(en1.next());
             Rule r = createRule();
             h.loadObject(r);
             hasGACs = hasGACs || r.hasNestedACs();
@@ -4607,9 +4602,9 @@ public class GraGra implements Disposable, XMLObject {
             }
             h.close();
         }
-        Enumeration<?> en2 = h.getEnumeration("", null, true, "RuleScheme");
-        while (en2.hasMoreElements()) {
-            h.peekElement(en2.nextElement());
+        Iterator<Element> en2 = h.getEnumeration("", null, true, "RuleScheme");
+        while (en2.hasNext()) {
+            h.peekElement(en2.next());
             RuleScheme rs = createRuleScheme();
             h.loadObject(rs);
             hasGACs = hasGACs || rs.hasNestedACs();

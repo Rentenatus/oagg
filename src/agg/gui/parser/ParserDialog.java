@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.parser;
 
@@ -50,6 +51,7 @@ import agg.parser.ParserFactory;
 import agg.parser.ParserOption;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
+import java.util.List;
 
 /**
  * This dialog guides the user thru all setting which must be done before the parser can start.
@@ -97,7 +99,7 @@ public class ParserDialog extends JDialog implements ActionListener,
     @SuppressWarnings("rawtypes")
     JList gragraNames;
 
-    private Vector<String> gragraNamesVector;
+    private List<String> gragraNamesVector;
 
     /**
      * this JScrollPane is needed to scroll the gragra names
@@ -422,7 +424,7 @@ public class ParserDialog extends JDialog implements ActionListener,
 
         /* gragra namen liste */
         this.gragraNamesVector = treeView.getGraGraNames();
-        this.gragraNames = new JList(this.gragraNamesVector); // treeView.getGraGraNames());
+        this.gragraNames = new JList(new Vector(this.gragraNamesVector)); // treeView.getGraGraNames());
         this.gragraNames.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.gragraNames.addListSelectionListener(this);
 
@@ -580,7 +582,7 @@ public class ParserDialog extends JDialog implements ActionListener,
             String name = (String) this.gragraNames.getSelectedValue();
             boolean found = false;
             for (int i = 0; i < this.treeView.getGraGras().size() && !found; i++) {
-                EdGraGra gragra = this.treeView.getGraGras().elementAt(i);
+                EdGraGra gragra = this.treeView.getGraGras().get(i);
                 if (name.equals(gragra.getName())) {
                     found = true;
                     switch (step) {
@@ -606,7 +608,7 @@ public class ParserDialog extends JDialog implements ActionListener,
             String nameStr = (String) this.gragraNames.getSelectedValue();
             boolean found = false;
             for (int i = 0; i < this.treeView.getGraGras().size() && !found; i++) {
-                EdGraGra gragra = this.treeView.getGraGras().elementAt(i);
+                EdGraGra gragra = this.treeView.getGraGras().get(i);
                 String name = nameStr;
                 int indx = nameStr.indexOf("(");
                 if (indx != -1) {
@@ -702,8 +704,8 @@ public class ParserDialog extends JDialog implements ActionListener,
                 // add loaded name to list of gragra names
                 String str = loadedGraGra.getName() + "("
                         + loadedGraGra.getFileName() + ")";
-                this.gragraNamesVector.addElement(str);
-                this.gragraNames.setListData(this.gragraNamesVector);
+                this.gragraNamesVector.add(str);
+                this.gragraNames.setListData(new Vector(this.gragraNamesVector));
                 this.gragraNames.setSelectedIndex(this.gragraNamesVector.size() - 1);
             }
             switch (step) {
@@ -747,8 +749,8 @@ public class ParserDialog extends JDialog implements ActionListener,
         // add loaded name to list of gragra names
         String str = excludePairContainer.getGrammar().getName() + "("
                 + fileName + ")";
-        this.gragraNamesVector.addElement(str);
-        this.gragraNames.setListData(this.gragraNamesVector);
+        this.gragraNamesVector.add(str);
+        this.gragraNames.setListData(new Vector(this.gragraNamesVector));
         this.gragraNames.setSelectedIndex(this.gragraNamesVector.size() - 1);
 
         // set critical pairs

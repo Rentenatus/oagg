@@ -1,11 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ * </copyright>
  */
 package agg.xt_basis;
 
@@ -24,6 +26,9 @@ import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.ValueTuple;
 import agg.cons.AtomConstraint;
 import agg.util.Pair;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manages the node/edge types of graphs. Especially the rules and host graphs of a graph transformation system (gratra)
@@ -75,7 +80,7 @@ public class TypeSet {
     /**
      * returned instead of a list of {@link TypeError}s, if there were none.
      */
-    private static final Collection<TypeError> SUCCESS = new Vector<TypeError>(0);
+    private static final Collection<TypeError> SUCCESS = new ArrayList< >(0);
 
     /**
      * the types of the edges and nodes will be hold in this list
@@ -239,8 +244,8 @@ public class TypeSet {
      *
      * @see agg.xt_basis.Type
      */
-    public final Enumeration<Type> getTypes() {
-        return this.types.elements();
+    public final Iterator<Type> getTypes() {
+        return this.types.iterator();
     }
 
     public final int getTypesCount() {
@@ -492,14 +497,14 @@ public class TypeSet {
      * If the parameter <code>all</code> is true, then a copy will be created of each type of the
      * <code>otherTypes</code>, otherwise only of not found type.
      */
-    public void adaptTypes(final Enumeration<Type> otherTypes, final boolean all) {
+    public void adaptTypes(final Iterator<Type> otherTypes, final boolean all) {
         doAdaptTypes(otherTypes, all);
     }
 
-    private void doAdaptTypes(final Enumeration<Type> otherTypes, final boolean all) {
+    private void doAdaptTypes(final Iterator<Type> otherTypes, final boolean all) {
         Vector<Pair<Type, Type>> v = new Vector<Pair<Type, Type>>(5);
-        while (otherTypes.hasMoreElements()) {
-            Type t = otherTypes.nextElement();
+        while (otherTypes.hasNext()) {
+            Type t = otherTypes.next();
             Type similar = getTypeByNameAndAdditionalRepr(t.getStringRepr(), t
                     .getAdditionalRepr());
 
@@ -541,8 +546,8 @@ public class TypeSet {
             }
         }
 
-        while (otherTypes.hasMoreElements()) {
-            Type t = otherTypes.nextElement();
+        while (otherTypes. hasNext()) {
+            Type t = otherTypes.next();
             Type similar = getTypeByNameAndAdditionalRepr(t.getStringRepr(), t
                     .getAdditionalRepr());
             if (similar != null) {
@@ -556,7 +561,7 @@ public class TypeSet {
     private void adaptTypeInheritance(
             final Graph tGraph,
             final Vector<Type> typesToAdapt,
-            final Hashtable<Type, Vector<Type>> oldInheritance) {
+            final Map<Type, Vector<Type>> oldInheritance) {
         if (tGraph == null || this.typeGraph == null
                 || !this.typeGraph.getNodesSet().iterator().hasNext()
                 || typesToAdapt.isEmpty()) {
@@ -757,8 +762,7 @@ public class TypeSet {
                 k++;
             }
             // store arc, source and target types of a clan arc, then destroy the arc
-            Hashtable<Type, Vector<Pair<?, ?>>> table = new Hashtable<Type, Vector<Pair<?, ?>>>(
-                    5, 5);
+            Map<Type, Vector<Pair<?, ?>>> table = new HashMap<>(                    5, 5);
             for (int i = 0; i < arcsToDelete.size(); i++) {
                 Arc a = arcsToDelete.get(i);
                 TypeGraphArc subt = t.getTypeGraphArc(a.getSource().getType(), a.getTarget().getType());
@@ -784,9 +788,9 @@ public class TypeSet {
             }
             // create clan edges again
             if (!table.isEmpty()) {
-                Enumeration<Type> keys = table.keys();
-                while (keys.hasMoreElements()) {
-                    Type arcT = keys.nextElement();
+                Iterator<Type> keys = table.keySet().iterator();
+                while (keys.hasNext()) {
+                    Type arcT = keys.next();
                     Vector<Pair<?, ?>> tmp = table.get(arcT);
                     Pair<?, ?> srcTtarT = tmp.get(0);
                     Pair<?, ?> srcMult = tmp.get(1);
@@ -821,7 +825,7 @@ public class TypeSet {
 //		System.out.println("TypeSet.importTypeGraph rewrite: "+rewrite);
         final Vector<Type> differentAttribute = new Vector<Type>(5);
         final Vector<Type> differentInheritance = new Vector<Type>(5);
-        final Hashtable<Type, Vector<Type>> oldInheritance = new Hashtable<Type, Vector<Type>>(5, 5);
+        final Map<Type, Vector<Type>> oldInheritance = new HashMap< >(5, 5);
         final Vector<Type> differentMultiplicity = new Vector<Type>(5);
         final Vector<Type> typesToAdd = new Vector<Type>(5);
 
@@ -857,9 +861,9 @@ public class TypeSet {
                     Type other_t = differentInheritance.get(i);
                     Type t = getTypeByNameAndAdditionalRepr(other_t
                             .getStringRepr(), other_t.getAdditionalRepr());
-                    Vector<GraphObject> v = this.typeGraph
+                    List<GraphObject> v = this.typeGraph
                             .getElementsOfTypeAsVector(t);
-                    if (!v.isEmpty() && v.firstElement().isNode()) {
+                    if (!v.isEmpty() && v.get(0).isNode()) {
                         if (!t.getParents().isEmpty()) {
                             oldInheritance.put(t, t.getParents());
                         }
@@ -1352,11 +1356,11 @@ public class TypeSet {
         }
         // now propagate all graph objects from type graph
         // to its this.types
-        Enumeration<GraphObject> en = this.typeGraph.getElements();
+        Iterator<GraphObject> en = this.typeGraph.iteratorOfElems();
         GraphObject actGraphObject;
-        while (en.hasMoreElements()) {
+        while (en.hasNext()) {
             // link the type to the graph object
-            actGraphObject = en.nextElement();
+            actGraphObject = en.next();
             actType = actGraphObject.getType();
             if (!actType.addTypeGraphObject(actGraphObject)) {
                 // the adding wasn't successful
@@ -2214,12 +2218,12 @@ public class TypeSet {
             final Graph graph,
             final int currentTypeGraphLevel) {
 
-        final Enumeration<GraphObject> list = graph.getElementsOfType(
+        final Iterator<GraphObject> list = graph.getElementsOfType(
                 typearc.getType(),
                 typearc.getSourceType(),
                 typearc.getTargetType());
-        while (list.hasMoreElements()) {
-            final Arc arc = (Arc) list.nextElement();
+        while (list.hasNext()) {
+            final Arc arc = (Arc) list.next();
             // delegate multiplicity check to arc type
             final TypeError error = arc.getType().check(arc, currentTypeGraphLevel);
             if (error != null) {
@@ -2865,10 +2869,10 @@ public class TypeSet {
             return true;
         }
         // compare types size
-        Enumeration<Type> e = ts.getTypes();
+        Iterator<Type> e = ts.getTypes();
         Vector<Type> another = new Vector<Type>();
-        while (e.hasMoreElements()) {
-            another.add(e.nextElement());
+        while (e.hasNext()) {
+            another.add(e.next());
         }
         if (this.types.size() != another.size()) {
             return false;
@@ -3334,9 +3338,6 @@ public class TypeSet {
      * Trims the capacity of used vectors to be the vector's current size.
      */
     public void trimToSize() {
-        if (this.typeGraph != null) {
-            this.typeGraph.trimToSize();
-        }
         this.types.trimToSize();
         this.inheritanceArcs.trimToSize();
     }

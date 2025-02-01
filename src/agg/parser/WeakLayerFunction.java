@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -94,8 +95,8 @@ public class WeakLayerFunction extends LayerFunction {
             Graph leftGraph = rule.getLeft();
             Graph rightGraph = rule.getRight();
             /* alle geloeschten Objekte suchen */
-            for (Enumeration<GraphObject> en = leftGraph.getElements(); en.hasMoreElements();) {
-                GraphObject grob = en.nextElement();
+            for (Iterator<GraphObject> en = leftGraph.iteratorOfElems(); en.hasNext();) {
+                GraphObject grob = en.next();
                 if (rule.getImage(grob) == null) {
                     deletionSet.add(grob);
                 }
@@ -124,14 +125,14 @@ public class WeakLayerFunction extends LayerFunction {
                 break;
             }
             /* alle erzeugten Objekte suchen */
-            for (Enumeration<GraphObject> en = rightGraph.getElements(); en
-                    .hasMoreElements();) {
-                creationSet.add(en.nextElement());
+            for (Iterator<GraphObject> en = rightGraph.iteratorOfElems(); en
+                    .hasNext();) {
+                creationSet.add(en.next());
             }
             Report.println("creationSet ist " + creationSet, Report.LAYER);
-            for (Enumeration<GraphObject> en = leftGraph.getElements(); en.hasMoreElements();) {
+            for (Iterator<GraphObject> en = leftGraph.iteratorOfElems(); en.hasNext();) {
                 try {
-                    creationSet.remove(rule.getImage(en.nextElement()));
+                    creationSet.remove(rule.getImage(en.next()));
                 } catch (NullPointerException npe) {
                 }
             }

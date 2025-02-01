@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 /**
  *
@@ -170,9 +169,9 @@ public class ObjectFlow {
         Object outObj = this.getOutput(myInputObj);
         if (this.srcOfOutput instanceof Rule
                 && outObj instanceof GraphObject) {
-            Enumeration<GraphObject> inv = ((Rule) this.srcOfOutput).getInverseImage((GraphObject) outObj);
-            if (inv.hasMoreElements()) {
-                return inv.nextElement();
+            Iterator<GraphObject> inv = ((Rule) this.srcOfOutput).getInverseImage((GraphObject) outObj);
+            if (inv.hasNext()) {
+                return inv.next();
             }
         }
         return null;
@@ -185,9 +184,9 @@ public class ObjectFlow {
         Object outObj = this.getOutput(myInputObj);
         if (this.srcOfOutput instanceof Rule
                 && outObj instanceof GraphObject) {
-            Enumeration<GraphObject> inv = ((Rule) this.srcOfOutput).getInverseImage((GraphObject) outObj);
-            if (inv.hasMoreElements()) {
-                GraphObject otherInput = inv.nextElement();
+            Iterator<GraphObject> inv = ((Rule) this.srcOfOutput).getInverseImage((GraphObject) outObj);
+            if (inv.hasNext()) {
+                GraphObject otherInput = inv.next();
                 return otherObjFlow.getOutput(otherInput);
             }
         }

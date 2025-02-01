@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -411,16 +412,16 @@ public class CriticalPairData {
             Iterator<Node> nodes = g.getNodesCollection().iterator();
             while (nodes.hasNext()) {
                 GraphObject go = nodes.next();
-                if (this.pair.first.first.getInverseImage(go).hasMoreElements()
-                        && this.pair.first.second.getInverseImage(go).hasMoreElements()) {
+                if (this.pair.first.first.hasInverseImage(go)
+                        && this.pair.first.second.hasInverseImage(go)) {
                     list.add(go);
                 }
             }
             Iterator<Arc> arcs = g.getArcsCollection().iterator();
             while (arcs.hasNext()) {
                 GraphObject go = arcs.next();
-                if (this.pair.first.first.getInverseImage(go).hasMoreElements()
-                        && this.pair.first.second.getInverseImage(go).hasMoreElements()) {
+                if (this.pair.first.first.hasInverseImage(go)
+                        && this.pair.first.second.hasInverseImage(go)) {
                     list.add(go);
                 }
             }
@@ -445,8 +446,8 @@ public class CriticalPairData {
             Iterator<Node> nodes = g.getNodesCollection().iterator();
             while (nodes.hasNext()) {
                 GraphObject go = nodes.next();
-                if (this.pair.first.first.getInverseImage(go).hasMoreElements()
-                        && this.pair.first.second.getInverseImage(go).hasMoreElements()
+                if (this.pair.first.first.hasInverseImage(go)
+                        && this.pair.first.second.hasInverseImage(go)
                         && go.isCritical()) {
                     list.add(go);
                 }
@@ -454,8 +455,8 @@ public class CriticalPairData {
             Iterator<Arc> arcs = g.getArcsCollection().iterator();
             while (arcs.hasNext()) {
                 GraphObject go = arcs.next();
-                if (this.pair.first.first.getInverseImage(go).hasMoreElements()
-                        && this.pair.first.second.getInverseImage(go).hasMoreElements()
+                if (this.pair.first.first.hasInverseImage(go)
+                        && this.pair.first.second.hasInverseImage(go)
                         && go.isCritical()) {
                     list.add(go);
                 }
@@ -470,12 +471,12 @@ public class CriticalPairData {
         if (m1.getSource() == this.r1.getRight()) {
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     this.r1.getLeft(), m1.getTarget());
-            Enumeration<GraphObject> dom = m1.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                Enumeration<GraphObject> inverse = this.r1.getInverseImage(go);
-                if (inverse.hasMoreElements()) {
-                    GraphObject goL = inverse.nextElement();
+            Iterator<GraphObject> dom = m1.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                Iterator<GraphObject> inverse = this.r1.getInverseImage(go);
+                if (inverse.hasNext()) {
+                    GraphObject goL = inverse.next();
                     try {
                         om.addMapping(goL, m1.getImage(go));
                     } catch (BadMappingException ex) {
@@ -495,12 +496,12 @@ public class CriticalPairData {
         if (m1.getSource() == this.r1.getRight()) {
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     this.r1.getLeft(), m1.getTarget());
-            Enumeration<GraphObject> dom = m1.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                Enumeration<GraphObject> inverse = this.r1.getInverseImage(go);
-                if (inverse.hasMoreElements()) {
-                    GraphObject goL = inverse.nextElement();
+            Iterator<GraphObject> dom = m1.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                Iterator<GraphObject> inverse = this.r1.getInverseImage(go);
+                if (inverse.hasNext()) {
+                    GraphObject goL = inverse.next();
                     try {
                         om.addMapping(goL, m1.getImage(go));
                     } catch (BadMappingException ex) {
@@ -521,12 +522,12 @@ public class CriticalPairData {
                 && this.r2.getLeft() == help2.getSource()) {
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     this.r2.getLeft(), m2.getTarget());
-            Enumeration<GraphObject> dom = m2.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                Enumeration<GraphObject> inverse = help2.getInverseImage(go);
-                if (inverse.hasMoreElements()) {
-                    GraphObject goL = inverse.nextElement();
+            Iterator<GraphObject> dom = m2.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                Iterator<GraphObject> inverse = help2.getInverseImage(go);
+                if (inverse.hasNext()) {
+                    GraphObject goL = inverse.next();
                     try {
                         om.addMapping(goL, m2.getImage(go));
                     } catch (BadMappingException ex) {
@@ -547,12 +548,12 @@ public class CriticalPairData {
 
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     help2.getSource(), m2.getTarget());
-            Enumeration<GraphObject> dom = m2.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                Enumeration<GraphObject> inverse = help2.getInverseImage(go);
-                if (inverse.hasMoreElements()) {
-                    GraphObject goN = inverse.nextElement();
+            Iterator<GraphObject> dom = m2.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                Iterator<GraphObject> inverse = help2.getInverseImage(go);
+                if (inverse.hasNext()) {
+                    GraphObject goN = inverse.next();
                     try {
                         om.addMapping(goN, m2.getImage(go));
                     } catch (BadMappingException ex) {
@@ -573,9 +574,9 @@ public class CriticalPairData {
 
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     help1.getSource(), m2.getTarget());
-            Enumeration<GraphObject> dom = help1.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
+            Iterator<GraphObject> dom = help1.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
                 GraphObject img = help2.getImage(help1.getImage(go));
                 if (img != null) {
                     try {
@@ -661,12 +662,12 @@ public class CriticalPairData {
                 List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> l1 = null;
                 OrdinaryMorphism m1 = p.first.second;
                 OrdinaryMorphism m2 = p.first.first;
-                Enumeration<GraphObject> dom1 = m1.getDomain();
-                while (dom1.hasMoreElements()) {
-                    GraphObject o1 = dom1.nextElement();
+                Iterator<GraphObject> dom1 = m1.getDomain();
+                while (dom1.hasNext()) {
+                    GraphObject o1 = dom1.next();
                     GraphObject o = m1.getImage(o1);
-                    if (m2.getInverseImage(o).hasMoreElements()) {
-                        if (o.isCritical() && r1.getInverseImage(o1).hasMoreElements()) {
+                    if (m2.hasInverseImage(o)) {
+                        if (o.isCritical() && r1.hasInverseImage(o1)) {
                             map2.put(p, key);
                             l1 = this.map.get(key);
                             if (l1 == null) {
@@ -686,12 +687,12 @@ public class CriticalPairData {
                 List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> l1 = null;
                 OrdinaryMorphism m1 = p.first.second;
                 OrdinaryMorphism m2 = p.first.first;
-                Enumeration<GraphObject> dom1 = m1.getDomain();
-                while (dom1.hasMoreElements()) {
-                    GraphObject o1 = dom1.nextElement();
+                Iterator<GraphObject> dom1 = m1.getDomain();
+                while (dom1.hasNext()) {
+                    GraphObject o1 = dom1.next();
                     GraphObject o = m1.getImage(o1);
-                    if (m2.getInverseImage(o).hasMoreElements()) {
-                        if (o.isCritical() && !r1.getInverseImage(o1).hasMoreElements()) {
+                    if (m2.hasInverseImage(o)) {
+                        if (o.isCritical() && !r1.hasInverseImage(o1)) {
                             map2.put(p, key);
                             l1 = this.map.get(key);
                             if (l1 == null) {

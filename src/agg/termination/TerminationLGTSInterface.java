@@ -1,25 +1,24 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.termination;
 
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-
+import agg.util.Pair;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
-import agg.util.Pair;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
 
 /**
  * This class implements termination conditions of Layered Graph Grammar.
@@ -48,21 +47,21 @@ public interface TerminationLGTSInterface {
 
     public Hashtable<Integer, HashSet<Rule>> getInvertedRuleLayer();
 
-    public Vector<Integer> getOrderedRuleLayer();
+    public List<Integer> getOrderedRuleLayer();
 
     public Hashtable<Integer, HashSet<Object>> getInvertedTypeDeletionLayer();
 
     public Hashtable<Integer, HashSet<Object>> getInvertedTypeCreationLayer();
 
-    public Hashtable<Integer, Vector<Type>> getDeletionType();
+    public Hashtable<Integer, List<Type>> getDeletionType();
 
-    public Hashtable<Integer, Vector<GraphObject>> getDeletionTypeObject();
+    public Hashtable<Integer, List<GraphObject>> getDeletionTypeObject();
 
-    public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultTypeDeletion();
+    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultTypeDeletion();
 
-    public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultDeletion();
+    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultDeletion();
 
-    public Hashtable<Integer, Pair<Boolean, Vector<Rule>>> getResultNondeletion();
+    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultNondeletion();
 
     public void resetLayer();
 
@@ -70,7 +69,7 @@ public interface TerminationLGTSInterface {
 
     public void initAll(boolean generate);
 
-    public Vector<Object> getCreatedTypesOnDeletionLayer(Integer layer);
+    public List<Object> getCreatedTypesOnDeletionLayer(Integer layer);
 
     /**
      * Checks layer conditions .

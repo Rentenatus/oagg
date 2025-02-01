@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.editor.impl;
 
@@ -46,6 +47,7 @@ import agg.xt_basis.TypeException;
 import agg.gui.editor.EditorConstants;
 import agg.gui.editor.GraphPanel;
 import agg.layout.evolutionary.LayoutArc;
+import java.util.List;
 
 /**
  * EdArc specifies an arc layout of an agg.xt_basis.Arc object
@@ -446,9 +448,9 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     /**
      * Returns the attributes which are shown
      */
-    public Vector<Vector<String>> getAttributes() {
+    public List<List<String>> getAttributes() {
         // maybe this method can be moved to EdGraphObjec
-        Vector<Vector<String>> attrs = new Vector<Vector<String>>();
+        List<List<String>> attrs = new Vector<>();
         if (this.bArc != null && this.bArc.getAttribute() != null) {
             AttrInstance attributes = this.bArc.getAttribute();
 
@@ -457,13 +459,12 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
 
                 int number = mvs.getSize(attributes);
                 for (int i = 0; i < number; i++) {
-                    Vector<String> tmpAttrVector = new Vector<String>();
+                    List<String> tmpAttrVector = new Vector<String>();
                     int index = mvs.convertSlotToIndex(attributes, i);
-                    tmpAttrVector.addElement(attributes.getTypeAsString(index));
-                    tmpAttrVector.addElement(attributes.getNameAsString(index));
-                    tmpAttrVector
-                            .addElement(attributes.getValueAsString(index));
-                    attrs.addElement(tmpAttrVector);
+                    tmpAttrVector.add(attributes.getTypeAsString(index));
+                    tmpAttrVector.add(attributes.getNameAsString(index));
+                    tmpAttrVector.add(attributes.getValueAsString(index));
+                    attrs.add(tmpAttrVector);
                 }
             } else {
                 attrs = setAttributes(this.bArc);
@@ -475,8 +476,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     /**
      * Sets my attributes to the attributes specified by the Arc bArc
      */
-    public Vector<Vector<String>> setAttributes(Arc bArc) {
-        Vector<Vector<String>> attrs = new Vector<Vector<String>>();
+    public List<List<String>> setAttributes(Arc bArc) {
+        List<List<String>> attrs = new Vector<>();
         if (bArc == null) {
             return attrs;
         }
@@ -487,11 +488,11 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         int nattrs = bArc.getAttribute().getNumberOfEntries();
         if (nattrs != 0) {
             for (int i = 0; i < nattrs; i++) {
-                Vector<String> attr = new Vector<String>();
-                attr.addElement(bArc.getAttribute().getTypeAsString(i));
-                attr.addElement(bArc.getAttribute().getNameAsString(i));
-                attr.addElement(bArc.getAttribute().getValueAsString(i));
-                attrs.addElement(attr);
+                List<String> attr = new Vector<>();
+                attr.add(bArc.getAttribute().getTypeAsString(i));
+                attr.add(bArc.getAttribute().getNameAsString(i));
+                attr.add(bArc.getAttribute().getValueAsString(i));
+                attrs.add(attr);
             }
         }
         return attrs;
@@ -500,7 +501,7 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     /**
      * Sets my attributes to the attributes specified by the GraphObject obj
      */
-    public Vector<Vector<String>> setAttributes(GraphObject obj) {
+    public List<List<String>> setAttributes(GraphObject obj) {
         return setAttributes((Arc) obj);
     }
 
@@ -1601,14 +1602,14 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             }
 
             /* Attribute anzeigen */
-            Vector<Vector<String>> attrs = getAttributes();
+            List<List<String>> attrs = getAttributes();
             if (attrs != null && !attrs.isEmpty()) {
                 for (int i = 0; i < attrs.size(); i++) {
-                    Vector<String> attr = attrs.elementAt(i);
-                    if (!this.elemOfTG && (attr.elementAt(2).length() != 0)) {
-                        String attrStr = attr.elementAt(1);
-                        attrStr = attr.elementAt(1) + "=";
-                        attrStr = attrStr + attr.elementAt(2);
+                    List<String> attr = attrs.get(i);
+                    if (!this.elemOfTG && (attr.get(2).length() != 0)) {
+                        String attrStr = attr.get(1);
+                        attrStr = attr.get(1) + "=";
+                        attrStr = attrStr + attr.get(2);
                         if (!underlined) {
                             ty = ty + fm.getHeight();
                             g.drawLine(tx, ty, tx + tw, ty);
@@ -1618,13 +1619,13 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                         ty1 = ty + fm.getAscent();
                         g.drawString(attrStr, tx, ty1);
                         ty = ty + fm.getHeight();
-                    } else if (this.elemOfTG && (attr.elementAt(1) != null)) {
-                        String attrStr = attr.elementAt(0);
+                    } else if (this.elemOfTG && (attr.get(1) != null)) {
+                        String attrStr = attr.get(0);
                         attrStr = attrStr + "  ";
-                        attrStr = attrStr + attr.elementAt(1);
+                        attrStr = attrStr + attr.get(1);
                         //					 Type graph: default attr value 
-                        if (attr.elementAt(2).length() != 0) {
-                            attrStr = attrStr + "=" + attr.elementAt(2);
+                        if (attr.get(2).length() != 0) {
+                            attrStr = attrStr + "=" + attr.get(2);
                         }
                         if (!underlined) {
                             ty = ty + fm.getHeight();
@@ -1895,13 +1896,13 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         }
         FontMetrics fm = g.getFontMetrics();
         /* Attribute anzeigen */
-        Vector<Vector<String>> attrs = getAttributes();
+        List<List<String>> attrs = getAttributes();
         if (attrs != null && !attrs.isEmpty()) {
             for (int i = 0; i < attrs.size(); i++) {
-                Vector<String> attr = attrs.elementAt(i);
-                if (attr.elementAt(2).length() != 0) {
-                    if (attr.elementAt(1).equals("name")) {
-                        String attrStr = attr.elementAt(2);
+                List<String> attr = attrs.get(i);
+                if (attr.get(2).length() != 0) {
+                    if (attr.get(1).equals("name")) {
+                        String attrStr = attr.get(2);
                         if (!attrStr.equals("\"\"")) {
                             int ty1 = ty + fm.getAscent();
                             g.drawString(attrStr, tx, ty1);

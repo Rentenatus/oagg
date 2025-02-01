@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.browser.impl;
 
@@ -234,9 +235,9 @@ public class TestBrowser extends JPanel {
         List<Rule> rules = this.gragra.getBasisGraGra().getListOfRules();
         if (!rules.isEmpty()) {
             Rule r = rules.get(0);
-            Enumeration<OrdinaryMorphism> nacs = r.getNACs();
-            if (nacs.hasMoreElements()) {
-                OrdinaryMorphism nac = nacs.nextElement();
+            Iterator<OrdinaryMorphism> nacs = r.getNACs();
+            if (nacs.hasNext()) {
+                OrdinaryMorphism nac = nacs.next();
                 this.browser.setGraph(nac.getImage());
                 this.browser.showGraph();
             }

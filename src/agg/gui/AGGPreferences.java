@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui;
 
@@ -24,6 +25,7 @@ import agg.gui.event.EditEvent;
 import agg.gui.options.AbstractOptionGUI;
 import agg.gui.options.GraTraOptionGUI;
 import agg.gui.options.OptionGUI;
+import java.util.Iterator;
 
 /**
  * The class creates an AGG preferences.
@@ -54,8 +56,8 @@ public class AGGPreferences implements EditEventListener {
         }
     }
 
-    public Enumeration<JMenu> getMenus() {
-        return this.menus.elements();
+    public Iterator<JMenu> getMenus() {
+        return this.menus.iterator();
     }
 
     public OptionGUI getOptionGUI() {

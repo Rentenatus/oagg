@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.cpa;
 
@@ -210,8 +211,8 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         appl.removeMenu(back);
     }
 
-    public Enumeration<JMenu> getMenus() {
-        return this.menus.elements();
+    public Iterator<JMenu> getMenus() {
+        return this.menus.iterator();
     }
 
     public EdGraGra getGraGra() {
@@ -644,7 +645,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.pairsMenu.add(this.backCP);
         backCPaddActionListener();
 
-        this.menus.addElement(this.pairsMenu);
+        this.menus.add(this.pairsMenu);
     }
 
     private void rulesCPaddActionListener() {
@@ -1960,7 +1961,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             this.graphDesktop = (GraphDesktop) e.getSource();
             if (e.getData() instanceof Graph) {
                 if (this.overlapGraphs == null) {
-                    this.overlapGraphs = new Hashtable<Graph, Pair<Vector<Hashtable<GraphObject, GraphObject>>, JButton>>();
+                    this.overlapGraphs = new Hashtable<Graph, Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>>();
                 }
 
                 this.overlapGraph = (Graph) e.getData();
@@ -1973,12 +1974,12 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         this.overlapGraphs = null;
                         return;
                     }
-                    Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> ht = epc.getExcludeContainerForTestGraph();
+                    Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> ht = epc.getExcludeContainerForTestGraph();
 
-                    Vector<Hashtable<GraphObject, GraphObject>> matches = ht.get(this.overlapGraph);
+                    List<Hashtable<GraphObject, GraphObject>> matches = ht.get(this.overlapGraph);
 
                     if (matches != null) {
-                        this.hostGraphMappings = new Vector<Hashtable<GraphObject, GraphObject>>(
+                        this.hostGraphMappings = new Vector<>(
                                 matches.size());
                         this.hostGraphMappings.addAll(matches);
                         if (this.hostGraphMappings.size() > 1) {
@@ -1990,12 +1991,12 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             this.nextMatchAtHostGraphButton = null;
                         }
 
-                        Pair<Vector<Hashtable<GraphObject, GraphObject>>, JButton> pair = new Pair<Vector<Hashtable<GraphObject, GraphObject>>, JButton>(
+                        Pair<List<Hashtable<GraphObject, GraphObject>>, JButton> pair = new Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>(
                                 this.hostGraphMappings, this.nextMatchAtHostGraphButton);
                         this.overlapGraphs.put(this.overlapGraph, pair);
 
                         if (this.hostGraphMappings.size() > 0) {
-                            Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.elementAt(0);
+                            Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
 
                             showCriticalMatch(this.treeView.getCurrentGraGra()
                                     .getGraph(), this.graphDesktop
@@ -2013,20 +2014,20 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         this.treeView.graphDidChange();
                     }
                 } else {
-                    Pair<Vector<Hashtable<GraphObject, GraphObject>>, JButton> pair = this.overlapGraphs.get(this.overlapGraph);
+                    Pair<List<Hashtable<GraphObject, GraphObject>>, JButton> pair = this.overlapGraphs.get(this.overlapGraph);
 
                     this.hostGraphMappings = pair.first;
                     this.nextMatchAtHostGraphButton = pair.second;
 
                     if (this.hostGraphMappings != null
                             && this.hostGraphMappings.size() > 0) {
-                        Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.elementAt(0);
+                        Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
 
                         showCriticalMatch(this.treeView.getCurrentGraGra()
                                 .getGraph(), this.graphDesktop
                                         .getInternalLayoutGraph(this.overlapGraph), objs);
                         this.treeView.graphDidChange();
-                        this.hostGraphMappings.removeElementAt(0);
+                        this.hostGraphMappings.remove(0);
                     }
                 }
             }
@@ -2037,7 +2038,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         if (e.getSource() instanceof JButton) {
             if (((JButton) e.getSource()) == this.nextMatchAtHostGraphButton) {
                 if (this.hostGraphMappings != null && this.hostGraphMappings.size() > 0) {
-                    Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.elementAt(0);
+                    Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
 
                     showCriticalMatch(this.treeView.getCurrentGraGra().getGraph(),
                             this.graphDesktop.getInternalLayoutGraph(this.overlapGraph),
@@ -2358,13 +2359,13 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
 
         // select critical graph objects
         for (int i = 0; i < hostg.getNodes().size(); i++) {
-            EdNode n = hostg.getNodes().elementAt(i);
+            EdNode n = hostg.getNodes().get(i);
             if (n.getBasisNode().isCritical()) {
                 hostg.setSelectedNode(n);
             }
         }
         for (int i = 0; i < hostg.getArcs().size(); i++) {
-            EdArc a = hostg.getArcs().elementAt(i);
+            EdArc a = hostg.getArcs().get(i);
             if (a.getBasisArc().isCritical()) {
                 hostg.setSelectedArc(a);
             }
@@ -2393,7 +2394,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
      */
     public void removeCPAnalysisEventListener(ParserEventListener l) {
         if (this.listener.contains(l)) {
-            this.listener.removeElement(l);
+            this.listener.remove(l);
         }
     }
 
@@ -2405,7 +2406,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
      */
     synchronized void fireParserEvent(ParserEvent e) {
         for (int i = 0; i < this.listener.size(); i++) {
-            this.listener.elementAt(i).parserEventOccured(e);
+            this.listener.get(i).parserEventOccured(e);
         }
     }
 
@@ -2556,19 +2557,17 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             if (pc instanceof LayeredDependencyPairContainer) {
                 ((LayeredDependencyPairContainer) pc).stop();
                 ((LayeredDependencyPairContainer) pc)
-                        .removePairEventListener(this.listener.elementAt(i));
+                        .removePairEventListener(this.listener.get(i));
             } else if (pc instanceof LayeredExcludePairContainer) {
                 ((LayeredExcludePairContainer) pc).stop();
                 ((LayeredExcludePairContainer) pc)
-                        .removePairEventListener(this.listener.elementAt(i));
+                        .removePairEventListener(this.listener.get(i));
             } else if (pc instanceof DependencyPairContainer) {
                 ((DependencyPairContainer) pc).stop();
-                ((DependencyPairContainer) pc).removePairEventListener(this.listener
-                        .elementAt(i));
+                ((DependencyPairContainer) pc).removePairEventListener(this.listener.get(i));
             } else if (pc instanceof ExcludePairContainer) {
                 ((ExcludePairContainer) pc).stop();
-                ((ExcludePairContainer) pc).removePairEventListener(this.listener
-                        .elementAt(i));
+                ((ExcludePairContainer) pc).removePairEventListener(this.listener.get(i));
             }
         }
     }
@@ -2577,22 +2576,20 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         for (int i = 0; i < this.listener.size(); i++) {
             if (pc instanceof LayeredDependencyPairContainer) {
                 ((LayeredDependencyPairContainer) pc)
-                        .addPairEventListener(this.listener.elementAt(i));
+                        .addPairEventListener(this.listener.get(i));
             } else if (pc instanceof LayeredExcludePairContainer) {
                 ((LayeredExcludePairContainer) pc)
-                        .addPairEventListener(this.listener.elementAt(i));
+                        .addPairEventListener(this.listener.get(i));
             } else if (pc instanceof PriorityDependencyPairContainer) {
                 ((PriorityDependencyPairContainer) pc)
-                        .addPairEventListener(this.listener.elementAt(i));
+                        .addPairEventListener(this.listener.get(i));
             } else if (pc instanceof PriorityExcludePairContainer) {
                 ((PriorityExcludePairContainer) pc)
-                        .addPairEventListener(this.listener.elementAt(i));
+                        .addPairEventListener(this.listener.get(i));
             } else if (pc instanceof DependencyPairContainer) {
-                ((DependencyPairContainer) pc).addPairEventListener(this.listener
-                        .elementAt(i));
+                ((DependencyPairContainer) pc).addPairEventListener(this.listener.get(i));
             } else if (pc instanceof ExcludePairContainer) {
-                ((ExcludePairContainer) pc).addPairEventListener(this.listener
-                        .elementAt(i));
+                ((ExcludePairContainer) pc).addPairEventListener(this.listener.get(i));
             }
         }
     }
@@ -2623,7 +2620,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
     }
 
     boolean areRulesInjective(GraGra gra) {
-        Vector<Rule> noninjectives = gra.getNonInjectiveRules();
+        List<Rule> noninjectives = gra.getNonInjectiveRules();
         String text = "\n[ ";
         for (int i = 0; i < noninjectives.size(); i++) {
             text = text + noninjectives.get(i).getName() + "  ";
@@ -2686,9 +2683,9 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             loadSeparateCPcpx, loadSeparateCPdpx, saveCP, showConflictCP,
             showDependencyCP, cpaCombiGraphCP, checkHostGraphCP, backCP;
 
-    protected Vector<ParserEventListener> listener;
+    protected List<ParserEventListener> listener;
 
-    protected Vector<StatusMessageListener> pmlistener;
+    protected List<StatusMessageListener> pmlistener;
 
     protected AGGAppl parent;
 
@@ -2704,7 +2701,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
 
     protected List<Rule> ruleList1, ruleList2;
 
-    protected Vector<JMenu> menus;
+    protected List<JMenu> menus;
 
     protected Hashtable<EdGraGra, Boolean> gragraChanged = new Hashtable<EdGraGra, Boolean>();
 
@@ -2716,16 +2713,16 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
 	protected Hashtable<JFrame, CriticalPairAnalysisSeparated> separatedFrames = new Hashtable<JFrame, CriticalPairAnalysisSeparated>();
 
     protected CriticalPairAnalysisSeparated hostGraphCPA;
-    Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> hostGraphCPAcontainer;
+    Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> hostGraphCPAcontainer;
 
     // CriticalPairAnalysisSeparated combinedCPA;
     protected JFrame hostGraphFrame;
 
-    protected Hashtable<Graph, Pair<Vector<Hashtable<GraphObject, GraphObject>>, JButton>> overlapGraphs;
+    protected Hashtable<Graph, Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>> overlapGraphs;
 
     protected Graph overlapGraph;
 
-    protected Vector<Hashtable<GraphObject, GraphObject>> hostGraphMappings;
+    protected List<Hashtable<GraphObject, GraphObject>> hostGraphMappings;
 
     protected JButton nextMatchAtHostGraphButton;
 

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -42,6 +43,8 @@ import agg.util.XMLObject;
 import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * At the moment, AGG implements the DPO approach by switching on the dangling-edge condition by default. Switching off
@@ -56,19 +59,19 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     protected String formStr = "true";
     protected String formReadStr = "true";
 
-    final protected Vector<OrdinaryMorphism> itsACs = new Vector<OrdinaryMorphism>();
-    final protected Vector<OrdinaryMorphism> itsNACs = new Vector<OrdinaryMorphism>();
-    final protected Vector<OrdinaryMorphism> itsPACs = new Vector<OrdinaryMorphism>();
+    final protected List<OrdinaryMorphism> itsACs = new ArrayList<>();
+    final protected List<OrdinaryMorphism> itsNACs = new ArrayList<>();
+    final protected List<OrdinaryMorphism> itsPACs = new ArrayList<>();
 
     // containers for PostApplicationConditions
     transient protected boolean generatePostConstraints;
-    protected Vector<AtomConstraint> itsUsedAtomics;
-    protected Vector<Formula> itsUsedFormulas;
-    transient protected Vector<String> constraintNameSet;
-    transient protected Vector<Formula> constraints;
-    transient protected Vector<EvalSet> atom_conditions;
+    protected List<AtomConstraint> itsUsedAtomics;
+    protected List<Formula> itsUsedFormulas;
+    transient protected List<String> constraintNameSet;
+    transient protected List<Formula> constraints;
+    transient protected List<EvalSet> atom_conditions;
 
-    protected Vector<ShiftedPAC> itsShiftedPACs;
+    protected List<ShiftedPAC> itsShiftedPACs;
 
     transient protected boolean applicable;
 
@@ -97,11 +100,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 
     transient protected List<GraphObject> forbiden;
 
-    transient protected Hashtable<GraphObject, GraphObject> changedPreserved;
+    transient protected Map<GraphObject, GraphObject> changedPreserved;
 
     transient protected List<String> typesWhichNeedMultiplicityCheck;
 
-    protected Hashtable<Node, Type> abstractType2childType;
+    protected Map<Node, Type> abstractType2childType;
 
     protected Match itsMatch;
 
@@ -209,19 +212,19 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             this.itsNACs.get(0).dispose(false, true);
             this.itsNACs.remove(0);
         }
-        this.itsNACs.trimToSize();
+        this.itsNACs.clear();
 
         while (!this.itsPACs.isEmpty()) {
             this.itsPACs.get(0).dispose(false, true);
             this.itsPACs.remove(0);
         }
-        this.itsPACs.trimToSize();
+        this.itsPACs.clear();
 
         while (!this.itsACs.isEmpty()) {
             this.itsACs.get(0).dispose(false, true);
             this.itsACs.remove(0);
         }
-        this.itsACs.trimToSize();
+        this.itsACs.clear();
 
         this.disposeInverseConstruct();
 
@@ -432,7 +435,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         if (result) {
             result = false;
 
-            Hashtable<OrdinaryMorphism, Boolean> applcond2enable = new Hashtable<OrdinaryMorphism, Boolean>(
+            Map<OrdinaryMorphism, Boolean> applcond2enable = new HashMap<>(
                     this.itsNACs.size() + this.itsPACs.size() + this.itsACs.size());
             // store nac.isEnabled() setting and disable nac 
             for (int i = 0; i < this.itsNACs.size(); i++) {
@@ -569,7 +572,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * too.
      */
     public void destroyNestedAC(final OrdinaryMorphism ac) {
-        this.itsACs.removeElement(ac);
+        this.itsACs.remove(ac);
         ac.getImage().dispose();
     }
 
@@ -583,12 +586,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     /**
      * Return an enumeration of nested application conditions. An element is of type <code>OrdinaryMorphism</code>.
      */
-    public Enumeration<OrdinaryMorphism> getNestedACs() {
-        return this.itsACs.elements();
+    public Iterator<OrdinaryMorphism> getNestedACs() {
+        return this.itsACs.iterator();
     }
 
     public List<NestedApplCond> getEnabledACs() {
-        List<NestedApplCond> list = new Vector<NestedApplCond>(this.itsACs.size());
+        List<NestedApplCond> list = new ArrayList<>(this.itsACs.size());
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -603,7 +606,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public List<Evaluable> getEnabledGeneralACsAsEvaluable() {
-        List<Evaluable> list = new Vector<Evaluable>(this.itsACs.size());
+        List<Evaluable> list = new ArrayList<>(this.itsACs.size());
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -641,10 +644,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      */
     public final boolean removeNestedAC(OrdinaryMorphism ac) {
         boolean enAC = ac.isEnabled();
-        if (this.itsACs.removeElement(ac)) {
+        if (this.itsACs.remove(ac)) {
             if (enAC) {
                 this.itsFormula.patchOutEvaluable((NestedApplCond) ac, true);
-                this.refreshFormula(new Vector<Evaluable>(this.getEnabledACs()));
+                this.refreshFormula(new ArrayList<>(this.getEnabledACs()));
             }
             return true;
         }
@@ -660,13 +663,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             if (ac.getTarget().isUsingVariable(var)) {
                 return true;
             }
-            Vector<String> acVars = ac.getTarget()
+            List<String> acVars = ac.getTarget()
                     .getVariableNamesOfAttributes();
             for (int j = 0; j < acVars.size(); j++) {
                 String varName = acVars.get(j);
                 for (int k = 0; k < act.getNumberOfEntries(); k++) {
                     CondMember cond = (CondMember) act.getMemberAt(k);
-                    Vector<String> condVars = cond.getAllVariables();
+                    List<String> condVars = cond.getAllVariables();
                     if (condVars.contains(varName)
                             && condVars.contains(var.getName())) {
                         return true;
@@ -689,7 +692,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 BaseFactory.theFactory().createGraph(getRight().getTypeSet()),
                 getRight().getAttrContext());
 
-        this.itsNACs.addElement(nac);
+        this.itsNACs.add(nac);
         AttrContext nacContext = nac.getAttrContext(); //getLeft().getAttrContext();
         nac.getImage().setAttrContext(nacContext);
         nac.getImage().setKind(GraphKind.NAC);
@@ -707,19 +710,19 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public void makeACDuetoRHS(final OrdinaryMorphism morph) {
-        HashMap<Node, Node> map = new HashMap<Node, Node>();
+        HashMap<Node, Node> map = new HashMap<>();
         Iterator<Node> nodes = this.itsImag.getNodesSet().iterator();
         while (nodes.hasNext()) {
             Node nr = nodes.next();
-            Enumeration<GraphObject> l = this.getInverseImage(nr);
-            if (l.hasMoreElements()) {
-                Node nl = (Node) l.nextElement();
+            Iterator<GraphObject> l = this.getInverseImage(nr);
+            if (l.hasNext()) {
+                Node nl = (Node) l.next();
                 try {
                     Node n = morph.getTarget().copyNode(nl);
                     try {
                         morph.addMapping(nl, n);
-                        while (l.hasMoreElements()) {
-                            morph.addMapping((Node) l.nextElement(), n);
+                        while (l.hasNext()) {
+                            morph.addMapping((Node) l.next(), n);
                         }
                         map.put(nr, n);
                     } catch (BadMappingException ex) {
@@ -740,15 +743,15 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         Iterator<Arc> arcs = this.itsImag.getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc ar = arcs.next();
-            Enumeration<GraphObject> l = this.getInverseImage(ar);
-            if (l.hasMoreElements()) {
-                Arc al = (Arc) l.nextElement();
+            Iterator<GraphObject> l = this.getInverseImage(ar);
+            if (l.hasNext()) {
+                Arc al = (Arc) l.next();
                 try {
                     Arc a = morph.getTarget().copyArc(al, (Node) morph.getImage(al.getSource()), (Node) morph.getImage(al.getTarget()));
                     try {
                         morph.addMapping(al, a);
-                        while (l.hasMoreElements()) {
-                            morph.addMapping(l.nextElement(), a);
+                        while (l.hasNext()) {
+                            morph.addMapping(l.next(), a);
                         }
                     } catch (BadMappingException ex) {
                     }
@@ -804,7 +807,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Destroys the specified NAC from my NACs. The image graph of the nac morphism would be destroyed, too.
      */
     public void destroyNAC(OrdinaryMorphism nac) {
-        this.itsNACs.removeElement(nac);
+        this.itsNACs.remove(nac);
         nac.getImage().dispose();
     }
 
@@ -830,15 +833,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     /**
      * Returns an enumeration of my NACs.
      */
-    public Enumeration<OrdinaryMorphism> getNACs() {
-        return this.itsNACs.elements();
-    }
-
-    /**
-     * @deprecated replaced by <code>getNACsList()</code>
-     */
-    public Vector<OrdinaryMorphism> getNACsVector() {
-        return this.itsNACs;
+    public Iterator<OrdinaryMorphism> getNACs() {
+        return this.itsNACs.iterator();
     }
 
     public List<OrdinaryMorphism> getNACsList() {
@@ -901,10 +897,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return <code>false</code> if <code>nac</code> is not found, otherwise - <code>true</code>.
      */
     public final boolean removeNAC(OrdinaryMorphism nac) {
-        if (this.itsNACs.removeElement(nac)) {
-            return true;
-        }
-        return false;
+        return this.itsNACs.remove(nac);
     }
 
     /**
@@ -919,7 +912,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 BaseFactory.theFactory().createGraph(getRight().getTypeSet()),
                 getRight().getAttrContext());
 
-        this.itsPACs.addElement(pac);
+        this.itsPACs.add(pac);
         AttrContext pacContext = pac.getAttrContext(); //getLeft().getAttrContext();
         pac.getImage().setAttrContext(pacContext);
         pac.getImage().setKind(GraphKind.PAC);
@@ -956,7 +949,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     public void addShiftedPAC(final List<OrdinaryMorphism> list) {
         final ShiftedPAC shiftedPAC = new ShiftedPAC(list);
         if (this.itsShiftedPACs == null) {
-            itsShiftedPACs = new Vector<ShiftedPAC>();
+            itsShiftedPACs = new ArrayList<>();
         }
         this.itsShiftedPACs.add(shiftedPAC);
     }
@@ -981,7 +974,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Destroys the specified pac from my set of PACs. The image graph of the pac morphism would be destroyed, too.
      */
     public void destroyPAC(final OrdinaryMorphism pac) {
-        this.itsPACs.removeElement(pac);
+        this.itsPACs.remove(pac);
         pac.getImage().dispose();
     }
 
@@ -1007,30 +1000,21 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     /**
      * Return an enumeration of my PACs with elements of type <code>OrdinaryMorphism</code>.
      */
-    public Enumeration<OrdinaryMorphism> getPACs() {
-        return this.itsPACs.elements();
+    public Iterator<OrdinaryMorphism> getPACs() {
+        return this.itsPACs.iterator();
     }
 
     /**
      * Return an enumeration of my enabled PACs with elements of type <code>OrdinaryMorphism</code>.
      */
-    public Enumeration<OrdinaryMorphism> getEnabledPACs() {
-        Vector<OrdinaryMorphism> v = new Vector<OrdinaryMorphism>(2);
+    public Iterator<OrdinaryMorphism> getEnabledPACs() {
+        List<OrdinaryMorphism> v = new ArrayList<>(2);
         for (OrdinaryMorphism p : this.itsPACs) {
             if (p.isEnabled()) {
                 v.add(p);
             }
         }
-        return v.elements();
-    }
-
-    /**
-     * @deprecated replaced by <code>getPACsList()</code>
-     *
-     * Return the Vector of my PACs with elements of type <code>OrdinaryMorphism</code>.
-     */
-    public Vector<OrdinaryMorphism> getPACsVector() {
-        return this.itsPACs;
+        return v.iterator();
     }
 
     public List<OrdinaryMorphism> getPACsList() {
@@ -1093,11 +1077,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return <code>false</code> if <code>pac</code> is not found, otherwise - <code>true</code>.
      */
     public final boolean removePAC(OrdinaryMorphism pac) {
-        if (this.itsPACs.removeElement(pac)) {
-            return true;
-        }
-
-        return false;
+        return this.itsPACs.remove(pac);
     }
 
     // /////////////////////////////////////
@@ -1110,7 +1090,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         while (en.hasNext()) {
             Node n = en.next();
             if (n.getType().equals(nodeType)) {
-                if (!this.getInverseImage(n).hasMoreElements()) {
+                if (!this.getInverseImage(n).hasNext()) {
                     return false;
                 }
             }
@@ -1122,7 +1102,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         final Iterator<Node> elems = this.getRight().getNodesSet().iterator();
         while (elems.hasNext()) {
             final GraphObject obj = elems.next();
-            if (!this.getInverseImage(obj).hasMoreElements()) {
+            if (!this.getInverseImage(obj).hasNext()) {
                 List<String> list = this.getRight().getTypeSet().nodeRequiresArc((Node) obj);
                 if (list != null && !list.isEmpty()) {
                     TypeError actError = new TypeError(TypeError.TO_LESS_ARCS,
@@ -1164,11 +1144,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 }
 
                 // delete from rule application conditions
-                Vector<EvalSet> atom_conds = getAtomApplConds();
+                List<EvalSet> atom_conds = getAtomApplConds();
                 for (int i = 0; i < atom_conds.size(); i++) {
-                    Vector<?> v = atom_conds.get(i).getSet();
+                    List<?> v = atom_conds.get(i).getSet();
                     for (int j = 0; j < v.size(); j++) {
-                        Vector<?> v1 = ((EvalSet) v.get(j)).getSet();
+                        List<?> v1 = ((EvalSet) v.get(j)).getSet();
                         for (int k = 0; k < v1.size(); k++) {
                             agg.cons.AtomApplCond aac = (agg.cons.AtomApplCond) v1
                                     .get(k);
@@ -1191,8 +1171,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Try to destroy all graph objects of the specified types from its graphs (LHS, RHS, NACs, PACs, graph
      * constraints). Returns names of the failed types.
      */
-    public Vector<String> destroyObjectsOfTypes(Vector<Type> types) {
-        Vector<String> failed = new Vector<String>(5);
+    public List<String> destroyObjectsOfTypes(List<Type> types) {
+        List<String> failed = new ArrayList<>(5);
         for (int i = 0; i < types.size(); i++) {
             Type t = types.get(i);
             if (!destroyObjectsOfType(t)) {
@@ -1227,8 +1207,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     /**
      * Returns its graph constraints which can be converted to the post application constraints.
      */
-    public Vector<Formula> getConstraints() {
-        return (this.constraints != null) ? this.constraints : new Vector<Formula>(0);
+    public List<Formula> getConstraints() {
+        return (this.constraints != null) ? this.constraints : new ArrayList<>(0);
     }
 
     /**
@@ -1277,19 +1257,19 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         if (this.itsUsedAtomics != null && this.itsUsedAtomics.size() > 0
                 && this.itsUsedFormulas != null && this.itsUsedFormulas.size() > 0) {
             String msg = "";
-            Vector<EvalSet> fin = new Vector<EvalSet>();
-            Vector<String> names = new Vector<String>();
+            List<EvalSet> fin = new ArrayList<>();
+            List<String> names = new ArrayList<>();
 
             // clear Post Appl. Conditions
             if (this.constraints == null) {
-                constraints = new Vector<Formula>();
+                constraints = new ArrayList<>();
             } else {
                 this.constraints.clear();
             }
             setAtomApplConds(null, null);
 
-            final Hashtable<AtomConstraint, EvalSet> atomic2set = new Hashtable<AtomConstraint, EvalSet>();
-            final Hashtable<String, String> failedAtomic2error = new Hashtable<String, String>();
+            final Map<AtomConstraint, EvalSet> atomic2set = new HashMap<>();
+            final Map<String, String> failedAtomic2error = new HashMap<>();
 
             int tgLevel = this.getTypeSet().getLevelOfTypeGraphCheck();
             if (tgLevel > TypeSet.ENABLED_MAX) {
@@ -1297,7 +1277,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             }
 
             for (int j = 0; j < this.itsUsedAtomics.size(); j++) {
-                AtomConstraint a = this.itsUsedAtomics.elementAt(j);
+                AtomConstraint a = this.itsUsedAtomics.get(j);
                 if (!a.isValid()) {
                     msg = "Atomic  \"" + a.getAtomicName() + "\"  is not valid. <br>";
                     this.itsUsedAtomics.clear();
@@ -1309,7 +1289,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                         .setVariableContext(true);
 
                 Convert conv = new Convert(this, a);
-                Vector<Object> v = conv.convert();
+                List<Object> v = conv.convert();
 
                 ((AttrTupleManager) AttrTupleManager.getDefaultManager())
                         .setVariableContext(false);
@@ -1333,11 +1313,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             }
 
             for (int j = 0; j < this.itsUsedFormulas.size(); j++) {
-                Formula f = this.itsUsedFormulas.elementAt(j);
+                Formula f = this.itsUsedFormulas.get(j);
                 if (!f.isEnabled()) {
                     continue;
                 }
-                Vector<Evaluable> v = new Vector<Evaluable>();
+                List<Evaluable> v = new ArrayList<>();
                 String s = f.getAsString(v);
                 //			System.out.println(s);
                 //			System.out.println(v);
@@ -1345,11 +1325,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 // In fin the set of _all_new atomics are noted
                 // (though they are real formulas now) in the original order.
                 // This means, we need a translation.
-                // I.e. we build a new vector as the source of a new formula
+                // I.e. we build a new List as the source of a new formula
                 // only containing the base formulas
                 // corresponding to the atomic at that index.
                 boolean formulaOK = true;
-                Vector<Evaluable> v2 = new Vector<Evaluable>();
+                List<Evaluable> v2 = new ArrayList<>();
                 for (int k = 0; k < v.size(); k++) {
                     Object e = v.get(k);
                     boolean convertOK = false;
@@ -1395,9 +1375,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 
             String msg1 = "Cannot convert atomic(s) :\n";
             String msg2 = "";
-            final Enumeration<String> failedAtomic = failedAtomic2error.keys();
-            while (failedAtomic.hasMoreElements()) {
-                String name = failedAtomic.nextElement();
+            final Iterator<String> failedAtomic = failedAtomic2error.keySet().iterator();
+            while (failedAtomic.hasNext()) {
+                String name = failedAtomic.next();
                 String error = failedAtomic2error.get(name);
                 msg2 = msg2.concat(" - ").concat(name).concat(" - ").concat("\n");
                 msg2 = msg2.concat(error).concat("\n");
@@ -1413,10 +1393,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Set a vector of atomic graph constraints used for generating post application conditions. Elements of the
+     * Set a List of atomic graph constraints used for generating post application conditions. Elements of the
      * usedAtomic are of the type agg.cons.AtomConstraint .
      *
-     * private void setUsedAtomics(Vector usedAtomics) { itsUsedAtomics = usedAtomics; }
+     * private void setUsedAtomics(List usedAtomics) { itsUsedAtomics = usedAtomics; }
      */
     /**
      * Set its constraints (formulas) which will be used for generating its post application conditions.
@@ -1424,12 +1404,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     public void setUsedFormulas(List<Formula> formulasToUse) {
         if (!formulasToUse.isEmpty()) {
             if (this.itsUsedFormulas == null) {
-                itsUsedFormulas = new Vector<Formula>();
+                itsUsedFormulas = new ArrayList<>();
             } else {
                 this.itsUsedFormulas.clear();
             }
             if (this.itsUsedAtomics == null) {
-                itsUsedAtomics = new Vector<AtomConstraint>();
+                itsUsedAtomics = new ArrayList<>();
             } else {
                 this.itsUsedAtomics.clear();
             }
@@ -1437,15 +1417,15 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             this.itsUsedFormulas.addAll(formulasToUse);
             for (int i = 0; i < this.itsUsedFormulas.size(); i++) {
                 Formula f = this.itsUsedFormulas.get(i);
-                Vector<Evaluable> vec = new Vector<Evaluable>();
+                List<Evaluable> vec = new ArrayList<>();
                 String form = f.getAsString(vec);
                 for (int j = 0; j < vec.size(); j++) {
                     if (vec.get(j) instanceof AtomConstraint) {
                         AtomConstraint ac = (AtomConstraint) vec.get(j);
-                        this.itsUsedAtomics.addElement(ac);
+                        this.itsUsedAtomics.add(ac);
                     } else {
                         System.out
-                                .println("Rule.setUsedFormulas(Vector<Formula> usedFormulas):  formula: "
+                                .println("Rule.setUsedFormulas(List<Formula> usedFormulas):  formula: "
                                         + form + "   FAILED!");
                     }
                 }
@@ -1454,19 +1434,19 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Return a vector of atomic graph constraints used for generating post application conditions. Elements of the
+     * Return a List of atomic graph constraints used for generating post application conditions. Elements of the
      * usedAtomic are of the type agg.cons.AtomConstraint .
      */
-    public Vector<AtomConstraint> getUsedAtomics() {
-        return (this.itsUsedAtomics != null) ? this.itsUsedAtomics : new Vector<AtomConstraint>(0);
+    public List<AtomConstraint> getUsedAtomics() {
+        return (this.itsUsedAtomics != null) ? this.itsUsedAtomics : new ArrayList<>(0);
     }
 
     /**
-     * Return the vector of constraints (formulas) used for generating post application conditions. Elements of the
+     * Return the List of constraints (formulas) used for generating post application conditions. Elements of the
      * usedFormulas are of the type agg.cons.Formula .
      */
-    public Vector<Formula> getUsedFormulas() {
-        return (this.itsUsedFormulas != null) ? this.itsUsedFormulas : new Vector<Formula>(0);
+    public List<Formula> getUsedFormulas() {
+        return (this.itsUsedFormulas != null) ? this.itsUsedFormulas : new ArrayList<>(0);
     }
 
     /**
@@ -1506,14 +1486,14 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     /**
      * Set the specified post application conditions to its conditions.
      */
-    public void setAtomApplConds(Vector<EvalSet> v, Vector<String> names) {
+    public void setAtomApplConds(List<EvalSet> v, List<String> names) {
         if (this.atom_conditions == null) {
-            atom_conditions = new Vector<EvalSet>();
+            atom_conditions = new ArrayList<>();
         } else {
             this.atom_conditions.clear();
         }
         if (this.constraintNameSet == null) {
-            constraintNameSet = new Vector<String>();
+            constraintNameSet = new ArrayList<>();
         } else {
             this.constraintNameSet.clear();
         }
@@ -1532,12 +1512,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    public Vector<EvalSet> getAtomApplConds() {
-        return (this.atom_conditions != null) ? this.atom_conditions : new Vector<EvalSet>(0);
+    public List<EvalSet> getAtomApplConds() {
+        return (this.atom_conditions != null) ? this.atom_conditions : new ArrayList<>(0);
     }
 
-    public Vector<String> getConstraintNames() {
-        return (this.constraintNameSet != null) ? this.constraintNameSet : new Vector<String>(0);
+    public List<String> getConstraintNames() {
+        return (this.constraintNameSet != null) ? this.constraintNameSet : new ArrayList<>(0);
     }
 
     /**
@@ -1546,8 +1526,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     public void removeConstraint(EvalSet constraint) {
         if (this.atom_conditions != null && this.atom_conditions.contains(constraint)) {
             int i = this.atom_conditions.indexOf(constraint);
-            this.atom_conditions.removeElement(constraint);
-            this.constraintNameSet.removeElementAt(i);
+            this.atom_conditions.remove(constraint);
+            this.constraintNameSet.remove(i);
         }
     }
 
@@ -1558,31 +1538,31 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         if (this.atom_conditions != null) {
             int i = 0;
             while (i < this.atom_conditions.size()) {
-                Vector<?> v = this.atom_conditions.get(i).getSet();
+                List<?> v = this.atom_conditions.get(i).getSet();
                 int j = 0;
                 while (j < v.size()) {
-                    Vector<?> v1 = ((EvalSet) v.get(j)).getSet();
+                    List<?> v1 = ((EvalSet) v.get(j)).getSet();
                     int k = 0;
                     while (k < v1.size()) {
                         AtomApplCond aac = (AtomApplCond) v1.get(k);
                         if (atom.equals(aac)) {
-                            v1.removeElement(atom);
+                            v1.remove(atom);
                             // System.out.println("AtomApplCond: DONE");
                             k = v1.size();
                         } else {
                             k++;
                         }
                     }
-                    if (v1.size() == 0) {
-                        v.removeElementAt(j);
+                    if (v1.isEmpty()) {
+                        v.remove(j);
                         j = v.size();
                     } else {
                         j++;
                     }
                 }
-                if (v.size() == 0) {
-                    this.atom_conditions.removeElementAt(i);
-                    this.constraintNameSet.removeElementAt(i);
+                if (v.isEmpty()) {
+                    this.atom_conditions.remove(i);
+                    this.constraintNameSet.remove(i);
                     i = this.atom_conditions.size();
                 } else {
                     i++;
@@ -1660,65 +1640,29 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Trims the capacity of used vectors to be the vector's current size.
+     * Trims the capacity of used Lists to be the List's current size.
      */
     public void trimToSize() {
-        super.trimToSize();
-
-        this.itsNACs.trimToSize();
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            this.itsNACs.elementAt(i).trimToSize();
-        }
-        this.itsPACs.trimToSize();
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            this.itsPACs.elementAt(i).trimToSize();
-        }
-        this.itsACs.trimToSize();
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            this.itsACs.elementAt(i).trimToSize();
-        }
 
         if (this.itsUsedAtomics != null) {
-            this.itsUsedAtomics.trimToSize();
             for (int i = 0; i < this.itsUsedAtomics.size(); i++) {
                 this.itsUsedAtomics.get(i).trimToSize();
             }
         }
-        if (this.itsUsedFormulas != null) {
-            this.itsUsedFormulas.trimToSize();
-            for (int i = 0; i < this.itsUsedFormulas.size(); i++) {
-                this.itsUsedFormulas.trimToSize();
-            }
-        }
-        if (this.constraints != null) {
-            this.constraints.trimToSize();
-            for (int i = 0; i < this.constraints.size(); i++) {
-                this.constraints.trimToSize();
-            }
-        }
-        if (this.atom_conditions != null) {
-            this.atom_conditions.trimToSize();
-        }
-        if (this.constraintNameSet != null) {
-            this.constraintNameSet.trimToSize();
-        }
 
-        if (this.itsShiftedPACs != null) {
-            this.itsShiftedPACs.trimToSize();
-        }
     }
 
     public void refreshAttributed() {
         getLeft().refreshAttributed();
         getRight().refreshAttributed();
         for (int i = 0; i < this.itsNACs.size(); i++) {
-            this.itsNACs.elementAt(i).getTarget().refreshAttributed();
+            this.itsNACs.get(i).getTarget().refreshAttributed();
         }
         for (int i = 0; i < this.itsPACs.size(); i++) {
-            this.itsPACs.elementAt(i).getTarget().refreshAttributed();
+            this.itsPACs.get(i).getTarget().refreshAttributed();
         }
         for (int i = 0; i < this.itsACs.size(); i++) {
-            this.itsACs.elementAt(i).getTarget().refreshAttributed();
+            this.itsACs.get(i).getTarget().refreshAttributed();
         }
     }
 
@@ -1734,21 +1678,22 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             return true;
         }
         for (int i = 0; i < this.itsNACs.size(); i++) {
-            if (this.itsNACs.elementAt(i).getTarget().isUsingType(typeObj)) {
+            if (this.itsNACs.get(i).getTarget().isUsingType(typeObj)) {
                 return true;
             }
         }
         for (int i = 0; i < this.itsPACs.size(); i++) {
-            if (this.itsPACs.elementAt(i).getTarget().isUsingType(typeObj)) {
+            if (this.itsPACs.get(i).getTarget().isUsingType(typeObj)) {
                 return true;
             }
         }
         for (int i = 0; i < this.itsACs.size(); i++) {
-            this.itsACs.elementAt(i).getTarget().refreshAttributed();
+            this.itsACs.get(i).getTarget().refreshAttributed();
         }
         return false;
     }
 
+    @Override
     public void removeUnusedVariableOfAttrContext() {
         DeclTuple vars = ((VarTuple) this.getAttrContext().getVariables()).getTupleType();
         for (int i = 0; i < vars.getNumberOfEntries(); i++) {
@@ -1770,9 +1715,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    private boolean isUsedInTargetGraph(Enumeration<OrdinaryMorphism> list, String varName) {
-        while (list.hasMoreElements()) {
-            Graph g = list.nextElement().getTarget();
+    private boolean isUsedInTargetGraph(Iterator<OrdinaryMorphism> iter, String varName) {
+        while (iter.hasNext()) {
+            Graph g = iter.next().getTarget();
             if (g.getVariableNamesOfAttributes().contains(varName)) {
                 return true;
             }
@@ -1780,18 +1725,18 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return false;
     }
 
-    private boolean isUsedInNestedGraphs(Enumeration<OrdinaryMorphism> list, String varName) {
-        while (list.hasMoreElements()) {
-            OrdinaryMorphism m = list.nextElement();
+    private boolean isUsedInNestedGraphs(Iterator<OrdinaryMorphism> iter, String varName) {
+        while (iter.hasNext()) {
+            OrdinaryMorphism m = iter.next();
             if (m.getTarget().getVariableNamesOfAttributes().contains(varName)) {
                 return true;
             }
             if (m instanceof NestedApplCond) {
-                Vector<OrdinaryMorphism> nl = new Vector<OrdinaryMorphism>();
+                List<OrdinaryMorphism> nl = new ArrayList<>();
                 for (int i = 0; i < ((NestedApplCond) m).getNestedACs().size(); i++) {
                     nl.add(((NestedApplCond) m).getNestedACs().get(i));
                 }
-                if (isUsedInNestedGraphs(nl.elements(), varName)) {
+                if (isUsedInNestedGraphs(nl.iterator(), varName)) {
                     return true;
                 }
             }
@@ -1821,7 +1766,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //		SubRule sr = new SubRule(this, getLeft().createSubGraph(), getRight()
 //				.createSubGraph());
 //		if (itsSubRules == null)
-//			itsSubRules = new Vector<SubRule>(5, 1);
+//			itsSubRules = new List<SubRule>(5, 1);
 //		itsSubRules.addElement(sr);
 //		return sr;
 //	}
@@ -1844,7 +1789,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //	public final SubRule createSubRule(SubGraph left, SubGraph right) {
 //		SubRule sr = new SubRule(this, left, right);
 //		if (itsSubRules == null)
-//			itsSubRules = new Vector<SubRule>(5, 1);
+//			itsSubRules = new List<SubRule>(5, 1);
 //		itsSubRules.addElement(sr);
 //		return sr;
 //
@@ -1918,25 +1863,25 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         writeMorphism(h);
 
         // NACs
-        Enumeration<OrdinaryMorphism> nacs = getNACs();
+        Iterator<OrdinaryMorphism> nacs = getNACs();
         // PACs
-        Enumeration<OrdinaryMorphism> pacs = getPACs();
+        Iterator<OrdinaryMorphism> pacs = getPACs();
         // nested ACs
-        Enumeration<OrdinaryMorphism> nested = getNestedACs();
+        Iterator<OrdinaryMorphism> nested = getNestedACs();
 
         // Attr context conditions
         AttrConditionTuple condt = context.getConditions();
         int num = condt.getNumberOfEntries();
 
-        if (nested.hasMoreElements()
-                || nacs.hasMoreElements()
-                || pacs.hasMoreElements()
+        if (nested.hasNext()
+                || nacs.hasNext()
+                || pacs.hasNext()
                 || (num > 0)
                 || (this.itsUsedAtomics != null && this.itsUsedAtomics.size() > 0)) {
             h.openSubTag("ApplCondition");
             // NACs
-            while (nacs.hasMoreElements()) {
-                OrdinaryMorphism m = nacs.nextElement();
+            while (nacs.hasNext()) {
+                OrdinaryMorphism m = nacs.next();
                 m.getTarget().setKind(GraphKind.NAC);
                 h.openSubTag("NAC");
                 if (!m.isEnabled()) {
@@ -1947,8 +1892,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 h.close();
             }
             // PACs
-            while (pacs.hasMoreElements()) {
-                OrdinaryMorphism m = pacs.nextElement();
+            while (pacs.hasNext()) {
+                OrdinaryMorphism m = pacs.next();
                 m.getTarget().setKind(GraphKind.PAC);
                 h.openSubTag("PAC");
                 if (!m.isEnabled()) {
@@ -1959,8 +1904,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 h.close();
             }
             // nested ACs
-            while (nested.hasMoreElements()) {
-                OrdinaryMorphism m = nested.nextElement();
+            while (nested.hasNext()) {
+                OrdinaryMorphism m = nested.next();
                 m.getTarget().setKind(GraphKind.AC);
                 h.openSubTag("NestedAC");
                 if (!m.isEnabled()) {
@@ -1985,7 +1930,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 h.openSubTag("PostApplicationCondition");
                 // save formulas
                 for (int i = 0; i < this.itsUsedFormulas.size(); i++) {
-                    Formula f = this.itsUsedFormulas.elementAt(i);
+                    Formula f = this.itsUsedFormulas.get(i);
                     h.openSubTag("FormulaRef");
                     h.addObject("f", f, false);
                     h.close();
@@ -2073,10 +2018,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             this.itsImag.setKind(GraphKind.RHS);
             this.itsImag.setHelpInfo(this.getName());
 
-            Vector<Formula> tmpFormulas = new Vector<Formula>(); // of PostApplicationCondition
+            List<Formula> tmpFormulas = new ArrayList<>(); // of PostApplicationCondition
 
-//			Vector<NestedApplCond> nacs = new Vector<NestedApplCond>();
-//			Vector<NestedApplCond> pacs = new Vector<NestedApplCond>();
+//			List<NestedApplCond> nacs = new ArrayList< >();
+//			List<NestedApplCond> pacs = new ArrayList< >();
 //			boolean needConvertToFormula = false;
             if (h.readSubTag("ApplCondition")) {
                 while (h.readSubTag("NAC")) {
@@ -2175,7 +2120,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                         Formula f1 = (Formula) h.getObject("f", null, false);
                         // System.out.println("Formula: "+f1);
                         if (f1 != null) {
-                            tmpFormulas.addElement(f1);
+                            tmpFormulas.add(f1);
                         }
                         h.close();
                     }
@@ -2258,7 +2203,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             final List<NestedApplCond> pacs,
             final List<NestedApplCond> nacs) {
 
-        final List<Evaluable> vars = new Vector<Evaluable>(this.itsACs.size());
+        final List<Evaluable> vars = new ArrayList<>(this.itsACs.size());
 
         if (this.itsACs.size() == 0) {
             this.formStr = "true";
@@ -2607,7 +2552,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             final List<OrdinaryMorphism> otherApplConds,
             String what) {
         // compare ACs
-        Vector<OrdinaryMorphism> another = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> another = new ArrayList<>();
         another.addAll(otherApplConds);
         if (applConds.size() != another.size()) {
             // System.out.println("Rule: "+getName()+" NACs discrepancy!");
@@ -2620,7 +2565,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         for (int i = 0; i < applConds.size(); i++) {
             ac = applConds.get(i);
             for (int j = another.size() - 1; j >= 0; j--) {
-                OrdinaryMorphism ac1 = another.elementAt(j);
+                OrdinaryMorphism ac1 = another.get(j);
                 if (ac.compareTo(ac1)) {
                     another.remove(ac1);
                     break;
@@ -2645,10 +2590,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private List<GraphObject> getInputParameterObjects(final Graph g, final List<String> inputParams) {
-        List<GraphObject> goIP = new Vector<GraphObject>();
-        Enumeration<GraphObject> elems = g.getElements();
-        while (elems.hasMoreElements()) {
-            GraphObject go = elems.nextElement();
+        List<GraphObject> goIP = new ArrayList<>();
+        Iterator<GraphObject> elems = g.iteratorOfElems();
+        while (elems.hasNext()) {
+            GraphObject go = elems.next();
             if (go.getAttribute() != null) {
                 ValueTuple val = (ValueTuple) go.getAttribute();
                 for (int i = 0; i < val.getNumberOfEntries(); i++) {
@@ -2665,11 +2610,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public List<GraphObject> getLeftInputParameterObjects() {
-        List<GraphObject> list = new Vector<GraphObject>();
+        List<GraphObject> list = new ArrayList<>();
         VarTuple var = (VarTuple) getAttrContext().getVariables();
-        Enumeration<GraphObject> elems = this.itsOrig.getElements();
-        while (elems.hasMoreElements()) {
-            GraphObject go = elems.nextElement();
+        Iterator<GraphObject> elems = this.itsOrig.iteratorOfElems();
+        while (elems.hasNext()) {
+            GraphObject go = elems.next();
             if (go.getAttribute() != null) {
                 ValueTuple val = (ValueTuple) go.getAttribute();
                 for (int i = 0; i < val.getNumberOfEntries(); i++) {
@@ -2688,11 +2633,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public List<GraphObject> getRightInputParameterObjects() {
-        List<GraphObject> list = new Vector<GraphObject>();
+        List<GraphObject> list = new ArrayList<>();
         VarTuple var = (VarTuple) getAttrContext().getVariables();
-        Enumeration<GraphObject> elems = this.itsImag.getElements();
-        while (elems.hasMoreElements()) {
-            GraphObject go = elems.nextElement();
+        Iterator<GraphObject> elems = this.itsImag.iteratorOfElems();
+        while (elems.hasNext()) {
+            GraphObject go = elems.next();
             if (go.getAttribute() != null) {
                 ValueTuple val = (ValueTuple) go.getAttribute();
                 for (int i = 0; i < val.getNumberOfEntries(); i++) {
@@ -2709,8 +2654,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return list;
     }
 
-    public Vector<String> getInputParameterNames() {
-        Vector<String> inputParams = new Vector<String>(1);
+    public List<String> getInputParameterNames() {
+        List<String> inputParams = new ArrayList<>(1);
         VarTuple var = (VarTuple) getAttrContext().getVariables();
         for (int i = 0; i < var.getNumberOfEntries(); i++) {
             VarMember varm = var.getVarMemberAt(i);
@@ -2725,40 +2670,40 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Returns variables of the attribute context of this rule which are used as input parameter for the rule
      * application.
      */
-    public Vector<VarMember> getInputParameters() {
-        Vector<VarMember> inputParams = new Vector<VarMember>(1);
+    public List<VarMember> getInputParameters() {
+        List<VarMember> inputParams = new ArrayList<>(1);
         VarTuple var = (VarTuple) getAttrContext().getVariables();
         for (int i = 0; i < var.getNumberOfEntries(); i++) {
             VarMember varm = var.getVarMemberAt(i);
             if (varm.isInputParameter()) {
-                inputParams.addElement(varm);
+                inputParams.add(varm);
             }
         }
         return inputParams;
     }
 
-    public Vector<VarMember> getInputParametersLeft() {
-        Vector<VarMember> inputParams = new Vector<VarMember>(1);
+    public List<VarMember> getInputParametersLeft() {
+        List<VarMember> inputParams = new ArrayList<>(1);
         VarTuple var = (VarTuple) getAttrContext().getVariables();
         for (int i = 0; i < var.getNumberOfEntries(); i++) {
             VarMember vm = var.getVarMemberAt(i);
             if (vm.isInputParameter()
                     && vm.getMark() == VarMember.LHS) {
-                inputParams.addElement(vm);
+                inputParams.add(vm);
             }
         }
         return inputParams;
     }
 
-    public Vector<VarMember> getInputParametersRight() {
-        Vector<VarMember> inputParams = new Vector<VarMember>(1);
+    public List<VarMember> getInputParametersRight() {
+        List<VarMember> inputParams = new ArrayList<>(1);
         VarTuple var = (VarTuple) getAttrContext().getVariables();
         for (int i = 0; i < var.getNumberOfEntries(); i++) {
             VarMember vm = var.getVarMemberAt(i);
             if (vm.isInputParameter()
                     && (vm.getMark() == VarMember.RHS
                     || vm.getMark() == VarMember.NAC)) {
-                inputParams.addElement(vm);
+                inputParams.add(vm);
             }
         }
         return inputParams;
@@ -2768,31 +2713,31 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Returns variables of the attribute context of this rule which are used by attributes of the specified graph
      * object as an input parameter for the rule application.
      */
-    public Vector<VarMember> getInputParametersOfGraphObject(final GraphObject go, final VarTuple var) {
+    public List<VarMember> getInputParametersOfGraphObject(final GraphObject go, final VarTuple var) {
         if (go.getAttribute() == null) {
-            return new Vector<VarMember>();
+            return new ArrayList<>();
         }
 
-        Vector<VarMember> inputParams = new Vector<VarMember>(1);
+        List<VarMember> inputParams = new ArrayList<>(1);
         ValueTuple attrVal = (ValueTuple) go.getAttribute();
         for (int i = 0; i < attrVal.getNumberOfEntries(); i++) {
             ValueMember vm = attrVal.getValueMemberAt(i);
             if (vm.isSet() && vm.getExpr().isVariable()) {
                 VarMember varm = var.getVarMemberAt(vm.getExprAsText());
                 if (varm != null && varm.isInputParameter()) {
-                    inputParams.addElement(varm);
+                    inputParams.add(varm);
                 }
             }
         }
         return inputParams;
     }
 
-    public Vector<VarMember> getNonInputParametersOfNewGraphObjects() {
+    public List<VarMember> getNonInputParametersOfNewGraphObjects() {
         VarTuple var = (VarTuple) getAttrContext().getVariables();
-        Vector<VarMember> params = new Vector<VarMember>(1);
-        final Enumeration<GraphObject> objs = this.itsImag.getElements();
-        while (objs.hasMoreElements()) {
-            GraphObject go = objs.nextElement();
+        List<VarMember> params = new ArrayList<>(1);
+        final Iterator<GraphObject> objs = this.itsImag.iteratorOfElems();
+        while (objs.hasNext()) {
+            GraphObject go = objs.next();
             if (go.getAttribute() == null
                     || this.itsCodomObjects.contains(go)) {
                 continue;
@@ -2804,7 +2749,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 if (vm.isSet() && vm.getExpr().isVariable()) {
                     VarMember varm = var.getVarMemberAt(vm.getExprAsText());
                     if (varm != null && !varm.isInputParameter()) {
-                        params.addElement(varm);
+                        params.add(varm);
                     }
                 }
             }
@@ -2812,14 +2757,14 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return params;
     }
 
-    public Vector<VarMember> getNonInputParameters() {
+    public List<VarMember> getNonInputParameters() {
         VarTuple var = (VarTuple) getAttrContext().getVariables();
-        Vector<VarMember> params = new Vector<VarMember>(1);
+        List<VarMember> params = new ArrayList<>(1);
 
         for (int i = 0; i < var.getNumberOfEntries(); i++) {
             VarMember v = var.getVarMemberAt(i);
             if (!v.isInputParameter()) {
-                params.addElement(v);
+                params.add(v);
             }
         }
         return params;
@@ -2859,14 +2804,14 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         Iterator<Arc> arcs = ac.getTarget().getArcsCollection().iterator();
         while (arcs.hasNext()) {
             Arc a = arcs.next();
-            if (!ac.getInverseImage(a).hasMoreElements()) {
-                if (ac.getInverseImage(a.getSource()).hasMoreElements()) {
-                    if (this.getImage(ac.getInverseImage(a.getSource()).nextElement()) == null) {
+            if (!ac.getInverseImage(a).hasNext()) {
+                if (ac.getInverseImage(a.getSource()).hasNext()) {
+                    if (this.getImage(ac.getInverseImage(a.getSource()).next()) == null) {
                         return false;
                     }
                 }
-                if (ac.getInverseImage(a.getTarget()).hasMoreElements()) {
-                    if (this.getImage(ac.getInverseImage(a.getTarget()).nextElement()) == null) {
+                if (ac.getInverseImage(a.getTarget()).hasNext()) {
+                    if (this.getImage(ac.getInverseImage(a.getTarget()).next()) == null) {
                         return false;
                     }
                 }
@@ -2970,12 +2915,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private boolean extendByPac(OrdinaryMorphism pac) {
-        Hashtable<Node, Node> n2n = new Hashtable<Node, Node>();
+        Map<Node, Node> n2n = new HashMap<>();
         Iterator<Node> nodes = pac.getTarget().getNodesCollection().iterator();
         while (nodes.hasNext()) {
             Node pn = nodes.next();
-            Enumeration<GraphObject> en = pac.getInverseImage(pn);
-            if (!en.hasMoreElements()) {
+            Iterator<GraphObject> en = pac.getInverseImage(pn);
+            if (!en.hasNext()) {
                 try {
                     Node nln = this.itsOrig.copyNode(pn);
                     n2n.put(pn, nln);
@@ -2992,8 +2937,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                     return false;
                 }
             } else {
-                while (en.hasMoreElements()) {
-                    Node ln = (Node) en.nextElement();
+                while (en.hasNext()) {
+                    Node ln = (Node) en.next();
                     n2n.put(pn, ln);
                     Node rn = (Node) this.getImage(ln);
                     if (rn != null) {
@@ -3006,8 +2951,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         Iterator<Arc> arcs = pac.getTarget().getArcsCollection().iterator();
         while (arcs.hasNext()) {
             Arc pa = arcs.next();
-            Enumeration<GraphObject> en = pac.getInverseImage(pa);
-            if (!en.hasMoreElements()) {
+            Iterator<GraphObject> en = pac.getInverseImage(pa);
+            if (!en.hasNext()) {
                 try {
                     Node srcl = n2n.get(pa.getSource());
                     Node tarl = n2n.get(pa.getTarget());
@@ -3153,14 +3098,14 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             VarMember vm = (VarMember) avt.getMemberAt(i);
             if (vm.isInputParameter() && !vm.isSet()) {
                 if (left) {
-                    Vector<String> vars = getLeft().getVariableNamesOfAttributes();
+                    List<String> vars = getLeft().getVariableNamesOfAttributes();
                     for (int j = 0; j < vars.size(); j++) {
                         if (vars.get(j).equals(vm.getName())) {
                             return vm.getName();
                         }
                     }
                 } else {
-                    Vector<String> vars = getRight().getVariableNamesOfAttributes();
+                    List<String> vars = getRight().getVariableNamesOfAttributes();
                     for (int j = 0; j < vars.size(); j++) {
                         if (vars.get(j).equals(vm.getName())) {
                             return vm.getName();
@@ -3169,7 +3114,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 }
                 for (int j = 0; j < this.itsNACs.size(); j++) {
                     OrdinaryMorphism nac = this.itsNACs.get(j);
-                    Vector<String> vars = nac.getTarget()
+                    List<String> vars = nac.getTarget()
                             .getVariableNamesOfAttributes();
                     for (int k = 0; k < vars.size(); k++) {
                         if (vars.get(k).equals(vm.getName())) {
@@ -3179,7 +3124,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 }
                 for (int j = 0; j < this.itsPACs.size(); j++) {
                     OrdinaryMorphism pac = this.itsPACs.get(j);
-                    Vector<String> vars = pac.getTarget()
+                    List<String> vars = pac.getTarget()
                             .getVariableNamesOfAttributes();
                     for (int k = 0; k < vars.size(); k++) {
                         if (vars.get(k).equals(vm.getName())) {
@@ -3189,7 +3134,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 }
                 for (int j = 0; j < this.itsACs.size(); j++) {
                     OrdinaryMorphism ac = this.itsACs.get(j);
-                    Vector<String> vars = ac.getTarget()
+                    List<String> vars = ac.getTarget()
                             .getVariableNamesOfAttributes();
                     for (int k = 0; k < vars.size(); k++) {
                         if (vars.get(k).equals(vm.getName())) {
@@ -3202,7 +3147,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return null;
     }
 
-    private void deleteUnusedVars(Vector<VarMember> used) {
+    private void deleteUnusedVars(List<VarMember> used) {
         VarTuple vars = (VarTuple) this.getAttrContext().getVariables();
         for (int i = 0; i < vars.getNumberOfEntries(); i++) {
             VarMember vm = vars.getVarMemberAt(i);
@@ -3224,12 +3169,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
 
         // check usage of abstract types of the RHS
-        final Vector<String> abstractTypesOfRHS = new Vector<String>(1);
+        final List<String> abstractTypesOfRHS = new ArrayList<>(1);
         Iterator<Node> enumer = this.itsImag.getNodesSet().iterator();
         while (enumer.hasNext()) {
             GraphObject o = enumer.next();
-            Enumeration<GraphObject> inverse = getInverseImage(o);
-            if (!inverse.hasMoreElements() && o.getType().isAbstract()) {
+            Iterator<GraphObject> inverse = getInverseImage(o);
+            if (!inverse.hasNext() && o.getType().isAbstract()) {
                 abstractTypesOfRHS.add(o.getType().getName());
             }
         }
@@ -3260,7 +3205,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         this.errorMsg = "";
 
         // get used variable and its declaration: (type, name)
-        Vector<Pair<String, String>> varDecls = getVariableDeclarations();
+        List<Pair<String, String>> varDecls = getVariableDeclarations();
 
         // add vars of NACs to varDecls
         for (int l = 0; l < this.itsNACs.size(); l++) {
@@ -3331,13 +3276,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             if (nac.getTarget().isUsingVariable(var)) {
                 return true;
             }
-            Vector<String> nacVars = nac.getTarget()
+            List<String> nacVars = nac.getTarget()
                     .getVariableNamesOfAttributes();
             for (int j = 0; j < nacVars.size(); j++) {
                 String varName = nacVars.get(j);
                 for (int k = 0; k < act.getNumberOfEntries(); k++) {
                     CondMember cond = (CondMember) act.getMemberAt(k);
-                    Vector<String> condVars = cond.getAllVariables();
+                    List<String> condVars = cond.getAllVariables();
                     if (condVars.contains(varName)
                             && condVars.contains(var.getName())) {
                         return true;
@@ -3357,13 +3302,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             if (pac.getTarget().isUsingVariable(var)) {
                 return true;
             }
-            Vector<String> pacVars = pac.getTarget()
+            List<String> pacVars = pac.getTarget()
                     .getVariableNamesOfAttributes();
             for (int j = 0; j < pacVars.size(); j++) {
                 String varName = pacVars.get(j);
                 for (int k = 0; k < act.getNumberOfEntries(); k++) {
                     CondMember cond = (CondMember) act.getMemberAt(k);
-                    Vector<String> condVars = cond.getAllVariables();
+                    List<String> condVars = cond.getAllVariables();
                     if (condVars.contains(varName)
                             && condVars.contains(var.getName())) {
                         return true;
@@ -3389,7 +3334,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                     continue;
                 }
             }
-            if (right && !this.getInverseImage(o).hasMoreElements()) {
+            if (right && !this.getInverseImage(o).hasNext()) {
                 if (o.isNode()) {
                     g.applyDefaultAttrValuesOfTypeGraph((Node) o, null);
                 } else {
@@ -3426,12 +3371,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return attributed;
     }
 
-    private void addVarDecl(final Graph g, final Vector<Pair<String, String>> varDecls) {
+    private void addVarDecl(final Graph g, final List<Pair<String, String>> varDecls) {
         addVarDecl(g.getNodesSet().iterator(), varDecls);
         addVarDecl(g.getArcsSet().iterator(), varDecls);
     }
 
-    private void addVarDecl(final Iterator<?> elems, final Vector<Pair<String, String>> varDecls) {
+    private void addVarDecl(final Iterator<?> elems, final List<Pair<String, String>> varDecls) {
         while (elems.hasNext()) {
             GraphObject o = (GraphObject) elems.next();
             if (o.getAttribute() != null) {
@@ -3447,14 +3392,14 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                         Pair<String, String> p = new Pair<String, String>(t, n);
                         boolean found = false;
                         for (int j = 0; j < varDecls.size(); j++) {
-                            Pair<String, String> pj = varDecls.elementAt(j);
+                            Pair<String, String> pj = varDecls.get(j);
                             if (t.equals(pj.first) && n.equals(pj.second)) {
                                 found = true;
                                 break;
                             }
                         }
                         if (!found) {
-                            varDecls.addElement(p);
+                            varDecls.add(p);
                         }
                     }
                 }
@@ -3462,13 +3407,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    private boolean checkDoubleVarDecl(final Vector<Pair<String, String>> varDecls) {
+    private boolean checkDoubleVarDecl(final List<Pair<String, String>> varDecls) {
         boolean result = true;
         // check: same variable name , different type :: should not happen!
         for (int j = 0; result && j < varDecls.size(); j++) {
-            Pair<String, String> pj = varDecls.elementAt(j);
+            Pair<String, String> pj = varDecls.get(j);
             for (int jj = j + 1; result && jj < varDecls.size(); jj++) {
-                Pair<String, String> pjj = varDecls.elementAt(jj);
+                Pair<String, String> pjj = varDecls.get(jj);
                 if (pj.second.equals(pjj.second) && !pj.first.equals(pjj.first)) {
                     if (!("Object".equals(pj.first)
                             || "java.lang.Object".equals(pj.first))
@@ -3540,7 +3485,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                             return false;
                         }
                         if (!var.isInputParameter() && vm.getExpr() == null) {
-                            final Vector<String> leftVars = this.itsOrig.getVariableNamesOfAttributes();
+                            final List<String> leftVars = this.itsOrig.getVariableNamesOfAttributes();
                             if (!leftVars.contains(var.getName())) {
                                 this.errorMsg = "Variable :  ";
                                 this.errorMsg = this.errorMsg.concat(var.getName());
@@ -3555,13 +3500,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                             this.errorMsg = this.errorMsg.concat(vm.getExprAsText());
                             return false;
                         }
-                        final Vector<String> vec = vm.getAllVariableNamesOfExpression();
-                        final Vector<String> vecLeft = this.itsOrig.getVariableNamesOfAttributes();
+                        final List<String> vec = vm.getAllVariableNamesOfExpression();
+                        final List<String> vecLeft = this.itsOrig.getVariableNamesOfAttributes();
                         for (int l = 0; l < vec.size(); l++) {
-                            final String n = vec.elementAt(l);
+                            final String n = vec.get(l);
                             boolean found = false;
                             for (int ll = 0; ll < vecLeft.size(); ll++) {
-                                String nn = vecLeft.elementAt(ll);
+                                String nn = vecLeft.get(ll);
                                 if (n.equals(nn)) {
                                     found = true;
                                 }
@@ -3577,7 +3522,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                             }
                         }
                     }
-                } else //if (!getInverseImage(o).hasMoreElements()) 
+                } else //if (!getInverseImage(o).hasNext()) 
                 {
                     // look for default attr value in the type graph
                     boolean failed = true;
@@ -3606,13 +3551,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 
     private boolean checkUsedVariables(
             final AttrVariableTuple avt,
-            final Vector<Pair<String, String>> varDecls) {
+            final List<Pair<String, String>> varDecls) {
 
-        Vector<VarMember> used = new Vector<VarMember>(5);
+        List<VarMember> used = new ArrayList<>(5);
 
         boolean result = true;
         for (int i = 0; i < varDecls.size(); i++) {
-            final Pair<String, String> p = varDecls.elementAt(i);
+            final Pair<String, String> p = varDecls.get(i);
             String typeName1 = p.first;
 
             boolean isClass1 = false;
@@ -3693,17 +3638,17 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 return false;
             }
 
-            final Vector<String> vars = cm.getAllVariables();
+            final List<String> vars = cm.getAllVariables();
             if (!vars.isEmpty()) {
                 boolean mixedNAC = false;
                 boolean mixedPAC = false;
                 boolean mixed = false;
-                String name0 = vars.elementAt(0);
+                String name0 = vars.get(0);
                 if (((VarTuple) avt).isDeclared(name0)) {
-                    final VarMember var0 = avt.getVarMemberAt(vars.elementAt(0));
+                    final VarMember var0 = avt.getVarMemberAt(vars.get(0));
                     int mark = var0.getMark();
                     for (int j = 1; j < vars.size(); j++) {
-                        final String name = vars.elementAt(j);
+                        final String name = vars.get(j);
                         if (((VarTuple) avt).isDeclared(name)) {
                             final VarMember var = avt.getVarMemberAt(name);
                             if (mark == VarMember.LHS) {
@@ -3829,7 +3774,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                                 var.setMark(mark);
                             }
                         } else if (vm.getExpr().isComplex()) {
-                            Vector<String> vec = new Vector<String>(3);
+                            List<String> vec = new ArrayList<>(3);
                             vm.getExpr().getAllVariables(vec);
                             for (String s : vec) {
                                 VarMember var = avt.getVarMemberAt(s);
@@ -3855,7 +3800,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                                 var.setMark(mark);
                             }
                         } else if (vm.getExpr().isComplex()) {
-                            Vector<String> vec = new Vector<String>(3);
+                            List<String> vec = new ArrayList<>(3);
                             vm.getExpr().getAllVariables(vec);
                             for (String s : vec) {
                                 VarMember var = avt.getVarMemberAt(s);
@@ -3940,7 +3885,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public List<Type> getTypesOfLeftGraph() {
-        final List<Type> list = new Vector<Type>();
+        final List<Type> list = new ArrayList<>();
         for (final Iterator<Node> en = getLeft().getNodesSet().iterator(); en.hasNext();) {
             final Node o = en.next();
             if (!list.contains(o.getType())) {
@@ -3957,7 +3902,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public List<Type> getTypeOfObjectToDelete() {
-        final List<Type> list = new Vector<Type>();
+        final List<Type> list = new ArrayList<>();
         for (final Iterator<Node> en = getLeft().getNodesSet().iterator(); en.hasNext();) {
             final Node o = en.next();
             if (getImage(o) == null
@@ -3976,17 +3921,17 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public List<Type> getTypeOfObjectToCreate() {
-        final List<Type> list = new Vector<Type>();
+        final List<Type> list = new ArrayList<>();
         for (Iterator<Node> en = getRight().getNodesSet().iterator(); en.hasNext();) {
             GraphObject o = en.next();
-            if (!getInverseImage(o).hasMoreElements()
+            if (!getInverseImage(o).hasNext()
                     && !list.contains(o.getType())) {
                 list.add(o.getType());
             }
         }
         for (Iterator<Arc> en = getRight().getArcsSet().iterator(); en.hasNext();) {
             GraphObject o = en.next();
-            if (!getInverseImage(o).hasMoreElements()
+            if (!getInverseImage(o).hasNext()
                     && !list.contains(o.getType())) {
                 list.add(o.getType());
             }
@@ -4010,9 +3955,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private List<String> findTypesWhichNeedMultiplicityCheck() {
-        final List<String> list = new Vector<String>();
+        final List<String> list = new ArrayList<>();
 
-        final List<GraphObject> list1 = new Vector<GraphObject>();
+        final List<GraphObject> list1 = new ArrayList<>();
         list1.addAll(this.getElementsToCreate());
         list1.addAll(this.getElementsToDelete());
         for (int i = 0; i < list1.size(); i++) {
@@ -4060,20 +4005,6 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * @deprecated replaced by <code>Vector<GraphObject> getElementsToCreate()</code>
-     */
-    public List<GraphObject> getObjectsToCreate() {
-        return getElementsToCreate();
-    }
-
-    /**
-     * @deprecated use <code>getElementsToCreate().size()</code>
-     */
-    public int getNumberOfObjectsToCreate() {
-        return getElementsToCreate().size();
-    }
-
-    /**
      * Returns true if this rule will delete some graph elements, otherwise - false.
      */
     public boolean isDeleting() {
@@ -4112,7 +4043,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         boolean result = false;
         for (int i = 0; i < delNodes.size() && !result; i++) {
             final Node n = delNodes.get(i);
-            final Vector<Arc> inheritedArcs = this.getTypeSet().getInheritedArcs(n.getType());
+            final List<Arc> inheritedArcs = this.getTypeSet().getInheritedArcs(n.getType());
             if (inheritedArcs.size() > 0) {
                 // TypeGraph exists and arcs at Node of type n.getType()
                 for (int j = 0; j < inheritedArcs.size() && !result; j++) {
@@ -4161,7 +4092,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             Iterator<Arc> arcs = nac.getTarget().getArcsCollection().iterator();
             while (arcs.hasNext()) {
                 Arc a = arcs.next();
-                if (!nac.getInverseImage(a).hasMoreElements()
+                if (!nac.getInverseImage(a).hasNext()
                         && a.getType() == typeArc.getType()) {
                     Node n = (Node) nac.getImage(lhsNode);
                     if (n == a.getSource()) {
@@ -4227,7 +4158,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             for (final Iterator<Arc> en = this.itsImag.getArcsSet().iterator(); en.hasNext();) {
                 Arc a = en.next();
                 if (a.getType().compareTo(arct)
-                        && !this.getInverseImage(a).hasMoreElements()) {
+                        && !this.getInverseImage(a).hasNext()) {
                     List<GraphObject> inv1 = this.getInverseImageList(a.getSource());
                     if (inv1.contains(src)) {
                         List<GraphObject> inv2 = this.getInverseImageList(a.getTarget());
@@ -4248,26 +4179,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      */
     public boolean isArcCreating(final Arc a) {
         if (//this.itsImag.getArcsSet().contains(a) &&
-                !this.getInverseImage(a).hasMoreElements()
-                && this.getInverseImage(a.getSource()).hasMoreElements()
-                && this.getInverseImage(a.getTarget()).hasMoreElements()) {
+                !this.getInverseImage(a).hasNext()
+                && this.getInverseImage(a.getSource()).hasNext()
+                && this.getInverseImage(a.getTarget()).hasNext()) {
             return true;
         }
         return false;
-    }
-
-    /**
-     * @deprecated replaced by <code>Vector<GraphObject> getElementsToDelete()</code>
-     */
-    public List<GraphObject> getObjectsToDelete() {
-        return getElementsToDelete();
-    }
-
-    /**
-     * @deprecated use <code>getElementsToDelete().size()</code>
-     */
-    public int getNumberOfObjectsToDelete() {
-        return getElementsToDelete().size();
     }
 
     /**
@@ -4307,7 +4224,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Returns preserved elements which attributes should be changed. The key is an object of the LHS, the value - its
      * image of the RHS.
      */
-    public Hashtable<GraphObject, GraphObject> getElementsToChange() {
+    public Map<GraphObject, GraphObject> getElementsToChange() {
         if (this.changedPreserved == null
                 || this.itsOrig.changed) {
             this.changedPreserved = findElementsToChange();
@@ -4317,13 +4234,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private List<GraphObject> findElementsToPreserve() {
-        List<GraphObject> vec = new Vector<GraphObject>();
+        List<GraphObject> vec = new ArrayList<>();
         vec.addAll(this.itsDomObjects);
         return vec;
     }
 
     private List<GraphObject> findElementsToCreate() {
-        List<GraphObject> vec = new Vector<GraphObject>();
+        List<GraphObject> vec = new ArrayList<>();
         vec.addAll(this.findNodesToCreate());
         vec.addAll(this.findArcsToCreate());
 
@@ -4332,11 +4249,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private List<Node> findNodesToCreate() {
-        List<Node> vec = new Vector<Node>();
+        List<Node> vec = new ArrayList<>();
 
         for (Iterator<Node> en = getRight().getNodesSet().iterator(); en.hasNext();) {
             Node o = en.next();
-            if (!getInverseImage(o).hasMoreElements()) {
+            if (!getInverseImage(o).hasNext()) {
                 vec.add(o);
             }
         }
@@ -4344,11 +4261,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private List<Arc> findArcsToCreate() {
-        List<Arc> vec = new Vector<Arc>();
+        List<Arc> vec = new ArrayList<>();
 
         for (Iterator<Arc> en = getRight().getArcsSet().iterator(); en.hasNext();) {
             Arc o = en.next();
-            if (!getInverseImage(o).hasMoreElements()) {
+            if (!getInverseImage(o).hasNext()) {
                 vec.add(o);
             }
         }
@@ -4356,14 +4273,14 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private List<GraphObject> findElementsToDelete() {
-        final List<GraphObject> vec = new Vector<GraphObject>();
+        final List<GraphObject> vec = new ArrayList<>();
         vec.addAll(findNodesToDelete());
         vec.addAll(findArcsToDelete());
         return vec;
     }
 
     private List<Node> findNodesToDelete() {
-        final List<Node> vec = new Vector<Node>();
+        final List<Node> vec = new ArrayList<>();
         for (final Iterator<Node> en = getLeft().getNodesSet().iterator(); en.hasNext();) {
             final Node o = en.next();
             if (getImage(o) == null) {
@@ -4376,12 +4293,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return vec;
     }
 
-    private Vector<Arc> findArcsToDelete() {
-        final Vector<Arc> vec = new Vector<Arc>();
+    private List<Arc> findArcsToDelete() {
+        final List<Arc> vec = new ArrayList<>();
         for (final Iterator<Arc> en = getLeft().getArcsSet().iterator(); en.hasNext();) {
             final Arc o = en.next();
             if (getImage(o) == null) {
-                vec.addElement(o);
+                vec.add(o);
             }
         }
         this.isDeleting = this.isDeleting || !vec.isEmpty();
@@ -4406,8 +4323,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	 * Returns preserved graph objects to be changed. The key is a graph object
 	 * of the LHS, the value is its image object of the RHS
      */
-    private Hashtable<GraphObject, GraphObject> findElementsToChange() {
-        Hashtable<GraphObject, GraphObject> set = new Hashtable<GraphObject, GraphObject>();
+    private Map<GraphObject, GraphObject> findElementsToChange() {
+        Map<GraphObject, GraphObject> set = new HashMap<>();
         for (int i = 0; i < this.itsDomObjects.size(); i++) {
             GraphObject go = this.itsDomObjects.get(i);
             if (isChangingAttribute(go, getImage(go))) {
@@ -4444,18 +4361,18 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     /*
 	 * protected boolean differentVariablesUsed(Graph g, Enumeration nacs) {
 	 * AttrContext ac = getAttrContext(); VarTuple avt = (VarTuple)
-	 * ac.getVariables(); Hashtable<VarMember,Boolean> used = new Hashtable<VarMember,Boolean>(avt.getSize());
+	 * ac.getVariables(); Map<VarMember,Boolean> used = new Map<VarMember,Boolean>(avt.getSize());
 	 * for (int i = 0; i < avt.getSize(); i++) { VarMember var =
 	 * avt.getVarMemberAt(i); used.put(var, Boolean.valueOf(false)); } Enumeration e =
-	 * g.getElements(); while (nacs.hasMoreElements()) { used = new Hashtable<VarMember,Boolean>(avt.getSize());
+	 * g.getElements(); while (nacs.hasNext()) { used = new Map<VarMember,Boolean>(avt.getSize());
 	 * for (int i = 0; i < avt.getSize(); i++) { VarMember var =
 	 * avt.getVarMemberAt(i); used.put(var, Boolean.valueOf(false)); }
-	 * OrdinaryMorphism m = (OrdinaryMorphism) nacs.nextElement(); e =
-	 * m.getTarget().getElements(); while (e.hasMoreElements()) { GraphObject o =
-	 * (GraphObject) e.nextElement(); if(o.getAttribute() == null) continue;
+	 * OrdinaryMorphism m = (OrdinaryMorphism) nacs.next(); e =
+	 * m.getTarget().getElements(); while (e.hasNext()) { GraphObject o =
+	 * (GraphObject) e.next(); if(o.getAttribute() == null) continue;
 	 * AttrInstance attr = o.getAttribute(); ValueTuple vt = (ValueTuple) attr;
-	 * if (m.getInverseImage(o).hasMoreElements()) { GraphObject orig =
-	 * (GraphObject) m.getInverseImage(o).nextElement(); ValueTuple vtOrig =
+	 * if (m.getInverseImage(o).hasNext()) { GraphObject orig =
+	 * (GraphObject) m.getInverseImage(o).next(); ValueTuple vtOrig =
 	 * (ValueTuple) orig.getAttribute(); for (int k = 0; k < vt.getSize(); k++) {
 	 * ValueMember vm = vt.getValueMemberAt(k); ValueMember vmOrig =
 	 * vtOrig.getValueMemberAt(k); if (vmOrig.isSet() && vm.isSet()) { if
@@ -4466,12 +4383,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	 * 
 	 * 
 	 * protected boolean areSameVariablesUsed() { AttrContext ac =
-	 * getAttrContext(); VarTuple avt = (VarTuple) ac.getVariables(); Hashtable<VarMember,Boolean>
-	 * used = new Hashtable<VarMember,Boolean>(avt.getSize()); for (int i = 0;
+	 * getAttrContext(); VarTuple avt = (VarTuple) ac.getVariables(); Map<VarMember,Boolean>
+	 * used = new Map<VarMember,Boolean>(avt.getSize()); for (int i = 0;
 	 * i < avt.getSize(); i++) { VarMember var = avt.getVarMemberAt(i);
-	 * used.put(var, Boolean.valueOf(false)); } Vector<VarMember> result = new
-	 * Vector<VarMember>(); Enumeration e = getLeft().getElements(); while
-	 * (e.hasMoreElements()) { GraphObject o = (GraphObject) e.nextElement();
+	 * used.put(var, Boolean.valueOf(false)); } List<VarMember> result = new
+	 * List<VarMember>(); Enumeration e = getLeft().getElements(); while
+	 * (e.hasNext()) { GraphObject o = (GraphObject) e.next();
 	 * if(o.getAttribute() == null) continue; AttrInstance attr =
 	 * o.getAttribute(); ValueTuple vt = (ValueTuple) attr; for (int k = 0; k <
 	 * vt.getSize(); k++) { ValueMember vm = vt.getValueMemberAt(k); if
@@ -4518,9 +4435,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private void restoreVarDecl(final Graph g, final VarTuple vart) {
-        Enumeration<GraphObject> en1 = g.getElements();
-        while (en1.hasMoreElements()) {
-            GraphObject o = en1.nextElement();
+        Iterator<GraphObject> en1 = g.iteratorOfElems();
+        while (en1.hasNext()) {
+            GraphObject o = en1.next();
             if (o.getAttribute() == null) {
                 continue;
             }
@@ -4548,9 +4465,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    public Vector<Type> getUsedTypes() {
+    @Override
+    public List<Type> getUsedTypes() {
         // get types of LHS and RHS
-        final Vector<Type> vec = super.getUsedTypes();
+        final List<Type> vec = super.getUsedTypes();
         // add types of NACs
         for (int i = 0; i < this.itsNACs.size(); i++) {
             OrdinaryMorphism om = this.itsNACs.get(i);
@@ -4607,10 +4525,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             }
         }
         // check types: all types of the orig. graph should be in image, too
-        Vector<Type> origTypes = getLeft().getUsedTypes();
+        List<Type> origTypes = getLeft().getUsedTypes();
 
         // TODO::mit PACs  origTypes erweitern
-        Vector<Type> otherTypes = g.getUsedAndInheritedTypes();
+        List<Type> otherTypes = g.getUsedAndInheritedTypes();
         for (int i = 0; i < origTypes.size(); i++) {
             if (!otherTypes.contains(origTypes.get(i))) {
                 return false;
@@ -4662,16 +4580,16 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 
     /**
      * Set value of the input parameter of its attribute context. The specified parameters contain: String - is a name
-     * of an input parameter, first Object of a Vector - is the value, second Object of a Vector - is the type of this
-     * input parameter.
+     * of an input parameter, first Object of a List - is the value, second Object of a List - is the type of this input
+     * parameter.
      */
-    public void setInputParameters(HashMap<String, Vector<Object>> parameters) {
+    public void setInputParameters(HashMap<String, List<Object>> parameters) {
         VarTuple var = (VarTuple) getAttrContext().getVariables();
         int j = 0;
         for (int i = 0; i < var.getNumberOfEntries(); i++) {
             VarMember varm = var.getVarMemberAt(i);
             if (varm.isInputParameter()) {
-                Vector<Object> valuePair = parameters.get(varm.getName());
+                List<Object> valuePair = parameters.get(varm.getName());
                 Object value = valuePair.get(0);
                 String type = (String) valuePair.get(1);
                 if (type.equals("int") || type.equals("boolean")
@@ -4699,7 +4617,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
 
         int n = this.itsACs.size();
-        final List<Evaluable> vars = new Vector<Evaluable>(n);
+        final List<Evaluable> vars = new ArrayList<>(n);
 
         String tmp = "";
         int indx = -1;
@@ -4742,7 +4660,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             return true;
         }
 
-        final List<Evaluable> vars = new Vector<Evaluable>(this.itsACs.size());
+        final List<Evaluable> vars = new ArrayList<>(this.itsACs.size());
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -4778,7 +4696,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             return true;
         }
 
-        final List<Evaluable> vars = new Vector<Evaluable>(this.itsACs.size());
+        final List<Evaluable> vars = new ArrayList<>(this.itsACs.size());
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -4854,7 +4772,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @param bnf
      */
     public boolean setFormula(String bnf) {
-//		final List<NestedApplCond> vars = new Vector<NestedApplCond>(this.itsACs.size());
+//		final List<NestedApplCond> vars = new List<NestedApplCond>(this.itsACs.size());
 //		for (int i=0; i<this.itsACs.size(); i++) {	
 //			vars.add((NestedApplCond) this.itsACs.get(i));
 //		}		
@@ -4876,7 +4794,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             return this.setDefaultFormulaFalse();
         }
 
-        final List<Evaluable> vars = new Vector<Evaluable>();
+        final List<Evaluable> vars = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             NestedApplCond ac = list.get(i);
             if (ac.isEnabled()) {
@@ -4954,7 +4872,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Returns a list with names of enabled general application conditions.
      */
     public List<String> getNameOfEnabledACs() {
-        final List<String> vars = new Vector<String>();
+        final List<String> vars = new ArrayList<>();
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -4968,7 +4886,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Returns a list with names of enabled general application conditions and its nested ACs inclusively.
      */
     public List<String> getNameOfEnabledNestedACs() {
-        final List<String> vars = new Vector<String>();
+        final List<String> vars = new ArrayList<>();
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -4983,7 +4901,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Returns a list with names of all general application conditions and its nested ACs inclusively.
      */
     public List<String> getNameOfNestedACs() {
-        final List<String> vars = new Vector<String>();
+        final List<String> vars = new ArrayList<>();
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
             vars.add(ac.getName());

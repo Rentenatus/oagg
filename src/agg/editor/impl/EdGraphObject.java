@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 package agg.editor.impl;
 
@@ -21,6 +20,7 @@ import agg.attribute.view.AttrViewSetting;
 import agg.gui.editor.EditorConstants;
 import agg.gui.editor.GraphPanel;
 import agg.xt_basis.GraphObject;
+import java.util.List;
 
 /**
  * An EdGraphObject specifies the common layout interface and implementations for nodes and arcs. This abstract class is
@@ -74,7 +74,7 @@ public abstract class EdGraphObject {
 
     protected int myKey = 0;
 
-    transient protected final Vector<String> marks;
+    transient protected final List<String> marks;
 
     transient protected EdGraphObject myCopy;
 
@@ -103,7 +103,7 @@ public abstract class EdGraphObject {
 //		if (this.eType != null) {
 //			this.eType.addUser(this);
 //		}
-        this.marks = new Vector<String>();
+        this.marks = new Vector<>();
     }
 
     public abstract void dispose();
@@ -150,7 +150,7 @@ public abstract class EdGraphObject {
     /**
      * Returns the attributes
      */
-    public abstract Vector<Vector<String>> getAttributes();
+    public abstract List<List<String>> getAttributes();
 
     public abstract void refreshAttributeInstance();
 
@@ -164,7 +164,7 @@ public abstract class EdGraphObject {
     /**
      * Sets the attributes
      */
-    public abstract Vector<Vector<String>> setAttributes(GraphObject obj);
+    public abstract List<List<String>> setAttributes(GraphObject obj);
 
     public abstract void drawGraphic(Graphics grs);
 
@@ -248,7 +248,7 @@ public abstract class EdGraphObject {
             if (i > 0) {
                 markBuf.append(',');
             }
-            markBuf.append(this.marks.elementAt(i));
+            markBuf.append(this.marks.get(i));
         }
         return markBuf.toString();
     }
@@ -257,7 +257,7 @@ public abstract class EdGraphObject {
      * Returns the text height
      */
     public int getTextHeight(FontMetrics fm) {
-        Vector<Vector<String>> attrs = getAttributes();
+        List<List<String>> attrs = getAttributes();
         int nn = 0;
         int h1 = 0;
         // die Hoehe einer Zeile
@@ -275,10 +275,10 @@ public abstract class EdGraphObject {
         if (attrs != null) {
             nn = attrs.size();
             for (int i = 0; i < attrs.size(); i++) {
-                Vector<String> attr = attrs.elementAt(i);
-                if (!this.elemOfTG && (attr.elementAt(2).length() == 0)) {
+                List<String> attr = attrs.get(i);
+                if (!this.elemOfTG && (attr.get(2).length() == 0)) {
                     nn--;
-                } else if (this.elemOfTG && (attr.elementAt(1) == null)) {
+                } else if (this.elemOfTG && (attr.get(1) == null)) {
                     nn--;
                 }
             }
@@ -322,16 +322,16 @@ public abstract class EdGraphObject {
             return wdth;
         }
 
-        Vector<Vector<String>> attrs = getAttributes();
+        List<List<String>> attrs = getAttributes();
         if (attrs != null) {
             for (int i = 0; i < attrs.size(); i++) {
-                Vector<String> attr = attrs.elementAt(i);
+                List<String> attr = attrs.get(i);
                 if (this.elemOfTG) {
-                    if (attr.elementAt(1) != null) {
-                        String tstStr = attr.elementAt(0) + "  " + attr.elementAt(1);
+                    if (attr.get(1) != null) {
+                        String tstStr = attr.get(0) + "  " + attr.get(1);
 //						 Type graph: default attr value 
-                        if (attr.elementAt(2).length() != 0) {
-                            tstStr = tstStr + "=" + attr.elementAt(2);
+                        if (attr.get(2).length() != 0) {
+                            tstStr = tstStr + "=" + attr.get(2);
                         }
                         if (fm == null) {
                             if ((nn * tstStr.length()) > wdth) {
@@ -341,8 +341,8 @@ public abstract class EdGraphObject {
                             wdth = fm.stringWidth(tstStr);
                         }
                     }
-                } else if (attr.elementAt(2).length() != 0) {
-                    String tstStr = attr.elementAt(1) + "=" + attr.elementAt(2);
+                } else if (attr.get(2).length() != 0) {
+                    String tstStr = attr.get(1) + "=" + attr.get(2);
                     if (fm == null) {
                         if ((nn * tstStr.length()) > wdth) {
                             wdth = nn * tstStr.length();
@@ -579,14 +579,14 @@ public abstract class EdGraphObject {
      * Adds the morphism mark specified by the int m to my morphism mark
      */
     public void addMorphismMark(int m) {
-        this.marks.addElement(String.valueOf(m));
+        this.marks.add(String.valueOf(m));
     }
 
     /**
      * Adds the morphism mark specified by the String m to my morphism mark
      */
     public void addMorphismMark(String m) {
-        this.marks.addElement(m);
+        this.marks.add(m);
     }
 
     /**

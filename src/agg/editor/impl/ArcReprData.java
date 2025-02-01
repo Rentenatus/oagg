@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.editor.impl;
 
@@ -24,6 +25,7 @@ import agg.xt_basis.Type;
 import agg.xt_basis.TypeException;
 import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.ValueMember;
+import java.util.List;
 
 public class ArcReprData implements StateEditable {
 
@@ -206,21 +208,21 @@ public class ArcReprData implements StateEditable {
     }
 
     private EdType findArcType(EdGraph g, EdType t) {
-        Vector<EdType> arcTypes = g.getTypeSet().getArcTypes();
+        List<EdType> arcTypes = g.getTypeSet().getArcTypes();
         for (int i = 0; i < arcTypes.size(); i++) {
             EdType ti = arcTypes.get(i);
             if ((ti == t)
                     || (ti.getContextUsage().indexOf(
                             String.valueOf(this.typeRepresentation
                                     .getTypeHashCode())) >= 0)) {
-                return ti;
+                return ti; 
             }
         }
         return null;
     }
 
     private EdType findArcType(EdGraph g, int typeHC) {
-        Vector<EdType> arcTypes = g.getTypeSet().getArcTypes();
+        List<EdType> arcTypes = g.getTypeSet().getArcTypes();
         for (int i = 0; i < arcTypes.size(); i++) {
             EdType t = arcTypes.get(i);
             if (t.hashCode() == typeHC) {
@@ -237,7 +239,7 @@ public class ArcReprData implements StateEditable {
         return null;
     }
 
-    protected EdArc createArcFromArcRepr(EdGraph g, Vector<EdNode> restoredNodes) {
+    protected EdArc createArcFromArcRepr(EdGraph g, List<EdNode> restoredNodes) {
         EdType type = findArcType(g, this.typeRepresentation.getTypeHashCode());
         if (type == null) {
             type = this.typeRepresentation.createTypeFromTypeRepr();
@@ -342,7 +344,7 @@ public class ArcReprData implements StateEditable {
     }
 
     private EdNode getNode(EdGraph g, int hashCode) {
-        Vector<EdNode> nodes = g.getNodes();
+        List<EdNode> nodes = g.getNodes();
         for (int i = 0; i < nodes.size(); i++) {
             EdNode n = nodes.get(i);
             if (n.hashCode() == hashCode) {

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.util;
 
@@ -657,10 +658,10 @@ public class XMLHelper implements ExceptionListener {
         templ.XreadObject(this);
     }
 
-    public void addEnumeration(String mem_name, Enumeration<?> e, boolean sub) {
+    public void addEnumeration(String mem_name, Iterator<?> e, boolean sub) {
         String refs = "";
-        while (e.hasMoreElements()) {
-            XMLObject o = (XMLObject) e.nextElement();
+        while (e.hasNext()) {
+            XMLObject o = (XMLObject) e.next();
             String newi = getO2I(o);
             if (newi.length() == 0) {
                 newi = newO2I(o);
@@ -757,7 +758,7 @@ public class XMLHelper implements ExceptionListener {
         }
     }
 
-    public Enumeration<Element> getEnumeration(String mem_name, XMLObject templ,
+    public Iterator<Element> getEnumeration(String mem_name, XMLObject templ,
             boolean sub, String tagname) {
         Vector<Element> v = new Vector<Element>();
         push(top());
@@ -767,8 +768,8 @@ public class XMLHelper implements ExceptionListener {
                 v.add(e);
             }
         }
-        pop();
-        return v.elements();
+        pop(); 
+        return v.iterator();
     }
 
     public Iterator<Element> getIteration(String mem_name, XMLObject templ,

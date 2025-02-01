@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.treeview;
 
@@ -527,7 +528,7 @@ public class GraGraTreeView extends JPanel implements
 //		Object[] options = { "SAVE", "EXIT" };
 
         int answ = 1;
-        Vector<EdGraGra> gragras = getGraGras();
+        List<EdGraGra> gragras = getGraGras();
         for (int i = 0; i < gragras.size(); i++) {
             EdGraGra gra = gragras.get(i);
             if (gra.isChanged()) {
@@ -564,13 +565,13 @@ public class GraGraTreeView extends JPanel implements
 
     public synchronized void addTreeViewEventListener(TreeViewEventListener l) {
         if (!this.treeEventListeners.contains(l)) {
-            this.treeEventListeners.addElement(l);
+            this.treeEventListeners.add(l);
         }
     }
 
     public synchronized void removeTreeViewEventListener(TreeViewEventListener l) {
         if (this.treeEventListeners.contains(l)) {
-            this.treeEventListeners.removeElement(l);
+            this.treeEventListeners.remove(l);
         }
     }
 
@@ -589,15 +590,15 @@ public class GraGraTreeView extends JPanel implements
 
     public synchronized void fireTreeViewEvent(final TreeViewEvent e) {
         for (int i = 0; i < this.treeEventListeners.size(); i++) {
-            this.treeEventListeners.elementAt(i).treeViewEventOccurred(e);
+            this.treeEventListeners.get(i).treeViewEventOccurred(e);
         }
     }
 
     /**
      * Gets my main menus
      */
-    public Enumeration<JMenu> getMenus() {
-        return this.menus.elements();
+    public Iterator<JMenu> getMenus() {
+        return this.menus.iterator();
     }
 
     public JMenu getFileMenu() {
@@ -2913,7 +2914,7 @@ public class GraGraTreeView extends JPanel implements
                 .getUserObject();
         if (sd.isConstraint()) {
             EdConstraint c = sd.getConstraint();
-            Vector<Formula> v = new Vector<Formula>(1);
+            List<Formula> v = new Vector<>(1);
             v.add(c.getBasisConstraint());
             GraGraConstraintLayerDialog lg = new GraGraConstraintLayerDialog(
                     this.applFrame, v, c.getGraGra().getBasisGraGra().getLayers());
@@ -2942,7 +2943,7 @@ public class GraGraTreeView extends JPanel implements
                 .getUserObject();
         if (sd.isConstraint()) {
             EdConstraint c = sd.getConstraint();
-            Vector<Formula> v = new Vector<Formula>(1);
+            List<Formula> v = new Vector<Formula>(1);
             v.add(c.getBasisConstraint());
             ConstraintPriorityDialog lg = new ConstraintPriorityDialog(this.applFrame, v,
                     c.getGraGra().getBasisGraGra().getPriorities());
@@ -3110,7 +3111,7 @@ public class GraGraTreeView extends JPanel implements
     /**
      * Returns all gragra names of the this.tree
      */
-    public Vector<String> getGraGraNames() {
+    public List<String> getGraGraNames() {
         return ((GraGraTreeModel) this.tree.getModel()).getGraGraNames();
     }
 
@@ -3264,8 +3265,8 @@ public class GraGraTreeView extends JPanel implements
         return null;
     }
 
-    public Pair<EdRule, Vector<String>> getRuleContext(final DefaultMutableTreeNode n) {
-        Pair<EdRule, Vector<String>> context = null;
+    public Pair<EdRule, List<String>> getRuleContext(final DefaultMutableTreeNode n) {
+        Pair<EdRule, List<String>> context = null;
         GraGraTreeNodeData data = (GraGraTreeNodeData) n.getUserObject();
         if (data.isAttrCondition()) {
             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) n
@@ -3275,17 +3276,16 @@ public class GraGraTreeView extends JPanel implements
             }
             GraGraTreeNodeData sd = (GraGraTreeNodeData) parent.getUserObject();
             if (sd.isRule()) {
-                Vector<String> attrconds = sd.getRule().getAttrConditions();
-                context = new Pair<EdRule, Vector<String>>(sd.getRule(),
-                        attrconds);
+                List<String> attrconds = sd.getRule().getAttrConditions();
+                context = new Pair<>(sd.getRule(), attrconds);
             }
         }
         return context;
     }
 
-    public Pair<EdAtomic, Vector<String>> getConclusionContext(
+    public Pair<EdAtomic, List<String>> getConclusionContext(
             final DefaultMutableTreeNode n) {
-        Pair<EdAtomic, Vector<String>> context = null;
+        Pair<EdAtomic, List<String>> context = null;
         GraGraTreeNodeData data = (GraGraTreeNodeData) n.getUserObject();
         if (data.isAttrCondition()) {
             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) n
@@ -3295,10 +3295,9 @@ public class GraGraTreeView extends JPanel implements
             }
             GraGraTreeNodeData sd = (GraGraTreeNodeData) parent.getUserObject();
             if (sd.isConclusion()) {
-                Vector<String> attrconds = sd.getConclusion()
+                List<String> attrconds = sd.getConclusion()
                         .getAttrConditions();
-                context = new Pair<EdAtomic, Vector<String>>(
-                        sd.getConclusion(), attrconds);
+                context = new Pair<>(sd.getConclusion(), attrconds);
             }
         }
         return context;
@@ -3331,15 +3330,15 @@ public class GraGraTreeView extends JPanel implements
     /**
      * Returns a vector with elements of the type agg.gui.EdGraGra
      */
-    public Vector<EdGraGra> getGraGras() {
-        Vector<EdGraGra> gragras = new Vector<EdGraGra>();
+    public List<EdGraGra> getGraGras() {
+        List<EdGraGra> gragras = new Vector<EdGraGra>();
         DefaultMutableTreeNode aNode;
         GraGraTreeNodeData data;
         for (int i = 0; i < this.top.getChildCount(); i++) {
             aNode = (DefaultMutableTreeNode) this.top.getChildAt(i);
             data = (GraGraTreeNodeData) aNode.getUserObject();
             if (data.isGraGra()) {
-                gragras.addElement(data.getGraGra());
+                gragras.add(data.getGraGra());
             }
         }
         return gragras;
@@ -4798,7 +4797,7 @@ public class GraGraTreeView extends JPanel implements
                 }
             } else if (objToCheck instanceof EdConstraint) {
                 boolean used = false;
-                Vector<Formula> formulas = sd.getRule().getBasisRule().getUsedFormulas();
+                List<Formula> formulas = sd.getRule().getBasisRule().getUsedFormulas();
                 for (int i = 0; i < formulas.size(); i++) {
                     Formula f = formulas.get(i);
                     // System.out.println(f +"
@@ -4863,9 +4862,9 @@ public class GraGraTreeView extends JPanel implements
                 }
             }
             this.tree.collapsePath(path);
-            Vector<EvalSet> atoms = er.getBasisRule().getAtomApplConds();
+            List<EvalSet> atoms = er.getBasisRule().getAtomApplConds();
             // System.out.println("Atomics: "+atoms.size());
-            Vector<String> names = er.getBasisRule().getConstraintNames();
+            List<String> names = er.getBasisRule().getConstraintNames();
             String name;
             for (int i = 0; i < atoms.size(); i++) {
                 EvalSet es = atoms.get(i);
@@ -4881,7 +4880,7 @@ public class GraGraTreeView extends JPanel implements
                 boolean parentAdded = false;
                 for (int j = 0; j < es.getSet().size(); j++) {
                     // AtomApplCond cond = (AtomApplCond) es.getSet().get(j);
-                    Vector<?> set = ((EvalSet) es.getSet().get(j)).getSet();
+                    List<?> set = ((EvalSet) es.getSet().get(j)).getSet();
                     // System.out.println("Conclusions: "+set.size());
                     if (set.size() == 0) {
                         //					System.out.println("GragRaTreeView.addRuleConstraints: "
@@ -4894,7 +4893,7 @@ public class GraGraTreeView extends JPanel implements
                         parentAdded = true;
                     }
                     for (int k = 0; k < set.size(); k++) {
-                        AtomApplCond cond = (AtomApplCond) set.elementAt(k);
+                        AtomApplCond cond = (AtomApplCond) set.get(k);
                         String condName = cond.getSourceAtomConstraint().getName();
                         String n = (k + (j * set.size()) + 1) + "_" + condName;
                         EdAtomApplCond aac = new EdAtomApplCond(n, er, cond);
@@ -5231,7 +5230,7 @@ public class GraGraTreeView extends JPanel implements
     private void updateGraGraRuleData(final DefaultMutableTreeNode graNode) {
         EdGraGra gragra = ((GraGraTreeNodeData) graNode.getUserObject())
                 .getGraGra();
-        Vector<Rule> preservedRules = new Vector<Rule>();
+        List<Rule> preservedRules = new Vector<Rule>();
         // first check deleted rules
         for (int i = 0; i < graNode.getChildCount(); i++) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) graNode
@@ -6430,7 +6429,7 @@ public class GraGraTreeView extends JPanel implements
             importGraph(eg, selGraGra);
         }
         // import rules
-        Vector<String> failed = new Vector<String>();
+        List<String> failed = new Vector<String>();
         for (int i = 0; i < importGraGra.getRules().size(); i++) {
             EdRule er = importGraGra.getRules().get(i);
             EdRule newRule = importRule(er, selGraGra);
@@ -6573,9 +6572,9 @@ public class GraGraTreeView extends JPanel implements
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_IMPORT));
 
         EdGraph graphToImport = null;
-        Vector<String> graphNames = new Vector<String>();
+        List<String> graphNames = new Vector<String>();
         if (importGraGra.getGraphs().size() > 1) {
-            Vector<EdGraph> graphs = importGraGra.getGraphs();
+            List<EdGraph> graphs = importGraGra.getGraphs();
             for (int i = 0; i < graphs.size(); i++) {
                 graphNames.add(graphs.get(i).getName());
             }
@@ -6693,8 +6692,8 @@ public class GraGraTreeView extends JPanel implements
 
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_IMPORT));
 
-            Vector<String> ruleNames = new Vector<String>();
-            Vector<EdRule> rules = importGraGra.getRules();
+            List<String> ruleNames = new Vector<String>();
+            List<EdRule> rules = importGraGra.getRules();
             for (int i = 0; i < rules.size(); i++) {
                 ruleNames.add(rules.get(i).getName());
             }
@@ -6703,7 +6702,7 @@ public class GraGraTreeView extends JPanel implements
                     "Rule to import", ruleNames);
             rid.setVisible(true);
             ruleNames = rid.getSelectedItemNames();
-            Vector<String> failed = new Vector<String>();
+            List<String> failed = new Vector<String>();
             if (ruleNames.size() > 0) {
                 selGraGra.getTypeSet().getBasisTypeSet().adaptTypes(
                         importGraGra.getBasisGraGra().getTypes(), true);
@@ -6827,12 +6826,12 @@ public class GraGraTreeView extends JPanel implements
 
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_IMPORT));
 
-        Vector<String> names = importGraGra.getAtomicNames();
+        List<String> names = importGraGra.getAtomicNames();
         ItemImportDialog rid = new ItemImportDialog(this.applFrame,
                 "Atomic Graph Constraint to import", names);
         rid.setVisible(true);
         names = rid.getSelectedItemNames();
-        Vector<String> failed = new Vector<String>();
+        List<String> failed = new Vector<String>();
         if (names.size() > 0) {
             selGraGra.getTypeSet().getBasisTypeSet().adaptTypes(
                     importGraGra.getBasisGraGra().getTypes(), true);
@@ -6908,9 +6907,9 @@ public class GraGraTreeView extends JPanel implements
 
         boolean result = false;
         List<EdGraph> graphsToImport = new Vector<EdGraph>();
-        Vector<String> graphNames = new Vector<String>();
+        List<String> graphNames = new Vector<String>();
         if (importGraGra.getGraphs().size() > 1) {
-            Vector<EdGraph> graphs = importGraGra.getGraphs();
+            List<EdGraph> graphs = importGraGra.getGraphs();
             for (int i = 0; i < graphs.size(); i++) {
                 graphNames.add(graphs.get(i).getName());
             }
@@ -8559,7 +8558,7 @@ public class GraGraTreeView extends JPanel implements
         mi.setMnemonic('Q');
         mi.addActionListener(this.actionAdapter);
 
-        this.menus.addElement(this.file);
+        this.menus.add(this.file);
     }
 
     private void resetEnabledOfFileMenuItems(String command) {
@@ -8923,7 +8922,7 @@ public class GraGraTreeView extends JPanel implements
 
     protected String msg;
 
-    private final Vector<JMenu> menus = new Vector<JMenu>();
+    private final List<JMenu> menus = new Vector<JMenu>();
 
     private final JMenu file;
 
@@ -8933,7 +8932,7 @@ public class GraGraTreeView extends JPanel implements
 
     private final GraGraLoad gragraLoad;
 
-    private final Vector<TreeViewEventListener> treeEventListeners = new Vector<TreeViewEventListener>();
+    private final List<TreeViewEventListener> treeEventListeners = new Vector<TreeViewEventListener>();
 
     private String directory = "";
 
@@ -8961,9 +8960,9 @@ public class GraGraTreeView extends JPanel implements
 
     private EdAtomApplCond currentAtomApplCond;
 
-    private Pair<EdRule, Vector<String>> currentRuleContext;
+    private Pair<EdRule, List<String>> currentRuleContext;
 
-    private Pair<EdAtomic, Vector<String>> currentConclusionContext;
+    private Pair<EdAtomic, List<String>> currentConclusionContext;
 
     protected final FilePopupMenu filePopupMenu;
 

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.popupmenu;
 
@@ -30,6 +31,7 @@ import agg.gui.editor.GraphEditor;
 import agg.gui.editor.GraphPanel;
 import agg.gui.editor.RuleEditor;
 import agg.gui.saveload.GraphicsExportJPEG;
+import java.util.List;
 
 /**
  * @author $Author: olga $
@@ -596,7 +598,7 @@ public class ModePopupMenu extends JPopupMenu {
 
             this.miArcVisibility.setText("Hide Objects of Selected Edge Type");
             EdType type = this.gp.getGraph().getTypeSet().getSelectedArcType();
-            Vector<EdArc> edges = this.gp.getGraph().getTypeSet().getTypeGraph().getArcs(type);
+            List<EdArc> edges = this.gp.getGraph().getTypeSet().getTypeGraph().getArcs(type);
             for (int j = 0; j < edges.size(); j++) {
                 EdArc a = edges.get(j);
                 if (!type.getBasisType().isObjectOfTypeGraphArcVisible(

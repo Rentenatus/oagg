@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -60,7 +61,6 @@ public class BaseFactory {
     /**
      * The factory models GraGras.
      */
-
     private final List<GraGra> itsGraGras = new Vector<GraGra>();
 
     protected static BaseFactory theBaseFactory;
@@ -234,9 +234,9 @@ public class BaseFactory {
         Iterator<Node> nodes = L.getNodesCollection().iterator();
         while (nodes.hasNext()) {
             Node nL = nodes.next();
-            Node nC = (Node) c.getInverseImage(g.getImage(nL)).nextElement();
-            if (l.getInverseImage(nL).hasMoreElements()) {
-                Node nK = (Node) l.getInverseImage(nL).nextElement();
+            Node nC = (Node) c.firstOfInverseImage(g.getImage(nL));
+            if (l.hasInverseImage(nL)) {
+                Node nK = (Node) l.firstOfInverseImage(nL);
                 try {
                     k.addMapping(nK, nC);
                 } catch (BadMappingException ex) {
@@ -250,9 +250,9 @@ public class BaseFactory {
         Iterator<Arc> arcs = L.getArcsCollection().iterator();
         while (arcs.hasNext()) {
             Arc aL = arcs.next();
-            Arc aC = (Arc) c.getInverseImage(g.getImage(aL)).nextElement();
-            if (l.getInverseImage(aL).hasMoreElements()) {
-                Arc aK = (Arc) l.getInverseImage(aL).nextElement();
+            Arc aC = (Arc) c.firstOfInverseImage(g.getImage(aL));
+            if (l.hasInverseImage(aL)) {
+                Arc aK = (Arc) l.firstOfInverseImage(aL);
                 try {
                     k.addMapping(aK, aC);
                 } catch (BadMappingException ex) {
@@ -320,17 +320,17 @@ public class BaseFactory {
             Arc aG = arcs.next();
             GraphObject sG = aG.getSource();
             GraphObject tG = aG.getTarget();
-            if (g.getInverseImage(sG).hasMoreElements()
-                    && !t.getInverseImage(g.getInverseImage(sG).nextElement()).hasMoreElements()) {
+            if (g.hasInverseImage(sG)
+                    && !t.hasInverseImage(g.firstOfInverseImage(sG))) {
                 // aG is a new edge
-                GraphObject sL = g.getInverseImage(sG).nextElement();
-                if (!l.getInverseImage(sL).hasMoreElements()) {
+                GraphObject sL = g.firstOfInverseImage(sG);
+                if (!l.hasInverseImage(sL)) {
 //					System.out.println("BF.makePOComplement: edge source conflict!!");
                     return false;
                 }
-            } else if (g.getInverseImage(tG).hasMoreElements()) {
-                GraphObject sL = g.getInverseImage(tG).nextElement();
-                if (!l.getInverseImage(sL).hasMoreElements()) {
+            } else if (g.hasInverseImage(tG)) {
+                GraphObject sL = g.firstOfInverseImage(tG);
+                if (!l.hasInverseImage(sL)) {
 //					System.out.println("BF.makePOComplement: edge source conflict!!");
                     return false;
                 }
@@ -448,10 +448,9 @@ public class BaseFactory {
         Iterator<Node> nodes = H.getNodesCollection().iterator();
         while (nodes.hasNext()) {
             Node n = nodes.next();
-            if (g.getInverseImage(n).hasMoreElements()
-                    && f.getInverseImage(n).hasMoreElements()) {
-                Node n_f = (Node) f.getInverseImage(n).nextElement();
-                Node n_g = (Node) g.getInverseImage(n).nextElement();
+            if (g.hasInverseImage(n) && f.hasInverseImage(n)) {
+                Node n_f = (Node) f.firstOfInverseImage(n);
+                Node n_g = (Node) g.firstOfInverseImage(n);
                 try {
                     Node nn = L.createNode(n.getType());
                     try {
@@ -467,10 +466,9 @@ public class BaseFactory {
         Iterator<Arc> arcs = H.getArcsCollection().iterator();
         while (arcs.hasNext()) {
             Arc a = arcs.next();
-            if (g.getInverseImage(a).hasMoreElements()
-                    && f.getInverseImage(a).hasMoreElements()) {
-                Arc a_f = (Arc) f.getInverseImage(a).nextElement();
-                Arc a_g = (Arc) g.getInverseImage(a).nextElement();
+            if (g.hasInverseImage(a) && f.hasInverseImage(a)) {
+                Arc a_f = (Arc) f.firstOfInverseImage(a);
+                Arc a_g = (Arc) g.firstOfInverseImage(a);
                 Node src = (Node) n2n.get(a_g.getSource());
                 Node tar = (Node) n2n.get(a_g.getTarget());
                 try {
@@ -519,7 +517,7 @@ public class BaseFactory {
         Iterator<Arc> arcs = G.getArcsCollection().iterator();
         while (arcs.hasNext()) {
             Arc a = arcs.next();
-            if (!g.getInverseImage(a).hasMoreElements()) {
+            if (!g.hasInverseImage(a)) {
                 // edge is in G but not in D
                 try {
                     // add edge to L
@@ -541,25 +539,25 @@ public class BaseFactory {
                     } catch (BadMappingException ex1) {
                     }
 
-                    if (g.getInverseImage(a.getSource()).hasMoreElements()) {
+                    if (g.hasInverseImage(a.getSource())) {
                         // edge's source is in D, so add it to B
                         if (n2n_B.get(a.getSource()) == null) {
                             Node s_B = B.createNode(a.getSourceType());
                             n2n_B.put(a.getSource(), s_B);
                             try {
-                                b1.addMapping(s_B, g.getInverseImage(a.getSource()).nextElement());
+                                b1.addMapping(s_B, g.firstOfInverseImage(a.getSource()));
                                 b2.addMapping(s_B, s_L);
                             } catch (BadMappingException ex1) {
                             }
                         }
                     }
-                    if (g.getInverseImage(a.getTarget()).hasMoreElements()) {
+                    if (g.hasInverseImage(a.getTarget())) {
                         // edge's target is in D, so add it to B
                         if (n2n_B.get(a.getTarget()) == null) {
                             Node t_B = B.createNode(a.getTargetType());
                             n2n_B.put(a.getTarget(), t_B);
                             try {
-                                b1.addMapping(t_B, g.getInverseImage(a.getTarget()).nextElement());
+                                b1.addMapping(t_B, g.firstOfInverseImage(a.getTarget()));
                                 b2.addMapping(t_B, t_L);
                             } catch (BadMappingException ex1) {
                             }
@@ -582,7 +580,7 @@ public class BaseFactory {
         while (nodes.hasNext()) {
             Node n = nodes.next();
             if (n2n_L.get(n) == null
-                    && !g.getInverseImage(n).hasMoreElements()) {
+                    && !g.hasInverseImage(n)) {
                 try {
                     Node n_L = L.createNode(n.getType());
                     try {
@@ -752,9 +750,9 @@ public class BaseFactory {
     private void changedAttr2Var(final Rule r, final OrdinaryMorphism t,
             final OrdinaryMorphism mL, final OrdinaryMorphism mR) {
         int indx = 1;
-        Enumeration<GraphObject> dom = r.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject goL = dom.nextElement();
+        Iterator<GraphObject> dom = r.getDomain();
+        while (dom.hasNext()) {
+            GraphObject goL = dom.next();
             GraphObject goR = r.getImage(goL);
             GraphObject goG = mL.getImage(goL);
             GraphObject goH = mR.getImage(goR);
@@ -802,9 +800,9 @@ public class BaseFactory {
                 ? new Rule(h.getOriginal(), h.getImage())
                 : new Rule(h.getOriginal(), h.getImage(), attrCntx);
 
-        Enumeration<GraphObject> dom = h.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        Iterator<GraphObject> dom = h.getDomain();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             try {
                 rule.addMapping(obj, h.getImage(obj));
             } catch (BadMappingException ex) {
@@ -863,8 +861,8 @@ public class BaseFactory {
             if (o.getAttribute() == null) {
                 continue;
             }
-            Enumeration<GraphObject> inverseImg = rule.getInverseImage(o);
-            if (!inverseImg.hasMoreElements()) {
+            Iterator<GraphObject> inverseImg = rule.getInverseImage(o);
+            if (!inverseImg.hasNext()) {
                 ValueTuple value = (ValueTuple) o.getAttribute();
                 for (int i = 0; i < value.getSize(); i++) {
                     ValueMember vm = value.getValueMemberAt(i);
@@ -918,9 +916,9 @@ public class BaseFactory {
         }
 
         final Rule rule = new Rule(isoL.getTarget(), isoR.getTarget());
-        final Enumeration<GraphObject> dom = h.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        final Iterator<GraphObject> dom = h.getDomain();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             GraphObject img = h.getImage(obj);
             try {
                 rule.addMapping(isoL.getImage(obj), isoR.getImage(img));
@@ -981,7 +979,7 @@ public class BaseFactory {
         int count = startCount;
         while (elems.hasNext()) {
             GraphObject o = (GraphObject) elems.next();
-            boolean inverseImageExists = rule.getInverseImage(o).hasMoreElements();
+            boolean inverseImageExists = rule.hasInverseImage(o);
             if (o.getAttribute() == null) {
                 continue;
             }
@@ -1106,8 +1104,8 @@ public class BaseFactory {
         Iterator<?> objs = right.getNodesSet().iterator();
         while (objs.hasNext()) {
             GraphObject o = (GraphObject) objs.next();
-            Enumeration<GraphObject> inverseImg = rule.getInverseImage(o);
-            if (!inverseImg.hasMoreElements()) {
+            Iterator<GraphObject> inverseImg = rule.getInverseImage(o);
+            if (!inverseImg.hasNext()) {
                 if (o.getAttribute() == null) {
                     continue;
                 }
@@ -1128,8 +1126,8 @@ public class BaseFactory {
         objs = right.getArcsSet().iterator();
         while (objs.hasNext()) {
             GraphObject o = (GraphObject) objs.next();
-            Enumeration<GraphObject> inverseImg = rule.getInverseImage(o);
-            if (!inverseImg.hasMoreElements()) {
+            Iterator<GraphObject> inverseImg = rule.getInverseImage(o);
+            if (!inverseImg.hasNext()) {
                 if (o.getAttribute() == null) {
                     continue;
                 }
@@ -1193,9 +1191,9 @@ public class BaseFactory {
         }
 
         // set mappings
-        final Enumeration<GraphObject> dom = morph.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        final Iterator<GraphObject> dom = morph.getDomain();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             GraphObject img = morph.getImage(obj);
             GraphObject img1 = isoLeft.getImage(obj);
             GraphObject obj1 = isoRight.getImage(img);
@@ -1305,9 +1303,9 @@ public class BaseFactory {
         }
 
         // set mappings
-        final Enumeration<GraphObject> dom = srcMorph.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        final Iterator<GraphObject> dom = srcMorph.getDomain();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             GraphObject img = srcMorph.getImage(obj);
             GraphObject img1 = table.get(obj);
             GraphObject obj1 = table.get(img);
@@ -1375,9 +1373,9 @@ public class BaseFactory {
                 absInverseRule.setErrorMsg(warning);
             }
 
-            if (!r.getNACs().hasMoreElements()
-                    && !r.getPACs().hasMoreElements()
-                    && !r.getNestedACs().hasMoreElements()
+            if (!r.getNACs().hasNext()
+                    && !r.getPACs().hasNext()
+                    && !r.getNestedACs().hasNext()
                     && r.getAttrContext().getConditions().getNumberOfEntries() == 0) {
                 return new Pair<Pair<Rule, Boolean>, Pair<OrdinaryMorphism, OrdinaryMorphism>>(
                         new Pair<Rule, Boolean>(absInverseRule, Boolean.TRUE), pair.second);
@@ -1447,9 +1445,9 @@ public class BaseFactory {
     public void replaceExprByVarInApplConds(
             final Rule r,
             final Hashtable<ValueMember, Pair<String, String>> storeMap) {
-        Enumeration<OrdinaryMorphism> applConds = r.getNACs();
-        while (applConds.hasMoreElements()) {
-            OrdinaryMorphism morph = applConds.nextElement();
+        Iterator<OrdinaryMorphism> applConds = r.getNACs();
+        while (applConds.hasNext()) {
+            OrdinaryMorphism morph = applConds.next();
             VarTuple vars = (VarTuple) morph.getAttrContext().getVariables();
 
             replaceAttrExpressionByVariable(
@@ -1467,8 +1465,8 @@ public class BaseFactory {
         }
 
         applConds = r.getPACs();
-        while (applConds.hasMoreElements()) {
-            OrdinaryMorphism morph = applConds.nextElement();
+        while (applConds.hasNext()) {
+            OrdinaryMorphism morph = applConds.next();
             VarTuple vars = (VarTuple) morph.getAttrContext().getVariables();
 
             replaceAttrExpressionByVariable(
@@ -1561,9 +1559,9 @@ public class BaseFactory {
     public void restoreExprByVarInApplConds(
             final Rule r,
             final Hashtable<ValueMember, Pair<String, String>> storeMap) {
-        Enumeration<OrdinaryMorphism> applConds = r.getNACs();
-        while (applConds.hasMoreElements()) {
-            OrdinaryMorphism morph = applConds.nextElement();
+        Iterator<OrdinaryMorphism> applConds = r.getNACs();
+        while (applConds.hasNext()) {
+            OrdinaryMorphism morph = applConds.next();
             VarTuple vars = (VarTuple) morph.getAttrContext().getVariables();
 
             this.restoreAttrExpressionReplacedByVariable(
@@ -1579,8 +1577,8 @@ public class BaseFactory {
         }
 
         applConds = r.getPACs();
-        while (applConds.hasMoreElements()) {
-            OrdinaryMorphism morph = applConds.nextElement();
+        while (applConds.hasNext()) {
+            OrdinaryMorphism morph = applConds.next();
             VarTuple vars = (VarTuple) morph.getAttrContext().getVariables();
 
             this.restoreAttrExpressionReplacedByVariable(
@@ -1655,12 +1653,12 @@ public class BaseFactory {
     public boolean checkWeakParallelMatches(final Match m1, final Match m2) {
         if (m1 != null && m1.isValid()
                 && m2 != null && m2.isValid()) {
-            Enumeration<GraphObject> dom1 = m1.getDomain();
-            while (dom1.hasMoreElements()) {
-                GraphObject go1 = dom1.nextElement();
+            Iterator<GraphObject> dom1 = m1.getDomain();
+            while (dom1.hasNext()) {
+                GraphObject go1 = dom1.next();
                 GraphObject go = m1.getImage(go1);
                 if (m2.hasInverseImage(go)) {
-                    GraphObject go2 = m2.getInverseImage(go).nextElement();
+                    GraphObject go2 = m2.firstOfInverseImage(go);
                     // check r2 delete
                     if (m2.getRule().getImage(go2) == null) {
                         return false;
@@ -1810,8 +1808,8 @@ public class BaseFactory {
                     if (cr.getRule() != null) {
                         System.out.println("=== >>>  Concurrent rule: "
                                 + cr.getRule().getName()
-                                + "  has NACs: " + cr.getRule().getNACs().hasMoreElements()
-                                + ", has PACs: " + cr.getRule().getPACs().hasMoreElements());
+                                + "  has NACs: " + cr.getRule().getNACs().hasNext()
+                                + ", has PACs: " + cr.getRule().getPACs().hasNext());
 //					((VarTuple) cr.getRule().getAttrContext().getVariables()).showVariables();
 
                         cr.usedM = freeM - Runtime.getRuntime().freeMemory();
@@ -2031,7 +2029,7 @@ public class BaseFactory {
             if (grob.getAttribute() == null) {
                 continue;
             }
-            if (!morph.getInverseImage(grob).hasMoreElements()) {
+            if (!morph.hasInverseImage(grob)) {
                 ValueTuple value = (ValueTuple) grob.getAttribute();
                 for (int i = 0; i < value.getSize(); i++) {
                     ValueMember val = value.getValueMemberAt(i);
@@ -2080,8 +2078,8 @@ public class BaseFactory {
             if (!tar.attrExists()) {
                 continue;
             }
-            if (morph.getInverseImage(tar).hasMoreElements()) {
-                GraphObject src = morph.getInverseImage(tar).nextElement();
+            if (morph.hasInverseImage(tar)) {
+                GraphObject src = morph.firstOfInverseImage(tar);
                 if (!src.attrExists()) {
                     continue;
                 }
@@ -2682,9 +2680,9 @@ public class BaseFactory {
 
     public void adjustAttributeValueAlongMorphismMapping(
             final OrdinaryMorphism morph) {
-        final Enumeration<GraphObject> dom = morph.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        final Iterator<GraphObject> dom = morph.getDomain();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             if (obj.getAttribute() != null) {
                 GraphObject img = morph.getImage(obj);
                 if (img.getAttribute() != null) {
@@ -2821,11 +2819,11 @@ public class BaseFactory {
             final OrdinaryMorphism condR) {
 
         // adjust usage of variables in the attributes of nacR
-        final Enumeration<GraphObject> nacLCoDom = condL.getCodomain();
-        while (nacLCoDom.hasMoreElements()) {
-            GraphObject condObj = nacLCoDom.nextElement();
+        final Iterator<GraphObject> nacLCoDom = condL.getCodomain();
+        while (nacLCoDom.hasNext()) {
+            GraphObject condObj = nacLCoDom.next();
             if (condObj.getAttribute() != null) {
-                GraphObject lhsObj = condL.getInverseImage(condObj).nextElement();
+                GraphObject lhsObj = condL.firstOfInverseImage(condObj);
                 GraphObject rhsObj = r.getImage(lhsObj);
                 if (rhsObj != null) {
                     GraphObject condRObj = condR.getImage(rhsObj);
@@ -2873,8 +2871,8 @@ public class BaseFactory {
         while (rhsArcs.hasNext() && ok) {
             Arc a = rhsArcs.next();
             Arc aImg = (Arc) condR.getImage(a);
-            if (!r.getInverseImage(a).hasMoreElements()
-                    || (condL.getImage(r.getInverseImage(a).nextElement()) == null)) {
+            if (!r.hasInverseImage(a)
+                    || (condL.getImage(r.firstOfInverseImage(a)) == null)) {
                 try {
                     condR.getTarget().destroyArc(aImg, false, false);
                 } catch (TypeException tex) {
@@ -2888,8 +2886,8 @@ public class BaseFactory {
         while (rhsNodes.hasNext() && ok) {
             Node n = rhsNodes.next();
             Node nImg = (Node) condR.getImage(n);
-            if (!r.getInverseImage(n).hasMoreElements()
-                    || (condL.getImage(r.getInverseImage(n).nextElement()) == null)) {
+            if (!r.hasInverseImage(n)
+                    || (condL.getImage(r.firstOfInverseImage(n)) == null)) {
                 try {
                     condR.getTarget().destroyNode(nImg, false, false);
                 } catch (TypeException tex) {
@@ -3030,7 +3028,7 @@ public class BaseFactory {
         Iterator<?> e = morph2.getTarget().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
-            if (!morph2.getInverseImage(o).hasMoreElements()) {
+            if (!morph2.hasInverseImage(o)) {
                 try {
                     Node n = extLeft.copyNode((Node) o);
                     this.setEmptyAttrsByDummyHC(n);
@@ -3045,9 +3043,8 @@ public class BaseFactory {
                     System.out.println(ex.getLocalizedMessage());
                 }
 
-            } else if (morph1.getImage(morph2.getInverseImage(o).nextElement()) != null) {
-                Node n = (Node) morph1.getImage(morph2
-                        .getInverseImage(o).nextElement());
+            } else if (morph1.getImage(morph2.firstOfInverseImage(o)) != null) {
+                Node n = (Node) morph1.getImage(morph2.firstOfInverseImage(o));
                 n.setContextUsage(o.hashCode());
                 n.setObjectName(o.getObjectName());
                 this.adjustAttributesFromTo(o, n);
@@ -3067,16 +3064,14 @@ public class BaseFactory {
         e = morph2.getTarget().getArcsSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
-            if (!morph2.getInverseImage(o).hasMoreElements()) {
+            if (!morph2.hasInverseImage(o)) {
                 Node src = tmp.get(((Arc) o).getSource());
                 if (src == null) {
-                    src = (Node) morph1.getImage(morph2.getInverseImage(
-                            ((Arc) o).getSource()).nextElement());
+                    src = (Node) morph1.getImage(morph2.firstOfInverseImage(((Arc) o).getSource()));
                 }
                 Node tar = tmp.get(((Arc) o).getTarget());
                 if (tar == null) {
-                    tar = (Node) morph1.getImage(morph2.getInverseImage(
-                            ((Arc) o).getTarget()).nextElement());
+                    tar = (Node) morph1.getImage(morph2.firstOfInverseImage(((Arc) o).getTarget()));
                 }
                 try {
                     Arc a = extLeft.copyArc((Arc) o, src, tar);
@@ -3089,16 +3084,14 @@ public class BaseFactory {
                     }
                 } catch (TypeException ex) {
                 }
-            } else if (morph1.getImage(morph2.getInverseImage(o).nextElement()) != null) {
-                Arc a = (Arc) morph1.getImage(morph2
-                        .getInverseImage(o).nextElement());
+            } else if (morph1.getImage(morph2.firstOfInverseImage(o)) != null) {
+                Arc a = (Arc) morph1.getImage(morph2.firstOfInverseImage(o));
                 a.setContextUsage(o.hashCode());
                 a.setObjectName(o.getObjectName());
                 this.adjustAttributesFromTo(o, a);
                 this.setEmptyAttrsByDummyHC(a);
                 try {
-                    morph.addMapping(o, morph1.getImage(morph2
-                            .getInverseImage(o).nextElement()));
+                    morph.addMapping(o, morph1.getImage(morph2.firstOfInverseImage(o)));
                 } catch (BadMappingException exc) {
                     System.out.println("BF.extendTargetGraph1ByTargetGraph2: " + exc.getLocalizedMessage());
                 }
@@ -3363,9 +3356,9 @@ public class BaseFactory {
         boolean removed = false;
         Vector<GraphObject> del = new Vector<GraphObject>();
         // remove preserved unchanged objects from LHS and RHS
-        Enumeration<GraphObject> dom = r.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        Iterator<GraphObject> dom = r.getDomain();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             GraphObject img = r.getImage(obj);
             if (obj.isArc()
                     && ((obj.getAttribute() == null && img.getAttribute() == null)
@@ -3391,8 +3384,8 @@ public class BaseFactory {
         }
         del.clear();
         dom = r.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             GraphObject img = r.getImage(obj);
             if (obj.isNode()
                     && ((Node) obj).getNumberOfArcs() == 0
@@ -3652,7 +3645,7 @@ public class BaseFactory {
                     e.getLocalizedMessage();
                 }
             } else {
-                Node n = (Node) table.get(rule.getEmbeddingRight().getInverseImage(rNode).nextElement());
+                Node n = (Node) table.get(rule.getEmbeddingRight().firstOfInverseImage(rNode));
                 itsRNode = (Node) ruleClone.getEmbeddingRight().getImage(n);
                 table.put(rNode, itsRNode);
             }
@@ -3679,7 +3672,7 @@ public class BaseFactory {
                     }
                 }
             } else {
-                Node n = (Node) table.get(rule.getEmbeddingLeft().getInverseImage(lNode).nextElement());
+                Node n = (Node) table.get(rule.getEmbeddingLeft().firstOfInverseImage(lNode));
                 itsLNode = (Node) ruleClone.getEmbeddingLeft().getImage(n);
                 table.put(lNode, itsLNode);
             }
@@ -3699,7 +3692,7 @@ public class BaseFactory {
                     e.getLocalizedMessage();
                 }
             } else {
-                Arc a = (Arc) table.get(rule.getEmbeddingRight().getInverseImage(rArc).nextElement());
+                Arc a = (Arc) table.get(rule.getEmbeddingRight().firstOfInverseImage(rArc));
                 itsRArc = (Arc) ruleClone.getEmbeddingRight().getImage(a);
                 table.put(rArc, itsRArc);
             }
@@ -3728,7 +3721,7 @@ public class BaseFactory {
                     }
                 }
             } else {
-                Arc a = (Arc) table.get(rule.getEmbeddingLeft().getInverseImage(lArc).nextElement());
+                Arc a = (Arc) table.get(rule.getEmbeddingLeft().firstOfInverseImage(lArc));
                 itsLArc = (Arc) ruleClone.getEmbeddingLeft().getImage(a);
                 table.put(lArc, itsLArc);
             }
@@ -3797,7 +3790,7 @@ public class BaseFactory {
                     e.getLocalizedMessage();
                 }
             } else {
-                Node n = (Node) table.get(rule.getEmbeddingLeft().getInverseImage(lNode).nextElement());
+                Node n = (Node) table.get(rule.getEmbeddingLeft().firstOfInverseImage(lNode));
                 invRNode = (Node) invRule.getEmbeddingRight().getImage(n);
                 table.put(lNode, invRNode);
 
@@ -3815,9 +3808,9 @@ public class BaseFactory {
                 } catch (TypeException e) {
                     e.getLocalizedMessage();
                 }
-                Enumeration<GraphObject> en = rule.getInverseImage(rNode);
-                if (en.hasMoreElements()) {
-                    GraphObject ln = en.nextElement();
+                Iterator<GraphObject> en = rule.getInverseImage(rNode);
+                if (en.hasNext()) {
+                    GraphObject ln = en.next();
                     // set mapping
                     try {
                         invRule.addMapping(invLNode, table.get(ln));
@@ -3826,7 +3819,7 @@ public class BaseFactory {
                     }
                 }
             } else {
-                Node n = (Node) table.get(rule.getEmbeddingRight().getInverseImage(rNode).nextElement());
+                Node n = (Node) table.get(rule.getEmbeddingRight().firstOfInverseImage(rNode));
                 invLNode = (Node) invRule.getEmbeddingLeft().getImage(n);
                 table.put(rNode, invLNode);
             }
@@ -3849,7 +3842,7 @@ public class BaseFactory {
                     System.out.println(e.getLocalizedMessage());
                 }
             } else {
-                Arc a = (Arc) table.get(rule.getEmbeddingLeft().getInverseImage(lArc).nextElement());
+                Arc a = (Arc) table.get(rule.getEmbeddingLeft().firstOfInverseImage(lArc));
                 invRArc = (Arc) invRule.getEmbeddingRight().getImage(a);
                 table.put(lArc, invRArc);
             }
@@ -3868,9 +3861,9 @@ public class BaseFactory {
                 } catch (TypeException e) {
                     e.getLocalizedMessage();
                 }
-                Enumeration<GraphObject> en = rule.getInverseImage(rArc);
-                if (en.hasMoreElements()) {
-                    GraphObject la = en.nextElement();
+                Iterator<GraphObject> en = rule.getInverseImage(rArc);
+                if (en.hasNext()) {
+                    GraphObject la = en.next();
                     // set mapping
                     try {
                         invRule.addMapping(invLArc, table.get(la));
@@ -3879,7 +3872,7 @@ public class BaseFactory {
                     }
                 }
             } else {
-                Arc a = (Arc) table.get(rule.getEmbeddingRight().getInverseImage(rArc).nextElement());
+                Arc a = (Arc) table.get(rule.getEmbeddingRight().firstOfInverseImage(rArc));
                 invLArc = (Arc) invRule.getEmbeddingLeft().getImage(a);
                 table.put(rArc, invLArc);
             }
@@ -4483,9 +4476,9 @@ public class BaseFactory {
 
         VarTuple vars = (VarTuple) m.getAttrContext().getVariables();
         int count = vars.getSize();
-        Enumeration<GraphObject> elements = morph.getDomain();
-        while (elements.hasMoreElements()) {
-            GraphObject obj = elements.nextElement();
+        Iterator<GraphObject> elements = morph.getDomain();
+        while (elements.hasNext()) {
+            GraphObject obj = elements.next();
             GraphObject img = morph.getImage(obj);
             if (img != null) {
                 if (obj.getAttribute() == null && img.getAttribute() == null) {
@@ -4584,9 +4577,9 @@ public class BaseFactory {
                     ? BaseFactory.theFactory().createGeneralMorphism(morph.getTarget(), condIso.getTarget())
                     : BaseFactory.theFactory().createMorphism(morph.getTarget(), condIso.getTarget());
 
-            Enumeration<GraphObject> condDom = cond.getDomain();
-            while (condDom.hasMoreElements()) {
-                GraphObject go = condDom.nextElement();
+            Iterator<GraphObject> condDom = cond.getDomain();
+            while (condDom.hasNext()) {
+                GraphObject go = condDom.next();
                 if (go.isNode()) {
                     GraphObject condImg = cond.getImage(go);
                     if (condImg != null) {
@@ -4602,8 +4595,8 @@ public class BaseFactory {
                 }
             }
             condDom = cond.getDomain();
-            while (condDom.hasMoreElements()) {
-                GraphObject go = condDom.nextElement();
+            while (condDom.hasNext()) {
+                GraphObject go = condDom.next();
                 if (go.isArc()) {
                     GraphObject condImg = cond.getImage(go);
                     if (condImg != null) {
@@ -4626,8 +4619,8 @@ public class BaseFactory {
                 }
             }
             condDom = cond.getDomain();
-            while (condDom.hasMoreElements()) {
-                GraphObject go = condDom.nextElement();
+            while (condDom.hasNext()) {
+                GraphObject go = condDom.next();
                 if (go.isNode()) {
                     GraphObject condImg = cond.getImage(go);
                     if (condImg != null) {
@@ -5279,17 +5272,17 @@ public class BaseFactory {
      * enumeration of pairs of morphisms. Each pair consists of a morphism from thisGraph to the overlap graph and a
      * morphism from the other graph to the overlap graph.
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlappingSet(
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlappingSet(
             final Graph thisGraph,
             final Graph g,
             final int sizeOfInclusion,
             final boolean union,
             final boolean withIsomorphic) {
 
-        final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-        Vector<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
-        final Enumeration<GraphObject> itsGOs = thisGraph.getElements();
-        final Vector<GraphObject> itsGOSet = new Vector<GraphObject>();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
+        final Iterator<GraphObject> itsGOs = thisGraph.iteratorOfElems();
+        final List<GraphObject> itsGOSet = new Vector<GraphObject>();
         int size = 0;
         int minGraphSize;
 
@@ -5298,8 +5291,8 @@ public class BaseFactory {
         } else {
             minGraphSize = 1;
         }
-        while (itsGOs.hasMoreElements()) {
-            itsGOSet.addElement(itsGOs.nextElement());
+        while (itsGOs.hasNext()) {
+            itsGOSet.add(itsGOs.next());
             size++;
         }
 
@@ -5313,13 +5306,13 @@ public class BaseFactory {
             subs = generateAllSubgraphsWithInclusionsOfSize(thisGraph, sizeOfInclusion,
                     itsGOSet, subs, withIsomorphic, null, false);
         } else {
-            return oSet.elements();
+            return oSet.iterator();
         }
 
         makeOverlappingPairs(thisGraph, g, subs, oSet);
         subs.clear();
 
-        return (oSet.elements());
+        return (oSet.iterator());
     }
 
     public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlappingSet(
@@ -5331,9 +5324,9 @@ public class BaseFactory {
             final boolean withIsomorphic) {
 
         final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-        Vector<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
-        final Enumeration<GraphObject> itsGOs = thisGraph.getElements();
-        final Vector<GraphObject> itsGOSet = new Vector<GraphObject>();
+        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
+        final Iterator<GraphObject> itsGOs = thisGraph.iteratorOfElems();
+        final List<GraphObject> itsGOSet = new Vector<GraphObject>();
         int size = 0;
         int minGraphSize;
 
@@ -5342,8 +5335,8 @@ public class BaseFactory {
         } else {
             minGraphSize = 1;
         }
-        while (itsGOs.hasMoreElements()) {
-            itsGOSet.addElement(itsGOs.nextElement());
+        while (itsGOs.hasNext()) {
+            itsGOSet.add(itsGOs.next());
             size++;
         }
 
@@ -5374,8 +5367,8 @@ public class BaseFactory {
     private void makeOverlappingPairs(
             final Graph thisGraph,
             final Graph g,
-            final Vector<OrdinaryMorphism> subs,
-            final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet,
+            final List<OrdinaryMorphism> subs,
+            final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet,
             final Hashtable<Object, Object> objectMap) {
 
         if (objectMap == null || objectMap.isEmpty()) {
@@ -5388,7 +5381,7 @@ public class BaseFactory {
                 ? (new Completion_InheritCSP()) : (new Completion_InjCSP());
 
         for (int i = 0; i < subs.size(); i++) {
-            OrdinaryMorphism h = subs.elementAt(i);
+            OrdinaryMorphism h = subs.get(i);
             Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>> rulePair = (BaseFactory.theFactory()).constructIsomorphicRule(h, true, false);
             if (rulePair == null) {
                 continue;
@@ -5401,13 +5394,13 @@ public class BaseFactory {
             while (match.nextCompletion()) {
                 boolean allOfObjectFlow = true;
                 int count = 0;
-                Enumeration<GraphObject> dom = match.getDomain();
-                while (dom.hasMoreElements()) {
+                Iterator<GraphObject> dom = match.getDomain();
+                while (dom.hasNext()) {
                     // obj corresponds to an object of L2 which is key of the objectMap
-                    final GraphObject obj = dom.nextElement();
-                    if (rulePair.second.first.getInverseImage(obj).hasMoreElements()) {
+                    final GraphObject obj = dom.next();
+                    if (rulePair.second.first.hasInverseImage(obj)) {
                         // obj1 is equivalent to obj
-                        final GraphObject obj1 = rulePair.second.first.getInverseImage(obj).nextElement();
+                        final GraphObject obj1 = rulePair.second.first.firstOfInverseImage(obj);
                         // objL2 is the object of L2 which can be a key of the objectMap
                         final GraphObject objL2 = h.getImage(obj1);
                         // obj2 is the value of the key (objL2) of the objectMap
@@ -5441,9 +5434,10 @@ public class BaseFactory {
                                     OrdinaryMorphism mStar = rulePair.second.second.compose(ms);
                                     if (mStar != null) {
                                         // make result overlapping pair
-                                        final Pair<OrdinaryMorphism, OrdinaryMorphism> p = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
-                                                mStar, rStar);
-                                        oSet.addElement(p);
+                                        final Pair<OrdinaryMorphism, OrdinaryMorphism> p
+                                                = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
+                                                        mStar, rStar);
+                                        oSet.add(p);
                                     }
                                     ms.dispose();
                                     ms = null;
@@ -5481,14 +5475,14 @@ public class BaseFactory {
     private void makeOverlappingPairs(
             final Graph thisGraph,
             final Graph g,
-            final Vector<OrdinaryMorphism> subs,
-            final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet) {
+            final List<OrdinaryMorphism> subs,
+            final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet) {
 
         MorphCompletionStrategy strategy = (thisGraph.getTypeSet().hasInheritance())
                 ? (new Completion_InheritCSP()) : (new Completion_InjCSP());
 
         for (int i = 0; i < subs.size(); i++) {
-            OrdinaryMorphism h = subs.elementAt(i);
+            OrdinaryMorphism h = subs.get(i);
             makeOverlappingPair(thisGraph, g, h, strategy, oSet);
             h.dispose(true, false);
             h = null;
@@ -5500,7 +5494,7 @@ public class BaseFactory {
             final Graph g,
             final OrdinaryMorphism inclusion,
             final MorphCompletionStrategy strategy,
-            final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet) {
+            final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet) {
 
         Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>> rulePair = (BaseFactory.theFactory()).constructIsomorphicRule(inclusion, true, false);
         if (rulePair == null) {
@@ -5544,9 +5538,10 @@ public class BaseFactory {
                             if (ms != null) {
                                 OrdinaryMorphism mStar = rulePair.second.second.compose(ms);
                                 if (mStar != null) {
-                                    final Pair<OrdinaryMorphism, OrdinaryMorphism> p = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
-                                            mStar, rStar);
-                                    oSet.addElement(p);
+                                    final Pair<OrdinaryMorphism, OrdinaryMorphism> p
+                                            = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
+                                                    mStar, rStar);
+                                    oSet.add(p);
                                 } else {
                                     rStar.dispose();
                                     rStar = null;
@@ -5583,7 +5578,7 @@ public class BaseFactory {
             final Hashtable<Object, Object> intersection, // thisGraph -> g
             final OrdinaryMorphism inclusion, // subgraph -> thisGraph
             final MorphCompletionStrategy strategy,
-            final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet) {
+            final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet) {
 
 //		System.out.println("===) BaseFactory.makeOverlappingPair");
         Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>> rulePair = (BaseFactory.theFactory()).constructIsomorphicRule(inclusion, true, false);
@@ -5602,8 +5597,8 @@ public class BaseFactory {
             Object thisGraph_obj = keys.nextElement();
             if (thisGraph_obj instanceof Node) {
                 Object g_obj = intersection.get(thisGraph_obj);
-                if (inclusion.getInverseImage((GraphObject) thisGraph_obj).hasMoreElements()) {
-                    GraphObject sub_obj = inclusion.getInverseImage((GraphObject) thisGraph_obj).nextElement();
+                if (inclusion.hasInverseImage((GraphObject) thisGraph_obj)) {
+                    GraphObject sub_obj = inclusion.firstOfInverseImage((GraphObject) thisGraph_obj);
                     GraphObject lhs_obj = rulePair.second.first.getImage(sub_obj);
                     if (lhs_obj != null && g_obj != null) {
                         try {
@@ -5626,8 +5621,8 @@ public class BaseFactory {
             Object thisGraph_obj = keys.nextElement();
             if (thisGraph_obj instanceof Arc) {
                 Object g_obj = intersection.get(thisGraph_obj);
-                if (inclusion.getInverseImage((GraphObject) thisGraph_obj).hasMoreElements()) {
-                    GraphObject sub_obj = inclusion.getInverseImage((GraphObject) thisGraph_obj).nextElement();
+                if (inclusion.hasInverseImage((GraphObject) thisGraph_obj)) {
+                    GraphObject sub_obj = inclusion.firstOfInverseImage((GraphObject) thisGraph_obj);
                     GraphObject lhs_obj = rulePair.second.first.getImage(sub_obj);
                     if (lhs_obj != null && g_obj != null) {
                         try {
@@ -5667,9 +5662,10 @@ public class BaseFactory {
                             if (ms != null) {
                                 OrdinaryMorphism mStar = rulePair.second.second.compose(ms);
                                 if (mStar != null) {
-                                    final Pair<OrdinaryMorphism, OrdinaryMorphism> p = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
-                                            mStar, rStar);
-                                    oSet.addElement(p);
+                                    final Pair<OrdinaryMorphism, OrdinaryMorphism> p
+                                            = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
+                                                    mStar, rStar);
+                                    oSet.add(p);
                                 }
                                 ms.dispose();
                                 ms = null;
@@ -5700,7 +5696,7 @@ public class BaseFactory {
      * enumeration of pairs of morphisms. Each pair consists of a morphism from thisGraph to the overlap graph and a
      * morphism from the other graph to the overlap graph.
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapSet(
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapSet(
             final Graph thisGraph,
             final Graph g,
             final boolean withIsomorphic) {
@@ -5712,7 +5708,7 @@ public class BaseFactory {
      * morphisms. Each pair consists of a morphism from thisGraph to the overlap graph and a morphism from the other
      * graph to the overlap graph.
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapSet(
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapSet(
             final Graph thisGraph,
             final Graph g,
             final boolean union,
@@ -5727,7 +5723,7 @@ public class BaseFactory {
      * @param withIsomorphic true if isomorphic overlappings should be preserved, otherwise only one of isomorphic
      * overlappings preserved, the other will be deleted
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
             final Graph g, final boolean withIsomorphic) {
         return getOverlappings(thisGraph, g, false, withIsomorphic);
@@ -5741,7 +5737,7 @@ public class BaseFactory {
      * @param withIsomorphic true if isomorphic overlappings should be preserved, otherwise only one of isomorphic
      * overlappings preserved, the other will be deleted
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
             final Graph g, final boolean disjunion,
             final boolean withIsomorphic) {
@@ -5759,7 +5755,7 @@ public class BaseFactory {
      *
      * @return An enumeration with pairs of the overlapping morphisms
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
             final Graph g,
             final int sizeOfInclusion,
@@ -5776,7 +5772,7 @@ public class BaseFactory {
      * @param withIsomorphic true if isomorphic overlappings should be preserved, otherwise only one of isomorphic
      * overlappings preserved, the other will be deleted
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
             final Graph g,
             int sizeOfInclusions,
@@ -5835,21 +5831,21 @@ public class BaseFactory {
         return null;
     }
 
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingByPartialPredefinedIntersection(
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingByPartialPredefinedIntersection(
             final Graph thisGraph,
             final Graph g,
             final List<Object> requiredInsideSubgraphs,
             final Hashtable<Object, Object> partialIntersection,
             boolean onlyRequiredObjectsInsideSubgraphs) {
 
-        final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-        Vector<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
-        final Vector<GraphObject> itsGOSet = new Vector<GraphObject>();
-        final Enumeration<GraphObject> itsGOs = thisGraph.getElements();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
+        final List<GraphObject> itsGOSet = new Vector<GraphObject>();
+        final Iterator<GraphObject> itsGOs = thisGraph.iteratorOfElems();
         int size = 0;
 
-        while (itsGOs.hasMoreElements()) {
-            itsGOSet.addElement(itsGOs.nextElement());
+        while (itsGOs.hasNext()) {
+            itsGOSet.add(itsGOs.next());
         }
 
         size = (itsGOSet.size() <= g.getSize()) ? itsGOSet.size() : g.getSize();
@@ -5864,22 +5860,22 @@ public class BaseFactory {
 
         subs.clear();
 
-        return (oSet.elements());
+        return oSet.iterator();
     }
 
     /**
      * Returns a set of OrdinaryMorphism with the source graph is a subgraph of the given Graph <code>thisGraph</code>
      * and the target graph is the given Graph <code>thisGraph</code>.
      */
-    public Vector<OrdinaryMorphism> generateAllSubgraphs(
+    public List<OrdinaryMorphism> generateAllSubgraphs(
             final Graph thisGraph,
             int sizeOfInclusions,
             boolean union,
             boolean withIsomorphic) {
 
-        Vector<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>(0);
-        Enumeration<GraphObject> itsGOs = thisGraph.getElements();
-        Vector<GraphObject> itsGOSet = new Vector<GraphObject>();
+        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>(0);
+        Iterator<GraphObject> itsGOs = thisGraph.iteratorOfElems();
+        List<GraphObject> itsGOSet = new Vector<GraphObject>();
         int size = 0;
         int minGraphSize;
 
@@ -5888,8 +5884,8 @@ public class BaseFactory {
         } else {
             minGraphSize = 1;
         }
-        while (itsGOs.hasMoreElements()) {
-            itsGOSet.addElement(itsGOs.nextElement());
+        while (itsGOs.hasNext()) {
+            itsGOSet.add(itsGOs.next());
             size++;
         }
 
@@ -5916,11 +5912,11 @@ public class BaseFactory {
      * Additionally, the objects of the given List <code>requiredObjectsInsideSubgraphs</code> contained in all
      * subgraphs.
      */
-    public Vector<OrdinaryMorphism> generateAllSubgraphsWithInclusionsOfSize(
+    public List<OrdinaryMorphism> generateAllSubgraphsWithInclusionsOfSize(
             final Graph thisGraph,
             int i,
-            Vector<GraphObject> itsGOSet,
-            Vector<OrdinaryMorphism> inclusions,
+            List<GraphObject> itsGOSet,
+            List<OrdinaryMorphism> inclusions,
             boolean withIsomorphic,
             final List<Object> requiredObjectsInsideSubgraphs,
             boolean onlyRequiredObjectsInsideSubgraphs) {
@@ -5929,10 +5925,10 @@ public class BaseFactory {
             return putInclusion(thisGraph, new Vector<GraphObject>(), inclusions);
         }
 
-        Vector<Integer> select = new Vector<Integer>();
+        List<Integer> select = new Vector<Integer>();
         if (i <= itsGOSet.size()) {
             for (int j = 1; j <= i; j++) {
-                select.addElement(Integer.valueOf(j - 1));
+                select.add(Integer.valueOf(j - 1));
             }
             computeSelection(thisGraph, 1, itsGOSet, select, inclusions,
                     requiredObjectsInsideSubgraphs, onlyRequiredObjectsInsideSubgraphs);
@@ -5943,23 +5939,23 @@ public class BaseFactory {
         return inclusions;
     }
 
-    private Vector<OrdinaryMorphism> computeSelection(
+    private List<OrdinaryMorphism> computeSelection(
             final Graph thisGraph,
             int s,
-            Vector<GraphObject> itsGOSet,
-            Vector<Integer> select,
-            Vector<OrdinaryMorphism> inclusions,
+            List<GraphObject> itsGOSet,
+            List<Integer> select,
+            List<OrdinaryMorphism> inclusions,
             final List<Object> requiredObjectsInsideSubgraph,
             boolean onlyRequiredObjectsInsideSubgraphs) {
 
         int max = itsGOSet.size();
         int selSize = select.size();
         int v;
-        Vector<GraphObject> goSet;
+        List<GraphObject> goSet;
 
         if (s <= selSize && s >= 1) {
             try {
-                v = select.elementAt(s - 1).intValue();
+                v = select.get(s - 1).intValue();
                 while (v < max - selSize + s) {
 //					int tmp = max - selSize + s;
                     inclusions = computeSelection(thisGraph, s + 1, itsGOSet, select,
@@ -5970,15 +5966,15 @@ public class BaseFactory {
                             inclusions = putInclusion(thisGraph, goSet, inclusions);
                         }
                     }
-                    select.setElementAt(Integer.valueOf(v + 1), s - 1);
-                    v = select.elementAt(s - 1).intValue();
+                    select.set(Integer.valueOf(v + 1), s - 1);
+                    v = select.get(s - 1).intValue();
                 }
                 if (s > 1) {
-                    v = select.elementAt(s - 2).intValue();
+                    v = select.get(s - 2).intValue();
                     if (v < max - selSize + s + 1) {
-                        select.setElementAt(Integer.valueOf(v + 1), s - 2);
+                        select.set(Integer.valueOf(v + 1), s - 2);
                         for (int j = 1; j <= selSize - s + 1; j++) {
-                            select.setElementAt(Integer.valueOf(v + 1 + j), s + j
+                            select.set(Integer.valueOf(v + 1 + j), s + j
                                     - 2);
                         }
                     }
@@ -5990,30 +5986,30 @@ public class BaseFactory {
         return (inclusions);
     }
 
-    private Vector<GraphObject> makeGraphObjectSet(
-            Vector<Integer> select,
-            Vector<GraphObject> itsGOSet,
+    private List<GraphObject> makeGraphObjectSet(
+            List<Integer> select,
+            List<GraphObject> itsGOSet,
             final List<Object> requiredObjectsInsideSubgraph,
             boolean onlyRequiredObjectsInsideSubgraphs) {
 
-        final Vector<GraphObject> tmp = new Vector<GraphObject>();
+        final List<GraphObject> tmp = new Vector<GraphObject>();
 
         if (requiredObjectsInsideSubgraph == null
                 || requiredObjectsInsideSubgraph.isEmpty()) {
             for (int i = 0; i < select.size(); i++) {
-                int v = select.elementAt(i).intValue();
-                tmp.addElement(itsGOSet.elementAt(v));
+                int v = select.get(i).intValue();
+                tmp.add(itsGOSet.get(v));
             }
         } else if (onlyRequiredObjectsInsideSubgraphs
                 && (select.size() == requiredObjectsInsideSubgraph.size())) {
             // all required objects must be in subgraph but not more
             int found = 0;
             for (int i = 0; i < select.size(); i++) {
-                int v = select.elementAt(i).intValue();
-                GraphObject go = itsGOSet.elementAt(v);
+                int v = select.get(i).intValue();
+                GraphObject go = itsGOSet.get(v);
                 if (requiredObjectsInsideSubgraph.contains(go)) {
                     found++;
-                    tmp.addElement(go);
+                    tmp.add(go);
                 }
             }
             if (found != requiredObjectsInsideSubgraph.size()) {
@@ -6022,12 +6018,12 @@ public class BaseFactory {
         } else { // at least as required
             int found = 0;
             for (int i = 0; i < select.size(); i++) {
-                int v = select.elementAt(i).intValue();
-                GraphObject go = itsGOSet.elementAt(v);
+                int v = select.get(i).intValue();
+                GraphObject go = itsGOSet.get(v);
                 if (requiredObjectsInsideSubgraph.contains(go)) {
                     found++;
                 }
-                tmp.addElement(go);
+                tmp.add(go);
             }
             if (found < requiredObjectsInsideSubgraph.size()) {
                 tmp.clear();
@@ -6037,10 +6033,10 @@ public class BaseFactory {
         return tmp;
     }
 
-    private Vector<OrdinaryMorphism> putInclusion(
+    private List<OrdinaryMorphism> putInclusion(
             final Graph thisGraph,
-            final Vector<GraphObject> goSet,
-            final Vector<OrdinaryMorphism> inclusions) {
+            final List<GraphObject> goSet,
+            final List<OrdinaryMorphism> inclusions) {
         Node source = null;
         Node target = null;
         Graph subGraph = BaseFactory.theFactory().createGraph(thisGraph.getTypeSet());
@@ -6048,7 +6044,7 @@ public class BaseFactory {
                 subGraph, thisGraph);
 
         for (int i = 1; i <= goSet.size(); i++) {
-            GraphObject go = goSet.elementAt(i - 1);
+            GraphObject go = goSet.get(i - 1);
             if (go.isNode()) {
                 Node n = null;
                 try {
@@ -6067,19 +6063,19 @@ public class BaseFactory {
             }
         }
         for (int i = 1; i <= goSet.size(); i++) {
-            GraphObject go = goSet.elementAt(i - 1);
+            GraphObject go = goSet.get(i - 1);
             if (go.isArc()) {
-                Enumeration<GraphObject> sources = inclusion.getInverseImage(((Arc) go)
+                Iterator<GraphObject> sources = inclusion.getInverseImage(((Arc) go)
                         .getSource());
 
-                if (sources.hasMoreElements()) {
-                    source = (Node) sources.nextElement();
+                if (sources.hasNext()) {
+                    source = (Node) sources.next();
 
-                    Enumeration<GraphObject> targets = inclusion.getInverseImage(((Arc) go)
+                    Iterator<GraphObject> targets = inclusion.getInverseImage(((Arc) go)
                             .getTarget());
 
-                    if (targets.hasMoreElements()) {
-                        target = (Node) targets.nextElement();
+                    if (targets.hasNext()) {
+                        target = (Node) targets.next();
 
                         Arc a = null;
                         try {
@@ -6101,7 +6097,7 @@ public class BaseFactory {
                 }
             }
         }
-        inclusions.addElement(inclusion);
+        inclusions.add(inclusion);
         return (inclusions);
     }
 
@@ -6136,17 +6132,17 @@ public class BaseFactory {
         for (int i = 0; i < goSet.size(); i++) {
             GraphObject go = goSet.get(i);
             if (go.isArc()) {
-                Enumeration<GraphObject> sources = inclusion.getInverseImage(((Arc) go)
+                Iterator<GraphObject> sources = inclusion.getInverseImage(((Arc) go)
                         .getSource());
 
-                if (sources.hasMoreElements()) {
-                    source = (Node) sources.nextElement();
+                if (sources.hasNext()) {
+                    source = (Node) sources.next();
 
-                    Enumeration<GraphObject> targets = inclusion.getInverseImage(((Arc) go)
+                    Iterator<GraphObject> targets = inclusion.getInverseImage(((Arc) go)
                             .getTarget());
 
-                    if (targets.hasMoreElements()) {
-                        target = (Node) targets.nextElement();
+                    if (targets.hasNext()) {
+                        target = (Node) targets.next();
 
                         Arc a = null;
                         try {
@@ -6172,16 +6168,14 @@ public class BaseFactory {
         return inclusion;
     }
 
-    protected void checkIsomorphicInclusions(Vector<OrdinaryMorphism> inclusions) {
+    protected void checkIsomorphicInclusions(List<OrdinaryMorphism> inclusions) {
         int size = inclusions.size();
         for (int i = 0; i < size; i++) {
-            OrdinaryMorphism inclusion = inclusions
-                    .elementAt(i);
+            OrdinaryMorphism inclusion = inclusions.get(i);
             for (int j = i + 1; j < size; j++) {
-                OrdinaryMorphism inc = inclusions
-                        .elementAt(j);
+                OrdinaryMorphism inc = inclusions.get(j);
                 if (inclusion.getSource().isIsomorphicTo(inc.getSource())) {
-                    inclusions.removeElement(inc);
+                    inclusions.remove(inc);
                     j--;
                     size = inclusions.size();
                     BaseFactory.theFactory().destroyMorphism(inc);
@@ -6227,7 +6221,7 @@ public class BaseFactory {
                     Node child = go;
                     Node parent = img2;
                     // save original of parent and its edges
-                    Node orig_rStar = (Node) isoMorph.getInverseImage(parent).nextElement();
+                    Node orig_rStar = (Node) isoMorph.firstOfInverseImage(parent);
                     Iterator<Arc> arcs = orig_rStar.getOutgoingArcsSet().iterator();
                     while (arcs.hasNext()) {
                         Arc a = arcs.next();
@@ -6246,9 +6240,9 @@ public class BaseFactory {
                     arcs = parent.getOutgoingArcsSet().iterator();
                     while (arcs.hasNext()) {
                         Arc a = arcs.next();
-                        Enumeration<GraphObject> orig = matchMorph.getInverseImage(a);
-                        if (orig.hasMoreElements()) {
-                            img2origOutArc.put(a, (Arc) orig.nextElement());
+                        Iterator<GraphObject> orig = matchMorph.getInverseImage(a);
+                        if (orig.hasNext()) {
+                            img2origOutArc.put(a, (Arc) orig.next());
                         } else {
                             img2origOutArc.put(a, a);
                         }
@@ -6256,9 +6250,9 @@ public class BaseFactory {
                     arcs = parent.getIncomingArcsSet().iterator();
                     while (arcs.hasNext()) {
                         Arc a = arcs.next();
-                        Enumeration<GraphObject> orig = matchMorph.getInverseImage(a);
-                        if (orig.hasMoreElements()) {
-                            img2origInArc.put(a, (Arc) orig.nextElement());
+                        Iterator<GraphObject> orig = matchMorph.getInverseImage(a);
+                        if (orig.hasNext()) {
+                            img2origInArc.put(a, (Arc) orig.next());
                         } else {
                             img2origInArc.put(a, a);
                         }
@@ -6402,7 +6396,7 @@ public class BaseFactory {
                     Node child = go;
                     Node parent = img2;
                     // save original of parent and its edges
-                    Node orig_rStar = (Node) morph2.getInverseImage(parent).nextElement();
+                    Node orig_rStar = (Node) morph2.firstOfInverseImage(parent);
                     Iterator<Arc> arcs = orig_rStar.getOutgoingArcsSet().iterator();
                     while (arcs.hasNext()) {
                         Arc a = arcs.next();
@@ -6421,9 +6415,9 @@ public class BaseFactory {
                     arcs = parent.getOutgoingArcsSet().iterator();
                     while (arcs.hasNext()) {
                         Arc a = arcs.next();
-                        Enumeration<GraphObject> orig = morph1.getInverseImage(a);
-                        if (orig.hasMoreElements()) {
-                            img2origOutArc.put(a, (Arc) orig.nextElement());
+                        Iterator<GraphObject> orig = morph1.getInverseImage(a);
+                        if (orig.hasNext()) {
+                            img2origOutArc.put(a, (Arc) orig.next());
                         } else {
                             img2origOutArc.put(a, a);
                         }
@@ -6431,9 +6425,9 @@ public class BaseFactory {
                     arcs = parent.getIncomingArcsSet().iterator();
                     while (arcs.hasNext()) {
                         Arc a = arcs.next();
-                        Enumeration<GraphObject> orig = morph1.getInverseImage(a);
-                        if (orig.hasMoreElements()) {
-                            img2origInArc.put(a, (Arc) orig.nextElement());
+                        Iterator<GraphObject> orig = morph1.getInverseImage(a);
+                        if (orig.hasNext()) {
+                            img2origInArc.put(a, (Arc) orig.next());
                         } else {
                             img2origInArc.put(a, a);
                         }

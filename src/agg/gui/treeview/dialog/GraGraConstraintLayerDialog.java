@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -46,6 +47,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 //import agg.editor.impl.EdGraGra;
 import agg.gui.help.HtmlBrowser;
 import agg.cons.Formula;
+import java.util.List;
 
 /**
  * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers for graph
@@ -72,9 +74,9 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
 
     private boolean isCancelled;
 
-    private Vector<Formula> constraints;
+    private List<Formula> constraints;
 
-    private Vector<String> layers;
+    private List<String> layers;
 
 //	private EdGraGra gragra;
     private HtmlBrowser helpBrowser;
@@ -84,12 +86,12 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
      */
     public class HashTableModel extends DefaultTableModel {
 
-        Hashtable<Object, Vector<Object>> table;
+        Hashtable<Object, List<Object>> table;
 
         /**
          * Creates a new model with hashtable and the title for the columns of the table.
          */
-        public HashTableModel(Vector<Formula> constraints, Vector<String> layers) {
+        public HashTableModel(List<Formula> constraints, List<String> layers) {
             super();
 
             layers.add(0, "Constraint / Rule Layer");
@@ -97,29 +99,29 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
                 addColumn(layers.get(i));
             }
 
-            this.table = new Hashtable<Object, Vector<Object>>(constraints.size());
+            this.table = new Hashtable<Object, List<Object>>(constraints.size());
 
             for (int i = 0; i < constraints.size(); i++) {
                 Formula f = constraints.get(i);
-                Vector<Integer> flayers = f.getLayer();
-                Vector<Object> tmpVector = new Vector<Object>();
+                List<Integer> flayers = f.getLayer();
+                Vector<Object> tmpVector = new Vector< >();
                 for (int k = 1; k < layers.size(); k++) {
                     String l = layers.get(k);
                     boolean found = false;
                     for (int j = 0; j < flayers.size(); j++) {
                         Integer v = flayers.get(j);
                         if (v.intValue() == (Integer.valueOf(l)).intValue()) {
-                            tmpVector.addElement(l);
+                            tmpVector.add(l);
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        tmpVector.addElement("");
+                        tmpVector.add("");
                     }
                 }
 
-                Vector<Object> value = new Vector<Object>();
+                List<Object> value = new Vector<Object>();
                 value.addAll(tmpVector);
                 this.table.put(f, value);
 
@@ -155,7 +157,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             } else {
                 Object key = super.getValueAt(row, 0);
                 if (key instanceof Formula) {
-                    Vector<Object> v = this.table.get(key);
+                    List<Object> v = this.table.get(key);
                     if (column - 1 < v.size()) {
                         result = v.get(column - 1);
                     } else {
@@ -180,7 +182,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             // "+aValue+" at: "+column);
             try {
                 super.setValueAt(aValue, row, column);
-                Vector<Object> v = this.table.get(key);
+                List<Object> v = this.table.get(key);
                 // System.out.println("v: "+v);
                 v.remove(column - 1);
                 v.add(column - 1, aValue);
@@ -190,7 +192,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             }
         }
 
-        public Hashtable<Object, Vector<Object>> getTable() {
+        public Hashtable<Object, List<Object>> getTable() {
             return this.table;
         }
 
@@ -220,7 +222,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
     public class LayerCellRenderer extends DefaultTableCellRenderer implements
             TableCellRenderer, MouseListener {
 
-        Vector<JCheckBox> checks;
+        List<JCheckBox> checks;
 
         int clmn;
 
@@ -246,7 +248,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             for (int i = 0; i < size; i++) {
                 JCheckBox cb = new JCheckBox("", false);
                 cb.setBackground(Color.WHITE);
-                this.checks.addElement(cb);
+                this.checks.add(cb);
                 Object value = ((DefaultTableModel) this.jtable.getModel())
                         .getValueAt(i, indx);
                 if (!((String) value).equals("")) {
@@ -302,7 +304,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
         public void mouseReleased(MouseEvent e) {
         }
 
-        public Vector<JCheckBox> getChecks() {
+        public List<JCheckBox> getChecks() {
             return this.checks;
         }
 
@@ -315,8 +317,8 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
      * @param constraints the constraints of a grammar
      * @param layersAsString the layers of a grammar
      */
-    public GraGraConstraintLayerDialog(JFrame parent, Vector<Formula> constraints,
-            Vector<String> layersAsString) {
+    public GraGraConstraintLayerDialog(JFrame parent, List<Formula> constraints,
+            List<String> layersAsString) {
         super(parent, true);
         // System.out.println("GraGraConstraintLayerGUI parent: "+parent);
         setTitle("Select Rule Layer");
@@ -328,7 +330,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
         // this.constraintLayer = new ConstraintLayer(constraints);
         this.constraints = constraints;
         // this.layers = layersAsString;
-        this.layers = new Vector<String>(layersAsString.size());
+        this.layers = new Vector< >(layersAsString.size());
         for (int i = 0; i < layersAsString.size(); i++) {
             this.layers.add(layersAsString.get(i));
         }
@@ -427,14 +429,14 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
     }
 
     private void acceptValues() {
-        Hashtable<Object, Vector<Object>> table = ((HashTableModel) this.constraintTable
+        Hashtable<Object, List<Object>> table = ((HashTableModel) this.constraintTable
                 .getModel()).getTable();
         for (Enumeration<?> e = table.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
             // System.out.println(key);
-            Vector<Object> l = table.get(key);
+            List<Object> l = table.get(key);
             // System.out.println("l: "+l);
-            Vector<Integer> v = new Vector<Integer>(l.size());
+            Vector<Integer> v = new Vector< >(l.size());
             for (int i = 0; i < l.size(); i++) {
                 String s = (String) l.get(i);
                 if (!s.equals("")) {

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -78,18 +79,18 @@ public class LayerFunction implements XMLObject {
 
     private void initCreationLayer(GraGra gragra) {
         this.creationLayer = new Hashtable<Type, Integer>();
-        Enumeration<Type> types = gragra.getTypes();
-        while (types.hasMoreElements()) {
-            Type type = types.nextElement();
+        Iterator<Type> types = gragra.getTypes();
+        while (types.hasNext()) {
+            Type type = types.next();
             this.creationLayer.put(type, new Integer(0));
         }
     }
 
     private void initDeletionLayer(GraGra gragra) {
         this.deletionLayer = new Hashtable<Type, Integer>();
-        Enumeration<Type> types = gragra.getTypes();
-        while (types.hasMoreElements()) {
-            Type type = types.nextElement();
+        Iterator<Type> types = gragra.getTypes();
+        while (types.hasNext()) {
+            Type type = types.next();
             this.deletionLayer.put(type, new Integer(0));
         }
     }
@@ -295,9 +296,9 @@ public class LayerFunction implements XMLObject {
      */
     public Hashtable<Type, Integer> getCreationLayer() {
         int size = 0;
-        Enumeration<Type> en = this.grammar.getTypes();
-        while (en.hasMoreElements()) {
-            en.nextElement();
+        Iterator<Type> en = this.grammar.getTypes();
+        while (en.hasNext()) {
+            en.next();
             size++;
         }
         if (size != this.creationLayer.size()) {
@@ -306,8 +307,8 @@ public class LayerFunction implements XMLObject {
         }
 
         en = this.grammar.getTypes();
-        while (en.hasMoreElements()) {
-            Object key = en.nextElement();
+        while (en.hasNext()) {
+            Object key = en.next();
             if (!this.creationLayer.containsKey(key)) {
                 initCreationLayer(this.grammar);
                 return this.creationLayer;
@@ -323,9 +324,9 @@ public class LayerFunction implements XMLObject {
      */
     public Hashtable<Type, Integer> getDeletionLayer() {
         int size = 0;
-        Enumeration<Type> en = this.grammar.getTypes();
-        while (en.hasMoreElements()) {
-            en.nextElement();
+        Iterator<Type> en = this.grammar.getTypes();
+        while (en.hasNext()) {
+            en.next();
             size++;
         }
 
@@ -335,8 +336,8 @@ public class LayerFunction implements XMLObject {
         }
 
         en = this.grammar.getTypes();
-        while (en.hasMoreElements()) {
-            Object key = en.nextElement();
+        while (en.hasNext()) {
+            Object key = en.next();
             if (!this.deletionLayer.containsKey(key)) {
                 initDeletionLayer(this.grammar);
                 return this.deletionLayer;

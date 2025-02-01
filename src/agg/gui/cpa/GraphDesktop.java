@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.cpa;
 
@@ -775,8 +776,8 @@ public class GraphDesktop implements InternalFrameListener {
     private void setRuleLayout(EdRule to, EdRule from) {
         to.getLeft().setLayoutByBasisObject(from.getLeft());
         to.getRight().setLayoutByBasisObject(from.getRight());
-        Vector<EdNAC> nacsTo = to.getNACs();
-        Vector<EdNAC> nacsFrom = from.getNACs();
+        List<EdNAC> nacsTo = to.getNACs();
+        List<EdNAC> nacsFrom = from.getNACs();
         for (int i = 0; i < nacsTo.size(); i++) {
             EdGraph nacGto = nacsTo.get(i);
             for (int j = 0; j < nacsFrom.size(); j++) {
@@ -787,8 +788,8 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
         }
-        Vector<EdPAC> pacsTo = to.getPACs();
-        Vector<EdPAC> pacsFrom = from.getPACs();
+        List<EdPAC> pacsTo = to.getPACs();
+        List<EdPAC> pacsFrom = from.getPACs();
         for (int i = 0; i < pacsTo.size(); i++) {
             EdGraph pacGto = pacsTo.get(i);
             for (int j = 0; j < pacsFrom.size(); j++) {
@@ -1961,16 +1962,16 @@ public class GraphDesktop implements InternalFrameListener {
         boolean mapOK = true;
         // set nac mappings
         if (firstRule) {
-            Enumeration<GraphObject> dom = o1.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
+            Iterator<GraphObject> dom = o1.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
                 try {
                     if (go.getContext() == r.getLeft()) {
                         bnac.addMapping(go, iso.getImage(o1.getImage(go)));
                     } else if (go.getContext() == r.getRight()) {
-                        Enumeration<GraphObject> inverse = r.getInverseImage(go);
-                        if (inverse.hasMoreElements()) {
-                            GraphObject goL = inverse.nextElement();
+                        Iterator<GraphObject> inverse = r.getInverseImage(go);
+                        if (inverse.hasNext()) {
+                            GraphObject goL = inverse.next();
                             bnac.addMapping(goL, iso.getImage(o1.getImage(go)));
                         } else {
                             errMsg.setText("One of critical objects has reference to a new RHS object.");
@@ -1985,16 +1986,16 @@ public class GraphDesktop implements InternalFrameListener {
             }
             mapOK = mapOK && !bnac.isEmpty();
         } else {
-            Enumeration<GraphObject> dom = o2.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
+            Iterator<GraphObject> dom = o2.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
                 try {
                     if (go.getContext() == r.getLeft()) {
                         bnac.addMapping(go, iso.getImage(o2.getImage(go)));
                     } else if (go.getContext() == cp2.first.getTarget()) {
-                        Enumeration<GraphObject> inverse = cp2.first.getInverseImage(go);
-                        if (inverse.hasMoreElements()) {
-                            GraphObject goL = inverse.nextElement();
+                        Iterator<GraphObject> inverse = cp2.first.getInverseImage(go);
+                        if (inverse.hasNext()) {
+                            GraphObject goL = inverse.next();
                             bnac.addMapping(goL, iso.getImage(o2.getImage(go)));
                         }
                     }
@@ -2361,17 +2362,17 @@ public class GraphDesktop implements InternalFrameListener {
 
             OrdinaryMorphism duetoNAC = cpdata.getMorph2DueToNAC();
             if (duetoNAC != null) {
-                Vector<GraphObject> out = duetoNAC.getDomainObjects();
+                List<GraphObject> out = duetoNAC.getDomainObjects();
                 System.out.println("due to NAC: " + duetoNAC.getSource().getName() + " ::: " + out);
             }
             OrdinaryMorphism duetoPAC = cpdata.getMorph2DueToPAC();
             if (duetoPAC != null) {
-                Vector<GraphObject> out = duetoPAC.getDomainObjects();
+                List<GraphObject> out = duetoPAC.getDomainObjects();
                 System.out.println("due to PAC: " + duetoPAC.getSource().getName() + " ::: " + out);
             }
             OrdinaryMorphism duetoLHS2 = cpdata.getMorph2DueToLHS();
             if (duetoLHS2 != null) {
-                Vector<GraphObject> out = duetoLHS2.getDomainObjects();
+                List<GraphObject> out = duetoLHS2.getDomainObjects();
                 System.out.println("due to LHS2: " + duetoLHS2.getSource().getName() + " ::: " + out);
             }
         }

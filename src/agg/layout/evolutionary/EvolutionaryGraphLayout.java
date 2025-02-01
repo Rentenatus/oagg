@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.layout.evolutionary;
 
@@ -62,7 +60,7 @@ public class EvolutionaryGraphLayout {
 
     private int overlapscnt;
 
-    private final Hashtable<Type, Vector<LayoutPattern>> layoutPatterns;
+    private final Hashtable<Type, List<LayoutPattern>> layoutPatterns;
 
     private final Hashtable<LayoutNode, Type> layoutNode2Type;
 
@@ -93,7 +91,7 @@ public class EvolutionaryGraphLayout {
         this.edgeIntersctnIters = 50;
         this.overlapscnt = 0;
         this.gnrlEdgeLngth = 200;
-        this.layoutPatterns = new Hashtable<Type, Vector<LayoutPattern>>();
+        this.layoutPatterns = new Hashtable<Type, List<LayoutPattern>>();
         this.layoutNode2Type = new Hashtable<LayoutNode, Type>();
     }
 
@@ -158,12 +156,12 @@ public class EvolutionaryGraphLayout {
         return ret;
     }
 
-    public void createInheritancePattern(final Vector<Arc> inheritanceArcs) {
+    public void createInheritancePattern(final List<Arc> inheritanceArcs) {
         for (int i = 0; i < inheritanceArcs.size(); i++) {
             final Arc inharc = inheritanceArcs.get(i);
 //			String inhTypeName = inharc.getSource().getType().getName()
 //					+ "-INHERITS-" + inharc.getTarget().getType().getName();
-            final Vector<LayoutPattern> v = getLayoutPatternsForType(inharc.getType());
+            final List<LayoutPattern> v = getLayoutPatternsForType(inharc.getType());
             if (!v.isEmpty()) {
                 v.clear();
             }
@@ -172,7 +170,7 @@ public class EvolutionaryGraphLayout {
         }
     }
 
-    private Vector<LayoutPattern> getInheritancePattern(final EdArc edge) {
+    private List<LayoutPattern> getInheritancePattern(final EdArc edge) {
         if (edge.getBasisArc().isInheritance()) {
 //			String inhTypeName = edge.getBasisArc().getSource().getType()
 //					.getName()
@@ -194,8 +192,8 @@ public class EvolutionaryGraphLayout {
             final List<EdArc> arcs,
             final int itrs) {
 
-        final Vector<LayoutNode> lnodes = getLayoutNodes(nodes);
-        final Vector<LayoutArc> larcs = getLayoutArcs(arcs);
+        final List<LayoutNode> lnodes = getLayoutNodes(nodes);
+        final List<LayoutArc> larcs = getLayoutArcs(arcs);
         int temp = this.temperature;
         for (int i = 0; i < itrs; i++) {
             // System.out.println("iteration: "+i+" this.temperature: "+ temp);
@@ -250,7 +248,7 @@ public class EvolutionaryGraphLayout {
      *
      * @param lnodes
      */
-    private void calcNodeRepulse(final Vector<LayoutNode> lnodes) {
+    private void calcNodeRepulse(final List<LayoutNode> lnodes) {
         for (int j = 0; j < lnodes.size(); j++) {
             final LayoutNode lnodev = lnodes.get(j);
 
@@ -326,7 +324,7 @@ public class EvolutionaryGraphLayout {
     }
 
     private void calcDistToPos(final List<EdArc> arcs,
-            final Vector<LayoutNode> lnodes,
+            final List<LayoutNode> lnodes,
             final int temp,
             final int gage) {
 
@@ -404,7 +402,7 @@ public class EvolutionaryGraphLayout {
             for (int i = 0; i < arcs.size(); i++) {
                 final EdArc arc = arcs.get(i);
 
-                Vector<LayoutPattern> patterns = null;
+                List<LayoutPattern> patterns = null;
                 if (arc.isElementOfTypeGraph()) {
                     patterns = getInheritancePattern(arc);
                 }
@@ -680,7 +678,7 @@ public class EvolutionaryGraphLayout {
             }
 
             if (this.usePattern) {
-                Vector<LayoutPattern> patterns = null;
+                List<LayoutPattern> patterns = null;
                 if (arc.isElementOfTypeGraph()) {
                     patterns = getInheritancePattern(arc);
                 }
@@ -808,7 +806,7 @@ public class EvolutionaryGraphLayout {
             }
         }
 
-        final Vector<LayoutNode> lnodes = getLayoutNodes(nodes);
+        final List<LayoutNode> lnodes = getLayoutNodes(nodes);
         for (int i = 0; i < itrs; i++) {
             final int temp2 = this.temperature;
             for (int j = 0; j < nodeit; j++) {
@@ -948,8 +946,8 @@ public class EvolutionaryGraphLayout {
     // frozenNodeType.remove(nodetype);
     // }
     public boolean graphContainsNewNodes(final EdGraph eg) {
-        final Vector<EdNode> nodes = eg.getNodes();
-        final Vector<EdNode> oldnodes = this.oldedgraph.getNodes();
+        final List<EdNode> nodes = eg.getNodes();
+        final List<EdNode> oldnodes = this.oldedgraph.getNodes();
         for (int i = 0; i < nodes.size(); i++) {
             final EdNode ni = nodes.get(i);
             boolean found = false;
@@ -967,23 +965,23 @@ public class EvolutionaryGraphLayout {
         return false;
     }
 
-    private Vector<LayoutNode> getLayoutNodes(final List<EdNode> nodes) {
+    private List<LayoutNode> getLayoutNodes(final List<EdNode> nodes) {
         this.layoutNode2Type.clear();
-        final Vector<LayoutNode> ret = new Vector<LayoutNode>();
+        final List<LayoutNode> ret = new Vector<LayoutNode>();
         for (int i = 0; i < nodes.size(); i++) {
             final EdNode n = nodes.get(i);
             if (n != null && n.getLNode() != null) {
                 this.layoutNode2Type.put(n.getLNode(), n.getBasisNode().getType());
-                ret.addElement(n.getLNode());
+                ret.add(n.getLNode());
             }
         }
         return ret;
     }
 
-    private Vector<LayoutArc> getLayoutArcs(final List<EdArc> arcs) {
-        final Vector<LayoutArc> ret = new Vector<LayoutArc>();
+    private List<LayoutArc> getLayoutArcs(final List<EdArc> arcs) {
+        final List<LayoutArc> ret = new Vector<LayoutArc>();
         for (int i = 0; i < arcs.size(); i++) {
-            ret.addElement(arcs.get(i).getLArc());
+            ret.add(arcs.get(i).getLArc());
         }
         return ret;
     }
@@ -1034,7 +1032,7 @@ public class EvolutionaryGraphLayout {
 //		final int xdim = this.panel.width;
 //		final int ydim = this.panel.height;
 
-        final Vector<LayoutNode> lnodes = getLayoutNodes(nodes);
+        final List<LayoutNode> lnodes = getLayoutNodes(nodes);
         for (int i = 0; i < lnodes.size(); i++) {
             final LayoutNode lnode = lnodes.get(i);
             if ((!this.usePattern && (lnode.isFrozenByDefault() && this.frozenPos))
@@ -1053,7 +1051,7 @@ public class EvolutionaryGraphLayout {
     public void makeRandomLayoutOfNodes(final EdGraph eg, final List<EdNode> nodes) {
         // System.out.println("Layouter.makeNodesRandomLayout:
         // "+eg.getBasisGraph().getName());
-        final Vector<LayoutNode> lnodes = getLayoutNodes(nodes);
+        final List<LayoutNode> lnodes = getLayoutNodes(nodes);
         final int xdim = this.panel.width;
         final int ydim = this.panel.height;
         int x, y;
@@ -1093,13 +1091,13 @@ public class EvolutionaryGraphLayout {
                 // "+ydim+"] zufallszahl: "+rdx+" , "+rdy+" x: "+x+" y: "+y);
                 if (this.usePattern) {
                     final EdNode node = lnode.getEdNode();
-                    final Vector<EdArc> arcs = eg.getArcs();
+                    final List<EdArc> arcs = eg.getArcs();
                     for (int j = 0; j < arcs.size(); j++) {
                         final EdArc arc = arcs.get(j);
                         if (arc.getSource().equals(node)
                                 || arc.getTarget().equals(node)) {
 
-                            Vector<LayoutPattern> patterns = null;
+                            List<LayoutPattern> patterns = null;
                             if (arc.isElementOfTypeGraph()) {
                                 patterns = getInheritancePattern(arc);
                             }
@@ -1167,7 +1165,7 @@ public class EvolutionaryGraphLayout {
 
     public void centreLayout(final EdGraph eg, final List<EdNode> nodes) {
         // System.out.println("Layout.centerLayout ... ");
-        final Vector<LayoutNode> lnodes = getLayoutNodes(nodes);
+        final List<LayoutNode> lnodes = getLayoutNodes(nodes);
         int left = 0, right = 0, up = 0, down = 0;
         int xmin = this.panel.width;
         int xmax = 0;
@@ -1283,15 +1281,15 @@ public class EvolutionaryGraphLayout {
     public void shockAging(final EdGraph eg) { // blitzalterung
         // System.out.println("Layouter.flashAging... graph gen.:
         // "+eg.getGraphGen());
-        final Vector<EdNode> nodes = eg.getNodes();
-        final Vector<EdNode> oldnodes = this.oldedgraph.getNodes();
+        final List<EdNode> nodes = eg.getNodes();
+        final List<EdNode> oldnodes = this.oldedgraph.getNodes();
         int index;
         for (int i = 0; i < oldnodes.size(); i++) {
             final EdNode oldnode = oldnodes.get(i);
             if (oldnode.isInVectorByBasisNode(nodes) != -1) {
                 // also knoten wurde geloescht
                 // erst eingehende kanten...
-                final Vector<EdArc> arcsIn = this.oldedgraph.getIncomingArcs(oldnode);
+                final List<EdArc> arcsIn = this.oldedgraph.getIncomingArcs(oldnode);
                 for (int j = 0; j < arcsIn.size(); j++) {
                     final EdNode oldnode2 = (EdNode) arcsIn.get(j).getSource();
                     index = oldnode2.isInVectorByBasisNode(nodes);
@@ -1307,7 +1305,7 @@ public class EvolutionaryGraphLayout {
                     }
                 }
                 // und fuer die ausgehenden
-                final Vector<EdArc> arcsOut = this.oldedgraph.getOutgoingArcs(oldnode);
+                final List<EdArc> arcsOut = this.oldedgraph.getOutgoingArcs(oldnode);
                 for (int j = 0; j < arcsOut.size(); j++) {
                     final EdNode oldnode2 = (EdNode) arcsOut.get(j).getTarget();
                     index = oldnode2.isInVectorByBasisNode(nodes);
@@ -1422,7 +1420,7 @@ public class EvolutionaryGraphLayout {
             final char offsetType, final int offset) {
         final LayoutPattern lp = new LayoutPattern(name, pType, type, offsetType,
                 offset);
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
         }
@@ -1435,7 +1433,7 @@ public class EvolutionaryGraphLayout {
     public void createLayoutPattern(final String name, final String pType, final Type type,
             final int length) {
         final LayoutPattern lp = new LayoutPattern(name, pType, type, length);
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
         }
@@ -1448,7 +1446,7 @@ public class EvolutionaryGraphLayout {
     public void createLayoutPattern(final String name, final String pType, final Type type,
             final boolean frozen) {
         final LayoutPattern lp = new LayoutPattern(name, pType, type, frozen);
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
         }
@@ -1465,7 +1463,7 @@ public class EvolutionaryGraphLayout {
     }
 
     public void removeLayoutPattern(final Type type, final String patternName) {
-        final Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        final List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null || v.isEmpty()) {
             return;
         }
@@ -1481,7 +1479,7 @@ public class EvolutionaryGraphLayout {
         // name: "+patternName+" count:"+v.size());
     }
 
-    public Hashtable<Type, Vector<LayoutPattern>> getLayoutPatterns() {
+    public Hashtable<Type, List<LayoutPattern>> getLayoutPatterns() {
         return this.layoutPatterns;
     }
 
@@ -1489,8 +1487,8 @@ public class EvolutionaryGraphLayout {
         this.layoutPatterns.clear();
     }
 
-    public Vector<LayoutPattern> getLayoutPatternsForType(final Type type) {
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+    public List<LayoutPattern> getLayoutPatternsForType(final Type type) {
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
             this.layoutPatterns.put(type, v);
@@ -1499,7 +1497,7 @@ public class EvolutionaryGraphLayout {
     }
 
     public LayoutPattern getLayoutPatternForType(final Type type, final String patternName) {
-        final Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        final List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             return null;
         }
@@ -1514,7 +1512,7 @@ public class EvolutionaryGraphLayout {
         return null;
     }
 
-    public void setLayoutPatterns(final Hashtable<Type, Vector<LayoutPattern>> table) {
+    public void setLayoutPatterns(final Hashtable<Type, List<LayoutPattern>> table) {
         this.layoutPatterns.clear();
         final Enumeration<Type> keys = table.keys();
         while (keys.hasMoreElements()) {
@@ -1524,7 +1522,7 @@ public class EvolutionaryGraphLayout {
     }
 
     // private void delBendPoints(EdGraph eg){
-    // Vector arcs = eg.getArcs();
+    // List arcs = eg.getArcs();
     //		
     // EdArc arc;
     //		

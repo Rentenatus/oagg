@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 //$Id: GraGraTreeModel.java,v 1.9 2010/08/25 00:34:40 olga Exp $
 package agg.gui.treeview;
@@ -488,17 +489,17 @@ public class GraGraTreeModel extends DefaultTreeModel {
                 childrenNames.add(er.getBasisRule().getName());
 
                 for (int j = 0; j < er.getNACs().size(); j++) {
-                    EdNAC enac = er.getNACs().elementAt(j);
+                    EdNAC enac = er.getNACs().get(j);
                     childrenNames.add(enac.getBasisGraph()
                             .getName());
                 }
                 for (int j = 0; j < er.getPACs().size(); j++) {
-                    EdPAC epac = er.getPACs().elementAt(j);
+                    EdPAC epac = er.getPACs().get(j);
                     childrenNames.add(epac.getBasisGraph()
                             .getName());
                 }
                 for (int j = 0; j < er.getNestedACs().size(); j++) {
-                    EdPAC epac = er.getNestedACs().elementAt(j);
+                    EdPAC epac = er.getNestedACs().get(j);
                     childrenNames.add(epac.getBasisGraph()
                             .getName());
                 }
@@ -512,15 +513,15 @@ public class GraGraTreeModel extends DefaultTreeModel {
         Vector<String> childrenNames = new Vector<String>();
 //		childrenNames.add(eRule.getName());
         for (int i = 0; i < eRule.getNACs().size(); i++) {
-            childrenNames.add(eRule.getNACs().elementAt(i)
+            childrenNames.add(eRule.getNACs().get(i)
                     .getBasisGraph().getName());
         }
         for (int i = 0; i < eRule.getPACs().size(); i++) {
-            childrenNames.add(eRule.getPACs().elementAt(i)
+            childrenNames.add(eRule.getPACs().get(i)
                     .getBasisGraph().getName());
         }
         for (int i = 0; i < eRule.getNestedACs().size(); i++) {
-            childrenNames.add(eRule.getNestedACs().elementAt(i)
+            childrenNames.add(eRule.getNestedACs().get(i)
                     .getBasisGraph().getName());
         }
         return childrenNames;

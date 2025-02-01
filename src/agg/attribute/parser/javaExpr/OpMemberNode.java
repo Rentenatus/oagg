@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 
 import agg.attribute.impl.AttrSession;
 import agg.attribute.impl.VerboseControl;
+import java.util.Iterator;
 
 /**
  * @version $Id: OpMemberNode.java,v 1.9 2010/09/23 08:15:01 olga Exp $
@@ -70,10 +71,10 @@ public class OpMemberNode extends MemberNode {
         // System.out.println( toString(prefix) );
         AttrSession.logPrintln(VerboseControl.logJexParser, toString(prefix));
         if (this.children != null) {
-            java.util.Enumeration<Node> e = this.children.elements();
-            e.nextElement();
-            while (e.hasMoreElements()) {
-                SimpleNode n = (SimpleNode) e.nextElement();
+            Iterator<Node> e = this.children.iterator();
+            e.next();
+            while (e.hasNext()) {
+                SimpleNode n = (SimpleNode) e.next();
                 n.dump(prefix + " ");
             }
         }

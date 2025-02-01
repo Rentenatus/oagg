@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -23,6 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -45,11 +47,11 @@ public class ItemImportDialog extends JDialog implements ActionListener {
 
     private final JScrollPane scrollPane;
 
-    private final Vector<String> itemNames;
+    private final List<String> itemNames;
 
-    private final Vector<String> result;
+    private final List<String> result;
 
-    private final Vector<JCheckBox> checkBox;
+    private final List<JCheckBox> checkBox;
 
     private final JButton allItemsButton;
 
@@ -59,7 +61,7 @@ public class ItemImportDialog extends JDialog implements ActionListener {
 
 //	private boolean isCancelled;
     public ItemImportDialog(JFrame parent, String title,
-            Vector<String> itemNames) {
+            List<String> itemNames) {
         super(parent, true);
         this.itemNames = itemNames;
         this.result = new Vector<String>();
@@ -90,7 +92,7 @@ public class ItemImportDialog extends JDialog implements ActionListener {
             String name = itemNames.get(i);
             JCheckBox cb = new JCheckBox(name, null, false);
             cb.addActionListener(this);
-            this.checkBox.addElement(cb);
+            this.checkBox.add(cb);
             this.itemPanel.add(cb);
         }
 
@@ -141,14 +143,14 @@ public class ItemImportDialog extends JDialog implements ActionListener {
         Object source = e.getSource();
         if (source == this.allItemsButton) {
             for (int j = 0; j < this.checkBox.size(); j++) {
-                JCheckBox cb = this.checkBox.elementAt(j);
+                JCheckBox cb = this.checkBox.get(j);
                 cb.setSelected(true);
             }
         } else if (source == this.closeButton) {
             for (int j = 0; j < this.checkBox.size(); j++) {
-                JCheckBox cb = this.checkBox.elementAt(j);
+                JCheckBox cb = this.checkBox.get(j);
                 if (cb.isSelected()) {
-                    this.result.addElement(this.itemNames.elementAt(j));
+                    this.result.add(this.itemNames.get(j));
                 }
             }
             setVisible(false);
@@ -160,7 +162,7 @@ public class ItemImportDialog extends JDialog implements ActionListener {
         }
     }
 
-    public Vector<String> getSelectedItemNames() {
+    public List<String> getSelectedItemNames() {
         return this.result;
     }
 

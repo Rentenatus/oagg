@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -22,6 +23,7 @@ import agg.attribute.impl.VarTuple;
 import agg.attribute.AttrContext;
 import agg.util.csp.Variable;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import java.util.Iterator;
 
 /**
  * A decorator class which adds support for negative application conditions (NACs) to a given completion strategy
@@ -280,9 +282,9 @@ public class Completion_NAC extends MorphCompletionStrategy {
     private final boolean areNACsSatisfied(Match match) {
         if (match.getRule().hasNACs()) {
             this.globalNAC = true;
-            final Enumeration<OrdinaryMorphism> nacs = match.getRule().getNACs();
-            while (nacs.hasMoreElements()) {
-                final OrdinaryMorphism nac = nacs.nextElement();
+            final Iterator<OrdinaryMorphism> nacs = match.getRule().getNACs();
+            while (nacs.hasNext()) {
+                final OrdinaryMorphism nac = nacs.next();
 
                 if (!nac.isEnabled()) {
                     continue;
@@ -305,9 +307,9 @@ public class Completion_NAC extends MorphCompletionStrategy {
     private final boolean arePACsSatisfied(Match match) {
         if (match.getRule().hasPACs()) {
             this.globalPAC = true;
-            final Enumeration<OrdinaryMorphism> pacs = match.getRule().getPACs();
-            while (pacs.hasMoreElements()) {
-                final OrdinaryMorphism pac = pacs.nextElement();
+            final Iterator<OrdinaryMorphism> pacs = match.getRule().getPACs();
+            while (pacs.hasNext()) {
+                final OrdinaryMorphism pac = pacs.next();
                 if (pac.isEnabled() && !pac.isShifted()) {
                     if (pac.getSize() != 0) {
                         this.globalPAC = false;

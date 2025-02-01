@@ -1,14 +1,15 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
+ * 
+ * 
  * Title:        AGG<p>
  * Description:
  * <p>
@@ -378,7 +379,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
         Hashtable<EdGraphObject, EdGraphObject> go2go = new Hashtable<EdGraphObject, EdGraphObject>();
         int x = refNode.getX();
         int y = refNode.getY() + 40;
-        Vector<EdNode> v = refGraph.getNodes();
+        List<EdNode> v = refGraph.getNodes();
         for (int i = 0; i < v.size(); i++) {
             EdNode go = v.get(i);
             EdType t = this.fgraph.getTypeSet().getTypeForName(go.getTypeName());
@@ -405,7 +406,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
             } catch (TypeException ex) {
             }
         }
-        Vector<EdArc> v1 = refGraph.getArcs();
+        List<EdArc> v1 = refGraph.getArcs();
         for (int i = 0; i < v1.size(); i++) {
             EdArc go = v1.get(i);
             EdNode src = (EdNode) go2go.get(go.getSource());
@@ -923,7 +924,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
             }
         }
 
-        Vector<EdArc> outs = this.fgraph.getOutgoingArcs(n);
+        List<EdArc> outs = this.fgraph.getOutgoingArcs(n);
         for (int i = 0; i < outs.size(); i++) {
             EdNode n1 = (EdNode) outs.get(i).getTarget();
             deleteNode(n1);
@@ -939,7 +940,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     private void deleteRefinement() {
         boolean del = true;
         while (del) {
-            Vector<EdNode> list = this.fgraph.getNodes();
+            List<EdNode> list = this.fgraph.getNodes();
             del = false;
             for (int i = 0; i < list.size(); i++) {
                 EdNode n = list.get(i);
@@ -956,7 +957,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
      */
     private boolean deleteRefOfNode(final EdNode n) {
         boolean res = false;
-        Vector<EdArc> outs = this.fgraph.getOutgoingArcs(n);
+        List<EdArc> outs = this.fgraph.getOutgoingArcs(n);
         for (int i = 0; i < outs.size(); i++) {
             EdNode n1 = (EdNode) outs.get(i).getTarget();
             if (this.subNodes.contains(n1)) {
@@ -1041,7 +1042,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
 
     private void resetTopNode() {
         if (!this.fgraph.getNodes().isEmpty()) {
-            Vector<EdNode> list = this.fgraph.getNodes();
+            List<EdNode> list = this.fgraph.getNodes();
             for (int i = 0; i < list.size(); i++) {
                 EdNode n = list.get(i);
                 if (n.getBasisNode().getNumberOfIncomingArcs() == 0) {

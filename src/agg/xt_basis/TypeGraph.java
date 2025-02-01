@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -41,7 +42,7 @@ public class TypeGraph extends Graph {
      * contained.
      */
     public void dispose() {
-        this.observer.removeAllElements();
+        this.observer.clear();
         this.itsTypes.setLevelOfTypeGraph(TypeSet.DISABLED);
         Iterator<?> iter = this.itsArcs.iterator();
         while (iter.hasNext()) {
@@ -83,7 +84,7 @@ public class TypeGraph extends Graph {
                 continue;
             }
 
-            if (!this.getElementsOfType(t).hasMoreElements()) {
+            if (!this.getElementsOfType(t).hasNext()) {
                 if (t.isNodeType()) {
                     try {
                         createNode(t);
@@ -1408,14 +1409,14 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, boolean withIsomorphic) {
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, boolean withIsomorphic) {
         return null;
     }
 
     /**
      * This method is not defined for this class.
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, boolean disjunion,
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, boolean disjunion,
             boolean withIsomorphic) {
         return null;
     }
@@ -1423,7 +1424,7 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, int sizeOfInclusions,
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, int sizeOfInclusions,
             boolean withIsomorphic) {
         return null;
     }
@@ -1431,7 +1432,7 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, int sizeOfInclusions,
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, int sizeOfInclusions,
             boolean disjunion, boolean withIsomorphic) {
         return null;
     }
@@ -1479,9 +1480,9 @@ public class TypeGraph extends Graph {
                 this.info = str.toString();
             }
 
-            Enumeration<?> en = h.getEnumeration("", null, true, "Node");
-            while (en.hasMoreElements()) {
-                h.peekElement(en.nextElement());
+            Iterator<?> en = h.getEnumeration("", null, true, "Node");
+            while (en.hasNext()) {
+                h.peekElement(en.next());
                 Type t = (Type) h.getObject("type", null, false);
                 if (t != null) {
                     Node n = null;
@@ -1521,8 +1522,8 @@ public class TypeGraph extends Graph {
                 h.close();
             }
             en = h.getEnumeration("", null, true, "Edge");
-            while (en.hasMoreElements()) {
-                h.peekElement(en.nextElement());
+            while (en.hasNext()) {
+                h.peekElement(en.next());
                 Type t = (Type) h.getObject("type", null, false);
                 Node n1 = (Node) h.getObject("source", null, false);
                 Node n2 = (Node) h.getObject("target", null, false);

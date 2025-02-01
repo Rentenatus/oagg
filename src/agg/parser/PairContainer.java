@@ -1,28 +1,26 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 // This class belongs to the following package:
 package agg.parser;
 
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-
-//import com.objectspace.jgl.Pair;
-import agg.util.XMLObject;
 import agg.util.Pair;
+import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
+import java.util.Hashtable;
+import java.util.List;
 
 //****************************************************************************+
 /**
@@ -37,7 +35,7 @@ public interface PairContainer extends XMLObject {
 
     // ****************************************************************************+
     /**
-     * Computes the critical part of two rules. This can be a <code>Vector</code> of overlaping graphs.
+     * Computes the critical part of two rules. This can be a <code>List</code> of overlaping graphs.
      *
      * @param r1 The first part of a critical pair
      * @param r2 The second part of a critical pair
@@ -45,11 +43,11 @@ public interface PairContainer extends XMLObject {
      * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
      * @return The critic object of two rules.
      */
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getCriticalPair(Rule r1, Rule r2, int kind)
             throws InvalidAlgorithmException;
 
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getCriticalPair(Rule r1, Rule r2, int kind, boolean local)
             throws InvalidAlgorithmException;
 
@@ -95,7 +93,7 @@ public interface PairContainer extends XMLObject {
      * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
      * @return The hashtable with critical pairs.
      */
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getContainer(int kind) throws InvalidAlgorithmException;
 
     // ****************************************************************************+
@@ -107,7 +105,7 @@ public interface PairContainer extends XMLObject {
      * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
      * @return All rules that are critic with the parameter.
      */
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getCriticalSet(int kind, Rule rule)
             throws InvalidAlgorithmException;
 

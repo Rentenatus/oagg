@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -106,9 +107,8 @@ public class ExtendedLayerFunction extends LayerFunction {
         for (Iterator<Rule> rules = this.grammar.getListOfRules().iterator(); rules.hasNext()
                 && result;) {
             Rule r = rules.next();
-            for (Enumeration<OrdinaryMorphism> nacs = r.getNACs(); nacs.hasMoreElements()
-                    && result;) {
-                OrdinaryMorphism nac = nacs.nextElement();
+            for (Iterator<OrdinaryMorphism> nacs = r.getNACs(); nacs.hasNext() && result;) {
+                OrdinaryMorphism nac = nacs.next();
                 Graph nacGraph = nac.getImage();
                 for (Iterator<?> grobs = nacGraph.getNodesSet().iterator(); grobs
                         .hasNext()

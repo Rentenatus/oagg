@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.popupmenu;
 
@@ -484,8 +485,7 @@ public class EditSelPopupMenu extends JPopupMenu {
                     if (answer == JOptionPane.YES_OPTION) {
                         for (int i = 0; i < EditSelPopupMenu.this.gp.getGraph().getSelectedObjs()
                                 .size(); i++) {
-                            EdGraphObject go = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs()
-                                    .elementAt(i);
+                            EdGraphObject go = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs().get(i);
                             if (!go.getMorphismMark().equals("")) {
                                 EditSelPopupMenu.this.gp.setMappedObjDeleted(true);
                             }
@@ -885,7 +885,7 @@ public class EditSelPopupMenu extends JPopupMenu {
                 for (int i = 0; i < this.ruleEditor.getRule().getRight()
                         .getSelectedObjs().size(); i++) {
                     EdGraphObject imageObj = this.ruleEditor.getRule().getRight()
-                            .getSelectedObjs().elementAt(i);
+                            .getSelectedObjs().get(i);
                     this.ruleEditor.getRule().removeMapping(imageObj,
                             this.ruleEditor.getRule().getBasisRule());
                 }
@@ -895,7 +895,7 @@ public class EditSelPopupMenu extends JPopupMenu {
                     for (int i = 0; i < this.ruleEditor.getNAC().getSelectedObjs()
                             .size(); i++) {
                         EdGraphObject imageObj = this.ruleEditor.getNAC()
-                                .getSelectedObjs().elementAt(i);
+                                .getSelectedObjs().get(i);
                         this.ruleEditor.getRule().removeMapping(imageObj,
                                 this.ruleEditor.getNAC().getMorphism());
                     }
@@ -904,7 +904,7 @@ public class EditSelPopupMenu extends JPopupMenu {
                     for (int i = 0; i < this.ruleEditor.getPAC().getSelectedObjs()
                             .size(); i++) {
                         EdGraphObject imageObj = this.ruleEditor.getPAC()
-                                .getSelectedObjs().elementAt(i);
+                                .getSelectedObjs().get(i);
                         this.ruleEditor.getRule().removeMapping(imageObj,
                                 this.ruleEditor.getPAC().getMorphism());
                     }
@@ -916,7 +916,7 @@ public class EditSelPopupMenu extends JPopupMenu {
                 && this.gp == this.graphEditor.getGraphPanel()) {
             for (int i = 0; i < this.graphEditor.getGraph().getSelectedObjs().size(); i++) {
                 EdGraphObject imageObj = this.graphEditor.getGraph()
-                        .getSelectedObjs().elementAt(i);
+                        .getSelectedObjs().get(i);
                 if (this.ruleEditor != null) {
                     this.ruleEditor.getRule().removeMapping(imageObj,
                             this.ruleEditor.getRule().getMatch());

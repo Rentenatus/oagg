@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -327,9 +328,9 @@ public final class StaticStep {
         GraphObject lhsObj, rhsObj, gObj;
 
 //		compute attributes of preserved objects
-        final Enumeration<GraphObject> dom = match.getDomain();
-        while (dom.hasMoreElements()) {
-            lhsObj = dom.nextElement();
+        final Iterator<GraphObject> dom = match.getDomain();
+        while (dom.hasNext()) {
+            lhsObj = dom.next();
             gObj = match.getImage(lhsObj);
 
             if (!gObj.attrExists() //gObj.getAttribute() == null
@@ -368,10 +369,10 @@ public final class StaticStep {
 
         // now compute attributes of new objects only
 //		Enumeration<GraphObject> anInvImage;
-        final Enumeration<GraphObject> anObjIter = comatch.getDomain();
-        while (anObjIter.hasMoreElements()) {
-            rhsObj = anObjIter.nextElement();
-            if (r.getInverseImage(rhsObj).hasMoreElements()) {
+        final Iterator<GraphObject> anObjIter = comatch.getDomain();
+        while (anObjIter.hasNext()) {
+            rhsObj = anObjIter.next();
+            if (r.hasInverseImage(rhsObj)) {
                 continue;
             }
 
@@ -430,9 +431,9 @@ public final class StaticStep {
         GraphObject lhsObj, rhsObj, gObj, hObj;
 
 //		compute attributes of preserved objects
-        final Enumeration<GraphObject> dom = match.getDomain();
-        while (dom.hasMoreElements()) {
-            lhsObj = dom.nextElement();
+        final Iterator<GraphObject> dom = match.getDomain();
+        while (dom.hasNext()) {
+            lhsObj = dom.next();
             gObj = match.getImage(lhsObj);
 
             if (!gObj.attrExists() //gObj.getAttribute() == null
@@ -468,10 +469,10 @@ public final class StaticStep {
 
         // now compute attributes of new objects only
 //		Enumeration<GraphObject> anInvImage;
-        final Enumeration<GraphObject> anObjIter = comatch.getDomain();
-        while (anObjIter.hasMoreElements()) {
-            rhsObj = anObjIter.nextElement();
-            if (r.getInverseImage(rhsObj).hasMoreElements()) {
+        final Iterator<GraphObject> anObjIter = comatch.getDomain();
+        while (anObjIter.hasNext()) {
+            rhsObj = anObjIter.next();
+            if (r.hasInverseImage(rhsObj)) {
                 continue;
             }
 
@@ -508,9 +509,9 @@ public final class StaticStep {
             return;
         }
 
-        final Enumeration<GraphObject> dom = rstar.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject gObj = dom.nextElement();
+        final Iterator<GraphObject> dom = rstar.getDomain();
+        while (dom.hasNext()) {
+            GraphObject gObj = dom.next();
             if (gObj.attrExists()) { //gObj.getAttribute() != null) {
                 GraphObject hObj = rstar.getImage(gObj);
                 hObj.getAttribute().copyEntries(gObj.getAttribute());
@@ -943,7 +944,7 @@ public final class StaticStep {
                         }
                     }
                 }
-            } else if (r.getInverseImage(n).hasMoreElements()) {
+            } else if (r.hasInverseImage(n)) {
                 return;
             }
         }
@@ -1017,7 +1018,7 @@ public final class StaticStep {
                         }
                     }
                 }
-            } else if (r.getInverseImage(a).hasMoreElements()) {
+            } else if (r.hasInverseImage(a)) {
                 return;
             }
         }
@@ -1293,10 +1294,10 @@ public final class StaticStep {
 
         final List<GraphObject> list = new Vector<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
-            Enumeration<GraphObject> dom = comatch.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                if (go.isNode() && !r.getInverseImage(go).hasMoreElements()) {
+            Iterator<GraphObject> dom = comatch.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                if (go.isNode() && !r.hasInverseImage(go)) {
                     list.add(go);
                 }
             }
@@ -1310,10 +1311,10 @@ public final class StaticStep {
 
         final List<GraphObject> list = new Vector<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
-            Enumeration<GraphObject> dom = comatch.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                if (go.isArc() && !r.getInverseImage(go).hasMoreElements()) {
+            Iterator<GraphObject> dom = comatch.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                if (go.isArc() && !r.hasInverseImage(go)) {
                     list.add(go);
                 }
             }
@@ -1327,10 +1328,10 @@ public final class StaticStep {
 
         final List<GraphObject> list = new Vector<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
-            Enumeration<GraphObject> dom = comatch.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                if (!r.getInverseImage(go).hasMoreElements()) {
+            Iterator<GraphObject> dom = comatch.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                if (!r.hasInverseImage(go)) {
                     list.add(go);
                 }
             }

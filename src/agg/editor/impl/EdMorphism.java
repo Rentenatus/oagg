@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.editor.impl;
 
@@ -40,10 +41,10 @@ public class EdMorphism {
     }
 
     private void makeSourceTarget(OrdinaryMorphism o) {
-        Enumeration<GraphObject> graphObjects = o.getDomain();
+        Iterator<GraphObject> graphObjects = o.getDomain();
         int i = 1;
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             this.source.put(go, new Integer(i));
             this.target1.put(o.getImage(go), new Integer(i));
             i++;
@@ -52,24 +53,24 @@ public class EdMorphism {
 
     public int makeVDiagram(Rule r1, Rule r2, OrdinaryMorphism o1, OrdinaryMorphism o2, int lastIndx) {
         int i = lastIndx;
-        Enumeration<GraphObject> graphObjects = o1.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        Iterator<GraphObject> graphObjects = o1.getCodomain();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
                 this.source.put(go, new Integer(i));
             }
 
-            Enumeration<GraphObject> inverse = o1.getInverseImage(go);
-            while (inverse.hasMoreElements()) {
-                GraphObject inv1 = inverse.nextElement();
+            Iterator<GraphObject> inverse = o1.getInverseImage(go);
+            while (inverse.hasNext()) {
+                GraphObject inv1 = inverse.next();
                 if (o1.getSource() == r1.getLeft()) {
                     this.target1.put(inv1, this.source.get(go));
                 } else if (o1.getSource() == r1.getRight()) {
                     GraphObject inv2 = null;
-                    Enumeration<GraphObject> inverse1 = r1.getInverseImage(inv1);
-                    while (inverse1.hasMoreElements()) {
-                        inv2 = inverse1.nextElement();
+                    Iterator<GraphObject> inverse1 = r1.getInverseImage(inv1);
+                    while (inverse1.hasNext()) {
+                        inv2 = inverse1.next();
                         this.target1.put(inv2, this.source.get(go));
                     }
                     this.target1.put(inv1, this.source.get(go));
@@ -77,28 +78,28 @@ public class EdMorphism {
             }
         }
         graphObjects = o2.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
                 this.source.put(go, new Integer(i));
             }
 
             if (o2.getSource() == r2.getLeft()) {
-                Enumeration<GraphObject> inverse = o2.getInverseImage(go);
-                while (inverse.hasMoreElements()) {
-                    GraphObject inv = inverse.nextElement();
+                Iterator<GraphObject> inverse = o2.getInverseImage(go);
+                while (inverse.hasNext()) {
+                    GraphObject inv = inverse.next();
                     this.target2.put(inv, this.source.get(go));
                 }
             } else if (o2.getSource() == r2.getRight()) {
-                Enumeration<GraphObject> inverse = o2.getInverseImage(go);
-                while (inverse.hasMoreElements()) {
-                    GraphObject inv = inverse.nextElement();
+                Iterator<GraphObject> inverse = o2.getInverseImage(go);
+                while (inverse.hasNext()) {
+                    GraphObject inv = inverse.next();
                     this.target2.put(inv, this.source.get(go));
 
-                    Enumeration<GraphObject> inverse1 = r2.getInverseImage(inv);
-                    while (inverse1.hasMoreElements()) {
-                        GraphObject inv2 = inverse1.nextElement();
+                    Iterator<GraphObject> inverse1 = r2.getInverseImage(inv);
+                    while (inverse1.hasNext()) {
+                        GraphObject inv2 = inverse1.next();
                         this.target2.put(inv2, this.target2.get(inv));
                     }
                 }
@@ -119,24 +120,24 @@ public class EdMorphism {
             int lastIndx) {
 
         int i = lastIndx;
-        Enumeration<GraphObject> graphObjects = o1.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        Iterator<GraphObject> graphObjects = o1.getCodomain();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
                 this.source.put(go, new Integer(i));
             }
 
-            Enumeration<GraphObject> inverse = o1.getInverseImage(go);
-            while (inverse.hasMoreElements()) {
-                GraphObject inv1 = inverse.nextElement();
+            Iterator<GraphObject> inverse = o1.getInverseImage(go);
+            while (inverse.hasNext()) {
+                GraphObject inv1 = inverse.next();
                 if (o1.getSource() == r1.getLeft()) {
                     this.target1.put(inv1, this.source.get(go));
                 } else if (o1.getSource() == r1.getRight()) {
                     GraphObject inv2 = null;
-                    Enumeration<GraphObject> inverse1 = r1.getInverseImage(inv1);
-                    while (inverse1.hasMoreElements()) {
-                        inv2 = inverse1.nextElement();
+                    Iterator<GraphObject> inverse1 = r1.getInverseImage(inv1);
+                    while (inverse1.hasNext()) {
+                        inv2 = inverse1.next();
                         this.target1.put(inv2, this.source.get(go));
                     }
                     this.target1.put(inv1, this.source.get(go));
@@ -144,28 +145,28 @@ public class EdMorphism {
             }
         }
         graphObjects = o2.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
                 this.source.put(go, new Integer(i));
             }
 
             if (o2.getSource() == r2.getLeft()) {
-                Enumeration<GraphObject> inverse = o2.getInverseImage(go);
-                while (inverse.hasMoreElements()) {
-                    GraphObject inv = inverse.nextElement();
+                Iterator<GraphObject> inverse = o2.getInverseImage(go);
+                while (inverse.hasNext()) {
+                    GraphObject inv = inverse.next();
                     this.target2.put(inv, this.source.get(go));
                 }
             } else if (o2.getSource() == r2.getRight()) {
-                Enumeration<GraphObject> inverse = o2.getInverseImage(go);
-                while (inverse.hasMoreElements()) {
-                    GraphObject inv = inverse.nextElement();
+                Iterator<GraphObject> inverse = o2.getInverseImage(go);
+                while (inverse.hasNext()) {
+                    GraphObject inv = inverse.next();
                     this.target2.put(inv, this.source.get(go));
 
-                    Enumeration<GraphObject> inverse1 = r2.getInverseImage(inv);
-                    while (inverse1.hasMoreElements()) {
-                        GraphObject inv2 = inverse1.nextElement();
+                    Iterator<GraphObject> inverse1 = r2.getInverseImage(inv);
+                    while (inverse1.hasNext()) {
+                        GraphObject inv2 = inverse1.next();
                         this.target2.put(inv2, this.target2.get(inv));
                     }
                 }
@@ -178,24 +179,24 @@ public class EdMorphism {
             // where: morphL2N2.getSource() == r2.getLeft()
             // morphNac2N2.getSource() == nac.getTarget()
             graphObjects = o2.getCodomain();
-            while (graphObjects.hasMoreElements()) {
-                GraphObject go = graphObjects.nextElement();
+            while (graphObjects.hasNext()) {
+                GraphObject go = graphObjects.next();
                 if (this.source.get(go) == null) {
                     i++;
                     this.source.put(go, new Integer(i));
                 }
 
-                Enumeration<GraphObject> inverse = o2.getInverseImage(go);
-                if (inverse.hasMoreElements()) {
-                    GraphObject go2 = inverse.nextElement();
-                    Enumeration<GraphObject> inverse2 = morphL2N2.getInverseImage(go2);
-                    if (inverse2.hasMoreElements()) {
-                        GraphObject inv = inverse2.nextElement();
+                Iterator<GraphObject> inverse = o2.getInverseImage(go);
+                if (inverse.hasNext()) {
+                    GraphObject go2 = inverse.next();
+                    Iterator<GraphObject> inverse2 = morphL2N2.getInverseImage(go2);
+                    if (inverse2.hasNext()) {
+                        GraphObject inv = inverse2.next();
                         this.target2.put(inv, this.source.get(go));
                     } else {
                         inverse2 = morphNac2N2.getInverseImage(go2);
-                        if (inverse2.hasMoreElements()) {
-                            GraphObject inv = inverse2.nextElement();
+                        if (inverse2.hasNext()) {
+                            GraphObject inv = inverse2.next();
                             this.target2.put(inv, this.source.get(go));
                         }
                     }
@@ -222,9 +223,9 @@ public class EdMorphism {
 
     public int completeMorphismMarks(OrdinaryMorphism m, HashMap<GraphObject, Integer> target, int lastIndx) {
         int i = lastIndx;
-        Enumeration<GraphObject> dom = m.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject ol = dom.nextElement();
+        Iterator<GraphObject> dom = m.getDomain();
+        while (dom.hasNext()) {
+            GraphObject ol = dom.next();
             GraphObject or = m.getImage(ol);
             if (target.get(ol) == null && target.get(or) == null) {
                 i++;
@@ -245,24 +246,24 @@ public class EdMorphism {
             int lastIndx) {
 
         int i = lastIndx;
-        Enumeration<GraphObject> graphObjects = o1.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        Iterator<GraphObject> graphObjects = o1.getCodomain();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
                 this.source.put(go, new Integer(i));
             }
 
-            Enumeration<GraphObject> inverse = o1.getInverseImage(go);
-            while (inverse.hasMoreElements()) {
-                GraphObject inv1 = inverse.nextElement();
+            Iterator<GraphObject> inverse = o1.getInverseImage(go);
+            while (inverse.hasNext()) {
+                GraphObject inv1 = inverse.next();
                 if (o1.getSource() == r1.getLeft()) {
                     this.target1.put(inv1, this.source.get(go));
                 } else if (o1.getSource() == r1.getRight()) {
                     GraphObject inv2 = null;
-                    Enumeration<GraphObject> inverse1 = r1.getInverseImage(inv1);
-                    while (inverse1.hasMoreElements()) {
-                        inv2 = inverse1.nextElement();
+                    Iterator<GraphObject> inverse1 = r1.getInverseImage(inv1);
+                    while (inverse1.hasNext()) {
+                        inv2 = inverse1.next();
                         this.target1.put(inv2, this.source.get(go));
                     }
                     this.target1.put(inv1, this.source.get(go));
@@ -270,27 +271,27 @@ public class EdMorphism {
             }
         }
         graphObjects = o2.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
                 this.source.put(go, new Integer(i));
             }
 
             if (o2.getSource() == r2.getLeft()) {
-                Enumeration<GraphObject> inverse = o2.getInverseImage(go);
-                while (inverse.hasMoreElements()) {
-                    GraphObject inv = inverse.nextElement();
+                Iterator<GraphObject> inverse = o2.getInverseImage(go);
+                while (inverse.hasNext()) {
+                    GraphObject inv = inverse.next();
                     this.target2.put(inv, this.source.get(go));
                 }
             } else if (o2.getSource() == r2.getRight()) {
-                Enumeration<GraphObject> inverse = o2.getInverseImage(go);
-                while (inverse.hasMoreElements()) {
-                    GraphObject inv = inverse.nextElement();
+                Iterator<GraphObject> inverse = o2.getInverseImage(go);
+                while (inverse.hasNext()) {
+                    GraphObject inv = inverse.next();
                     this.target2.put(inv, this.source.get(go));
-                    Enumeration<GraphObject> inverse1 = r2.getInverseImage(inv);
-                    while (inverse1.hasMoreElements()) {
-                        GraphObject inv2 = inverse1.nextElement();
+                    Iterator<GraphObject> inverse1 = r2.getInverseImage(inv);
+                    while (inverse1.hasNext()) {
+                        GraphObject inv2 = inverse1.next();
                         this.target2.put(inv2, this.target2.get(inv));
                     }
                 }
@@ -300,20 +301,20 @@ public class EdMorphism {
         if (morphsPAC2 != null) {
             OrdinaryMorphism morphPac2G = morphsPAC2.first.compose(morphsPAC2.second);
             BaseFactory.theFactory().unsetAllTransientAttrValues(morphPac2G);
-            graphObjects = o2.getTarget().getElements();
-            while (graphObjects.hasMoreElements()) {
-                GraphObject go = graphObjects.nextElement();
+            graphObjects = o2.getTarget().iteratorOfElems();
+            while (graphObjects.hasNext()) {
+                GraphObject go = graphObjects.next();
                 if (this.source.get(go) == null) {
                     i++;
                     this.source.put(go, new Integer(i));
                 }
 
-                Enumeration<GraphObject> inverse1 = morphPac2G.getInverseImage(go);
-                if (inverse1.hasMoreElements()) {
-                    GraphObject go1 = inverse1.nextElement();
-                    Enumeration<GraphObject> inverse2 = pac2.getInverseImage(go1);
-                    if (inverse2.hasMoreElements()) {
-                        GraphObject inv = inverse2.nextElement();
+                Iterator<GraphObject> inverse1 = morphPac2G.getInverseImage(go);
+                if (inverse1.hasNext()) {
+                    GraphObject go1 = inverse1.next();
+                    Iterator<GraphObject> inverse2 = pac2.getInverseImage(go1);
+                    if (inverse2.hasNext()) {
+                        GraphObject inv = inverse2.next();
                         this.target2.put(inv, this.source.get(go));
                     } else {
                         this.target2.put(go1, this.source.get(go));
@@ -340,30 +341,30 @@ public class EdMorphism {
 
     public int makeVDiagram(OrdinaryMorphism o1, OrdinaryMorphism o2, int lastIndx) {
         int i = lastIndx;
-        Enumeration<GraphObject> graphObjects = o1.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        Iterator<GraphObject> graphObjects = o1.getCodomain();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
                 this.source.put(go, new Integer(i));
             }
 
-            Enumeration<GraphObject> inverse = o1.getInverseImage(go);
-            while (inverse.hasMoreElements()) {
-                GraphObject inv = inverse.nextElement();
+            Iterator<GraphObject> inverse = o1.getInverseImage(go);
+            while (inverse.hasNext()) {
+                GraphObject inv = inverse.next();
                 this.target1.put(inv, this.source.get(go));
             }
         }
         graphObjects = o2.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
                 this.source.put(go, new Integer(i));
             }
-            Enumeration<GraphObject> inverse = o2.getInverseImage(go);
-            while (inverse.hasMoreElements()) {
-                GraphObject inv = inverse.nextElement();
+            Iterator<GraphObject> inverse = o2.getInverseImage(go);
+            while (inverse.hasNext()) {
+                GraphObject inv = inverse.next();
                 this.target2.put(inv, this.source.get(go));
             }
         }

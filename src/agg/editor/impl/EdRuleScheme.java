@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.editor.impl;
 
@@ -32,6 +30,7 @@ import agg.xt_basis.TypeException;
 import agg.xt_basis.agt.AmalgamatedRule;
 import agg.xt_basis.agt.MultiRule;
 import agg.xt_basis.agt.RuleScheme;
+import java.util.Iterator;
 
 /**
  * @author olga
@@ -308,7 +307,7 @@ public class EdRuleScheme extends EdRule {
 
     public void propagateRemoveGraphObjectToMultiRule(final EdGraphObject srcObject) {
         if (srcObject.isNode()) {
-            Vector<EdArc> arcs = srcObject.getContext().getIncomingArcs((EdNode) srcObject);
+            List<EdArc> arcs = srcObject.getContext().getIncomingArcs((EdNode) srcObject);
             for (int i = 0; i < arcs.size(); i++) {
                 EdArc arc = arcs.get(i);
                 this.propagateRemoveGraphObjectToMultiRule(arc);
@@ -461,8 +460,8 @@ public class EdRuleScheme extends EdRule {
                 if (objR != null) {
                     EdGraphObject goR = multiRule.getRight().findGraphObject(objR);
                     if (goR != null) {
-                        if (multiRule.getBasisRule().getInverseImage(goR.getBasisObject()).hasMoreElements()) {
-                            GraphObject objL = multiRule.getBasisRule().getInverseImage(goR.getBasisObject()).nextElement();
+                        if (multiRule.getBasisRule().hasInverseImage(goR.getBasisObject())) {
+                            GraphObject objL = multiRule.getBasisRule().firstOfInverseImage(goR.getBasisObject());
                             EdGraphObject goL = multiRule.getLeft().findGraphObject(objL);
                             if (goL != null) {
                                 multiRule.removeRuleMapping(goL);
@@ -475,9 +474,9 @@ public class EdRuleScheme extends EdRule {
     }
 
     private void applyLayoutOfKernelRule(final EdRule multiRule) {
-        final Enumeration<GraphObject> embLeft = ((MultiRule) multiRule.getBasisRule()).getEmbeddingLeft().getDomain();
-        while (embLeft.hasMoreElements()) {
-            GraphObject o = embLeft.nextElement();
+        final Iterator<GraphObject> embLeft = ((MultiRule) multiRule.getBasisRule()).getEmbeddingLeft().getDomain();
+        while (embLeft.hasNext()) {
+            GraphObject o = embLeft.next();
             GraphObject o1 = ((MultiRule) multiRule.getBasisRule()).getEmbeddingLeft().getImage(o);
             EdGraphObject go = this.itsKernelRule.getLeft().findGraphObject(o);
             EdGraphObject go1 = multiRule.getLeft().findGraphObject(o1);
@@ -486,9 +485,9 @@ public class EdRuleScheme extends EdRule {
             }
         }
 
-        final Enumeration<GraphObject> embRight = ((MultiRule) multiRule.getBasisRule()).getEmbeddingRight().getDomain();
-        while (embRight.hasMoreElements()) {
-            GraphObject o = embRight.nextElement();
+        final Iterator<GraphObject> embRight = ((MultiRule) multiRule.getBasisRule()).getEmbeddingRight().getDomain();
+        while (embRight.hasNext()) {
+            GraphObject o = embRight.next();
             GraphObject o1 = ((MultiRule) multiRule.getBasisRule()).getEmbeddingRight().getImage(o);
             EdGraphObject go = this.itsKernelRule.getRight().findGraphObject(o);
             EdGraphObject go1 = multiRule.getRight().findGraphObject(o1);
@@ -644,9 +643,9 @@ public class EdRuleScheme extends EdRule {
 
         eImageGraph.clearMarks();
 
-        Enumeration<GraphObject> domain = m.getDomain();
-        while (domain.hasMoreElements()) {
-            GraphObject bOrig = domain.nextElement();
+        Iterator<GraphObject> domain = m.getDomain();
+        while (domain.hasNext()) {
+            GraphObject bOrig = domain.next();
             GraphObject bImage = m.getImage(bOrig);
 
             EdNode enI = eImageGraph.findNode(bImage);
@@ -1203,7 +1202,7 @@ public class EdRuleScheme extends EdRule {
 //			EdGraphObject kernObj = mr.getLeft().getSourceObjOfGraphEmbedding(n);
             if (((MultiRule) mr.getBasisRule()).isTargetOfEmbeddingLeft(n.getBasisObject())) {
                 GraphObject kern = ((MultiRule) mr.getBasisRule())
-                        .getEmbeddingLeft().getInverseImage(n.getBasisObject()).nextElement();
+                        .getEmbeddingLeft().firstOfInverseImage(n.getBasisObject());
                 EdGraphObject kerngo = this.itsKernelRule.getLeft().findGraphObject(kern);
                 if (kerngo != null) {
                     n.addContextUsage(String.valueOf(kerngo.hashCode()));
@@ -1216,7 +1215,7 @@ public class EdRuleScheme extends EdRule {
 //			EdGraphObject kernObj = mr.getRight().getSourceObjOfGraphEmbedding(n);
             if (((MultiRule) mr.getBasisRule()).isTargetOfEmbeddingRight(n.getBasisObject())) {
                 GraphObject kern = ((MultiRule) mr.getBasisRule())
-                        .getEmbeddingRight().getInverseImage(n.getBasisObject()).nextElement();
+                        .getEmbeddingRight().firstOfInverseImage(n.getBasisObject());
                 EdGraphObject kerngo = this.itsKernelRule.getRight().findGraphObject(kern);
                 if (kerngo != null) {
                     n.addContextUsage(String.valueOf(kerngo.hashCode()));

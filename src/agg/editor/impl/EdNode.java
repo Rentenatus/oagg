@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.editor.impl;
 
@@ -65,7 +66,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
 
     private int nodeid;
 
-    private Vector<Integer> cluster, oldcluster;
+    private List<Integer> cluster, oldcluster;
 
     private Color ownColor = null;
 
@@ -334,8 +335,8 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     /**
      * Returns the attributes which are shown
      */
-    public Vector<Vector<String>> getAttributes() {
-        Vector<Vector<String>> attrs = new Vector<Vector<String>>();
+    public List<List<String>> getAttributes() {
+        List<List<String>> attrs = new Vector<>();
         if (this.bNode != null) {
             AttrInstance attributes = this.bNode.getAttribute();
             if (attributes != null && getView() != null) {
@@ -343,7 +344,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
 
                 int number = mvs.getSize(attributes);
                 for (int i = 0; i < number; i++) {
-                    Vector<String> tmpAttrVector = new Vector<String>(3);
+                    List<String> tmpAttrVector = new Vector<>(3);
                     int index = mvs.convertSlotToIndex(attributes, i);
                     DeclMember currentMember = (DeclMember) attributes
                             .getType().getMemberAt(index);
@@ -362,11 +363,10 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                         continue;
                     }
 
-                    tmpAttrVector.addElement(attributes.getTypeAsString(index));
-                    tmpAttrVector.addElement(attributes.getNameAsString(index));
-                    tmpAttrVector
-                            .addElement(attributes.getValueAsString(index));
-                    attrs.addElement(tmpAttrVector);
+                    tmpAttrVector.add(attributes.getTypeAsString(index));
+                    tmpAttrVector.add(attributes.getNameAsString(index));
+                    tmpAttrVector.add(attributes.getValueAsString(index));
+                    attrs.add(tmpAttrVector);
                 }
             } else {
                 attrs = setAttributes(this.bNode);
@@ -379,8 +379,8 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
      * Sets my attribute value to the attributes specified by the Node. Returns a list of lists with type, name, value
      * of attribute members.
      */
-    public Vector<Vector<String>> setAttributes(Node bNode) {
-        Vector<Vector<String>> attrs = new Vector<Vector<String>>();
+    public List<List<String>> setAttributes(Node bNode) {
+        List<List<String>> attrs = new Vector< >();
         if (bNode == null) {
             return attrs;
         }
@@ -391,11 +391,11 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         int nattrs = bNode.getAttribute().getNumberOfEntries();
         if (nattrs != 0) {
             for (int i = 0; i < nattrs; i++) {
-                Vector<String> attr = new Vector<String>();
-                attr.addElement(bNode.getAttribute().getTypeAsString(i));
-                attr.addElement(bNode.getAttribute().getNameAsString(i));
-                attr.addElement(bNode.getAttribute().getValueAsString(i));
-                attrs.addElement(attr);
+                List<String> attr = new Vector<String>();
+                attr.add(bNode.getAttribute().getTypeAsString(i));
+                attr.add(bNode.getAttribute().getNameAsString(i));
+                attr.add(bNode.getAttribute().getValueAsString(i));
+                attrs.add(attr);
             }
         }
         return attrs;
@@ -404,7 +404,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     /**
      * Sets my attributes to the attributes specified by the GraphObject
      */
-    public Vector<Vector<String>> setAttributes(GraphObject obj) {
+    public List<List<String>> setAttributes(GraphObject obj) {
         return setAttributes((Node) obj);
     }
 
@@ -1039,14 +1039,14 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         }
 
         // Attribute anzeigen
-        Vector<Vector<String>> attrs = getAttributes();
+        List<List<String>> attrs = getAttributes();
         if (attrs != null && !attrs.isEmpty()) {
             for (int i = 0; i < attrs.size(); i++) {
-                Vector<String> attr = attrs.elementAt(i);
-                if (!this.elemOfTG && (attr.elementAt(2).length() != 0)) {
-                    String attrStr = attr.elementAt(1);
-                    attrStr = attr.elementAt(1) + "=";
-                    attrStr = attrStr + attr.elementAt(2);
+                List<String> attr = attrs.get(i);
+                if (!this.elemOfTG && (attr.get(2).length() != 0)) {
+                    String attrStr = attr.get(1);
+                    attrStr = attr.get(1) + "=";
+                    attrStr = attrStr + attr.get(2);
                     if (!underlined) {
                         g.drawLine(tx, ty, tx + tw, ty);
                         underlined = true;
@@ -1054,13 +1054,13 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                     ty1 = ty + (fm.getHeight() - fm.getDescent());
                     g.drawString(attrStr, tx, ty1);
                     ty = ty + fm.getHeight();
-                } else if (this.elemOfTG && (attr.elementAt(1) != null)) {
-                    String attrStr = attr.elementAt(0);
+                } else if (this.elemOfTG && (attr.get(1) != null)) {
+                    String attrStr = attr.get(0);
                     attrStr = attrStr + "  ";
-                    attrStr = attrStr + attr.elementAt(1);
+                    attrStr = attrStr + attr.get(1);
                     // Type graph: default attr value 
-                    if (attr.elementAt(2).length() != 0) {
-                        attrStr = attrStr + "=" + attr.elementAt(2);
+                    if (attr.get(2).length() != 0) {
+                        attrStr = attrStr + "=" + attr.get(2);
                     }
 
                     if (!underlined) {
@@ -1098,7 +1098,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     }
 
     public void updateNameAttrOnly(FontMetrics fm) {
-        Vector<Vector<String>> attrs = getAttributes();
+        List<List<String>> attrs = getAttributes();
         int nn = 1; // attrs number always 1
         int h1 = 0;
         // die Hoehe einer Zeile
@@ -1116,10 +1116,10 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         int w1 = 0;
         if (attrs != null) {
             for (int i = 0; i < attrs.size(); i++) {
-                Vector<String> attr = attrs.elementAt(i);
-                if (attr.elementAt(1).equals("name")) {
-                    if (attr.elementAt(2).length() != 0) {
-                        String tstStr = attr.elementAt(2);
+                List<String> attr = attrs.get(i);
+                if (attr.get(1).equals("name")) {
+                    if (attr.get(2).length() != 0) {
+                        String tstStr = attr.get(2);
                         if (fm == null) {
                             w1 = nn * tstStr.length() + 6;
                         } else {
@@ -1141,7 +1141,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         Graphics2D g = (Graphics2D) grs;
         g.setStroke(new BasicStroke(2.0f));
         FontMetrics fm = g.getFontMetrics();
-        Vector<Vector<String>> attrs = getAttributes();
+        List<List<String>> attrs = getAttributes();
         int th = getHeight();
         int tw = getWidth();
         int tx = centerX - tw / 2 + 9;
@@ -1150,10 +1150,10 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         // Attribute anzeigen
         if (attrs != null && !attrs.isEmpty()) {
             for (int i = 0; i < attrs.size(); i++) {
-                Vector<String> attr = attrs.elementAt(i);
-                if (attr.elementAt(1).equals("name")) {
-                    if (attr.elementAt(2).length() != 0) {
-                        String attrStr = attr.elementAt(2);
+                List<String> attr = attrs.get(i);
+                if (attr.get(1).equals("name")) {
+                    if (attr.get(2).length() != 0) {
+                        String attrStr = attr.get(2);
                         // ty1 = ty+(fm.getHeight()-fm.getDescent());
                         g.drawString(
                                 attrStr.substring(1, attrStr.length() - 1), tx,
@@ -1278,11 +1278,11 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         return this.nodeid;
     }
 
-    public void setCluster(Vector<Integer> clus) {
-        this.cluster = new Vector<Integer>(clus);
+    public void setCluster(List<Integer> clus) {
+        this.cluster = new Vector<>(clus);
     }
 
-    public Vector<Integer> getCluster() {
+    public List<Integer> getCluster() {
         return this.cluster;
     }
 
@@ -1290,7 +1290,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         EdNode node;
         int xdist, ydist, dist;
         this.oldcluster = this.cluster;
-        this.cluster = new Vector<Integer>();
+        this.cluster = new Vector< >();
         for (int i = 0; i < nodes.size(); i++) {
             node = nodes.get(i);
             if (!this.equals(node)) {
@@ -1301,7 +1301,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                     dist = (int) Math.round(Math.sqrt((xdist * xdist)
                             + (ydist * ydist)));
                     if (dist <= epsilon) {
-                        this.cluster.addElement(new Integer(node.getNodeID()));
+                        this.cluster.add(new Integer(node.getNodeID()));
                     }
                 }
             }
@@ -1309,7 +1309,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
 
     }
 
-    public Vector<Integer> getOldCluster() {
+    public List<Integer> getOldCluster() {
         return this.oldcluster;
     }
 

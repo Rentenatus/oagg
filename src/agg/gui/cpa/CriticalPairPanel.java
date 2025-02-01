@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.cpa;
 
@@ -130,7 +131,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
     /**
      * the listener for selections in the array
      */
-    private Vector<ParserGUIListener> listeners = new Vector<ParserGUIListener>();
+    private List<ParserGUIListener> listeners = new Vector<ParserGUIListener>();
 
     private Rule first, second;
 
@@ -686,7 +687,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             Rule r1 = keys.nextElement();
             if (r1 == rule1) {
                 // System.out.println("ExcludePC:: reduce: "+r1.getName());
-                Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.container
+                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.container
                         .getExcludeContainer().get(r1);
                 for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
@@ -737,7 +738,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      * @param listener The listener.
      */
     public void addParserGUIListener(ParserGUIListener listener) {
-        this.listeners.addElement(listener);
+        this.listeners.add(listener);
     }
 
     /**
@@ -746,7 +747,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      * @param listener The listener.
      */
     public void removeParserGUIListener(ParserGUIListener listener) {
-        this.listeners.removeElement(listener);
+        this.listeners.remove(listener);
     }// removeParserGUIListener
 
     /**
@@ -755,7 +756,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
     private void fireParserGUIEvent(Object data) {
         ParserGUIEvent event = new ParserGUIEvent(this, data);
         for (int i = 0; i < this.listeners.size(); i++) {
-            ParserGUIListener l = this.listeners.elementAt(i);
+            ParserGUIListener l = this.listeners.get(i);
             l.occured(event);
         }
     }
@@ -763,7 +764,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
     private void fireParserGUIEvent(Object data, int msg) {
         ParserGUIEvent event = new ParserGUIEvent(this, data, msg);
         for (int i = 0; i < this.listeners.size(); i++) {
-            ParserGUIListener l = this.listeners.elementAt(i);
+            ParserGUIListener l = this.listeners.get(i);
             l.occured(event);
         }
     }

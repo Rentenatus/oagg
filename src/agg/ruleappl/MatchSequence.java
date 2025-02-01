@@ -123,9 +123,9 @@ public class MatchSequence {
      */
     public void addDirectMatch(final Rule currentRule, final OrdinaryMorphism m) {
         final Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>();
-        final Enumeration<GraphObject> objs = m.getDomain();
-        while (objs.hasMoreElements()) {
-            GraphObject obj = objs.nextElement();
+        final Iterator<GraphObject> objs = m.getDomain();
+        while (objs.hasNext()) {
+            GraphObject obj = objs.next();
             GraphObject img = m.getImage(obj);
 
             match.put(obj, img);
@@ -151,9 +151,9 @@ public class MatchSequence {
             int indx_totalPureRule) {
 
         final Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>();
-        final Enumeration<GraphObject> objs = m.getDomain();
-        while (objs.hasMoreElements()) {
-            GraphObject obj = objs.nextElement();
+        final Iterator<GraphObject> objs = m.getDomain();
+        while (objs.hasNext()) {
+            GraphObject obj = objs.next();
             GraphObject img = m.getImage(obj);
 
             match.put(obj, img);
@@ -177,9 +177,9 @@ public class MatchSequence {
             final OrdinaryMorphism m) {
 
         Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>();
-        final Enumeration<GraphObject> objs = m.getDomain();
-        while (objs.hasMoreElements()) {
-            GraphObject obj = objs.nextElement();
+        final Iterator<GraphObject> objs = m.getDomain();
+        while (objs.hasNext()) {
+            GraphObject obj = objs.next();
             GraphObject img = m.getImage(obj);
 
             match.put(obj, img);
@@ -198,9 +198,9 @@ public class MatchSequence {
      */
     public void addComatch(final Rule r, final Morphism com) {
         final Hashtable<GraphObject, GraphObject> comatch = new Hashtable<GraphObject, GraphObject>();
-        final Enumeration<GraphObject> objs = com.getDomain();
-        while (objs.hasMoreElements()) {
-            GraphObject obj = objs.nextElement();
+        final Iterator<GraphObject> objs = com.getDomain();
+        while (objs.hasNext()) {
+            GraphObject obj = objs.next();
             GraphObject img = com.getImage(obj);
             if (r instanceof AmalgamatedRule) {
                 RuleScheme rs = r.getRuleScheme();
@@ -412,8 +412,8 @@ public class MatchSequence {
                     GraphObject lhs_obj = (GraphObject) lhs.next();
                     GraphObject rhs_obj = (GraphObject) objFlow.getOutput(lhs_obj);
                     if (rhs_obj != null) {
-                        if (preRule.getInverseImage(rhs_obj).hasMoreElements()) {
-                            GraphObject pre_lhs_obj = preRule.getInverseImage(rhs_obj).nextElement();
+                        if (preRule.hasInverseImage(rhs_obj)) {
+                            GraphObject pre_lhs_obj = preRule.firstOfInverseImage(rhs_obj);
                             GraphObject g_obj = preMatch.get(pre_lhs_obj);
                             if (g_obj != null) {
                                 matchmap.put(lhs_obj, g_obj);
@@ -426,8 +426,8 @@ public class MatchSequence {
                     GraphObject lhs_obj = (GraphObject) lhs.next();
                     GraphObject rhs_obj = (GraphObject) objFlow.getOutput(lhs_obj);
                     if (rhs_obj != null) {
-                        if (preRule.getInverseImage(rhs_obj).hasMoreElements()) {
-                            GraphObject pre_lhs_obj = preRule.getInverseImage(rhs_obj).nextElement();
+                        if (preRule.hasInverseImage(rhs_obj)) {
+                            GraphObject pre_lhs_obj = preRule.firstOfInverseImage(rhs_obj);
                             GraphObject g_obj = preMatch.get(pre_lhs_obj);
                             if (g_obj != null) {
                                 matchmap.put(lhs_obj, g_obj);
@@ -708,7 +708,7 @@ public class MatchSequence {
                     for (int i = 0; i < goSet.size(); i++) {
                         final GraphObject obj = goSet.get(i);
                         if (obj.isNode() && n.getType().isParentOf(obj.getType())) {
-                            if (!m.getInverseImage(obj).hasMoreElements()) {
+                            if (!m.hasInverseImage(obj)) {
                                 try {
                                     m.addMapping(n, obj);
                                     goSet.remove(obj);

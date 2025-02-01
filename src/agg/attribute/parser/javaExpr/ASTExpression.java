@@ -1,14 +1,17 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.attribute.parser.javaExpr;
+
+import java.util.Iterator;
 
 /* JJT: 0.2.2 */
 /**
@@ -33,9 +36,8 @@ public class ASTExpression extends SimpleNode {
      */
     public void dump(String prefix) {
         if (this.children != null) {
-            for (java.util.Enumeration<Node> e = this.children.elements(); e
-                    .hasMoreElements();) {
-                SimpleNode n = (SimpleNode) e.nextElement();
+            for (Iterator<Node> e = this.children.iterator(); e.hasNext();) {
+                SimpleNode n = (SimpleNode) e.next();
                 n.dump(prefix);
             }
         }

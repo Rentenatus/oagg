@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.attribute.impl;
 
@@ -21,6 +22,8 @@ import agg.attribute.AttrEvent;
 //import agg.attribute.view.AttrViewSetting;
 import agg.attribute.view.impl.OpenViewSetting;
 import agg.util.XMLHelper;
+import java.util.Iterator;
+import org.w3c.dom.Element;
 
 /**
  * Implementation of the interface agg.attribute.AttrInstance; Encapsulates a tuple of attributes, so that a graphical
@@ -596,9 +599,9 @@ public class ValueTuple extends TupleObject implements AttrInstance,
     }
 
     public void XreadObject(XMLHelper h) {
-        Enumeration<?> en = h.getEnumeration("", null, true, "Attribute");
-        while (en.hasMoreElements()) {
-            h.peekElement(en.nextElement());
+        Iterator<Element> en = h.getEnumeration("", null, true, "Attribute");
+        while (en.hasNext()) {
+            h.peekElement(en.next());
             AttrTypeMember typeMem = (AttrTypeMember) h.getObject("type", null,
                     false);
             if (typeMem != null) {

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.cpa;
 
@@ -51,6 +52,7 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.util.Pair;
+import java.util.List;
 
 /**
  * Holds the whole GUI for the critical pair analysis
@@ -136,7 +138,7 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
 
     boolean threadCPisAlive;
 
-    Vector<StatusMessageListener> listener;
+    List<StatusMessageListener> listener;
 
     EdGraGra layout;
 
@@ -539,10 +541,10 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
         }
     }
 
-    Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getOverlappingsByEvent(final ParserGUIEvent pguie) {
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = null;
-        Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> overlappingsForGraph = null;
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = null;
+        Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> overlappingsForGraph = null;
         try {
             if (!CriticalPairAnalysisGUI.this.isPanel2) { // conflicts
                 if (pguie.getData() instanceof Pair) {
@@ -573,13 +575,13 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                         }
                     }
                 } else if (pguie.getData() instanceof CriticalPairData) {
-                    overlappings = (Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>) ((CriticalPairData) pguie.getData()).getCriticalsOfKind(-1);
+                    overlappings = (List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>) ((CriticalPairData) pguie.getData()).getCriticalsOfKind(-1);
                 }
             } else { // dependencies	
                 if (pguie.getData() instanceof Pair) {
                     overlappings = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo2).getCriticalPair(CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, CriticalPair.EXCLUDE, true);
                 } else if (pguie.getData() instanceof CriticalPairData) {
-                    overlappings = (Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>) ((CriticalPairData) pguie.getData()).getCriticalsOfKind(-1);
+                    overlappings = (List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>) ((CriticalPairData) pguie.getData()).getCriticalsOfKind(-1);
                 }
             }
         } catch (InvalidAlgorithmException iae) {
@@ -660,7 +662,7 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                         + CriticalPairAnalysisGUI.this.rechts.getName()
                         + "  ]  -  is running ..."));
 
-                Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = getOverlappingsByEvent(pguie);
+                List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = getOverlappingsByEvent(pguie);
 
                 if (overlappings != null && overlappings.size() > 0) {
                     int x0 = 0;
@@ -685,7 +687,7 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                         if (CriticalPairAnalysisGUI.this.beo instanceof DependencyPairContainer
                                 || CriticalPairAnalysisGUI.this.beo instanceof ExcludePairContainer) {
                             for (int x = x0; x <= xn; x++) {
-                                Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = overlappings.elementAt(x);
+                                Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = overlappings.get(x);
                                 Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = p.first;
                                 Graph graph = p1.first.getTarget();
                                 CriticalPairAnalysisGUI.this.gDesktop.addOverlapping(graph, p);
@@ -694,7 +696,7 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                         }
                     } else if (CriticalPairAnalysisGUI.this.beo2 instanceof DependencyPairContainer) {
                         for (int x = x0; x <= xn; x++) {
-                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = overlappings.elementAt(x);
+                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = overlappings.get(x);
                             Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = p.first;
                             Graph graph = p1.first.getTarget();
                             CriticalPairAnalysisGUI.this.gDesktop.addOverlapping(graph, p);
@@ -844,12 +846,12 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
      * @param sml the listener which listen to my messages
      */
     public void addStatusMessageListener(StatusMessageListener sml) {
-        this.listener.addElement(sml);
+        this.listener.add(sml);
     }
 
     void fireStatusMessageEvent(StatusMessageEvent sme) {
         for (int i = 0; i < this.listener.size(); i++) {
-            this.listener.elementAt(i).newMessage(sme);
+            this.listener.get(i).newMessage(sme);
         }
     }
 

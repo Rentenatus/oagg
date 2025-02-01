@@ -33,6 +33,7 @@ import agg.gui.editor.GraphEditor;
 import agg.xt_basis.Graph;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
+import java.util.List;
 
 public class RuleConstraint {
 
@@ -139,7 +140,7 @@ public class RuleConstraint {
             return null;
         }
         EvalSet ret = null;
-        Vector<EvalSet> v = this.rule.getAtomApplConds();
+        List<EvalSet> v = this.rule.getAtomApplConds();
         if (this.atom_index < v.size()) {
             ret = v.get(this.atom_index);
         }

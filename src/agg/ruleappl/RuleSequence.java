@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.ruleappl;
 
@@ -1397,9 +1395,9 @@ public class RuleSequence implements GraTraEventListener {
                     Object out = outs.nextElement();
                     if (out instanceof GraphObject
                             && preRule.getRight().isElement((GraphObject) out)) {
-                        Enumeration<GraphObject> inverse = preRule.getInverseImage((GraphObject) out);
-                        while (inverse.hasMoreElements()) {
-                            GraphObject prein = inverse.nextElement();
+                        Iterator<GraphObject> inverse = preRule.getInverseImage((GraphObject) out);
+                        while (inverse.hasNext()) {
+                            GraphObject prein = inverse.next();
 
                             for (int j = 0; j < preObjFlowList.size(); j++) {
                                 ObjectFlow preObjFlow = preObjFlowList.get(j);
@@ -1885,9 +1883,9 @@ public class RuleSequence implements GraTraEventListener {
 
             if (of != null && i >= 1
                     && tmp.get(i - 1) instanceof Rule) {
-                Enumeration<GraphObject> elems = ((Rule) inSrc).getLeft().getElements();
-                while (elems.hasMoreElements()) {
-                    GraphObject go_in = elems.nextElement();
+                Iterator<GraphObject> elems = ((Rule) inSrc).getLeft().iteratorOfElems();
+                while (elems.hasNext()) {
+                    GraphObject go_in = elems.next();
                     if (of.isInputObject(go_in)) {
                         if (i - 1 >= 0) {
                             GraphObject go_out = (GraphObject) of.getOutput(go_in);
@@ -1990,9 +1988,9 @@ public class RuleSequence implements GraTraEventListener {
             boolean withGraph) {
 
         int c = withGraph ? -1 : 0;
-        Enumeration<GraphObject> en = r_in.getInverseImage(go_out);
-        if (en.hasMoreElements()) {
-            GraphObject go = en.nextElement();
+        Iterator<GraphObject> en = r_in.getInverseImage(go_out);
+        if (en.hasNext()) {
+            GraphObject go = en.next();
             ObjectFlow of = this.getObjFlowForRules(r_out, j + c, r_in, i + c);
             if (of != null && of.isInputObject(go)) {
                 GraphObject go_out_j = (GraphObject) of.getOutput(go);
@@ -2058,11 +2056,11 @@ public class RuleSequence implements GraTraEventListener {
                         if (of3 != null) {
                             Object go_out3 = of3.getOutput(go_in2);
                             if (go_out3 != null) {
-                                Enumeration<GraphObject> en = r_in1.getInverseImage((GraphObject) go_out3);
-                                if (en.hasMoreElements()) {
+                                Iterator<GraphObject> en = r_in1.getInverseImage((GraphObject) go_out3);
+                                if (en.hasNext()) {
                                     of1 = new ObjectFlow(r_out, r_in1, j, i1);
                                     this.addObjFlow(of1);
-                                    of1.addMapping(go_out, en.nextElement());
+                                    of1.addMapping(go_out, en.next());
                                 }
                             }
                         }
@@ -2099,9 +2097,9 @@ public class RuleSequence implements GraTraEventListener {
                                 if (outgoing.getTarget().getType().isParentOf(a.getTarget().getType())) {
                                     Node goL1 = null;
                                     // get left go of r1
-                                    Enumeration<GraphObject> gosL1 = r1.getInverseImage(a.getTarget());
-                                    if (gosL1.hasMoreElements()) {
-                                        goL1 = (Node) gosL1.nextElement();
+                                    Iterator<GraphObject> gosL1 = r1.getInverseImage(a.getTarget());
+                                    if (gosL1.hasNext()) {
+                                        goL1 = (Node) gosL1.next();
                                     }
                                     if (goL1 == null) {
                                         if (!outgoing.getTarget().isAttrMemConstantValDifferent(a.getTarget())) {
@@ -2128,9 +2126,9 @@ public class RuleSequence implements GraTraEventListener {
                                     Node goL1 = null;
                                     // get left go of r1
                                     // get left go of r1
-                                    Enumeration<GraphObject> gosL1 = r1.getInverseImage(a.getSource());
-                                    if (gosL1.hasMoreElements()) {
-                                        goL1 = (Node) gosL1.nextElement();
+                                    Iterator<GraphObject> gosL1 = r1.getInverseImage(a.getSource());
+                                    if (gosL1.hasNext()) {
+                                        goL1 = (Node) gosL1.next();
                                     }
                                     if (goL1 == null) {
                                         if (!incoming.getSource().isAttrMemConstantValDifferent(a.getSource())) {
@@ -2162,9 +2160,9 @@ public class RuleSequence implements GraTraEventListener {
                                 if (a1.getType().isParentOf(a.getType())) {
                                     Arc goL1 = null;
                                     // get left go of r1
-                                    Enumeration<GraphObject> gosL1 = r1.getInverseImage(a);
-                                    if (gosL1.hasMoreElements()) {
-                                        goL1 = (Arc) gosL1.nextElement();
+                                    Iterator<GraphObject> gosL1 = r1.getInverseImage(a);
+                                    if (gosL1.hasNext()) {
+                                        goL1 = (Arc) gosL1.next();
                                     }
                                     if (goL1 == null) {
                                         if (!a1.isAttrMemConstantValDifferent(a)) {

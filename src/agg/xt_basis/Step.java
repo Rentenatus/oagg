@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -195,9 +196,9 @@ public class Step {
         GraphObject lhsObj, rhsObj, gObj;
 
 //		compute attributes of preserved objects
-        final Enumeration<GraphObject> dom = match.getDomain();
-        while (dom.hasMoreElements()) {
-            lhsObj = dom.nextElement();
+        final Iterator<GraphObject> dom = match.getDomain();
+        while (dom.hasNext()) {
+            lhsObj = dom.next();
             gObj = match.getImage(lhsObj);
 
             if (!gObj.attrExists() //gObj.getAttribute() == null
@@ -226,10 +227,10 @@ public class Step {
 
         // now compute attributes of new objects only
 //		Enumeration<GraphObject> anInvImage;
-        final Enumeration<GraphObject> anObjIter = comatch.getCodomain();
-        while (anObjIter.hasMoreElements()) {
-            rhsObj = anObjIter.nextElement();
-            if (r.getInverseImage(rhsObj).hasMoreElements()) {
+        final Iterator<GraphObject> anObjIter = comatch.getCodomain();
+        while (anObjIter.hasNext()) {
+            rhsObj = anObjIter.next();
+            if (r.hasInverseImage(rhsObj)) {
                 continue;
             }
 
@@ -686,7 +687,7 @@ public class Step {
                         }
                     }
                 }
-            } else if (r.getInverseImage(n).hasMoreElements()) {
+            } else if (r.hasInverseImage(n)) {
                 return;
             }
         }
@@ -760,7 +761,7 @@ public class Step {
                         }
                     }
                 }
-            } else if (r.getInverseImage(a).hasMoreElements()) {
+            } else if (r.hasInverseImage(a)) {
                 return;
             }
         }
@@ -1048,10 +1049,10 @@ public class Step {
 
         final List<GraphObject> list = new Vector<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
-            Enumeration<GraphObject> dom = comatch.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                if (go.isNode() && !r.getInverseImage(go).hasMoreElements()) {
+            Iterator<GraphObject> dom = comatch.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                if (go.isNode() && !r.hasInverseImage(go)) {
                     list.add(go);
                 }
             }
@@ -1065,10 +1066,10 @@ public class Step {
 
         final List<GraphObject> list = new Vector<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
-            Enumeration<GraphObject> dom = comatch.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go = dom.nextElement();
-                if (!r.getInverseImage(go).hasMoreElements()) {
+            Iterator<GraphObject> dom = comatch.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go = dom.next();
+                if (!r.hasInverseImage(go)) {
                     list.add(go);
                 }
             }

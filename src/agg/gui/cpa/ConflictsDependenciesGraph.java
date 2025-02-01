@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.cpa;
 
@@ -70,9 +71,9 @@ public class ConflictsDependenciesGraph implements ActionListener,
 
     GraGra grammar;
 
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
+    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
 
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
+    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
 
     Graph cpaGraph;
 
@@ -84,7 +85,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
 
     GraphicsExportJPEG graphJPG;
 
-    final Vector<Arc> visArcs = new Vector<Arc>();
+    final List<Arc> visArcs = new Vector<Arc>();
 
     public ConflictsDependenciesGraph(ExcludePairContainer conflictsContainer,
             ExcludePairContainer dependenciesContainer) {
@@ -416,17 +417,17 @@ public class ConflictsDependenciesGraph implements ActionListener,
             return;
         }
 
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
         for (Enumeration<Rule> keys = container.keys(); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
             for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 ExcludePairContainer.Entry entry = ((ExcludePairContainer) pc)
                         .getEntry(r1, r2);
                 if (entry.isCritical()) {
                     if (r1 == r2) {
-                        Vector<EdNode> elems = this.cpaLayout.getNodes();
+                        List<EdNode> elems = this.cpaLayout.getNodes();
                         for (int i = 0; i < elems.size(); i++) {
                             agg.xt_basis.Node n = elems.get(i).getBasisNode();
                             Object val = n.getAttribute().getValueAt("name");
@@ -509,7 +510,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
                     }
                 } else {
                     if (r1 == r2) {
-                        Vector<EdNode> elems = this.cpaLayout.getNodes();
+                        List<EdNode> elems = this.cpaLayout.getNodes();
                         for (int i = 0; i < elems.size(); i++) {
                             agg.xt_basis.Node n = elems.get(i).getBasisNode();
                             Object val = n.getAttribute().getValueAt("name");
@@ -532,16 +533,16 @@ public class ConflictsDependenciesGraph implements ActionListener,
             return;
         }
 
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
         for (Enumeration<Rule> keys = container.keys(); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
             for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 ExcludePairContainer.Entry entry = ((ExcludePairContainer) pc)
                         .getEntry(r1, r2);
                 if (entry.isCritical()) {
-                    Vector<EdNode> elems = this.cpaLayout.getNodes();
+                    List<EdNode> elems = this.cpaLayout.getNodes();
                     for (int i = 0; i < elems.size(); i++) {
                         agg.xt_basis.Node n = elems.get(i).getBasisNode();
                         Object val = n.getAttribute().getValueAt("name");
@@ -570,7 +571,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
                     }
                 } else {
                     if (r1 == r2) {
-                        Vector<EdNode> elems = this.cpaLayout.getNodes();
+                        List<EdNode> elems = this.cpaLayout.getNodes();
                         for (int i = 0; i < elems.size(); i++) {
                             agg.xt_basis.Node n = elems.get(i).getBasisNode();
                             Object val = n.getAttribute().getValueAt("name");
@@ -589,7 +590,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
     }
 
     private Arc getArc(EdGraph g, String tn, Rule r1, Rule r2) {
-        Vector<EdArc> elems = g.getArcs();
+        List<EdArc> elems = g.getArcs();
         Arc a = null;
         for (int i = 0; i < elems.size(); i++) {
             a = elems.get(i).getBasisArc();
@@ -627,7 +628,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
     }
 
     private void updateGraphAlongPairContainer(EdGraph g, PairContainer pc,
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> table1,
+            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> table1,
             String tn) {
         if (g == null || pc == null || table1 == null) {
             return;
@@ -682,7 +683,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
             if (n1 == null) {// new rule node
                 n1 = createNode(g.getBasisGraph(), "Rule", r1);
             }
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table2 = table1.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table2 = table1.get(r1);
             for (Enumeration<Rule> keys2 = table2.keys(); keys2.hasMoreElements();) {
                 Rule r2 = keys2.nextElement();
                 Node n2 = getNode(g.getBasisGraph(), r2);
@@ -1095,7 +1096,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 for (Enumeration<Rule> keys1 = this.conflicts.keys(); keys1.hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
+                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
                         for (Enumeration<Rule> keys2 = table.keys(); keys2
                                 .hasMoreElements();) {
                             Rule r2 = keys2.nextElement();
@@ -1114,7 +1115,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
                                     nr2 = createNode(this.cpaGraph, nodeType, r2);
                                     local.put(r2.getQualifiedName(), nr2);
                                 }
-                                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = table.get(r2);
+                                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = table.get(r2);
                                 boolean rel = p.first.booleanValue();
                                 if (rel) {
                                     // create edge of rule relation
@@ -1132,7 +1133,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
                         .hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
+                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
                         for (Enumeration<Rule> keys2 = table.keys(); keys2
                                 .hasMoreElements();) {
                             Rule r2 = keys2.nextElement();
@@ -1151,7 +1152,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
                                     nr2 = createNode(this.cpaGraph, nodeType, r2);
                                     local.put(r2.getQualifiedName(), nr2);
                                 }
-                                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = table.get(r2);
+                                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = table.get(r2);
                                 boolean rel = p.first.booleanValue();
                                 if (rel) {
                                     createEdge(this.cpaGraph, arcTypeDepend, nr1, nr2);
@@ -1169,9 +1170,9 @@ public class ConflictsDependenciesGraph implements ActionListener,
     private void replaceBidirectedEdgesByUndirectedEdge(EdGraph eg) {
         // replace two edges between the same nodes through one not directed
         // edge
-        Enumeration<EdArc> e = eg.getArcs().elements();
-        while (e.hasMoreElements()) {
-            EdArc a = e.nextElement();
+        Iterator<EdArc> e = eg.getArcs().iterator();
+        while (e.hasNext()) {
+            EdArc a = e.next();
 
             if (a.getSource() == a.getTarget()) {
                 continue;
@@ -1180,9 +1181,9 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 continue;
             }
 
-            Enumeration<EdArc> e1 = eg.getArcs().elements();
-            while (e1.hasMoreElements()) {
-                EdArc a1 = e1.nextElement();
+            Iterator<EdArc> e1 = eg.getArcs().iterator();
+            while (e1.hasNext()) {
+                EdArc a1 = e1.next();
 
                 if (a1.getSource() == a1.getTarget()) {
                     continue;
@@ -1567,7 +1568,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
 
     /*
 	private void hideGraphObject() {
-		Vector<EdGraphObject> v = this.cpaLayout.getSelectedObjs();
+		List<EdGraphObject> v = this.cpaLayout.getSelectedObjs();
 		for (int i = 0; i < v.size(); i++) {
 			EdGraphObject go = v.elementAt(i);
 			go.setSelected(false);
@@ -1610,9 +1611,9 @@ public class ConflictsDependenciesGraph implements ActionListener,
     }
 
     private void straightEdges(EdGraph g) {
-        Enumeration<EdArc> e = g.getArcs().elements();
-        while (e.hasMoreElements()) {
-            EdArc ea = e.nextElement();
+        Iterator<EdArc> e = g.getArcs().iterator();
+        while (e.hasNext()) {
+            EdArc ea = e.next();
             g.straightArc(ea);
             /*
 			 * Node src = (Node)ea.getBasisArc().getSource(); Node tar =
@@ -1627,7 +1628,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
     }
 
     private void changeStyleOfEdges(EdGraph g, String edgeTypeName, int style) {
-        Vector<EdType> arctypes = g.getTypeSet().getArcTypes();
+        List<EdType> arctypes = g.getTypeSet().getArcTypes();
         for (int i = 0; i < arctypes.size(); i++) {
             EdType et = arctypes.get(i);
             if (et.getBasisType().getName().equals(edgeTypeName)) {

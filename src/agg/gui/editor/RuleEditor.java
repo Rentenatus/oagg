@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.editor;
 
@@ -233,7 +234,7 @@ public class RuleEditor extends JPanel {
                     .isTargetOfEmbeddingLeft(leftgo.getBasisObject())
                     || ((MultiRule) this.eRule.getBasisRule())
                             .isTargetOfEmbeddingRight(rightgo.getBasisObject())) {
-                if (!this.eRule.getBasisRule().getInverseImage(rightgo.getBasisObject()).hasMoreElements()) {
+                if (!this.eRule.getBasisRule().hasInverseImage(rightgo.getBasisObject())) {
                     JOptionPane.showMessageDialog(
                             this.applFrame,
                             "Mapping failed!"
@@ -344,7 +345,7 @@ public class RuleEditor extends JPanel {
                 }
             }
 
-            Vector<EdGraphObject> vec = this.eRule.getOriginal(go);
+            List<EdGraphObject> vec = this.eRule.getOriginal(go);
             boolean result = false;
             for (int i = 0; i < vec.size(); i++) {
                 EdGraphObject lgo = vec.get(i);
@@ -528,7 +529,7 @@ public class RuleEditor extends JPanel {
         }
 
         boolean unmapdone = false;
-        Vector<EdGraphObject> l = new Vector<EdGraphObject>(1);
+        List<EdGraphObject> l = new Vector<EdGraphObject>(1);
         EdGraphObject lgo = null;
         if (obj.isSelected()) {
             l.addAll(this.getRule().getLeft().getSelectedObjs());
@@ -536,7 +537,7 @@ public class RuleEditor extends JPanel {
             l.add(obj);
         }
         for (int i = 0; i < l.size(); i++) {
-            lgo = l.elementAt(i);
+            lgo = l.get(i);
             if (this.removeRuleMapping(lgo, true)
                     || (this.getNAC() != null
                     && this.removeNacMapping(lgo, true))
@@ -573,17 +574,17 @@ public class RuleEditor extends JPanel {
             return;
         }
 
-        Vector<EdGraphObject> vec = null;
+        List<EdGraphObject> vec = null;
         boolean unmapdone = false;
         EdGraphObject imageObj = null;
-        Vector<EdGraphObject> l = new Vector<EdGraphObject>(1);
+        List<EdGraphObject> l = new Vector<EdGraphObject>(1);
         if (obj.isSelected()) {
             l.addAll(this.getRule().getRight().getSelectedObjs());
         } else {
             l.add(obj);
         }
         for (int i = 0; i < l.size(); i++) {
-            imageObj = l.elementAt(i);
+            imageObj = l.get(i);
             vec = this.getRule().getOriginal(imageObj);
             for (int j = 0; j < vec.size(); j++) {
                 EdGraphObject go = vec.get(j);
@@ -604,10 +605,10 @@ public class RuleEditor extends JPanel {
         }
 //		this.leftCondObj = this.editor.setLeftCondGraphObject(this.editor.getNACPanel().getGraph().getPicked(x, y));
         boolean unmapdone = false;
-        Vector<EdGraphObject> vec = null;
+        List<EdGraphObject> vec = null;
         EdGraphObject imageObj = null;
         EdGraphObject go = null;
-        Vector<EdGraphObject> l = new Vector<EdGraphObject>(1);
+        List<EdGraphObject> l = new Vector<EdGraphObject>(1);
         if (this.getNAC() != null) {
             if (obj.isSelected()) {
                 l.addAll(this.getNAC().getSelectedObjs());
@@ -615,7 +616,7 @@ public class RuleEditor extends JPanel {
                 l.add(obj);
             }
             for (int i = 0; i < l.size(); i++) {
-                imageObj = l.elementAt(i);
+                imageObj = l.get(i);
                 vec = this.getNAC().getOriginal(imageObj);
                 for (int j = 0; j < vec.size(); j++) {
                     go = vec.get(j);
@@ -631,7 +632,7 @@ public class RuleEditor extends JPanel {
                 l.add(obj);
             }
             for (int i = 0; i < l.size(); i++) {
-                imageObj = l.elementAt(i);
+                imageObj = l.get(i);
                 vec = this.getPAC().getOriginal(imageObj);
                 for (int j = 0; j < vec.size(); j++) {
                     go = vec.get(j);
@@ -647,7 +648,7 @@ public class RuleEditor extends JPanel {
                 l.add(obj);
             }
             for (int i = 0; i < l.size(); i++) {
-                imageObj = l.elementAt(i);
+                imageObj = l.get(i);
                 vec = this.getNestedAC().getOriginal(imageObj);
                 for (int j = 0; j < vec.size(); j++) {
                     go = vec.get(j);
@@ -666,7 +667,7 @@ public class RuleEditor extends JPanel {
     public void removeMappingGraph(final EdGraphObject obj) {
         if (this.getGraphEditor() != null && obj != null) {
             boolean unmapdone = false;
-            Enumeration<GraphObject> inverse = null;
+            Iterator<GraphObject> inverse = null;
             EdGraphObject lgo = null;
             if (obj.isSelected()) {
                 EdGraphObject imageObj = null;
@@ -675,8 +676,8 @@ public class RuleEditor extends JPanel {
                     imageObj = this.getGraphEditor().getGraph().getSelectedObjs().get(i);
                     inverse = this.getRule().getMatch()
                             .getInverseImage(imageObj.getBasisObject());
-                    while (inverse.hasMoreElements()) {
-                        lgo = this.getRule().getLeft().findGraphObject(inverse.nextElement());
+                    while (inverse.hasNext()) {
+                        lgo = this.getRule().getLeft().findGraphObject(inverse.next());
                         if (this.removeMatchMapping(lgo, true)) {
                             unmapdone = true;
                         }
@@ -684,8 +685,8 @@ public class RuleEditor extends JPanel {
                 }
             } else if (this.getRule().getMatch() != null) {
                 inverse = this.getRule().getMatch().getInverseImage(obj.getBasisObject());
-                while (inverse.hasMoreElements()) {
-                    lgo = this.getRule().getLeft().findGraphObject(inverse.nextElement());
+                while (inverse.hasNext()) {
+                    lgo = this.getRule().getLeft().findGraphObject(inverse.next());
                     if (this.removeMatchMapping(lgo, true)) {
                         unmapdone = true;
                     }
@@ -769,7 +770,7 @@ public class RuleEditor extends JPanel {
         }
 
         boolean res = false;
-        Vector<EdGraphObject> vec = this.eNAC.getOriginal(go);
+        List<EdGraphObject> vec = this.eNAC.getOriginal(go);
         for (int i = 0; i < vec.size(); i++) {
             EdGraphObject lgo = vec.get(i);
             res = removeNacMapping(lgo, true) || res;
@@ -875,7 +876,7 @@ public class RuleEditor extends JPanel {
             return false;
         }
         boolean res = false;
-        Vector<EdGraphObject> vec = this.ePAC.getOriginal(go);
+        List<EdGraphObject> vec = this.ePAC.getOriginal(go);
         for (int i = 0; i < vec.size(); i++) {
             EdGraphObject lgo = vec.get(i);
             res = removePacMapping(lgo, true) || res;
@@ -975,7 +976,7 @@ public class RuleEditor extends JPanel {
             return false;
         }
         boolean res = false;
-        Vector<EdGraphObject> vec = this.eGAC.getOriginal(go);
+        List<EdGraphObject> vec = this.eGAC.getOriginal(go);
         for (int i = 0; i < vec.size(); i++) {
             EdGraphObject lgo = vec.get(i);
             res = res || removeNestedACMapping(lgo, true) || res;
@@ -1106,10 +1107,10 @@ public class RuleEditor extends JPanel {
         }
 
         boolean res = false;
-        Enumeration<GraphObject> inverse = this.eRule.getMatch().getInverseImage(
+        Iterator<GraphObject> inverse = this.eRule.getMatch().getInverseImage(
                 go.getBasisObject());
-        while (inverse.hasMoreElements()) {
-            GraphObject o = inverse.nextElement();
+        while (inverse.hasNext()) {
+            GraphObject o = inverse.next();
             EdGraphObject lgo = this.eRule.getLeft().findGraphObject(o);
             res = removeMatchMapping(lgo, true) || res;
         }
@@ -1154,9 +1155,9 @@ public class RuleEditor extends JPanel {
         this.draggingC = b;
     }
 
-    public Vector<EdGraphObject> getImages(EdGraph imageGraph,
-            OrdinaryMorphism morph, Vector<EdGraphObject> objs) {
-        Vector<EdGraphObject> res = new Vector<EdGraphObject>(5);
+    public List<EdGraphObject> getImages(EdGraph imageGraph,
+            OrdinaryMorphism morph, List<EdGraphObject> objs) {
+        List<EdGraphObject> res = new Vector<EdGraphObject>(5);
         for (int i = 0; i < objs.size(); i++) {
             EdGraphObject go = objs.get(i);
             GraphObject img = morph.getImage(go.getBasisObject());
@@ -1172,7 +1173,7 @@ public class RuleEditor extends JPanel {
                     Iterator<Arc> e = ((Node) img).getIncomingArcsSet().iterator();
                     while (e.hasNext()) {
                         Arc a = e.next();
-                        if (morph.getInverseImage(a).hasMoreElements()) {
+                        if (morph.hasInverseImage(a)) {
                             EdArc ea = imageGraph.findArc(a);
                             if (ea != null && res.contains(ea.getSource())
                                     && !res.contains(ea)) {
@@ -1183,7 +1184,7 @@ public class RuleEditor extends JPanel {
                     e = ((Node) img).getOutgoingArcsSet().iterator();
                     while (e.hasNext()) {
                         Arc a = e.next();
-                        if (morph.getInverseImage(a).hasMoreElements()) {
+                        if (morph.hasInverseImage(a)) {
                             EdArc ea = imageGraph.findArc(a);
                             if (ea != null && res.contains(ea.getTarget())
                                     && !res.contains(ea)) {
@@ -1201,14 +1202,14 @@ public class RuleEditor extends JPanel {
         return res;
     }
 
-    public Vector<EdGraphObject> getInverseImages(EdGraph imageGraph,
-            OrdinaryMorphism morph, Vector<EdGraphObject> objs) {
-        Vector<EdGraphObject> res = new Vector<EdGraphObject>(5);
+    public List<EdGraphObject> getInverseImages(EdGraph imageGraph,
+            OrdinaryMorphism morph, List<EdGraphObject> objs) {
+        List<EdGraphObject> res = new Vector<EdGraphObject>(5);
         for (int i = 0; i < objs.size(); i++) {
             EdGraphObject go = objs.get(i);
-            Enumeration<GraphObject> en = morph.getInverseImage(go.getBasisObject());
-            while (en.hasMoreElements()) {
-                GraphObject img = en.nextElement();
+            Iterator<GraphObject> en = morph.getInverseImage(go.getBasisObject());
+            while (en.hasNext()) {
+                GraphObject img = en.next();
                 if (img != null) {
                     EdGraphObject obj = imageGraph.findGraphObject(img);
                     if (obj == null) {
@@ -2237,7 +2238,7 @@ public class RuleEditor extends JPanel {
 	private void drawGraphic(EdGraphObject go, GraphPanel p, boolean map,
 			boolean erase) {
 		if (map) {
-			Vector<EdGraphObject> v = p.getGraph().getChangedGraphObjects();
+			List<EdGraphObject> v = p.getGraph().getChangedGraphObjects();
 			// System.out.println("ChangedGraphObjects: "+v.size());
 			for (int i = 0; i < v.size(); i++) {
 				EdGraphObject o = v.elementAt(i);
@@ -2254,7 +2255,7 @@ public class RuleEditor extends JPanel {
 	private void drawGraphic(EdGraphObject go, GraphPanel p) {
 		if (go.isNode()) {
 			p.getGraph().drawNode(p.getCanvas().getGraphics(), (EdNode) go);
-			Vector<EdArc> v = p.getGraph().getIncomingArcs((EdNode) go);
+			List<EdArc> v = p.getGraph().getIncomingArcs((EdNode) go);
 			for (int i = 0; i < v.size(); i++) {
 				v.elementAt(i).drawText(p.getCanvas().getGraphics(),
 						p.getCanvas().getScale());
@@ -2275,7 +2276,7 @@ public class RuleEditor extends JPanel {
 	private void eraseGraphic(EdGraphObject go, GraphPanel p) {
 		if (go.isNode()) {
 			((EdNode) go).eraseGraphic(p.getCanvas().getGraphics());
-			Vector<EdArc> v = p.getGraph().getIncomingArcs((EdNode) go);
+			List<EdArc> v = p.getGraph().getIncomingArcs((EdNode) go);
 			for (int i = 0; i < v.size(); i++) {
 				v.elementAt(i).eraseText(p.getCanvas().getGraphics());
 			}
@@ -2680,10 +2681,10 @@ public class RuleEditor extends JPanel {
 
     protected void unmapSelectedGraphObjects(GraphPanel gp, String kind,
             boolean wantDeleteGraphObject) {
-        Vector<EdGraphObject> selObjs = gp.getGraph().getSelectedObjs();
+        List<EdGraphObject> selObjs = gp.getGraph().getSelectedObjs();
         if (kind.equals("LHS")) {
             for (int i = 0; i < selObjs.size(); i++) {
-                EdGraphObject origObj = selObjs.elementAt(i);
+                EdGraphObject origObj = selObjs.get(i);
                 boolean isRuleObj = this.getRule().getLeft() == origObj.getContext();
                 if (!wantDeleteGraphObject) {
                     if (getNAC() != null) {
@@ -2708,31 +2709,31 @@ public class RuleEditor extends JPanel {
             }
         } else if (kind.equals("RHS")) {
             for (int i = 0; i < selObjs.size(); i++) {
-                EdGraphObject imageObj = selObjs.elementAt(i);
+                EdGraphObject imageObj = selObjs.get(i);
                 this.removeRuleMapping(imageObj, false);
             }
         } else if (kind.equals("NAC")) {
             for (int i = 0; i < selObjs.size(); i++) {
-                EdGraphObject imageObj = selObjs.elementAt(i);
+                EdGraphObject imageObj = selObjs.get(i);
                 this.removeNacMapping(imageObj, false);
             }
         } else if (kind.equals("PAC")) {
             for (int i = 0; i < selObjs.size(); i++) {
-                EdGraphObject imageObj = selObjs.elementAt(i);
+                EdGraphObject imageObj = selObjs.get(i);
                 this.removePacMapping(imageObj, false);
             }
         } else if (kind.equals("AC")) {
             for (int i = 0; i < selObjs.size(); i++) {
-                EdGraphObject imageObj = selObjs.elementAt(i);
+                EdGraphObject imageObj = selObjs.get(i);
                 this.removeNestedACMapping(imageObj, false);
             }
         } else if (kind.equals("P")) {
             for (int i = 0; i < selObjs.size(); i++) {
-                this.removeRuleMapping(selObjs.elementAt(i), true);
+                this.removeRuleMapping(selObjs.get(i), true);
             }
         } else if (kind.equals("C")) {
             for (int i = 0; i < selObjs.size(); i++) {
-                this.removeRuleMapping(selObjs.elementAt(i), false);
+                this.removeRuleMapping(selObjs.get(i), false);
             }
         }
 
@@ -2934,7 +2935,7 @@ public class RuleEditor extends JPanel {
                 && treeNode.getUserObject() instanceof NACTreeNodeData
                 && ((NACTreeNodeData) treeNode.getUserObject()).getNAC() == this.eNAC) {
             if (!this.eNAC.getBasisGraph().isEmpty()) {
-                Vector<?> elems = this.eRule.getLeft().getArcs();
+                List<?> elems = this.eRule.getLeft().getArcs();
                 for (int i = 0; i < elems.size(); i++) {
                     removeNacMapping((EdGraphObject) elems.get(i), true);
                 }
@@ -2943,7 +2944,7 @@ public class RuleEditor extends JPanel {
                     removeNacMapping((EdGraphObject) elems.get(i), true);
                 }
 
-                Vector<EdGraphObject> vec = new Vector<EdGraphObject>();
+                List<EdGraphObject> vec = new Vector<EdGraphObject>();
                 vec.addAll(this.eNAC.getNodes());
                 vec.addAll(this.eNAC.getArcs());
                 this.eNAC.addDeletedToUndo(vec);
@@ -2984,7 +2985,7 @@ public class RuleEditor extends JPanel {
                 && treeNode.getUserObject() instanceof PACTreeNodeData
                 && ((PACTreeNodeData) treeNode.getUserObject()).getPAC() == this.ePAC) {
             if (!this.ePAC.getBasisGraph().isEmpty()) {
-                Vector<?> elems = this.eRule.getLeft().getArcs();
+                List<?> elems = this.eRule.getLeft().getArcs();
                 for (int i = 0; i < elems.size(); i++) {
                     removePacMapping((EdGraphObject) elems.get(i), true);
                 }
@@ -2993,7 +2994,7 @@ public class RuleEditor extends JPanel {
                     removePacMapping((EdGraphObject) elems.get(i), true);
                 }
 
-                Vector<EdGraphObject> vec = new Vector<EdGraphObject>();
+                List<EdGraphObject> vec = new Vector<EdGraphObject>();
                 vec.addAll(this.ePAC.getNodes());
                 vec.addAll(this.ePAC.getArcs());
                 this.ePAC.addDeletedToUndo(vec);
@@ -3032,7 +3033,7 @@ public class RuleEditor extends JPanel {
                 && ((NestedACTreeNodeData) treeNode.getUserObject()).getNestedAC() == this.eGAC) {
             if (!this.eGAC.getBasisGraph().isEmpty()) {
                 EdGraph srcGraph = this.eGAC.getSource() == null ? this.eRule.getLeft() : this.eGAC.getSource();
-                Vector<?> elems = srcGraph.getArcs();
+                List<?> elems = srcGraph.getArcs();
                 for (int i = 0; i < elems.size(); i++) {
                     removeNestedACMapping((EdGraphObject) elems.get(i), true);
                 }
@@ -3041,7 +3042,7 @@ public class RuleEditor extends JPanel {
                     removeNestedACMapping((EdGraphObject) elems.get(i), true);
                 }
 
-                Vector<EdGraphObject> vec = new Vector<EdGraphObject>();
+                List<EdGraphObject> vec = new Vector<EdGraphObject>();
                 vec.addAll(this.eGAC.getNodes());
                 vec.addAll(this.eGAC.getArcs());
                 this.eGAC.addDeletedToUndo(vec);
@@ -3077,7 +3078,7 @@ public class RuleEditor extends JPanel {
 
         if (!this.eGAC.getBasisGraph().isEmpty()) {
             EdGraph srcGraph = this.eGAC.getSource() == null ? this.eRule.getLeft() : this.eGAC.getSource();
-            Vector<?> elems = srcGraph.getArcs();
+            List<?> elems = srcGraph.getArcs();
             for (int i = 0; i < elems.size(); i++) {
                 removeNestedACMapping((EdGraphObject) elems.get(i), true);
             }
@@ -3086,7 +3087,7 @@ public class RuleEditor extends JPanel {
                 removeNestedACMapping((EdGraphObject) elems.get(i), true);
             }
 
-            Vector<EdGraphObject> vec = new Vector<EdGraphObject>();
+            List<EdGraphObject> vec = new Vector<EdGraphObject>();
             vec.addAll(this.eGAC.getNodes());
             vec.addAll(this.eGAC.getArcs());
             this.eGAC.addDeletedToUndo(vec);
@@ -3116,7 +3117,7 @@ public class RuleEditor extends JPanel {
         }
 
         if (!this.eNAC.getBasisGraph().isEmpty()) {
-            Vector<?> elems = this.eRule.getLeft().getArcs();
+            List<?> elems = this.eRule.getLeft().getArcs();
             for (int i = 0; i < elems.size(); i++) {
                 removeNacMapping((EdGraphObject) elems.get(i), true);
             }
@@ -3125,7 +3126,7 @@ public class RuleEditor extends JPanel {
                 removeNacMapping((EdGraphObject) elems.get(i), true);
             }
 
-            Vector<EdGraphObject> vec = new Vector<EdGraphObject>();
+            List<EdGraphObject> vec = new Vector<EdGraphObject>();
             vec.addAll(this.eNAC.getNodes());
             vec.addAll(this.eNAC.getArcs());
             this.eNAC.addDeletedToUndo(vec);

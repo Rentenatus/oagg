@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.xt_basis;
 
@@ -410,7 +408,7 @@ public class ConcurrentRule {
                     input_cr = this.embLr2ToLcr.getImage((GraphObject) input);
                     if (input_cr != null) {
                         if (((Rule) this.source1).getTarget().isElement((GraphObject) output)
-                                && this.embLr1ToLcr.getInverseImage(input_cr).hasMoreElements()) {
+                                && this.embLr1ToLcr.hasInverseImage(input_cr)) {
                         } else {
                             this.reflectedObjectFlowIO.put((GraphObject) input, (GraphObject) output);
                             this.sizeOfInputObjectFlow++;
@@ -530,17 +528,17 @@ public class ConcurrentRule {
         Iterator<?> elems = this.overlap1.getTarget().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
-            if (this.overlap1.getInverseImage(go).hasMoreElements()
-                    && this.overlap2.getInverseImage(go).hasMoreElements()) {
-                list.add(this.overlap2.getInverseImage(go).nextElement());
+            if (this.overlap1.hasInverseImage(go)
+                    && this.overlap2.hasInverseImage(go)) {
+                list.add(this.overlap2.firstOfInverseImage(go));
             }
         }
         elems = this.overlap1.getTarget().getArcsSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
-            if (this.overlap1.getInverseImage(go).hasMoreElements()
-                    && this.overlap2.getInverseImage(go).hasMoreElements()) {
-                list.add(this.overlap2.getInverseImage(go).nextElement());
+            if (this.overlap1.hasInverseImage(go)
+                    && this.overlap2.hasInverseImage(go)) {
+                list.add(this.overlap2.firstOfInverseImage(go));
             }
         }
 
@@ -559,17 +557,17 @@ public class ConcurrentRule {
         Iterator<?> elems = this.overlap1.getTarget().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
-            if (this.overlap1.getInverseImage(go).hasMoreElements()
-                    && this.overlap2.getInverseImage(go).hasMoreElements()) {
-                list.add(this.overlap1.getInverseImage(go).nextElement());
+            if (this.overlap1.hasInverseImage(go)
+                    && this.overlap2.hasInverseImage(go)) {
+                list.add(this.overlap1.firstOfInverseImage(go));
             }
         }
         elems = this.overlap1.getTarget().getArcsSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
-            if (this.overlap1.getInverseImage(go).hasMoreElements()
-                    && this.overlap2.getInverseImage(go).hasMoreElements()) {
-                list.add(this.overlap1.getInverseImage(go).nextElement());
+            if (this.overlap1.hasInverseImage(go)
+                    && this.overlap2.hasInverseImage(go)) {
+                list.add(this.overlap1.firstOfInverseImage(go));
             }
         }
         return list;
@@ -587,19 +585,19 @@ public class ConcurrentRule {
         Iterator<?> elems = this.overlap1.getTarget().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
-            if (this.overlap1.getInverseImage(go).hasMoreElements()
-                    && this.overlap2.getInverseImage(go).hasMoreElements()) {
-                map.put(this.overlap1.getInverseImage(go).nextElement(),
-                        this.overlap2.getInverseImage(go).nextElement());
+            if (this.overlap1.hasInverseImage(go)
+                    && this.overlap2.hasInverseImage(go)) {
+                map.put(this.overlap1.firstOfInverseImage(go),
+                        this.overlap2.firstOfInverseImage(go));
             }
         }
         elems = this.overlap1.getTarget().getArcsSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
-            if (this.overlap1.getInverseImage(go).hasMoreElements()
-                    && this.overlap2.getInverseImage(go).hasMoreElements()) {
-                map.put(this.overlap1.getInverseImage(go).nextElement(),
-                        this.overlap2.getInverseImage(go).nextElement());
+            if (this.overlap1.hasInverseImage(go)
+                    && this.overlap2.hasInverseImage(go)) {
+                map.put(this.overlap1.firstOfInverseImage(go),
+                        this.overlap2.firstOfInverseImage(go));
             }
         }
         return map;
@@ -1051,9 +1049,9 @@ public class ConcurrentRule {
         match1.setCompletionStrategy(new Completion_InjCSP());
         match1.getTarget().setCompleteGraph(false);
         // set mappings of match1 similar to m1	
-        Enumeration<GraphObject> dom1 = m1.getDomain();
-        while (dom1.hasMoreElements() && !failed) {
-            GraphObject obj = dom1.nextElement();
+        Iterator<GraphObject> dom1 = m1.getDomain();
+        while (dom1.hasNext() && !failed) {
+            GraphObject obj = dom1.next();
             try {
                 match1.addMapping(obj, iso1.getImage(m1.getImage(obj)));
             } catch (Exception ex) {
@@ -1116,9 +1114,9 @@ public class ConcurrentRule {
         match2.setCompletionStrategy(new Completion_InjCSP());
         match2.getTarget().setCompleteGraph(false);
         // set mappings of match2 similar to m2	
-        Enumeration<GraphObject> dom2 = m2.getDomain();
-        while (!failed && dom2.hasMoreElements()) {
-            GraphObject obj = dom2.nextElement();
+        Iterator<GraphObject> dom2 = m2.getDomain();
+        while (!failed && dom2.hasNext()) {
+            GraphObject obj = dom2.next();
 //			System.out.println("*** m2.getImage(obj): "+m2.getImage(obj));
             try {
                 match2.addMapping(obj, iso2.getImage(iso1.getImage(m2.getImage(obj))));
@@ -1171,7 +1169,7 @@ public class ConcurrentRule {
             boolean alsoPACs) {
 
         boolean ok = true;
-        if (alsoPACs && rule.getPACs().hasMoreElements()) {
+        if (alsoPACs && rule.getPACs().hasNext()) {
             List<OrdinaryMorphism> condList = shiftPACsOverEmbMorph(cr, rule, rule.getPACs(), lhsToLHS);
             if (cr.notApplicable) {
                 return false;
@@ -1191,7 +1189,7 @@ public class ConcurrentRule {
             }
         }
 
-        if (ok && rule.getNACs().hasMoreElements()) {
+        if (ok && rule.getNACs().hasNext()) {
             List<OrdinaryMorphism> condList = shiftNACsOverEmbMorph(rule, rule.getNACs(), lhsToLHS);
             if (condList != null && !condList.isEmpty()) {
                 removeIsomorphicMorph(condList);
@@ -1255,7 +1253,7 @@ public class ConcurrentRule {
             final Iterator<Node> en = pac.getTarget().getNodesSet().iterator();
             while (en.hasNext() && ok) {
                 GraphObject o = en.next();
-                if (!pac.getInverseImage(o).hasMoreElements()) {
+                if (!pac.hasInverseImage(o)) {
                     Node lhsNode = (Node) pacGraph2concurRuleLHS.getImage(o);
                     try {
                         Node rhsNode = concurRule.getRight().copyNode(lhsNode);
@@ -1274,7 +1272,7 @@ public class ConcurrentRule {
             final Iterator<Arc> ea = pac.getTarget().getArcsSet().iterator();
             while (ea.hasNext() && ok) {
                 GraphObject o = ea.next();
-                if (!pac.getInverseImage(o).hasMoreElements()) {
+                if (!pac.hasInverseImage(o)) {
                     Arc lhsArc = (Arc) pacGraph2concurRuleLHS.getImage(o);
                     // here src, tar of lhsArc must be preserved!
                     // TODO:  allow src, tar to be deleted
@@ -1328,9 +1326,9 @@ public class ConcurrentRule {
      */
     private boolean checkCorrespondingAttrsOfApplCondition(final Rule rule, final OrdinaryMorphism applCond) {
         boolean ok = true;
-        final Enumeration<GraphObject> dom = applCond.getDomain();
-        while (dom.hasMoreElements() && ok) {
-            GraphObject lhsObj = dom.nextElement();
+        final Iterator<GraphObject> dom = applCond.getDomain();
+        while (dom.hasNext() && ok) {
+            GraphObject lhsObj = dom.next();
             GraphObject acObj = applCond.getImage(lhsObj);
             if (acObj != null
                     && acObj.getAttribute() != null) {
@@ -1463,12 +1461,12 @@ public class ConcurrentRule {
     private List<OrdinaryMorphism> shiftPACsOverEmbMorph(
             final Rule cr,
             final Rule rule,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph) {
 
         List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
-        while (conds.hasMoreElements()) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()) {
+            OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) { // morphism mapping exists
                 // here: LHS -> cond is not empty
                 List<OrdinaryMorphism> list = shiftCondOverEmbMorph(cond, morph);
@@ -1514,12 +1512,12 @@ public class ConcurrentRule {
 
     private List<OrdinaryMorphism> shiftNACsOverEmbMorph(
             final Rule rule,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph) {
 
         final List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
-        while (conds.hasMoreElements()) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()) {
+            OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
                 // here: LHS -> cond mapping not empty			
                 List<OrdinaryMorphism> list = shiftCondOverEmbMorph(cond, morph);
@@ -1551,14 +1549,14 @@ public class ConcurrentRule {
     private List<OrdinaryMorphism> shiftPACsOverMorphAndRight(
             final Rule cr,
             final Rule rule,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism right,
             final OrdinaryMorphism embMorph) {
 
         List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
-        while (conds.hasMoreElements()) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()) {
+            OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
                 // here: LHS -> cond mapping is not empty
                 List<OrdinaryMorphism> list = shiftCondOverMorph(rule, cond, morph);
@@ -1569,9 +1567,9 @@ public class ConcurrentRule {
                         OrdinaryMorphism c = list.get(i);
                         // shift c left
                         OrdinaryMorphism lc = BaseFactory.theBaseFactory.createMorphism(right.getTarget(), c.getTarget());
-                        Enumeration<GraphObject> dom = c.getDomain();
-                        while (dom.hasMoreElements()) {
-                            GraphObject go = dom.nextElement();
+                        Iterator<GraphObject> dom = c.getDomain();
+                        while (dom.hasNext()) {
+                            GraphObject go = dom.next();
                             GraphObject go1 = c.getImage(go);
                             GraphObject go2 = right.getImage(go);
                             if (go2 != null) {
@@ -1620,14 +1618,14 @@ public class ConcurrentRule {
     private List<OrdinaryMorphism> shiftNACsOverMorphAndRight(
             final Rule cr,
             final Rule rule,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism right,
             final OrdinaryMorphism embMorph) {
 
         List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
-        while (conds.hasMoreElements()) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()) {
+            OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) { // morphism mapping exists
                 // here: LHS -> cond is not empty
                 List<OrdinaryMorphism> list = shiftCondOverMorph(rule, cond, morph);
@@ -1638,9 +1636,9 @@ public class ConcurrentRule {
                     // shift c left
                     OrdinaryMorphism lc = BaseFactory.theBaseFactory.createMorphism(right.getTarget(), c.getTarget());
                     // set mapping
-                    Enumeration<GraphObject> dom = c.getDomain();
-                    while (dom.hasMoreElements()) {
-                        GraphObject go = dom.nextElement();
+                    Iterator<GraphObject> dom = c.getDomain();
+                    while (dom.hasNext()) {
+                        GraphObject go = dom.next();
                         GraphObject go1 = c.getImage(go);
                         GraphObject go2 = right.getImage(go);
                         if (go2 != null) {
@@ -1679,14 +1677,14 @@ public class ConcurrentRule {
     private List<OrdinaryMorphism> shiftPACsOverMorphAndLeft(
             final Rule cr,
             final Rule rule,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph) {
 
         List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
-        while (conds.hasMoreElements()) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()) {
+            OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
                 // here: LHS -> cond mapping is not empty
                 List<OrdinaryMorphism> list = shiftCondOverMorph(rule, cond, morph);
@@ -1742,14 +1740,14 @@ public class ConcurrentRule {
     private List<OrdinaryMorphism> shiftNACsOverMorphAndLeft(
             final Rule cr,
             final Rule rule,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph) {
 
         List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
-        while (conds.hasMoreElements()) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()) {
+            OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
                 // here: LHS -> cond is not empty
                 List<OrdinaryMorphism> list = shiftCondOverMorph(rule, cond, morph);
@@ -1795,10 +1793,10 @@ public class ConcurrentRule {
         final Iterator<Arc> arcs = cond.getTarget().getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc arc = arcs.next();
-            Enumeration<GraphObject> inv = cond.getInverseImage(arc);
-            if (inv.hasMoreElements()) {
-                GraphObject lgo = inv.nextElement();
-                if (!iL.getInverseImage(lgo).hasMoreElements()) {
+            Iterator<GraphObject> inv = cond.getInverseImage(arc);
+            if (inv.hasNext()) {
+                GraphObject lgo = inv.next();
+                if (!iL.hasInverseImage(lgo)) {
                     if (similarAttribute(lgo, arc)) {
                         delete.add(arc);
                     }
@@ -1824,10 +1822,10 @@ public class ConcurrentRule {
             Node node = nodes.next();
             if (!node.getOutgoingArcs().hasNext()
                     && !node.getIncomingArcs().hasNext()) {
-                Enumeration<GraphObject> inv = cond.getInverseImage(node);
-                if (inv.hasMoreElements()) {
-                    GraphObject lgo = inv.nextElement();
-                    if (!iL.getInverseImage(lgo).hasMoreElements()) {
+                Iterator<GraphObject> inv = cond.getInverseImage(node);
+                if (inv.hasNext()) {
+                    GraphObject lgo = inv.next();
+                    if (!iL.hasInverseImage(lgo)) {
                         if (similarAttribute(lgo, node)) {
                             delete.add(node);
                         }
@@ -1936,7 +1934,7 @@ public class ConcurrentRule {
         // get the extended result graph
         final Graph dCondGraph = condSrcIsom.getTarget();
 
-        final Vector<GraphObject> condDom = condSrcIsom.getDomainObjects();
+        final List<GraphObject> condDom = condSrcIsom.getDomainObjects();
         final List<Object> requiredObjs = new Vector<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
                 condDom.size());
@@ -1952,12 +1950,12 @@ public class ConcurrentRule {
             }
         }
         // make graph overlappings above required objects
-        Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlaps = BaseFactory.theBaseFactory
+        Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlaps = BaseFactory.theBaseFactory
                 .getOverlappingByPartialPredefinedIntersection(dCondGraph,
                         morph.getTarget(), requiredObjs, objmap, true); // false);
         // add created conditions to the list
-        while (overlaps.hasMoreElements()) {
-            Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.nextElement();
+        while (overlaps.hasNext()) {
+            Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.next();
             if (!p.second.getTarget().isEmpty()) {
                 // get an application condition after shifting
                 OrdinaryMorphism c = p.second;
@@ -1977,9 +1975,9 @@ public class ConcurrentRule {
 
         // first check: 
         // for all x from rule.lhs with cond.getImage(x) != null also morph.getImage(x) != null
-        final Enumeration<GraphObject> dom = cond.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject go = dom.nextElement();
+        final Iterator<GraphObject> dom = cond.getDomain();
+        while (dom.hasNext()) {
+            GraphObject go = dom.next();
             if (morph.getImage(go) == null) {
                 this.failedApplConds.add(cond);
                 return null;
@@ -1994,7 +1992,7 @@ public class ConcurrentRule {
 
         final OrdinaryMorphism leftToCond = cond.compose(condIsom);
 
-        final Vector<GraphObject> condDom = cond.getDomainObjects();
+        final List<GraphObject> condDom = cond.getDomainObjects();
         final List<Object> requiredObjs = new Vector<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(condDom.size());
 
@@ -2008,7 +2006,7 @@ public class ConcurrentRule {
             }
         }
 
-        final Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlaps = BaseFactory.theBaseFactory.getOverlappingByPartialPredefinedIntersection(
+        final Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlaps = BaseFactory.theBaseFactory.getOverlappingByPartialPredefinedIntersection(
                 condIsom.getTarget(),
                 morph.getTarget(),
                 requiredObjs,
@@ -2016,8 +2014,8 @@ public class ConcurrentRule {
                 true);
 
         final List<OrdinaryMorphism> list = new Vector<OrdinaryMorphism>();
-        while (overlaps.hasMoreElements()) {
-            Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.nextElement();
+        while (overlaps.hasNext()) {
+            Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.next();
             OrdinaryMorphism condCR = p.second;
             if (!p.second.getTarget().isEmpty()) {
                 filterObjsOfRightRuleCond(rule, cond, condIsom, p.first, condCR, morph);
@@ -2049,35 +2047,35 @@ public class ConcurrentRule {
         while (arcs.hasNext()) {
             Arc go_condCR = arcs.next();
             Arc goInv_condCR = null;
-            if (condCR.getInverseImage(go_condCR).hasMoreElements()) {
-                if (condTargetToCondCR.getInverseImage(go_condCR).hasMoreElements()) {
-                    goInv_condCR = (Arc) condTargetToCondCR.getInverseImage(go_condCR).nextElement();
+            if (condCR.hasInverseImage(go_condCR)) {
+                if (condTargetToCondCR.hasInverseImage(go_condCR)) {
+                    goInv_condCR = (Arc) condTargetToCondCR.firstOfInverseImage(go_condCR);
                 }
                 if (goInv_condCR == null) {
                     todelete.add(go_condCR);
                     continue;
                 }
-                if (!condIsom.getInverseImage(goInv_condCR).hasMoreElements()) {
+                if (!condIsom.hasInverseImage(goInv_condCR)) {
                     todelete.add(go_condCR);
                     continue;
                 }
-                Arc go_leftCR = (Arc) condCR.getInverseImage(go_condCR).nextElement();
+                Arc go_leftCR = (Arc) condCR.firstOfInverseImage(go_condCR);
                 if (r == this.source2) {
-                    if (this.embLr2ToLcr.getInverseImage(go_leftCR).hasMoreElements()) {
-                        Arc go_left2 = (Arc) this.embLr2ToLcr.getInverseImage(go_leftCR).nextElement();
+                    if (this.embLr2ToLcr.hasInverseImage(go_leftCR)) {
+                        Arc go_left2 = (Arc) this.embLr2ToLcr.firstOfInverseImage(go_leftCR);
                         if (condL.getImage(go_left2) == null) {
                             condCR.removeMapping(go_condCR);
                         }
-                    } else if (this.embLr1ToLcr.getInverseImage(go_leftCR).hasMoreElements()) {
+                    } else if (this.embLr1ToLcr.hasInverseImage(go_leftCR)) {
                         todelete.add(go_condCR);
                     }
                 } else if (r == this.source1) {
-                    if (this.embLr1ToLcr.getInverseImage(go_leftCR).hasMoreElements()) {
-                        Arc go_left1 = (Arc) this.embLr1ToLcr.getInverseImage(go_leftCR).nextElement();
+                    if (this.embLr1ToLcr.hasInverseImage(go_leftCR)) {
+                        Arc go_left1 = (Arc) this.embLr1ToLcr.firstOfInverseImage(go_leftCR);
                         if (condL.getImage(go_left1) == null) {
                             condCR.removeMapping(go_condCR);
                         }
-                    } else if (this.embLr2ToLcr.getInverseImage(go_leftCR).hasMoreElements()) {
+                    } else if (this.embLr2ToLcr.hasInverseImage(go_leftCR)) {
                         todelete.add(go_condCR);
                     }
                 }
@@ -2097,35 +2095,35 @@ public class ConcurrentRule {
         while (nodes.hasNext()) {
             Node go_condCR = nodes.next();
             Node goInv_condCR = null;
-            if (condCR.getInverseImage(go_condCR).hasMoreElements()) {
-                if (condTargetToCondCR.getInverseImage(go_condCR).hasMoreElements()) {
-                    goInv_condCR = (Node) condTargetToCondCR.getInverseImage(go_condCR).nextElement();
+            if (condCR.hasInverseImage(go_condCR)) {
+                if (condTargetToCondCR.hasInverseImage(go_condCR)) {
+                    goInv_condCR = (Node) condTargetToCondCR.firstOfInverseImage(go_condCR);
                 }
                 if (goInv_condCR == null) {
                     todelete.add(go_condCR);
                     continue;
                 }
-                if (!condIsom.getInverseImage(goInv_condCR).hasMoreElements()) {
+                if (!condIsom.hasInverseImage(goInv_condCR)) {
                     todelete.add(go_condCR);
                     continue;
                 }
-                Node go_leftCR = (Node) condCR.getInverseImage(go_condCR).nextElement();
+                Node go_leftCR = (Node) condCR.firstOfInverseImage(go_condCR);
                 if (r == this.source2) {
-                    if (this.embLr2ToLcr.getInverseImage(go_leftCR).hasMoreElements()) {
-                        Node go_left2 = (Node) this.embLr2ToLcr.getInverseImage(go_leftCR).nextElement();
+                    if (this.embLr2ToLcr.hasInverseImage(go_leftCR)) {
+                        Node go_left2 = (Node) this.embLr2ToLcr.firstOfInverseImage(go_leftCR);
                         if (condL.getImage(go_left2) == null) {
                             condCR.removeMapping(go_condCR);
                         }
-                    } else if (this.embLr1ToLcr.getInverseImage(go_leftCR).hasMoreElements()) {
+                    } else if (this.embLr1ToLcr.hasInverseImage(go_leftCR)) {
                         todelete.add(go_condCR);
                     }
                 } else if (r == this.source1) {
-                    if (this.embLr1ToLcr.getInverseImage(go_leftCR).hasMoreElements()) {
-                        Node go_left1 = (Node) this.embLr1ToLcr.getInverseImage(go_leftCR).nextElement();
+                    if (this.embLr1ToLcr.hasInverseImage(go_leftCR)) {
+                        Node go_left1 = (Node) this.embLr1ToLcr.firstOfInverseImage(go_leftCR);
                         if (condL.getImage(go_left1) == null) {
                             condCR.removeMapping(go_condCR);
                         }
-                    } else if (this.embLr2ToLcr.getInverseImage(go_leftCR).hasMoreElements()) {
+                    } else if (this.embLr2ToLcr.hasInverseImage(go_leftCR)) {
                         todelete.add(go_condCR);
                     }
                 }
@@ -2164,7 +2162,7 @@ public class ConcurrentRule {
         final Iterator<Node> en = cond.getTarget().getNodesSet().iterator();
         while (en.hasNext()) {
             GraphObject o = en.next();
-            if (!cond.getInverseImage(o).hasMoreElements()) {
+            if (!cond.hasInverseImage(o)) {
                 try {
                     Node n = extTarget.copyNode((Node) o);
                     n.setContextUsage(o.hashCode());
@@ -2175,15 +2173,13 @@ public class ConcurrentRule {
                     }
                 } catch (TypeException ex) {
                 }
-            } else if (isom.getImage(cond.getInverseImage(o).nextElement()) != null) {
+            } else if (isom.getImage(cond.firstOfInverseImage(o)) != null) {
                 try {
-                    Node n = (Node) isom.getImage(cond
-                            .getInverseImage(o).nextElement());
+                    Node n = (Node) isom.getImage(cond.firstOfInverseImage(o));
                     n.setObjectName(o.getObjectName());
                     this.adjustAttrsFromTo(o, n, concurRule);
 
-                    morph.addMapping(o, isom.getImage(cond
-                            .getInverseImage(o).nextElement()));
+                    morph.addMapping(o, isom.getImage(cond.firstOfInverseImage(o)));
                 } catch (BadMappingException exc) {
                 }
             }
@@ -2191,16 +2187,16 @@ public class ConcurrentRule {
         final Iterator<Arc> ea = cond.getTarget().getArcsSet().iterator();
         while (ea.hasNext()) {
             GraphObject o = ea.next();
-            if (!cond.getInverseImage(o).hasMoreElements()) {
+            if (!cond.hasInverseImage(o)) {
                 Node src = tmp.get(((Arc) o).getSource());
                 if (src == null) {
-                    src = (Node) isom.getImage(cond.getInverseImage(
-                            ((Arc) o).getSource()).nextElement());
+                    src = (Node) isom.getImage(cond.firstOfInverseImage(
+                            ((Arc) o).getSource()));
                 }
                 Node tar = tmp.get(((Arc) o).getTarget());
                 if (tar == null) {
-                    tar = (Node) isom.getImage(cond.getInverseImage(
-                            ((Arc) o).getTarget()).nextElement());
+                    tar = (Node) isom.getImage(cond.firstOfInverseImage(
+                            ((Arc) o).getTarget()));
                 }
                 try {
                     Arc a = extTarget.copyArc((Arc) o, src, tar);
@@ -2211,14 +2207,12 @@ public class ConcurrentRule {
                     }
                 } catch (TypeException ex) {
                 }
-            } else if (isom.getImage(cond.getInverseImage(o).nextElement()) != null) {
+            } else if (isom.getImage(cond.firstOfInverseImage(o)) != null) {
                 try {
-                    Arc a = (Arc) isom.getImage(cond
-                            .getInverseImage(o).nextElement());
+                    Arc a = (Arc) isom.getImage(cond.firstOfInverseImage(o));
                     a.setObjectName(o.getObjectName());
                     this.adjustAttrsFromTo(o, a, concurRule);
-                    morph.addMapping(o, isom.getImage(
-                            cond.getInverseImage(o).nextElement()));
+                    morph.addMapping(o, isom.getImage(cond.firstOfInverseImage(o)));
                 } catch (BadMappingException exc) {
                 }
             }
@@ -2258,9 +2252,9 @@ public class ConcurrentRule {
     }
 
     private void adjustUnsetAttrsAboveMorph(final OrdinaryMorphism morph) {
-        Enumeration<GraphObject> dom = morph.getDomain();
-        while (dom.hasMoreElements()) {
-            final GraphObject from = dom.nextElement();
+        Iterator<GraphObject> dom = morph.getDomain();
+        while (dom.hasNext()) {
+            final GraphObject from = dom.next();
             final GraphObject to = morph.getImage(from);
             if (from.getAttribute() != null && to.getAttribute() != null) {
                 ValueTuple vt_from = (ValueTuple) from.getAttribute();
@@ -2298,9 +2292,9 @@ public class ConcurrentRule {
             final OrdinaryMorphism cond,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism shifted) {
-        Enumeration<GraphObject> dom = morph.getDomain();
-        while (dom.hasMoreElements()) {
-            final GraphObject obj = dom.nextElement();
+        Iterator<GraphObject> dom = morph.getDomain();
+        while (dom.hasNext()) {
+            final GraphObject obj = dom.next();
             final GraphObject img = morph.getImage(obj);
             final GraphObject from = cond.getImage(obj);
             final GraphObject to = shifted.getImage(img);
@@ -2359,7 +2353,7 @@ public class ConcurrentRule {
         for (int i = 0; i < this.failedApplConds.size(); i++) {
             OrdinaryMorphism morph = this.failedApplConds.get(i);
             if (r.getLeft() == morph.getSource()) {
-                Vector<String> vars = morph.getTarget().getVariableNamesOfAttributes();
+                List<String> vars = morph.getTarget().getVariableNamesOfAttributes();
                 for (int j = 0; j < condvars.size(); j++) {
                     if (vars.contains(condvars.get(j))) {
                         return false;
@@ -2377,9 +2371,9 @@ public class ConcurrentRule {
 //		System.out.println("ConcurrentRule.adjustLeftMappedAttrs::  "+cr.getName()+"        "+rule.getName());
         List<String> varToDelete = new Vector<String>();
 
-        Enumeration<GraphObject> dom1 = rule.getDomain();
-        while (dom1.hasMoreElements()) {
-            GraphObject obj = dom1.nextElement();
+        Iterator<GraphObject> dom1 = rule.getDomain();
+        while (dom1.hasNext()) {
+            GraphObject obj = dom1.next();
             if (obj.getAttribute() != null) {
                 GraphObject img = rule.getImage(obj);
                 ValueTuple vt = (ValueTuple) obj.getAttribute();
@@ -2615,8 +2609,8 @@ public class ConcurrentRule {
 //		graph2Varnames = new Hashtable<Graph, Vector<String>>();
 
         VarTuple vars = (VarTuple) concurRule.getAttrContext().getVariables();
-        Vector<String> varNamesRHS = concurRule.getTarget().getVariableNamesOfAttributes();
-        Vector<String> varNamesLHS = concurRule.getSource().getVariableNamesOfAttributes();
+        List<String> varNamesRHS = concurRule.getTarget().getVariableNamesOfAttributes();
+        List<String> varNamesLHS = concurRule.getSource().getVariableNamesOfAttributes();
 
         for (int i = 0; i < vars.getNumberOfEntries(); i++) {
             VarMember var = vars.getVarMemberAt(i);
@@ -2662,9 +2656,9 @@ public class ConcurrentRule {
         }
     }
 
-    private boolean isUsedInGraph(Enumeration<OrdinaryMorphism> list, String varName) {
-        while (list.hasMoreElements()) {
-            Graph g = list.nextElement().getTarget();
+    private boolean isUsedInGraph(Iterator<OrdinaryMorphism> list, String varName) {
+        while (list.hasNext()) {
+            Graph g = list.next().getTarget();
             if (g.getVariableNamesOfAttributes().contains(varName)) {
 //				System.out.println(g.getName()+"   uses  "+varName);
                 return true;

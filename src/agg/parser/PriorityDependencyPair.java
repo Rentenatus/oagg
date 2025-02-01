@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -17,6 +18,7 @@ import agg.util.Pair;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Graph;
+import java.util.List;
 
 /**
  * These pairs extends the <CODE>DependencyPairs</CODE> with layers.
@@ -44,11 +46,11 @@ public class PriorityDependencyPair extends DependencyPair {
      * @throws InvalidAlgorithmException Thrown if a illegal algorithm is selected.
      * @return The object which is critic of the two rules
      */
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> isCritical(int kind, Rule r1, Rule r2)
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> isCritical(int kind, Rule r1, Rule r2)
             throws InvalidAlgorithmException {
         // System.out.println("LayeredExcludePair.isCritical ");
         if (kind == EXCLUDE || kind == CONFLICTFREE) {
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> result = null;
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> result = null;
             boolean samePrior = r1.getPriority() == r2.getPriority();
             if (kind == EXCLUDE) {
                 if (samePrior) {

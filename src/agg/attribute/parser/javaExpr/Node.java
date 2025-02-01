@@ -14,7 +14,7 @@ package agg.attribute.parser.javaExpr;
  machinery for constructing the parent and child relationships
  between nodes. */
 import java.io.Serializable;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * @version $Id: Node.java,v 1.4 2009/10/26 10:04:48 olga Exp $
@@ -94,7 +94,7 @@ public interface Node extends Serializable {
     /**
      * fills the vector with the names of all variables which occur in this abstract syntax tree
      */
-    public void getAllVariablesinExpression(Vector<String> v);
+    public void getAllVariablesinExpression(List<String> v);
 
     /**
      * Copy the abstract syntax tree

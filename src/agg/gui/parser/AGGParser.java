@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.parser;
 
@@ -48,6 +49,7 @@ import agg.parser.SimpleParser;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.RuleLayer;
 import agg.util.Pair;
+import java.util.Iterator;
 
 /**
  * The class creates an AGG parser.
@@ -115,8 +117,8 @@ public class AGGParser implements ParserEventListener, OptionListener,
         }
     }
 
-    public Enumeration<JMenu> getMenus() {
-        return this.menus.elements();
+    public Iterator<JMenu> getMenus() {
+        return this.menus.iterator();
     }
 
     public ParserGUIOption getParserGUIOption() {

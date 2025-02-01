@@ -197,9 +197,9 @@ public class GraphBrowser implements ParserGUIListener {
         }
         EdGraph g = r.getLeft();
         for (int k = 0; k < to.getNodes().size(); k++) {
-            EdNode n = to.getNodes().elementAt(k);
+            EdNode n = to.getNodes().get(k);
             for (int j = 0; j < g.getNodes().size(); j++) {
-                EdNode en = g.getNodes().elementAt(j);
+                EdNode en = g.getNodes().get(j);
                 if (en.getBasisNode().equals(n.getBasisNode())) {
                     n.setXY(en.getX(), en.getY());
                     break;

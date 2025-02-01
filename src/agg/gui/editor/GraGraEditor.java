@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.editor;
 
@@ -137,6 +138,7 @@ import agg.layout.evolutionary.LayoutMetrics;
 import agg.layout.evolutionary.EvolutionaryGraphLayout;
 import agg.ruleappl.RuleSequence;
 import agg.util.Pair;
+import java.util.Iterator;
 
 /**
  * This class defines an editor for editing grammars. A grammar is an instance of the class EdGraGra. The editor
@@ -166,7 +168,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
 
     private final EditSelPopupMenu editSelPopupMenu = new EditSelPopupMenu();
 
-    private final Vector<JMenu> mainMenus = new Vector<JMenu>();
+    private final List<JMenu> mainMenus = new Vector<JMenu>();
 
     private final JMenu edit = new JMenu("Edit", true);
 
@@ -175,11 +177,11 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
     private final JMenu transform = new JMenu("Transform", true);
     ;
 
-	private final Vector<JButton> editModeButtons = new Vector<JButton>(6);
+	private final List<JButton> editModeButtons = new Vector<JButton>(6);
 
-    private final Vector<JButton> transformButtons = new Vector<JButton>(6);
+    private final List<JButton> transformButtons = new Vector<JButton>(6);
 
-    private final Vector<EditEventListener> editEventListeners = new Vector<EditEventListener>();
+    private final List<EditEventListener> editEventListeners = new Vector<EditEventListener>();
 
     private final AGGToolBar toolBar = new AGGToolBar(0); // horizontal
 
@@ -465,7 +467,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
      */
     public synchronized void addEditEventListener(EditEventListener l) {
         if (!this.editEventListeners.contains(l)) {
-            this.editEventListeners.addElement(l);
+            this.editEventListeners.add(l);
         }
     }
 
@@ -474,7 +476,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
      */
     public synchronized void removeEditEventListener(EditEventListener l) {
         if (this.editEventListeners.contains(l)) {
-            this.editEventListeners.removeElement(l);
+            this.editEventListeners.remove(l);
         }
     }
 
@@ -483,7 +485,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
      */
     public synchronized void fireEditEvent(EditEvent e) {
         for (int i = 0; i < this.editEventListeners.size(); i++) {
-            this.editEventListeners.elementAt(i).editEventOccurred(e);
+            this.editEventListeners.get(i).editEventOccurred(e);
         }
     }
 
@@ -1560,10 +1562,10 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 && this.activePanel.getParentEditor() instanceof RuleEditor
                 && nacObj.getAttribute() != null) {
             if (this.ruleEditor.getNAC() != null) {
-                final Enumeration<GraphObject> inverse = this.ruleEditor.getNAC()
+                final Iterator<GraphObject> inverse = this.ruleEditor.getNAC()
                         .getMorphism().getInverseImage(nacObj);
-                while (inverse.hasMoreElements()) {
-                    final GraphObject lhsObj = inverse.nextElement();
+                while (inverse.hasNext()) {
+                    final GraphObject lhsObj = inverse.next();
 
                     if (!this.ruleEditor.getRule().getBasisRule()
                             .compareConstAttrValueOfMapObjs(
@@ -1590,13 +1592,12 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 && this.activePanel.getParentEditor() instanceof RuleEditor
                 && pacObj.getAttribute() != null) {
             if (this.ruleEditor.getPAC() != null
-                    && this.ruleEditor.getPAC().getMorphism()
-                            .getInverseImage(pacObj).hasMoreElements()) {
+                    && this.ruleEditor.getPAC().getMorphism().hasInverseImage(pacObj)) {
 
-                final Enumeration<GraphObject> inverse = this.ruleEditor.getPAC()
+                final Iterator<GraphObject> inverse = this.ruleEditor.getPAC()
                         .getMorphism().getInverseImage(pacObj);
-                while (inverse.hasMoreElements()) {
-                    final GraphObject lhsObj = inverse.nextElement();
+                while (inverse.hasNext()) {
+                    final GraphObject lhsObj = inverse.next();
 
                     if (!this.ruleEditor.getRule().getBasisRule()
                             .compareConstAttrValueOfMapObjs(
@@ -1623,13 +1624,12 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 && this.activePanel.getParentEditor() instanceof RuleEditor
                 && acObj.getAttribute() != null) {
             if (this.ruleEditor.getNestedAC() != null
-                    && this.ruleEditor.getNestedAC().getMorphism()
-                            .getInverseImage(acObj).hasMoreElements()) {
+                    && this.ruleEditor.getNestedAC().getMorphism().hasInverseImage(acObj)) {
 
-                final Enumeration<GraphObject> inverse = this.ruleEditor.getNestedAC()
+                final Iterator<GraphObject> inverse = this.ruleEditor.getNestedAC()
                         .getMorphism().getInverseImage(acObj);
-                while (inverse.hasMoreElements()) {
-                    final GraphObject lhsObj = inverse.nextElement();
+                while (inverse.hasNext()) {
+                    final GraphObject lhsObj = inverse.next();
 
                     if (!this.ruleEditor.getRule().getBasisRule()
                             .compareConstAttrValueOfMapObjs(
@@ -1780,8 +1780,8 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
     /**
      * Returns my main menus
      */
-    public Enumeration<JMenu> getMenus() {
-        return this.mainMenus.elements();
+    public Iterator<JMenu> getMenus() {
+        return this.mainMenus.iterator();
     }
 
     /**
@@ -2241,13 +2241,13 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
     protected void resetGraTraGUI(final EdGraGra gg) {
         if (gg.getBasisGraGra().getGraTraOptions().isEmpty()) {
             Vector<String> defaultOpts = new Vector<String>();
-            defaultOpts.addElement(GraTraOptions.CSP);
-            defaultOpts.addElement(GraTraOptions.INJECTIVE);
-            defaultOpts.addElement(GraTraOptions.DANGLING);
-            defaultOpts.addElement(GraTraOptions.IDENTIFICATION);
-            defaultOpts.addElement(GraTraOptions.NACS);
-            defaultOpts.addElement(GraTraOptions.PACS);
-            defaultOpts.addElement(GraTraOptions.GACS);
+            defaultOpts.add(GraTraOptions.CSP);
+            defaultOpts.add(GraTraOptions.INJECTIVE);
+            defaultOpts.add(GraTraOptions.DANGLING);
+            defaultOpts.add(GraTraOptions.IDENTIFICATION);
+            defaultOpts.add(GraTraOptions.NACS);
+            defaultOpts.add(GraTraOptions.PACS);
+            defaultOpts.add(GraTraOptions.GACS);
             this.gragraTransform.updateGraTraOptionGUI(defaultOpts);
             gg.getBasisGraGra()
                     .setGraTraOptions(this.gragraTransform.getStrategy());
@@ -2510,16 +2510,16 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
             EdGraphObject ego = null;
             if (this.ruleEditor.getRule().getLeft().hasOneSelection()) {
                 ego = this.ruleEditor.getRule().getLeft().getSelectedObjs()
-                        .firstElement();
+                        .get(0);
             } else if (this.ruleEditor.getRule().getRight().hasOneSelection()) {
                 ego = this.ruleEditor.getRule().getRight().getSelectedObjs()
-                        .firstElement();
+                        .get(0);
             } else if (this.ruleEditor.getNAC().hasOneSelection()) {
-                ego = this.ruleEditor.getNAC().getSelectedObjs().firstElement();
+                ego = this.ruleEditor.getNAC().getSelectedObjs().get(0);
             } else if (this.ruleEditor.getPAC().hasOneSelection()) {
-                ego = this.ruleEditor.getPAC().getSelectedObjs().firstElement();
+                ego = this.ruleEditor.getPAC().getSelectedObjs().get(0);
             } else if (this.ruleEditor.getNestedAC().hasOneSelection()) {
-                ego = this.ruleEditor.getNestedAC().getSelectedObjs().firstElement();
+                ego = this.ruleEditor.getNestedAC().getSelectedObjs().get(0);
             }
             if (ego != null) {
                 if (getAttrEditor(ego) != null) {
@@ -2538,7 +2538,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
         } else if (this.graphEditor.hasOneSelection() && !this.ruleEditor.hasSelection()) {
             // show attribute editor within the rule panel
             if (getAttrEditor(this.graphEditor.getGraph().getSelectedObjs()
-                    .firstElement()) != null) {
+                    .get(0)) != null) {
                 this.attrEditor.enableContextEditor(false);
                 setAttrEditorOnTop(this.attrEditor.getComponent());
                 fireEditEvent(new EditEvent(this, EditEvent.EDIT_PROCEDURE,
@@ -3164,7 +3164,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 this.attrMemberCount = en.getBasisObject().getNumberOfAttributes();
 
                 if (this.undoManager != null && this.undoManager.isEnabled()) {
-                    Vector<EdGraphObject> vec = getGraGra()
+                    List<EdGraphObject> vec = getGraGra()
                             .getGraphObjectsOfType(en.getType(), true);
                     // System.out.println(attrMemberCount+" objs: "+vec.size());
                     if (!vec.isEmpty()) {
@@ -3189,7 +3189,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 ea.setGraphPanel(this.activePanel);
 
                 if (this.undoManager != null && this.undoManager.isEnabled()) {
-                    Vector<EdGraphObject> vec = new Vector<EdGraphObject>(
+                    List<EdGraphObject> vec = new Vector<EdGraphObject>(
                             this.getGraGra().getTypeSet().getTypeUsers(ea.getType()));
                     if (!vec.isEmpty()) {
                         for (int i = 0; i < vec.size(); i++) {
@@ -3597,7 +3597,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
             if (!this.ruleEditor.getRule().isEditable()) {
                 return;
             }
-            // test Graph.getPartialMorphismIntoSet(Vector, TypeSet)
+            // test Graph.getPartialMorphismIntoSet(List, TypeSet)
             // if(getGraGra().getGraph().hasSelection()){
             // makePartialMatch();
             // }
@@ -3825,9 +3825,9 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                     this.graph.update();
                 }
                 if (!this.rule.getNACs().isEmpty()) {
-                    this.nac = this.rule.getNACs().firstElement();
+                    this.nac = this.rule.getNACs().get(0);
                 } else if (!this.rule.getPACs().isEmpty()) {
-                    this.pac = this.rule.getPACs().firstElement();
+                    this.pac = this.rule.getPACs().get(0);
                 }
             }
 
@@ -3851,9 +3851,9 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                     this.rule = this.gra.getRules().firstElement();
                 }
                 if (this.rule != null && !this.rule.getNACs().isEmpty()) {
-                    this.nac = this.rule.getNACs().firstElement();
+                    this.nac = this.rule.getNACs().get(0);
                 } else if (this.rule != null && !this.rule.getPACs().isEmpty()) {
-                    this.pac = this.rule.getPACs().firstElement();
+                    this.pac = this.rule.getPACs().get(0);
                 }
             } else if (!data.getGraph().isTypeGraph()) { // can be after undo step
                 if (this.gragra.getGraph() != data.getGraph()) {
@@ -3954,9 +3954,9 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 this.graph = this.gra.getGraph();
                 this.rule = data.getRule();
                 if (!data.getRule().getNACs().isEmpty()) {
-                    this.nac = data.getRule().getNACs().firstElement();
+                    this.nac = data.getRule().getNACs().get(0);
                 } else if (!data.getRule().getPACs().isEmpty()) {
-                    this.pac = data.getRule().getPACs().firstElement();
+                    this.pac = data.getRule().getPACs().get(0);
                 }
 //				else if (!data.getRule().getNestedACs().isEmpty()) 
 //					this.ac = (EdNestedApplCond) data.getRule().getNestedACs().firstElement();
@@ -3972,10 +3972,10 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                     done = true;
 
                     if (!data.getRule().getNACs().isEmpty()) {
-                        this.nac = data.getRule().getNACs().firstElement();
+                        this.nac = data.getRule().getNACs().get(0);
                         this.ruleEditor.setNAC(this.nac);
                     } else if (!data.getRule().getPACs().isEmpty()) {
-                        this.pac = data.getRule().getPACs().firstElement();
+                        this.pac = data.getRule().getPACs().get(0);
                         this.ruleEditor.setPAC(this.pac);
                     } //				else if (!data.getRule().getNestedACs().isEmpty()) {
                     //					this.ac = (EdNestedApplCond) data.getRule().getNestedACs().firstElement();
@@ -4030,9 +4030,9 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 }
             }
             if (this.rule != null && !this.rule.getNACs().isEmpty()) {
-                this.nac = this.rule.getNACs().firstElement();
+                this.nac = this.rule.getNACs().get(0);
             } else if (this.rule != null && !this.rule.getPACs().isEmpty()) {
-                this.pac = this.rule.getPACs().firstElement();
+                this.pac = this.rule.getPACs().get(0);
             }
         }
     }
@@ -4553,7 +4553,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 this.edit.addSeparator();
             }
         }
-        this.mainMenus.addElement(this.edit);
+        this.mainMenus.add(this.edit);
     }
 
     private void createModeMenu() {
@@ -4584,7 +4584,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
             }
         }
         this.mode.getItem(0).setSelected(true);
-        this.mainMenus.addElement(this.mode);
+        this.mainMenus.add(this.mode);
     }
 
     private void createTransformMenu() {
@@ -4618,7 +4618,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                 this.transform.addSeparator();
             }
         }
-        this.mainMenus.addElement(this.transform);
+        this.mainMenus.add(this.transform);
     }
 
     private void resetEnabledOfMenus(GraGraTreeNodeData selNode,
@@ -5720,7 +5720,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
 //		exportJPEG.save(graphEditor.getGraphPanel().getCanvas());
 //	}
     private void setNodeIds(EdGraph g) {
-        final Vector<EdNode> nodes = g.getNodes();
+        final List<EdNode> nodes = g.getNodes();
         for (int i = 0; i < nodes.size(); i++) {
             final EdNode n = nodes.get(i);
             if (n.getNodeID() == -1) {
@@ -5731,9 +5731,9 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
         }
     }
 
-    private Vector<String> createMetricValues(final List<EdNode> nodes,
+    private List<String> createMetricValues(final List<EdNode> nodes,
             final List<EdArc> arcs) {
-        final Vector<String> metricValues = new Vector<String>();
+        final List<String> metricValues = new Vector<String>();
         // old title
         // String s = new
         // String("ggen\tn_ov\tn_e_ov\te_xing\te_dif\tp_miss\t\tn_mov\tclust\t\t#n\t#e");
@@ -6051,7 +6051,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
                     .getGraphGen(), visiblenodes, visiblearcs,
                     this.evolutionaryLayouter.getOldEdGraph().getVisibleNodes(),
                     lmetrics);
-            this.metricvalues.addElement(metrics);
+            this.metricvalues.add(metrics);
         }
         // System.out.println("GraGraEditor.doStepELayoutProc()... done ");
     }
@@ -6159,13 +6159,13 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
     /*
 	private void makePartialMatch() {
 		System.out.println("GraGraEditor.makePartialMatch...");
-		Vector<EdGraphObject> sel = getGraGra().getGraph().getSelectedObjs();
-		Vector<GraphObject> set = new Vector<GraphObject>();
+		List<EdGraphObject> sel = getGraGra().getGraph().getSelectedObjs();
+		List<GraphObject> set = new Vector<GraphObject>();
 		for (int i = 0; i < sel.size(); i++) {
 			set.add(sel.get(i).getBasisObject());
 		}
 		Graph lhs = ruleEditor.getRule().getBasisRule().getLeft();
-		Vector<Hashtable<GraphObject, GraphObject>> maps = lhs
+		List<Hashtable<GraphObject, GraphObject>> maps = lhs
 				.getPartialMorphismIntoSet(set);
 		if (maps != null && !maps.isEmpty()) {
 			// create match
@@ -6268,7 +6268,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
 
     private String jpgPath;
 
-    private Vector<String> metricvalues;
+    private List<String> metricvalues;
 
     private boolean staticNodePositionForGraphLayouter;
 

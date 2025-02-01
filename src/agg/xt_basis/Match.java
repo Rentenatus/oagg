@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -123,8 +124,8 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         }
 
         // check types: all types of the orig. graph should be in image, too
-        final Vector<Type> origTypes = this.itsOrig.getUsedTypes();
-        final Vector<Type> imagTypes = this.itsImag.getUsedAndInheritedTypes();
+        final List<Type> origTypes = this.itsOrig.getUsedTypes();
+        final List<Type> imagTypes = this.itsImag.getUsedAndInheritedTypes();
         for (int i = 0; i < origTypes.size(); i++) {
             if (!imagTypes.contains(origTypes.get(i))) {
                 return false;
@@ -482,12 +483,12 @@ public class Match extends OrdinaryMorphism implements XMLObject {
             while (arcs.hasNext()) {
                 Arc a = arcs.next();
                 if (this.itsRule.isArcCreating(a)) {
-                    Enumeration<GraphObject> enSrc = this.itsRule.getInverseImage(a.getSource());
-                    while (enSrc.hasMoreElements()) {
-                        Enumeration<GraphObject> enTar = this.itsRule.getInverseImage(a.getTarget());
-                        while (enTar.hasMoreElements()) {
-                            Node src = (Node) enSrc.nextElement();
-                            Node tar = (Node) enTar.nextElement();
+                    Iterator<GraphObject> enSrc = this.itsRule.getInverseImage(a.getSource());
+                    while (enSrc.hasNext()) {
+                        Iterator<GraphObject> enTar = this.itsRule.getInverseImage(a.getTarget());
+                        while (enTar.hasNext()) {
+                            Node src = (Node) enSrc.next();
+                            Node tar = (Node) enTar.next();
                             // check the source node in the this.itsRule.LHS already contains an arc like a
                             if (src.hasArc(a.getType(), tar)) {
                                 // does this.itsRule delete a such arc

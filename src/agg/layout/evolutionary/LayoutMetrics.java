@@ -208,7 +208,7 @@ public class LayoutMetrics {
 		return ret;
 	}
 
-	public int getOverlappingNode(Vector<LayoutNode> lnodes, int index) {
+	public int getOverlappingNode(List<LayoutNode> lnodes, int index) {
 		int ret = -1;
 		LayoutNode node1, node2;
 		node1 = lnodes.get(index);
@@ -248,7 +248,7 @@ public class LayoutMetrics {
 	private int getspaceusage(EdGraph eg) {
 		Dimension dim = eg.getGraphDim();
 		int ret = 0;
-		Vector<EdNode> nodes = eg.getNodes();
+		List<EdNode> nodes = eg.getNodes();
 		int parts = (int) Math.floor(Math.sqrt(nodes.size()));
 		System.out.println("Parts: " + parts + "    dim x: " + dim.width
 				+ "    dim y: " + dim.height);
@@ -370,9 +370,9 @@ public class LayoutMetrics {
 	}
 
 	public void calcClusterDiffs(EdGraph eg) {
-		Vector<EdNode> nodes = eg.getNodes();
+		List<EdNode> nodes = eg.getNodes();
 		EdNode node;
-		Vector<Integer> oldcluster, newcluster;
+		List<Integer> oldcluster, newcluster;
 		int sumplus = 0, summinus = 0;
 //		int oldid, newid;
 		for (int i = 0; i < nodes.size(); i++) {
@@ -420,7 +420,7 @@ public class LayoutMetrics {
 		
 		int ret = 0;
 		EdGraGra edgra = eg.getGraGra();
-		Vector<EdArc> arcs = eg.getArcs();
+		List<EdArc> arcs = eg.getArcs();
 		EdArc arc;
 		LayoutPattern lp;
 		EdNode source, target;
@@ -429,7 +429,7 @@ public class LayoutMetrics {
 
 		for (int i = 0; i < arcs.size(); i++) {
 			arc = arcs.get(i);
-			Vector<LayoutPattern> paterns = edgra.getLayoutPatternsForType(arc
+			List<LayoutPattern> paterns = edgra.getLayoutPatternsForType(arc
 					.getType().getBasisType());
 			for (int j = 0; j < paterns.size(); j++) {
 				lp = paterns.get(j);
