@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Vector;
 
 /**
  * This class extends simple graphs with the possibility to have arcs between nodes.
@@ -132,11 +133,11 @@ public class Graph extends ExtObservable
     }
 
     private void init() {
-        observer = new ArrayList< >();
+        observer = new Vector< >();
         itsNodes = new LinkedGOHashSet<Node>();
         itsArcs = new LinkedGOHashSet<Arc>();
         itsTypeObjectsMap = new HashMap< >();
-        itsUsingMorphs = new ArrayList< >();
+        itsUsingMorphs = new Vector< >();
 
         kind = GraphKind.GRAPH;
         comment = "";
