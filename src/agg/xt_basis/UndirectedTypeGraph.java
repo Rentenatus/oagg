@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -19,110 +20,40 @@ import java.util.Vector;
 import agg.attribute.impl.ValueTuple;
 import agg.util.Change;
 
+/**
+ *
+ * @author Olga
+ * @author Janusch Rentenatus
+ */
 public class UndirectedTypeGraph extends TypeGraph {
 
     public UndirectedTypeGraph(TypeSet aTypeSet) {
-        super(aTypeSet);
-
+        super(GraphOrientationUndirected.INSTANCE, aTypeSet);
     }
 
     /**
-     * Returns an error if the type multiplicity check failed after an edge of the specified type would be created,
-     * otherwise - null.
+     * Adds the specified edge to my edges.The type of the specified edge has to be in my type set.<br>
+     * The edge must be an instance of <code>UndirectedArc</code>.
+     *
+     * @param anArc
      */
-    public TypeError canCreateArc(
-            final Type edgeType,
-            final Node source,
-            final Node target,
-            int currentTypeGraphLevel) {
-
-        TypeError error = this.itsTypes.canCreateArc(
-                this, edgeType, source, target, currentTypeGraphLevel);
-        if (error != null) {
-            error = this.itsTypes.canCreateArc(
-                    this, edgeType, target, source, currentTypeGraphLevel);
+    @Override
+    public void addArc(Arc anArc) {
+        if (anArc instanceof UndirectedArc) {
+            super.addArc(anArc);
         }
-
-        return error;
     }
 
     /**
-     * Checks if the specified edge to create is allowed.
+     *
+     * @param t
+     * @param src
+     * @param tar
+     * @return
      */
-    public TypeError checkConnectValid(Type edgeType, Node source, Node target) {
-        if (this.itsTypes.getTypeGraph() == null
-                || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED
-                || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.ENABLED_INHERITANCE) {
-            return null;
-        }
-
-        Arc typearc = this.itsTypes.getTypeGraphArc(edgeType, source.getType(), target.getType());
-        if (typearc == null) {
-            typearc = this.itsTypes.getTypeGraphArc(edgeType, target.getType(), source.getType());
-        }
-
-        if (typearc != null) {
-            return null;
-        }
-
-        return new TypeError(TypeError.NO_SUCH_TYPE,
-                "The edge of the type \"" + edgeType.getName()
-                + "\" is not allowed between node type \""
-                + source.getType().getName() + "\"  and  \""
-                + target.getType().getName() + "\".");
-    }
-
-    //???
-    public TypeError checkNodeRequiresArc(final int actTypeGraphLevel) {
-        if (this.itsTypes.getTypeGraph() == null
-                || actTypeGraphLevel != TypeSet.ENABLED_MAX_MIN) {
-            return null;
-        }
-
-        Iterator<Node> iter = this.itsNodes.iterator();
-        while (iter.hasNext()) {
-            Node n = iter.next();
-            List<String> list = this.itsTypes.nodeRequiresArc(n);
-            if (list != null && !list.isEmpty()) {
-                return new TypeError(TypeError.TO_LESS_ARCS,
-                        "Node type  "
-                        + "\"" + n.getType().getName() + "\" \n"
-                        + "requires edge(s) of type: \n"
-                        + list.toString(), n.getType());
-            }
-
-        }
-        return null;
-    }
-
-    /**
-     * Creates and add a new UndirectedArc of the specified type, source and target nodes, which must be part of this
-     * graph.
-     */
-    public Arc createArc(Type type, Node src, Node tar) throws TypeException {
-        if (src == null || tar == null) {
-            throw new TypeException("UndirectedGraph.createArc:: Cannot create an UndirectedArc of type : " + type.getStringRepr() + "   Source or target node is null!");
-        } else if (!this.isNode(src) || !this.isNode(tar)) {
-            throw new TypeException("UndirectedGraph.createArc:: Cannot create an UndirectedArc of type : " + type.getStringRepr() + "  Source or target does not belong to this graph!");
-        }
-
-        Type t = null;
-        if (this.itsTypes.containsType(type)) {
-            t = type;
-        }
-        if (t == null) {
-            t = this.itsTypes.getSimilarType(type);
-            if (t == null) {
-                t = this.itsTypes.addType(type);
-            }
-        }
-
-//		TypeError typeError = this.checkConnectValid(t, src, tar);
-//		if (typeError != null) {
-//			throw new TypeException(typeError);
-//		}
-        Arc anArc = newArc(t, src, tar);
-        return anArc;
+    @Override
+    protected UndirectedArc createArcFast(Type t, Node src, Node tar) {
+        return new UndirectedArc(t, src, tar, this);
     }
 
     /**
@@ -209,108 +140,6 @@ public class UndirectedTypeGraph extends TypeGraph {
             }
         }
         return null;
-    }
-
-    protected void removeArc(final Arc a) {
-        if (a.getContext() == this) {
-            // remove arc from its source / target
-            ((Node) a.getSource()).removeOut(a);
-            ((Node) a.getTarget()).removeOut(a);
-
-            for (int i = 0; i < this.itsUsingMorphs.size(); i++) {
-                this.itsUsingMorphs.get(i).removeMapping(a);
-            }
-
-            this.itsArcs.remove(a);
-            removeArcFromTypeObjectsMap(a);
-            this.changed = true;
-        }
-    }
-
-    protected void removeArcFromTypeObjectsMap(final Arc arc) {
-        if (arc.getSource() != null
-                && arc.getTarget() != null) {
-
-            if (arc.getSource().getType().hasParent()
-                    || arc.getTarget().getType().hasParent()) {
-
-                Vector<Type> srcParents = arc.getSource().getType().getAllParents();
-                Vector<Type> tarParents = arc.getTarget().getType().getAllParents();
-
-                for (int i = 0; i < srcParents.size(); ++i) {
-                    for (int j = 0; j < tarParents.size(); ++j) {
-                        String keystr = srcParents.get(i).convertToKey()
-                                + arc.getType().convertToKey()
-                                + tarParents.get(j).convertToKey();
-                        String keystr2 = tarParents.get(i).convertToKey()
-                                + arc.getType().convertToKey()
-                                + srcParents.get(j).convertToKey();
-
-                        HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
-                        if (objSet == null) {
-                            // look for inverse arc key					
-                            objSet = this.itsTypeObjectsMap.get(keystr2);
-                        }
-                        if (objSet != null) {
-                            objSet.remove(arc);
-                        }
-                    }
-                }
-            } else {
-                String keystr = arc.convertToKey();
-                String keystr2 = ((UndirectedArc) arc).convertToInverseKey();
-                HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
-                if (objSet == null) {
-                    // look for inverse arc key
-                    objSet = this.itsTypeObjectsMap.get(keystr2);
-                }
-                if (objSet != null) {
-                    objSet.remove(arc);
-                }
-            }
-        }
-    }
-
-    protected void extendTypeObjectsMapByArc(final Arc arc) {
-        if (this.itsTypes.hasInheritance()
-                && arc.getSource().getType().hasParent()
-                || arc.getTarget().getType().hasParent()) {
-            Vector<Type> srcParents = arc.getSource().getType().getAllParents();
-            Vector<Type> tarParents = arc.getTarget().getType().getAllParents();
-            for (int i = 0; i < srcParents.size(); ++i) {
-                for (int j = 0; j < tarParents.size(); ++j) {
-                    String keystr = srcParents.get(i).convertToKey()
-                            + arc.getType().convertToKey()
-                            + tarParents.get(j).convertToKey();
-                    String keystr2 = tarParents.get(i).convertToKey()
-                            + arc.getType().convertToKey()
-                            + srcParents.get(j).convertToKey();
-                    HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
-                    if (objSet == null) {
-                        // look for inverse arc key					
-                        objSet = this.itsTypeObjectsMap.get(keystr2);
-                    }
-                    if (objSet == null) {
-                        objSet = new LinkedHashSet<GraphObject>();
-                        this.itsTypeObjectsMap.put(keystr, objSet);
-                    }
-                    objSet.add(arc);
-                }
-            }
-        } else {
-            String keystr = arc.convertToKey();
-            String keystr2 = ((UndirectedArc) arc).convertToInverseKey();
-            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
-            if (objSet == null) {
-                // look for inverse arc key
-                objSet = this.itsTypeObjectsMap.get(keystr2);
-            }
-            if (objSet == null) {
-                objSet = new LinkedHashSet<GraphObject>();
-                this.itsTypeObjectsMap.put(keystr, objSet);
-            }
-            objSet.add(arc);
-        }
     }
 
 }

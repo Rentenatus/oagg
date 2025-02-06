@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -23,12 +23,12 @@ import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
 import agg.util.Change;
-import agg.util.CopyMemory;
 import agg.util.ExtObservable;
 import agg.util.LinkedGOHashSet;
 import agg.util.Pair;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
+import agg.xt_basis.calculator.GraphOrientation;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +48,7 @@ import java.util.Vector;
  *
  * @version $Id: Graph.java,v 1.145 2010/11/16 23:34:19 olga Exp $
  * @author $Author: olga $
+ * @author Janusch Rentenatus
  */
 // * Class Graph is capable of passing the following change informations
 // * as an argument to its observers' <code>update()</code> methods:
@@ -67,6 +68,8 @@ public class Graph extends ExtObservable
     // test: node XY-position as attribute
 
     public boolean xyAttr = false;
+    private final Object monitorMorphs = new Object();
+    private final GraphOrientation orientation;
 
     protected List<Observer> observer;
     protected LinkedGOHashSet<Node> itsNodes;
@@ -90,23 +93,76 @@ public class Graph extends ExtObservable
     protected boolean completeGraph;
 
     /**
+     * Creates an empty graph with an empty TypeSet.Use {@link #Graph(boolean)}, to create a complete graph (a host
+     * graph).
+     *
+     * @param orientation
+     */
+    protected Graph(GraphOrientation orientation) {
+        this.orientation = orientation;
+        this.itsTypes = new TypeSet();
+        this.completeGraph = false;
+        init();
+    }
+
+    /**
+     * Creates an empty graph with the specified TypeSet.Use {@link #Graph(TypeSet, boolean)}, to create a complete
+     * graph (a host graph).
+     *
+     * @param orientation
+     * @param aTypeSet
+     */
+    protected Graph(GraphOrientation orientation, TypeSet aTypeSet) {
+        this.orientation = orientation;
+        this.itsTypes = aTypeSet;
+        this.completeGraph = false;
+        init();
+    }
+
+    /**
      * Creates an empty graph with an empty TypeSet.
      *
-     * Use {@link #Graph(boolean)}, to create a complete graph (a host graph).
+     * @param orientation
+     * @param completeGraph true, to create a host graph
      */
-    public Graph() {
+    protected Graph(GraphOrientation orientation, boolean completeGraph) {
+        this.orientation = orientation;
         this.itsTypes = new TypeSet();
+        this.completeGraph = completeGraph;
         init();
     }
 
     /**
      * Creates an empty graph with the specified TypeSet.
      *
-     * Use {@link #Graph(TypeSet,boolean)}, to create a complete graph (a host graph).
+     * @param orientation
+     * @param aTypeSet the TypeSet to use
+     * @param completeGraph true, to create a host graph
+     */
+    protected Graph(GraphOrientation orientation, TypeSet aTypeSet, boolean completeGraph) {
+        this.orientation = orientation;
+        this.itsTypes = aTypeSet;
+        this.completeGraph = completeGraph;
+        init();
+    }
+
+    /**
+     * Creates an empty graph with an empty TypeSet.
+     *
+     * Use {@link #Graph(boolean)}, to create a complete graph (a host graph).
+     */
+    public Graph() {
+        this(GraphOrientationDirected.INSTANCE);
+    }
+
+    /**
+     * Creates an empty graph with the specified TypeSet.Use {@link #Graph(TypeSet, boolean)}, to create a complete
+     * graph (a host graph).
+     *
+     * @param aTypeSet
      */
     public Graph(TypeSet aTypeSet) {
-        this.itsTypes = aTypeSet;
-        init();
+        this(GraphOrientationDirected.INSTANCE, aTypeSet);
     }
 
     /**
@@ -115,9 +171,7 @@ public class Graph extends ExtObservable
      * @param completeGraph true, to create a host graph
      */
     public Graph(boolean completeGraph) {
-        this.itsTypes = new TypeSet();
-        this.completeGraph = completeGraph;
-        init();
+        this(GraphOrientationDirected.INSTANCE, completeGraph);
     }
 
     /**
@@ -127,17 +181,16 @@ public class Graph extends ExtObservable
      * @param completeGraph true, to create a host graph
      */
     public Graph(TypeSet aTypeSet, boolean completeGraph) {
-        this.itsTypes = aTypeSet;
-        this.completeGraph = completeGraph;
-        init();
+        this(GraphOrientationDirected.INSTANCE, aTypeSet, completeGraph);
+
     }
 
     private void init() {
-        observer = new Vector< >();
-        itsNodes = new LinkedGOHashSet<Node>();
-        itsArcs = new LinkedGOHashSet<Arc>();
-        itsTypeObjectsMap = new HashMap< >();
-        itsUsingMorphs = new Vector< >();
+        observer = new ArrayList<>();
+        itsNodes = new LinkedGOHashSet<>();
+        itsArcs = new LinkedGOHashSet<>();
+        itsTypeObjectsMap = new HashMap<>();
+        itsUsingMorphs = new ArrayList<>();
 
         kind = GraphKind.GRAPH;
         comment = "";
@@ -198,6 +251,7 @@ public class Graph extends ExtObservable
      * A kind is a role of a graph in a grammar, for exmpl.: a type graph - TG, a host graph - HOST, the left graph of a
      * rule - LHS, the right graph of a rule - RHS, a NAC graph - NAC, a PAC graph - PAC and so on.
      *
+     * @param aKind
      * @see agg.xt_basis.GraphKind
      */
     public void setKind(final String aKind) {
@@ -212,6 +266,7 @@ public class Graph extends ExtObservable
         return this.notificationRequired;
     }
 
+    @Override
     public boolean hasChanged() {
         return this.changed;
     }
@@ -219,7 +274,7 @@ public class Graph extends ExtObservable
     /**
      * Set the given type set to its type set.
      *
-     * @param types a type set which contains all types already used in this graph. This won't be checked.
+     * @param types a type set which contains all types already used in this graph. This won'arcType be checked.
      */
     public void setTypeSet(TypeSet types) {
         this.itsTypes = types;
@@ -227,15 +282,45 @@ public class Graph extends ExtObservable
 
     /**
      * Returns its type set.
+     *
+     * @return
      */
     public TypeSet getTypeSet() {
         return this.itsTypes;
     }
 
     /**
-     * Tries to add a copy of the specified graph to my elements. The existing type graph should be disabled.
+     *
+     * @param anArc
+     */
+    protected void sourceRemoveArc(final Arc anArc) {
+        orientation.sourceRemoveArc(anArc);
+    }
+
+    /**
+     *
+     * @param anArc
+     */
+    protected void targetRemoveArc(Arc anArc) {
+        orientation.targetRemoveArc(anArc);
+    }
+
+    /**
+     *
+     * @param t
+     * @param src
+     * @param tar
+     * @return
+     */
+    protected Arc createArcFast(Type t, Node src, Node tar) {
+        return new Arc(t, src, tar, this);
+    }
+
+    /**
+     * Tries to add a copy of the specified graph to my elements.The existing type graph should be disabled.
      *
      * @param g
+     * @param disabledTypeGraph
      * @return true if a copy was added, otherwise - false.
      */
     public boolean addCopyOfGraph(Graph g, boolean disabledTypeGraph) {
@@ -243,7 +328,7 @@ public class Graph extends ExtObservable
             if (!disabledTypeGraph
                     || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
                 boolean failed = false;
-                final Map<Node, Node> memo1 = new HashMap< >(g
+                final Map<Node, Node> memo1 = new HashMap<>(g
                         .getSize());
                 Iterator<Node> vtxList = g.getNodesSet().iterator();
                 while (vtxList.hasNext()) {
@@ -316,7 +401,7 @@ public class Graph extends ExtObservable
         synchronized (this) {
             if (this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
                 boolean failed = false;
-                final Map<Node, Node> memo1 = new HashMap< >(g
+                final Map<Node, Node> memo1 = new HashMap<>(g
                         .getSize());
                 Iterator<Node> vtxList = g.getNodesSet().iterator();
                 while (vtxList.hasNext()) {
@@ -415,6 +500,11 @@ public class Graph extends ExtObservable
         return false;
     }
 
+    /**
+     *
+     * @param typeSet
+     * @return
+     */
     public Graph copyLight(TypeSet typeSet) {
         synchronized (this) {
             TypeError typeError = null;
@@ -424,7 +514,7 @@ public class Graph extends ExtObservable
             }
 
             boolean failed = false;
-            final Map<Node, Node> memo1 = new HashMap< >(this
+            final Map<Node, Node> memo1 = new HashMap<>(this
                     .getSize());
 
             Graph theCopy = BaseFactory.theFactory().createGraph(typeSet);
@@ -540,8 +630,11 @@ public class Graph extends ExtObservable
     }
 
     /**
-     * Returns a copy of this graph using specified type set. The specified type set should be compatible to its type
+     * Returns a copy of this graph using specified type set.The specified type set should be compatible to its type
      * set.
+     *
+     * @param types
+     * @return
      */
     public Graph copy(TypeSet types) {
         return graphcopy(types);
@@ -611,9 +704,9 @@ public class Graph extends ExtObservable
                 }
                 /**
                  * *************************************************************
-                 * At loop termination, the memory Map contains * information about the node twins that are
-                 * induced * by the copyprocess. At this point, the copied graph contains its nodes but yet no arcs.*
-				 *************************************************************
+                 * At loop termination, the memory Map contains * information about the node twins that are induced * by
+                 * the copyprocess. At this point, the copied graph contains its nodes but yet no arcs.*
+                 * ************************************************************
                  */
             }
 
@@ -761,87 +854,6 @@ public class Graph extends ExtObservable
     }
 
     /**
-     * Returns a copy of the graph itself. The mappings of original nodes / arcs and copied nodes / arcs are stored in a
-     * Map of the class <code>CopyMemory</code>. The method <code>CopyMemory.REQUEST(n)</code> returns an
-     * appropriate Map.
-     *
-     * @param n can be 1 or 2.
-     */
-    public Graph graphcopy(int n) {
-        synchronized (this) {
-            int currentLevelOfTGcheck = this.getTypeSet().getLevelOfTypeGraphCheck();
-            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
-                this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
-            }
-
-            boolean failed = false;
-            CopyMemory.INSTALL(n);
-
-            Graph theCopy = BaseFactory.theFactory().createGraph(getTypeSet());
-            if ((this.getAttrContext() != null)
-                    && ((ContextView) this.getAttrContext())
-                            .getAllowedMapping() == AttrMapping.GRAPH_MAP) {
-                agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager
-                        .getDefaultManager().newContext(
-                                agg.attribute.AttrMapping.GRAPH_MAP);
-                theCopy.setAttrContext(agg.attribute.impl.AttrTupleManager
-                        .getDefaultManager().newRightContext(aGraphContext));
-            }
-            theCopy.setCompleteGraph(this.isCompleteGraph());
-            theCopy.setName(this.getName() + "_copy");
-
-            Iterator<?> iter = this.itsNodes.iterator();
-            while (!failed && iter.hasNext()) {
-                Node vtxOrig = (Node) iter.next();
-                Node vtxCopy = null;
-                try {
-                    vtxCopy = theCopy.newNode(vtxOrig.getType());
-                    vtxCopy.setObjectName(vtxOrig.getObjectName());
-                    vtxCopy.copyAttributes(vtxOrig);
-                    vtxCopy.setContextUsage(vtxOrig.getContextUsage());
-                    CopyMemory.STORE(vtxOrig, vtxCopy, n);
-                } catch (TypeException e) {
-                    failed = true;
-                    theCopy.dispose();
-                }
-            }
-
-            iter = this.itsArcs.iterator();
-            while (!failed && iter.hasNext()) {
-                Arc arcOrig = (Arc) iter.next();
-                try {
-                    Node source = (Node) arcOrig.getSource();
-                    Node target = (Node) arcOrig.getTarget();
-                    Node srcImg = (Node) CopyMemory.SELECT(source, n);
-                    Node tgtImg = (Node) CopyMemory.SELECT(target, n);
-                    Arc arcCopy = theCopy.newArc(arcOrig.getType(), srcImg,
-                            tgtImg);
-                    if (arcCopy != null) {
-                        arcCopy.setObjectName(arcOrig.getObjectName());
-                        arcCopy.copyAttributes(arcOrig);
-                        arcCopy.setContextUsage(arcOrig.getContextUsage());
-                        CopyMemory.STORE(arcOrig, arcCopy, n);
-                    }
-                } catch (TypeException e) {
-                    failed = true;
-                    theCopy.dispose();
-                }
-            }
-
-            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
-                this.getTypeSet().setLevelOfTypeGraph(currentLevelOfTGcheck);
-            }
-
-            if (failed) {
-                return null;
-            }
-
-            return theCopy;
-        }
-
-    }
-
-    /**
      * The method returns a copy of the graph itself.
      */
     public Graph graphcopy() {
@@ -866,7 +878,7 @@ public class Graph extends ExtObservable
             theCopy.setCompleteGraph(this.isCompleteGraph());
             theCopy.setName(this.getName() + "_copy");
 
-            final Map<Node, Node> memo1 = new HashMap< >(this.getSize());
+            final Map<Node, Node> memo1 = new HashMap<>(this.getSize());
 
             Iterator<?> iter = this.itsNodes.iterator();
             while (!failed && iter.hasNext()) {
@@ -932,7 +944,7 @@ public class Graph extends ExtObservable
             }
 
             boolean failed = false;
-            final Map<Node, Node> memo1 = new HashMap< >(g.getSize());
+            final Map<Node, Node> memo1 = new HashMap<>(g.getSize());
 
             Graph theCopy = this;
             if ((g.getAttrContext() != null)
@@ -986,63 +998,27 @@ public class Graph extends ExtObservable
         }
     }
 
-//	public  OrdinaryMorphism extendByGraph(final Graph g) {
-//		final OrdinaryMorphism map = BaseFactory.theFactory().createMorphism(g, this);
-//		Enumeration<Node> nodes = g.getNodes();
-//		while (nodes.hasNext()) {
-//			Node elem= nodes.next();
-//			try {
-//				Node copy = this.copyNode(elem);
-    ////				System.out.println("Graph.extendByGraph:: Node copy: "+copy+"  orig: "+elem);
-////				if (copy != null) {
-//					map.addMapping(elem, copy);
-////				}
-////				else {
-////					System.out.println("Graph.extendByGraph:: Node copy: "+copy+"  orig: "+elem);
-////				}
-//			} 
-//			catch (TypeException ex) {}	
-//			catch (BadMappingException e) {}
-//		}
-//		Enumeration<Arc> arcs = g.getArcs();
-//		while (arcs.hasNext()) {
-//			Arc elem = arcs.next();
-//			try {
-//				Node s = (Node) map.getImage(elem.getSource());
-//				Node t = (Node) map.getImage(elem.getTarget());
-//				Arc copy = this.copyArc(elem, s, t);
-////				if (copy != null) {
-//					map.addMapping(elem, copy);
-////				}
-////				else {
-////					System.out.println("Graph.extendByGraph:: Arc copy   : "+copy+"  src: "+s+"  tar: "+t);
-////					System.out.println("Graph.extendByGraph:: Arc original: "+elem+"  src: "+elem.getSource()+"  tar: "+elem.getTarget());
-////				}
-//			} 
-//			catch (TypeException ex) {}	
-//			catch (BadMappingException e) {}
-//		}
-//		return map;
-//	}
-
-	/**
-	 * Prepares this graph for garbage collection, so cut all connections to
-	 * other objects and dispose all graph object contained.
-	 * @throws ClassNotFoundException 
-	 */
-	public void dispose() {
+    /**
+     * Prepares this graph for garbage collection, so cut all connections to other objects and dispose all graph object
+     * contained.
+     *
+     * @throws ClassNotFoundException
+     */
+    public void dispose() {
         if (this.observer != null) {
-            this.observer.clear(); 
+            this.observer.clear();
             super.dispose(); // dispose observer
         }
 
-        this.itsName = "Graph";
-        if (this.itsUsingMorphs != null) {
-            this.itsUsingMorphs.clear(); 
-        }
+        synchronized (monitorMorphs) {
+            this.itsName = "Graph";
+            if (this.itsUsingMorphs != null) {
+                this.itsUsingMorphs.clear();
+            }
 
-        destroyArcs();
-        destroyNodes();
+            destroyArcs();
+            destroyNodes();
+        }
 
         this.itsNodes = null;
         this.itsArcs = null;
@@ -1053,7 +1029,9 @@ public class Graph extends ExtObservable
 //		System.out.println("Graph.dispose()  DONE  "+this.hashCode());
     }
 
+    @Override
     public void finalize() {
+        super.finalize();
     }
 
     private void destroyNodes() {
@@ -1076,6 +1054,7 @@ public class Graph extends ExtObservable
         }
     }
 
+    @Override
     public final void update(Observable obs, Object change) {
     }
 
@@ -1150,23 +1129,17 @@ public class Graph extends ExtObservable
 
     /**
      * Return textual comments of this graph.
+     *
+     * @return
      */
     public String getTextualComment() {
         return this.comment;
     }
 
-    /**
-     * @deprecated moved to {@link TypeSet}
-     * @see agg.xt_basis.Type
-     */
-    public final Iterator<Type> getTypes() {
-        return this.itsTypes.getTypes();
-    }
-
     public List<Type> getUsedTypes() {
-        final List<Type> vec = new ArrayList< >();
+        final List<Type> vec = new ArrayList<>();
         getTypesOfGOs(this.itsNodes.iterator(), vec);
-        getTypesOfGOs(this.itsArcs.iterator(), vec); 
+        getTypesOfGOs(this.itsArcs.iterator(), vec);
         return vec;
     }
 
@@ -1180,7 +1153,7 @@ public class Graph extends ExtObservable
     }
 
     public List<Type> getUsedAndInheritedTypes() {
-        final List<Type> vec = new ArrayList< >();
+        final List<Type> vec = new ArrayList<>();
         Iterator<?> iter = this.itsNodes.iterator();
         while (iter.hasNext()) {
             GraphObject o = (GraphObject) iter.next();
@@ -1203,12 +1176,14 @@ public class Graph extends ExtObservable
             if (!vec.contains(t)) {
                 vec.add(t);
             }
-        } 
+        }
         return vec;
     }
 
     /**
-     * Adds the specified node to my nodes. The type of the specified node has to be in my type set.
+     * Adds the specified node to my nodes.The type of the specified node has to be in my type set.
+     *
+     * @param n
      */
     public void addNode(Node n) {
         if (!this.itsNodes.contains(n)) {
@@ -1227,21 +1202,21 @@ public class Graph extends ExtObservable
 
     protected void removeNode(final Node n) {
         if (n.getContext() == this) {
-            for (int i = 0; i < this.itsUsingMorphs.size(); i++) {
-                this.itsUsingMorphs.get(i).removeMapping(n);
-            }
+            synchronized (monitorMorphs) {
+                removeMapping(n);
 
-            Iterator<Arc> anIter = n.getIncomingArcsSet().iterator();
-            while (anIter.hasNext()) {
-                Arc aNeighbor = anIter.next();
-                removeArc(aNeighbor);
-                anIter = n.getIncomingArcsSet().iterator();
-            }
-            anIter = n.getOutgoingArcsSet().iterator();
-            while (anIter.hasNext()) {
-                Arc aNeighbor = anIter.next();
-                removeArc(aNeighbor);
+                Iterator<Arc> anIter = n.getIncomingArcsSet().iterator();
+                while (anIter.hasNext()) {
+                    Arc aNeighbor = anIter.next();
+                    removeArc(aNeighbor);
+                    anIter = n.getIncomingArcsSet().iterator();
+                }
                 anIter = n.getOutgoingArcsSet().iterator();
+                while (anIter.hasNext()) {
+                    Arc aNeighbor = anIter.next();
+                    removeArc(aNeighbor);
+                    anIter = n.getOutgoingArcsSet().iterator();
+                }
             }
 
             this.itsNodes.remove(n);
@@ -1253,7 +1228,9 @@ public class Graph extends ExtObservable
     }
 
     /**
-     * Adds the specified edge to my edges. The type of the specified edge has to be in my type set.
+     * Adds the specified edge to my edges.The type of the specified edge has to be in my type set.
+     *
+     * @param anArc
      */
     public void addArc(Arc anArc) {
         if (!this.itsArcs.contains(anArc)) {
@@ -1264,18 +1241,13 @@ public class Graph extends ExtObservable
         }
     }
 
-    protected void removeArc(final Arc a) {
-        if (a.getContext() == this) {
-            // remove arc from its source / target
-            ((Node) a.getSource()).removeOut(a);
-            ((Node) a.getTarget()).removeIn(a);
-
-            for (int i = 0; i < this.itsUsingMorphs.size(); i++) {
-                this.itsUsingMorphs.get(i).removeMapping(a);
-            }
-
-            this.itsArcs.remove(a);
-            removeArcFromTypeObjectsMap(a);
+    protected void removeArc(final Arc anArc) {
+        if (anArc.getContext() == this)  synchronized (monitorMorphs) {
+            sourceRemoveArc(anArc);
+            targetRemoveArc(anArc);
+            removeMapping(anArc);
+            this.itsArcs.remove(anArc);
+            removeArcFromTypeObjectsMap(anArc);
             this.changed = true;
         }
     }
@@ -1320,8 +1292,8 @@ public class Graph extends ExtObservable
     }
 
     /**
-     * Creates and adds a new Node of the specified type. 
-	 *
+     * Creates and adds a new Node of the specified type.
+     *
      */
     public Node createNode(Type type) throws TypeException {
         Type t = this.itsTypes.adoptClan(type);
@@ -1432,25 +1404,23 @@ public class Graph extends ExtObservable
             }
         }
 
-        // remove mapping of node
-        for (int i = 0; i < this.itsUsingMorphs.size(); i++) {
-            OrdinaryMorphism morph = this.itsUsingMorphs.get(i);
-            morph.removeMapping(node);
-        }
+        synchronized (monitorMorphs) {
+            removeMapping(node);
 
-        // destroy incoming/outgoing arcs
-        Arc a;
-        Iterator<Arc> iter = node.getIncomingArcsSet().iterator();
-        while (iter.hasNext()) {
-            a = iter.next();
-            destroyArc(a, false, false);
-            iter = node.getIncomingArcsSet().iterator();
-        }
-        iter = node.getOutgoingArcsSet().iterator();
-        while (iter.hasNext()) {
-            a = iter.next();
-            destroyArc(a, false, false);
+            // destroy incoming/outgoing arcs
+            Arc a;
+            Iterator<Arc> iter = node.getIncomingArcsSet().iterator();
+            while (iter.hasNext()) {
+                a = iter.next();
+                destroyArc(a, false, false);
+                iter = node.getIncomingArcsSet().iterator();
+            }
             iter = node.getOutgoingArcsSet().iterator();
+            while (iter.hasNext()) {
+                a = iter.next();
+                destroyArc(a, false, false);
+                iter = node.getOutgoingArcsSet().iterator();
+            }
         }
 
         propagateChange(new Change(Change.WANT_DESTROY_OBJECT, node));
@@ -1465,20 +1435,18 @@ public class Graph extends ExtObservable
         propagateChange(new Change(Change.OBJECT_DESTROYED, node));
     }
 
-    public synchronized void destroyNodeFast(final Node node) {
+    public void destroyNodeFast(final Node node) {
+        synchronized (monitorMorphs) {
+            removeMapping(node);
 
-        // remove mapping of node
-        for (int i = 0; i < this.itsUsingMorphs.size(); i++) {
-            this.itsUsingMorphs.get(i).removeMapping(node);
-        }
-
-        // destroy incoming arcs
-        while (node.getIncomingArcsSet().iterator().hasNext()) {
-            destroyArcFast(node.getIncomingArcsSet().iterator().next());
-        }
-        // destroy outgoing arcs
-        while (node.getOutgoingArcsSet().iterator().hasNext()) {
-            destroyArcFast(node.getOutgoingArcsSet().iterator().next());
+            // destroy incoming arcs
+            while (node.getIncomingArcsSet().iterator().hasNext()) {
+                destroyArcFast(node.getIncomingArcsSet().iterator().next());
+            }
+            // destroy outgoing arcs
+            while (node.getOutgoingArcsSet().iterator().hasNext()) {
+                destroyArcFast(node.getOutgoingArcsSet().iterator().next());
+            }
         }
 
         propagateChange(new Change(Change.WANT_DESTROY_OBJECT, node));
@@ -1491,6 +1459,17 @@ public class Graph extends ExtObservable
         this.changed = true;
 
         propagateChange(new Change(Change.OBJECT_DESTROYED, node));
+    }
+
+    /**
+     *
+     * @param anObject
+     */
+    protected void removeMapping(final GraphObject anObject) {
+        // remove mapping of node or arc
+        for (Iterator<OrdinaryMorphism> morphIter = this.itsUsingMorphs.iterator(); morphIter.hasNext();) {
+            morphIter.next().removeMapping(anObject);
+        }
     }
 
     /**
@@ -1503,13 +1482,13 @@ public class Graph extends ExtObservable
             throw new TypeException(typeError);
         }
 
-        Arc anArc = new Arc(t, src, tar, this);
+        Arc anArc = createArcFast(t, src, tar);
         anArc.setDirected(!(this instanceof UndirectedGraph));
 //		check for type mismatches, also multiplicity max of source and target
         typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
         if (typeError != null) {
-            ((Node) anArc.getSource()).removeOut(anArc);
-            ((Node) anArc.getTarget()).removeIn(anArc);
+            sourceRemoveArc(anArc);
+            targetRemoveArc(anArc);
             throw new TypeException(typeError);
         }
 
@@ -1525,17 +1504,19 @@ public class Graph extends ExtObservable
         return anArc;
     }
 
+    /**
+     *
+     * @param t
+     * @param src
+     * @param tar
+     * @return
+     */
     protected Arc newArcFast(Type t, Node src, Node tar) {
 //		long time = System.nanoTime();
-        Arc anArc = new Arc(t, src, tar, this);
-        anArc.setDirected(!(this instanceof UndirectedGraph));
-
+        Arc anArc = createArcFast(t, src, tar);
         this.attributed = this.attributed || anArc.getAttribute() != null;
-
         this.itsArcs.add(anArc);
-
         addToTypeObjectsMap(anArc);
-
         this.changed = true;
         propagateChange(new Change(Change.OBJECT_CREATED, anArc));
 //		System.out.println("Arc created  in: "+(System.nanoTime()-time)+"nano");
@@ -1547,52 +1528,52 @@ public class Graph extends ExtObservable
      */
     public Arc createArc(Type type, Node src, Node tar) throws TypeException {
         if (src == null || tar == null) {
-            throw new TypeException("Graph.createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "   Source or target node is null!");
+            throw new TypeException(getClass().getSimpleName() + ".createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "   Source or target node is null!");
         } else if (!this.isNode(src) || !this.isNode(tar)) {
-            throw new TypeException("Graph.createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "  Source or target is not a Node!");
+            throw new TypeException(getClass().getSimpleName() + ".createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "  Source or target is not a Node!");
         }
 
-        Type t = null;
+        Type arcType = null;
         if (this.itsTypes.containsType(type)) {
-            t = type;
+            arcType = type;
         }
-        if (t == null) {
-            t = this.itsTypes.getSimilarType(type);
-            if (t == null) {
-                t = this.itsTypes.addType(type);
+        if (arcType == null) {
+            arcType = this.itsTypes.getSimilarType(type);
+            if (arcType == null) {
+                arcType = this.itsTypes.addType(type);
             }
-            if (t.getAdditionalRepr().indexOf("[EDGE]") == -1) {
-                t.setAdditionalRepr("[EDGE]");
+            if (arcType.getAdditionalRepr().indexOf("[EDGE]") == -1) {
+                arcType.setAdditionalRepr("[EDGE]");
             }
         }
 
-        TypeError typeError = this.checkConnectValid(t, src, tar);
+        TypeError typeError = this.checkConnectValid(arcType, src, tar);
         if (typeError != null) {
             throw new TypeException(typeError);
         }
 
-        Arc anArc = new Arc(t, src, tar, this);
-        anArc.setDirected(!(this instanceof UndirectedGraph));
+        Arc anArc = createArcFast(arcType, src, tar);
 
+        postCreatingArc(anArc);
+
+        return anArc;
+    }
+
+    protected void postCreatingArc(Arc anArc) throws TypeException {
+        TypeError typeError;
         // if this is not a type graph, so check this graph
         // against its type graph
         typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
         if (typeError != null) {
-            ((Node) anArc.getSource()).removeOut(anArc);
-            ((Node) anArc.getTarget()).removeIn(anArc);
+            sourceRemoveArc(anArc);
+            targetRemoveArc(anArc);
             throw new TypeException(typeError);
         }
-
         this.attributed = this.attributed || anArc.getAttribute() != null;
-
         this.itsArcs.add(anArc);
-
         addToTypeObjectsMap(anArc);
-
         this.changed = true;
         propagateChange(new Change(Change.OBJECT_CREATED, anArc));
-
-        return anArc;
     }
 
     /**
@@ -1606,7 +1587,6 @@ public class Graph extends ExtObservable
             arc = createArc(orig.getType(), src, tar);
             if (arc != null) {
                 arc.setInputVector(orig.copyInputVector());
-                arc.setDirected(!(this instanceof UndirectedGraph));
                 arc.setObjectName(orig.getObjectName());
                 if (orig.getAttribute() != null) {
                     arc.createAttributeInstance();
@@ -1662,12 +1642,13 @@ public class Graph extends ExtObservable
      * @throws TypeException If this graph is a type graph, and there are arcs of this type arc in one of other graphs,
      * an exception is thrown when forceDestroy is false, otherwise - does thrown any exception.
      */
-    public synchronized void destroyArc(
+    public void destroyArc(
             final Arc arc,
             final boolean checkFirst,
             final boolean forceDestroy) throws TypeException {
 
         if (arc != null) {
+
             // can we remove this arc?
             // check for multiplicity
             if (checkFirst
@@ -1681,15 +1662,10 @@ public class Graph extends ExtObservable
             }
 
             propagateChange(new Change(Change.WANT_DESTROY_OBJECT, arc));
-
-            // remove mapping of arc
-            for (int i = 0; i < this.itsUsingMorphs.size(); i++) {
-                OrdinaryMorphism morph = this.itsUsingMorphs.get(i);
-                morph.removeMapping(arc);
+            synchronized (monitorMorphs) {
+                removeMapping(arc);
+                removeArcFromTypeObjectsMap(arc);
             }
-
-            removeArcFromTypeObjectsMap(arc);
-
             this.itsArcs.remove(arc);
             arc.dispose();
             this.changed = true;
@@ -1698,20 +1674,14 @@ public class Graph extends ExtObservable
         }
     }
 
-    public synchronized void destroyArcFast(final Arc arc) {
+    public void destroyArcFast(final Arc arc) {
 
         propagateChange(new Change(Change.WANT_DESTROY_OBJECT, arc));
-
-        // remove mapping of arc
-        for (int i = 0; i < this.itsUsingMorphs.size(); i++) {
-            this.itsUsingMorphs.get(i).removeMapping(arc);
+        synchronized (monitorMorphs) {
+            removeMapping(arc);
+            removeArcFromTypeObjectsMap(arc);
         }
-
-        removeArcFromTypeObjectsMap(arc);
-
-//		long t0 = System.nanoTime();
         this.itsArcs.remove(arc);
-//		System.out.println(this.itsArcs.size()+")   "+(System.nanoTime()-t0)+" nano");
 
         arc.dispose();
         this.changed = true;
@@ -1781,7 +1751,7 @@ public class Graph extends ExtObservable
             Type t = types.get(i);
             if (!destroyObjectsOfType(t)) {
                 if (failed == null) {
-                    failed = new ArrayList< >(5);
+                    failed = new ArrayList<>(5);
                 }
                 failed.add("Graph:  ".concat(this.itsName).concat("   Type:  ").concat(t.getName()));
             }
@@ -1885,7 +1855,7 @@ public class Graph extends ExtObservable
             Arc go = outs.next();
             if (go.getTarget() == tar) {
                 if (res == null) {
-                    res = new ArrayList< >();
+                    res = new ArrayList<>();
                 }
                 res.add(go);
             }
@@ -1903,7 +1873,7 @@ public class Graph extends ExtObservable
             Node go = iter.next();
             if (t.isParentOf(go.getType())) {
                 if (res == null) {
-                    res = new ArrayList< >();
+                    res = new ArrayList<>();
                 }
                 res.add(go);
             }
@@ -1921,7 +1891,7 @@ public class Graph extends ExtObservable
             Node go = iter.next();
             if (t.isParentOf(go.getType())) {
                 if (res == null) {
-                    res = new ArrayList< >();
+                    res = new ArrayList<>();
                 }
                 res.add(go);
             }
@@ -1939,7 +1909,7 @@ public class Graph extends ExtObservable
             Node go = iter.next();
             if (go.getType().compareTo(t)) {
                 if (res == null) {
-                    res = new ArrayList< >();
+                    res = new ArrayList<>();
                 }
                 res.add(go);
             }
@@ -1957,10 +1927,10 @@ public class Graph extends ExtObservable
         while (outs.hasNext()) {
             Arc go = outs.next();
             if ((go.getTarget() == tar)
-                    && go.getType().compareTo(t) //&& go.getType().isRelatedTo(t)
+                    && go.getType().compareTo(t) //&& go.getType().isRelatedTo(arcType)
                     ) {
                 if (res == null) {
-                    res = new ArrayList< >();
+                    res = new ArrayList<>();
                 }
                 res.add(go);
             }
@@ -1978,7 +1948,7 @@ public class Graph extends ExtObservable
             Arc obj = iter.next();
             if (obj.getType().compareTo(type)) {
                 if (res == null) {
-                    res = new ArrayList< >();
+                    res = new ArrayList<>();
                 }
                 res.add(obj);
             }
@@ -1991,7 +1961,7 @@ public class Graph extends ExtObservable
      * "[UNNAMED_EDGE]". The order of the type names is the order of the node and edges of this graph.
      */
     public List<String> getTypeNamesOfGraphObjects() {
-        final List<String> v = new ArrayList< >(getSize());
+        final List<String> v = new ArrayList<>(getSize());
         getTypeNamesOfGOs(this.itsNodes.iterator(), v);
         getTypeNamesOfGOs(this.itsArcs.iterator(), v);
         return v;
@@ -2014,9 +1984,9 @@ public class Graph extends ExtObservable
      * @see agg.xt_basis.GraphObject
      */
     public Iterator<GraphObject> iteratorOfElems() {
-        List<GraphObject> elems = new ArrayList< >(this.itsNodes);
+        List<GraphObject> elems = new ArrayList<>(this.itsNodes);
         elems.addAll(this.itsArcs);
-        return elems.iterator(); 
+        return elems.iterator();
     }
 
     /**
@@ -2034,7 +2004,7 @@ public class Graph extends ExtObservable
      * @see agg.xt_basis.GraphObject
      */
     public List<GraphObject> getElemsOfTypeAsList(final String typeName) {
-        final List<GraphObject> elems = new ArrayList< >();
+        final List<GraphObject> elems = new ArrayList<>();
         if (!this.getElemsOfTypeName(typeName, this.itsNodes.iterator(), elems)) {
             this.getElemsOfTypeName(typeName, this.itsArcs.iterator(), elems);
         }
@@ -2066,7 +2036,7 @@ public class Graph extends ExtObservable
      * @return a list of objects of the specified type.
      */
     public List<GraphObject> getElementsOfTypeAsVector(final Type type) {
-        final List<GraphObject> elems = new ArrayList< >();
+        final List<GraphObject> elems = new ArrayList<>();
         if (!this.getElemsOfType(type, this.itsNodes.iterator(), elems)) {
             this.getElemsOfType(type, this.itsArcs.iterator(), elems);
         }
@@ -2137,7 +2107,7 @@ public class Graph extends ExtObservable
             final Iterator<?> iter,
             boolean withElemsOfType) {
 
-        List<GraphObject> result = new ArrayList< >(2);
+        List<GraphObject> result = new ArrayList<>(2);
         while (iter.hasNext()) {
             GraphObject obj = (GraphObject) iter.next();
             if ((withElemsOfType && obj.getType().compareTo(type))
@@ -2153,7 +2123,7 @@ public class Graph extends ExtObservable
             final Iterator<?> iter,
             boolean withElemsOfType) {
 
-        List<GraphObject> result = new ArrayList< >(2);
+        List<GraphObject> result = new ArrayList<>(2);
         while (iter.hasNext()) {
             GraphObject obj = (GraphObject) iter.next();
             if ((withElemsOfType && obj.getType().compareTo(type))
@@ -2165,7 +2135,7 @@ public class Graph extends ExtObservable
     }
 
     public List<GraphObject> getElementsOfTypeAsVector(final Type type, boolean withChildren) {
-        final List<GraphObject> elems = new ArrayList< >();
+        final List<GraphObject> elems = new ArrayList<>();
         Iterator<?> iter = this.itsNodes.iterator();
         while (iter.hasNext()) {
             Node obj = (Node) iter.next();
@@ -2205,7 +2175,7 @@ public class Graph extends ExtObservable
      */
     public List<GraphObject> getElementsOfTypeAsVector(final Type type, final Type src,
             final Type tar) {
-        final List<GraphObject> elems = new ArrayList< >();
+        final List<GraphObject> elems = new ArrayList<>();
         Iterator<Arc> iter = this.itsArcs.iterator();
         while (iter.hasNext()) {
             Arc obj = iter.next();
@@ -2235,7 +2205,7 @@ public class Graph extends ExtObservable
      * @see agg.xt_basis.GraphObject
      */
     public List<GraphObject> getElementsOfTypeAsVector(final GraphObject type) {
-        List<GraphObject> elems = new ArrayList< >();
+        List<GraphObject> elems = new ArrayList<>();
         if (type.isNode()) {
             elems = getElementsOfTypeAsVector(type.getType());
             if (!elems.isEmpty()) {
@@ -2317,14 +2287,18 @@ public class Graph extends ExtObservable
      * @param m
      */
     public void addUsingMorph(OrdinaryMorphism m) {
-        this.itsUsingMorphs.add(m);
+        synchronized (monitorMorphs) {
+            this.itsUsingMorphs.add(m);
+        }
     }
 
     /**
      * Removes the specified morphism from stored morphisms.
      */
     public boolean removeUsingMorph(final OrdinaryMorphism m) {
-        return this.itsUsingMorphs.remove(m);
+        synchronized (monitorMorphs) {
+            return this.itsUsingMorphs.remove(m);
+        }
     }
 
     public boolean isEmpty() {
@@ -2347,6 +2321,9 @@ public class Graph extends ExtObservable
 
     /**
      * Returns <code>true</code> if its nodes contain the specified node.
+     *
+     * @param obj
+     * @return
      */
     public boolean isNode(Node obj) {
         return this.itsNodes.contains(obj);
@@ -2354,6 +2331,9 @@ public class Graph extends ExtObservable
 
     /**
      * Returns <code>true</code> if its arcs contain the specified arc.
+     *
+     * @param obj
+     * @return
      */
     public boolean isArc(Arc obj) {
         return this.itsArcs.contains(obj);
@@ -2361,6 +2341,9 @@ public class Graph extends ExtObservable
 
     /**
      * Returns <code>true</code> if this graph uses the specified type.
+     *
+     * @param t
+     * @return
      */
     public boolean isUsingType(GraphObject t) {
         if (t.isArc()) {
@@ -2372,30 +2355,16 @@ public class Graph extends ExtObservable
             while (iter.hasNext()) {
                 Arc o = iter.next();
                 if (hasTypeGraphArc) {
-                    if (o.getType().compareTo(t.getType())
-                            && ((o.getSource().getType().compareTo(((Arc) t)
-                                    .getSource().getType())) || (o.getSource()
-                                    .getType().isChildOf(((Arc) t).getSource()
-                                            .getType())))
-                            && ((o.getTarget().getType().compareTo(((Arc) t)
-                                    .getTarget().getType())) || (o.getTarget()
-                                    .getType().isChildOf(((Arc) t).getTarget()
-                                            .getType())))) {
-                        return true;
-                    }
-                } else if (o.getType().compareTo(t.getType())) {
-                    return true;
+                    return (orientation.isUsingArcType(o, (Arc) t));
+                } else {
+                    return (o.getType().compareTo(t.getType()));
                 }
             }
-
         } else {
             while (this.itsNodes.iterator().hasNext()) {
                 Node o = this.itsNodes.iterator().next();
-                if (o.getType().compareTo(t.getType())) {
-                    return true;
-                } else if (o.getType().isChildOf(t.getType())) {
-                    return true;
-                }
+                return (o.getType().compareTo(t.getType()))
+                        || (o.getType().isChildOf(t.getType()));
             }
         }
         return false;
@@ -2481,12 +2450,12 @@ public class Graph extends ExtObservable
      */
     public void clear() {
         this.changed = false;
+        synchronized (monitorMorphs) {
+            this.itsUsingMorphs.clear();
 
-        this.itsUsingMorphs.clear();
-
-        this.destroyArcs();
-        this.destroyNodes();
-
+            this.destroyArcs();
+            this.destroyNodes();
+        }
         propagateChange(new Change(Change.OBJECT_DESTROYED, null));
     }
 
@@ -2562,7 +2531,7 @@ public class Graph extends ExtObservable
         if (glue.isNode()) {
             // Move Incoming Arcs context from "glue" to "keep"
             // Inverse relations are implicitly updated
-            final List<Arc> incoms = new ArrayList< >(((Node) glue).getIncomingArcsSet());
+            final List<Arc> incoms = new ArrayList<>(((Node) glue).getIncomingArcsSet());
             for (int i = 0; i < incoms.size(); i++) {
                 Arc arc = incoms.get(i);
                 if ((this.itsTypes.checkIfRemovableFromTarget(arc) == null)
@@ -2578,7 +2547,7 @@ public class Graph extends ExtObservable
             }
             incoms.clear();
             // Move Outgoing Arcs context from "glue" to "keep"
-            final List<Arc> outcoms = new ArrayList< >(((Node) glue).getOutgoingArcsSet());
+            final List<Arc> outcoms = new ArrayList<>(((Node) glue).getOutgoingArcsSet());
             for (int i = 0; i < outcoms.size(); i++) {
                 Arc arc = outcoms.get(i);
                 if ((this.itsTypes.checkIfRemovableFromSource(arc) == null)
@@ -2882,7 +2851,7 @@ public class Graph extends ExtObservable
             return null;
         }
 
-        final List<OrdinaryMorphism> isos = new ArrayList< >(5);
+        final List<OrdinaryMorphism> isos = new ArrayList<>(5);
         // try to get an isomorphism
         OrdinaryMorphism h = BaseFactory.theFactory().createMorphism(this, g);
         h.setCompletionStrategy(new Completion_InjCSP());
@@ -2937,7 +2906,7 @@ public class Graph extends ExtObservable
      * @return computed isomorphic morphisms or null
      */
     public List<OrdinaryMorphism> getIsomorphicWith(final Graph g, final boolean all) {
-        List<OrdinaryMorphism> allIsos = new ArrayList< >(5);
+        List<OrdinaryMorphism> allIsos = new ArrayList<>(5);
         if (!all) {
             OrdinaryMorphism h = getIsomorphicWith(g);
             if (h != null) {
@@ -3077,11 +3046,11 @@ public class Graph extends ExtObservable
     /**
      * Makes the given empty graph <code>theCopy</code> to a copy of myself. The attributes values are copied, too. If
      * inverse is TRUE, the <code>iso</code> morphism is given by <code>theCopy -> this</code>, otherwise by
-     *  <code>this -> theCopy</code>
+     * <code>this -> theCopy</code>
      */
     public boolean makeIsocopy(boolean inverse, OrdinaryMorphism iso, Graph theCopy) {
         boolean failed = false;
-        final Map<Node, Node> memo1 = new HashMap< >(this
+        final Map<Node, Node> memo1 = new HashMap<>(this
                 .getSize());
         Iterator<?> iter = this.itsNodes.iterator();
         while (!failed && iter.hasNext()) {
@@ -3169,7 +3138,7 @@ public class Graph extends ExtObservable
             theCopy.setName(this.getName().concat("_copy"));
             iso.setName("IsoMorph");
 
-            final Map<Node, Node> memo1 = new HashMap< >(this
+            final Map<Node, Node> memo1 = new HashMap<>(this
                     .getSize());
 
             Iterator<?> iter = this.itsNodes.iterator();
@@ -3506,8 +3475,8 @@ public class Graph extends ExtObservable
 		return result;
 	}
      */
-//	private String attributeToString(GraphObject o) {
-//		return o.attributeToString();
+//	private String attributeToString(GraphObject gob) {
+//		return gob.attributeToString();
 //	}
     /**
      * Returns true if the given set of graph objects represents a valid graph.
@@ -3728,6 +3697,11 @@ public class Graph extends ExtObservable
 
     /**
      * Checks if the specified edge to create is allowed.
+     *
+     * @param edgeType
+     * @param src
+     * @param tar
+     * @return
      */
     public TypeError checkConnectValid(Type edgeType, Node src, Node tar) {
         if (this.itsTypes.getTypeGraph() == null
@@ -3741,8 +3715,7 @@ public class Graph extends ExtObservable
                     "No parallel edges allowed");
         }
 
-        Arc typearc = this.itsTypes.getTypeGraphArc(
-                edgeType, src.getType(), tar.getType());
+        Arc typearc = orientation.getTypeGraphArc(this, edgeType, src, tar);
         if (typearc != null) {
             if (isParallelArcAllowed(edgeType, src, tar)) {
                 return null;
@@ -3760,12 +3733,7 @@ public class Graph extends ExtObservable
     }
 
     public boolean isParallelArcAllowed(Type edgeType, Node src, Node tar) {
-        if (this.itsTypes.isArcParallel()
-                || (src.getOutgoingArc(edgeType, tar) == null)) {
-            return true;
-        } else {
-            return false;
-        }
+        return orientation.isParallelArcAllowed(this, edgeType, src, tar);
     }
 
     public TypeError checkNodeRequiresArc(final int actTypeGraphLevel) {
@@ -3805,6 +3773,12 @@ public class Graph extends ExtObservable
     /**
      * Returns an error if the type multiplicity check failed after an edge of the specified type would be created,
      * otherwise - null.
+     *
+     * @param edgeType
+     * @param source
+     * @param target
+     * @param currentTypeGraphLevel
+     * @return
      */
     public TypeError canCreateArc(
             final Type edgeType,
@@ -3812,12 +3786,11 @@ public class Graph extends ExtObservable
             final Node target,
             int currentTypeGraphLevel) {
 
-        return this.itsTypes.canCreateArc(this, edgeType, source, target,
-                currentTypeGraphLevel);
+        return this.orientation.canCreateArc(this, edgeType, source, target, currentTypeGraphLevel);
     }
 
     public List<String> getVariableNamesOfAttributes() {
-        final List<String> result = new ArrayList< >();
+        final List<String> result = new ArrayList<>();
         getVarNamesOfAttrs(this.itsNodes.iterator(), result);
         getVarNamesOfAttrs(this.itsArcs.iterator(), result);
         return result;
@@ -3840,10 +3813,10 @@ public class Graph extends ExtObservable
     }
 
     public List<VarMember> getSameVariablesOfAttributes() {
-        final List<VarMember> result = new ArrayList< >();
+        final List<VarMember> result = new ArrayList<>();
         final AttrContext ac = getAttrContext();
         final VarTuple avt = (VarTuple) ac.getVariables();
-        final Map<VarMember, Boolean> used = new HashMap< >(
+        final Map<VarMember, Boolean> used = new HashMap<>(
                 avt.getSize());
         for (int i = 0; i < avt.getSize(); i++) {
             VarMember var = avt.getVarMemberAt(i);
@@ -3952,6 +3925,9 @@ public class Graph extends ExtObservable
         }
     }
 
+    /**
+     *
+     */
     public void unsetAttributeValueWhereVariable() {
         this.unsetAttrValueWhichIsVar(this.itsNodes.iterator());
         this.unsetAttrValueWhichIsVar(this.itsArcs.iterator());
@@ -3986,9 +3962,8 @@ public class Graph extends ExtObservable
         if (set.isEmpty() || set.size() > this.getSize()) {
             return null;
         }
-        final List<Map<GraphObject, GraphObject>> result = new ArrayList< >();
-
-        final Map<GraphObject, GraphObject> store = new HashMap< >();
+        final List<Map<GraphObject, GraphObject>> result = new ArrayList<>();
+        final Map<GraphObject, GraphObject> store = new HashMap<>();
 
         // create graph g from set and store new/original objects
         Graph g = BaseFactory.theFactory().createGraph(this.getTypeSet());
@@ -4014,7 +3989,7 @@ public class Graph extends ExtObservable
         // because this can be LHS of a rule set variable attr context
         ((AttrTupleManager) m.getAttrManager()).setVariableContext(true);
         while (m.nextCompletion()) {
-            final Map<GraphObject, GraphObject> table = new HashMap< >();
+            final Map<GraphObject, GraphObject> table = new HashMap<>();
 
             Iterator<GraphObject> en = m.getDomain();
             while (en.hasNext()) {
@@ -4028,8 +4003,10 @@ public class Graph extends ExtObservable
     }
 
     /**
-     * Returns object domains for used types. The key of a node type is built by <code>type.convertToKey()</code>, the
+     * Returns object domains for used types.The key of a node type is built by <code>type.convertToKey()</code>, the
      * key of an arc type by <code>srcNodeType.convertToKey()+type.convertToKey()+tarNodeType.convertToKey()</code>.
+     *
+     * @return
      */
     public Map<String, HashSet<GraphObject>> getTypeObjectsMap() {
         if (this.itsTypeObjectsMap.isEmpty()) {
@@ -4047,6 +4024,10 @@ public class Graph extends ExtObservable
         fillTypeObjectsMap();
     }
 
+    /**
+     *
+     * @param anObj
+     */
     protected void addToTypeObjectsMap(GraphObject anObj) {
         if (anObj.isNode()) {
             extendTypeObjectsMapByNode((Node) anObj);
@@ -4055,6 +4036,10 @@ public class Graph extends ExtObservable
         }
     }
 
+    /**
+     *
+     * @param anObj
+     */
     protected void removeNodeFromTypeObjectsMap(final Node anObj) {
         if (anObj.getType().hasParent()) {
             List<Type> myParents = anObj.getType().getAllParents();
@@ -4074,35 +4059,44 @@ public class Graph extends ExtObservable
         }
     }
 
-    protected void removeArcFromTypeObjectsMap(final Arc anObj) {
-        if (anObj.getSource() != null
-                && anObj.getTarget() != null) {
+    /**
+     *
+     * @param anArc
+     */
+    protected void removeArcFromTypeObjectsMap(final Arc anArc) {
+        if (anArc.getSource() == null || anArc.getTarget() == null) {
+            return;
+        }
 
-            if (anObj.getSource().getType().hasParent()
-                    || anObj.getTarget().getType().hasParent()) {
+        if (anArc.getSource().getType().hasParent()
+                || anArc.getTarget().getType().hasParent()) {
 
-                List<Type> mySrcParents = anObj.getSource().getType().getAllParents();
-                List<Type> myTarParents = anObj.getTarget().getType().getAllParents();
+            List<Type> srcParents = anArc.getSource().getType().getAllParents();
+            List<Type> tarParents = anArc.getTarget().getType().getAllParents();
+            for (Type srcParent : srcParents) {
+                for (Type tarParent : tarParents) {
 
-                for (int i = 0; i < mySrcParents.size(); ++i) {
-                    for (int j = 0; j < myTarParents.size(); ++j) {
-                        String keystr = mySrcParents.get(i).convertToKey()
-                                + anObj.getType().convertToKey()
-                                + myTarParents.get(j).convertToKey();
-                        final HashSet<GraphObject> anObjVec = this.itsTypeObjectsMap.get(keystr);
-                        if (anObjVec != null) {
-                            anObjVec.remove(anObj);
-                        }
+                    String[] keystr = orientation.arcStringKeys(srcParent, anArc, tarParent);
+                    HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr[0]);
+                    if (objSet == null && keystr.length == 2) {
+                        objSet = this.itsTypeObjectsMap.get(keystr[1]);
+                    }
+                    if (objSet != null) {
+                        objSet.remove(anArc);
                     }
                 }
-            } else {
-                String keystr = anObj.convertToKey();
-                final HashSet<GraphObject> anObjVec = this.itsTypeObjectsMap.get(keystr);
-                if (anObjVec != null) {
-                    anObjVec.remove(anObj);
-                }
+            }
+        } else {
+            String[] keystr = orientation.arcStringKeys(anArc);
+            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr[0]);
+            if (objSet == null && keystr.length == 2) {
+                objSet = this.itsTypeObjectsMap.get(keystr[1]);
+            }
+            if (objSet != null) {
+                objSet.remove(anArc);
             }
         }
+
     }
 
     protected void removeFromTypeObjectsMap(final GraphObject anObj) {
@@ -4151,13 +4145,17 @@ public class Graph extends ExtObservable
             String keystr = newParents.get(i).convertToKey();
             HashSet<GraphObject> anObjVec = this.itsTypeObjectsMap.get(keystr);
             if (anObjVec == null) {
-                anObjVec = new LinkedHashSet<GraphObject>();
+                anObjVec = new LinkedHashSet<>();
                 this.itsTypeObjectsMap.put(keystr, anObjVec);
             }
             anObjVec.add(node);
         }
     }
 
+    /**
+     *
+     * @param node
+     */
     protected void extendTypeObjectsMapByNode(final Node node) {
         if (node.getType().hasParent()) {
             List<Type> myParents = node.getType().getAllParents();
@@ -4181,75 +4179,78 @@ public class Graph extends ExtObservable
         }
     }
 
-    protected void extendTypeObjectsMapByArc(final Arc arc) {
+    /**
+     *
+     * @param anArc
+     */
+    protected void extendTypeObjectsMapByArc(final Arc anArc) {
         if (this.itsTypes.hasInheritance()
-                && arc.getSource().getType().hasParent()
-                || arc.getTarget().getType().hasParent()) {
-            List<Type> srcParents = arc.getSource().getType().getAllParents();
-            List<Type> tarParents = arc.getTarget().getType().getAllParents();
-            for (int i = 0; i < srcParents.size(); ++i) {
-                for (int j = 0; j < tarParents.size(); ++j) {
-                    String keystr = srcParents.get(i).convertToKey()
-                            + arc.getType().convertToKey()
-                            + tarParents.get(j).convertToKey();
-                    HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
-                    if (objSet == null) {
-                        objSet = new LinkedHashSet<GraphObject>();
-                        this.itsTypeObjectsMap.put(keystr, objSet);
+                && anArc.getSource().getType().hasParent()
+                || anArc.getTarget().getType().hasParent()) {
+            List<Type> srcParents = anArc.getSource().getType().getAllParents();
+            List<Type> tarParents = anArc.getTarget().getType().getAllParents();
+            for (Type srcParent : srcParents) {
+                for (Type tarParent : tarParents) {
+
+                    String[] keystr = orientation.arcStringKeys(srcParent, anArc, tarParent);
+                    HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr[0]);
+                    if (objSet == null && keystr.length == 2) {
+                        objSet = this.itsTypeObjectsMap.get(keystr[1]);
                     }
-                    objSet.add(arc);
+                    if (objSet == null) {
+                        objSet = new LinkedHashSet<>();
+                        this.itsTypeObjectsMap.put(keystr[0], objSet);
+                    }
+                    objSet.add(anArc);
                 }
             }
         } else {
-            String keystr = arc.convertToKey();
-            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
-            if (objSet == null) {
-                objSet = new LinkedHashSet<GraphObject>();
-                this.itsTypeObjectsMap.put(keystr, objSet);
+            String[] keystr = orientation.arcStringKeys(anArc);
+            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr[0]);
+            if (objSet == null && keystr.length == 2) {
+                objSet = this.itsTypeObjectsMap.get(keystr[1]);
             }
-            objSet.add(arc);
+            if (objSet == null) {
+                objSet = new LinkedHashSet<>();
+                this.itsTypeObjectsMap.put(keystr[0], objSet);
+            }
+            objSet.add(anArc);
         }
     }
 
+    /**
+     *
+     */
     public void refreshAttributed() {
         this.attributed = false;
-        Iterator<?> iter = this.itsNodes.iterator();
-        while (iter.hasNext()) {
-            GraphObject o = (GraphObject) iter.next();
-            if ((o.getType().getAttrType() != null)
-                    && (o.getType().getAttrType().getNumberOfEntries() != 0)) {
+        for (GraphObject gob : this.itsNodes) {
+            if ((gob.getType().getAttrType() != null)
+                    && (gob.getType().getAttrType().getNumberOfEntries() != 0)) {
                 this.attributed = true;
             }
         }
-        iter = this.itsArcs.iterator();
-        while (iter.hasNext()) {
-            GraphObject o = (GraphObject) iter.next();
-            if ((o.getType().getAttrType() != null)
-                    && (o.getType().getAttrType().getNumberOfEntries() != 0)) {
+        for (GraphObject gob : this.itsArcs) {
+            if ((gob.getType().getAttrType() != null)
+                    && (gob.getType().getAttrType().getNumberOfEntries() != 0)) {
                 this.attributed = true;
             }
         }
     }
 
+    public void showTypeMap() {
+        showTypeMap(itsTypeObjectsMap);
+    }
 
-
-    /*
-	private void showTypeMap(Map<String, List<GraphObject>> d) {
-		System.out.println("******  TYPE DOMAINS  ******");
-		Iterator<String> keys = d.keys();
-		while (keys.hasNext()) {
-			String key = keys.next();
-			System.out.println(key);
-			List<GraphObject> v = d.get(key);
-			for (int i = 0; i < v.size(); i++) {
-				GraphObject go = v.get(i);
-				System.out.print(go + "  ");
-			}
-			System.out.println();
-		}
-		System.out.println("***********");
-	}
-     */
-    java.lang.String s;
+    public static void showTypeMap(Map<String, HashSet<GraphObject>> d) {
+        System.out.println("******  TYPE DOMAINS  ******");
+        for (String key : d.keySet()) {
+            System.out.println("'" + key + "':");
+            for (GraphObject go : d.get(key)) {
+                System.out.print(go + "  ");
+            }
+            System.out.println();
+        }
+        System.out.println("***********");
+    }
 
 }

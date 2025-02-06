@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -11,29 +11,42 @@
  */
 package agg.xt_basis;
 
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Vector;
-import java.util.Hashtable;
-
 import agg.attribute.AttrInstance;
 import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarMember;
 import agg.util.Change;
 import agg.util.Pair;
 import agg.util.XMLHelper;
+import agg.xt_basis.calculator.GraphOrientation;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Vector;
 
+/**
+ *
+ * @author Olga
+ * @author Janusch Rentenatus
+ */
 public class TypeGraph extends Graph {
 
     /**
      * Creates an empty type graph for the specified type set.
      */
+    protected TypeGraph(GraphOrientation orientation, TypeSet aTypeSet) {
+        super(orientation, aTypeSet);
+        this.kind = GraphKind.TG;
+    }
+
+    /**
+     * Creates an empty type graph for the specified type set.
+     *
+     * @param aTypeSet
+     */
     public TypeGraph(TypeSet aTypeSet) {
         super(aTypeSet);
-        this.completeGraph = false;
         this.kind = GraphKind.TG;
     }
 
@@ -41,6 +54,7 @@ public class TypeGraph extends Graph {
      * prepare this graph for garbage collection. so cut all connections to other objects and dispose all graph object
      * contained.
      */
+    @Override
     public void dispose() {
         this.observer.clear();
         this.itsTypes.setLevelOfTypeGraph(TypeSet.DISABLED);
@@ -68,7 +82,14 @@ public class TypeGraph extends Graph {
         super.dispose();
     }
 
+    @Override
     public void finalize() {
+        super.finalize();
+    }
+
+    @Override
+    public boolean isParallelArcAllowed(Type edgeType, Node src, Node tar) {
+        return true;
     }
 
     /**
@@ -749,7 +770,7 @@ public class TypeGraph extends Graph {
      * *************************************************************************
      * Create a new Node as a copy of <code>orig</code>. Only the type and the * attributes are copied, the structural
      * context (incoming/outgoing arcs) is not. *
-	 *************************************************************************
+     * ************************************************************************
      */
     public Node copyNode(final Node orig) throws TypeException {
         Node aNode = createNode(orig.getType());
@@ -803,17 +824,6 @@ public class TypeGraph extends Graph {
         }
     }
 
-    protected void removeArc(final Arc a) {
-        if (this.itsArcs.contains(a)) {
-            ((Node) a.getSource()).removeOut(a);
-            ((Node) a.getTarget()).removeIn(a);
-            this.itsArcs.remove(a);
-//			a.getType().removeTypeUser(a);
-            removeArcFromTypeObjectsMap(a);
-            this.changed = true;
-        }
-    }
-
     protected Node newNode(final Type t) throws TypeException {
         final Node aNode = new Node(t, this);
         TypeError typeError = this.itsTypes.addTypeGraphObject(aNode);
@@ -836,7 +846,12 @@ public class TypeGraph extends Graph {
 
     /**
      * Create a new Node of the specified Type.
+     *
+     * @param type
+     * @return
+     * @throws agg.xt_basis.TypeException
      */
+    @Override
     public Node createNode(final Type type) throws TypeException {
         Type t = this.itsTypes.adoptClan(type);
         Node aNode = newNode(t);
@@ -845,6 +860,10 @@ public class TypeGraph extends Graph {
 
     /**
      * Creates a new Node of the specified Type.
+     *
+     * @param type
+     * @return
+     * @throws agg.xt_basis.TypeException
      */
     public Node createTypeNode(final Type type) throws TypeException {
         return createNode(type);
@@ -852,6 +871,9 @@ public class TypeGraph extends Graph {
 
     /**
      * Returns the type graph node of the specified type or <code>null</code>.
+     *
+     * @param type
+     * @return
      */
     public Node getTypeNode(final Type type) {
         return this.itsTypes.getTypeGraphNode(type);
@@ -1006,28 +1028,34 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Create a new Arc with given Type, source and target objects. Source and target object must be part of this graph.
+     * Create a new Arc with given Type, source and target objects.Source and target object must be part of this graph.
+     *
+     * @param type
+     * @param src
+     * @param tar
+     * @return
+     * @throws agg.xt_basis.TypeException
      */
+    @Override
     public Arc createArc(final Type type, final Node src, final Node tar) throws TypeException {
         if (src == null || tar == null) {
-            return null;
-        }
-        if (!this.isElement(src) || !this.isElement(tar)) {
-            return null;
+            throw new TypeException("UndirectedGraph.createArc:: Cannot create an UndirectedArc of type : " + type.getStringRepr() + "   Source or target node is null!");
+        } else if (!this.isNode(src) || !this.isNode(tar)) {
+            throw new TypeException("UndirectedGraph.createArc:: Cannot create an UndirectedArc of type : " + type.getStringRepr() + "  Source or target does not belong to this graph!");
         }
 
-        Type t = null;
+        Type arcType = null;
         if (this.itsTypes.containsType(type)) {
-            t = type;
+            arcType = type;
         }
-        if (t == null) {
-            t = this.itsTypes.getSimilarType(type);
-            if (t == null) {
-                t = this.itsTypes.addType(type);
+        if (arcType == null) {
+            arcType = this.itsTypes.getSimilarType(type);
+            if (arcType == null) {
+                arcType = this.itsTypes.addType(type);
             }
         }
 
-        Arc anArc = newArc(t, src, tar);
+        Arc anArc = newArc(arcType, src, tar);
         return anArc;
     }
 
@@ -1040,7 +1068,7 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Returns the type graph edge of the specified type <code>t</code>, with a source node of the specified type
+     * Returns the type graph edge of the specified type <code>arcType</code>, with a source node of the specified type
      * <code>source</code> and a target node of the specified type <code>target</code>, otherwise returns
      * <code>null</code>.
      */
@@ -1272,25 +1300,6 @@ public class TypeGraph extends Graph {
     protected void removeNodeFromTypeObjectsMap(final Node anObj) {
         final String keystr = anObj.getType().convertToKey();
         this.itsTypeObjectsMap.remove(keystr);
-    }
-
-    protected void removeArcFromTypeObjectsMap(final Arc anObj) {
-        if (anObj.getSource() != null
-                && anObj.getTarget() != null) {
-            Vector<Type> mySrcChildren = anObj.getSource().getType().getAllChildren();
-            Vector<Type> myTarChildren = anObj.getTarget().getType().getAllChildren();
-
-            for (int i = 0; i < mySrcChildren.size(); ++i) {
-
-                for (int j = 0; j < myTarChildren.size(); ++j) {
-
-                    String keystr = mySrcChildren.get(i).convertToKey()
-                            + anObj.getType().convertToKey()
-                            + myTarChildren.get(j).convertToKey();
-                    this.itsTypeObjectsMap.remove(keystr);
-                }
-            }
-        }
     }
 
     /**
