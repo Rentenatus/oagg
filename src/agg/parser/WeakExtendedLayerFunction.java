@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -102,10 +103,10 @@ public class WeakExtendedLayerFunction extends WeakLayerFunction {
             for (int l = 0; l < nacs.size(); l++) {
                 final OrdinaryMorphism nac = nacs.get(l);
                 Graph nacGraph = nac.getImage();
-                for (Enumeration<GraphObject> grobs = nacGraph.getElements(); grobs
-                        .hasMoreElements()
+                for (Iterator<GraphObject> grobs = nacGraph.iteratorOfElems(); grobs
+                        .hasNext()
                         && result;) {
-                    GraphObject grob = grobs.nextElement();
+                    GraphObject grob = grobs.next();
                     Type t = grob.getType();
                     Integer rl = getRuleLayer().get(r);
                     Integer cl = getCreationLayer().get(t);

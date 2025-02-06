@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.cons;
 
@@ -262,9 +263,9 @@ public class TwoMorphs extends JPanel {
             return;
         }
         for (int k = 0; k < to.getNodes().size(); k++) {
-            EdNode n = to.getNodes().elementAt(k);
+            EdNode n = to.getNodes().get(k);
             for (int j = 0; j < from.getNodes().size(); j++) {
-                EdNode en = from.getNodes().elementAt(j);
+                EdNode en = from.getNodes().get(j);
                 if (en.getBasisNode().getContextUsage()
                         == n.getBasisNode().getContextUsage()) {
                     n.setXY(en.getX(), en.getY());
@@ -284,14 +285,14 @@ public class TwoMorphs extends JPanel {
             }
         }
 
-        Enumeration<GraphObject> graphObjects = m.getCodomain();
+        Iterator<GraphObject> graphObjects = m.getCodomain();
         graphObjects = m.getCodomain();
-        while (graphObjects.hasMoreElements()) {
-            GraphObject go = graphObjects.nextElement();
-            Enumeration<GraphObject> inverse = m.getInverseImage(go);
+        while (graphObjects.hasNext()) {
+            GraphObject go = graphObjects.next();
+            Iterator<GraphObject> inverse = m.getInverseImage(go);
             GraphObject inv = null;
-            if (inverse.hasMoreElements()) {
-                inv = inverse.nextElement();
+            if (inverse.hasNext()) {
+                inv = inverse.next();
             }
             if (h.get(go) != null && inv != null) {
                 /*
@@ -300,15 +301,15 @@ public class TwoMorphs extends JPanel {
                  */
                 Integer number = h.get(go);
                 h.put(inv, number);
-                while (inverse.hasMoreElements()) {
-                    inv = inverse.nextElement();
+                while (inverse.hasNext()) {
+                    inv = inverse.next();
                     h.put(inv, number);
                 }
             } else if (h.get(go) == null) {
                 Integer number = null;
                 inverse = m.getInverseImage(go);
-                while (inverse.hasMoreElements()) {
-                    inv = inverse.nextElement();
+                while (inverse.hasNext()) {
+                    inv = inverse.next();
                     number = h.get(inv);
                     if (number != null) {
                         break;
@@ -319,8 +320,8 @@ public class TwoMorphs extends JPanel {
                 }
                 h.put(go, number);
                 inverse = m.getInverseImage(go);
-                while (inverse.hasMoreElements()) {
-                    inv = inverse.nextElement();
+                while (inverse.hasNext()) {
+                    inv = inverse.next();
                     if (h.get(inv) == null) {
                         h.put(inv, number);
                     }

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -45,6 +46,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import agg.gui.help.HtmlBrowser;
 import agg.cons.Formula;
+import java.util.List;
 
 /**
  * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers for graph
@@ -71,9 +73,9 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
 
     private boolean isCancelled;
 
-    private Vector<Formula> constraints;
+    private List<Formula> constraints;
 
-    private Vector<String> priorities;
+    private List<String> priorities;
 
 //	private EdGraGra gragra;
     private HtmlBrowser helpBrowser;
@@ -83,13 +85,13 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
      */
     public class HashTableModel extends DefaultTableModel {
 
-        Hashtable<Object, Vector<Object>> table;
+        Hashtable<Object, List<Object>> table;
 
         /**
          * Creates a new model with hashtable and the title for the columns of the table.
          */
-        public HashTableModel(Vector<Formula> constraints,
-                Vector<String> priorities) {
+        public HashTableModel(List<Formula> constraints,
+                List<String> priorities) {
             super();
 
             priorities.add(0, "Constraint / Rule Priority");
@@ -97,11 +99,11 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
                 addColumn(priorities.get(i));
             }
 
-            this.table = new Hashtable<Object, Vector<Object>>(constraints.size());
+            this.table = new Hashtable<Object, List<Object>>(constraints.size());
 
             for (int i = 0; i < constraints.size(); i++) {
                 Formula f = constraints.get(i);
-                Vector<Integer> value = f.getPriority();
+                List<Integer> value = f.getPriority();
                 Vector<Object> tmpVector = new Vector<Object>();
                 for (int k = 1; k < priorities.size(); k++) {
                     String l = priorities.get(k);
@@ -109,13 +111,13 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
                     for (int j = 0; j < value.size(); j++) {
                         Integer v = value.get(j);
                         if (v.intValue() == (Integer.valueOf(l)).intValue()) {
-                            tmpVector.addElement(l);
+                            tmpVector.add(l);
                             found = true;
                             break;
                         }
                     }
                     if (!found) {
-                        tmpVector.addElement("");
+                        tmpVector.add("");
                     }
                 }
                 this.table.put(f, tmpVector);
@@ -151,7 +153,7 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
             } else {
                 Object key = super.getValueAt(row, 0);
                 if (key instanceof Formula) {
-                    Vector<Object> v = this.table.get(key);
+                    List<Object> v = this.table.get(key);
                     if (column - 1 < v.size()) {
                         result = v.get(column - 1);
                     } else {
@@ -176,7 +178,7 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
             // "+aValue+" at: "+column);
             try {
                 super.setValueAt(aValue, row, column);
-                Vector<Object> v = this.table.get(key);
+                List<Object> v = this.table.get(key);
                 // System.out.println("v: "+v);
                 if (v != null) {
                     v.remove(column - 1);
@@ -188,7 +190,7 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
             }
         }
 
-        public Hashtable<Object, Vector<Object>> getTable() {
+        public Hashtable<Object, List<Object>> getTable() {
             return this.table;
         }
 
@@ -218,7 +220,7 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
     public class PriorityCellRenderer extends DefaultTableCellRenderer
             implements TableCellRenderer, MouseListener {
 
-        Vector<JCheckBox> checks;
+        List<JCheckBox> checks;
 
         int clmn;
 
@@ -242,7 +244,7 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
             for (int i = 0; i < size; i++) {
                 JCheckBox cb = new JCheckBox("", false);
                 cb.setBackground(Color.WHITE);
-                this.checks.addElement(cb);
+                this.checks.add(cb);
                 Object value = ((DefaultTableModel) this.jtable.getModel())
                         .getValueAt(i, indx);
 //				System.out.println(value);
@@ -300,7 +302,7 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
         public void mouseReleased(MouseEvent e) {
         }
 
-        public Vector<JCheckBox> getChecks() {
+        public List<JCheckBox> getChecks() {
             return this.checks;
         }
 
@@ -313,8 +315,8 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
      * @param constraints the constraints of a grammar
      * @param prioritiesAsString the priorities of a grammar
      */
-    public ConstraintPriorityDialog(JFrame parent, Vector<Formula> constraints,
-            Vector<String> prioritiesAsString) {
+    public ConstraintPriorityDialog(JFrame parent, List<Formula> constraints,
+            List<String> prioritiesAsString) {
         super(parent, true);
         // System.out.println("GraGraConstraintLayerGUI parent: "+parent);
         setTitle("Select Rule Priority");
@@ -425,12 +427,12 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
     }
 
     private void acceptValues() {
-        Hashtable<Object, Vector<Object>> tab = ((HashTableModel) this.constraintTable.getModel())
+        Hashtable<Object, List<Object>> tab = ((HashTableModel) this.constraintTable.getModel())
                 .getTable();
         for (Enumeration<?> e = tab.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
             // System.out.println(key);
-            Vector<?> l = tab.get(key);
+            List<?> l = tab.get(key);
             // System.out.println("l: "+l);
             Vector<Integer> v = new Vector<Integer>(l.size());
             for (int i = 0; i < l.size(); i++) {

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.cons;
 
@@ -46,6 +47,7 @@ import agg.xt_basis.Match;
 import agg.xt_basis.TypeException;
 import agg.xt_basis.csp.Completion_CSP;
 import agg.util.Pair;
+import java.util.List;
 
 public class AtomApplCond implements Evaluable {
 
@@ -180,11 +182,11 @@ public class AtomApplCond implements Evaluable {
 
     private boolean isEvaluable(final VarTuple vars, final CondMember condMem, final Graph g) {
         boolean result = true;
-        final Vector<String> varnames = g.getVariableNamesOfAttributes();
+        final List<String> varnames = g.getVariableNamesOfAttributes();
         if (condMem.isEnabled() && !condMem.isEvaluable(vars)) {
-            final Vector<String> condVars = condMem.getAllVariables();
+            final List<String> condVars = condMem.getAllVariables();
             for (int j = 0; j < condVars.size(); j++) {
-                final String vn = condVars.elementAt(j);
+                final String vn = condVars.get(j);
                 if (!vars.getVarMemberAt(vn).isSet()
                         && varnames.contains(vn)) {
                     result = false;
@@ -488,27 +490,27 @@ public class AtomApplCond implements Evaluable {
     private boolean checkConclusionMatchStructure(final OrdinaryMorphism conclMatch) {
         if (!conclMatch.isInjective()) {
             boolean ok = true;
-            Enumeration<GraphObject> conclMatchCodom = conclMatch.getCodomain();
-            while (conclMatchCodom.hasMoreElements() /*&& ok*/) {
-                GraphObject o = conclMatchCodom.nextElement();
-                Enumeration<GraphObject> oInverses = conclMatch.getInverseImage(o);
-                GraphObject inv1 = oInverses.nextElement();
+            Iterator<GraphObject> conclMatchCodom = conclMatch.getCodomain();
+            while (conclMatchCodom.hasNext()/*&& ok*/) {
+                GraphObject o = conclMatchCodom.next();
+                Iterator<GraphObject> oInverses = conclMatch.getInverseImage(o);
+                GraphObject inv1 = oInverses.next();
                 GraphObject inv_q1 = null;
-                if (this.po_q.getInverseImage(inv1).hasMoreElements()) {
-                    inv_q1 = this.po_q.getInverseImage(inv1).nextElement();
+                if (this.po_q.hasInverseImage(inv1)) {
+                    inv_q1 = this.po_q.firstOfInverseImage(inv1);
                 }
 
                 // ab hier kann kritisch werden!						
                 if (inv_q1 != null) {
-                    while (oInverses.hasMoreElements()) {
-                        GraphObject inv = oInverses.nextElement();
+                    while (oInverses.hasNext()) {
+                        GraphObject inv = oInverses.next();
                         GraphObject inv_q = null;
-                        if (this.po_q.getInverseImage(inv).hasMoreElements()) {
-                            inv_q = this.po_q.getInverseImage(inv).nextElement();
+                        if (this.po_q.hasInverseImage(inv)) {
+                            inv_q = this.po_q.firstOfInverseImage(inv);
                         }
                         if (inv_q != null
-                                && !this.itsAtomConstraint.getInverseImage(inv_q1).hasMoreElements()
-                                && !this.itsAtomConstraint.getInverseImage(inv_q).hasMoreElements()) {
+                                && !this.itsAtomConstraint.hasInverseImage(inv_q1)
+                                && !this.itsAtomConstraint.hasInverseImage(inv_q)) {
                             ok = false;
                             break;
                         }
@@ -563,18 +565,18 @@ public class AtomApplCond implements Evaluable {
 //		System.out.println(this.getClass().getName()+".createEquivalents()...");
         final Vector<AtomApplCond> v = new Vector<AtomApplCond>(0);
 
-        final Enumeration<GraphObject> eq = this.po_q.getCodomain();
-        while (eq.hasMoreElements()) {
-            final GraphObject objTq = eq.nextElement();
-            if (!this.po_t.getInverseImage(objTq).hasMoreElements()) {
+        final Iterator<GraphObject> eq = this.po_q.getCodomain();
+        while (eq.hasNext()) {
+            final GraphObject objTq = eq.next();
+            if (!this.po_t.hasInverseImage(objTq)) {
                 // objTq is from C without P
-                if (this.po_q.getInverseImage(objTq).hasMoreElements()) {
-//					GraphObject objC = this.po_q.getInverseImage(objTq).nextElement();
+                if (this.po_q.hasInverseImage(objTq)) {
+//					GraphObject objC = this.po_q.firstOfInverseImage(objTq) ;
 
-                    final Enumeration<GraphObject> et = this.po_t.getCodomain();
-                    while (et.hasMoreElements()) {
-                        final GraphObject objTt = et.nextElement();
-                        if (!this.po_q.getInverseImage(objTt).hasMoreElements()) {
+                    final Iterator<GraphObject> et = this.po_t.getCodomain();
+                    while (et.hasNext()) {
+                        final GraphObject objTt = et.next();
+                        if (!this.po_q.hasInverseImage(objTt)) {
                             // objTt is from S without P, also from R
 
                             boolean canGlue = false;
@@ -622,9 +624,7 @@ public class AtomApplCond implements Evaluable {
                                         // find objects to glue
                                         final GraphObject glue = isoT.getImage(objTq);
                                         final GraphObject keep = isoT.getImage(objTt);
-                                        final GraphObject obj_glue = equivalentQ
-                                                .getInverseImage(glue)
-                                                .nextElement();
+                                        final GraphObject obj_glue = equivalentQ.firstOfInverseImage(glue);
 
                                         boolean mappingOK = true;
                                         if (glue.getAttribute() == null
@@ -739,24 +739,18 @@ public class AtomApplCond implements Evaluable {
                 && (objTt.getTarget() == objTq.getTarget())) {
             canGlue = true;
         } else {
-            if (!this.po_t.getInverseImage(objTq.getSource())
-                    .hasMoreElements()
-                    && !this.itsAtomConstraint.getInverseImage(
-                            this.po_q.getInverseImage(
-                                    objTq.getSource()).nextElement())
-                            .hasMoreElements()
-                    && !this.po_q.getInverseImage(objTt.getSource())
-                            .hasMoreElements()) {
+            if (!this.po_t.hasInverseImage(objTq.getSource())
+                    && !this.itsAtomConstraint.hasInverseImage(
+                            this.po_q.firstOfInverseImage(
+                                    objTq.getSource()))
+                    && !this.po_q.hasInverseImage(objTt.getSource())) {
                 srcOK = true;
             }
-            if (!this.po_t.getInverseImage(objTq.getTarget())
-                    .hasMoreElements()
-                    && !this.itsAtomConstraint.getInverseImage(
-                            this.po_q.getInverseImage(
-                                    objTq.getTarget()).nextElement())
-                            .hasMoreElements()
-                    && !this.po_q.getInverseImage(objTt.getTarget())
-                            .hasMoreElements()) {
+            if (!this.po_t.hasInverseImage(objTq.getTarget())
+                    && !this.itsAtomConstraint.hasInverseImage(
+                            this.po_q.firstOfInverseImage(
+                                    objTq.getTarget()))
+                    && !this.po_q.hasInverseImage(objTt.getTarget())) {
                 tarOK = true;
             }
             canGlue = srcOK || tarOK;

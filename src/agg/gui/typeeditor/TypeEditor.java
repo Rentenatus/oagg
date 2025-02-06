@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.typeeditor;
 
@@ -574,7 +575,7 @@ public class TypeEditor implements TypeEventListener, StateEditable {
     private boolean canDeleteNodeType(EdType t) {
         EdGraph typeGraph = this.gragra.getTypeSet().getTypeGraph();
         if (typeGraph != null) {
-            Vector<EdNode> vec = typeGraph.getNodes(t);
+            List<EdNode> vec = typeGraph.getNodes(t);
             if (!vec.isEmpty()) {
                 EdNode n = vec.get(0);
                 if (typeGraph.containsIncomingOutgoingArcsAt(n)) {
@@ -609,14 +610,14 @@ public class TypeEditor implements TypeEventListener, StateEditable {
             }
             if (g != null && vec != null) {
                 if (go.isNode()) {
-                    Vector<EdArc> vIn = g.getIncomingArcs((EdNode) go);
+                    List<EdArc> vIn = g.getIncomingArcs((EdNode) go);
                     for (int j = 0; j < vIn.size(); j++) {
                         EdArc a = vIn.get(j);
                         if (!vec.contains(a)) {
                             vec.add(a);
                         }
                     }
-                    Vector<EdArc> vOut = g.getOutgoingArcs((EdNode) go);
+                    List<EdArc> vOut = g.getOutgoingArcs((EdNode) go);
                     for (int j = 0; j < vOut.size(); j++) {
                         EdArc a = vOut.get(j);
                         if (!vec.contains(a)) {

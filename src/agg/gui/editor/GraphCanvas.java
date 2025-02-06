@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.editor;
 
@@ -54,6 +55,7 @@ import agg.editor.impl.EdRuleScheme;
 import agg.editor.impl.EdType;
 import agg.editor.impl.EditUndoManager;
 import agg.editor.impl.Loop;
+import java.util.ArrayList;
 
 /**
  *
@@ -382,7 +384,7 @@ public class GraphCanvas extends JPanel {
                     /* after transformation step */
                     EdNode lastNode = null;
                     if (this.eGraph.getNodes().size() != 0) {
-                        lastNode = this.eGraph.getNodes().lastElement();
+                        lastNode = this.eGraph.getNodes().get(this.eGraph.getNodes().size() - 1);
                         int newHeight = getHeight();
                         while (lastNode.getY() > newHeight) {
                             newHeight = newHeight + this.viewport.getHeight() / 2;
@@ -837,7 +839,7 @@ public class GraphCanvas extends JPanel {
         try {
             TypeError typeError = null;
             // handle incoming arcs
-            Vector<EdArc> vIn = this.eGraph.getIncomingArcs(go);
+            List<EdArc> vIn = this.eGraph.getIncomingArcs(go);
             for (int i = 0; i < vIn.size(); i++) {
                 EdArc a = vIn.get(i);
 
@@ -852,7 +854,7 @@ public class GraphCanvas extends JPanel {
                 this.eGraph.addDeletedToUndo(a);
             }
             // handle outgoing arcs	
-            Vector<EdArc> vOut = this.eGraph.getOutgoingArcs(go);
+            List<EdArc> vOut = this.eGraph.getOutgoingArcs(go);
             for (int i = 0; i < vOut.size(); i++) {
                 EdArc a = vOut.get(i);
 
@@ -1029,7 +1031,7 @@ public class GraphCanvas extends JPanel {
         }
 
         if (this.eGraph.getBasisGraph().isTypeGraph()) {
-            deleteTypeGraphObject((List<?>) this.eGraph.getSelectedObjs().clone());
+            deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
         } else {
             try {
                 this.eGraph.deleteSelectedNodes();
@@ -1052,7 +1054,7 @@ public class GraphCanvas extends JPanel {
         }
 
         if (this.eGraph.getBasisGraph().isTypeGraph()) {
-            deleteTypeGraphObject((List<?>) this.eGraph.getSelectedObjs().clone());
+            deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
         } else {
             try {
                 this.eGraph.deleteSelectedArcs();
@@ -1075,15 +1077,16 @@ public class GraphCanvas extends JPanel {
         }
 
         if (this.eGraph.getBasisGraph().isTypeGraph()) {
-            deleteTypeGraphObject((List<?>) this.eGraph.getSelectedObjs().clone());
+            deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
+
         } else {
-            List<?> list = (List<?>) this.eGraph.getSelectedArcs().clone();
+            List<?> list = new ArrayList<>(this.eGraph.getSelectedArcs());
             for (int i = 0; i < list.size(); i++) {
                 final EdArc obj = (EdArc) list.get(i);
                 this.deleteArcObject(obj, obj.getSource().isSelected(), obj.getTarget().isSelected());
             }
 
-            list = (List<?>) this.eGraph.getSelectedNodes().clone();
+            list = new ArrayList<>(this.eGraph.getSelectedNodes());
             for (int i = 0; i < list.size(); i++) {
                 final EdNode obj = (EdNode) list.get(i);
                 this.deleteNodeObject(obj);
@@ -1092,7 +1095,7 @@ public class GraphCanvas extends JPanel {
     }
 
     private void deleteTypeGraphObject(final List<?> gos) {
-        final Vector<EdGraphObject> deletedObjs = new Vector<EdGraphObject>();
+        final List<EdGraphObject> deletedObjs = new Vector<EdGraphObject>();
         final boolean showWarning = true;
         for (int i = 0; i < gos.size(); i++) {
             EdGraphObject go = (EdGraphObject) gos.get(i);
@@ -1180,22 +1183,22 @@ public class GraphCanvas extends JPanel {
         }
 
         if (canDelete) {
-            Vector<EdGraphObject> objs = new Vector<EdGraphObject>();
+            List<EdGraphObject> objs = new Vector<EdGraphObject>();
             objs.add(go);
             deletedObjs.add(go);
 
             if (go.isNode()) {
                 // // inheritance : TEST!
-                // Vector<EdNode> parents = this.eGraph.getParentsOf((EdNode) go);
+                // List<EdNode> parents = this.eGraph.getParentsOf((EdNode) go);
                 // if(parents.size() > 0)
                 // this.eGraph.addChangedParentToUndo(go);
-                // Vector<EdNode> childrens = this.eGraph.getChildrenOf((EdNode) go);
+                // List<EdNode> childrens = this.eGraph.getChildrenOf((EdNode) go);
                 // for(int j=0; j<childrens.size(); j++){
                 // EdNode ch = (EdNode) childrens.get(j);
                 // this.eGraph.addChangedParentToUndo(ch);
                 // }
 
-                Vector<EdArc> vIn = this.eGraph.getIncomingArcs((EdNode) go);
+                List<EdArc> vIn = this.eGraph.getIncomingArcs((EdNode) go);
                 for (int i = 0; i < vIn.size(); i++) {
                     EdArc a = vIn.get(i);
                     if (!deletedObjs.contains(a)) {
@@ -1203,7 +1206,7 @@ public class GraphCanvas extends JPanel {
                         deletedObjs.add(a);
                     }
                 }
-                Vector<EdArc> vOut = this.eGraph.getOutgoingArcs((EdNode) go);
+                List<EdArc> vOut = this.eGraph.getOutgoingArcs((EdNode) go);
                 for (int i = 0; i < vOut.size(); i++) {
                     EdArc a = vOut.get(i);
                     if (!deletedObjs.contains(a)) {
@@ -1282,17 +1285,17 @@ public class GraphCanvas extends JPanel {
                 && (this.eGraph.getTypeSet().getBasisTypeSet().getLevelOfTypeGraphCheck() <= TypeSet.DISABLED
                 || !this.eGraph.getTypeSet().isTypeUsed(srcNode.getType()))) {
 
-            Vector<EdNode> parents = this.eGraph.getParentsOf(srcNode);
+            List<EdNode> parents = this.eGraph.getParentsOf(srcNode);
             if (!parents.isEmpty()) {
                 EdNode tarNode = parents.get(0);
 
                 boolean canRemoveIR = !this.eGraph.getTypeSet().hasTypeUser(srcNode.getType());
                 if (!canRemoveIR) {
-                    Vector<EdArc> usedArcTypes = this.eGraph.getTypeSet().
+                    List<EdArc> usedArcTypes = this.eGraph.getTypeSet().
                             getTypeArcOfInheritedArcsInUse(srcNode.getType().getBasisType(), tarNode.getType().getBasisType());
 
                     if (!usedArcTypes.isEmpty()) {
-                        Vector<String> names = new Vector<String>(usedArcTypes.size());
+                        List<String> names = new Vector<String>(usedArcTypes.size());
                         for (int i = 0; i < usedArcTypes.size(); i++) {
                             names.add(usedArcTypes.get(i).getType().getName());
                         }
@@ -1375,11 +1378,11 @@ public class GraphCanvas extends JPanel {
 
             boolean canRemoveIR = !this.eGraph.getTypeSet().hasTypeUser(srcNode.getType());
             if (!canRemoveIR) {
-                Vector<EdArc> usedArcTypes = this.eGraph.getTypeSet().
+                List<EdArc> usedArcTypes = this.eGraph.getTypeSet().
                         getTypeArcOfInheritedArcsInUse(srcNode.getType().getBasisType(), tarNode.getType().getBasisType());
 
                 if (!usedArcTypes.isEmpty()) {
-                    Vector<String> names = new Vector<String>(usedArcTypes.size());
+                    List<String> names = new Vector<String>(usedArcTypes.size());
                     for (int i = 0; i < usedArcTypes.size(); i++) {
                         names.add(usedArcTypes.get(i).getType().getName());
                     }
@@ -1509,10 +1512,10 @@ public class GraphCanvas extends JPanel {
         int X = (int) ((x + 10) / this.scale);
         int Y = (int) ((y + 10) / this.scale);
 
-        Vector<EdGraphObject> res = this.eGraph.copySelected(X, Y);
+        List<EdGraphObject> res = this.eGraph.copySelected(X, Y);
 
         if (res != null && !res.isEmpty()) {
-            Vector<EdGraphObject> vec = new Vector<EdGraphObject>(res);
+            List<EdGraphObject> vec = new Vector<EdGraphObject>(res);
             this.eGraph.addCreatedToUndo(vec);
             this.eGraph.undoManagerEndEdit();
 
@@ -1547,9 +1550,9 @@ public class GraphCanvas extends JPanel {
         int Y = (int) ((y + 10) / this.scale);
 
         targetGraph.setGraphToCopy(this.eGraph.getSelectedAsGraph());
-        Vector<EdGraphObject> res = targetGraph.copySelected(X, Y);
+        List<EdGraphObject> res = targetGraph.copySelected(X, Y);
         if (res != null && !res.isEmpty()) {
-            Vector<EdGraphObject> vec = new Vector<EdGraphObject>(res);
+            List<EdGraphObject> vec = new Vector<EdGraphObject>(res);
             targetGraph.addCreatedToUndo(vec);
             targetGraph.undoManagerEndEdit();
 
@@ -1703,7 +1706,7 @@ public class GraphCanvas extends JPanel {
             return false;
         }
         if (this.eGraph.hasSelection()) {
-//			Vector<EdGraphObject> vec = new Vector<EdGraphObject>();
+//			List<EdGraphObject> vec = new Vector<EdGraphObject>();
 //			vec.addAll(this.eGraph.getSelectedArcs());
             if (this.eGraph.straightSelectedArcs()) {
 //				this.eGraph.undoManagerEndEdit();
@@ -2045,7 +2048,7 @@ public class GraphCanvas extends JPanel {
                 } else {
                     EdType arcType = this.eGraph.getTypeSet().getSelectedArcType();
                     if (arcType != null) {
-                        Vector<Type> v = arcType.getBasisType()
+                        List<Type> v = arcType.getBasisType()
                                 .getTargetsOfArc(this.src.getType().getBasisType());
                         if (!this.eGraph.isTypeGraph() && v.size() == 1) {
                             drawOKImage(0, x, y);
@@ -2196,7 +2199,7 @@ public class GraphCanvas extends JPanel {
             tarWasNull = true;
             EdType arcType = this.eGraph.getTypeSet().getSelectedArcType();
             if (arcType != null) {
-                Vector<Type> v = arcType.getBasisType()
+                List<Type> v = arcType.getBasisType()
                         .getTargetsOfArc(this.src.getType().getBasisType());
 
                 if (checkTargetOfMagicArc(this.src.getType(), this.eGraph.getTypeSet()
@@ -2205,7 +2208,7 @@ public class GraphCanvas extends JPanel {
                     EdType nodeType = this.eGraph.getTypeSet()
                             .getSelectedNodeType();
                     if (v.size() == 1) {
-                        nodeType = this.eGraph.getTypeSet().getNodeType(v.firstElement());
+                        nodeType = this.eGraph.getTypeSet().getNodeType(v.get(0));
                     }
 
                     if (this.canCreateNodeOfType(nodeType.getBasisType(),
@@ -2215,8 +2218,7 @@ public class GraphCanvas extends JPanel {
                 } else {
                     if (!this.eGraph.isTypeGraph()) {
                         if (v.size() == 1) {
-                            EdType nodeType = this.eGraph.getTypeSet().getNodeType(
-                                    v.firstElement());
+                            EdType nodeType = this.eGraph.getTypeSet().getNodeType(v.get(0));
 
                             if (this.canCreateNodeOfType(nodeType.getBasisType(),
                                     arcType.getBasisType(), this.src.getType().getBasisType())) {
@@ -2278,15 +2280,14 @@ public class GraphCanvas extends JPanel {
                 cannotCreateErrorMessage(" Create edge ", " an edge",
                         "There isn't any edge type selected.");
             } else if (this.src != null) {
-                Vector<Type> v = arcType.getBasisType()
+                List<Type> v = arcType.getBasisType()
                         .getTargetsOfArc(this.src.getType().getBasisType());
 
                 if (checkTargetOfMagicArc(this.src.getType(), this.eGraph.getTypeSet()
                         .getSelectedNodeType())) {
 
                     if (v.size() == 1) {
-                        EdType nodeType = this.eGraph.getTypeSet().getNodeType(
-                                v.firstElement());
+                        EdType nodeType = this.eGraph.getTypeSet().getNodeType(v.get(0));
 
                         if (this.canCreateNodeOfType(nodeType.getBasisType(),
                                 arcType.getBasisType(), this.src.getType().getBasisType())) {
@@ -2314,8 +2315,7 @@ public class GraphCanvas extends JPanel {
                 } else {
                     if (!this.eGraph.isTypeGraph()) {
                         if (v.size() == 1) {
-                            EdType nodeType = this.eGraph.getTypeSet().getNodeType(
-                                    v.firstElement());
+                            EdType nodeType = this.eGraph.getTypeSet().getNodeType(v.get(0));
 
                             if (this.canCreateNodeOfType(nodeType.getBasisType(),
                                     arcType.getBasisType(), this.src.getType().getBasisType())) {
@@ -2469,7 +2469,7 @@ public class GraphCanvas extends JPanel {
     }
 
     private void selectObjectsInside(Rectangle rect) {
-        Vector<EdGraphObject> selSet = new Vector<EdGraphObject>();
+        List<EdGraphObject> selSet = new Vector<EdGraphObject>();
         int k = -1;
         boolean deselectDone = false;
         for (int i = 0; i < this.eGraph.getNodes().size(); i++) {
@@ -2497,7 +2497,7 @@ public class GraphCanvas extends JPanel {
             }
         }
         for (int i = 0; i < this.eGraph.getArcs().size(); i++) {
-            EdArc ea = this.eGraph.getArcs().elementAt(i);
+            EdArc ea = this.eGraph.getArcs().get(i);
             if (selSet.contains(ea.getSource())
                     && selSet.contains(ea.getTarget())) {
                 this.eGraph.select(ea);
@@ -2519,7 +2519,7 @@ public class GraphCanvas extends JPanel {
 
     private void moveSelected(int DX, int DY) {
         for (int i = 0; i < this.eGraph.getSelectedNodes().size(); i++) {
-            EdNode en = this.eGraph.getSelectedNodes().elementAt(i);
+            EdNode en = this.eGraph.getSelectedNodes().get(i);
             this.eGraph.moveNodeAndNotSelectedInOutArcs(en, DX, DY);
             // set xyattr 
             if (this.pickedNode.getBasisNode().xyAttr
@@ -2532,7 +2532,7 @@ public class GraphCanvas extends JPanel {
         }
 
         for (int i = 0; i < this.eGraph.getArcs().size(); i++) {
-            EdArc ea = this.eGraph.getArcs().elementAt(i);
+            EdArc ea = this.eGraph.getArcs().get(i);
             if (ea.isLine() && ea.hasAnchor()) {
                 if (ea.isSelected()) {
                     if (ea.getSource().isSelected()
@@ -2565,7 +2565,7 @@ public class GraphCanvas extends JPanel {
         }
         if ((dependOn == DEPEND_ON_LAST_OBJECT)
                 && (this.eGraph.getNodes().size() != 0)) {
-            EdGraphObject go = this.eGraph.getNodes().lastElement();
+            EdGraphObject go = this.eGraph.getNodes().get(this.eGraph.getNodes().size() - 1);
             if (go.getX() >= (this.hsb.getValue() + this.hsb.getVisibleAmount())) {
                 this.hsbValue = go.getX() + go.getWidth() - this.hsb.getVisibleAmount();
                 this.hsb.setValue(this.hsbValue);

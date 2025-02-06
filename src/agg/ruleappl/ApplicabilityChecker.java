@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 /**
  *
@@ -49,6 +48,7 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import java.util.Map;
 
 /**
  * @author olga
@@ -971,7 +971,7 @@ public class ApplicabilityChecker implements Runnable {
         try {
             if (!this.gragra.isLayered()
                     || r1.getLayer() == r2.getLayer()) {
-                final Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> conflicts = excludePair.isCritical(CriticalPair.CONFLICT, r1, r2);
+                final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> conflicts = excludePair.isCritical(CriticalPair.CONFLICT, r1, r2);
                 if (conflicts != null && !conflicts.isEmpty()) {
                     result = false;
                     if (indx_r1 >= 0 && indx_r1 >= 0) {
@@ -982,10 +982,10 @@ public class ApplicabilityChecker implements Runnable {
                                 if (objFlow != null && !objFlow.isEmpty()) {
                                     boolean inside = false;
                                     final List<Object> inputs = objFlow.getInputs();
-                                    final Enumeration<GraphObject> objs = pair.second.getDomain();
-                                    while (objs.hasMoreElements() && !inside) {
-                                        final GraphObject obj = objs.nextElement();
-                                        if (pair.first.getInverseImage(pair.second.getImage(obj)).hasMoreElements()
+                                    final Iterator<GraphObject> objs = pair.second.getDomain();
+                                    while (objs.hasNext() && !inside) {
+                                        final GraphObject obj = objs.next();
+                                        if (pair.first.hasInverseImage(pair.second.getImage(obj))
                                                 && inputs.contains(obj)) {
                                             inside = true;
                                         }
@@ -1014,7 +1014,7 @@ public class ApplicabilityChecker implements Runnable {
     /*
 	private boolean asymParallelIndependentByCPA(final Rule r1, final Rule r2, final Graph graph) {		
 		final CriticalRulePairAtGraph crp = new CriticalRulePairAtGraph(r1, r2, graph);
-//		final Vector<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> 
+//		final List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> 
 //		crpResult = crp.isCriticalAtGraph(); 
 		return (crp.isCriticalAtGraph() == null);
 	}
@@ -1418,14 +1418,14 @@ public class ApplicabilityChecker implements Runnable {
             return null;
         }
 
-        List<ConcurrentRule> crs = new Vector<ConcurrentRule>(1);
+        List<ConcurrentRule> crs = new Vector<>(1);
         for (int i = 1; i < seq.size(); i++) {
             Rule ri = seq.get(i);
             int preI = i - 1;
             Rule preR = seq.get(preI);
             List<List<ConcurrentRule>> concurRuleListsOfRule = this.getListsOfConcurrentRulesOfRule(ri, i);
             if (concurRuleListsOfRule == null) {
-                concurRuleListsOfRule = new Vector<List<ConcurrentRule>>();
+                concurRuleListsOfRule = new Vector<>();
                 this.ruleSequence.putListsOfConcurrentRules(ri, i, concurRuleListsOfRule);
             }
             List<ConcurrentRule> list = null;
@@ -1435,7 +1435,7 @@ public class ApplicabilityChecker implements Runnable {
             } else {
                 if (this.getListsOfConcurrentRulesOfRule(preR, preI) != null) {
                     List<ConcurrentRule> listOfPreRule = this.getListsOfConcurrentRulesOfRule(preR, preI).get(0);
-                    list = new Vector<ConcurrentRule>();
+                    list = new Vector<>();
                     for (int c = 0; c < listOfPreRule.size(); c++) {
                         ConcurrentRule cr = listOfPreRule.get(c);
                         list.addAll(this.makeConcurrentRulesDuetoDependency(cr, ri, null));
@@ -1603,7 +1603,6 @@ public class ApplicabilityChecker implements Runnable {
 		return result;
 	}
      */
-
     private boolean noEnablingPredecessor(
             final List<Rule> sequence,
             final int i,
@@ -1639,12 +1638,12 @@ public class ApplicabilityChecker implements Runnable {
         embedding.setCompletionStrategy(this.strategy, true);
         boolean result = false;
         while (embedding.nextCompletionWithConstantsChecking() && !result) {
-            Enumeration<GraphObject> codom = embedding.getCodomain();
+            Iterator<GraphObject> codom = embedding.getCodomain();
             // exist l21 : L2 -> R1
-            while (codom.hasMoreElements()) {
-                GraphObject obj = codom.nextElement();
+            while (codom.hasNext()) {
+                GraphObject obj = codom.next();
                 // rule r1 produce at least one object which is used in LHS of r2
-                if (!r1.getInverseImage(obj).hasMoreElements()) {
+                if (!r1.hasInverseImage(obj)) {
                     result = true;
 
                     if (this.ruleSequence.isObjFlowActive()) {
@@ -1700,28 +1699,28 @@ public class ApplicabilityChecker implements Runnable {
             List<GraphObject> goIP = preRuleIP.getInputParameterObjectsRight(inputParams);
 
             // collect objects with variable of the conditions of ruleAC
-            Vector<String> varsAC = ((CondTuple) ruleAC.getAttrContext().getConditions()).getAllVariables();
-            List<GraphObject> goAC = new Vector<GraphObject>();
+            List<String> varsAC = ((CondTuple) ruleAC.getAttrContext().getConditions()).getAllVariables();
+            List<GraphObject> goAC = new Vector<>();
 
             // find LHS object with variable of the conditions of ruleAC
             addObjsWithVarOfCond(ruleAC.getLeft(), varsAC, null, goAC);
 
             // find PAC object with variable in the conditions of ruleAC
-            Enumeration<OrdinaryMorphism> morphs = ruleAC.getPACs();
-            while (morphs.hasMoreElements()) {
-                OrdinaryMorphism morph = morphs.nextElement();
+            Iterator<OrdinaryMorphism> morphs = ruleAC.getPACs();
+            while (morphs.hasNext()) {
+                OrdinaryMorphism morph = morphs.next();
                 addObjsWithVarOfCond(morph.getTarget(), varsAC, morph, goAC);
             }
             // find NAC object with variable in the conditions of ruleAC
             morphs = ruleAC.getNACs();
-            while (morphs.hasMoreElements()) {
-                OrdinaryMorphism morph = morphs.nextElement();
+            while (morphs.hasNext()) {
+                OrdinaryMorphism morph = morphs.next();
                 addObjsWithVarOfCond(morph.getTarget(), varsAC, morph, goAC);
             }
 
-            Enumeration<GraphObject> dom = ruleLHS2preRuleRHS.getDomain();
-            while (dom.hasMoreElements()) {
-                GraphObject go_ac = dom.nextElement();
+            Iterator<GraphObject> dom = ruleLHS2preRuleRHS.getDomain();
+            while (dom.hasNext()) {
+                GraphObject go_ac = dom.next();
                 GraphObject go_ip = ruleLHS2preRuleRHS.getImage(go_ac);
                 if (goAC.contains(go_ac) && goIP.contains(go_ip)) {
                     return true;
@@ -1744,7 +1743,7 @@ public class ApplicabilityChecker implements Runnable {
 			List<GraphObject> goIPright = rule.getInputParameterObjectsRight(inputParams);
 			
 			// collect objects with variable of the conditions of rule
-			Vector<String> varsAC = ((CondTuple) rule.getAttrContext().getConditions()).getAllVariables();
+			List<String> varsAC = ((CondTuple) rule.getAttrContext().getConditions()).getAllVariables();
 			List<GraphObject> goAC = new Vector<GraphObject>();
 			
 			// find LHS object with variable of conditions of rule
@@ -1824,8 +1823,8 @@ public class ApplicabilityChecker implements Runnable {
                                 if (!list.contains(go)) {
                                     list.add(go);
                                 }
-                            } else if (morph.getInverseImage(go).hasMoreElements()) {
-                                GraphObject go1 = morph.getInverseImage(go).nextElement();
+                            } else if (morph.hasInverseImage(go)) {
+                                GraphObject go1 = morph.firstOfInverseImage(go);
                                 if (!list.contains(go1)) {
                                     list.add(go1);
                                 }
@@ -1926,15 +1925,15 @@ public class ApplicabilityChecker implements Runnable {
      * false.
      */
     private boolean checkForbiddenObjects(
-            final Enumeration<OrdinaryMorphism> nacs,
+            final Iterator<OrdinaryMorphism> nacs,
             final Rule r,
             final Graph g) {
 
         final List<GraphObject> toCreate = r.getElementsToCreate();
         boolean found = false;
 
-        while (nacs.hasMoreElements() && !found) {
-            OrdinaryMorphism nac = nacs.nextElement();
+        while (nacs.hasNext() && !found) {
+            OrdinaryMorphism nac = nacs.next();
 
             found = checkForbiddenObjs(nac,
                     g,
@@ -1963,7 +1962,7 @@ public class ApplicabilityChecker implements Runnable {
 
         while (iter.hasNext()) {
             GraphObject elem = (GraphObject) iter.next();
-            if (!nac.getInverseImage(elem).hasMoreElements()) {
+            if (!nac.hasInverseImage(elem)) {
                 Type t = elem.getType();
                 // check RHS of rule
                 for (int i = 0; i < toCreate.size(); i++) {
@@ -1984,7 +1983,7 @@ public class ApplicabilityChecker implements Runnable {
                 }
                 if (!found) {
                     // check graph
-                    Hashtable<String, HashSet<GraphObject>> type2objects = g.getTypeObjectsMap();
+                    Map<String, HashSet<GraphObject>> type2objects = g.getTypeObjectsMap();
                     if (elem.isNode()) {
                         String key = elem.convertToKey();
                         if (type2objects.get(key) != null
@@ -2009,14 +2008,14 @@ public class ApplicabilityChecker implements Runnable {
      * Application Conditions nacs of an other rule. Otherwise false.
      */
     private boolean checkForbiddenObjects(
-            final Enumeration<OrdinaryMorphism> nacs,
+            final Iterator<OrdinaryMorphism> nacs,
             final Rule r) {
 
         final List<GraphObject> toCreate = r.getElementsToCreate();
         boolean found = false;
 
-        while (nacs.hasMoreElements() && !found) {
-            OrdinaryMorphism nac = nacs.nextElement();
+        while (nacs.hasNext() && !found) {
+            OrdinaryMorphism nac = nacs.next();
 
             found = doCheckForbiddenObjs(nac, toCreate, nac.getTarget().getNodesSet().iterator())
                     || doCheckForbiddenObjs(nac, toCreate, nac.getTarget().getArcsSet().iterator());
@@ -2032,7 +2031,7 @@ public class ApplicabilityChecker implements Runnable {
         boolean noObj = !toCreate.isEmpty();
         while (elems.hasNext()) {
             GraphObject elem = (GraphObject) elems.next();
-            if (!nac.getInverseImage(elem).hasMoreElements()) {
+            if (!nac.hasInverseImage(elem)) {
                 Type t = elem.getType();
                 // check new objects of rule
                 for (int i = 0; i < toCreate.size(); i++) {
@@ -2129,7 +2128,7 @@ public class ApplicabilityChecker implements Runnable {
             // OLD part,  TODO: refactoring
             List<List<ConcurrentRule>> concurRuleLists = this.ruleSequence.getListsOfConcurrentRules(ri, i);
             if (concurRuleLists == null) {
-                concurRuleLists = new Vector<List<ConcurrentRule>>();
+                concurRuleLists = new Vector<>();
                 this.ruleSequence.putListsOfConcurrentRules(ri, i, concurRuleLists);
             }
 
@@ -2187,7 +2186,7 @@ public class ApplicabilityChecker implements Runnable {
                 // get new list of concurrent rules of the current rule ri
                 List<List<ConcurrentRule>> concurRuleLists = this.ruleSequence.getListsOfConcurrentRules(ri, i);
                 if (concurRuleLists == null) {
-                    concurRuleLists = new Vector<List<ConcurrentRule>>();
+                    concurRuleLists = new Vector<>();
                     this.ruleSequence.putListsOfConcurrentRules(ri, i, concurRuleLists);
                 }
                 // make concurrent rule(s) due to dependency pair overlapping
@@ -2250,7 +2249,7 @@ public class ApplicabilityChecker implements Runnable {
 //			
 //			if (cr.isApplicable(g, this.gragraStrategy, false)) {	
 //				
-//				Vector<Rule> tmp = new Vector<Rule>();
+//				List<Rule> tmp = new Vector<Rule>();
 //				tmp.addAll(sequence);
 //				tmp.remove(i);
 //				tmp.remove(i-1);
@@ -2351,12 +2350,12 @@ public class ApplicabilityChecker implements Runnable {
         boolean result = true;
         int concurrrentRuleDepth = cr.getDepth();
 
-        Vector<Rule> remainList = new Vector<Rule>();
+        List<Rule> remainList = new Vector<>();
         for (int l = i + 1; l < sequence.size(); l++) {
             remainList.add(sequence.get(l));
         }
 
-        Vector<Rule> crSourceList = new Vector<Rule>();
+        List<Rule> crSourceList = new Vector<>();
         int start = i - concurrrentRuleDepth;
         for (int l = start; l <= i; l++) {
             crSourceList.add(sequence.get(l));
@@ -2412,7 +2411,7 @@ public class ApplicabilityChecker implements Runnable {
 //		System.out.println("=== >>>  concurrentRuleAsymParallelIndependentByCPA: check conflicts of concurrent rule...");
 
         boolean result = true;
-        Vector<Rule> tmp = new Vector<Rule>();
+        List<Rule> tmp = new Vector<>();
         tmp.addAll(sequence);
         int n = 0;
         while (concurdepth - n >= 0) {
@@ -2489,7 +2488,7 @@ public class ApplicabilityChecker implements Runnable {
 				System.out.println("---> Concurrent rule: "+cr.getName());		
 			
 				if (cr.isApplicable(g, strategy, false)) {					
-					Vector<Rule> tmp = new Vector<Rule>();
+					List<Rule> tmp = new Vector<Rule>();
 					tmp.addAll(sequence);
 					tmp.add(i, cr);
 					tmp.remove(i-1);
@@ -2577,7 +2576,7 @@ public class ApplicabilityChecker implements Runnable {
             final int listIndx) {
         List<List<ConcurrentRule>> lists = this.ruleSequence.getListsOfConcurrentRules(r, indx);
         if (lists == null) {
-            lists = new Vector<List<ConcurrentRule>>();
+            lists = new Vector<>();
             this.ruleSequence.putListsOfConcurrentRules(r, indx, lists);
             return null;
         } else if (listIndx < lists.size()) {
@@ -2616,13 +2615,13 @@ public class ApplicabilityChecker implements Runnable {
                 }
 
                 if (crListOfPreRule != null) {
-                    final List<ConcurrentRule> list = new Vector<ConcurrentRule>();
+                    final List<ConcurrentRule> list = new Vector<>();
                     for (int c = 0; c < crListOfPreRule.size(); c++) {
                         final ConcurrentRule cr = crListOfPreRule.get(c);
                         list.addAll(this.makeConcurrentRulesDuetoDependency(cr, r, matchmap));
                     }
                     while (crsOfRule.size() < x) {
-                        crsOfRule.add(new Vector<ConcurrentRule>());
+                        crsOfRule.add(new Vector<>());
                     }
                     crsOfRule.add(list);
                     res = true;
@@ -2660,7 +2659,7 @@ public class ApplicabilityChecker implements Runnable {
         final List<List<ConcurrentRule>> crListsOfRuleI_1 = this.getListsOfConcurrentRulesOfRule(ri_1, i_1);
         if (crListsOfRuleI_1 != null && !crListsOfRuleI_1.isEmpty()) {
             for (int l = 0; l < crListsOfRuleI_1.size() && !result; l++) {
-                List<ConcurrentRule> listAll = new Vector<ConcurrentRule>();
+                List<ConcurrentRule> listAll = new Vector<>();
                 crListsOfRuleI.add(listAll);
                 List<ConcurrentRule> crList = crListsOfRuleI_1.get(l);
                 for (int c = 0; c < crList.size() && !result; c++) {
@@ -2708,7 +2707,7 @@ public class ApplicabilityChecker implements Runnable {
                         }
                     }
 
-                    list = new Vector<ConcurrentRule>();
+                    list = new Vector<>();
                     for (int c = 0; c < listOfPreRule.size(); c++) {
                         final ConcurrentRule cr = listOfPreRule.get(c);
                         list.addAll(this.makeConcurrentRulesDuetoDependency(cr, r1, null));
@@ -2839,7 +2838,7 @@ public class ApplicabilityChecker implements Runnable {
 
         List<ConcurrentRule> list = null;
         try {
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
             if (criticalPairs != null) {
                 list = dependencyContainer.getConcurrentRules();
                 // check overlappings against ObjectFlow
@@ -2888,7 +2887,7 @@ public class ApplicabilityChecker implements Runnable {
 
         List<ConcurrentRule> list = null;
         try {
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
             if (criticalPairs != null) {
                 list = dependencyContainer.getConcurrentRules();
             }
@@ -2896,7 +2895,7 @@ public class ApplicabilityChecker implements Runnable {
         }
 
         if (list == null) {
-            list = new Vector<ConcurrentRule>(1);
+            list = new Vector<>(1);
         } else {
             for (int i = 0; i < list.size(); i++) {
                 list.get(i).setIndexOfFirstSourceRule(indx_r1);
@@ -2937,7 +2936,7 @@ public class ApplicabilityChecker implements Runnable {
 
         List<ConcurrentRule> list = null;
         try {
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(cr1.getRule(), r2, CriticalPair.EXCLUDE, true);
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(cr1.getRule(), r2, CriticalPair.EXCLUDE, true);
             if (criticalPairs != null) {
                 list = dependencyContainer.getConcurrentRules();
             }
@@ -2945,7 +2944,7 @@ public class ApplicabilityChecker implements Runnable {
         }
 
         if (list == null) {
-            list = new Vector<ConcurrentRule>(1);
+            list = new Vector<>(1);
         }
 
         if (this.completeConcurrency) {
@@ -2990,7 +2989,7 @@ public class ApplicabilityChecker implements Runnable {
             final List<ConcurrentRule> crules,
             int indx_cr) {
 
-        final List<ConcurrentRule> reslist = new Vector<ConcurrentRule>();
+        final List<ConcurrentRule> reslist = new Vector<>();
         if (this.completeConcurRuleBackward) {
             for (int i = 0; i < crules.size(); i++) {
                 final ConcurrentRule cr = crules.get(i);
@@ -3089,7 +3088,7 @@ public class ApplicabilityChecker implements Runnable {
 //			((CondTuple) r1.getAttrContext().getConditions()).showConditions();
         }
 
-        final List<ConcurrentRule> list = new Vector<ConcurrentRule>();
+        final List<ConcurrentRule> list = new Vector<>();
 
         Pair<Pair<Rule, Boolean>, Pair<OrdinaryMorphism, OrdinaryMorphism>> inverseRulePair = BaseFactory.theFactory().reverseRule(r1);
         Rule inverseRule1 = inverseRulePair.first.first;
@@ -3132,8 +3131,8 @@ public class ApplicabilityChecker implements Runnable {
 
                             System.out.println("=== >>>  Concurrent rule: "
                                     + cr.getRule().getName()
-                                    + "  has NACs: " + cr.getRule().getNACs().hasMoreElements()
-                                    + ", has PACs: " + cr.getRule().getPACs().hasMoreElements());
+                                    + "  has NACs: " + cr.getRule().getNACs().hasNext()
+                                    + ", has PACs: " + cr.getRule().getPACs().hasNext());
                             //						((VarTuple) cr.getRule().getAttrContext().getVariables()).showVariables();
                         }
                     }
@@ -3166,7 +3165,7 @@ public class ApplicabilityChecker implements Runnable {
 //			((VarTuple) rule1.getAttrContext().getVariables()).showVariables();
         }
 
-        final List<ConcurrentRule> list = new Vector<ConcurrentRule>();
+        final List<ConcurrentRule> list = new Vector<>();
 
 //		final Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>> 
 //			inverseRulePair = BaseFactory.theFactory().makeInverseRule(r1);
@@ -3188,8 +3187,8 @@ public class ApplicabilityChecker implements Runnable {
 
                 System.out.println("=== >>>  ApplicabilityChecker.makeConcurrentRules::  DISJOINT  CR: "
                         + cr.getRule().getName()
-                        + "  has NACs: " + cr.getRule().getNACs().hasMoreElements()
-                        + ", has PACs: " + cr.getRule().getPACs().hasMoreElements());
+                        + "  has NACs: " + cr.getRule().getNACs().hasNext()
+                        + ", has PACs: " + cr.getRule().getPACs().hasNext());
                 list.add(cr);
             }
         }
@@ -3315,21 +3314,21 @@ public class ApplicabilityChecker implements Runnable {
     private List<GraphObject> getOverlappingObjectsOfFirstMorphism(
             final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping) {
 
-        List<GraphObject> list = new Vector<GraphObject>();
+        List<GraphObject> list = new Vector<>();
         Iterator<?> elems = overlapping.first.getTarget().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
-            if (overlapping.second.getInverseImage(go).hasMoreElements()
-                    && overlapping.first.getInverseImage(go).hasMoreElements()) {
-                list.add(overlapping.first.getInverseImage(go).nextElement());
+            if (overlapping.second.hasInverseImage(go)
+                    && overlapping.first.hasInverseImage(go)) {
+                list.add(overlapping.first.firstOfInverseImage(go));
             }
         }
         elems = overlapping.first.getTarget().getArcsSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
-            if (overlapping.second.getInverseImage(go).hasMoreElements()
-                    && overlapping.first.getInverseImage(go).hasMoreElements()) {
-                list.add(overlapping.first.getInverseImage(go).nextElement());
+            if (overlapping.second.hasInverseImage(go)
+                    && overlapping.first.hasInverseImage(go)) {
+                list.add(overlapping.first.firstOfInverseImage(go));
             }
         }
         return list;
@@ -3429,7 +3428,7 @@ public class ApplicabilityChecker implements Runnable {
 			final DependencyPairContainer dependencyContainer,
 			final Rule r1, final Rule r2) {
 		try {
-			Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+			List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
 			criticalPairs = dependencyContainer.getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
 			if (criticalPairs == null) {
 //				System.out.println("=== >>> "+r1.getName()+" & "+r2.getName()+" : dependency does not exist! ");

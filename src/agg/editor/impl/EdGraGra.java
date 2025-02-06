@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.editor.impl;
 
@@ -54,6 +55,7 @@ import agg.attribute.impl.CondMember;
 import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
 import agg.layout.evolutionary.LayoutPattern;
+import org.w3c.dom.Element;
 
 /**
  * An EdGraGra consists of exactly one working graph and an arbitrary number of graph rules. The used object is an
@@ -125,7 +127,7 @@ public class EdGraGra implements XMLObject {
 
     private boolean isChanged = false;
 
-    private Hashtable<Type, Vector<LayoutPattern>> layoutPatterns = new Hashtable<Type, Vector<LayoutPattern>>();
+    private Hashtable<Type, List<LayoutPattern>> layoutPatterns = new Hashtable<>();
 
     private EditUndoManager undoManager;
     private boolean undoEnabled = true;
@@ -250,7 +252,7 @@ public class EdGraGra implements XMLObject {
             this.startGraph.dispose();
         }
 
-        Iterator<Vector<LayoutPattern>> lpIter = this.layoutPatterns.values().iterator();
+        Iterator<List<LayoutPattern>> lpIter = this.layoutPatterns.values().iterator();
         while (lpIter.hasNext()) {
             Iterator<LayoutPattern> iter = lpIter.next().iterator();
             while (iter.hasNext()) {
@@ -557,8 +559,8 @@ public class EdGraGra implements XMLObject {
         if (g.getTypeSet().getBasisTypeSet().compareTo(
                 this.typeSet.getBasisTypeSet())) {
             if (this.bGraGra.addGraph(g.getBasisGraph())) {
-                Vector<Type> v = g.getBasisGraph().getUsedTypes();
-                this.bGraGra.getTypeSet().adaptTypes(v.elements(), false);
+                List<Type> v = g.getBasisGraph().getUsedTypes();
+                this.bGraGra.getTypeSet().adaptTypes(v.iterator(), false);
                 this.typeSet.refreshTypes();
                 g.update();
                 g.setGraGra(this);
@@ -1080,8 +1082,8 @@ public class EdGraGra implements XMLObject {
                 }
 
                 if (this.bGraGra.addRule(r.getBasisRule())) {
-                    Vector<Type> v = r.getBasisRule().getUsedTypes();
-                    this.bGraGra.getTypeSet().adaptTypes(v.elements(), false);
+                    List<Type> v = r.getBasisRule().getUsedTypes();
+                    this.bGraGra.getTypeSet().adaptTypes(v.iterator(), false);
                     this.typeSet.refreshTypes();
                     this.eRules.add(r);
                     r.update();
@@ -1422,7 +1424,7 @@ public class EdGraGra implements XMLObject {
         final EdGraph rg = (inverse) ? toRule.getLeft() : toRule.getRight();
 
         // set node layout of LHS
-        Vector<EdNode> nodes = fromRule.getLeft().getNodes();
+        List<EdNode> nodes = fromRule.getLeft().getNodes();
         for (int i = 0; i < nodes.size(); i++) {
             EdNode n = nodes.get(i);
             EdNode inv = lg.findNode(leftFrom2leftTo.getImage(n.getBasisObject()));
@@ -1440,7 +1442,7 @@ public class EdGraGra implements XMLObject {
             }
         }
 
-        final Vector<EdPAC> gacs = toRule.getNestedACs();
+        final List<EdPAC> gacs = toRule.getNestedACs();
         for (int j = 0; j < gacs.size(); j++) {
             EdPAC ac = gacs.get(j);
             EdPAC acOrig = fromRule.getNestedAC(ac.getName());
@@ -1449,7 +1451,7 @@ public class EdGraGra implements XMLObject {
             }
         }
 
-        final Vector<EdNAC> nacs = toRule.getNACs();
+        final List<EdNAC> nacs = toRule.getNACs();
         for (int j = 0; j < nacs.size(); j++) {
             EdNAC ac = nacs.get(j);
             EdNAC acOrig = fromRule.getNAC(ac.getName());
@@ -1458,7 +1460,7 @@ public class EdGraGra implements XMLObject {
             }
         }
 
-        final Vector<EdPAC> pacs = toRule.getPACs();
+        final List<EdPAC> pacs = toRule.getPACs();
         for (int j = 0; j < pacs.size(); j++) {
             EdPAC ac = pacs.get(j);
             EdPAC acOrig = fromRule.getPAC(ac.getName());
@@ -1646,9 +1648,9 @@ public class EdGraGra implements XMLObject {
         this.copyMorph(r.getBasisRule(), ruleClone.getBasisRule(), table);
 
         // copy NACs
-        Enumeration<EdNAC> nacs = r.getNACs().elements();
-        while (nacs.hasMoreElements()) {
-            EdNAC cond = nacs.nextElement();
+        Iterator<EdNAC> nacs = r.getNACs().iterator();
+        while (nacs.hasNext()) {
+            EdNAC cond = nacs.next();
             EdNAC condClone = ruleClone.createNAC(cond.getBasisGraph().getName(), false);
             condClone.setUndoManager(this.undoManager);
 
@@ -1657,9 +1659,9 @@ public class EdGraGra implements XMLObject {
         }
 
         // copy PACs 
-        Enumeration<EdPAC> pacs = r.getPACs().elements();
-        while (pacs.hasMoreElements()) {
-            EdPAC cond = pacs.nextElement();
+        Iterator<EdPAC> pacs = r.getPACs().iterator();
+        while (pacs.hasNext()) {
+            EdPAC cond = pacs.next();
             EdPAC condClone = ruleClone.createPAC(cond.getBasisGraph().getName(), false);
             condClone.setUndoManager(this.undoManager);
 
@@ -1667,9 +1669,9 @@ public class EdGraGra implements XMLObject {
             this.copyMorph(cond.getMorphism(), condClone.getMorphism(), table);
         }
 
-        Enumeration<EdPAC> gacs = r.getNestedACs().elements();
-        while (gacs.hasMoreElements()) {
-            EdPAC cond = gacs.nextElement();
+        Iterator<EdPAC> gacs = r.getNestedACs().iterator();
+        while (gacs.hasNext()) {
+            EdPAC cond = gacs.next();
             EdPAC condClone = ruleClone.createNestedAC(cond.getBasisGraph().getName(), false);
             condClone.setUndoManager(this.undoManager);
 
@@ -1876,8 +1878,8 @@ public class EdGraGra implements XMLObject {
         if (c.getTypeSet().getBasisTypeSet().compareTo(
                 this.typeSet.getBasisTypeSet())) {
             if (this.bGraGra.addAtomic(c.getBasisAtomic())) {
-                Vector<Type> v = c.getBasisAtomic().getUsedTypes();
-                this.bGraGra.getTypeSet().adaptTypes(v.elements(), false);
+                List<Type> v = c.getBasisAtomic().getUsedTypes();
+                this.bGraGra.getTypeSet().adaptTypes(v.iterator(), false);
                 this.typeSet.refreshTypes();
                 c.update();
 
@@ -2777,7 +2779,7 @@ public class EdGraGra implements XMLObject {
                 r.getRight().clearSelected();
 
                 for (int j = 0; j < r.getNACs().size(); j++) {
-                    r.getNACs().elementAt(j).clearSelected();
+                    r.getNACs().get(j).clearSelected();
                 }
             }
         }
@@ -2825,7 +2827,7 @@ public class EdGraGra implements XMLObject {
                 }
             } else {
                 // set visibility of the edge type
-                Vector<EdArc> edges = this.getTypeGraph().getArcs(type);
+                List<EdArc> edges = this.getTypeGraph().getArcs(type);
                 for (int j = 0; j < edges.size(); j++) {
                     EdArc a = edges.get(j);
                     type.getBasisType().setVisibityOfObjectsOfTypeGraphArc(
@@ -2931,7 +2933,7 @@ public class EdGraGra implements XMLObject {
                 EdRule er = this.eRules.elementAt(i);
                 er.setTypeSet(this.typeSet);
                 for (int j = 0; j < er.getNACs().size(); j++) {
-                    EdNAC nac = er.getNACs().elementAt(j);
+                    EdNAC nac = er.getNACs().get(j);
                     nac.setTypeSet(this.typeSet);
                 }
                 er.update();
@@ -3110,23 +3112,23 @@ public class EdGraGra implements XMLObject {
         this.typeSet.getNodeTypes().removeAllElements();
         this.typeSet.getArcTypes().removeAllElements();
 
-        this.eGraph.getArcs().removeAllElements();
-        this.eGraph.getNodes().removeAllElements();
+        this.eGraph.getArcs().clear();
+        this.eGraph.getNodes().clear();
 
         // Rules
         for (int i = 0; i < this.eRules.size(); i++) {
             EdRule r = this.eRules.elementAt(i);
             if (r != null) {
-                r.getLeft().getArcs().removeAllElements();
-                r.getLeft().getNodes().removeAllElements();
-                r.getRight().getArcs().removeAllElements();
-                r.getRight().getNodes().removeAllElements();
+                r.getLeft().getArcs().clear();
+                r.getLeft().getNodes().clear();
+                r.getRight().getArcs().clear();
+                r.getRight().getNodes().clear();
 
                 // NACs
                 for (int j = 0; j < r.getNACs().size(); j++) {
-                    EdNAC nac = r.getNACs().elementAt(j);
-                    nac.getArcs().removeAllElements();
-                    nac.getNodes().removeAllElements();
+                    EdNAC nac = r.getNACs().get(j);
+                    nac.getArcs().clear();
+                    nac.getNodes().clear();
                 }
             }
         }
@@ -3234,21 +3236,14 @@ public class EdGraGra implements XMLObject {
         this.bGraGra.trimToSize();
         this.typeSet.trimToSize();
         this.eGraphs.trimToSize();
-        for (int i = 0; i < this.eGraphs.size(); i++) {
-            this.eGraphs.get(i).trimToSize();
-        }
+
         this.eRules.trimToSize();
-        for (int i = 0; i < this.eRules.size(); i++) {
-            this.eRules.get(i).trimToSize();
-        }
         this.eAtomics.trimToSize();
         for (int i = 0; i < this.eAtomics.size(); i++) {
             this.eAtomics.get(i).trimToSize();
         }
         this.eConstraints.trimToSize();
-        if (this.startGraph != null) {
-            this.startGraph.trimToSize();
-        }
+
     }
 
     /*
@@ -3332,12 +3327,12 @@ public class EdGraGra implements XMLObject {
         while (types.hasMoreElements()) {
             Type t = types.nextElement();
             // System.out.println("type name: "+t.getName());
-            Vector<LayoutPattern> lpatternsVec = this.layoutPatterns.get(t);
+            List<LayoutPattern> lpatternsVec = this.layoutPatterns.get(t);
             if (lpatternsVec != null && !lpatternsVec.isEmpty()) {
                 h.openSubTag("Layout");
                 // System.out.println("type: "+t.toString());
                 h.addObject("type", t, false);
-                h.addEnumeration("", lpatternsVec.elements(), true);
+                h.addEnumeration("", lpatternsVec.iterator(), true);
                 h.close();
             }
         }
@@ -3409,9 +3404,9 @@ public class EdGraGra implements XMLObject {
                 Type t = (Type) h.getObject("type", null, false);
                 if (t != null) {
 //					EdType et = typeSet.getTypeForName(t);
-                    Enumeration<?> en = h.getEnumeration("", null, true, "LayoutPattern");
-                    while (en.hasMoreElements()) {
-                        h.peekElement(en.nextElement());
+                    Iterator<Element> en = h.getEnumeration("", null, true, "LayoutPattern");
+                    while (en.hasNext()) {
+                        h.peekElement(en.next());
                         LayoutPattern lp = new LayoutPattern(t);
                         h.loadObject(lp);
                         addLayoutPattern(t, lp);
@@ -3495,7 +3490,7 @@ public class EdGraGra implements XMLObject {
             Arc inharc = inheritanceArcs.get(i);
             // String inhTypeName =
             // inharc.getSource().getType().getName()+"-INHERITS-"+inharc.getTarget().getType().getName();
-            Vector<LayoutPattern> v = getLayoutPatternsForType(inharc.getType());
+            List<LayoutPattern> v = getLayoutPatternsForType(inharc.getType());
             v.clear();
             this.createLayoutPattern("ver_tree", "edge", inharc.getType(), 'y',
                     -1);
@@ -3525,7 +3520,7 @@ public class EdGraGra implements XMLObject {
             char offsetType, int offset) {
         LayoutPattern lp = new LayoutPattern(pname, pType, type, offsetType,
                 offset);
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
         }
@@ -3552,7 +3547,7 @@ public class EdGraGra implements XMLObject {
     public void createLayoutPattern(String pname, String pType, Type type,
             int length) {
         LayoutPattern lp = new LayoutPattern(pname, pType, type, length);
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
         }
@@ -3579,7 +3574,7 @@ public class EdGraGra implements XMLObject {
     public void createLayoutPattern(String pName, String pType, Type type,
             boolean frozen) {
         LayoutPattern lp = new LayoutPattern(pName, pType, type, frozen);
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
         }
@@ -3596,7 +3591,7 @@ public class EdGraGra implements XMLObject {
     }
 
     public void addLayoutPattern(Type type, LayoutPattern lp) {
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
         }
@@ -3620,7 +3615,7 @@ public class EdGraGra implements XMLObject {
     }
 
     public void removeLayoutPattern(Type type, String patternName) {
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null || v.isEmpty()) {
             return;
         }
@@ -3642,7 +3637,7 @@ public class EdGraGra implements XMLObject {
         // "+this.layoutPatterns.size());
     }
 
-    public Hashtable<Type, Vector<LayoutPattern>> getLayoutPatterns() {
+    public Hashtable<Type, List<LayoutPattern>> getLayoutPatterns() {
         return this.layoutPatterns;
     }
 
@@ -3650,8 +3645,8 @@ public class EdGraGra implements XMLObject {
         this.layoutPatterns.clear();
     }
 
-    public Vector<LayoutPattern> getLayoutPatternsForType(Type type) {
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+    public List<LayoutPattern> getLayoutPatternsForType(Type type) {
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             v = new Vector<LayoutPattern>();
             this.layoutPatterns.put(type, v);
@@ -3660,7 +3655,7 @@ public class EdGraGra implements XMLObject {
     }
 
     public LayoutPattern getLayoutPatternForType(Type type, String patternName) {
-        Vector<LayoutPattern> v = this.layoutPatterns.get(type);
+        List<LayoutPattern> v = this.layoutPatterns.get(type);
         if (v == null) {
             return null;
         }

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.attribute.handler.impl.javaExpr;
 
@@ -23,6 +24,7 @@ import agg.attribute.impl.ContextView;
 import agg.attribute.impl.VerboseControl;
 import agg.attribute.parser.javaExpr.Jex;
 import agg.attribute.parser.javaExpr.Node;
+import java.util.List;
 
 /**
  * @version $Id: JexExpr.java,v 1.16 2010/09/23 08:13:35 olga Exp $
@@ -322,11 +324,11 @@ public class JexExpr extends Object implements HandlerExpr {
      * Checks the expression if there is any variable which must be rewritten
      */
     protected boolean mustRewrite(SymbolTable symtab) {
-        Vector<String> v = new Vector<String>();
+        List<String> v = new Vector< >();
         getAllVariables(v);
         boolean result = false;
         for (int i = 0; i < v.size() && !result; i++) {
-            String s = v.elementAt(i);
+            String s = v.get(i);
             HandlerExpr he = symtab.getExpr(s);
             if (he != null) {
                 result = !he.isConstant();
@@ -427,9 +429,9 @@ public class JexExpr extends Object implements HandlerExpr {
     /**
      * fills the vector with the names of all variables which occur in this abstract syntax tree
      */
-    public void getAllVariables(Vector<String> v) {
+    public void getAllVariables(List<String> v) {
         if (getAST() != null) {
-            getAST().getAllVariablesinExpression(v);
+            getAST().getAllVariablesinExpression(v); 
         }
     }
 

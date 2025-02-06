@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.xt_basis.agt;
 
@@ -28,6 +26,7 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TypeSet;
+import java.util.List;
 
 /**
  * @author olga
@@ -67,7 +66,7 @@ public class AmalgamatedRule extends Rule {
     }
 
     private void makeRuleFromMorphism(final OrdinaryMorphism h) {
-        Vector<String> list = this.itsOrig.getVariableNamesOfAttributes();
+        List<String> list = this.itsOrig.getVariableNamesOfAttributes();
         list.addAll(this.itsImag.getVariableNamesOfAttributes());
 
         // set variables
@@ -87,9 +86,9 @@ public class AmalgamatedRule extends Rule {
         }
 
         // add object mapping
-        final Enumeration<GraphObject> dom = h.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        final Iterator<GraphObject> dom = h.getDomain();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             try {
                 GraphObject img = h.getImage(obj);
                 this.applyAttrValue(obj, img, vars);

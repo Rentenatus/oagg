@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -21,6 +20,8 @@ import java.util.Vector;
 import agg.attribute.handler.SymbolTable;
 import agg.attribute.impl.AttrSession;
 import agg.attribute.impl.VerboseControl;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id: SimpleNode.java,v 1.10 2010/09/23 08:15:01 olga Exp $
@@ -32,7 +33,7 @@ public class SimpleNode implements Node {
 
     protected Node parent;
 
-    protected java.util.Vector<Node> children;
+    protected java.util.List<Node> children;
 
     protected String identifier;
 
@@ -53,10 +54,7 @@ public class SimpleNode implements Node {
     public void jjtOpen() {
     }
 
-    public void jjtClose() {
-        if (this.children != null) {
-            this.children.trimToSize();
-        }
+    public void jjtClose() { 
     }
 
     public void jjtSetParent(Node n) {
@@ -71,11 +69,11 @@ public class SimpleNode implements Node {
         if (this.children == null) {
             this.children = new java.util.Vector<Node>();
         }
-        this.children.addElement(n);
+        this.children.add(n);
     }
 
     public Node jjtGetChild(int i) {
-        return this.children.elementAt(i);
+        return this.children.get(i);
     }
 
     public int jjtGetNumChildren() {
@@ -122,9 +120,8 @@ public class SimpleNode implements Node {
         // System.out.println( toString(prefix) );
         AttrSession.logPrintln(VerboseControl.logJexParser, toString(prefix));
         if (this.children != null) {
-            for (java.util.Enumeration<Node> e = this.children.elements(); e
-                    .hasMoreElements();) {
-                SimpleNode n = (SimpleNode) e.nextElement();
+            for (Iterator<Node> e = this.children.iterator(); e.hasNext();) {
+                SimpleNode n = (SimpleNode) e.next();
                 n.dump(prefix + " ");
             }
         }
@@ -309,8 +306,7 @@ public class SimpleNode implements Node {
 
     /**
      * *************************************************************************
-     * Public Methods
-	 *************************************************************************
+     * Public Methods ************************************************************************
      */
     /**
      * Obtaining the node type and checking for consistency.
@@ -377,14 +373,14 @@ public class SimpleNode implements Node {
      */
     public void replaceChild(Node oldChild, Node newChild) {
         int pos = this.children.indexOf(oldChild);
-        this.children.insertElementAt(newChild, pos);
-        this.children.removeElement(oldChild);
+        this.children.add(pos,newChild);
+        this.children.remove (oldChild);
     }
 
     /**
      * fills the vector with the names of all variables which occur in this abstract syntax tree
      */
-    public void getAllVariablesinExpression(Vector<String> v) {
+    public void getAllVariablesinExpression(List<String> v) {
         for (int i = 0; i < jjtGetNumChildren(); i++) {
             jjtGetChild(i).getAllVariablesinExpression(v);
         }

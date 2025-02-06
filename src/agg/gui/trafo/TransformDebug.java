@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.trafo;
 
@@ -986,8 +987,7 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                             }
                             return false;
                         }
-                        Vector<String> nacVars = nac.getTarget()
-                                .getVariableNamesOfAttributes();
+                        List<String> nacVars = nac.getTarget().getVariableNamesOfAttributes();
                         for (int j = 0; j < nacVars.size(); j++) {
                             String varName = nacVars.get(j);
                             for (int k = 0; k < this.act.getNumberOfEntries(); k++) {

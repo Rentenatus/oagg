@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -43,9 +44,9 @@ public class ConflictsDependenciesBasisGraph {
 
     GraGra grammar;
 
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
+    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
 
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
+    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
 
     Graph conflictGraph, dependGraph, combiGraph;
 
@@ -343,7 +344,7 @@ public class ConflictsDependenciesBasisGraph {
                 for (Enumeration<Rule> keys1 = this.conflicts.keys(); keys1.hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
+                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
                         for (Enumeration<Rule> keys2 = table.keys(); keys2
                                 .hasMoreElements();) {
                             Rule r2 = keys2.nextElement();
@@ -383,7 +384,7 @@ public class ConflictsDependenciesBasisGraph {
                                         node2rule.put(nr, r2);
                                     }
                                 }
-                                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = table.get(r2);
+                                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = table.get(r2);
                                 boolean rel = p.first.booleanValue();
                                 if (rel) {
                                     // create edge if rule relation
@@ -405,7 +406,7 @@ public class ConflictsDependenciesBasisGraph {
                         .hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
+                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
                         for (Enumeration<Rule> keys2 = table.keys(); keys2
                                 .hasMoreElements();) {
                             Rule r2 = keys2.nextElement();
@@ -446,7 +447,7 @@ public class ConflictsDependenciesBasisGraph {
                                         node2rule.put(nr, r2);
                                     }
                                 }
-                                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = table.get(r2);
+                                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = table.get(r2);
                                 boolean rel = p.first.booleanValue();
                                 if (rel) {
                                     createEdge(this.dependGraph, arcTypeDepend, nr1, nr2);
@@ -488,7 +489,7 @@ public class ConflictsDependenciesBasisGraph {
             // copy combiGraph and delete dependency edges
             this.conflictGraph = combiCPAGraph.copy();
             this.conflictGraph.setName("Conflicts of Rules");
-            Vector<Arc> list = this.conflictGraph.getArcs(arcTypeDepend);
+            List<Arc> list = this.conflictGraph.getArcs(arcTypeDepend);
             if (list != null) {
                 for (Arc a : list) {
                     try {
@@ -503,7 +504,7 @@ public class ConflictsDependenciesBasisGraph {
             // copy combiGraph and delete conflict edges
             this.dependGraph = combiCPAGraph.copy();
             this.dependGraph.setName("Dependencies of Rules");
-            Vector<Arc> list = this.dependGraph.getArcs(arcTypeConflict);
+            List<Arc> list = this.dependGraph.getArcs(arcTypeConflict);
             if (list != null) {
                 for (Arc a : list) {
                     try {

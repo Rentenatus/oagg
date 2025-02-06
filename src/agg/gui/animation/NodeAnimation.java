@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.gui.animation;
 
@@ -200,7 +198,7 @@ public class NodeAnimation {
                                     if (arcR == null) {
                                         for (Iterator<Arc> outsR = ((Node) oR).getOutgoingArcs(); outsR.hasNext();) {
                                             outR = outsR.next();
-                                            if (!this.r.getBasisRule().getInverseImage(outR).hasMoreElements()) {
+                                            if (!this.r.getBasisRule().getInverseImage(outR).hasNext()) {
                                                 arcR = outR;
                                                 break;
                                             }
@@ -217,9 +215,9 @@ public class NodeAnimation {
                             EdNode n1R = this.r.getRight().findNode(arcR.getTarget());
 //							System.out.println("NodeAnimation.setAnimationData::  n1R: "+n1R);
                             if (n1R != null) {
-                                Enumeration<GraphObject> inv = this.r.getBasisRule().getInverseImage(n1R.getBasisObject());
-                                if (inv.hasMoreElements()) {
-                                    this.n1G = this.g.findNode(m.getImage(inv.nextElement()));
+                                Iterator<GraphObject> inv = this.r.getBasisRule().getInverseImage(n1R.getBasisObject());
+                                if (inv.hasNext()) {
+                                    this.n1G = this.g.findNode(m.getImage(inv.next()));
                                     this.nG = this.g.findNode(m.getImage(oL));
 
 //									System.out.println("NodeAnimation.animationTest::  nG: "+nG);
@@ -301,11 +299,11 @@ public class NodeAnimation {
                 this.n1G = null;
                 Point lastpoint = null;
                 int p = 0;
-                Enumeration<GraphObject> dom = com.getDomain();
-                while (dom.hasMoreElements() && !this.stop) {
-                    GraphObject oR = dom.nextElement();
+                Iterator<GraphObject> dom = com.getDomain();
+                while (dom.hasNext() && !this.stop) {
+                    GraphObject oR = dom.next();
                     if (oR.isNode()
-                            && !this.r.getBasisRule().getInverseImage(oR).hasMoreElements()) {
+                            && !this.r.getBasisRule().getInverseImage(oR).hasNext()) {
 //						System.out.println("NodeAnimation.setAnimationDataOfSpan::  oR: "+oR.getType().getName());
                         // get node to create
                         EdNode nR = this.r.getRight().findNode(oR);
@@ -361,11 +359,11 @@ public class NodeAnimation {
                 this.n1G = null;
                 Point lastpoint = null;
                 int p = 0;
-                Enumeration<GraphObject> dom = com.getDomain();
-                while (dom.hasMoreElements() && !this.stop) {
-                    GraphObject oR = dom.nextElement();
+                Iterator<GraphObject> dom = com.getDomain();
+                while (dom.hasNext() && !this.stop) {
+                    GraphObject oR = dom.next();
                     if (oR.isNode()
-                            && !this.r.getBasisRule().getInverseImage(oR).hasMoreElements()) {
+                            && !this.r.getBasisRule().getInverseImage(oR).hasNext()) {
 //						System.out.println("NodeAnimation.setAnimationDataOfSpan::  oR: "+oR.getType().getName());
                         // get node to create
                         EdNode nR = this.r.getRight().findNode(oR);
@@ -381,8 +379,8 @@ public class NodeAnimation {
                             if (count == 1) {
                                 neighbour = neighbours.next();
                                 GraphObject nbNode = neighbour.getTarget();
-                                if (com.getInverseImage(nbNode).hasMoreElements()
-                                        && m.getInverseImage(nbNode).hasMoreElements()) {
+                                if (com.getInverseImage(nbNode).hasNext()
+                                        && m.getInverseImage(nbNode).hasNext()) {
                                     Point point = computeCross(neighbour);
 //									System.out.println("NodeAnimation.setAnimationDataOfCombiSpan (1):: point: "+point);
                                     if (point != null) {
@@ -402,8 +400,8 @@ public class NodeAnimation {
                                 while (neighbours.hasNext()) {
                                     neighbour = neighbours.next();
                                     GraphObject nbNode = neighbour.getTarget();
-                                    if (com.getInverseImage(nbNode).hasMoreElements()
-                                            && m.getInverseImage(nbNode).hasMoreElements()) {
+                                    if (com.getInverseImage(nbNode).hasNext()
+                                            && m.getInverseImage(nbNode).hasNext()) {
                                         break;
                                     }
                                 }
@@ -424,8 +422,8 @@ public class NodeAnimation {
                                 while (neighbours.hasNext()) {
                                     neighbour = neighbours.next();
                                     GraphObject nbNode = neighbour.getTarget();
-                                    if (com.getInverseImage(nbNode).hasMoreElements()
-                                            && m.getInverseImage(nbNode).hasMoreElements()) {
+                                    if (com.getInverseImage(nbNode).hasNext()
+                                            && m.getInverseImage(nbNode).hasNext()) {
                                         break;
                                     }
                                 }
@@ -467,11 +465,11 @@ public class NodeAnimation {
             if (com != null) {
                 this.nG = null;
                 this.n1G = null;
-                Enumeration<GraphObject> dom = com.getDomain();
-                while (dom.hasMoreElements() && !this.stop) {
-                    GraphObject oR = dom.nextElement();
+                Iterator<GraphObject> dom = com.getDomain();
+                while (dom.hasNext() && !this.stop) {
+                    GraphObject oR = dom.next();
                     if (oR.isNode() // and node should be created
-                            && !this.r.getBasisRule().getInverseImage(oR).hasMoreElements()) {
+                            && !this.r.getBasisRule().getInverseImage(oR).hasNext()) {
 //						System.out.println("NodeAnimation.setAnimationDataOfCreation::  oR: "+oR.getType().getName());
                         // get node to create
                         EdNode nR = this.r.getRight().findNode(oR);

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.saveload;
 
@@ -57,6 +58,7 @@ import agg.gui.editor.EditorConstants;
 import agg.gui.editor.GraphCanvas;
 import agg.gui.event.EditEvent;
 import agg.gui.event.EditEventListener;
+import java.util.List;
 
 /**
  * The GraGraPrint prints a gragra. A print dialog allows to choose what do you want to print.
@@ -331,10 +333,10 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             JCheckBox cb = this.gragraRuleChecks.elementAt(i);
             EdRule r = this.gragra.getRules().elementAt(i);
             if (this.all.isSelected() || cb.isSelected()) {
-                Vector<Image> imgs = getImage(i, r);
+                List<Image> imgs = getImage(i, r);
                 if (imgs != null) {
                     for (int j = 0; j < imgs.size(); j++) {
-                        Image image = imgs.elementAt(j);
+                        Image image = imgs.get(j);
                         if (image != null) {
                             images.addElement(image);
                         }
@@ -605,7 +607,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                     GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
 
             for (int i = 0; i < r.getNACs().size(); i++) {
-                EdNAC nac = r.getNACs().elementAt(i);
+                EdNAC nac = r.getNACs().get(i);
                 y++;
                 cb = new JCheckBox(nac.getName());
                 v.addElement(cb);
@@ -798,17 +800,17 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
     }
 
     /* Get an image of all NAC graphs. */
-    private Image getImage(Vector<EdNAC> nacGraphs) {
+    private Image getImage(List<EdNAC> nacGraphs) {
         if ((nacGraphs == null) || nacGraphs.isEmpty()) {
             return null;
         }
-        // System.out.println("GraGraPrint.getImage(Vector graphs)
+        // System.out.println("GraGraPrint.getImage(List graphs)
         // "+graphs.size()+" BEGIN");
         int iw = 0;
         int ih = 0;
-        Vector<EdGraph> imageGraphs = new Vector<EdGraph>();
+        List<EdGraph> imageGraphs = new Vector<EdGraph>();
         for (int i = 0; i < nacGraphs.size(); i++) {
-            EdGraph eg = nacGraphs.elementAt(i);
+            EdGraph eg = nacGraphs.get(i);
             if (this.optional != null) {
                 if (this.optional.isEmpty()
                         || this.optional.elementAt(i + 2).booleanValue()) {
@@ -820,7 +822,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                         ih = graphDim.height;
                     }
                     if ((iw > 0) && (ih > 0)) {
-                        imageGraphs.addElement(eg);
+                        imageGraphs.add(eg);
                     }
                 }
             }
@@ -828,11 +830,11 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
 
         iw = iw + offset; // groesste breite
         ih = 2 * offset + ih + offset; // groesste hoehe
-        Vector<Image> images = new Vector<Image>();
+        List<Image> images = new Vector<Image>();
         for (int i = 0; i < imageGraphs.size(); i++) {
-            EdGraph eg = imageGraphs.elementAt(i);
+            EdGraph eg = imageGraphs.get(i);
             Image image = getImage(eg, new Dimension(iw, ih));
-            images.addElement(image);
+            images.add(image);
         }
 
         // space between single images
@@ -874,7 +876,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             int x = 0;
             int y = 0;
             for (int i = 0; i < images.size(); i++) {
-                Image image = images.elementAt(i);
+                Image image = images.get(i);
                 if (((x + space.width) > this.W) || ((x + space.width + iw) > this.W)) {
                     x = 0;
                     y = y + ih;
@@ -909,7 +911,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
     }
 
     /* Get an image of an EdRule r with its NAC image. */
-    private Vector<Image> getImage(int ruleIndx, EdRule r) {
+    private List<Image> getImage(int ruleIndx, EdRule r) {
         if (r == null) {
             return null;
         }
@@ -1049,7 +1051,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             grs.drawImage(rightImage, x, y, null);
         } // rule image ready
 
-        Vector<Image> images = new Vector<Image>();
+        List<Image> images = new Vector<Image>();
         int bigImageW = 0;
         int bigImageH = 0;
         if (ruleImage != null) {
@@ -1059,7 +1061,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         Image bigImage = null;
         Image nacImage = null;
 
-        Vector<EdNAC> nacs = r.getNACs();
+        List<EdNAC> nacs = r.getNACs();
         nacImage = getImage(nacs); // NACs image ready
 
         if (nacImage != null) {
@@ -1083,7 +1085,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                     grs.drawRect(1, 2 * offset, ruleW + offset - 2, ruleH
                             + offset / 2);
 
-                    images.addElement(bigImage);
+                    images.add(bigImage);
                     // System.out.println("Rule ohne NACs auf eine Seite ( this.W x
                     // this.H) : "+bigImageW+" x "+bigImageH);
                 } else { // < this.H
@@ -1125,7 +1127,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             grs.drawRect(1, 2 * offset, bigImageW - 2, bigImageH - 2 * offset
                     - 1);
 
-            images.addElement(bigImage);
+            images.add(bigImage);
             // System.out.println("Rule + NACs auf eine Seite ( this.W x this.H) :
             // "+bigImageW+" x "+bigImageH);
         } else if (nacImage != null) {
@@ -1145,7 +1147,7 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             grs.drawRect(1, 2 * offset, nacImage.getWidth(null) + offset - 2,
                     nacImage.getHeight(null) - 1);
 
-            images.addElement(bigImage);
+            images.add(bigImage);
             // System.out.println("NACs auf eine Seite( this.W x this.H) : "+bigImageW+" x
             // "+bigImageH);
         }

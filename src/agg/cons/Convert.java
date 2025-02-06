@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.cons;
 
@@ -402,9 +403,9 @@ public class Convert {
                 continue;
             }
 
-            Enumeration<GraphObject> e = p.getDomain();
-            while (e.hasMoreElements()) {
-                GraphObject o = e.nextElement();
+            Iterator<GraphObject> e = p.getDomain();
+            while (e.hasNext()) {
+                GraphObject o = e.next();
                 if (o.getAttribute() == null) {
                     continue;
                 }
@@ -432,8 +433,8 @@ public class Convert {
             }
 
             e = s.getDomain();
-            while (e.hasMoreElements()) {
-                GraphObject o = e.nextElement();
+            while (e.hasNext()) {
+                GraphObject o = e.next();
                 if (o.getAttribute() == null) {
                     continue;
                 }
@@ -517,9 +518,9 @@ public class Convert {
     }
 
     private void adoptEntriesWhereEmpty(OrdinaryMorphism morph) {
-        Enumeration<GraphObject> e = morph.getDomain();
-        while (e.hasMoreElements()) {
-            GraphObject obj = e.nextElement();
+        Iterator<GraphObject> e = morph.getDomain();
+        while (e.hasNext()) {
+            GraphObject obj = e.next();
             GraphObject img = morph.getImage(obj);
             if (img.getAttribute() == null) {
                 continue;

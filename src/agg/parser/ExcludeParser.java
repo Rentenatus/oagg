@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 // This class belongs to the following package:
 package agg.parser;
@@ -30,6 +31,7 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TypeException;
 import agg.util.Pair;
+import java.util.List;
 
 //****************************************************************************+
 /**
@@ -79,7 +81,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
         fireParserEvent(new ParserMessageEvent(this,
                 "Starting exclude parser ..."));
 
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
         try {
             fireParserEvent(new ParserMessageEvent(this,
                     "Computting conflict free pairs. Please wait ..."));
@@ -93,7 +95,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             return false;
         }
 
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
         try {
             fireParserEvent(new ParserMessageEvent(this,
                     "Computting exclude pairs. Please wait ..."));
@@ -106,10 +108,10 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             return false;
         }
 
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight
-                = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight
-                = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight
+                = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight
+                = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
         makeLightContainer(exclude, excludeLight);
         makeLightContainer(conflictFree, conflictFreeLight);
 
@@ -178,7 +180,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         && !ruleApplied && !this.stop;) {
                     Rule r = keys.nextElement();
 //					System.out.println("try to apply rule: "+r.getName());
-                    Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> inclusions = findInclusions(r, CriticalPair.EXCLUDE);
+                    List<Pair<OrdinaryMorphism, OrdinaryMorphism>> inclusions = findInclusions(r, CriticalPair.EXCLUDE);
                     fireParserEvent(new ParserMessageEvent(this,
                             "Searching for difficult match"));
                     Match m = BaseFactory.theFactory().createMatch(r,
@@ -315,15 +317,15 @@ public class ExcludeParser extends AbstractParser implements Runnable {
      * @param out The new filtered container.
      */
     protected void makeLightContainer(
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> in,
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> out) {
+            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> in,
+            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> out) {
         // Report.println("-------------------------------------------",Report.CONTAINER);
         Enumeration<Rule> keys = in.keys();
         while (keys.hasMoreElements()) {
             Rule key = keys.nextElement();
             if (key != null) {
                 // Report.println("erster key "+key,Report.CONTAINER);
-                Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = in
+                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = in
                         .get(key);
                 // Report.println("erster Wert "+value,Report.CONTAINER);
                 boolean allTrue = true;
@@ -334,18 +336,18 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         continue;
                     }
                     // Report.println("zweiter key "+key2,Report.CONTAINER);
-                    Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = value.get(key2);
+                    Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = value.get(key2);
                     // Report.println("zweiter Wert "+p,Report.CONTAINER);
                     Boolean first = p.first;
                     // allTrue = allTrue && first.booleanValue();
                     if (first.booleanValue()) {
                         if (out.containsKey(key)) {
-                            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = out
+                            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = out
                                     .get(key);
                             secondPart.put(key2, p);
                         } else {
-                            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart
-                                    = new Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>();
+                            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart
+                                    = new Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>();
                             secondPart.put(key2, p);
                             out.put(key, secondPart);
                         }
@@ -368,9 +370,9 @@ public class ExcludeParser extends AbstractParser implements Runnable {
      * @param kind The critical pair algorithm.
      * @return A set of morphisms from the overlapping graph into the host graph.
      */
-    protected Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> findInclusions(Rule r1, int kind) {
-        Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> resultVector = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticVector = null;
+    protected List<Pair<OrdinaryMorphism, OrdinaryMorphism>> findInclusions(Rule r1, int kind) {
+        List<Pair<OrdinaryMorphism, OrdinaryMorphism>> resultVector = new Vector< >();
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticVector = null;
         try {
             criticVector = this.pairContainer.getCriticalSet(kind, r1);
         } catch (InvalidAlgorithmException iae) {
@@ -378,7 +380,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             return resultVector;
         }
         for (int i = 0; i < criticVector.size(); i++) {
-            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = criticVector.elementAt(i);
+            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = criticVector.get(i);
             // Pair result = new Pair(p.first.first, p.first.second);
             Pair<OrdinaryMorphism, OrdinaryMorphism> morphisms = p.first;
             if (p.second != null) {
@@ -391,7 +393,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         Iterator<?> e = morphisms.first.getSource().getArcsSet().iterator();
                         while (e.hasNext()) {
                             Arc obj = (Arc) e.next();
-                            if (!r1.getInverseImage(obj).hasMoreElements()) {
+                            if (!r1.hasInverseImage(obj)) {
                                 try {
                                     overlapIso.getTarget()
                                             .destroyObject(overlapIso.getImage(morphisms.first.getImage(obj)));
@@ -402,7 +404,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         e = morphisms.first.getSource().getNodesSet().iterator();
                         while (e.hasNext()) {
                             Node obj = (Node) e.next();
-                            if (!r1.getInverseImage(obj).hasMoreElements()) {
+                            if (!r1.hasInverseImage(obj)) {
                                 try {
                                     overlapIso.getTarget()
                                             .destroyObject(overlapIso.getImage(morphisms.first.getImage(obj)));
@@ -428,7 +430,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             while (inclusion.nextCompletion() && !graphOk) {
                 if (inclusion.isTotal() && inclusion.isInjective()) {
                     graphOk = true;
-                    resultVector.addElement(morphisms);
+                    resultVector.add (morphisms);
                     // resultVector.addElement(result);
                 }
             }
@@ -444,7 +446,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
      * @param inclusions The set of inclusions from overlapping graphs into the host graph.
      * @return true if with this one rule exclude another rule.
      */
-    protected boolean isMatchCritic(Match m, Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> inclusions) {
+    protected boolean isMatchCritic(Match m, List<Pair<OrdinaryMorphism, OrdinaryMorphism>> inclusions) {
         /* check3a */
         // Report.trace("isMatchCritic: anfang",2);
         boolean critic = false;
@@ -453,7 +455,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
         for (int i = 0; i < inclusions.size(); i++) {
 //			Report.println("ExcludeParser.isMatchCritic:: checke Inklusion #"
 //					+ i + " von " + inclusions.size(), Report.PARSER);
-            Pair<OrdinaryMorphism, OrdinaryMorphism> morphisms = inclusions.elementAt(i);
+            Pair<OrdinaryMorphism, OrdinaryMorphism> morphisms = inclusions.get(i);
             Graph overlapGraph = morphisms.first.getImage();
             o = BaseFactory.theFactory().createMorphism(overlapGraph,
                     getHostGraph());
@@ -468,15 +470,15 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             // System.out.println(i+": composed match: "+composed);
             while (composed.nextCompletion() && !critic) {
                 /* agg.util.Debug.printlnMorph(composed,"composed"); */
-                Vector<GraphObject> leftNodes = new Vector<GraphObject>();
-                for (Enumeration<GraphObject> en = m.getDomain(); en.hasMoreElements();) {
-                    GraphObject grob = en.nextElement();
+                List<GraphObject> leftNodes = new Vector< >();
+                for (Iterator<GraphObject> en = m.getDomain(); en.hasNext();) {
+                    GraphObject grob = en.next();
                     if (grob.isNode()) {
-                        leftNodes.addElement(grob);
+                        leftNodes.add(grob);
                     }
                 }
                 for (int k = 0; k < leftNodes.size(); k++) {
-                    Node n = (Node) leftNodes.elementAt(k);
+                    Node n = (Node) leftNodes.get(k);
                     /*
 					 * System.out.println("versuche "+n+" "+k+" zu mappen auf
 					 * "+m.getImage(n));

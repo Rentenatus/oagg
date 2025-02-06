@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.editor;
 
@@ -157,9 +158,9 @@ public class GraphMorphismEditor extends JPanel {
     }
 
     public boolean addMapping(final GraphObject leftobj, final GraphObject rightobj) {
-        if (this.morphism.getInverseImage(rightobj).hasMoreElements()) {
-            if (this.morphism.getInverseImage(rightobj).nextElement() != leftobj) {
-                removeMapping(this.morphism.getInverseImage(rightobj).nextElement());
+        if (this.morphism.hasInverseImage(rightobj)) {
+            if (this.morphism.firstOfInverseImage(rightobj) != leftobj) {
+                removeMapping(this.morphism.firstOfInverseImage(rightobj));
             } else {
                 return true;
             }
@@ -186,8 +187,8 @@ public class GraphMorphismEditor extends JPanel {
             if (mapOK) {
                 if (this.isoLeft != null && this.isoRight != null) {
                     this.objFlow.addMapping(
-                            this.isoLeft.getInverseImage(leftobj).nextElement(),
-                            this.isoRight.getInverseImage(rightobj).nextElement());
+                            this.isoLeft.firstOfInverseImage(leftobj),
+                            this.isoRight.firstOfInverseImage(rightobj));
                 } else {
                     this.objFlow.addMapping(leftobj, rightobj);
                 }
@@ -216,7 +217,7 @@ public class GraphMorphismEditor extends JPanel {
         this.morphism.removeMapping(obj);
         if (this.isoLeft != null && this.isoRight != null) {
             this.objFlow.removeMapping(
-                    this.isoLeft.getInverseImage(obj).nextElement());
+                    this.isoLeft.firstOfInverseImage(obj));
         } else {
             this.objFlow.removeMapping(obj);
         }
@@ -226,7 +227,7 @@ public class GraphMorphismEditor extends JPanel {
         this.morphism.removeMapping(obj);
         if (this.isoLeft != null && this.isoRight != null) {
             this.objFlow.removeMapping(
-                    this.isoLeft.getInverseImage(obj).nextElement());
+                    this.isoLeft.firstOfInverseImage(obj));
         } else {
             this.objFlow.removeMapping(obj);
         }
@@ -391,9 +392,9 @@ public class GraphMorphismEditor extends JPanel {
             return;
         }
 
-        Enumeration<GraphObject> domain = this.morphism.getDomain();
-        while (domain.hasMoreElements()) {
-            GraphObject bOrig = domain.nextElement();
+        Iterator<GraphObject> domain = this.morphism.getDomain();
+        while (domain.hasNext()) {
+            GraphObject bOrig = domain.next();
             GraphObject bImage = this.morphism.getImage(bOrig);
 
             enL = this.getLeftGraph().findNode(bOrig);

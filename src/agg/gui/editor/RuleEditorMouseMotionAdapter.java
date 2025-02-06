@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.gui.editor;
 
@@ -24,6 +22,7 @@ import javax.swing.SwingUtilities;
 import agg.editor.impl.EdAtomic;
 import agg.editor.impl.EdGraphObject;
 import agg.xt_basis.OrdinaryMorphism;
+import java.util.List;
 
 /**
  * @author olga
@@ -63,7 +62,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
             if (go == null) {
                 return;
             }
-            Vector<EdGraphObject> v = null;
+            List<EdGraphObject> v = null;
             if (go.isSelected()) {
                 v = this.editor.getActivePanel().getGraph().getSelectedObjs();
             } else {
@@ -85,7 +84,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
                         morph = this.editor.getRule().getBasisRule();
                     }
                     if (morph != null) {
-                        Vector<EdGraphObject> images = this.editor.getImages(this.editor.getRule()
+                        List<EdGraphObject> images = this.editor.getImages(this.editor.getRule()
                                 .getRight(), morph, v);
                         if (!images.isEmpty()) {
                             if (!this.editor.isRightDragging()) {
@@ -99,7 +98,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
                     }
                     // move images of NAC
                     if (this.editor.getNAC() != null) {
-                        Vector<EdGraphObject> images = this.editor.getImages(this.editor.getNAC(), this.editor.getNAC()
+                        List<EdGraphObject> images = this.editor.getImages(this.editor.getNAC(), this.editor.getNAC()
                                 .getMorphism(), v);
                         if (!images.isEmpty()) {
                             if (!this.editor.isLeftCondDragging()) {
@@ -112,7 +111,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
                     }
                     // move images of PAC
                     if (this.editor.getPAC() != null) {
-                        Vector<EdGraphObject> images = this.editor.getImages(this.editor.getPAC(), this.editor.getPAC()
+                        List<EdGraphObject> images = this.editor.getImages(this.editor.getPAC(), this.editor.getPAC()
                                 .getMorphism(), v);
                         if (!images.isEmpty()) {
                             if (!this.editor.isLeftCondDragging()) {
@@ -127,7 +126,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
             } else if (this.editor.getActivePanel() == this.editor.getRightPanel()) {
                 if (!v.isEmpty()) {
                     // move inverse images of LHS
-                    Vector<EdGraphObject> invImages = null;
+                    List<EdGraphObject> invImages = null;
                     OrdinaryMorphism morph = null;
                     if (this.editor.getRule() instanceof EdAtomic) {
                         if (((EdAtomic) this.editor.getRule()).isParent()) {
@@ -153,7 +152,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
 
                         // move images of NAC
                         if (this.editor.getNAC() != null) {
-                            Vector<EdGraphObject> imagesNAC = this.editor.getImages(this.editor.getNAC(), this.editor.getNAC()
+                            List<EdGraphObject> imagesNAC = this.editor.getImages(this.editor.getNAC(), this.editor.getNAC()
                                     .getMorphism(), invImages);
                             if (!imagesNAC.isEmpty()) {
                                 if (!this.editor.isLeftCondDragging()) {
@@ -166,7 +165,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
                         }
                         // move images of PAC
                         if (this.editor.getPAC() != null) {
-                            Vector<EdGraphObject> imagesPAC = this.editor.getImages(this.editor.getPAC(), this.editor.getPAC()
+                            List<EdGraphObject> imagesPAC = this.editor.getImages(this.editor.getPAC(), this.editor.getPAC()
                                     .getMorphism(), invImages);
                             if (!imagesPAC.isEmpty()) {
                                 if (!this.editor.isLeftCondDragging()) {
@@ -182,7 +181,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
             } else if (this.editor.getActivePanel() == this.editor.getLeftCondPanel()) {
                 if (!v.isEmpty()) {
                     // move images of LHS
-                    Vector<EdGraphObject> invImages = new Vector<EdGraphObject>(0);
+                    List<EdGraphObject> invImages = new Vector<EdGraphObject>(0);
                     if (this.editor.getNAC() != null
                             && this.editor.getNAC() == this.editor.getActivePanel().getGraph()) {
                         invImages = this.editor.getInverseImages(this.editor.getRule()
@@ -203,7 +202,7 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
                     }
 
                     // move images of RHS
-                    Vector<EdGraphObject> images = this.editor.getImages(this.editor.getRule().getRight(),
+                    List<EdGraphObject> images = this.editor.getImages(this.editor.getRule().getRight(),
                             this.editor.getRule().getBasisRule(), invImages);
                     if (!images.isEmpty()) {
                         if (!this.editor.isLeftDragging()) {

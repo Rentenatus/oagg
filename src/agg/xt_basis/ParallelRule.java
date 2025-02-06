@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.xt_basis;
 
@@ -107,7 +105,7 @@ public class ParallelRule extends Rule {
      */
     public OrdinaryMorphism getLeftEmbeddingOfObject(final GraphObject go) {
         for (int i = 0; i < this.embeddingLeft.size(); i++) {
-            if (this.embeddingLeft.get(i).getInverseImage(go).hasMoreElements()) {
+            if (this.embeddingLeft.get(i).hasInverseImage(go)) {
                 return this.embeddingLeft.get(i);
             }
         }
@@ -121,8 +119,7 @@ public class ParallelRule extends Rule {
      */
     public OrdinaryMorphism getRightEmbeddingOfObject(final GraphObject go) {
         for (int i = 0; i < this.embeddingRight.size(); i++) {
-            if (this.embeddingRight.get(i).getInverseImage(go)
-                    .hasMoreElements()) {
+            if (this.embeddingRight.get(i).hasInverseImage(go)) {
                 return this.embeddingRight.get(i);
             }
         }
@@ -189,9 +186,9 @@ public class ParallelRule extends Rule {
     private GraphObject getLeftRuleObjOf(GraphObject go) {
         for (int l = 0; l < this.embeddingLeft.size(); l++) {
             OrdinaryMorphism emb = this.embeddingLeft.get(l);
-            Enumeration<GraphObject> iter = emb.getInverseImage(go);
-            if (iter.hasMoreElements()) {
-                return iter.nextElement();
+            Iterator<GraphObject> iter = emb.getInverseImage(go);
+            if (iter.hasNext()) {
+                return iter.next();
             }
         }
         return null;
@@ -224,9 +221,9 @@ public class ParallelRule extends Rule {
                 if (m.isValid()) {
                     found = true;
                     final HashMap<GraphObject, GraphObject> map = new HashMap<GraphObject, GraphObject>();
-                    Enumeration<GraphObject> dom = m.getDomain();
-                    while (dom.hasMoreElements()) {
-                        GraphObject go = dom.nextElement();
+                    Iterator<GraphObject> dom = m.getDomain();
+                    while (dom.hasNext()) {
+                        GraphObject go = dom.next();
                         map.put(go, m.getImage(go));
                     }
                     result.add(map);
@@ -292,14 +289,14 @@ public class ParallelRule extends Rule {
         while (cpThread.isAlive()) {
         }
 
-        final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts = pc
+        final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts = pc
                 .getConflictContainer();
 
         for (int i = 0; i < rules.size(); i++) {
             Rule r = rules.get(i);
-            final Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> ruleConflicts = conflicts
+            final Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> ruleConflicts = conflicts
                     .get(r);
-            final Iterator<Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> iter = ruleConflicts
+            final Iterator<Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> iter = ruleConflicts
                     .values().iterator();
 
             while (iter.hasNext()) {
@@ -513,9 +510,9 @@ public class ParallelRule extends Rule {
             final Graph graph,
             final OrdinaryMorphism r2rl) {
 
-        Vector<GraphObject> del = new Vector<GraphObject>();
+        List<GraphObject> del = new Vector<GraphObject>();
         Graph g1 = r2rl.getTarget();
-        Vector<GraphObject> codom = embRight.getCodomainObjects();
+        List<GraphObject> codom = embRight.getCodomainObjects();
         for (int i = 0; i < codom.size(); i++) {
             GraphObject go = r2rl.getImage(codom.get(i));
             if (go.isArc()) {
@@ -572,7 +569,7 @@ public class ParallelRule extends Rule {
                 // morphism left1 = (L1+L2) -> (R2+L1)
             }
 
-            Vector<Evaluable> flist = new Vector<Evaluable>();
+            List<Evaluable> flist = new Vector<Evaluable>();
 
             // shift appl. conditions over embedding morphism
             ok = shiftCondsOverEmbMorphOLD(
@@ -618,7 +615,7 @@ public class ParallelRule extends Rule {
 
     @SuppressWarnings("unused")
     private boolean handleRuleApplConditionsOLD() {
-        Vector<Evaluable> flist = new Vector<Evaluable>();
+        List<Evaluable> flist = new Vector<Evaluable>();
         boolean ok = true;
         for (int i = 0; i < this.sources.size() && ok; i++) {
             Rule r = this.sources.get(i);
@@ -674,7 +671,7 @@ public class ParallelRule extends Rule {
     }
 
     private boolean handleRuleApplConditions() {
-        Vector<Evaluable> flist = new Vector<Evaluable>();
+        List<Evaluable> flist = new Vector<Evaluable>();
         boolean ok = true;
         for (int i = 0; i < this.sources.size() && ok; i++) {
             Rule r = this.sources.get(i);
@@ -735,7 +732,7 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism morph,
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph,
-            final Vector<Evaluable> flist) {
+            final List<Evaluable> flist) {
 
         boolean ok = true;
         // shift PACs
@@ -762,15 +759,15 @@ public class ParallelRule extends Rule {
     private boolean shiftPACsOverMorphAndLeftOLD(
             int indx,
             final Rule rule,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph,
             final List<Formula> fl) {
 
         boolean ok = true;
-        while (conds.hasMoreElements() && ok) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext() && ok) {
+            OrdinaryMorphism cond = conds.next();
             ok = shiftPACOverMorphAndLeftOLD(indx, rule, cond, morph, left, embMorph, fl);
         }
         return ok;
@@ -895,14 +892,14 @@ public class ParallelRule extends Rule {
     private boolean shiftNACsOverMorphAndLeft(
             int indx,
             final Rule rule,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph) {
 
         List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
-        while (conds.hasMoreElements()) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()) {
+            OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
                 // here: LHS -> cond is not empty
                 List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverMorph(rule, cond, morph);
@@ -953,9 +950,9 @@ public class ParallelRule extends Rule {
         // first check:
         // for all x from rule.lhs with cond.getImage(x) != null also
         // morph.getImage(x) != null
-        final Enumeration<GraphObject> dom = cond.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject go = dom.nextElement();
+        final Iterator<GraphObject> dom = cond.getDomain();
+        while (dom.hasNext()) {
+            GraphObject go = dom.next();
             if (morph.getImage(go) == null) {
                 this.failedApplConds.add(cond);
                 return null;
@@ -970,7 +967,7 @@ public class ParallelRule extends Rule {
 
         final OrdinaryMorphism leftToCond = cond.compose(condIsom);
 
-        final Vector<GraphObject> condDom = cond.getDomainObjects();
+        final List<GraphObject> condDom = cond.getDomainObjects();
         final List<Object> requiredObjs = new Vector<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
                 condDom.size());
@@ -985,14 +982,14 @@ public class ParallelRule extends Rule {
             }
         }
 
-        final Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlaps = BaseFactory.theBaseFactory
+        final Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlaps = BaseFactory.theBaseFactory
                 .getOverlappingByPartialPredefinedIntersection(
                         condIsom.getTarget(), morph.getTarget(), requiredObjs,
                         objmap, true);
 
         final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> list = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-        while (overlaps.hasMoreElements()) {
-            Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.nextElement();
+        while (overlaps.hasNext()) {
+            Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.next();
             if (!p.second.getTarget().isEmpty()) {
                 OrdinaryMorphism c = p.second;
                 filterObjsOfRightRuleCond(rule, cond, condIsom, p.first, c, morph);
@@ -1054,35 +1051,32 @@ public class ParallelRule extends Rule {
         while (arcs.hasNext()) {
             Arc go_condCR = arcs.next();
             Arc goInv_condCR = null;
-            if (condCR.getInverseImage(go_condCR).hasMoreElements()) {
-                if (condTargetToCondCR.getInverseImage(go_condCR)
-                        .hasMoreElements()) {
-                    goInv_condCR = (Arc) condTargetToCondCR.getInverseImage(
-                            go_condCR).nextElement();
+            if (condCR.getInverseImage(go_condCR).hasNext()) {
+                if (condTargetToCondCR.hasInverseImage(go_condCR)) {
+                    goInv_condCR = (Arc) condTargetToCondCR.firstOfInverseImage(go_condCR);
                 }
                 if (goInv_condCR == null) {
                     todelete.add(go_condCR);
                     continue;
                 }
-                if (!condIsom.getInverseImage(goInv_condCR).hasMoreElements()) {
+                if (!condIsom.hasInverseImage(goInv_condCR)) {
                     todelete.add(go_condCR);
                     continue;
                 }
-                Arc go_leftCR = (Arc) condCR.getInverseImage(go_condCR).nextElement();
+                Arc go_leftCR = (Arc) condCR.firstOfInverseImage(go_condCR);
                 for (int j = 0; j < this.sources.size(); j++) {
                     if (r == this.sources.get(j)) {
                         for (int k = 0; k < this.embeddingLeft.size(); k++) {
                             if (k == j) {
-                                if (this.embeddingLeft.get(k).getInverseImage(go_leftCR)
-                                        .hasMoreElements()) {
+                                if (this.embeddingLeft.get(k).hasInverseImage(go_leftCR)) {
                                     Arc go_left2 = (Arc) this.embeddingLeft.get(k)
-                                            .getInverseImage(go_leftCR).nextElement();
+                                            .firstOfInverseImage(go_leftCR);
                                     if (condL.getImage(go_left2) == null) {
                                         condCR.removeMapping(go_condCR);
                                     }
                                 }
                             } else if (this.embeddingLeft.get(k)
-                                    .getInverseImage(go_leftCR).hasMoreElements()) {
+                                    .hasInverseImage(go_leftCR)) {
                                 todelete.add(go_condCR);
                             }
                         }
@@ -1106,35 +1100,31 @@ public class ParallelRule extends Rule {
         while (nodes.hasNext()) {
             Node go_condCR = nodes.next();
             Node goInv_condCR = null;
-            if (condCR.getInverseImage(go_condCR).hasMoreElements()) {
-                if (condTargetToCondCR.getInverseImage(go_condCR)
-                        .hasMoreElements()) {
-                    goInv_condCR = (Node) condTargetToCondCR.getInverseImage(
-                            go_condCR).nextElement();
+            if (condCR.hasInverseImage(go_condCR)) {
+                if (condTargetToCondCR.hasInverseImage(go_condCR)) {
+                    goInv_condCR = (Node) condTargetToCondCR.firstOfInverseImage(go_condCR);
                 }
                 if (goInv_condCR == null) {
                     todelete.add(go_condCR);
                     continue;
                 }
-                if (!condIsom.getInverseImage(goInv_condCR).hasMoreElements()) {
+                if (!condIsom.hasInverseImage(goInv_condCR)) {
                     todelete.add(go_condCR);
                     continue;
                 }
-                Node go_leftCR = (Node) condCR.getInverseImage(go_condCR).nextElement();
+                Node go_leftCR = (Node) condCR.firstOfInverseImage(go_condCR);
                 for (int j = 0; j < this.sources.size(); j++) {
                     if (r == this.sources.get(j)) {
                         for (int k = 0; k < this.embeddingLeft.size(); k++) {
                             if (k == j) {
-                                if (this.embeddingLeft.get(k).getInverseImage(go_leftCR)
-                                        .hasMoreElements()) {
+                                if (this.embeddingLeft.get(k).hasInverseImage(go_leftCR)) {
                                     Node go_left2 = (Node) this.embeddingLeft.get(k)
-                                            .getInverseImage(go_leftCR).nextElement();
+                                            .firstOfInverseImage(go_leftCR);
                                     if (condL.getImage(go_left2) == null) {
                                         condCR.removeMapping(go_condCR);
                                     }
                                 }
-                            } else if (this.embeddingLeft.get(k)
-                                    .getInverseImage(go_leftCR).hasMoreElements()) {
+                            } else if (this.embeddingLeft.get(k).hasInverseImage(go_leftCR)) {
                                 todelete.add(go_condCR);
                             }
                         }
@@ -1243,12 +1233,12 @@ public class ParallelRule extends Rule {
     private boolean shiftCondsOverEmbMorphOLD(
             int indx, final Rule r,
             final OrdinaryMorphism morph,
-            final Vector<Evaluable> flist) {
+            final List<Evaluable> flist) {
 
         boolean result = true;
 
         // shift PACs
-        if (r.getPACs().hasMoreElements()) {
+        if (r.getPACs().hasNext()) {
             // shift over left embedding
             List<Formula> fl = new Vector<Formula>();
             result = shiftPACsOverEmbMorphOLD(indx, r, r.getPACs(), morph, fl);
@@ -1267,8 +1257,7 @@ public class ParallelRule extends Rule {
         }
 
         // shift NACs
-        if (result
-                && r.getNACs().hasMoreElements()) {
+        if (result && r.getNACs().hasNext()) {
             // shift left condition over left embedding
             shiftNACsOverEmbMorph(indx, r, r.getNACs(), morph);
 
@@ -1285,7 +1274,7 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism left) {
         boolean result = true;
         // shift NACs over left embedding
-        if (r.getNACs().hasMoreElements()) {
+        if (r.getNACs().hasNext()) {
             // shift left condition over left embedding
             shiftNACsOverEmbMorph(indx, r, r.getNACs(), embMorph);
             shiftNACsOverMorphAndLeft(indx, r, r.getNACs(), morph, left, embMorph);
@@ -1299,15 +1288,15 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism embMorph,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism left,
-            final Vector<Evaluable> flist) {
+            final List<Evaluable> flist) {
         boolean ok = true;
         // shift PACs
-        if (r.getPACs().hasMoreElements()) {
+        if (r.getPACs().hasNext()) {
             // shift over left embedding
             List<Formula> fl = new Vector<Formula>();
-            Enumeration<OrdinaryMorphism> conds = r.getPACs();
-            while (conds.hasMoreElements() && ok) {
-                OrdinaryMorphism cond = conds.nextElement();
+            Iterator<OrdinaryMorphism> conds = r.getPACs();
+            while (conds.hasNext() && ok) {
+                OrdinaryMorphism cond = conds.next();
                 List<OrdinaryMorphism> list1 = shiftPACOverEmbMorph(indx, r, cond, embMorph, fl);
                 List<OrdinaryMorphism> list2 = shiftPACOverMorphAndLeft(indx, r, cond, morph, left, embMorph, fl);
                 if (list1 != null && !list1.isEmpty()
@@ -1355,15 +1344,15 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism embMorph,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism left,
-            final Vector<Evaluable> flist) {
+            final List<Evaluable> flist) {
         // shift GACs and its formulas
         boolean result = true;
-        if (r.getNestedACs().hasMoreElements()) {
+        if (r.getNestedACs().hasNext()) {
             Hashtable<String, List<NestedApplCond>> cond2shift = new Hashtable<String, List<NestedApplCond>>();
 
-            final Enumeration<OrdinaryMorphism> conds = r.getNestedACs();
-            while (conds.hasMoreElements()) {
-                NestedApplCond cond = (NestedApplCond) conds.nextElement();
+            final Iterator<OrdinaryMorphism> conds = r.getNestedACs();
+            while (conds.hasNext()) {
+                NestedApplCond cond = (NestedApplCond) conds.next();
                 // shift left condition over left embedding
                 List<NestedApplCond> list = shiftGACOverEmbMorph(indx, r, cond, embMorph, cond2shift);
                 if (list != null && !list.isEmpty()) {
@@ -1507,7 +1496,7 @@ public class ParallelRule extends Rule {
         // get the extended result graph
         final Graph dCondGraph = condSrcIsom.getTarget();
 
-        final Vector<GraphObject> condDom = condSrcIsom.getDomainObjects();
+        final List<GraphObject> condDom = condSrcIsom.getDomainObjects();
         final List<Object> requiredObjs = new Vector<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
                 condDom.size());
@@ -1523,12 +1512,12 @@ public class ParallelRule extends Rule {
             }
         }
         // make graph overlappings above required objects
-        Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlaps = BaseFactory.theBaseFactory
+        Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlaps = BaseFactory.theBaseFactory
                 .getOverlappingByPartialPredefinedIntersection(dCondGraph,
                         morph.getTarget(), requiredObjs, objmap, true); // false);
         // add created conditions to the list
-        while (overlaps.hasMoreElements()) {
-            Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.nextElement();
+        while (overlaps.hasNext()) {
+            Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.next();
             if (!p.second.getTarget().isEmpty()) {
                 // get an application condition after shifting
                 OrdinaryMorphism c = p.second;
@@ -1552,11 +1541,11 @@ public class ParallelRule extends Rule {
      */
     private boolean shiftNACsOverEmbMorph(
             int indx, final Rule r,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph) {
 
-        while (conds.hasMoreElements()) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()) {
+            OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
                 // shift condition cond over emb. morphism
                 List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverEmbMorph(cond, morph);
@@ -1614,13 +1603,13 @@ public class ParallelRule extends Rule {
      */
     private boolean shiftPACsOverEmbMorphOLD(
             int indx, final Rule r,
-            final Enumeration<OrdinaryMorphism> conds,
+            final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph,
             final List<Formula> fl) {
 
         boolean ok = true;
-        while (conds.hasMoreElements() && ok) {
-            OrdinaryMorphism cond = conds.nextElement();
+        while (conds.hasNext()&& ok) {
+            OrdinaryMorphism cond = conds.next();
             ok = shiftPACOverEmbMorphOLD(indx, r, cond, morph, fl);
         }
         return ok;
@@ -1784,7 +1773,7 @@ public class ParallelRule extends Rule {
         // shift condition over morphism mo
         List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverEmbMorph(cond, morph);
         if (shift != null && shift.size() > 0) {
-            Vector<NestedApplCond> left = new Vector<NestedApplCond>(shift.size());
+            List<NestedApplCond> left = new Vector<NestedApplCond>(shift.size());
             for (int i = 0; i < shift.size(); i++) {
                 Pair<OrdinaryMorphism, OrdinaryMorphism> p = shift.get(i);
                 OrdinaryMorphism c = p.second;
@@ -1839,8 +1828,7 @@ public class ParallelRule extends Rule {
                 cond2shift.put(key, left);
             } else {
                 cond2shift.get(key).addAll(left);
-            }
-            left.trimToSize();
+            } 
             return left;
         }
         return null;
@@ -1858,7 +1846,7 @@ public class ParallelRule extends Rule {
         // shift condition over morph
         List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverMorph(r, cond, morph);
         if (shift != null && shift.size() > 0) {
-            final Vector<NestedApplCond> list = new Vector<NestedApplCond>(shift.size());
+            final List<NestedApplCond> list = new Vector<NestedApplCond>(shift.size());
             for (int i = 0; i < shift.size(); i++) {
                 Pair<OrdinaryMorphism, OrdinaryMorphism> p = shift.get(i);
                 OrdinaryMorphism c = p.second;
@@ -1914,8 +1902,7 @@ public class ParallelRule extends Rule {
                 lc.dispose();
             }
             shift.clear();
-            shift = null;
-            list.trimToSize();
+            shift = null; 
 
             // store the local list to be used later in the formula
             String key = String.valueOf(cond.hashCode() + indx);
@@ -2003,10 +1990,10 @@ public class ParallelRule extends Rule {
         final Iterator<Arc> arcs = cond.getTarget().getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc arc = arcs.next();
-            Enumeration<GraphObject> inv = cond.getInverseImage(arc);
-            if (inv.hasMoreElements()) {
-                GraphObject lgo = inv.nextElement();
-                if (!iL.getInverseImage(lgo).hasMoreElements()) {
+            Iterator<GraphObject> inv = cond.getInverseImage(arc);
+            if (inv.hasNext()) {
+                GraphObject lgo = inv.next();
+                if (!iL.getInverseImage(lgo).hasNext()) {
                     if (similarAttribute(lgo, arc)) {
                         delete.add(arc);
                     }
@@ -2032,10 +2019,10 @@ public class ParallelRule extends Rule {
             Node node = nodes.next();
             if (!node.getOutgoingArcs().hasNext()
                     && !node.getIncomingArcs().hasNext()) {
-                Enumeration<GraphObject> inv = cond.getInverseImage(node);
-                if (inv.hasMoreElements()) {
-                    GraphObject lgo = inv.nextElement();
-                    if (!iL.getInverseImage(lgo).hasMoreElements()) {
+                Iterator<GraphObject> inv = cond.getInverseImage(node);
+                if (inv.hasNext()) {
+                    GraphObject lgo = inv.next();
+                    if (!iL.hasInverseImage(lgo)) {
                         if (similarAttribute(lgo, node)) {
                             delete.add(node);
                         }
@@ -2063,7 +2050,7 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism condL,
             final OrdinaryMorphism leftEmbMorph) {
 
-        Vector<GraphObject> del = new Vector<GraphObject>();
+        List<GraphObject> del = new Vector<GraphObject>();
         Iterator<Arc> iter2 = cond.getSource().getArcsSet().iterator();
         while (iter2.hasNext()) {
             GraphObject go = iter2.next();
@@ -2142,12 +2129,12 @@ public class ParallelRule extends Rule {
     }
 
     private void setInputParameterIfNeeded(final Rule r) {
-//		final Hashtable<Graph, Vector<String>> graph2Varnames = new Hashtable<Graph, Vector<String>>();
+//		final Hashtable<Graph, List<String>> graph2Varnames = new Hashtable<Graph, List<String>>();
 
         final VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
-        final Vector<String> varNamesRHS = r.getTarget()
+        final List<String> varNamesRHS = r.getTarget()
                 .getVariableNamesOfAttributes();
-        final Vector<String> varNamesLHS = r.getSource()
+        final List<String> varNamesLHS = r.getSource()
                 .getVariableNamesOfAttributes();
 
         for (int i = 0; i < vars.getNumberOfEntries(); i++) {
@@ -2182,9 +2169,9 @@ public class ParallelRule extends Rule {
     }
 
     private void adjustUnsetAttrsAboveMorph(final OrdinaryMorphism morph) {
-        Enumeration<GraphObject> dom = morph.getDomain();
-        while (dom.hasMoreElements()) {
-            final GraphObject from = dom.nextElement();
+        Iterator<GraphObject> dom = morph.getDomain();
+        while (dom.hasNext()) {
+            final GraphObject from = dom.next();
             final GraphObject to = morph.getImage(from);
             if (from.getAttribute() != null && to.getAttribute() != null) {
                 ValueTuple vt_from = (ValueTuple) from.getAttribute();
@@ -2222,9 +2209,9 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism cond,
             final OrdinaryMorphism morph,
             final OrdinaryMorphism shifted) {
-        Enumeration<GraphObject> dom = morph.getDomain();
-        while (dom.hasMoreElements()) {
-            final GraphObject obj = dom.nextElement();
+        Iterator<GraphObject> dom = morph.getDomain();
+        while (dom.hasNext()) {
+            final GraphObject obj = dom.next();
             final GraphObject img = morph.getImage(obj);
             final GraphObject from = cond.getImage(obj);
             final GraphObject to = shifted.getImage(img);

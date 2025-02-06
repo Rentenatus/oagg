@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.editor.impl;
 
@@ -29,6 +27,7 @@ import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeException;
+import java.util.Iterator;
 
 /**
  * @author olga
@@ -40,7 +39,7 @@ public class EdNestedApplCond extends EdPAC {
 
     EdGraph itsSource;
 
-    List<EdNestedApplCond> itsACs = new Vector<EdNestedApplCond>(0, 1);
+    List<EdNestedApplCond> itsACs = new Vector<>(0, 1);
 
     boolean badMapping = false;
 
@@ -81,10 +80,10 @@ public class EdNestedApplCond extends EdPAC {
 
     void addEdit(EdGraphObject src, EdGraphObject tar, String kind,
             String presentation) {
-        Vector<String> v = new Vector<String>();
+        List<String> v = new Vector<>();
         v.add(String.valueOf(src.hashCode()));
         v.add(String.valueOf(tar.hashCode()));
-        this.undoObj = new Pair<String, Vector<?>>(kind, v);
+        this.undoObj = new Pair<>(kind, v);
         undoManagerAddEdit(presentation);
     }
 
@@ -125,7 +124,7 @@ public class EdNestedApplCond extends EdPAC {
     private void addDeletedMappingOfInOutEdgesToUndo(EdNode orig, EdNode img,
             EdGraph origG, EdGraph imgG, OrdinaryMorphism morph, String kind,
             String msg) {
-        Vector<EdArc> inArcs = origG.getIncomingArcs(orig);
+        List<EdArc> inArcs = origG.getIncomingArcs(orig);
         for (int i = 0; i < inArcs.size(); i++) {
             EdArc origEdArc = inArcs.get(i);
             GraphObject obj = morph.getImage(origEdArc.getBasisArc());
@@ -137,7 +136,7 @@ public class EdNestedApplCond extends EdPAC {
                 }
             }
         }
-        Vector<EdArc> outArcs = origG.getOutgoingArcs(orig);
+        List<EdArc> outArcs = origG.getOutgoingArcs(orig);
         for (int i = 0; i < outArcs.size(); i++) {
             EdArc origEdArc = outArcs.get(i);
             if (inArcs.contains(origEdArc)) {
@@ -221,7 +220,7 @@ public class EdNestedApplCond extends EdPAC {
     }
 
     public List<EdNestedApplCond> getEnabledNestedACs() {
-        List<EdNestedApplCond> list = new Vector<EdNestedApplCond>(this.itsACs.size());
+        List<EdNestedApplCond> list = new Vector<>(this.itsACs.size());
         for (int i = 0; i < this.itsACs.size(); i++) {
             EdNestedApplCond ac = this.itsACs.get(i);
             if (ac.getMorphism().isEnabled()) {
@@ -233,7 +232,7 @@ public class EdNestedApplCond extends EdPAC {
     }
 
     public List<EdNestedApplCond> getEnabledACs() {
-        List<EdNestedApplCond> list = new Vector<EdNestedApplCond>(this.itsACs.size());
+        List<EdNestedApplCond> list = new Vector<>(this.itsACs.size());
 //		list.add(this);
         for (int i = 0; i < this.itsACs.size(); i++) {
             EdNestedApplCond ac = this.itsACs.get(i);
@@ -350,8 +349,8 @@ public class EdNestedApplCond extends EdPAC {
                 this.typeSet.getBasisTypeSet())) {
             if (((NestedApplCond) this.morphism)
                     .addNestedAC((NestedApplCond) ac.getMorphism())) {
-                Vector<Type> v = ac.getMorphism().getUsedTypes();
-                this.morphism.getSource().getTypeSet().adaptTypes(v.elements(), false);
+                List<Type> v = ac.getMorphism().getUsedTypes();
+                this.morphism.getSource().getTypeSet().adaptTypes(v.iterator(), false);
                 this.typeSet.refreshTypes();
                 ac.getBasisGraph().setKind(GraphKind.AC);
                 ac.setRule(this.getRule());
@@ -389,11 +388,11 @@ public class EdNestedApplCond extends EdPAC {
         ac.clear();
 
         for (int i = 0; i < this.getNodes().size(); i++) {
-            EdNode en = this.getNodes().elementAt(i);
+            EdNode en = this.getNodes().get(i);
             identicNode(en, ac, morph);
         }
         for (int j = 0; j < this.getArcs().size(); j++) {
-            EdArc ea = this.getArcs().elementAt(j);
+            EdArc ea = this.getArcs().get(j);
             identicArc(ea, ac, morph);
         }
 
@@ -442,10 +441,10 @@ public class EdNestedApplCond extends EdPAC {
 
         ac.clearMarks();
 
-        Enumeration<GraphObject> domain = ac.getMorphism().getDomain();
+        Iterator<GraphObject> domain = ac.getMorphism().getDomain();
 
-        while (domain.hasMoreElements()) {
-            GraphObject bOrig = domain.nextElement();
+        while (domain.hasNext()) {
+            GraphObject bOrig = domain.next();
             GraphObject bImage = ac.getMorphism().getImage(bOrig);
 
             enL = this.findNode(bOrig);
@@ -572,11 +571,11 @@ public class EdNestedApplCond extends EdPAC {
         return ca;
     }
 
-    public Vector<EdGraphObject> getOriginal(EdGraphObject image) {
-        Vector<EdGraphObject> vec = new Vector<EdGraphObject>(2);
-        Enumeration<GraphObject> en = this.morphism.getInverseImage(image.getBasisObject());
-        while (en.hasMoreElements()) {
-            GraphObject obj = en.nextElement();
+    public List<EdGraphObject> getOriginal(EdGraphObject image) {
+        List<EdGraphObject> vec = new Vector<>(2);
+        Iterator<GraphObject> en = this.morphism.getInverseImage(image.getBasisObject());
+        while (en.hasNext()) {
+            GraphObject obj = en.next();
             EdGraphObject go = null;
             if (this.itsParent == null) {
                 go = this.itsRule.getLeft().findGraphObject(obj);
@@ -621,7 +620,7 @@ public class EdNestedApplCond extends EdPAC {
             final EdGraphObject tgo,
             final EdGraph g) {
 
-        List<EdGraphObject> list = new Vector<EdGraphObject>();
+        List<EdGraphObject> list = new Vector<>();
         if (tgo.isArc()) {
             for (int i = 0; i < g.arcs.size(); i++) {
                 EdArc go = g.arcs.get(i);
@@ -646,7 +645,7 @@ public class EdNestedApplCond extends EdPAC {
             final EdType t,
             final EdGraph g) {
 
-        List<EdGraphObject> list = new Vector<EdGraphObject>();
+        List<EdGraphObject> list = new Vector<>();
         if (t.isArcType()) {
             for (int i = 0; i < g.arcs.size(); i++) {
                 EdArc go = g.arcs.get(i);

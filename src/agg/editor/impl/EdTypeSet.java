@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.editor.impl;
 
@@ -169,8 +170,8 @@ public class EdTypeSet {
         if (typeGraphLayout != null) {
             if (this.bTypeSet.compareTo(typeGraphLayout.getTypeSet()
                     .getBasisTypeSet())) {
-                Vector<Type> v = typeGraphLayout.getBasisGraph().getUsedTypes();
-                this.bTypeSet.adaptTypes(v.elements(), false);
+                List<Type> v = typeGraphLayout.getBasisGraph().getUsedTypes();
+                this.bTypeSet.adaptTypes(v.iterator(), false);
                 refreshTypes();
                 this.edTypeGraph = typeGraphLayout;
                 this.bTypeSet.setTypeGraph(this.edTypeGraph.getBasisGraph());
@@ -999,9 +1000,9 @@ public class EdTypeSet {
     private void initTypesFromTypeSet() {
         this.nodeTypes.clear();
         this.arcTypes.clear();
-        Enumeration<Type> types = this.bTypeSet.getTypes();
-        while (types.hasMoreElements()) {
-            Type t = types.nextElement();
+        Iterator<Type> types = this.bTypeSet.getTypes();
+        while (types.hasNext()) {
+            Type t = types.next();
             if (t.getStringRepr().equals("")
                     && t.getAdditionalRepr().equals("")) {
                 // remove "empty" types
@@ -1125,9 +1126,9 @@ public class EdTypeSet {
 
     public void refreshTypes() {
         boolean hasChanged = false;
-        Enumeration<Type> types = this.bTypeSet.getTypes();
-        while (types.hasMoreElements()) {
-            Type t = types.nextElement();
+        Iterator<Type> types = this.bTypeSet.getTypes();
+        while (types.hasNext()) {
+            Type t = types.next();
             if (getType(t) == null) {
                 if (t.getAdditionalRepr().indexOf(":[NODE]:") >= 0) {
                     createNodeType(t);
@@ -1145,9 +1146,9 @@ public class EdTypeSet {
 
     public void refreshTypes(boolean byNameOnly) {
         boolean hasChanged = false;
-        Enumeration<Type> types = this.bTypeSet.getTypes();
-        while (types.hasMoreElements()) {
-            Type t = types.nextElement();
+        Iterator<Type> types = this.bTypeSet.getTypes();
+        while (types.hasNext()) {
+            Type t = types.next();
             EdType type = getType(t);
             if (type == null && byNameOnly) {
                 type = getTypeForName(t);

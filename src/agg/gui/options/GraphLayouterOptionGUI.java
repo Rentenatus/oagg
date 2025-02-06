@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.options;
 
@@ -65,6 +66,7 @@ import agg.gui.icons.RectShapeIcon;
 import agg.gui.icons.RoundRectShapeIcon;
 import agg.gui.editor.EditorConstants;
 import agg.gui.event.TypeEvent;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
@@ -1342,7 +1344,7 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 
             // now set values of layout patterns
             if (this.gragra != null) {
-                Vector<LayoutPattern> v = this.gragra.getLayoutPatternsForType(type
+                List<LayoutPattern> v = this.gragra.getLayoutPatternsForType(type
                         .getBasisType());
                 for (int j = 0; j < v.size(); j++) {
                     LayoutPattern lp = v.get(j);
@@ -1388,8 +1390,7 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 
             // now set values of layout patterns
             if (this.gragra != null) {
-                Vector<LayoutPattern> v = this.gragra.getLayoutPatternsForType(type
-                        .getBasisType());
+                List<LayoutPattern> v = this.gragra.getLayoutPatternsForType(type.getBasisType());
                 for (int j = 0; j < v.size(); j++) {
                     LayoutPattern lp = v.get(j);
                     if (lp.isNodePattern()

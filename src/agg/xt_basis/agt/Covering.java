@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis.agt;
 
@@ -527,9 +528,9 @@ public class Covering {
      */
     private boolean isDisjoint(final Match multiMatch, final MultiRule rule) {
         final List<GraphObject> owns = new Vector<GraphObject>();
-        final Enumeration<GraphObject> objs = multiMatch.getDomain();
-        while (objs.hasMoreElements()) {
-            final GraphObject obj = objs.nextElement();
+        final Iterator<GraphObject> objs = multiMatch.getDomain();
+        while (objs.hasNext()) {
+            final GraphObject obj = objs.next();
             if (!rule.isTargetOfEmbeddingLeft(obj)) {
                 owns.add(multiMatch.getImage(obj));
             }
@@ -570,9 +571,9 @@ public class Covering {
             final AmalgamationDataOfSingleKernelMatch askMultiMatchData) {
 
         final List<GraphObject> owns = new Vector<GraphObject>();
-        final Enumeration<GraphObject> objs = multiMatch.getDomain();
-        while (objs.hasMoreElements()) {
-            final GraphObject obj = objs.nextElement();
+        final Iterator<GraphObject> objs = multiMatch.getDomain();
+        while (objs.hasNext()) {
+            final GraphObject obj = objs.next();
             if (!rule.isTargetOfEmbeddingLeft(obj)) {
                 owns.add(multiMatch.getImage(obj));
             }
@@ -592,12 +593,12 @@ public class Covering {
                         for (int k = 0; k < owns.size(); k++) {
                             // object of host graph
                             final GraphObject obj = owns.get(k);
-                            if (m.getInverseImage(obj).hasMoreElements()) {
+                            if (m.hasInverseImage(obj)) {
                                 // object in domain of an already existing match
-                                GraphObject obj1 = m.getInverseImage(obj).nextElement();
-                                if (iso.getInverseImage(obj1).hasMoreElements()) {
+                                GraphObject obj1 = m.firstOfInverseImage(obj);
+                                if (iso.hasInverseImage(obj1)) {
                                     // object of the LHS of its multi rule
-                                    GraphObject obj2 = iso.getInverseImage(obj1).nextElement();
+                                    GraphObject obj2 = iso.firstOfInverseImage(obj1);
                                     // other multi rule deletes this object
                                     if (r.getImage(obj2) == null) {
                                         if (this.ruleScheme.checkDeleteUseConflictRequired()) {
@@ -607,7 +608,7 @@ public class Covering {
                                         }
                                     } // current multi rule deletes this object
                                     else if (rule.getImage(multiMatch
-                                            .getInverseImage(obj).nextElement()) == null) {
+                                            .firstOfInverseImage(obj)) == null) {
                                         if (this.ruleScheme.checkDeleteUseConflictRequired()) {
                                             this.errorMsg = "Rule:  " + rule.getName() + "  causes delete-use conflict.";
                                             return false;
@@ -616,14 +617,14 @@ public class Covering {
                                             GraphObject img2 = r.getImage(obj2);
                                             Iterator<Arc> arcs = ((Node) img2).getOutgoingArcs();
                                             while (arcs.hasNext()) {
-                                                if (!r.getInverseImage(arcs.next()).hasMoreElements()) {
+                                                if (!r.hasInverseImage(arcs.next())) {
                                                     this.errorMsg = "Rule:  " + rule.getName() + "  causes delete-use conflict.";
                                                     return false;
                                                 }
                                             }
                                             arcs = ((Node) img2).getIncomingArcs();
                                             while (arcs.hasNext()) {
-                                                if (!r.getInverseImage(arcs.next()).hasMoreElements()) {
+                                                if (!r.hasInverseImage(arcs.next())) {
                                                     this.errorMsg = "Rule:  " + rule.getName() + "  causes delete-use conflict.";
                                                     return false;
                                                 }
@@ -672,7 +673,7 @@ public class Covering {
         cp.enableEqualVariableNameOfAttrMapping(true);
         boolean result = false;
         try {
-            final Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> conflicts = cp.isCritical(CriticalPair.EXCLUDE, r1, r2);
+            final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> conflicts = cp.isCritical(CriticalPair.EXCLUDE, r1, r2);
             if (conflicts != null && !conflicts.isEmpty()) {
                 for (int i = 0; i < conflicts.size() && !result; i++) {
                     OrdinaryMorphism om1 = conflicts.get(i).first.first;
@@ -693,11 +694,11 @@ public class Covering {
     }
 
     private boolean isMultiObjConflict(final MultiRule r, final OrdinaryMorphism om) {
-        Enumeration<GraphObject> dom = om.getDomain();
-        while (dom.hasMoreElements()) {
-            GraphObject obj = dom.nextElement();
+        Iterator<GraphObject> dom = om.getDomain();
+        while (dom.hasNext()) {
+            GraphObject obj = dom.next();
             if (om.getImage(obj).isCritical()) {
-                if (!r.getEmbeddingLeft().getInverseImage(obj).hasMoreElements()) {
+                if (!r.getEmbeddingLeft().hasInverseImage(obj)) {
                     return true;
                 }
             }
@@ -786,9 +787,9 @@ public class Covering {
                         data.LkernelLinst = data.isoCopyLeft;
                     }
 
-                    final Enumeration<GraphObject> embLeftDomain = embLeft.getDomain();
-                    while (embLeftDomain.hasMoreElements()) {
-                        GraphObject domElem = embLeftDomain.nextElement();
+                    final Iterator<GraphObject> embLeftDomain = embLeft.getDomain();
+                    while (embLeftDomain.hasNext()) {
+                        GraphObject domElem = embLeftDomain.next();
                         GraphObject obj = null;
                         GraphObject img = null;
                         if (rule instanceof MultiRule) {
@@ -816,9 +817,9 @@ public class Covering {
                             data.RkernelRinst = data.isoCopyRight;
                         }
 
-                        final Enumeration<GraphObject> embRightDomain = embRight.getDomain();
-                        while (embRightDomain.hasMoreElements()) {
-                            GraphObject domElem = embRightDomain.nextElement();
+                        final Iterator<GraphObject> embRightDomain = embRight.getDomain();
+                        while (embRightDomain.hasNext()) {
+                            GraphObject domElem = embRightDomain.next();
                             GraphObject obj = null;
                             GraphObject img = null;
                             if (rule instanceof MultiRule) {
@@ -875,9 +876,9 @@ public class Covering {
                 // isomorphism data.isoCopyRight: Rmulti -> Rinst						 				 
                 // set morphism mappings	
                 boolean mapOK = true;
-                final Enumeration<GraphObject> dom = rule.getDomain();
-                while (dom.hasMoreElements()) {
-                    GraphObject obj = dom.nextElement();
+                final Iterator<GraphObject> dom = rule.getDomain();
+                while (dom.hasNext()) {
+                    GraphObject obj = dom.next();
                     GraphObject img = rule.getImage(obj);
                     GraphObject objLeft = data.isoCopyLeft.getImage(obj);
                     GraphObject objRight = data.isoCopyRight.getImage(img);
@@ -1058,9 +1059,9 @@ public class Covering {
 //		    		 System.out.println("data.instRule... "+data.instRule.getName());
 //		    		 ((VarTuple) data.instRule.getAttrContext().getVariables()).showVariables();
                     // set morphism mappings	     										
-                    final Enumeration<GraphObject> dom = data.instRule.getDomain();
-                    while (dom.hasMoreElements()) {
-                        GraphObject obj = dom.nextElement();
+                    final Iterator<GraphObject> dom = data.instRule.getDomain();
+                    while (dom.hasNext()) {
+                        GraphObject obj = dom.next();
                         GraphObject img = data.instRule.getImage(obj);
                         GraphObject objLeft = data.leftRequestEdge.getImage(obj);
                         GraphObject objRight = data.rightRequestEdge.getImage(img);
@@ -1068,7 +1069,7 @@ public class Covering {
                             if (amalgamMorph.getImage(objLeft) == null) {
                                 try {
                                     amalgamMorph.addMapping(objLeft, objRight);
-                                    GraphObject origRight = data.isoCopyRight.getInverseImage(img).nextElement();
+                                    GraphObject origRight = data.isoCopyRight.firstOfInverseImage(img);
                                     adoptEntriesWhereEmpty(amalgamMorph, objLeft, objRight, origRight);
                                 } catch (BadMappingException ex) {
                                     this.errorMsg = "Amalgamated rule failed.\n" + ex.getMessage();
@@ -1110,12 +1111,12 @@ public class Covering {
         Iterator<?> elems = data.instRule.getLeft().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject obj = (GraphObject) elems.next();
-            if (data.LkernelLinst.getInverseImage(obj).hasMoreElements()) {
-                GraphObject kernelObj = data.LkernelLinst.getInverseImage(obj).nextElement();
+            if (data.LkernelLinst.hasInverseImage(obj)) {
+                GraphObject kernelObj = data.LkernelLinst.firstOfInverseImage(obj);
                 GraphObject objAmalgam = data.leftRequestEdge.getImage(obj);
                 if (kernelObj != null && objAmalgam != null) {
-                    if (this.lastKernelData.isoCopyLeft.getInverseImage(kernelObj).hasMoreElements()) {
-                        GraphObject kernel = this.lastKernelData.isoCopyLeft.getInverseImage(kernelObj).nextElement();
+                    if (this.lastKernelData.isoCopyLeft.hasInverseImage(kernelObj)) {
+                        GraphObject kernel = this.lastKernelData.isoCopyLeft.firstOfInverseImage(kernelObj);
                         this.amalgamLHS2kernelLHS.put(objAmalgam, kernel);
                     }
                 }
@@ -1124,12 +1125,12 @@ public class Covering {
         elems = data.instRule.getLeft().getArcsSet().iterator();
         while (elems.hasNext()) {
             GraphObject obj = (GraphObject) elems.next();
-            if (data.LkernelLinst.getInverseImage(obj).hasMoreElements()) {
-                GraphObject kernelObj = data.LkernelLinst.getInverseImage(obj).nextElement();
+            if (data.LkernelLinst.hasInverseImage(obj)) {
+                GraphObject kernelObj = data.LkernelLinst.firstOfInverseImage(obj);
                 GraphObject objAmalgam = data.leftRequestEdge.getImage(obj);
                 if (kernelObj != null && objAmalgam != null) {
-                    if (this.lastKernelData.isoCopyLeft.getInverseImage(kernelObj).hasMoreElements()) {
-                        GraphObject kernel = this.lastKernelData.isoCopyLeft.getInverseImage(kernelObj).nextElement();
+                    if (this.lastKernelData.isoCopyLeft.hasInverseImage(kernelObj)) {
+                        GraphObject kernel = this.lastKernelData.isoCopyLeft.firstOfInverseImage(kernelObj);
                         this.amalgamLHS2kernelLHS.put(objAmalgam, kernel);
                     }
                 }
@@ -1139,12 +1140,12 @@ public class Covering {
         elems = data.instRule.getRight().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject obj = (GraphObject) elems.next();
-            if (data.RkernelRinst.getInverseImage(obj).hasMoreElements()) {
-                GraphObject kernelObj = data.RkernelRinst.getInverseImage(obj).nextElement();
+            if (data.RkernelRinst.hasInverseImage(obj)) {
+                GraphObject kernelObj = data.RkernelRinst.firstOfInverseImage(obj);
                 GraphObject objAmalgam = data.rightRequestEdge.getImage(obj);
                 if (kernelObj != null && objAmalgam != null) {
-                    if (this.lastKernelData.isoCopyRight.getInverseImage(kernelObj).hasMoreElements()) {
-                        GraphObject kernel = this.lastKernelData.isoCopyRight.getInverseImage(kernelObj).nextElement();
+                    if (this.lastKernelData.isoCopyRight.hasInverseImage(kernelObj)) {
+                        GraphObject kernel = this.lastKernelData.isoCopyRight.firstOfInverseImage(kernelObj);
                         this.amalgamRHS2kernelRHS.put(objAmalgam, kernel);
                     }
                 }
@@ -1153,12 +1154,12 @@ public class Covering {
         elems = data.instRule.getRight().getArcsSet().iterator();
         while (elems.hasNext()) {
             GraphObject obj = (GraphObject) elems.next();
-            if (data.RkernelRinst.getInverseImage(obj).hasMoreElements()) {
-                GraphObject kernelObj = data.RkernelRinst.getInverseImage(obj).nextElement();
+            if (data.RkernelRinst.hasInverseImage(obj)) {
+                GraphObject kernelObj = data.RkernelRinst.firstOfInverseImage(obj);
                 GraphObject objAmalgam = data.rightRequestEdge.getImage(obj);
                 if (kernelObj != null && objAmalgam != null) {
-                    if (this.lastKernelData.isoCopyRight.getInverseImage(kernelObj).hasMoreElements()) {
-                        GraphObject kernel = this.lastKernelData.isoCopyRight.getInverseImage(kernelObj).nextElement();
+                    if (this.lastKernelData.isoCopyRight.hasInverseImage(kernelObj)) {
+                        GraphObject kernel = this.lastKernelData.isoCopyRight.firstOfInverseImage(kernelObj);
                         this.amalgamRHS2kernelRHS.put(objAmalgam, kernel);
                     }
                 }
@@ -1299,9 +1300,9 @@ public class Covering {
         final Hashtable<GraphObject, List<GraphObject>> keep2glue = new Hashtable<GraphObject, List<GraphObject>>();
         final List<GraphObject> toDelete = new Vector<GraphObject>();
 
-        Enumeration<GraphObject> matchCodom = m.getCodomain();
-        while (matchCodom.hasMoreElements()) {
-            final GraphObject codomObj = matchCodom.nextElement();
+        Iterator<GraphObject> matchCodom = m.getCodomain();
+        while (matchCodom.hasNext()) {
+            final GraphObject codomObj = matchCodom.next();
             // store arcs to glue
             if (codomObj instanceof Arc) {
                 List<GraphObject> listL = m.getInverseImageList(codomObj); // LHS arcs				 
@@ -1330,8 +1331,8 @@ public class Covering {
         boolean result = true;
         // glue nodes
         matchCodom = m.getCodomain();
-        while (matchCodom.hasMoreElements()) {
-            GraphObject codomObj = matchCodom.nextElement();
+        while (matchCodom.hasNext()) {
+            GraphObject codomObj = matchCodom.next();
             if (codomObj instanceof Node) {
                 List<GraphObject> listL = m.getInverseImageList(codomObj); // LHS nodes
                 if (listL.size() > 1) {
@@ -1613,9 +1614,9 @@ public class Covering {
                 ruleMatch.getTarget());
         instMatch.setName(ruleMatch.getName());
 
-        final Enumeration<GraphObject> e = ruleMatch.getDomain();
-        while (e.hasMoreElements()) {
-            final GraphObject o = e.nextElement();
+        final Iterator<GraphObject> e = ruleMatch.getDomain();
+        while (e.hasNext()) {
+            final GraphObject o = e.next();
             final GraphObject oImg = LruleLinst.getImage(o);
             final GraphObject img = ruleMatch.getImage(o);
             try {

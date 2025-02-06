@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui;
 
@@ -24,6 +25,7 @@ import agg.gui.options.OptionGUI;
 import agg.gui.ruleappl.ApplicabilityRuleSequence;
 import agg.gui.termination.TerminationAnalysis;
 import agg.gui.treeview.GraGraTreeView;
+import java.util.Iterator;
 
 /**
  * The class creates an AGG analizer.
@@ -47,8 +49,8 @@ public class AGGAnalyzer implements EditEventListener {
 
     public void addCriticalPairAnalysis(CriticalPairAnalysis cpa) {
         this.criticalPairAnalysis = cpa;
-        for (Enumeration<JMenu> e = cpa.getMenus(); e.hasMoreElements();) {
-            this.menu.add(e.nextElement());
+        for (Iterator<JMenu> e = cpa.getMenus(); e.hasNext();) {
+            this.menu.add(e.next());
         }
         this.menu.addSeparator();
     }
@@ -87,8 +89,8 @@ public class AGGAnalyzer implements EditEventListener {
         this.menu.add(cpaOoptions);
     }
 
-    public Enumeration<JMenu> getMenus() {
-        return this.menus.elements();
+    public Iterator<JMenu> getMenus() {
+        return this.menus.iterator();
     }
 
     public CriticalPairAnalysis getCriticalPairAnalysis() {

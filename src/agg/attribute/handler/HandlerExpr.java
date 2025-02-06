@@ -1,18 +1,18 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.attribute.handler;
 
-import java.util.Vector;
-
 import agg.attribute.parser.javaExpr.Node;
+import java.util.List;
 
 /**
  * This interface is implemented by Attribute Handlers; provides services for the Attribute Manager. It is used in the
@@ -115,9 +115,9 @@ public interface HandlerExpr extends java.io.Serializable, Cloneable {
     public Node getAST();
 
     /**
-     * fills the vector with the names of all variables which occur in this expression
+     * fills the List with the names of all variables which occur in this expression
      */
-    public void getAllVariables(Vector<String> v);
+    public void getAllVariables(List<String> v);
 }
 /*
  * $Log: HandlerExpr.java,v $

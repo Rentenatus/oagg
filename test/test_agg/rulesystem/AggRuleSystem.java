@@ -4,7 +4,7 @@
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- */
+ */ 
 package test_agg.rulesystem;
 
 import agg.attribute.AttrInstance;
@@ -21,9 +21,8 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.Match;
 import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.Rule;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import test_agg.rulesystem.param.Parameter;
@@ -40,7 +39,7 @@ public class AggRuleSystem {
 
     public boolean loadSemantics(String semanticsName) {
         this.semanticsName = semanticsName;
-        graphGrammar = new GraGra(false);
+        graphGrammar = new GraGra (false);
         boolean warwas = false;
         try {
             graphGrammar.load(semanticsName);
@@ -126,7 +125,7 @@ public class AggRuleSystem {
         }
     }
 
-    protected void reduce(Vector<GraphObject> codomainObjects, String matchNameIndex, Map<String, Object> returnMapOrNull) {
+    protected void reduce(List<GraphObject> codomainObjects, String matchNameIndex, Map<String, Object> returnMapOrNull) {
         for (GraphObject graphObject : codomainObjects) {
             AttrInstance attr = graphObject.getAttribute();
             if (attr != null) {

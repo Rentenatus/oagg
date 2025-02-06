@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 // $Id: NestedACPopupMenu.java,v 1.7 2010/09/23 08:21:33 olga Exp $
 package agg.gui.popupmenu;
@@ -41,6 +42,7 @@ import agg.xt_basis.GraphKind;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.NestedApplCond;
 import agg.xt_basis.OrdinaryMorphism;
+import java.util.Iterator;
 
 @SuppressWarnings("serial")
 public class NestedACPopupMenu extends JPopupMenu {
@@ -279,9 +281,9 @@ public class NestedACPopupMenu extends JPopupMenu {
             ac.getImage().setAttrContext(attrContxt);
 
             Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
-            Enumeration<GraphObject> gos = cond.getMorphism().getSource().getElements();
-            while (gos.hasMoreElements()) {
-                GraphObject go = gos.nextElement();
+            Iterator<GraphObject> gos = cond.getMorphism().getSource().iteratorOfElems();
+            while (gos.hasNext()) {
+                GraphObject go = gos.next();
                 table.put(go, go);
             }
             BaseFactory.theFactory().copyGraph(cond.getBasisGraph(), ac.getImage(), table);

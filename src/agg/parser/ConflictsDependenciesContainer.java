@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -35,6 +36,7 @@ import agg.parser.ExcludePairContainer.Entry;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.util.Pair;
+import org.w3c.dom.Element;
 
 public class ConflictsDependenciesContainer implements XMLObject {
 
@@ -365,8 +367,8 @@ public class ConflictsDependenciesContainer implements XMLObject {
             return;
         }
 
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeContainer = null;
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeContainer = null;
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeContainer = null;
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeContainer = null;
         Entry entry = null;
         boolean optionsWritten = false;
 
@@ -389,13 +391,13 @@ public class ConflictsDependenciesContainer implements XMLObject {
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
 
-                Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
+                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
                 for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
                     entry = ((ExcludePairContainer) pc1).getEntry(r1, r2);
                     h.openSubTag("Rule");
                     h.addObject("R2", r2, false);
-                    Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+                    Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
                     Boolean b = p.first;
                     h.addAttr("bool", b.toString());
 
@@ -407,9 +409,9 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     h.addAttr("caIndx", entry.caIndxStr);
 
                     if (b.booleanValue()) {
-                        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
+                        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
                         for (int i = 0; i < v.size(); i++) {
-                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.elementAt(i);
+                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.get(i);
                             Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = p2i.first;
                             h.openSubTag("Overlapping_Pair");
                             OrdinaryMorphism first = p2.first;
@@ -455,7 +457,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     Rule r1 = keys.nextElement();
                     h.openSubTag("Rule");
                     h.addObject("R1", r1, false);
-                    Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
+                    Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
                             .get(r1);
                     for (Enumeration<Rule> k2 = secondPart.keys(); k2
                             .hasMoreElements();) {
@@ -505,13 +507,13 @@ public class ConflictsDependenciesContainer implements XMLObject {
                 Rule r1 = keys.nextElement();
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
-                Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
+                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
                 for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
                     entry = ((ExcludePairContainer) pc2).getEntry(r1, r2);
                     h.openSubTag("Rule");
                     h.addObject("R2", r2, false);
-                    Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+                    Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
                     Boolean b = p.first;
                     h.addAttr("bool", b.toString());
 
@@ -523,9 +525,9 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     h.addAttr("caIndx", entry.caIndxStr);
 
                     if (b.booleanValue()) {
-                        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
+                        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
                         for (int i = 0; i < v.size(); i++) {
-                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.elementAt(i);
+                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.get(i);
                             Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = p2i.first;
                             h.openSubTag("Overlapping_Pair");
                             OrdinaryMorphism first = p2.first;
@@ -570,7 +572,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     Rule r1 = keys.nextElement();
                     h.openSubTag("Rule");
                     h.addObject("R1", r1, false);
-                    Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
+                    Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
                             .get(r1);
                     for (Enumeration<Rule> k2 = secondPart.keys(); k2
                             .hasMoreElements();) {
@@ -633,8 +635,8 @@ public class ConflictsDependenciesContainer implements XMLObject {
             this.priority = false;
             boolean b = false;
             boolean depsRead = false;
-            Vector<String> tagnames = new Vector<String>(1);
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
+            List<String> tagnames = new Vector<String>(1);
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
 
             // read GraGra which was saved with CPs :
             // this.pairsGrammar
@@ -714,13 +716,13 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     tmpList2 = null;
                 }
 
-                Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-                if (!r1s.hasMoreElements()) {
+                Iterator<Element> r1s = h.getEnumeration("", null, true, "Rule");
+                if (!r1s.hasNext()) {
                     r1s = h.getEnumeration("", null, true, "Regel");
                 }
 
-                while (r1s.hasMoreElements()) {
-                    h.peekElement(r1s.nextElement());
+                while (r1s.hasNext()) {
+                    h.peekElement(r1s.next());
                     // da ein referenziertes object geholt werden soll.
                     // muss nur angegeben werden wie der Membername heisst.
                     r1 = (Rule) h.getObject("R1", null, false);
@@ -728,13 +730,13 @@ public class ConflictsDependenciesContainer implements XMLObject {
                         continue;
                     }
 
-                    Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-                    if (!r2s.hasMoreElements()) {
+                    Iterator<Element> r2s = h.getEnumeration("", null, true, "Rule");
+                    if (!r2s.hasNext()) {
                         r2s = h.getEnumeration("", null, true, "Regel");
                     }
 
-                    while (r2s.hasMoreElements()) {
-                        h.peekElement(r2s.nextElement());
+                    while (r2s.hasNext()) {
+                        h.peekElement(r2s.next());
                         r2 = (Rule) h.getObject("R2", null, false);
                         String bool = h.readAttr("bool");
 
@@ -747,10 +749,10 @@ public class ConflictsDependenciesContainer implements XMLObject {
                         if (bool.equals("true")) {
                             b = true;
                             allOverlappings = new Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
-                            Enumeration<?> overlappings = h.getEnumeration("",
+                            Iterator<Element> overlappings = h.getEnumeration("",
                                     null, true, "Overlapping_Pair");
-                            while (overlappings.hasMoreElements()) {
-                                h.peekElement(overlappings.nextElement());
+                            while (overlappings.hasNext()) {
+                                h.peekElement(overlappings.next());
                                 // use the type set of the loaded grammar!
                                 Graph g = (Graph) h.getObject("", BaseFactory.theFactory().createGraph(
                                         this.pairsGrammar.getTypeSet()), true);
@@ -774,7 +776,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
 									 * Pair(first, second));
                                      */
                                     Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(h, r1, r2, g, conflictKind);
-                                    allOverlappings.addElement(p);
+                                    allOverlappings.add(p);
                                 } else if (conflictKind == CriticalPair.TRIGGER_DEPENDENCY
                                         || conflictKind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
                                     /*
@@ -791,7 +793,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
                                      */
 
                                     Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(h, r1, r2, g, conflictKind);
-                                    allOverlappings.addElement(p);
+                                    allOverlappings.add(p);
                                 }
                                 h.close();
                             }
@@ -875,24 +877,24 @@ public class ConflictsDependenciesContainer implements XMLObject {
             tagnames.add("dependencyFreeContainer");
             if (h.readSubTag(tagnames)) {
 
-                Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-                if (!r1s.hasMoreElements()) {
+                Iterator<Element> r1s = h.getEnumeration("", null, true, "Rule");
+                if (!r1s.hasNext()) {
                     r1s = h.getEnumeration("", null, true, "Regel");
                 }
 
-                while (r1s.hasMoreElements()) {
-                    h.peekElement(r1s.nextElement());
+                while (r1s.hasNext()) {
+                    h.peekElement(r1s.next());
                     // da ein referenziertes object geholt werden soll.
                     // muss nur angegeben werden wie der Membername heisst.
                     r1 = (Rule) h.getObject("R1", null, false);
 
-                    Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-                    if (!r2s.hasMoreElements()) {
+                    Iterator<Element> r2s = h.getEnumeration("", null, true, "Rule");
+                    if (!r2s.hasNext()) {
                         r2s = h.getEnumeration("", null, true, "Regel");
                     }
 
-                    while (r2s.hasMoreElements()) {
-                        h.peekElement(r2s.nextElement());
+                    while (r2s.hasNext()) {
+                        h.peekElement(r2s.next());
                         r2 = (Rule) h.getObject("R2", null, false);
                         String bool = h.readAttr("bool");
                         String status = h.readAttr("status");
@@ -1030,23 +1032,23 @@ public class ConflictsDependenciesContainer implements XMLObject {
                         tmpList2 = null;
                     }
 
-                    Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-                    if (!r1s.hasMoreElements()) {
+                    Iterator<Element> r1s = h.getEnumeration("", null, true, "Rule");
+                    if (!r1s.hasNext()) {
                         r1s = h.getEnumeration("", null, true, "Regel");
                     }
 
-                    while (r1s.hasMoreElements()) {
-                        h.peekElement(r1s.nextElement());
+                    while (r1s.hasNext()) {
+                        h.peekElement(r1s.next());
                         // da ein referenziertes object geholt werden soll.
                         // muss nur angegeben werden wie der Membername heisst.
                         r1 = (Rule) h.getObject("R1", null, false);
-                        Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-                        if (!r2s.hasMoreElements()) {
+                        Iterator<Element> r2s = h.getEnumeration("", null, true, "Rule");
+                        if (!r2s.hasNext()) {
                             r2s = h.getEnumeration("", null, true, "Regel");
                         }
 
-                        while (r2s.hasMoreElements()) {
-                            h.peekElement(r2s.nextElement());
+                        while (r2s.hasNext()) {
+                            h.peekElement(r2s.next());
                             r2 = (Rule) h.getObject("R2", null, false);
                             String bool = h.readAttr("bool");
                             b = false;
@@ -1054,10 +1056,10 @@ public class ConflictsDependenciesContainer implements XMLObject {
                             if (bool.equals("true")) {
                                 b = true;
                                 allOverlappings = new Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
-                                Enumeration<?> overlappings = h.getEnumeration("",
+                                Iterator<Element> overlappings = h.getEnumeration("",
                                         null, true, "Overlapping_Pair");
-                                while (overlappings.hasMoreElements()) {
-                                    h.peekElement(overlappings.nextElement());
+                                while (overlappings.hasNext()) {
+                                    h.peekElement(overlappings.next());
                                     Graph g = (Graph) h.getObject("",
                                             new Graph(this.pairsGrammar.getTypeSet()),
                                             true);
@@ -1085,7 +1087,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
 
                                     Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(
                                             h, r1, r2, g, conflictKind);
-                                    allOverlappings.addElement(p);
+                                    allOverlappings.add(p);
 
                                     h.close();
                                 }
@@ -1112,24 +1114,24 @@ public class ConflictsDependenciesContainer implements XMLObject {
                 tagnames.add("dependencyFreeContainer");
                 if (h.readSubTag(tagnames)) {
                     if (!depsRead) {
-                        Enumeration<?> r1s1 = h.getEnumeration("", null, true, "Rule");
-                        if (!r1s1.hasMoreElements()) {
+                        Iterator<Element> r1s1 = h.getEnumeration("", null, true, "Rule");
+                        if (!r1s1.hasNext()) {
                             r1s1 = h.getEnumeration("", null, true, "Regel");
                         }
 
-                        while (r1s1.hasMoreElements()) {
-                            h.peekElement(r1s1.nextElement());
+                        while (r1s1.hasNext()) {
+                            h.peekElement(r1s1.next());
                             // da ein referenziertes object geholt werden soll.
                             // muss nur angegeben werden wie der Membername
                             // heisst.
                             r1 = (Rule) h.getObject("R1", null, false);
-                            Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-                            if (!r2s.hasMoreElements()) {
+                            Iterator<Element> r2s = h.getEnumeration("", null, true, "Rule");
+                            if (!r2s.hasNext()) {
                                 r2s = h.getEnumeration("", null, true, "Regel");
                             }
 
-                            while (r2s.hasMoreElements()) {
-                                h.peekElement(r2s.nextElement());
+                            while (r2s.hasNext()) {
+                                h.peekElement(r2s.next());
                                 r2 = (Rule) h.getObject("R2", null, false);
                                 String bool = h.readAttr("bool");
                                 String status = h.readAttr("status");
@@ -1228,10 +1230,10 @@ public class ConflictsDependenciesContainer implements XMLObject {
         this.cpaBasisGraph = new Graph();
         if (h.readSubTag("ConflictDependencyGraph")) {
             if (h.readSubTag("Types")) {
-                Enumeration<?> en = h.getEnumeration("", null, true,
+                Iterator<Element> en = h.getEnumeration("", null, true,
                         "NodeType");
-                while (en.hasMoreElements()) {
-                    h.peekElement(en.nextElement());
+                while (en.hasNext()) {
+                    h.peekElement(en.next());
                     Type t = this.cpaBasisGraph.getTypeSet().createNodeType(false);
                     h.loadObject(t);
                     h.close();
@@ -1241,8 +1243,8 @@ public class ConflictsDependenciesContainer implements XMLObject {
                 }
 
                 en = h.getEnumeration("", null, true, "EdgeType");
-                while (en.hasMoreElements()) {
-                    h.peekElement(en.nextElement());
+                while (en.hasNext()) {
+                    h.peekElement(en.next());
                     Type t = this.cpaBasisGraph.getTypeSet().createArcType(false);
                     h.loadObject(t);
                     h.close();
@@ -1266,7 +1268,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
             h.enrichObject(this.cpaGraph);
             h.close();
 
-            Vector<EdType> cpaEdgeTypes = this.cpaGraph.getTypeSet().getArcTypes();
+            List<EdType> cpaEdgeTypes = this.cpaGraph.getTypeSet().getArcTypes();
             for (int i = 0; i < cpaEdgeTypes.size(); i++) {
                 EdType t = cpaEdgeTypes.get(i);
                 if (t.getBasisType().getName().equals("c")) {
@@ -1317,9 +1319,9 @@ public class ConflictsDependenciesContainer implements XMLObject {
             }
         }
 
-        Enumeration<GraphObject> e = first.getDomain();
-        while (e.hasMoreElements()) {
-            GraphObject s = e.nextElement();
+        Iterator<GraphObject> e = first.getDomain();
+        while (e.hasNext()) {
+            GraphObject s = e.next();
             h.openSubTag("Mapping");
             h.addObject("orig", s, false);
             h.addObject("image", first.getImage(s), false);
@@ -1343,8 +1345,8 @@ public class ConflictsDependenciesContainer implements XMLObject {
             }
 
             e = second.getDomain();
-            while (e.hasMoreElements()) {
-                GraphObject s = e.nextElement();
+            while (e.hasNext()) {
+                GraphObject s = e.next();
                 h.openSubTag("Mapping");
                 h.addObject("orig", s, false);
                 h.addObject("image", second.getImage(s), false);
@@ -1373,13 +1375,13 @@ public class ConflictsDependenciesContainer implements XMLObject {
                 Iterator<Node> en = second.getTarget().getNodesSet().iterator();
                 while (en.hasNext()) {
                     GraphObject go = en.next();
-                    if (!second.getInverseImage(go).hasMoreElements()) {
-                        if (embedPAC2.getInverseImage(go).hasMoreElements()) {
-                            GraphObject o = embedPAC2.getInverseImage(go).nextElement();
+                    if (!second.hasInverseImage(go)) {
+                        if (embedPAC2.hasInverseImage(go)) {
+                            GraphObject o = embedPAC2.firstOfInverseImage(go);
                             pacgos.add(o);
                         }
                     } else {
-                        GraphObject s = second.getInverseImage(go).nextElement();
+                        GraphObject s = second.firstOfInverseImage(go);
                         h.openSubTag("Mapping");
                         h.addObject("orig", s, false);
                         h.addObject("image", go, false);
@@ -1390,13 +1392,13 @@ public class ConflictsDependenciesContainer implements XMLObject {
                 Iterator<Arc> ea = second.getTarget().getArcsSet().iterator();
                 while (ea.hasNext()) {
                     GraphObject go = ea.next();
-                    if (!second.getInverseImage(go).hasMoreElements()) {
-                        if (embedPAC2.getInverseImage(go).hasMoreElements()) {
-                            GraphObject o = embedPAC2.getInverseImage(go).nextElement();
+                    if (!second.hasInverseImage(go)) {
+                        if (embedPAC2.hasInverseImage(go)) {
+                            GraphObject o = embedPAC2.firstOfInverseImage(go);
                             pacgos.add(o);
                         }
                     } else {
-                        GraphObject s = second.getInverseImage(go).nextElement();
+                        GraphObject s = second.firstOfInverseImage(go);
                         h.openSubTag("Mapping");
                         h.addObject("orig", s, false);
                         h.addObject("image", go, false);
@@ -1434,16 +1436,14 @@ public class ConflictsDependenciesContainer implements XMLObject {
 
                 // second.target is N2 = NAC+L2
                 e = second.getDomain();
-                while (e.hasMoreElements()) {
-                    GraphObject src = e.nextElement();
+                while (e.hasNext()) {
+                    GraphObject src = e.next();
                     GraphObject t = second.getImage(src);
                     GraphObject s = null;
-                    if (morphL2iso.getInverseImage(src).hasMoreElements()) {
-                        s = morphL2iso.getInverseImage(src)
-                                .nextElement();
-                    } else if (morphNACiso.getInverseImage(src).hasMoreElements()) {
-                        s = morphNACiso.getInverseImage(src)
-                                .nextElement();
+                    if (morphL2iso.hasInverseImage(src)) {
+                        s = morphL2iso.firstOfInverseImage(src);
+                    } else if (morphNACiso.hasInverseImage(src)) {
+                        s = morphNACiso.firstOfInverseImage(src);
                     }
                     if (s != null) {
                         h.openSubTag("Mapping");
@@ -1652,8 +1652,8 @@ public class ConflictsDependenciesContainer implements XMLObject {
                 if (overlapGraph.getName().indexOf("forbid-switch-") >= 0
                         || overlapGraph.getName().indexOf("forbid-produce-dependency") >= 0) {
 
-                    for (Enumeration<OrdinaryMorphism> e = r1.getNACs(); e.hasMoreElements();) {
-                        OrdinaryMorphism n = e.nextElement();
+                    for (Iterator<OrdinaryMorphism> e = r1.getNACs(); e.hasNext();) {
+                        OrdinaryMorphism n = e.next();
                         if (overlapGraph.getHelpInfoAboutNAC().indexOf(n.getName()) != -1) {
                             nac = n;
                             break;
@@ -1665,8 +1665,8 @@ public class ConflictsDependenciesContainer implements XMLObject {
                         morphNACiso = NAC_RHS.second;
                     }
                 } else {
-                    for (Enumeration<OrdinaryMorphism> e = r2.getNACs(); e.hasMoreElements();) {
-                        OrdinaryMorphism n = e.nextElement();
+                    for (Iterator<OrdinaryMorphism> e = r2.getNACs(); e.hasNext();) {
+                        OrdinaryMorphism n = e.next();
                         if (overlapGraph.getHelpInfoAboutNAC().indexOf(n.getName()) != -1) {
                             nac = n;
                             break;

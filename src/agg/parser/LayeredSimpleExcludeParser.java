@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -27,6 +28,7 @@ import agg.xt_basis.RuleLayer;
 import agg.util.IntComparator;
 import agg.util.OrderedSet;
 import agg.util.Pair;
+import java.util.List;
 
 // ---------------------------------------------------------------------------+
 /**
@@ -97,7 +99,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
 		 * immer wieder angesetzt wird
          */
         RuleInstances eri = new RuleInstances();
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
         try {
             conflictFree = this.pairContainer
                     .getContainer(CriticalPair.CONFLICTFREE);
@@ -106,7 +108,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                     + iae.getMessage()));
             return false;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
         try {
             exclude = this.pairContainer.getContainer(CriticalPair.EXCLUDE);
         } catch (InvalidAlgorithmException iae) {
@@ -114,10 +116,10 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                     + iae.getMessage()));
             return false;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = null;
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
-        excludeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-        conflictFreeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = null;
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
+        excludeLight = new Hashtable<>();
+        conflictFreeLight = new Hashtable<>();
         makeLightContainer(exclude, excludeLight);
         makeLightContainer(conflictFree, conflictFreeLight);
         /*
@@ -131,10 +133,10 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                 conflictFreeLight.remove(key);
             }
         }
-        Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredExcludeLight
-                = new Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>>();
-        Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredConflictFreeLight
-                = new Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>>();
+        Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredExcludeLight
+                = new Hashtable<>();
+        Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredConflictFreeLight
+                = new Hashtable<>();
         /*
 		 * es gibt ein set von rules fuer einen bestimmten layer ausserdem gibt
 		 * es set von confliktfreien regeln aller layer synchronisieren beider
@@ -147,15 +149,15 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
             /* fuer alle regeln eines Layeres */
             for (Iterator<?> en2 = lRules.iterator(); en2.hasNext() && !this.stop;) {
                 Rule r = (Rule) en2.next();
-                Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = conflictFreeLight
+                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = conflictFreeLight
                         .get(r);
                 /* falls die Regel im conflictFreeLight ist */
                 if (value != null) {
                     /* neue Hashtable aufbauen */
-                    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredConflictFreeLight
+                    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredConflictFreeLight
                             .get(l);
                     if (hashtable == null) {
-                        hashtable = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+                        hashtable = new Hashtable< >();
                         layeredConflictFreeLight.put(l, hashtable);
                     }
                     hashtable.put(r, value);
@@ -165,10 +167,10 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                     /* vertrauen ist gut, kontrolle ist besser */
                     if (value != null) {
                         /* neue Hashtable aufbauen */
-                        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredExcludeLight
+                        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredExcludeLight
                                 .get(l);
                         if (hashtable == null) {
-                            hashtable = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+                            hashtable = new Hashtable< >();
                             layeredExcludeLight.put(l, hashtable);
                         }
                         hashtable.put(r, value);
@@ -183,7 +185,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
         while (!this.stop && !getHostGraph().isIsomorphicTo(this.stopGraph) && result
                 && (currentLayer != null)) {
             ruleApplied = false;
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lFree = layeredConflictFreeLight
+            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lFree = layeredConflictFreeLight
                     .get(currentLayer);
             Match m = null;
             if (lFree != null) {
@@ -199,7 +201,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                 }
             }
             if (!ruleApplied) {
-                Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lExclude = layeredExcludeLight.get(currentLayer);
+                Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lExclude = layeredExcludeLight.get(currentLayer);
                 Match savedMatch = null;
                 if (lExclude != null) {
                     fireParserEvent(new ParserMessageEvent(this,

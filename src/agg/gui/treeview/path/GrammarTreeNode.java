@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.gui.treeview.path;
 
@@ -644,12 +642,12 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
 
         /* create NAC tree nodes */
         for (int j = 0; j < rule.getNACs().size(); j++) {
-            final EdNAC nac = rule.getNACs().elementAt(j);
+            final EdNAC nac = rule.getNACs().get(j);
             insertNACIntoTree(treeView.getTreeModel(), ruleNode, nac);
         }
         /* create PAC tree nodes */
         for (int j = 0; j < rule.getPACs().size(); j++) {
-            final EdPAC pac = rule.getPACs().elementAt(j);
+            final EdPAC pac = rule.getPACs().get(j);
             insertPACIntoTree(treeView.getTreeModel(), ruleNode, pac);
         }
 
@@ -860,9 +858,9 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
         }
         EdRule er = sd.getRule();
         // tree.collapsePath(path);
-        Vector<EvalSet> atoms = er.getBasisRule().getAtomApplConds();
+        List<EvalSet> atoms = er.getBasisRule().getAtomApplConds();
         // System.out.println("Atomics: "+atoms.size());
-        Vector<String> names = er.getBasisRule().getConstraintNames();
+        List<String> names = er.getBasisRule().getConstraintNames();
         String name;
         for (int i = 0; i < atoms.size(); i++) {
             EvalSet es = atoms.get(i);
@@ -877,10 +875,10 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             // System.out.println("Conclusions: "+es.getSet().size());
             for (int j = 0; j < es.getSet().size(); j++) {
                 // AtomApplCond cond = (AtomApplCond) es.getSet().get(j);
-                Vector<?> set = ((EvalSet) es.getSet().get(j)).getSet();
+                List<?> set = ((EvalSet) es.getSet().get(j)).getSet();
                 // System.out.println("Conclusions: "+set.size());
                 for (int k = 0; k < set.size(); k++) {
-                    AtomApplCond cond = (AtomApplCond) set.elementAt(k);
+                    AtomApplCond cond = (AtomApplCond) set.get(k);
                     String condName = cond.getSourceAtomConstraint().getName();
                     String n = (k + (j * set.size()) + 1) + "_" + condName;
                     EdAtomApplCond aac = new EdAtomApplCond(n, er, cond);

@@ -1,15 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.xt_basis.agt;
 
@@ -324,10 +322,10 @@ public class MultiRule extends Rule implements Observer {
      * @return true if the rule morphism embedding of the kernel rule holds, otherwise false.
      */
     public boolean isMorphismEmbeddingValid() {
-        final Enumeration<GraphObject> kernelDom = this.itsRuleScheme
+        final Iterator<GraphObject> kernelDom = this.itsRuleScheme
                 .getKernelRule().getDomain();
-        while (kernelDom.hasMoreElements()) {
-            final GraphObject goKern = kernelDom.nextElement();
+        while (kernelDom.hasNext()) {
+            final GraphObject goKern = kernelDom.next();
             final GraphObject imgKern = this.itsRuleScheme.getKernelRule()
                     .getImage(goKern);
             final GraphObject go = this.embeddingLeft.getImage(goKern);
@@ -351,9 +349,9 @@ public class MultiRule extends Rule implements Observer {
      * @return true if rule mapping set successfully, otherwise false.
      */
     public boolean applyEmbeddedRuleMapping(final Rule kernelRule) {
-        final Enumeration<GraphObject> kernelDom = kernelRule.getDomain();
-        while (kernelDom.hasMoreElements()) {
-            final GraphObject goKern = kernelDom.nextElement();
+        final Iterator<GraphObject> kernelDom = kernelRule.getDomain();
+        while (kernelDom.hasNext()) {
+            final GraphObject goKern = kernelDom.next();
             final GraphObject imgKern = kernelRule.getImage(goKern);
             if (imgKern != null
                     && this.getImage(this.embeddingLeft.getImage(goKern)) != this.embeddingRight.getImage(imgKern)) {
@@ -372,34 +370,30 @@ public class MultiRule extends Rule implements Observer {
         final Iterator<Node> nLeft = this.itsOrig.getNodesSet().iterator();
         while (nLeft.hasNext()) {
             GraphObject obj = nLeft.next();
-            if (this.embeddingLeft.getInverseImage(obj).hasMoreElements()) {
-                this.mapKernel2MultiObject(this.embeddingLeft.getInverseImage(
-                        obj).nextElement(), obj);
+            if (this.embeddingLeft.hasInverseImage(obj)) {
+                this.mapKernel2MultiObject(this.embeddingLeft.firstOfInverseImage(obj), obj);
             }
         }
         final Iterator<Arc> aLeft = this.itsOrig.getArcsSet().iterator();
         while (aLeft.hasNext()) {
             GraphObject obj = aLeft.next();
-            if (this.embeddingLeft.getInverseImage(obj).hasMoreElements()) {
-                this.mapKernel2MultiObject(this.embeddingLeft.getInverseImage(
-                        obj).nextElement(), obj);
+            if (this.embeddingLeft.hasInverseImage(obj)) {
+                this.mapKernel2MultiObject(this.embeddingLeft.firstOfInverseImage(obj), obj);
             }
         }
 
         final Iterator<Node> nRight = this.itsImag.getNodesSet().iterator();
         while (nRight.hasNext()) {
             GraphObject obj = nRight.next();
-            if (this.embeddingRight.getInverseImage(obj).hasMoreElements()) {
-                this.mapKernel2MultiObject(this.embeddingRight.getInverseImage(
-                        obj).nextElement(), obj);
+            if (this.embeddingRight.hasInverseImage(obj)) {
+                this.mapKernel2MultiObject(this.embeddingRight.firstOfInverseImage(obj), obj);
             }
         }
         final Iterator<Arc> aRight = this.itsImag.getArcsSet().iterator();
         while (aRight.hasNext()) {
             GraphObject obj = aRight.next();
-            if (this.embeddingRight.getInverseImage(obj).hasMoreElements()) {
-                this.mapKernel2MultiObject(this.embeddingRight.getInverseImage(
-                        obj).nextElement(), obj);
+            if (this.embeddingRight.hasInverseImage(obj)) {
+                this.mapKernel2MultiObject(this.embeddingRight.firstOfInverseImage(obj), obj);
             }
         }
     }
@@ -631,7 +625,7 @@ public class MultiRule extends Rule implements Observer {
      * left embedding belongs to the LHS of the kernel rule.
      */
     public boolean isTargetOfEmbeddingLeft(final GraphObject obj) {
-        return this.embeddingLeft.getInverseImage(obj).hasMoreElements();
+        return this.embeddingLeft.hasInverseImage(obj);
     }
 
     /**
@@ -640,7 +634,7 @@ public class MultiRule extends Rule implements Observer {
      * right embedding belongs to the RHS of the kernel rule.
      */
     public boolean isTargetOfEmbeddingRight(final GraphObject obj) {
-        return this.embeddingRight.getInverseImage(obj).hasMoreElements();
+        return this.embeddingRight.hasInverseImage(obj);
     }
 
     /**

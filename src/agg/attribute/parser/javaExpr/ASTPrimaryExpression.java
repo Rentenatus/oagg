@@ -5,11 +5,12 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 /* JJT: 0.2.2 */
 package agg.attribute.parser.javaExpr;
+
+import java.util.Iterator;
 
 /**
  * @version $Id: ASTPrimaryExpression.java,v 1.11 2010/12/07 16:36:45 olga Exp $
@@ -33,9 +34,8 @@ public class ASTPrimaryExpression extends SimpleNode {
      */
     public void dump(String prefix) {
         if (this.children != null) {
-            for (java.util.Enumeration<Node> e = this.children.elements(); e
-                    .hasMoreElements();) {
-                SimpleNode n = (SimpleNode) e.nextElement();
+            for (Iterator<Node> e = this.children.iterator(); e.hasNext();) {
+                SimpleNode n = (SimpleNode) e.next();
                 n.dump(prefix);
             }
         }

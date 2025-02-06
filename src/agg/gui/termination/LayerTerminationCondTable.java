@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.termination;
 
@@ -45,6 +46,7 @@ import agg.termination.TerminationLGTS;
 import agg.termination.TerminationLGTSInterface;
 import agg.termination.TerminationLGTSTypedByTypeGraph;
 import agg.util.Pair;
+import java.util.List;
 
 /**
  * Shows a table with a row for a layer and a column for a termination condition, so that each element stands for rules
@@ -145,9 +147,9 @@ public class LayerTerminationCondTable extends JDialog implements
         JPanel rowHead = new JPanel();
         rowHead.setLayout(new GridLayout(termination.getOrderedRuleLayer()
                 .size(), 1));
-        Enumeration<Integer> en = termination.getOrderedRuleLayer().elements();
-        while (en.hasMoreElements()) {
-            String text = en.nextElement().toString();
+        Iterator<Integer> en = termination.getOrderedRuleLayer().iterator();
+        while (en.hasNext()) {
+            String text = en.next().toString();
             JLabel act = new JLabel(" Layer " + text + " ");
             act.setToolTipText("");
             rowHead.add(act);
@@ -182,10 +184,10 @@ public class LayerTerminationCondTable extends JDialog implements
                 act.addActionListener(this);
                 // System.out.println(termination.getOrderedRuleLayer().elementAt(i));
                 // System.out.println(this.conds.elementAt(ii));
-                this.addButton(termination.getOrderedRuleLayer().elementAt(i),
+                this.addButton(termination.getOrderedRuleLayer().get(i),
                         this.conds.elementAt(ii).first, act);
                 this.tablePanel.add(act);
-                refreshView(termination.getOrderedRuleLayer().elementAt(i),
+                refreshView(termination.getOrderedRuleLayer().get(i),
                         this.conds.elementAt(ii).first, act);
                 ii++;
             }
@@ -422,15 +424,15 @@ public class LayerTerminationCondTable extends JDialog implements
 
     private boolean getValue(Integer layer, String condName) {
         if (condName.equals("Deletion_1")) {
-            Pair<Boolean, Vector<Rule>> value = this.termination
+            Pair<Boolean, List<Rule>> value = this.termination
                     .getResultTypeDeletion().get(layer);
             return value.first.booleanValue();
         } else if (condName.equals("Deletion_2")) {
-            Pair<Boolean, Vector<Rule>> value = this.termination.getResultDeletion()
+            Pair<Boolean, List<Rule>> value = this.termination.getResultDeletion()
                     .get(layer);
             return value.first.booleanValue();
         } else if (condName.equals("Nondeletion")) {
-            Pair<Boolean, Vector<Rule>> value = this.termination
+            Pair<Boolean, List<Rule>> value = this.termination
                     .getResultNondeletion().get(layer);
             return value.first.booleanValue();
         } else {
@@ -443,15 +445,15 @@ public class LayerTerminationCondTable extends JDialog implements
         Vector<String> names = new Vector<String>();
         boolean result = false;
         if (condName.equals("Deletion_1")) {
-            Pair<Boolean, Vector<Rule>> p = this.termination.getResultTypeDeletion()
+            Pair<Boolean, List<Rule>> p = this.termination.getResultTypeDeletion()
                     .get(layer);
             result = p.first.booleanValue();
         } else if (condName.equals("Deletion_2")) {
-            Pair<Boolean, Vector<Rule>> p = this.termination.getResultDeletion()
+            Pair<Boolean, List<Rule>> p = this.termination.getResultDeletion()
                     .get(layer);
             result = p.first.booleanValue();
         } else if (condName.equals("Nondeletion")) {
-            Pair<Boolean, Vector<Rule>> p = this.termination.getResultNondeletion()
+            Pair<Boolean, List<Rule>> p = this.termination.getResultNondeletion()
                     .get(layer);
             result = p.first.booleanValue();
         }
@@ -474,11 +476,11 @@ public class LayerTerminationCondTable extends JDialog implements
             if (this.termination instanceof TerminationLGTS) {
                 if ((this.termination.getDeletionType() != null)
                         && this.termination.getDeletionType().containsKey(layer)) {
-                    Vector<agg.xt_basis.Type> types = this.termination.getDeletionType().get(layer);
+                    List<agg.xt_basis.Type> types = this.termination.getDeletionType().get(layer);
                     if (types != null) {
-                        Enumeration<agg.xt_basis.Type> en = types.elements();
-                        while (en.hasMoreElements()) {
-                            agg.xt_basis.Type t = en.nextElement();
+                        Iterator<agg.xt_basis.Type> en = types.iterator();
+                        while (en.hasNext()) {
+                            agg.xt_basis.Type t = en.next();
                             if (t.getStringRepr().equals("")) {
                                 names.addElement("(unnamed)");
                             } else {
@@ -490,11 +492,11 @@ public class LayerTerminationCondTable extends JDialog implements
             } else if (this.termination instanceof TerminationLGTSTypedByTypeGraph) {
                 if ((this.termination.getDeletionTypeObject() != null)
                         && this.termination.getDeletionTypeObject().containsKey(layer)) {
-                    Vector<GraphObject> typeObjs = this.termination.getDeletionTypeObject().get(layer);
+                    List<GraphObject> typeObjs = this.termination.getDeletionTypeObject().get(layer);
                     if (typeObjs != null) {
-                        Enumeration<GraphObject> en = typeObjs.elements();
-                        while (en.hasMoreElements()) {
-                            GraphObject tobj = en.nextElement();
+                        Iterator<GraphObject> en = typeObjs.iterator();
+                        while (en.hasNext()) {
+                            GraphObject tobj = en.next();
                             if (tobj.isNode()) {
                                 if (tobj.getType().getStringRepr().equals("")) {
                                     names.add("(unnamed)");
@@ -545,10 +547,10 @@ public class LayerTerminationCondTable extends JDialog implements
 
     private Vector<String> getCreatedTypesOnDeletionLayer(Integer layer) {
         final Vector<String> names = new Vector<String>();
-        final Vector<Object> types = this.termination.getCreatedTypesOnDeletionLayer(layer);
-        final Enumeration<Object> en = types.elements();
-        while (en.hasMoreElements()) {
-            final Object tobj = en.nextElement();
+        final List<Object> types = this.termination.getCreatedTypesOnDeletionLayer(layer);
+        final Iterator<Object> en = types.iterator();
+        while (en.hasNext()) {
+            final Object tobj = en.next();
             if (tobj instanceof agg.xt_basis.Type) {
                 final agg.xt_basis.Type t = (agg.xt_basis.Type) tobj;
                 if (t.getStringRepr().equals("")) {

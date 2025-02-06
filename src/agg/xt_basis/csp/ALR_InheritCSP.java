@@ -1,12 +1,14 @@
-/*******************************************************************************
+/**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. 
- * This program and the accompanying materials are made available 
- * under the terms of the Eclipse Public License v1.0 which 
- * accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- *******************************************************************************/
+ */
 package agg.xt_basis.csp;
 
 import java.util.Dictionary;
@@ -32,6 +34,7 @@ import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
 import agg.xt_basis.Type;
+import java.util.List;
 
 /**
  * A CSP whose solutions represent morphisms between two graphs.
@@ -407,7 +410,7 @@ public class ALR_InheritCSP extends CSP {
 					Vector<Type> parents = lhsobj.getType().getAllParents();
 					for (int p = 1; p < parents.size(); p++) {
 						Type pt = parents.get(p);
-						Vector<GraphObject> vp = g.getElementsOfTypeAsVector(pt);
+						List<GraphObject> vp = g.getElementsOfTypeAsVector(pt);
 						for (int i=0; i<vp.size(); i++) {
 							if (!v.contains(vp.get(i)))
 								v.add(vp.get(i));
@@ -421,7 +424,7 @@ public class ALR_InheritCSP extends CSP {
 					Vector<Type> tar_parents = tar.getType().getAllParents();
 					for (int i = 0; i < src_parents.size(); i++) {
 						Type srcp = src_parents.get(i);
-						Vector<GraphObject> vsrcp = g.getElementsOfTypeAsVector(lhsobj.getType(), srcp, tar.getType());
+						List<GraphObject> vsrcp = g.getElementsOfTypeAsVector(lhsobj.getType(), srcp, tar.getType());
 						for (int k=0; k<vsrcp.size(); k++) {
 							if (!v.contains(vsrcp.get(k)))
 								v.add(vsrcp.get(k));
@@ -429,7 +432,7 @@ public class ALR_InheritCSP extends CSP {
 
 						for (int j = 0; j<tar_parents.size(); j++) {
 							Type tarp = tar_parents.get(j);
-							Vector<GraphObject> vtarp = g.getElementsOfTypeAsVector(lhsobj.getType(), srcp, tarp);
+							List<GraphObject> vtarp = g.getElementsOfTypeAsVector(lhsobj.getType(), srcp, tarp);
 							for (int l=0; l<vtarp.size(); l++) {
 								if (!v.contains(vtarp.get(l)))
 									v.add(vtarp.get(l));

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis.csp;
 
@@ -169,16 +170,16 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
 
         GraphObject image;
         GraphObject obj = this.itsStack.peek().object;
-        Enumeration<?> iter = this.itsStack.peek().iter;
+        Iterator<GraphObject> iter = this.itsStack.peek().iter;
         // System.out.println("obj tp map : "+obj);
-        while (iter.hasMoreElements()) {
+        while (iter.hasNext()) {
             try {
-                image = (GraphObject) iter.nextElement();
+                image = (GraphObject) iter.next();
                 // System.out.println("test image: "+image);
-                Enumeration<GraphObject> e = this.itsMorphism.getInverseImage(image);
+                Iterator<GraphObject> e = this.itsMorphism.getInverseImage(image);
                 GraphObject o = null;
-                if (e.hasMoreElements()) {
-                    o = e.nextElement();
+                if (e.hasNext()) {
+                    o = e.next();
                 }
                 // System.out.println("injective: "+this.itsInjectiveFlag+" inverse
                 // image: "+o);
@@ -303,8 +304,8 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
         }
     }
 
-    private Enumeration<GraphObject> getDomain() {
-        return this.itsMorphism.getImage().getElements();
+    private Iterator<GraphObject> getDomain() {
+        return this.itsMorphism.getImage().iteratorOfElems();
         // return domain.elements();
     }
 
@@ -578,12 +579,12 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
 
 class StackItem {
 
-    protected StackItem(GraphObject obj, Enumeration<GraphObject> iter) {
+    protected StackItem(GraphObject obj, Iterator<GraphObject> iter) {
         this.object = obj;
         this.iter = iter;
     }
 
-    protected Enumeration<GraphObject> iter;
+    protected Iterator<GraphObject> iter;
 
     protected GraphObject object;
 }

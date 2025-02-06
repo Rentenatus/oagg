@@ -1,22 +1,15 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
  */
 package agg.xt_basis.agt;
-
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
 
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
@@ -39,6 +32,10 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This class implements an interaction rule scheme which contains a kernel rule (subrule) and a set of multi rules
@@ -314,8 +311,8 @@ public class RuleScheme extends Rule //implements Observer
             } else {
                 GraphObject objR = multiRule.getEmbeddingRight().getImage(go);
                 if (objR != null
-                        && this.getInverseImage(objR).hasMoreElements()) {
-                    multiRule.removeMapping(this.getInverseImage(go).nextElement());
+                        && this.hasInverseImage(objR)) {
+                    multiRule.removeMapping(this.firstOfInverseImage(go));
                 }
             }
         }
@@ -905,8 +902,7 @@ public class RuleScheme extends Rule //implements Observer
             if (nac.getTarget().isUsingVariable(var)) {
                 return true;
             }
-            Vector<String> nacVars = nac.getTarget()
-                    .getVariableNamesOfAttributes();
+            List<String> nacVars = nac.getTarget().getVariableNamesOfAttributes();
             for (int j = 0; j < nacVars.size(); j++) {
                 String varName = nacVars.get(j);
                 for (int k = 0; k < act.getNumberOfEntries(); k++) {
@@ -933,8 +929,7 @@ public class RuleScheme extends Rule //implements Observer
                 return true;
             }
 
-            Vector<String> pacVars = pac.getTarget()
-                    .getVariableNamesOfAttributes();
+            List<String> pacVars = pac.getTarget().getVariableNamesOfAttributes();
             for (int j = 0; j < pacVars.size(); j++) {
                 String varName = pacVars.get(j);
                 for (int k = 0; k < act.getNumberOfEntries(); k++) {
@@ -1030,7 +1025,7 @@ public class RuleScheme extends Rule //implements Observer
         // add only variables of LHS and RHS	
         if (this.kernelRule.hasNACs()
                 || this.kernelRule.hasPACs()) {
-            final Vector<String> list = this.kernelRule.getLeft().getVariableNamesOfAttributes();
+            final List<String> list = this.kernelRule.getLeft().getVariableNamesOfAttributes();
             list.addAll(this.kernelRule.getRight().getVariableNamesOfAttributes());
             multiRule.addToAttrContextAccordingList(
                     (VarTuple) this.kernelRule.getAttrContext().getVariables(),
@@ -1200,30 +1195,30 @@ public class RuleScheme extends Rule //implements Observer
      */
     private void mapKernel2MultiObject(final MultiRule multiRule) {
         final OrdinaryMorphism embLeft = multiRule.getEmbeddingLeft();
-        final Enumeration<GraphObject> domLeft = embLeft.getDomain();
-        while (domLeft.hasMoreElements()) {
-            final GraphObject kern = domLeft.nextElement();
+        final Iterator<GraphObject> domLeft = embLeft.getDomain();
+        while (domLeft.hasNext()) {
+            final GraphObject kern = domLeft.next();
             multiRule.mapKernel2MultiObject(kern, embLeft.getImage(kern));
         }
 //		final Enumeration<GraphObject> enLeft = multiRule.getLeft().getElements();
-//	  	while (enLeft.hasMoreElements()) {	         
-//	  		final GraphObject obj = enLeft.nextElement();	         
-//	       	if (embLeft.getInverseImage(obj).hasMoreElements()){
-//	       		multiRule.mapKernel2MultiObject(embLeft.getInverseImage(obj).nextElement(), obj);	         	         	
+//	  	while (enLeft.hasNext()) {	         
+//	  		final GraphObject obj = enLeft.next();	         
+//	       	if (embLeft.getInverseImage(obj).hasNext()){
+//	       		multiRule.mapKernel2MultiObject(embLeft.getInverseImage(obj).next(), obj);	         	         	
 //	       	}	        
 //	  	}    
 
         final OrdinaryMorphism embRight = multiRule.getEmbeddingRight();
-        final Enumeration<GraphObject> domRight = embRight.getDomain();
-        while (domRight.hasMoreElements()) {
-            final GraphObject kern = domRight.nextElement();
+        final Iterator<GraphObject> domRight = embRight.getDomain();
+        while (domRight.hasNext()) {
+            final GraphObject kern = domRight.next();
             multiRule.mapKernel2MultiObject(kern, embRight.getImage(kern));
         }
 //	  	final Enumeration<GraphObject> enRight = multiRule.getRight().getElements();
-//	  	while (enRight.hasMoreElements()) {	         
-//	  		final GraphObject obj = enRight.nextElement();	         
-//	  		if (embRight.getInverseImage(obj).hasMoreElements()) {
-//	  			multiRule.mapKernel2MultiObject(embRight.getInverseImage(obj).nextElement(), obj);		         	         	
+//	  	while (enRight.hasNext()) {	         
+//	  		final GraphObject obj = enRight.next();	         
+//	  		if (embRight.getInverseImage(obj).hasNext()) {
+//	  			multiRule.mapKernel2MultiObject(embRight.getInverseImage(obj).next(), obj);		         	         	
 //	  		}	        
 //	  	} 	        	  
     }
@@ -1269,9 +1264,9 @@ public class RuleScheme extends Rule //implements Observer
                     ? BaseFactory.theFactory().createGeneralMorphism(morph.getTarget(), condIso.getTarget())
                     : BaseFactory.theFactory().createMorphism(morph.getTarget(), condIso.getTarget());
 
-            final Enumeration<GraphObject> condDom = cond.getDomain();
-            while (condDom.hasMoreElements()) {
-                GraphObject go = condDom.nextElement();
+            final Iterator<GraphObject> condDom = cond.getDomain();
+            while (condDom.hasNext()) {
+                GraphObject go = condDom.next();
                 GraphObject condImg = cond.getImage(go);
                 if (condImg != null) {
                     GraphObject embedImg = morph.getImage(go);
@@ -1339,9 +1334,9 @@ public class RuleScheme extends Rule //implements Observer
             final OrdinaryMorphism above1,
             final OrdinaryMorphism above2) {
 
-        final Enumeration<GraphObject> condDom = from.getDomain();
-        while (condDom.hasMoreElements()) {
-            GraphObject go = condDom.nextElement();
+        final Iterator<GraphObject> condDom = from.getDomain();
+        while (condDom.hasNext()) {
+            GraphObject go = condDom.next();
             GraphObject condImg = from.getImage(go);
             if (condImg != null) {
                 GraphObject embedImg = above1.getImage(go);
@@ -1367,7 +1362,6 @@ public class RuleScheme extends Rule //implements Observer
 		
 	}
      */
-
     /**
      * Save the rule scheme.
      *

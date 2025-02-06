@@ -1,20 +1,22 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.cons;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EvalSet implements Evaluable {
 
-    private Vector<java.lang.Object> set;
+    private List<java.lang.Object> set;
 
     private int old_tick;
 
@@ -26,21 +28,21 @@ public class EvalSet implements Evaluable {
         this(null);
     }
 
-    public EvalSet(Vector<java.lang.Object> s) {
+    public EvalSet(List<java.lang.Object> s) {
         setSet(s);
         this.old_tick = -1;
         this.old_val = false;
     }
 
-    public void setSet(Vector<java.lang.Object> s) {
+    public void setSet(List<java.lang.Object> s) {
         if (s == null) {
-            this.set = new Vector<java.lang.Object>();
+            this.set = new ArrayList<java.lang.Object>();
         } else {
             this.set = s;
         }
     }
 
-    public Vector<java.lang.Object> getSet() {
+    public List<java.lang.Object> getSet() {
         return this.set;
     }
 
@@ -67,11 +69,13 @@ public class EvalSet implements Evaluable {
         return true;
     }
 
+    @Override
     public boolean eval(java.lang.Object o, boolean negate) {
         return eval(o, -1, negate);
     }
 
     /* set.eval(o) := \forall s\in set. s.eval(o) */
+    @Override
     public boolean eval(java.lang.Object o, int tick, boolean negate) {
         if (tick != -1 && tick == this.old_tick) {
             return this.old_val;
@@ -105,6 +109,7 @@ public class EvalSet implements Evaluable {
     /* (non-Javadoc)
 	 * @see agg.cons.Evaluable#evalForall(java.lang.Object, int, boolean)
      */
+    @Override
     public boolean evalForall(Object o, int tick) {
         // TODO Auto-generated method stub
         return false;

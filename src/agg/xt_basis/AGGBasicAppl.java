@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
@@ -18,27 +19,21 @@ import agg.convert.ConverterXML;
 public class AGGBasicAppl implements GraTraEventListener {
 
     private static GraGra gragra;
-
     private static Graph impGraph;
-
     private static GraTra gratra;
 
-    static int NN;
-
+    static int iterationsMax;
     private int msgGraTra;
 
-    private static boolean layered = false, ruleSequence = false,
-            priority = false;
-    ;
+    private static boolean layered = false;
+    private static boolean ruleSequence = false;
+    private static boolean priority = false;
 
-	private static boolean didTransformation = false;
+    private static boolean didTransformation = false;
 
     private static String fileName;
-
     private static String impFileName;
-
     private static String outputFileName;
-
     private static String error;
 
     private static boolean writeLogFile = false;
@@ -47,8 +42,14 @@ public class AGGBasicAppl implements GraTraEventListener {
     }
 
     public AGGBasicAppl(String filename) {
+        this(filename, 0);
+    }
+
+    public AGGBasicAppl(String filename, int nn) {
+        iterationsMax = nn;
+
         fileName = filename;
-        System.out.println("File name:  " + fileName);
+        System.out.println("File name: " + fileName + ((iterationsMax > 0) ? "   iterations: " + iterationsMax : ""));
         /* load gragra */
         gragra = load(fileName);
 
@@ -56,115 +57,56 @@ public class AGGBasicAppl implements GraTraEventListener {
         // gragra = BaseFactory.theFactory().createGraGra();
         // gragra.load(fileName);
         if (gragra != null) {
-            gragra.getLevelOfTypeGraphCheck();
-            /* do transform */
-            transform(gragra, this);
-
-            if (didTransformation) {
-                /* save gragra */
-                String out = "_out.ggx";
-
-                save(gragra, out);
-
-                // or so:
-                // gragra.save(out);
-                System.out.println("Output file:  " + outputFileName);
-
-                if (writeLogFile) {
-
-                    if (gratra instanceof DefaultGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((DefaultGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof PriorityGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((PriorityGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof LayeredGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((LayeredGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof RuleSequencesGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((RuleSequencesGraTraImpl) gratra)
-                                        .getProtocolName());
-                    }
-
-                }
-
-            } else {
-                System.out.println("Grammar:  " + gragra.getName()
-                        + "   could not perform any transformations!");
-            }
-
-            gratra.dispose();
-            BaseFactory.theFactory().destroyGraGra(gragra);
-            gragra = null;
-            gratra = null;
+            transformAndSave();
         } else {
             System.out.println("Grammar:  " + filename + "   FAILED!");
         }
     }
 
-    public AGGBasicAppl(String filename, int nn) {
-        NN = nn;
+    private void transformAndSave() {
+        gragra.getLevelOfTypeGraphCheck();
+        /* do transform */
+        transform(gragra, this);
 
-        fileName = filename;
-        System.out.println("File name: " + fileName + "   iterations: " + NN);
-        /* load gragra */
-        gragra = load(fileName);
+        if (didTransformation) {
+            /* save gragra */
+            String out = "_out.ggx";
 
-        // or so:
-        // gragra = BaseFactory.theFactory().createGraGra();
-        // gragra.load(fileName);
-        if (gragra != null) {
-            gragra.getLevelOfTypeGraphCheck();
-            /* do transform */
-            transform(gragra, this);
+            save(gragra, out);
 
-            if (didTransformation) {
-                /* save gragra */
-                String out = "_out.ggx";
+            // or so:
+            // gragra.save(out);
+            System.out.println("Output file:  " + outputFileName);
 
-                save(gragra, out);
+            if (writeLogFile) {
 
-                // or so:
-                // gragra.save(out);
-                System.out.println("Output file:  " + outputFileName);
-
-                if (writeLogFile) {
-
-                    if (gratra instanceof DefaultGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((DefaultGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof PriorityGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((PriorityGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof LayeredGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((LayeredGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof RuleSequencesGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((RuleSequencesGraTraImpl) gratra)
-                                        .getProtocolName());
-                    }
+                if (gratra instanceof DefaultGraTraImpl) {
+                    System.out.println("Transformation protocol: "
+                            + ((DefaultGraTraImpl) gratra)
+                                    .getProtocolName());
+                } else if (gratra instanceof PriorityGraTraImpl) {
+                    System.out.println("Transformation protocol: "
+                            + ((PriorityGraTraImpl) gratra)
+                                    .getProtocolName());
+                } else if (gratra instanceof LayeredGraTraImpl) {
+                    System.out.println("Transformation protocol: "
+                            + ((LayeredGraTraImpl) gratra)
+                                    .getProtocolName());
+                } else if (gratra instanceof RuleSequencesGraTraImpl) {
+                    System.out.println("Transformation protocol: "
+                            + ((RuleSequencesGraTraImpl) gratra)
+                                    .getProtocolName());
                 }
-
-            } else {
-                System.out.println("Grammar:  " + gragra.getName()
-                        + "   could not perform any transformations!");
             }
-
-            gratra.dispose();
-            BaseFactory.theFactory().destroyGraGra(gragra);
-            gragra = null;
-            gratra = null;
         } else {
-            System.out.println("Grammar:  " + filename + "   FAILED!");
+            System.out.println("Grammar:  " + gragra.getName()
+                    + "   could not perform any transformations!");
         }
+
+        gratra.dispose();
+        BaseFactory.theFactory().destroyGraGra(gragra);
+        gragra = null;
+        gratra = null;
     }
 
     public AGGBasicAppl(String filename, String impFilename) {
@@ -173,88 +115,86 @@ public class AGGBasicAppl implements GraTraEventListener {
         System.out.println("File name:  " + fileName);
         gragra = load(fileName);
         if (gragra != null) {
-            int levelOfTGcheck = gragra.getLevelOfTypeGraphCheck();
-            System.out.println("Import file name:  " + impFileName);
-            impGraph = importGraph(impFilename);
-            if (impGraph != null) {
-                gragra.setLevelOfTypeGraphCheck(TypeSet.DISABLED);
-                // System.out.println("0:: "+impGraph.attributesToString());
-
-                if (!gragra.importGraph(impGraph)) {
-                    System.out
-                            .println("Error:  Import graph has failed! Please check types of the import. ");
-                    return;
-                }
-                // System.out.println("2:: "+impGraph.attributesToString());
-                System.out.println("Importing graph was successful.");
-
-                if (gragra.getTypeSet().hasInheritance()) {
-                    if (levelOfTGcheck != TypeSet.DISABLED) {
-                        gragra.setLevelOfTypeGraphCheck(levelOfTGcheck);
-                    } else {
-                        gragra.setLevelOfTypeGraphCheck(TypeSet.ENABLED);
-                    }
-                } else {
-                    gragra.setLevelOfTypeGraphCheck(levelOfTGcheck);
-                }
-                // System.out.println("LevelOfTypeGraphCheck:
-                // "+gragra.getLevelOfTypeGraphCheck());
-
-                // save current grammar with imported graph
-                save(gragra, "Impot_" + fileName);
-                System.out.println("Import is written into:  " + "Impot_"
-                        + fileName);
-
-                /* do transform */
-                transform(gragra, this);
-                if (didTransformation) {
-                    /* save gragra */
-                    String out = "_out.ggx";
-                    /*
-					 * File f = new File(fileName); if(f.exists()){
-					 * if(f.getParent() != null) out =
-					 * f.getParent()+File.separator+out; else out =
-					 * "."+File.separator+out; }
-                     */
-
-                    save(gragra, out);
-
-                    // or so:
-                    // gragra.save(out);
-                    System.out.println("Output file:  " + outputFileName);
-                    if (gratra instanceof DefaultGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((DefaultGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof PriorityGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((PriorityGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof LayeredGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((LayeredGraTraImpl) gratra)
-                                        .getProtocolName());
-                    } else if (gratra instanceof RuleSequencesGraTraImpl) {
-                        System.out.println("Transformation protocol: "
-                                + ((RuleSequencesGraTraImpl) gratra)
-                                        .getProtocolName());
-                    }
-
-                } else {
-                    System.out.println("Grammar:  " + gragra.getName()
-                            + "   could not perform any transformations!");
-                }
-
-                gratra.dispose();
-                BaseFactory.theFactory().destroyGraGra(gragra);
-                gragra = null;
-                gratra = null;
-
-            } else {
-                System.out.println(impFilename + "   FAILED! " + error);
-            }
+            transformImpAndSave(impFilename);
         } else {
             System.out.println("Grammar:  " + filename + "   FAILED!");
+        }
+    }
+
+    private void transformImpAndSave(String impFilename) {
+        int levelOfTGcheck = gragra.getLevelOfTypeGraphCheck();
+        System.out.println("Import file name:  " + impFileName);
+        impGraph = importGraph(impFilename);
+        if (impGraph != null) {
+            gragra.setLevelOfTypeGraphCheck(TypeSet.DISABLED);
+            // System.out.println("0:: "+impGraph.attributesToString());
+            if (!gragra.importGraph(impGraph)) {
+                System.out
+                        .println("Error:  Import graph has failed! Please check types of the import. ");
+                return;
+            }
+            // System.out.println("2:: "+impGraph.attributesToString());
+            System.out.println("Importing graph was successful.");
+            if (gragra.getTypeSet().hasInheritance()) {
+                if (levelOfTGcheck != TypeSet.DISABLED) {
+                    gragra.setLevelOfTypeGraphCheck(levelOfTGcheck);
+                } else {
+                    gragra.setLevelOfTypeGraphCheck(TypeSet.ENABLED);
+                }
+            } else {
+                gragra.setLevelOfTypeGraphCheck(levelOfTGcheck);
+            }
+            // System.out.println("LevelOfTypeGraphCheck:
+            // "+gragra.getLevelOfTypeGraphCheck());
+            // save current grammar with imported graph
+            save(gragra, "Impot_" + fileName);
+            System.out.println("Import is written into:  " + "Impot_"
+                    + fileName);
+            /* do transformAndSave */
+            transform(gragra, this);
+            if (didTransformation) {
+                /* save gragra */
+                String out = "_out.ggx";
+                /*
+                * File f = new File(fileName); if(f.exists()){
+                * if(f.getParent() != null) out =
+                * f.getParent()+File.separator+out; else out =
+                * "."+File.separator+out; }
+                 */
+
+                save(gragra, out);
+
+                // or so:
+                // gragra.save(out);
+                System.out.println("Output file:  " + outputFileName);
+                if (gratra instanceof DefaultGraTraImpl) {
+                    System.out.println("Transformation protocol: "
+                            + ((DefaultGraTraImpl) gratra)
+                                    .getProtocolName());
+                } else if (gratra instanceof PriorityGraTraImpl) {
+                    System.out.println("Transformation protocol: "
+                            + ((PriorityGraTraImpl) gratra)
+                                    .getProtocolName());
+                } else if (gratra instanceof LayeredGraTraImpl) {
+                    System.out.println("Transformation protocol: "
+                            + ((LayeredGraTraImpl) gratra)
+                                    .getProtocolName());
+                } else if (gratra instanceof RuleSequencesGraTraImpl) {
+                    System.out.println("Transformation protocol: "
+                            + ((RuleSequencesGraTraImpl) gratra)
+                                    .getProtocolName());
+                }
+
+            } else {
+                System.out.println("Grammar:  " + gragra.getName()
+                        + "   could not perform any transformations!");
+            }
+            gratra.dispose();
+            BaseFactory.theFactory().destroyGraGra(gragra);
+            gragra = null;
+            gratra = null;
+        } else {
+            System.out.println(impFilename + "   FAILED! " + error);
         }
     }
 
@@ -562,7 +502,7 @@ public class AGGBasicAppl implements GraTraEventListener {
             System.out.println("Transformation by rule sequences ...");
         } else {
             gratra = new DefaultGraTraImpl();
-            ((DefaultGraTraImpl) gratra).setMaxOfCounter(NN);
+            ((DefaultGraTraImpl) gratra).setMaxOfCounter(iterationsMax);
             System.out.println("Transformation  non-deterministically ...");
         }
 
@@ -607,7 +547,7 @@ public class AGGBasicAppl implements GraTraEventListener {
         } else if (outFileName.equals("_out.ggx")) {
             outputFileName = fileName.substring(0, fileName.length() - 4)
                     + "_out.ggx";
-        } else if (outFileName.indexOf(".ggx") == -1) {
+        } else if (!outFileName.contains(".ggx")) {
             outputFileName = outFileName.concat(".ggx");
         } else if (outFileName.equals(fileName)) {
             outputFileName = fileName.substring(0, fileName.length() - 4)

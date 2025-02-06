@@ -66,16 +66,19 @@ public class ExtObservable extends Observable implements Disposable {
      *
      * @see agg.util.Change_ObservableGone
      */
+    @Override
     public void dispose() {
         super.setChanged();
         super.notifyObservers(new Change(Change.OBSERVABLE_GONE, this));
         super.deleteObservers();
     }
 
-    protected void finalize() throws Throwable {
+    @Override
+    protected void finalize() {
 //		 System.out.println("ExtObservable.finalize:: "+this);
     }
 
+    @Override
     public synchronized void setChanged() {
         super.setChanged();
     }

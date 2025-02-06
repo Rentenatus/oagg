@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -27,6 +28,7 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.Node;
 import agg.util.XMLHelper;
 import agg.util.Pair;
+import org.w3c.dom.Element;
 
 // ****************************************************************************+
 /**
@@ -55,12 +57,12 @@ public class DependencyPairContainer extends ExcludePairContainer {
         this.completeConcurrency = true;
     }
 
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getDependencyContainer() {
         return super.getExcludeContainer();
     }
 
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getCriticalPair(Rule r1, Rule r2, int kind, boolean local)
             throws InvalidAlgorithmException {
 
@@ -148,7 +150,7 @@ public class DependencyPairContainer extends ExcludePairContainer {
             ((DependencyPair) this.excludePair).enableProduceConcurrentRule(this.makeConcurrentRules);
             ((DependencyPair) this.excludePair).setCompleteConcurrency(this.completeConcurrency);
 
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
             try {
                 overlapping = this.excludePair.isCritical(CriticalPair.EXCLUDE, r1, r2);
                 e = this.getEntry(r1, r2, true);
@@ -215,11 +217,11 @@ public class DependencyPairContainer extends ExcludePairContainer {
         }
     }
 
-    protected synchronized Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    protected synchronized List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             continueComputeCriticalPair(
                     Rule r1,
                     Rule r2,
-                    final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container) {
+                    final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container) {
         // get Entry
         Entry e = this.getEntry(r1, r2, true);
         if (!e.isProgressIndexSet()) {
@@ -242,7 +244,7 @@ public class DependencyPairContainer extends ExcludePairContainer {
         ((DependencyPair) this.excludePair).enableProduceConcurrentRule(this.makeConcurrentRules);
         ((DependencyPair) this.excludePair).setCompleteConcurrency(this.completeConcurrency);
 
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
         try {
             overlapping = this.excludePair.isCritical(CriticalPair.EXCLUDE, r1, r2);
             e = this.getEntry(r1, r2, true);
@@ -353,22 +355,22 @@ public class DependencyPairContainer extends ExcludePairContainer {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
 
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
 
             for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
 
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
-                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
                 Boolean b = p.first;
 
                 h.addAttr("bool", b.toString());
                 if (b.booleanValue()) {
-                    Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
+                    List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
 
                     for (int i = 0; i < v.size(); i++) {
-                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.elementAt(i);
+                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.get(i);
                         Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = p2i.first;
                         h.openSubTag("Overlapping_Pair");
                         OrdinaryMorphism first = p2.first;
@@ -420,7 +422,7 @@ public class DependencyPairContainer extends ExcludePairContainer {
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
 
-                Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
+                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
 
                 for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
@@ -450,9 +452,9 @@ public class DependencyPairContainer extends ExcludePairContainer {
             Rule r1 = null;
             Rule r2 = null;
             boolean b = false;
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
-            Vector<String> tagnames = new Vector<String>(1);
-            Vector<String> tagnames2 = new Vector<String>(1);
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
+            List<String> tagnames = new Vector<>(1);
+            List<String> tagnames2 = new Vector<>(1);
 
             this.grammar = BaseFactory.theFactory().createGraGra();
             // loads the data in the predefined object
@@ -482,35 +484,35 @@ public class DependencyPairContainer extends ExcludePairContainer {
                     || this.conflictKind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY
                     || this.conflictKind == CriticalPair.CONFLICT) {
                 // System.out.println("conflictKind : "+conflictKind);
-                Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-                if (!r1s.hasMoreElements()) {
+                Iterator<Element> r1s = h.getEnumeration("", null, true, "Rule");
+                if (!r1s.hasNext()) {
                     r1s = h.getEnumeration("", null, true, "Regel");
                 }
-                while (r1s.hasMoreElements()) {
-                    h.peekElement(r1s.nextElement());
+                while (r1s.hasNext()) {
+                    h.peekElement(r1s.next());
 
                     /*
 					 * da ein referenziertes object geholt werden soll. muss nur
 					 * angegeben werden wie der Membername heisst.
                      */
                     r1 = (Rule) h.getObject("R1", null, false);
-                    Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-                    if (!r2s.hasMoreElements()) {
+                    Iterator<Element> r2s = h.getEnumeration("", null, true, "Rule");
+                    if (!r2s.hasNext()) {
                         r2s = h.getEnumeration("", null, true, "Regel");
                     }
-                    while (r2s.hasMoreElements()) {
-                        h.peekElement(r2s.nextElement());
+                    while (r2s.hasNext()) {
+                        h.peekElement(r2s.next());
                         r2 = (Rule) h.getObject("R2", null, false);
                         String bool = h.readAttr("bool");
                         b = false;
                         allOverlappings = null;
                         if (bool.equals("true")) {
                             b = true;
-                            allOverlappings = new Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
-                            Enumeration<?> overlappings = h.getEnumeration("",
+                            allOverlappings = new Vector<>();
+                            Iterator<Element> overlappings = h.getEnumeration("",
                                     null, true, "Overlapping_Pair");
-                            while (overlappings.hasMoreElements()) {
-                                h.peekElement(overlappings.nextElement());
+                            while (overlappings.hasNext()) {
+                                h.peekElement(overlappings.next());
 
                                 Graph g = (Graph) h.getObject("", BaseFactory.theFactory().createGraph(
                                         this.grammar.getTypeSet()), true);
@@ -536,7 +538,7 @@ public class DependencyPairContainer extends ExcludePairContainer {
                                  */
 
                                 Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(h, r1, r2, g);
-                                allOverlappings.addElement(p);
+                                allOverlappings.add(p);
 
                                 h.close();
                             }
@@ -550,24 +552,24 @@ public class DependencyPairContainer extends ExcludePairContainer {
                 h.close();
             }
             if (h.readSubTag("conflictFreeContainer")) {
-                Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-                if (!r1s.hasMoreElements()) {
+                Iterator<Element> r1s = h.getEnumeration("", null, true, "Rule");
+                if (!r1s.hasNext()) {
                     r1s = h.getEnumeration("", null, true, "Regel");
                 }
-                while (r1s.hasMoreElements()) {
-                    h.peekElement(r1s.nextElement());
+                while (r1s.hasNext()) {
+                    h.peekElement(r1s.next());
 
                     /*
 					 * da ein referenziertes object geholt werden soll. muss nur
 					 * angegeben werden wie der Membername heisst.
                      */
                     r1 = (Rule) h.getObject("R1", null, false);
-                    Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-                    if (!r2s.hasMoreElements()) {
+                    Iterator<Element> r2s = h.getEnumeration("", null, true, "Rule");
+                    if (!r2s.hasNext()) {
                         r2s = h.getEnumeration("", null, true, "Regel");
                     }
-                    while (r2s.hasMoreElements()) {
-                        h.peekElement(r2s.nextElement());
+                    while (r2s.hasNext()) {
+                        h.peekElement(r2s.next());
                         r2 = (Rule) h.getObject("R2", null, false);
                         String bool = h.readAttr("bool");
                         b = false;

@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.trafo;
 
@@ -62,7 +63,7 @@ public class GraGraTransform {
         this.debugger.setCompletionStrategy(this.strategy);
         this.editor.addEditEventListener(this.debugger);
 
-        this.transformListeners = new Vector<TransformEventListener>();
+        this.transformListeners = new Vector<>();
     }
 
     public GraGraEditor getEditor() {
@@ -73,13 +74,13 @@ public class GraGraTransform {
         return this.editor.getGraGra();
     }
 
-    public Vector<EdRule> getCurrentRuleSet() {
+    public List<EdRule> getCurrentRuleSet() {
         if (this.editor.getGraGra() != null) {
 //			return this.editor.getGraGra().getRules();
             return this.editor.getGraGra().getEnabledRules();
         }
 
-        return new Vector<EdRule>(0);
+        return new Vector<>(0);
     }
 
     /**
@@ -391,7 +392,7 @@ public class GraGraTransform {
         this.generalOptionGUI.update(optionsList);
     }
 
-    public void setRulesOfGraphRuleSequenceGUI(Vector<EdRule> rules) {
+    public void setRulesOfGraphRuleSequenceGUI(List<EdRule> rules) {
         this.optionGUI.setRulesOfRuleSequenceGUI(rules);
     }
 
@@ -618,11 +619,11 @@ public class GraGraTransform {
         this.editor.startInterpreterTransform();
     }
 
-    public Vector<Rule> getApplicableRules(EdGraGra gragra) {
+    public List<Rule> getApplicableRules(EdGraGra gragra) {
         return this.debugger.getApplicableRules(gragra);
     }
 
-    public Vector<EdRule> getApplicableRules(EdGraGra gragra, boolean applicable) {
+    public List<EdRule> getApplicableRules(EdGraGra gragra, boolean applicable) {
         return this.debugger.getApplicableRules(gragra, applicable);
     }
 
@@ -664,7 +665,7 @@ public class GraGraTransform {
      */
     public synchronized void addTransformEventListener(TransformEventListener l) {
         if (!this.transformListeners.contains(l)) {
-            this.transformListeners.addElement(l);
+            this.transformListeners.add(l);
         }
     }
 
@@ -674,7 +675,7 @@ public class GraGraTransform {
     public synchronized void removeTransformEventListener(
             TransformEventListener l) {
         if (this.transformListeners.contains(l)) {
-            this.transformListeners.removeElement(l);
+            this.transformListeners.remove(l);
         }
     }
 
@@ -703,7 +704,7 @@ public class GraGraTransform {
 
     private TransformRuleSequences ruleSequenceTransform;
 
-    private final Vector<TransformEventListener> transformListeners;
+    private final List<TransformEventListener> transformListeners;
 
     private GraGraEditor editor;
 

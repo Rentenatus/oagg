@@ -1,16 +1,16 @@
-package agg.xt_basis;
-
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
-//import java.util.Enumeration;
+package agg.xt_basis;
+
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -19,6 +19,7 @@ import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
+import java.util.List;
 
 /**
  * This class is just a workaround for lacking AttrContext functionality. In class Completion_CSP, we need a purified
@@ -181,7 +182,7 @@ public class PACStarMorphism extends OrdinaryMorphism {
 	}
      */
     private void unsetVariablesOfPAC() {
-        final Vector<String> pacVars = this.itsOrig.getVariableNamesOfAttributes();
+        final List<String> pacVars = this.itsOrig.getVariableNamesOfAttributes();
         final VarTuple vt = (VarTuple) this.itsAttrContext.getVariables();
         for (int i = 0; i < vt.getNumberOfEntries(); i++) {
             final VarMember vm = (VarMember) vt.getEntryAt(i);

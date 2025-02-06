@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.parser;
 
@@ -35,6 +36,7 @@ import agg.attribute.impl.ContextView;
 import agg.attribute.impl.ValueMember;
 import agg.util.XMLHelper;
 import agg.util.Pair;
+import org.w3c.dom.Element;
 
 // ****************************************************************************+
 /**
@@ -82,7 +84,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         int duIndx = -1, pfIndx = -1, caIndx = -1;
         String duIndxStr = "-1:", pfIndxStr = "-1:-1:", caIndxStr = "-1:";
 
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping;
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping;
 
         public boolean isCritical() {
             return this.isCritical;
@@ -108,11 +110,11 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             return this.status;
         }
 
-        public Vector<?> getOverlapping() {
+        public List<?> getOverlapping() {
             return this.overlapping;
         }
 
-        public void setOverlapping(Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v) {
+        public void setOverlapping(List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v) {
             this.overlapping.addAll(v);
         }
 
@@ -207,12 +209,12 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     }
 
     /**
-     * * Class Entry END  ***
+     * * Class Entry END ***
      */
     /**
      * This container stores the conflict relations.
      */
-    protected Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeContainer = null;
+    protected Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeContainer = null;
 
     /**
      * true, if each calculation should be done in an extra Thread. This makes only sense on computer with a lot of CPUs
@@ -223,7 +225,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     /**
      * This container stores the conflict free relations.
      */
-    protected Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeContainer = null;
+    protected Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeContainer = null;
 
     /**
      * Contains for each Pair one Entry. The structure is a hash table of hash tables of Entry.
@@ -255,7 +257,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      */
     protected boolean isComputedLocal;
 
-    final protected Vector<ParserEventListener> listener = new Vector<ParserEventListener>(
+    final protected List<ParserEventListener> listener = new Vector<ParserEventListener>(
             2);
 
     /**
@@ -291,7 +293,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     // in values are graph object mappings:
     // keys are graph objects of an overlapgraph, 
     // values -  objects of the test graph
-    final protected Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> excludeContainerForTestGraph = new Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>>();
+    final protected Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> excludeContainerForTestGraph = new Hashtable<>();
 
     protected Graph testGraph;
 
@@ -454,7 +456,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @throws InvalidAlgorithmException Thrown if a illegal algorithm is chosen.
      * @return The critical object.
      */
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getCriticalPair(
                     Rule r1, Rule r2, int kind)
             throws InvalidAlgorithmException {
@@ -477,9 +479,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @return critical pair data if it is already computed, otherwise null
      */
     public CriticalPairData getCriticalPairData(Rule r1, Rule r2) {
-        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
         if (secondPart != null) {
-            Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+            Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
             if (p != null) {
                 if (p.first.booleanValue()) {
                     return new CriticalPairData(r1, r2, p.second);
@@ -503,16 +505,16 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         Enumeration<Rule> r1Iter = this.excludeContainer.keys();
         while (r1Iter.hasMoreElements()) {
             Rule r1 = r1Iter.nextElement();
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
             if (secondPart != null) {
                 Enumeration<Rule> r2Iter = secondPart.keys();
                 while (r2Iter.hasMoreElements()) {
                     Rule r2 = r2Iter.nextElement();
 
-                    Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+                    Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
                     if (p != null
                             && p.first.booleanValue()) {
-                        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> kindList = new Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
+                        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> kindList = new Vector<>();
                         for (int i = 0; i < p.second.size(); i++) {
                             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> cp = p.second.get(i);
 
@@ -547,9 +549,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             final Graph overlapGraph,
             final Pair<OrdinaryMorphism, OrdinaryMorphism> cpair,
             final Rule r2) {
-        Enumeration<GraphObject> dom2 = cpair.second.getDomain();
-        while (dom2.hasMoreElements()) {
-            GraphObject go2 = dom2.nextElement();
+        Iterator<GraphObject> dom2 = cpair.second.getDomain();
+        while (dom2.hasNext()) {
+            GraphObject go2 = dom2.next();
             GraphObject go = cpair.second.getImage(go2);
             if (go.isCritical() && r2.getImage(go2) == null) {
                 return true;
@@ -562,9 +564,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             final Graph overlapGraph,
             final Pair<OrdinaryMorphism, OrdinaryMorphism> cpair,
             final Rule r2) {
-        Enumeration<GraphObject> dom2 = cpair.second.getDomain();
-        while (dom2.hasMoreElements()) {
-            GraphObject go2 = dom2.nextElement();
+        Iterator<GraphObject> dom2 = cpair.second.getDomain();
+        while (dom2.hasNext()) {
+            GraphObject go2 = dom2.next();
             GraphObject img2 = r2.getImage(go2);
             if (img2 != null) {
                 GraphObject go = cpair.second.getImage(go2);
@@ -599,7 +601,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return getCriticalPair(r1, r2, getContainer(kind));
     }
 
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getCriticalPair(
                     Rule r1, Rule r2, int kind, boolean local)
             throws InvalidAlgorithmException {
@@ -616,7 +618,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return getCriticalPair(r1, r2, getContainer(kind));
     }
 
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             continueComputeCriticalPair(
                     Rule r1, Rule r2, int kind, boolean local)
             throws InvalidAlgorithmException {
@@ -641,13 +643,13 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @param r1 The first part of a critical pair
      * @param r2 The second part of a critical pair
      * @param g The graph on which these two rules should be checked
-     * @return The critical object <code>Hashtable<Graph,Vector<Hashtable<GraphObject,GraphObject>>></code>,
-     * where a Graph is an overlapping graph and is a key, a Vector<Hashtable<GraphObject,GraphObject>> contains found
+     * @return The critical object <code>Hashtable<Graph,List<Hashtable<GraphObject,GraphObject>>></code>,
+     * where a Graph is an overlapping graph and is a key, a List<Hashtable<GraphObject,GraphObject>> contains found
      * critical matches and is a value. Furthermore, a Hashtable<GraphObject,GraphObject> defines a critical match of a
      * key-Graph into the specified Graph g. Here a key-GraphObject belongs to a key-Graph which is an overlapping
      * graph, a value-GraphObject belongs to the specified Graph g.
      */
-    public Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> getCriticalForGraph(
+    public Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> getCriticalForGraph(
             final Rule r1,
             final Rule r2,
             final Graph g) {
@@ -681,7 +683,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         }
 
         try {
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalObj = getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalObj = getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
             if (criticalObj != null) {
                 if (checkCritical(r1, r2, g)) {
 
@@ -720,14 +722,14 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return this.excludeContainerForTestGraph;
     }
 
-    public Vector<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> getCriticalPairAtGraph(
+    public List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> getCriticalPairAtGraph(
             final Rule r1,
             final Rule r2) {
 
         CriticalRulePairAtGraph test = new CriticalRulePairAtGraph(r1, r2, this.testGraph);
         test.setMorphismCompletionStrategy(this.strategy);
 
-        Vector<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> result = test.isCriticalAtGraph();
+        List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> result = test.isCriticalAtGraph();
 
         // select match graph objects
         /*
@@ -757,7 +759,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return result;
     }
 
-    public Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> getCriticalForGraph(
+    public Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> getCriticalForGraph(
             final Rule r1,
             final Rule r2) {
         if (this.useHostGraph && this.testGraph != null) {
@@ -773,22 +775,22 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @param r1 The first rule
      * @param r2 The second rule
      * @param container The container.
-     * @return The critical object is a Vector an element as a Pair.
+     * @return The critical object is a List an element as a Pair.
      */
-    protected synchronized Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    protected synchronized List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getCriticalPair(
                     final Rule r1,
                     final Rule r2,
-                    final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container) {
+                    final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container) {
 //		System.out.println("Excl.PC.getCritical(Rule r1, Rule r2, ...");
         if (this.stop) {
             return null;
         }
 
-        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
+        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
         /* falls r1/rX schon mal berechnet wurden, gibt es secondPart */
         if (secondPart != null) {
-            Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+            Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
             /*
 			 * wurden r1/r2 berechnet so existiert secondPart. ABER wird gerade
 			 * r1/r3 berechnet, so existiert noch kein p fuer r1/r4. p waehre in
@@ -820,20 +822,20 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return getCriticalPair(r1, r2, container);
     }
 
-    public synchronized Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> getLHSoverlappings(
+    public synchronized List<Pair<OrdinaryMorphism, OrdinaryMorphism>> getLHSoverlappings(
             final Rule r1,
             final Rule r2,
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs) {
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs) {
 
-        Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> matches = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>(5);
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> cps = criticalPairs;
+        List<Pair<OrdinaryMorphism, OrdinaryMorphism>> matches = new Vector<>(5);
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> cps = criticalPairs;
         if (cps == null || cps.isEmpty()) {
             cps = getCriticalPair(r1, r2, this.excludeContainer);
         }
         if (cps != null && !cps.isEmpty()) {
             for (int i = 0; i < cps.size(); i++) {
                 Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pi = cps.get(i);
-                Vector<OrdinaryMorphism> triple = getValidMatch1Match2(r1, r2, pi);
+                List<OrdinaryMorphism> triple = getValidMatch1Match2(r1, r2, pi);
                 if (triple != null && !triple.isEmpty()) {
                     Pair<OrdinaryMorphism, OrdinaryMorphism> overlapPair = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
                             triple.get(0), triple.get(1));
@@ -850,11 +852,11 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     private synchronized Hashtable<String, Pair<OrdinaryMorphism, OrdinaryMorphism>> getLHSoverlappings(
             final Rule r1,
             final Rule r2,
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs,
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs,
             final Hashtable<String, OrdinaryMorphism> overlapGraphIso) {
 
         // in case of produce-forbid
-        // the Vector overlapGraphIso will be filled with isomorphisms :
+        // the List overlapGraphIso will be filled with isomorphisms :
         // iso = overlapGraph -> overlapGraphAfterApplyReverseR1 .
         // Hashtable to return will contain a pair with match1 and match2,
         // the target of the matches is overlapGraphAfterApplyReverseR1,
@@ -862,9 +864,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         // The key of this table is the hashcode of a critical pair.
         Hashtable<String, Pair<OrdinaryMorphism, OrdinaryMorphism>> result = new Hashtable<String, Pair<OrdinaryMorphism, OrdinaryMorphism>>(5);
 
-        Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> matches = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>(5);
+        List<Pair<OrdinaryMorphism, OrdinaryMorphism>> matches = new Vector<>(5);
 
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> cps = criticalPairs;
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> cps = criticalPairs;
         if (cps == null || cps.isEmpty()) {
             cps = getCriticalPair(r1, r2, this.excludeContainer);
         }
@@ -873,7 +875,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             for (int i = 0; i < cps.size(); i++) {
                 Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pi = cps.get(i);
 
-                Vector<OrdinaryMorphism> triple = getValidMatch1Match2(r1, r2, pi);
+                List<OrdinaryMorphism> triple = getValidMatch1Match2(r1, r2, pi);
 
                 if (triple != null && !triple.isEmpty()) {
                     Pair<OrdinaryMorphism, OrdinaryMorphism> overlapPair = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
@@ -893,14 +895,14 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return result;
     }
 
-    private Vector<OrdinaryMorphism> getValidMatch1Match2(
+    private List<OrdinaryMorphism> getValidMatch1Match2(
             final Rule r1,
             final Rule r2,
             final Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> criticalPair) {
         // System.out.println("ExcludePairContainer.getValidMatch1Match2 ... rule1: "+r1.getName()+" rule2: "+r2.getName());
 
         BaseFactory bf = BaseFactory.theFactory();
-        Vector<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>(3);
+        List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>(3);
         Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = criticalPair.first;
         Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = criticalPair.second;
         if (p2 == null) {
@@ -988,16 +990,15 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     }
 
     private Pair<OrdinaryMorphism, OrdinaryMorphism> getIsomorphicOverlapping(
-            Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapPairs,
+            List<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapPairs,
             Pair<OrdinaryMorphism, OrdinaryMorphism> overlapPair) {
         Graph overlapGraph = overlapPair.first.getTarget();
         for (int j = 0; j < overlapPairs.size() && !this.stop; j++) {
-            Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = overlapPairs
-                    .elementAt(j);
+            Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = overlapPairs.get(j);
             Graph g = p1.first.getTarget();
             Hashtable<GraphObject, GraphObject> partialMap = getMorphismMap(
                     p1.first, overlapPair.first);
-            Vector<OrdinaryMorphism> overlapIsos = g.getIsomorphicWith(overlapGraph, partialMap);
+            List<OrdinaryMorphism> overlapIsos = g.getIsomorphicWith(overlapGraph, partialMap);
             if (overlapIsos != null) {
                 for (int i = 0; i < overlapIsos.size(); i++) {
                     OrdinaryMorphism overlapIso = overlapIsos.get(i);
@@ -1021,9 +1022,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         // pre-condition: m1.source == m2.source
         Hashtable<GraphObject, GraphObject> map = new Hashtable<GraphObject, GraphObject>(
                 m1.getSize());
-        Enumeration<GraphObject> e = m1.getDomain();
-        while (e.hasMoreElements()) {
-            GraphObject o1 = e.nextElement();
+        Iterator<GraphObject> e = m1.getDomain();
+        while (e.hasNext()) {
+            GraphObject o1 = e.next();
             GraphObject o = m1.getImage(o1);
             GraphObject i = m2.getImage(o1);
             if (o != null && i != null) {
@@ -1043,17 +1044,17 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return 2;
     }
 
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getExcludeContainer() {
         return this.excludeContainer;
     }
 
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getConflictContainer() {
         return this.excludeContainer;
     }
 
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getConflictFreeContainer() {
         return this.conflictFreeContainer;
     }
@@ -1065,7 +1066,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @throws InvalidAlgorithmException Thrown if a illegal algorithm is choosen
      * @return The container.
      */
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getContainer(int kind) throws InvalidAlgorithmException {
         // System.out.println("Excl.PC.getContainer... kind: "+kind);
         // System.out.println("isComputed: "+isComputed);
@@ -1082,7 +1083,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         }
     }
 
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getContainer(
                     int kind,
                     final List<Rule> ruleList,
@@ -1101,7 +1102,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         }
     }
 
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getContainer(
                     int kind,
                     final Rule r1,
@@ -1141,33 +1142,33 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @throws InvalidAlgorithmException Thrown if a illegal algorithm is chosen
      * @return The set of all the critic rules
      */
-    public Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> getCriticalSet(int kind, Rule rule)
+    public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> getCriticalSet(int kind, Rule rule)
             throws InvalidAlgorithmException {
         /* getContainer throws Exception */
         return getCriticalSet(getContainer(kind), rule);
     }
 
-    private Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    private List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getCriticalSet(
-                    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container,
+                    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container,
                     Rule rule) {
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> resultVector = new Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> resultVector = new Vector<>();
 
-        Vector<Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> tmpVector = new Vector<Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>();
+        List<List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> tmpVector = new Vector<>();
 
-        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = container.get(rule);
+        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = container.get(rule);
 
         for (Enumeration<Rule> keys = value.keys(); keys.hasMoreElements();) {
             Rule key = keys.nextElement();
-            Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = value.get(key);
+            Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = value.get(key);
             if (p.first.booleanValue()) {
-                tmpVector.addElement(p.second);
+                tmpVector.add(p.second);
             }
         }
         for (int i = 0; i < tmpVector.size(); i++) {
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> element = tmpVector.elementAt(i);
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> element = tmpVector.get(i);
             for (int j = 0; j < element.size(); j++) {
-                resultVector.addElement(element.elementAt(j));
+                resultVector.add(element.get(j));
             }
         }
         return resultVector;
@@ -1295,8 +1296,8 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * Initials all containers. So there are at least empty objects to store the exclude relation.
      */
     public void initAllContainer() {
-        this.conflictFreeContainer = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-        this.excludeContainer = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        this.conflictFreeContainer = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        this.excludeContainer = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
         this.commonContainer = new Hashtable<Rule, Hashtable<Rule, Entry>>();
     }
 
@@ -1360,7 +1361,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             this.isComputed = false;
         }
 
-        Vector<Rule> ruleList2 = new Vector<Rule>();
+        List<Rule> ruleList2 = new Vector<Rule>();
         ruleList2.addAll(ruleList);
 
         /* 2 Schleifen um alle Regeln mit allen Regeln zu ueberpruefen. */
@@ -1441,7 +1442,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     protected void fillContainers(Rule r1, Rule r2) {
         /*
 		 * Da die Regeln 2x durchgegangen werden muessen, ist es praktischer die
-		 * Regeln in einen Vector zu stopfen, den man immer wieder zur
+		 * Regeln in einen List zu stopfen, den man immer wieder zur
 		 * Verfuegung hat.
          */
         this.isComputedLocal = false;
@@ -1490,7 +1491,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
 //			this.excludePair.setProgressIndx(e);			
             setOptionsOfExcludePair();
 
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
             try {
                 overlapping = this.excludePair.isCritical(CriticalPair.EXCLUDE, r1, r2);
                 e = this.getEntry(r1, r2, true);
@@ -1552,11 +1553,11 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         }
     }
 
-    protected synchronized Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
+    protected synchronized List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             continueComputeCriticalPair(
                     Rule r1,
                     Rule r2,
-                    final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container) {
+                    final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container) {
         // get Entry
         Entry e = this.getEntry(r1, r2, true);
         if (!e.isProgressIndexSet()) {
@@ -1575,7 +1576,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         this.excludePair.setProgressIndx(e);
         setOptionsOfExcludePair();
 
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
         try {
             overlapping = this.excludePair.isCritical(CriticalPair.EXCLUDE, r1, r2);
             e = this.getEntry(r1, r2, true);
@@ -1677,20 +1678,20 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @param overlapping The set of overlapping graphs of the first and second rule.
      */
     protected synchronized void addQuadruple(
-            final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container,
+            final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container,
             final Rule r1,
             final Rule r2,
             boolean critic,
-            final Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping) {
+            final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping) {
 
         if (container.containsKey(r1)) {
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
-            Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = new Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>(
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
+            Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = new Pair<>(
                     Boolean.valueOf(critic), overlapping);
             secondPart.put(r2, p);
         } else {
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = new Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>();
-            Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = new Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>(
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = new Hashtable<>();
+            Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = new Pair<>(
                     Boolean.valueOf(critic), overlapping);
             secondPart.put(r2, p);
             container.put(r1, secondPart);
@@ -1723,7 +1724,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         }
     }
 
-    private int getEntryState(final Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping) {
+    private int getEntryState(final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping) {
         int entryState = Entry.COMPUTED;
         boolean dependCond1 = false;
         boolean dependCond2 = false;
@@ -1755,7 +1756,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
 
     // TODO: JavaDoc
     protected synchronized Entry addEntry(Rule r1, Rule r2, boolean critical,
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping) {
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping) {
 
         Entry entry = this.getEntry(r1, r2);
         // mark as computed
@@ -1824,11 +1825,11 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         Entry entry = this.getEntry(r1, r2, true);
         if (entry != null) {
             if (this.excludeContainer.get(r1) != null) {
-                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = this.excludeContainer.get(r1).get(r2);
+                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = this.excludeContainer.get(r1).get(r2);
                 if (p.first.booleanValue()) {
-                    Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
+                    List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
                     for (int i = 0; i < v.size(); i++) {
-                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> cpi = v.elementAt(i);
+                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> cpi = v.get(i);
                         Pair<OrdinaryMorphism, OrdinaryMorphism> cp = cpi.first;
                         OrdinaryMorphism m1 = cp.first;
                         OrdinaryMorphism m2 = cp.second;
@@ -1837,7 +1838,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                         m1 = null;
                         m2 = null;
                         cp = null;
-                        v.removeElementAt(i);
+                        v.remove(i);
                         i--;
                     }
                 }
@@ -1889,7 +1890,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                         .hasMoreElements();) {
                     Rule r1 = keys.nextElement();
                     if (r1 == rule1) {
-                        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
                         for (Enumeration<Rule> k2 = secondPart.keys(); k2
                                 .hasMoreElements();) {
                             Rule r2 = k2.nextElement();
@@ -1959,15 +1960,15 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
             // System.out.println("ExcludePC:: reduce: "+r1.getName());
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
             for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 // System.out.println("ExcludePC:: reduce: "+r2.getName());
-                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair
+                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair
                         = secondPart.get(r2);
                 Boolean b = pair.first;
                 if (b.booleanValue()) {
-                    Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = pair.second;
+                    List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = pair.second;
                     int size = v.size();
                     // System.out.println(size);
                     boolean found = true;
@@ -1975,10 +1976,10 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                         // System.out.println("while: "+size);
                         found = false;
                         for (int i = 0; i < size; i++) {
-                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p1i = v.elementAt(i);
+                            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p1i = v.get(i);
                             Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = p1i.first;
                             for (int j = i + 1; j < size; j++) {
-                                Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.elementAt(j);
+                                Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.get(j);
                                 Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = p2i.first;
                                 // System.out.println("checkIfSimilar ");
                                 Pair<OrdinaryMorphism, OrdinaryMorphism> p = checkIfSimilar(p1, p2);
@@ -1994,7 +1995,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                                     }
                                     j--;
                                     found = true;
-                                    v.removeElement(p2i);
+                                    v.remove(p2i);
                                     BaseFactory.theFactory().destroyMorphism(p.first);
                                     BaseFactory.theFactory().destroyMorphism(p.second);
                                     p = null;
@@ -2031,16 +2032,14 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         Iterator<?> e = overlap1.getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
-            if (p1.first.getInverseImage(o).hasMoreElements()
-                    || p1.second.getInverseImage(o).hasMoreElements()) {
+            if (p1.first.hasInverseImage(o) || p1.second.hasInverseImage(o)) {
                 n1++;
             }
         }
         e = overlap1.getArcsSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
-            if (p1.first.getInverseImage(o).hasMoreElements()
-                    || p1.second.getInverseImage(o).hasMoreElements()) {
+            if (p1.first.hasInverseImage(o) || p1.second.hasInverseImage(o)) {
                 n1++;
             }
         }
@@ -2050,16 +2049,14 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         e = overlap2.getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
-            if (p2.first.getInverseImage(o).hasMoreElements()
-                    || p2.second.getInverseImage(o).hasMoreElements()) {
+            if (p2.first.hasInverseImage(o) || p2.second.hasInverseImage(o)) {
                 n2++;
             }
         }
         e = overlap2.getArcsSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
-            if (p2.first.getInverseImage(o).hasMoreElements()
-                    || p2.second.getInverseImage(o).hasMoreElements()) {
+            if (p2.first.hasInverseImage(o) || p2.second.hasInverseImage(o)) {
                 n2++;
             }
         }
@@ -2092,19 +2089,19 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         boolean cpExists = false;
         for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer
                     .get(r1);
             for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
-                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
+                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
                 Boolean b = pair.first;
                 if (b.booleanValue()) {
                     // System.out.println(r1.getName()+" "+r2.getName());
                     cpExists = true;
-                    Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = pair.second;
+                    List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = pair.second;
                     int size = v.size();
                     for (int i = 0; i < size; i++) {
-                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pi = v.elementAt(i);
+                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pi = v.get(i);
                         Pair<OrdinaryMorphism, OrdinaryMorphism> p = pi.first;
                         Graph g = p.first.getImage();
                         if (!this.grammar.checkGraphConsistency(g)) {
@@ -2113,7 +2110,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                             // "+r2.getName());
                             // System.out.println("critical graph INCONSISTENT,
                             // remove it");
-                            v.removeElement(pi);
+                            v.remove(pi);
                             BaseFactory.theFactory().destroyMorphism(p.first);
                             BaseFactory.theFactory().destroyMorphism(p.second);
                             p = null;
@@ -2147,9 +2144,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         Entry entry = this.getEntry(r1, r2, true);
         entry.isCritical = false;
         entry.overlapping = null;
-        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
         if (secondPart != null) {
-            Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
+            Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
             pair.first = Boolean.valueOf(false);
             pair.second = null;
             if (this.conflictFreeContainer != null) {
@@ -2162,9 +2159,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         Entry entry = this.getEntry(r1, r2, true);
         entry.isCritical = false;
         entry.overlapping = null;
-        Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
         if (secondPart != null) {
-            Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
+            Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
             pair.first = Boolean.valueOf(false);
             pair.second = null;
         }
@@ -2179,7 +2176,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         }
         // strategy.showProperties();
 
-        Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalOverlappings = getCriticalPair(r1, r2, this.excludeContainer);
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalOverlappings = getCriticalPair(r1, r2, this.excludeContainer);
         if (criticalOverlappings == null) {
             return false;
         }
@@ -2191,7 +2188,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
 
         for (int j = 0; j < criticalOverlappings.size(); j++) {
 
-            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> criticalOverlap = criticalOverlappings.elementAt(j);
+            Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> criticalOverlap = criticalOverlappings.get(j);
 
             Pair<OrdinaryMorphism, OrdinaryMorphism> p = criticalMatches.get(String.valueOf(criticalOverlap.hashCode()));
 
@@ -2201,7 +2198,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                 Pair<OrdinaryMorphism, OrdinaryMorphism> p1 = criticalOverlap.first;
                 Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = criticalOverlap.second;
 
-                Vector<Hashtable<GraphObject, GraphObject>> mvec = new Vector<Hashtable<GraphObject, GraphObject>>();
+                List<Hashtable<GraphObject, GraphObject>> mvec = new Vector<>();
 
                 OrdinaryMorphism m = (BaseFactory.theFactory()).createMorphism(
                         overlapG, testgraph);
@@ -2260,22 +2257,22 @@ public class ExcludePairContainer implements PairContainer, Runnable {
 
                     Hashtable<GraphObject, GraphObject> objs = new Hashtable<GraphObject, GraphObject>();
 
-                    Enumeration<GraphObject> e = m.getDomain();
-                    while (e.hasMoreElements()) {
-                        GraphObject o = e.nextElement();
+                    Iterator<GraphObject> e = m.getDomain();
+                    while (e.hasNext()) {
+                        GraphObject o = e.next();
                         GraphObject img = m.getImage(o);
                         if (overlapGraphIsom != null) {
-                            Enumeration<GraphObject> invs = overlapGraphIsom.getInverseImage(o);
-                            if (invs.hasMoreElements()) {
-                                GraphObject orig = invs.nextElement();
+                            Iterator<GraphObject> invs = overlapGraphIsom.getInverseImage(o);
+                            if (invs.hasNext()) {
+                                GraphObject orig = invs.next();
                                 if (orig != null && img != null) {
                                     if (p1.first.getSource() == r1.getRight()) {
                                         boolean added = false;
-                                        Enumeration<GraphObject> rhs1 = p1.first.getInverseImage(orig);
-                                        if (rhs1.hasMoreElements()) {
-                                            GraphObject or1 = rhs1.nextElement();
-                                            Enumeration<GraphObject> lhs1 = r1.getInverseImage(or1);
-                                            if (lhs1.hasMoreElements()) {
+                                        Iterator<GraphObject> rhs1 = p1.first.getInverseImage(orig);
+                                        if (rhs1.hasNext()) {
+                                            GraphObject or1 = rhs1.next();
+                                            Iterator<GraphObject> lhs1 = r1.getInverseImage(or1);
+                                            if (lhs1.hasNext()) {
                                                 objs.put(orig, img);
                                                 added = true;
                                             }
@@ -2283,11 +2280,11 @@ public class ExcludePairContainer implements PairContainer, Runnable {
 
                                         if (!added && p2 != null && p2.first != null) {
                                             OrdinaryMorphism isoL2 = p2.first;
-                                            Enumeration<GraphObject> objsN2 = p1.second.getInverseImage(orig);
-                                            if (objsN2.hasMoreElements()) {
-                                                GraphObject objN2 = objsN2.nextElement();
-                                                Enumeration<GraphObject> lhs2 = isoL2.getInverseImage(objN2);
-                                                if (lhs2.hasMoreElements()) {
+                                            Iterator<GraphObject> objsN2 = p1.second.getInverseImage(orig);
+                                            if (objsN2.hasNext()) {
+                                                GraphObject objN2 = objsN2.next();
+                                                Iterator<GraphObject> lhs2 = isoL2.getInverseImage(objN2);
+                                                if (lhs2.hasNext()) {
                                                     objs.put(orig, img);
                                                 }
                                             }
@@ -2369,9 +2366,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
 
             if (com1 != null) {
                 // check change-use-attr-conflict
-                Enumeration<GraphObject> dom2 = m2test.getDomain();
-                while (dom2.hasMoreElements()) {
-                    GraphObject o = dom2.nextElement();
+                Iterator<GraphObject> dom2 = m2test.getDomain();
+                while (dom2.hasNext()) {
+                    GraphObject o = dom2.next();
                     GraphObject img1 = m2test.getImage(o);
                     GraphObject img2 = isoG.getImage(img1);
                     if (!img1.compareTo(img2)) {
@@ -2446,13 +2443,13 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                             OrdinaryMorphism nac2Star = (OrdinaryMorphism) m2.checkNAC(nac2);
                             if (nac2Star != null) {
 //								boolean critical = false;
-                                Enumeration<GraphObject> nac2StarCodom = nac2Star.getCodomain();
-                                while (nac2StarCodom.hasMoreElements()) {
-                                    GraphObject o = nac2StarCodom.nextElement();
-                                    Enumeration<GraphObject> preimgR1 = com1.getInverseImage(o);
-                                    if (preimgR1.hasMoreElements()) {
-                                        GraphObject preimg = preimgR1.nextElement();
-                                        if (!r1.getInverseImage(preimg).hasMoreElements()) {
+                                Iterator<GraphObject> nac2StarCodom = nac2Star.getCodomain();
+                                while (nac2StarCodom.hasNext()) {
+                                    GraphObject o = nac2StarCodom.next();
+                                    Iterator<GraphObject> preimgR1 = com1.getInverseImage(o);
+                                    if (preimgR1.hasNext()) {
+                                        GraphObject preimg = preimgR1.next();
+                                        if (!r1.getInverseImage(preimg).hasNext()) {
 //											critical = true;
                                             nac2Star.dispose();
                                             com1.dispose();
@@ -2531,7 +2528,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         return testMatch;
     }
 
-    public Hashtable<Graph, Vector<Hashtable<GraphObject, GraphObject>>> getExcludeContainerForTestGraph() {
+    public Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> getExcludeContainerForTestGraph() {
         return this.excludeContainerForTestGraph;
     }
 
@@ -2544,7 +2541,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                 .hasMoreElements();) {
             r1 = keys1.nextElement();
             // System.out.println(r1.getName());
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table2 = this.excludeContainer.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table2 = this.excludeContainer.get(r1);
             for (Enumeration<Rule> keys2 = table2.keys(); keys2.hasMoreElements();) {
                 Rule r2 = keys2.nextElement();
                 // System.out.println(r1.getName()+" "+r2.getName());
@@ -2576,9 +2573,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         } else if (first.getSource() == r1.getRight()) {
             h.addAttr("source", "RHS");
         }
-        Enumeration<GraphObject> e = first.getDomain();
-        while (e.hasMoreElements()) {
-            GraphObject s = e.nextElement();
+        Iterator<GraphObject> e = first.getDomain();
+        while (e.hasNext()) {
+            GraphObject s = e.next();
             h.openSubTag("Mapping");
             h.addObject("orig", s, false);
             h.addObject("image", first.getImage(s), false);
@@ -2595,8 +2592,8 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                 h.addAttr("name", second.getName());
                 h.addAttr("source", "LHS");
                 e = second.getDomain();
-                while (e.hasMoreElements()) {
-                    GraphObject s = e.nextElement();
+                while (e.hasNext()) {
+                    GraphObject s = e.next();
                     h.openSubTag("Mapping");
                     h.addObject("orig", s, false);
                     h.addObject("image", second.getImage(s), false);
@@ -2611,16 +2608,14 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             h.addAttr("source", "NAC+LHS");
             // second.target : N2 = NAC2+LHS2
             e = second.getDomain();
-            while (e.hasMoreElements()) {
-                GraphObject src = e.nextElement();
+            while (e.hasNext()) {
+                GraphObject src = e.next();
                 GraphObject t = second.getImage(src);
                 GraphObject s = null;
-                if (morphL2iso.getInverseImage(src).hasMoreElements()) {
-                    s = morphL2iso.getInverseImage(src)
-                            .nextElement();
-                } else if (morphNAC2iso.getInverseImage(src).hasMoreElements()) {
-                    s = morphNAC2iso.getInverseImage(src)
-                            .nextElement();
+                if (morphL2iso.hasInverseImage(src)) {
+                    s = morphL2iso.firstOfInverseImage(src);
+                } else if (morphNAC2iso.hasInverseImage(src)) {
+                    s = morphNAC2iso.firstOfInverseImage(src);
                 }
                 if (s != null) {
                     h.openSubTag("Mapping");
@@ -2777,7 +2772,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         Iterator<?> e = nac.getTarget().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
-            if (!nac.getInverseImage(o).hasMoreElements()) {
+            if (!nac.hasInverseImage(o)) {
                 try {
                     Node n = extLeft.copyNode((Node) o);
                     tmp.put((Node) o, n);
@@ -2785,23 +2780,20 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                 } catch (TypeException ex) {
                 }
             } else {
-                isoNAC.addMapping(o, isoLeft.getImage(nac
-                        .getInverseImage(o).nextElement()));
+                isoNAC.addMapping(o, isoLeft.getImage(nac.firstOfInverseImage(o)));
             }
         }
         e = nac.getTarget().getArcsSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
-            if (!nac.getInverseImage(o).hasMoreElements()) {
+            if (!nac.hasInverseImage(o)) {
                 Node src = tmp.get(((Arc) o).getSource());
                 if (src == null) {
-                    src = (Node) isoLeft.getImage(nac.getInverseImage(
-                            ((Arc) o).getSource()).nextElement());
+                    src = (Node) isoLeft.getImage(nac.firstOfInverseImage(((Arc) o).getSource()));
                 }
                 Node tar = tmp.get(((Arc) o).getTarget());
                 if (tar == null) {
-                    tar = (Node) isoLeft.getImage(nac.getInverseImage(
-                            ((Arc) o).getTarget()).nextElement());
+                    tar = (Node) isoLeft.getImage(nac.firstOfInverseImage(((Arc) o).getTarget()));
                 }
                 try {
                     Arc a = extLeft.copyArc((Arc) o, src, tar);
@@ -2809,8 +2801,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                 } catch (TypeException ex) {
                 }
             } else {
-                isoNAC.addMapping(o, isoLeft.getImage(nac
-                        .getInverseImage(o).nextElement()));
+                isoNAC.addMapping(o, isoLeft.getImage(nac.firstOfInverseImage(o)));
             }
 
         }
@@ -2857,23 +2848,23 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
 
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
 
             for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
 
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
-                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
                 Boolean b = p.first;
 
                 h.addAttr("bool", b.toString());
                 if (b.booleanValue()) {
-                    Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
+                    List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = p.second;
 
                     for (int i = 0; i < v.size(); i++) {
                         h.openSubTag("Overlapping_Pair");
-                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.elementAt(i);
+                        Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p2i = v.get(i);
                         Pair<OrdinaryMorphism, OrdinaryMorphism> p2 = p2i.first;
                         OrdinaryMorphism first = p2.first;
                         Graph overlapping = first.getImage();
@@ -2918,14 +2909,14 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
 
-            Hashtable<Rule, Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
+            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
 
             for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
 
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
-                Pair<Boolean, Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
+                Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
                 Boolean b = p.first;
 
                 h.addAttr("bool", b.toString());
@@ -2950,9 +2941,9 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             Rule r1 = null;
             Rule r2 = null;
             boolean b = false;
-            Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
-            Vector<String> tagnames = new Vector<String>(1);
-            Vector<String> tagnames2 = new Vector<String>(1);
+            List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
+            List<String> tagnames = new Vector<>(1);
+            List<String> tagnames2 = new Vector<>(1);
 
             this.grammar = BaseFactory.theFactory().createGraGra();
             // loads the data in the predefined object
@@ -2980,24 +2971,24 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             if (this.conflictKind == CriticalPair.CONFLICT
                     || this.conflictKind == CriticalPair.TRIGGER_DEPENDENCY
                     || this.conflictKind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
-                Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-                if (!r1s.hasMoreElements()) {
+                Iterator<Element> r1s = h.getEnumeration("", null, true, "Rule");
+                if (!r1s.hasNext()) {
                     r1s = h.getEnumeration("", null, true, "Regel");
                 }
-                while (r1s.hasMoreElements()) {
-                    h.peekElement(r1s.nextElement());
+                while (r1s.hasNext()) {
+                    h.peekElement(r1s.next());
 
                     /*
 					 * da ein referenziertes object geholt werden soll. muss nur
 					 * angegeben werden wie der Membername heisst.
                      */
                     r1 = (Rule) h.getObject("R1", null, false);
-                    Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-                    if (!r2s.hasMoreElements()) {
+                    Iterator<Element> r2s = h.getEnumeration("", null, true, "Rule");
+                    if (!r2s.hasNext()) {
                         r2s = h.getEnumeration("", null, true, "Regel");
                     }
-                    while (r2s.hasMoreElements()) {
-                        h.peekElement(r2s.nextElement());
+                    while (r2s.hasNext()) {
+                        h.peekElement(r2s.next());
                         r2 = (Rule) h.getObject("R2", null, false);
                         // System.out.println(r1.getName()+" "+r2.getName());
                         String bool = h.readAttr("bool");
@@ -3006,10 +2997,10 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                         if (bool.equals("true")) {
                             b = true;
                             allOverlappings = new Vector<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
-                            Enumeration<?> overlappings = h.getEnumeration("",
+                            Iterator<Element> overlappings = h.getEnumeration("",
                                     null, true, "Overlapping_Pair");
-                            while (overlappings.hasMoreElements()) {
-                                h.peekElement(overlappings.nextElement());
+                            while (overlappings.hasNext()) {
+                                h.peekElement(overlappings.next());
 
                                 Graph g = (Graph) h.getObject("", BaseFactory.theFactory().createGraph(
                                         this.grammar.getTypeSet()), true);
@@ -3025,7 +3016,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
 
                                 Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(
                                         h, r1, r2, g);
-                                allOverlappings.addElement(p);
+                                allOverlappings.add(p);
 
                                 h.close();
                             }
@@ -3042,24 +3033,24 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             }
 
             if (h.readSubTag("conflictFreeContainer")) {
-                Enumeration<?> r1s = h.getEnumeration("", null, true, "Rule");
-                if (!r1s.hasMoreElements()) {
+                Iterator<Element> r1s = h.getEnumeration("", null, true, "Rule");
+                if (!r1s.hasNext()) {
                     r1s = h.getEnumeration("", null, true, "Regel");
                 }
-                while (r1s.hasMoreElements()) {
-                    h.peekElement(r1s.nextElement());
+                while (r1s.hasNext()) {
+                    h.peekElement(r1s.next());
 
                     /*
 					 * da ein referenziertes object geholt werden soll. muss nur
 					 * angegeben werden wie der Membername heisst.
                      */
                     r1 = (Rule) h.getObject("R1", null, false);
-                    Enumeration<?> r2s = h.getEnumeration("", null, true, "Rule");
-                    if (!r2s.hasMoreElements()) {
+                    Iterator<Element> r2s = h.getEnumeration("", null, true, "Rule");
+                    if (!r2s.hasNext()) {
                         r2s = h.getEnumeration("", null, true, "Regel");
                     }
-                    while (r2s.hasMoreElements()) {
-                        h.peekElement(r2s.nextElement());
+                    while (r2s.hasNext()) {
+                        h.peekElement(r2s.next());
                         r2 = (Rule) h.getObject("R2", null, false);
                         // System.out.println(r1.getName()+" "+r2.getName());
                         String bool = h.readAttr("bool");
@@ -3134,7 +3125,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      */
     public void addPairEventListener(ParserEventListener l) {
         if (!this.listener.contains(l)) {
-            this.listener.addElement(l);
+            this.listener.add(l);
         }
     }
 
@@ -3146,7 +3137,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      */
     public void removePairEventListener(ParserEventListener l) {
         if (this.listener.contains(l)) {
-            this.listener.removeElement(l);
+            this.listener.remove(l);
         }
     }
 
@@ -3158,7 +3149,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      */
     protected synchronized void firePairEvent(ParserEvent event) {
         for (int i = 0; i < this.listener.size(); i++) {
-            this.listener.elementAt(i).parserEventOccured(event);
+            this.listener.get(i).parserEventOccured(event);
         }
     }
 
