@@ -107,10 +107,7 @@ public class TypeGraph extends Graph {
 
             if (!this.getElementsOfType(t).hasNext()) {
                 if (t.isNodeType()) {
-                    try {
-                        createNode(t);
-                    } catch (TypeException ex) {
-                    }
+                    createNode(t);
                 } else if (t.isArcType()) {
 
                 }
@@ -167,45 +164,39 @@ public class TypeGraph extends Graph {
                         }
                         if (type != null) {
                             if (type.getTypeGraphNodeObject() == null) {
-                                try {
-                                    vtxCopy = this.newNode(type);
+                                vtxCopy = this.newNode(type);
 
-                                    if (vtxCopy != null) {
-                                        // add inheritance edge
-                                        for (int i = 0; i < vtxOrig.getType()
-                                                .getParents().size(); i++) {
-                                            Type parentOrig = vtxOrig.getType()
-                                                    .getParents().get(i);
-                                            Type parent = this.itsTypes
-                                                    .getSimilarType(parentOrig);
-                                            if (parent == null) {
-                                                parent = this.itsTypes
-                                                        .getTypeByName(parentOrig
-                                                                .getName());
-                                                if (parent != null
-                                                        && !parent.isNodeType()) {
-                                                    parent = null;
-                                                }
-                                            }
-                                            if (parent != null) {
-                                                this.itsTypes.addInheritanceRelation(type,
-                                                        parent);
+                                if (vtxCopy != null) {
+                                    // add inheritance edge
+                                    for (int i = 0; i < vtxOrig.getType()
+                                            .getParents().size(); i++) {
+                                        Type parentOrig = vtxOrig.getType()
+                                                .getParents().get(i);
+                                        Type parent = this.itsTypes
+                                                .getSimilarType(parentOrig);
+                                        if (parent == null) {
+                                            parent = this.itsTypes
+                                                    .getTypeByName(parentOrig
+                                                            .getName());
+                                            if (parent != null
+                                                    && !parent.isNodeType()) {
+                                                parent = null;
                                             }
                                         }
-                                        vtxCopy.copyAttributes(vtxOrig);
-                                        vtxCopy.setContextUsage(vtxOrig
-                                                .getContextUsage());
-
-                                        memo1.put(vtxOrig, vtxCopy);
-                                        if (this.notificationRequired) {
-                                            propagateChange(new Change(
-                                                    Change.OBJECT_CREATED, vtxCopy));
+                                        if (parent != null) {
+                                            this.itsTypes.addInheritanceRelation(type,
+                                                    parent);
                                         }
                                     }
-                                } catch (TypeException e) {
-                                    // type node already exists
-                                    Node node = this.itsTypes.getTypeGraphNode(type);
-                                    memo1.put(vtxOrig, node);
+                                    vtxCopy.copyAttributes(vtxOrig);
+                                    vtxCopy.setContextUsage(vtxOrig
+                                            .getContextUsage());
+
+                                    memo1.put(vtxOrig, vtxCopy);
+                                    if (this.notificationRequired) {
+                                        propagateChange(new Change(
+                                                Change.OBJECT_CREATED, vtxCopy));
+                                    }
                                 }
                             } else {
                                 memo1.put(vtxOrig, type.getTypeGraphNodeObject());
@@ -306,45 +297,39 @@ public class TypeGraph extends Graph {
                 }
                 if (type != null) {
                     if (type.getTypeGraphNodeObject() == null) {
-                        try {
-                            vtxCopy = this.newNode(type);
+                        vtxCopy = this.newNode(type);
 
-                            if (vtxCopy != null) {
-                                // add inheritance edge
-                                for (int i = 0; i < vtxOrig.getType()
-                                        .getParents().size(); i++) {
-                                    Type parentOrig = vtxOrig.getType()
-                                            .getParents().get(i);
-                                    Type parent = this.itsTypes
-                                            .getSimilarType(parentOrig);
-                                    if (parent == null) {
-                                        parent = this.itsTypes
-                                                .getTypeByName(parentOrig
-                                                        .getName());
-                                        if (parent != null
-                                                && !parent.isNodeType()) {
-                                            parent = null;
-                                        }
-                                    }
-                                    if (parent != null) {
-                                        this.itsTypes.addInheritanceRelation(type,
-                                                parent);
+                        if (vtxCopy != null) {
+                            // add inheritance edge
+                            for (int i = 0; i < vtxOrig.getType()
+                                    .getParents().size(); i++) {
+                                Type parentOrig = vtxOrig.getType()
+                                        .getParents().get(i);
+                                Type parent = this.itsTypes
+                                        .getSimilarType(parentOrig);
+                                if (parent == null) {
+                                    parent = this.itsTypes
+                                            .getTypeByName(parentOrig
+                                                    .getName());
+                                    if (parent != null
+                                            && !parent.isNodeType()) {
+                                        parent = null;
                                     }
                                 }
-                                vtxCopy.copyAttributes(vtxOrig);
-                                vtxCopy.setContextUsage(vtxOrig
-                                        .getContextUsage());
-
-                                memo1.put(vtxOrig, vtxCopy);
-                                if (this.notificationRequired) {
-                                    propagateChange(new Change(
-                                            Change.OBJECT_CREATED, vtxCopy));
+                                if (parent != null) {
+                                    this.itsTypes.addInheritanceRelation(type,
+                                            parent);
                                 }
                             }
-                        } catch (TypeException e) {
-                            // type node already exists
-                            Node node = this.itsTypes.getTypeGraphNode(type);
-                            memo1.put(vtxOrig, node);
+                            vtxCopy.copyAttributes(vtxOrig);
+                            vtxCopy.setContextUsage(vtxOrig
+                                    .getContextUsage());
+
+                            memo1.put(vtxOrig, vtxCopy);
+                            if (this.notificationRequired) {
+                                propagateChange(new Change(
+                                        Change.OBJECT_CREATED, vtxCopy));
+                            }
                         }
                     } else {
                         memo1.put(vtxOrig, type.getTypeGraphNodeObject());
@@ -448,27 +433,21 @@ public class TypeGraph extends Graph {
                     }
                 }
                 if (type != null) {
-                    try {
-                        vtxCopy = theCopy.newNode(type);
-                        /**
-                         * side effect!
-                         */
-                        if (vtxCopy != null) {
-                            if (vtxCopy.getAttribute() != null
-                                    && vtxOrig.getAttribute() != null) {
-                                ((ValueTuple) vtxCopy.getAttribute())
-                                        .copyEntriesToSimilarMembers(vtxOrig
-                                                .getAttribute());
-                            }
-                            vtxCopy.setContextUsage(vtxOrig
-                                    .getContextUsage());
-                            memo1.put(vtxOrig, vtxCopy);
-
+                    vtxCopy = theCopy.newNode(type);
+                    /**
+                     * side effect!
+                     */
+                    if (vtxCopy != null) {
+                        if (vtxCopy.getAttribute() != null
+                                && vtxOrig.getAttribute() != null) {
+                            ((ValueTuple) vtxCopy.getAttribute())
+                                    .copyEntriesToSimilarMembers(vtxOrig
+                                            .getAttribute());
                         }
-                    } catch (TypeException e) {
-                        // e.printStackTrace();
-                        failed = true;
-                        theCopy.dispose();
+                        vtxCopy.setContextUsage(vtxOrig
+                                .getContextUsage());
+                        memo1.put(vtxOrig, vtxCopy);
+
                     }
                 }
             }
@@ -537,25 +516,17 @@ public class TypeGraph extends Graph {
             while (vtxList.hasNext() && !failed) {
                 Node vtxOrig = vtxList.next();
                 Node vtxCopy = null;
-                try {
-                    Type type = typeSet.getSimilarType(vtxOrig.getType());
-                    if (type != null) {
-                        vtxCopy = theCopy.newNode(type);
-                        /**
-                         * side effect!
-                         */
-                        if (vtxCopy != null) {
-                            vtxCopy.copyAttributes(vtxOrig);
-                            vtxCopy.setContextUsage(vtxOrig.getContextUsage());
-                            memo1.put(vtxOrig, vtxCopy);
-                        }
+                Type type = typeSet.getSimilarType(vtxOrig.getType());
+                if (type != null) {
+                    vtxCopy = theCopy.newNode(type);
+                    /**
+                     * side effect!
+                     */
+                    if (vtxCopy != null) {
+                        vtxCopy.copyAttributes(vtxOrig);
+                        vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                        memo1.put(vtxOrig, vtxCopy);
                     }
-                } catch (TypeException e) {
-                    // If this graph is checked, the copy should also be ok
-                    // so no Exception should happen.
-                    // e.printStackTrace();
-                    failed = true;
-                    theCopy.dispose();
                 }
             }// while
 
@@ -622,21 +593,15 @@ public class TypeGraph extends Graph {
                 Node vtxCopy = null;
                 Type type = this.itsTypes.getSimilarType(vtxOrig.getType());
                 if (type != null) {
-                    try {
-                        vtxCopy = theCopy.newNode(type);
-                        /**
-                         * side effect!
-                         */
-                        if (vtxCopy != null) {
-                            vtxCopy.copyAttributes(vtxOrig);
-                            vtxCopy.setContextUsage(vtxOrig
-                                    .getContextUsage());
-                            orig2copy.put(vtxOrig, vtxCopy);
-                        }
-                    } catch (TypeException e) {
-                        // e.printStackTrace();
-                        failed = true;
-                        theCopy.dispose();
+                    vtxCopy = theCopy.newNode(type);
+                    /**
+                     * side effect!
+                     */
+                    if (vtxCopy != null) {
+                        vtxCopy.copyAttributes(vtxOrig);
+                        vtxCopy.setContextUsage(vtxOrig
+                                .getContextUsage());
+                        orig2copy.put(vtxOrig, vtxCopy);
                     }
                 }
             }
@@ -687,18 +652,12 @@ public class TypeGraph extends Graph {
             while (!failed && iter.hasNext()) {
                 Node vtxOrig = (Node) iter.next();
                 Node vtxCopy = null;
-                try {
-                    vtxCopy = theCopy.createNode(vtxOrig);
-                    /**
-                     * side effect!
-                     */
-                    vtxCopy.setContextUsage(vtxOrig.getContextUsage());
-                    memo1.put(vtxOrig, vtxCopy);
-                } catch (TypeException e) {
-                    // e.printStackTrace();
-                    failed = true;
-                    theCopy.dispose();
-                }
+                vtxCopy = theCopy.createNode(vtxOrig);
+                /**
+                 * side effect!
+                 */
+                vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                memo1.put(vtxOrig, vtxCopy);
             }
 
             iter = this.itsArcs.iterator();
@@ -824,13 +783,8 @@ public class TypeGraph extends Graph {
         }
     }
 
-    protected Node newNode(final Type t) throws TypeException {
+    protected Node newNode(final Type t) {
         final Node aNode = new Node(t, this);
-        TypeError typeError = this.itsTypes.addTypeGraphObject(aNode);
-        if (typeError != null) {
-            aNode.dispose();
-            throw new TypeException(typeError);
-        }
 
         this.attributed = aNode.getAttribute() != null;
 
@@ -852,7 +806,7 @@ public class TypeGraph extends Graph {
      * @throws agg.xt_basis.TypeException
      */
     @Override
-    public Node createNode(final Type type) throws TypeException {
+    public Node createNode(final Type type) {
         Type t = this.itsTypes.adoptClan(type);
         Node aNode = newNode(t);
         return aNode;
@@ -894,7 +848,7 @@ public class TypeGraph extends Graph {
     /**
      * @deprecated use the method <code>copyNode(Node orig)</code>
      */
-    public Node createNode(final Node orig) throws TypeException {
+    public Node createNode(final Node orig) {
         Node aNode = createNode(orig.getType());
         if (aNode != null) {
             if (orig.getAttribute() != null && aNode.getAttribute() == null) {
@@ -1495,15 +1449,8 @@ public class TypeGraph extends Graph {
                 Type t = (Type) h.getObject("type", null, false);
                 if (t != null) {
                     Node n = null;
-                    try {
-                        n = newNode(t);
-                        n = (Node) h.loadObject(n);
-                    } catch (TypeException e) {
-                        // while loading the type check should be disabled,
-                        // so this Exception should never be thrown
-                        // e.printStackTrace();
-                        System.out.println("TypeGraph.XreadObject: cannot load a Node: " + e.getMessage());
-                    }
+                    n = newNode(t);
+                    n = (Node) h.loadObject(n);
 
                     // load multiplicity, if this is the type graph
                     // read the multiplicities

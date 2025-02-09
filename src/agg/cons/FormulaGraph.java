@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 package agg.cons;
 
@@ -189,11 +188,8 @@ public class FormulaGraph {
     public Node setTop(final String name) {
         Type t = getNodeType(name);
         if (t != null) {
-            try {
-                this.top = this.g.createNode(t);
-                return this.top;
-            } catch (TypeException ex) {
-            }
+            this.top = this.g.createNode(t);
+            return this.top;
         }
         return null;
     }
@@ -207,14 +203,11 @@ public class FormulaGraph {
     public Node setTop(final String name, final Evaluable obj) {
         Type t = getNodeType(name);
         if (t != null) {
-            try {
-                this.top = this.g.createNode(t);
-                if (obj != null && !this.isOpType(t)) {
-                    this.evals.add(obj);
-                }
-                return this.top;
-            } catch (TypeException ex) {
+            this.top = this.g.createNode(t);
+            if (obj != null && !this.isOpType(t)) {
+                this.evals.add(obj);
             }
+            return this.top;
         }
         return null;
     }

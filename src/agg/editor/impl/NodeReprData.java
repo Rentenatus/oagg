@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 package agg.editor.impl;
 
@@ -308,26 +307,23 @@ public class NodeReprData implements StateEditable {
         }
 
         EdNode n = null;
-        try {
-            Node basis = g.getBasisGraph().createNode(type.getBasisType());
-            n = g.addNode(basis, type);
+        Node basis = g.getBasisGraph().createNode(type.getBasisType());
+        n = g.addNode(basis, type);
 
-            n.addContextUsage(this.nodeHC);
+        n.addContextUsage(this.nodeHC);
 
-            if (n.isElementOfTypeGraph()) {
-                restoreParentsAndChildren(n);
-                restoreMultiplicity(n, this.typeRepresentation);
-            }
-
-            refreshAttributes(n);
-
-            n.setX(this.location.x);
-            n.setY(this.location.y);
-
-            n.getLNode().setFrozen(this.frozen);
-            n.getLNode().setFrozenByDefault(this.frozenAsDefault);
-        } catch (TypeException ex) {
+        if (n.isElementOfTypeGraph()) {
+            restoreParentsAndChildren(n);
+            restoreMultiplicity(n, this.typeRepresentation);
         }
+
+        refreshAttributes(n);
+
+        n.setX(this.location.x);
+        n.setY(this.location.y);
+
+        n.getLNode().setFrozen(this.frozen);
+        n.getLNode().setFrozenByDefault(this.frozenAsDefault);
 
         return n;
     }

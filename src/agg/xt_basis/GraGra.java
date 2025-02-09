@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -2325,18 +2325,6 @@ public class GraGra implements Disposable, XMLObject {
      */
     public Type createType() {
         return this.typeSet.createType();
-    }
-
-    /*
-	 * Create a new type for typing of GraphObjects. 
-	 * 
-	 * @deprecated  replaced by 
-	 * 		<code>Type createNodeType(boolean withAttributes)</code> for node type
-	 * and  
-	 * 		<code>Type createArcType(boolean withAttributes)</code> for edge type
-     */
-    public Type createType(boolean withAttributes) {
-        return this.typeSet.createType(withAttributes);
     }
 
     /**

@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -451,15 +451,12 @@ public class BaseFactory {
             if (g.hasInverseImage(n) && f.hasInverseImage(n)) {
                 Node n_f = (Node) f.firstOfInverseImage(n);
                 Node n_g = (Node) g.firstOfInverseImage(n);
+                Node nn = L.createNode(n.getType());
                 try {
-                    Node nn = L.createNode(n.getType());
-                    try {
-                        r.addMapping(nn, n_g);
-                        m.addMapping(nn, n_f);
-                        n2n.put(n_g, nn);
-                    } catch (BadMappingException ex1) {
-                    }
-                } catch (TypeException ex) {
+                    r.addMapping(nn, n_g);
+                    m.addMapping(nn, n_f);
+                    n2n.put(n_g, nn);
+                } catch (BadMappingException ex1) {
                 }
             }
         }
@@ -581,13 +578,10 @@ public class BaseFactory {
             Node n = nodes.next();
             if (n2n_L.get(n) == null
                     && !g.hasInverseImage(n)) {
+                Node n_L = L.createNode(n.getType());
                 try {
-                    Node n_L = L.createNode(n.getType());
-                    try {
-                        b3.addMapping(n_L, n);
-                    } catch (BadMappingException ex1) {
-                    }
-                } catch (TypeException ex) {
+                    b3.addMapping(n_L, n);
+                } catch (BadMappingException ex1) {
                 }
             }
         }
@@ -618,15 +612,12 @@ public class BaseFactory {
         while (nodes.hasNext()) {
             Node n = nodes.next();
             if (t.getImage(n) != null) {
+                Node nn = D.createNode(n.getType());
                 try {
-                    Node nn = D.createNode(n.getType());
-                    try {
-                        f.addMapping(nn, t.getImage(n));
-                        g.addMapping(nn, n);
-                        n2n.put(n, nn);
-                    } catch (BadMappingException ex1) {
-                    }
-                } catch (TypeException ex) {
+                    f.addMapping(nn, t.getImage(n));
+                    g.addMapping(nn, n);
+                    n2n.put(n, nn);
+                } catch (BadMappingException ex1) {
                 }
             }
         }

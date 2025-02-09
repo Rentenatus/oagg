@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -11,24 +11,22 @@
  */
 package agg.xt_basis;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.Hashtable;
-
 import agg.attribute.AttrManager;
 import agg.attribute.impl.AttrTupleManager;
-import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.DeclMember;
+import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.ValueTuple;
 import agg.cons.AtomConstraint;
 import agg.util.Pair;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * Manages the node/edge types of graphs. Especially the rules and host graphs of a graph transformation system (gratra)
@@ -80,7 +78,7 @@ public class TypeSet {
     /**
      * returned instead of a list of {@link TypeError}s, if there were none.
      */
-    private static final Collection<TypeError> SUCCESS = new ArrayList< >(0);
+    private static final Collection<TypeError> SUCCESS = new ArrayList<>(0);
 
     /**
      * the types of the edges and nodes will be hold in this list
@@ -118,7 +116,7 @@ public class TypeSet {
     private boolean typeGraphIsProved = false;
 
     /**
-     * holds the level of type graph check Possible values: null     {@link #DISABLED}, {@link #ENABLED},
+     * holds the level of type graph check Possible values: null null null null null null     {@link #DISABLED}, {@link #ENABLED},
 	 * {@link #ENABLED_MAX}, {@link #ENABLED_MAX_MIN}
      */
     private int typeGraphLevel = DISABLED;
@@ -546,7 +544,7 @@ public class TypeSet {
             }
         }
 
-        while (otherTypes. hasNext()) {
+        while (otherTypes.hasNext()) {
             Type t = otherTypes.next();
             Type similar = getTypeByNameAndAdditionalRepr(t.getStringRepr(), t
                     .getAdditionalRepr());
@@ -762,7 +760,7 @@ public class TypeSet {
                 k++;
             }
             // store arc, source and target types of a clan arc, then destroy the arc
-            Map<Type, Vector<Pair<?, ?>>> table = new HashMap<>(                    5, 5);
+            Map<Type, Vector<Pair<?, ?>>> table = new HashMap<>(5, 5);
             for (int i = 0; i < arcsToDelete.size(); i++) {
                 Arc a = arcsToDelete.get(i);
                 TypeGraphArc subt = t.getTypeGraphArc(a.getSource().getType(), a.getTarget().getType());
@@ -825,7 +823,7 @@ public class TypeSet {
 //		System.out.println("TypeSet.importTypeGraph rewrite: "+rewrite);
         final Vector<Type> differentAttribute = new Vector<Type>(5);
         final Vector<Type> differentInheritance = new Vector<Type>(5);
-        final Map<Type, Vector<Type>> oldInheritance = new HashMap< >(5, 5);
+        final Map<Type, Vector<Type>> oldInheritance = new HashMap<>(5, 5);
         final Vector<Type> differentMultiplicity = new Vector<Type>(5);
         final Vector<Type> typesToAdd = new Vector<Type>(5);
 
@@ -962,19 +960,17 @@ public class TypeSet {
         if (nodes != null && nodes.isEmpty()) {
             for (int i = 0; i < nodes.size(); i++) {
                 Node n = nodes.get(i);
-                try {
-                    this.typeGraph.createNode(n.getType());
-                } catch (TypeException ex) {
-                }
+
+                this.typeGraph.createNode(n.getType());
+
             }
         } else {
             for (int i = 0; i < this.types.size(); i++) {
                 Type t = this.types.get(i);
                 if (t.isNodeType()) {
-                    try {
-                        this.typeGraph.createNode(t);
-                    } catch (TypeException ex) {
-                    }
+
+                    this.typeGraph.createNode(t);
+
                 }
             }
         }
@@ -1034,10 +1030,7 @@ public class TypeSet {
                 Node n = nodes.next();
                 Type t = n.getType();
                 if (this.typeGraph.getNodes(t) == null) {
-                    try {
-                        this.typeGraph.createNode(t);
-                    } catch (TypeException ex) {
-                    }
+                    this.typeGraph.createNode(t);
                 }
             }
         } else {
@@ -1045,10 +1038,7 @@ public class TypeSet {
                 Type t = this.types.get(i);
                 if (t.isNodeType()) {
                     if (this.typeGraph.getNodes(t) == null) {
-                        try {
-                            this.typeGraph.createNode(t);
-                        } catch (TypeException ex) {
-                        }
+                        this.typeGraph.createNode(t);
                     }
                 }
             }
