@@ -1098,25 +1098,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return true;
     }
 
-    public TypeError checkNewNodeRequiresArc() {
-        final Iterator<Node> elems = this.getRight().getNodesSet().iterator();
-        while (elems.hasNext()) {
-            final GraphObject obj = elems.next();
-            if (!this.getInverseImage(obj).hasNext()) {
-                List<String> list = this.getRight().getTypeSet().nodeRequiresArc((Node) obj);
-                if (list != null && !list.isEmpty()) {
-                    TypeError actError = new TypeError(TypeError.TO_LESS_ARCS,
-                            "Node type  "
-                            + "\"" + obj.getType().getName() + "\" \n"
-                            + "requires edge(s) of type: \n"
-                            + list.toString(), obj.getType());
-                    actError.setContainingGraph(this.getRight());
-                    return actError;
-                }
-            }
-        }
-        return null;
-    }
+ 
 
     /**
      * Try to destroy all graph objects of the specified type from its graphs (LHS, RHS, NACs, PACs, graph constraints).

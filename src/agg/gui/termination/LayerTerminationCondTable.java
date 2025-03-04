@@ -43,8 +43,7 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
 import agg.xt_basis.Rule;
 import agg.termination.TerminationLGTS;
-import agg.termination.TerminationLGTSInterface;
-import agg.termination.TerminationLGTSTypedByTypeGraph;
+import agg.termination.TerminationLGTSInterface; 
 import agg.util.Pair;
 import java.util.List;
 
@@ -489,27 +488,7 @@ public class LayerTerminationCondTable extends JDialog implements
                         }
                     }
                 }
-            } else if (this.termination instanceof TerminationLGTSTypedByTypeGraph) {
-                if ((this.termination.getDeletionTypeObject() != null)
-                        && this.termination.getDeletionTypeObject().containsKey(layer)) {
-                    List<GraphObject> typeObjs = this.termination.getDeletionTypeObject().get(layer);
-                    if (typeObjs != null) {
-                        Iterator<GraphObject> en = typeObjs.iterator();
-                        while (en.hasNext()) {
-                            GraphObject tobj = en.next();
-                            if (tobj.isNode()) {
-                                if (tobj.getType().getStringRepr().equals("")) {
-                                    names.add("(unnamed)");
-                                } else {
-                                    names.add(tobj.getType().getStringRepr());
-                                }
-                            } else {
-                                names.add(getTypeStringOfEdge((Arc) tobj));
-                            }
-                        }
-                    }
-                }
-            }
+            }  
             return names;
         } else if (condName.equals("Deletion_2")) {
             if ((this.termination.getInvertedTypeDeletionLayer() != null)

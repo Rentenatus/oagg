@@ -51,15 +51,7 @@ public interface GraphOrientation {
             int currentTypeGraphLevel
     );
 
-    /**
-     *
-     * @param g
-     * @param edgeType
-     * @param src
-     * @param tar
-     * @return
-     */
-    public Arc getTypeGraphArc(final Graph g, Type edgeType, Node src, Node tar);
+    
 
     /**
      *

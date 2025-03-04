@@ -192,17 +192,6 @@ public interface Type extends XMLObject {
     public TypeError check(GraphObject graphObject, int level);
 
     /**
-     * returns if the given node could be removed. This check makes only sense, if the minimum multiplicity check is
-     * activated.
-     *
-     * @param node the node which will be removed.
-     * @param level the actual level. If not set to {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
-     * @return null, if the node will be valid typed even after removing the arc otherwise a {@link TypeError}
-     * containing the possible fault.
-     */
-    TypeError checkIfRemovable(Node node, int level);
-
-    /**
      * returns if the given arc could be removed from the given node so the node would be valid typed. This check makes
      * only sense, if the minimum multiplicity check is activated.
      *
@@ -308,9 +297,6 @@ public interface Type extends XMLObject {
     public int getSourceMin();
 
     public int getSourceMax();
-
-    public TypeError checkIfNodeCreatable(Graph basisGraph,
-            int levelOfTypeGraphCheck);
 
     public boolean hasInheritedAttribute();
 

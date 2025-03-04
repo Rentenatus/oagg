@@ -635,40 +635,7 @@ public class GraGra implements Disposable, XMLObject {
         return result;
     }
 
-    /**
-     * Adds the specified Graph g to the current type graph if it exists or to a new created type graph otherwise. The
-     * Graph g is a type graph, g.isTypeGraph() should return true. The type graph check should be disabled. The new
-     * node/edge types of the Graph g are added to the current types. The current type graph structure and the structure
-     * of the Graph g are united dis-jointly. Double occurrence of the nodes/arcs are possible and they have to be
-     * resolved manually by the user.
-     */
-    public boolean importTypeGraph(final Graph g, final boolean rewrite) {
-        boolean result = false;
-        if (g.isTypeGraph()) {
-            if (this.typeSet.getTypeGraph() == null) {
-                this.typeSet.createTypeGraph();
-            }
-
-            if (rewrite) {
-                this.typeSet.adaptTypes(g.getTypeSet(), false);
-            }
-
-            final Map<ValueTuple, ValueTuple> valueTable = storeAttrValueOfAttrTypeObserver();
-            if (this.typeSet.importTypeGraph(g, rewrite)) {
-                this.typeSet.refreshInheritanceArcs();
-                // extend the type graph by the node/arc types which are already used in graphs
-                // but are not defined in the type graph
-//				this.typeSet.extendTypeGraph(g.getNodesSet().iterator(), g.getArcsSet().iterator());
-
-                restoreAttrValueOfObserver(valueTable);
-                this.typeSet.getTypeGraph().graphDidChange();
-                result = true;
-            } else {
-                result = false;
-            }
-        }
-        return result;
-    }
+    
 
     private Map<ValueTuple, ValueTuple> storeAttrValueOfAttrTypeObserver() {
 //		System.out.println("######  storeAttrValueOfAttrTypeObserver......");
@@ -748,17 +715,7 @@ public class GraGra implements Disposable, XMLObject {
     public boolean importGraph(final Graph g) {
         boolean importTried = false;
         boolean result = false;
-        if ((g.getTypeSet().getTypeGraph() != null)
-                && ((this.typeSet.getTypeGraph() == null)
-                || (this.typeSet.getTypeGraph().isEmpty()
-                && (getLevelOfTypeGraphCheck() == TypeSet.DISABLED)))) {
-            importTried = true;
-            if (importTypeGraph(g.getTypeSet().getTypeGraph(), true)) {
-                result = importGraph(g, false);
-            } else {
-                result = false;
-            }
-        }
+ 
         if (!importTried) {
             result = importGraph(g, false);
         }
@@ -825,8 +782,7 @@ public class GraGra implements Disposable, XMLObject {
                 impGraph = g.copy(this.typeSet);
             } else if (this.typeSet.contains(g.getTypeSet())) {
                 impGraph = g.copy(this.typeSet);
-            } else if ((this.typeSet.getTypeGraph() == null)
-                    || (this.typeSet.getLevelOfTypeGraphCheck() == TypeSet.DISABLED)) {
+            } else   {
                 final Vector<Type> typesToAdopt = new Vector<Type>(1);
                 final Iterator<Type> other = g.getTypeSet().getTypes();
                 while (other.hasNext()) {
@@ -849,7 +805,7 @@ public class GraGra implements Disposable, XMLObject {
                 impGraph.setAttrContext(agg.attribute.impl.AttrTupleManager
                         .getDefaultManager().newRightContext(aGraphContext()));
 
-                this.typeSet.extendTypeGraph(g.getNodesSet().iterator(), g.getArcsSet().iterator());
+                 
             }
         }
         return impGraph;
@@ -897,7 +853,7 @@ public class GraGra implements Disposable, XMLObject {
                     edgelist.addAll(m.getTarget().getArcsSet());
                 }
 
-                this.typeSet.extendTypeGraph(nodelist.iterator(), edgelist.iterator());
+                 
             }
         }
         return result;
@@ -941,8 +897,7 @@ public class GraGra implements Disposable, XMLObject {
         if (this.itsStartGraph != null) {
             this.itsStartGraph.dispose();
         }
-
-        this.typeSet.destroyTypeGraph();
+ 
 
         this.typeSet.dispose();
 
@@ -1040,9 +995,7 @@ public class GraGra implements Disposable, XMLObject {
         return this.hasRuleApplCond;
     }
 
-    public void removeTypeGraph() {
-        this.typeSet.removeTypeGraph();
-    }
+ 
 
     /**
      * Set my name.
@@ -1850,12 +1803,7 @@ public class GraGra implements Disposable, XMLObject {
         return result;
     }
 
-    /**
-     * Dispose the type graph.
-     */
-    public void destroyTypeGraph() {
-        this.typeSet.removeTypeGraph();
-    }
+   
 
     /**
      * Dispose the specified rule.
@@ -1943,12 +1891,7 @@ public class GraGra implements Disposable, XMLObject {
                 }
             }
         }
-        // delete from type graph
-        if (this.typeSet.getTypeGraph() != null
-                && fromTypeGraph
-                && !this.typeSet.getTypeGraph().destroyObjectsOfType(t)) {
-            failed.add(this.typeSet.getTypeGraph().getName());
-        }
+        
         return failed;
     }
 
@@ -2016,16 +1959,7 @@ public class GraGra implements Disposable, XMLObject {
             }
         }
 
-        // delete from type graph
-        if (this.typeSet.getTypeGraph() != null && fromTypeGraph) {
-            v = this.typeSet.getTypeGraph().destroyObjectsOfTypes(ts);
-            if (v != null) {
-                if (failed == null) {
-                    failed = new Vector<String>(5);
-                }
-                failed.addAll(v);
-            }
-        }
+         
         return failed;
     }
 
@@ -2267,55 +2201,9 @@ public class GraGra implements Disposable, XMLObject {
         }
     }
 
-    /*
-	 * Replace its type set by the specified sharedTypes.
-	 * Precondition: this GraGra has to contain at most one empty host graph
-	 * and one empty rule. Its type set should be empty, too.
-	 * 
-	 * @param sharedTypes the type set to share
-	 * @return true if setting was successful, otherwise - false
-     */
- /*
-	private boolean setSharedTypes(final TypeSet sharedTypes) {
-		if ((this.getListOfGraphs().size() == 0
-				|| (this.getListOfGraphs().size() == 1
-						&& this.getListOfGraphs().get(0).isEmpty()))
-				&& (this.getListOfRules().size() == 0
-						|| (this.getListOfRules().size() == 1
-								&& this.getListOfRules().get(0).isEmptyRule()))
-				&& this.getListOfAtomics().size() == 0
-				&& this.getListOfConstraints().size() == 0) {
-			
-			this.typeSet = sharedTypes;
-			
-			if (this.getListOfGraphs().size() == 1) {
-				this.getListOfGraphs().get(0).setTypeSet(this.typeSet);
-			}
-			if (this.getListOfRules().size() == 1) {
-				this.getListOfRules().get(0).getLeft().setTypeSet(this.typeSet);
-				this.getListOfRules().get(0).getRight().setTypeSet(this.typeSet);
-			}
-			return true;
-		}
-		return false;
-	}
-     */
-    /**
-     * Creates an empty type graph. If a type graph was already defined, it will be lost.
-     */
-    public Graph createTypeGraph() {
-        Graph tg = this.typeSet.createTypeGraph();
-        // test: use XY position as attributes
-        tg.xyAttr = this.gratraOptions.contains(GraTraOptions.XY_POS_ATTRIBUTE);
-        return tg;
-    }
+   
 
-    /**
-     * Returns the type graph or <code>null</code>, if no type graph was created before.
-     */
-    public Graph getTypeGraph() {
-        return this.typeSet.getTypeGraph();
-    }
+  
 
     /**
      * Create a new type for typing of GraphObjects.
@@ -4156,10 +4044,7 @@ public class GraGra implements Disposable, XMLObject {
         // a <Type> tag for each type
         h.addEnumeration("", getTypes(), true);
 
-        // a <Graph> tag for the type graph
-        // the types must defined here, because the XwriteObject
-        // method of Graph use them
-        h.addObject("", this.typeSet.getTypeGraph(), true);
+       
 
         // </Types>
         h.close();
@@ -4463,32 +4348,17 @@ public class GraGra implements Disposable, XMLObject {
                 }
             }// while hasMoreElements
 
-            // now construct the type graph
-            // the types used there must have defined before
-            if (h.readSubTag("Graph")) {
-                Graph tg = this.createTypeGraph();
-                h.loadObject(tg);
-                h.close();
 
-                // mark type graph as unused first
-                this.typeSet.setLevelOfTypeGraph(TypeSet.DISABLED);
-
-                this.getTypeGraph().attributed = attributed;
-                this.getTypeGraph().setKind(GraphKind.TG);
-            }// if readSubTag("Graph")
 
             // close the <Types> tag
             h.close();
 
-            this.typeSet.refreshInheritanceArcs();
+            
         }// if readSubTag("Types")
 
-        if (this.typeSet.getTypeGraph() == null) {
+       
             this.typeSet.setLevelOfTypeGraph(TypeSet.DISABLED);
-        } else if (loadedLevel != TypeSet.DISABLED
-                && loadedLevel != TypeSet.UNDEFINED) {
-            this.typeSet.setLevelOfTypeGraph(TypeSet.ENABLED);
-        }
+       
 //		System.out.println("(Base) Grammar  Types: "
 //				+ (System.currentTimeMillis() - time0) + "ms");
 

@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 // $Id: GraGraPopupMenu.java,v 1.11 2010/09/23 08:21:33 olga Exp $
 package agg.gui.popupmenu;
@@ -82,15 +81,6 @@ public class GraGraPopupMenu extends JPopupMenu {
         add(this.menuNew);
 
         JMenuItem mi = this.menuNew.add(new JMenuItem(
-                "Type Graph                    Ctrl+Alt+T"));
-        mi.setActionCommand("newTypeGraph");
-        mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                createTypeGraph();
-            }
-        });
-
-        mi = this.menuNew.add(new JMenuItem(
                 "Graph                            Ctrl+Alt+G"));
         mi.setActionCommand("newGraph");
         mi.addActionListener(new ActionListener() {
@@ -583,32 +573,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 this.menuNew.insert(this.miRuleScheme, i + 1);
                 break;
             }
-        }
-    }
-
-    void createTypeGraph() {
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.path.getLastPathComponent();
-        if (gra.getTypeSet().getTypeGraph() != null) {
-            JOptionPane.showMessageDialog(this.treeView.getFrame(),
-                    "<html><body>"
-                    + " The type graph already exists."
-                    + "</body></html>",
-                    "",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        if (gra.isEditable()) {
-            EdGraph typeGraph = gra.createTypeGraph();
-
-            TypeGraphTreeNodeData sdTypeGraph = new TypeGraphTreeNodeData(typeGraph);
-            sdTypeGraph.setString("[D]TypeGraph");
-
-            DefaultMutableTreeNode newTypeGraphNode = new DefaultMutableTreeNode(
-                    sdTypeGraph);
-            sdTypeGraph.setTreeNode(newTypeGraphNode);
-            this.treeView.getTreeModel().insertNodeInto(newTypeGraphNode, parent, 0);
-        } else {
-            treeView.lockWarning();
         }
     }
 

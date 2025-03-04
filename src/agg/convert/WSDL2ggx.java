@@ -17,6 +17,7 @@ import agg.attribute.impl.VarTuple;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
+import agg.xt_basis.Graph;
 import agg.xt_basis.Node;
 import agg.xt_basis.NodeTypeImpl;
 import agg.xt_basis.Rule;
@@ -36,10 +37,10 @@ public class WSDL2ggx implements XMLObject {
         return done;
     }
 
-    private Node createNodeType(String name) {
+    private Node createNodeType(Graph typeGraph, String name) {
         NodeTypeImpl nt = (NodeTypeImpl) gragra.getTypeSet().createNodeType(true);
         nt.setStringRepr(name);
-        return gragra.getTypeSet().getTypeGraph().createNode(nt);
+        return typeGraph.createNode(nt);
     }
 
     private void addAttr(AttrHandler attrHandler, Type nodeType, String aType, String aName) {
@@ -70,9 +71,12 @@ public class WSDL2ggx implements XMLObject {
         System.out.println(tag);
         if (tag.equals("wsdl:types")) {
             this.done = true;
+            
+            // Das machen wir hier, nur damit wir uns am TypeGraph nicht verchlucken.
+            Graph typeGraph = new Graph();
             AttrHandler attrHandler = AttrTupleManager.getDefaultManager().getHandler(JexHandler.getLabelName());
 //			Node ws = 
-            createNodeType("WebService");
+            createNodeType(typeGraph, "WebService");
             if (h.readSubTag("s:schema")) {
                 System.out.println("s:schema");
                 tag = h.readSubTag();
@@ -110,7 +114,7 @@ public class WSDL2ggx implements XMLObject {
                         String eName = h.readAttr("name");
                         System.out.println(tag + "     " + eName);
                         if (!eName.startsWith("Array")) {
-                            Node n = createNodeType(eName);
+                            Node n = createNodeType(typeGraph, eName);
                             tag = h.readSubTag();
                             if (tag != null && tag.equals("s:sequence")) {
                                 tag = h.readSubTag();

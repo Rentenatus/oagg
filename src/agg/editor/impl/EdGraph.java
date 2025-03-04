@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -145,9 +145,6 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
             this.bGraph = graph;
             this.bGraph.addObserver(this);
             this.typeSet = new EdTypeSet(this.bGraph.getTypeSet());
-            if (this.bGraph instanceof agg.xt_basis.TypeGraph) {
-                this.isTG = true;
-            }
 
             makeGraphObjects();
         }
@@ -165,9 +162,6 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
             this.bGraph = graph;
             this.bGraph.addObserver(this);
             this.typeSet = types;
-            if (this.bGraph instanceof agg.xt_basis.TypeGraph) {
-                this.isTG = true;
-            }
 
             makeGraphObjects();
         }
@@ -1966,42 +1960,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     public boolean deleteInheritanceRelation(EdNode child, EdNode parent) {
-        if (this.isTG && (this.bGraph != null)
-                && (this.inheritanceArcs != null) && !this.inheritanceArcs.isEmpty()) {
 
-            if (this.bGraph.getTypeSet()
-                    .removeInheritanceRelation(child.getBasisNode().getType(),
-                            parent.getBasisNode().getType())) {
-                EdArc a = findInheritanceArc(child, parent, false);
-                if (a != null) {
-                    this.inheritanceArcs.remove(a);
-                    this.arcs.remove(a);
-                    a.dispose();
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean deleteAllInheritanceRelations(EdNode child) {
-        if (this.isTG && (this.bGraph != null)
-                && (this.inheritanceArcs != null) && !this.inheritanceArcs.isEmpty()) {
-
-            for (int i = 0; i < this.inheritanceArcs.size(); i++) {
-                EdArc a = this.inheritanceArcs.get(i);
-                if (a.getSource() == child
-                        && this.bGraph.getTypeSet().isInheritanceArc(a.getBasisArc())) {
-                    if (this.bGraph.getTypeSet().removeInheritanceRelation(
-                            child.getBasisNode().getType(),
-                            ((EdNode) a.getTarget()).getBasisNode().getType())) {
-                        this.inheritanceArcs.remove(a);
-                        this.arcs.remove(a);
-                        a.dispose();
-                    }
-                }
-            }
-        }
         return false;
     }
 
@@ -2735,8 +2694,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                             if (!trg.isSelected()) {
                                 trg.setSelected(true);
                             }
-                            singleNodes.remove (ea.getSource());
-                            singleNodes.remove (ea.getTarget());
+                            singleNodes.remove(ea.getSource());
+                            singleNodes.remove(ea.getTarget());
                         }
                     }
                 }
@@ -2932,7 +2891,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                             copy.setSelected(true);
                             this.selectedArcs.add(copy);
                         } else if (this.isTG) {
-                            copy = getFirstArcByTypeName(ea.getTypeName(), src, trg);
+
                         }
                     }
                 }
@@ -2994,20 +2953,6 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
             final List<EdNode> tnodes = this.getNodes(t);
             if (!tnodes.isEmpty()) {
                 return tnodes.get(0);
-            }
-        }
-        return null;
-    }
-
-    private EdArc getFirstArcByTypeName(final String tname, final EdNode src, final EdNode tgt) {
-        final EdType t = this.getTypeSet().getArcTypeForName(tname);
-        if (t != null) {
-            final Arc baseArc = this.getTypeSet().getBasisTypeSet().getTypeGraphArc(
-                    t.getBasisType(),
-                    src.getBasisNode().getType(),
-                    tgt.getBasisNode().getType());
-            if (baseArc != null) {
-                return this.findArc(baseArc);
             }
         }
         return null;

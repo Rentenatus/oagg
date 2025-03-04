@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -598,36 +598,6 @@ public class EdGraGra implements XMLObject {
             }
         }
         return false;
-    }
-
-    /**
-     * Adds the specified EdGraph g to the current type graph if it exists, otherwise creates a type graph and then adds
-     * the EdGraph g. The graph g is a type graph, so g.isTypeGraph() should return true. The type graph check should be
-     * disabled. The new node/edge types are added to the current types. The current type graph structure and the
-     * structure of the graph g are united dis-jointly. Double occurrences of the nodes/arcs are possible and they have
-     * to be resolved by the user manually.
-     */
-    public synchronized boolean importTypeGraph(EdGraph g, boolean rewrite) {
-        if (!g.isTypeGraph()) {
-            return false;
-        }
-        boolean result = false;
-        if (this.typeSet.getTypeGraph() == null) {
-            this.typeSet.createTypeGraph();
-        }
-
-        this.typeSet.getTypeGraph().setUndoManager(this.undoManager);
-
-        if (this.bGraGra.importTypeGraph(g.getBasisGraph(), rewrite)) {
-            this.typeSet.refreshTypes();
-            this.typeSet.getTypeGraph().deselectAll();
-            this.typeSet.getTypeGraph().synchronizeWithBasis(true);
-            this.typeSet.getTypeGraph().setLayoutByType(g);
-            update(true);
-            result = true;
-        }
-
-        return result;
     }
 
     /**
@@ -1921,32 +1891,6 @@ public class EdGraGra implements XMLObject {
         return false;
     }
 
-    public EdGraph createTypeGraph() {
-        this.bGraGra.createTypeGraph();
-        EdGraph tg = this.typeSet.createTypeGraph();
-        tg.setGraGra(this);
-        tg.setUndoManager(this.undoManager);
-        return tg;
-    }
-
-    public void setTypeGraph(EdGraph tg) {
-        this.typeSet.setTypeGraph(tg);
-        tg.setGraGra(this);
-        tg.setUndoManager(this.undoManager);
-    }
-
-    public boolean createTypeGraphFrom(EdGraph g) {
-        this.bGraGra.createTypeGraph();
-        this.getTypeSet().createTypeGraph();
-        if (((agg.xt_basis.TypeGraph) this.getTypeSet().getTypeGraph()
-                .getBasisGraph()).makeFromPlainGraph(g.getBasisGraph())) {
-            this.bGraGra.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
-            this.getTypeGraph().doDefaultEvolutionaryGraphLayout(20);
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Creates a graph layout of type EdGraph for each Graph from the Enumeration basisGraphs.
      *
@@ -2178,33 +2122,6 @@ public class EdGraGra implements XMLObject {
         return this.eConstraints.elementAt(i);
     }
 
-    /**
-     * Destroys the type graph. The used basis type graph is destroyed, too.
-     */
-    public void removeTypeGraph() {
-        if (this.bGraGra == null) {
-            return;
-        }
-        if (this.typeSet.getTypeGraph() == null) {
-            return;
-        }
-        this.typeSet.removeTypeGraph();
-        this.bGraGra.removeTypeGraph();
-    }
-
-    /**
-     * Destroys the type graph. The used basis type graph is destroyed, too.
-     */
-    public void destroyTypeGraph() {
-        if (this.bGraGra == null) {
-            return;
-        }
-        if (this.typeSet.getTypeGraph() == null) {
-            return;
-        }
-        this.bGraGra.destroyTypeGraph();
-    }
-
     public EdGraph getGraphOf(Graph basisGraph) {
         for (int i = 0; i < this.eGraphs.size(); i++) {
             EdGraph eg = this.eGraphs.get(i);
@@ -2289,8 +2206,6 @@ public class EdGraGra implements XMLObject {
             return false;
         }
         if (this.bGraGra.isElement(g.getBasisGraph())) {
-            return true;
-        } else if (this.bGraGra.getTypeGraph() == g.getBasisGraph()) {
             return true;
         }
 
@@ -2902,16 +2817,6 @@ public class EdGraGra implements XMLObject {
      * Updates the graph end rule layout
      */
     public synchronized void update(boolean attrsVisible) {
-        // update type graph
-        if (this.typeSet.getTypeGraph() == null
-                && this.typeSet.getBasisTypeSet().getTypeGraph() != null) {
-            this.typeSet.createTypeGraph();
-        }
-        if (this.typeSet.getTypeGraph() != null) {
-            this.typeSet.getTypeGraph().setGraGra(this);
-            this.typeSet.getTypeGraph().markTypeGraph(true);
-            this.typeSet.getTypeGraph().updateGraph(true, true);
-        }
 
         // update host graphs
         for (int i = 0; i < this.eGraphs.size(); i++) {

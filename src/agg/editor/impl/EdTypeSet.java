@@ -11,26 +11,22 @@
  */
 package agg.editor.impl;
 
-import java.awt.Color;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
+import agg.attribute.handler.AttrHandler;
+import agg.attribute.impl.DeclMember;
+import agg.attribute.impl.DeclTuple;
 import agg.gui.editor.EditorConstants;
 import agg.gui.event.TypeEvent;
 import agg.gui.event.TypeEventListener;
 import agg.xt_basis.Arc;
-import agg.xt_basis.Graph;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeException;
 import agg.xt_basis.TypeGraphArc;
 import agg.xt_basis.TypeSet;
-import agg.xt_basis.TypeGraph;
-import agg.attribute.handler.AttrHandler;
-import agg.attribute.impl.DeclTuple;
-import agg.attribute.impl.DeclMember;
+import java.awt.Color;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * This class EdTypeSet specifies a set of layout types for typing nodes and edges of graphs. The type is defined by a
@@ -166,44 +162,9 @@ public class EdTypeSet {
         return this.edTypeGraph;
     }
 
-    public boolean setTypeGraph(EdGraph typeGraphLayout) {
-        if (typeGraphLayout != null) {
-            if (this.bTypeSet.compareTo(typeGraphLayout.getTypeSet()
-                    .getBasisTypeSet())) {
-                List<Type> v = typeGraphLayout.getBasisGraph().getUsedTypes();
-                this.bTypeSet.adaptTypes(v.iterator(), false);
-                refreshTypes();
-                this.edTypeGraph = typeGraphLayout;
-                this.bTypeSet.setTypeGraph(this.edTypeGraph.getBasisGraph());
-                this.edTypeGraph.update();
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
+   
 
-    /**
-     * Creates an empty type graph, if this EdTypeSet haven't got one before. A type graph in the theoretical layer and
-     * an EdGraph for the layout will be created.
-     *
-     * Returns the created EdGraph with the layout informations and a link to the basic type graph
-     */
-    public EdGraph createTypeGraph() {
-        // calls TypeSet to create a basic type graph
-        // and wrap a layout around
-        Graph typeGraph = this.bTypeSet.getTypeGraph();
-        if (typeGraph == null) {
-            typeGraph = this.bTypeSet.createTypeGraph();
-        }
-
-        // we must send a reference to this otherwise we get an endless
-        // recursion
-        this.edTypeGraph = new EdGraph(typeGraph, this);
-        this.edTypeGraph.setCurrentLayoutToDefault(true);
-        this.edTypeGraph.markTypeGraph(true);
-        return this.edTypeGraph;
-    }
+    
 
     /**
      * The EdGraph for the layout of the type graph will be deleted..
@@ -1016,14 +977,7 @@ public class EdTypeSet {
             }
         }
 
-        // check type graph
-        Graph typeGraph = this.bTypeSet.getTypeGraph();
-        if ((typeGraph != null)
-                && (this.edTypeGraph == null || typeGraph != this.edTypeGraph
-                        .getBasisGraph())) {
-            this.edTypeGraph = new EdGraph(typeGraph, this);
-            this.edTypeGraph.markTypeGraph(true);
-        }
+        
     }
 
     public void refreshAttrInstances() {
@@ -1534,14 +1488,8 @@ public class EdTypeSet {
     public void addTypeUser(final EdType t, final EdGraphObject go) {
         if (t.isNodeType()) {
             addTypeUserToTypeContainer(t, go, this.nodeTypeUsers);
-            if (!go.isElementOfTypeGraph()) {
-                addTypeUserToTypeGraphNodeContainer(t, go, this.typeGraphNodeUsers);
-            }
         } else if (t.isArcType()) {
             addTypeUserToTypeContainer(t, go, this.arcTypeUsers);
-            if (!go.isElementOfTypeGraph()) {
-                addTypeUserToTypeGraphArcContainer(t, go, this.typeGraphArcUsers);
-            }
         }
     }
 
@@ -1571,54 +1519,22 @@ public class EdTypeSet {
         }
     }
 
-    private void addTypeUserToTypeGraphArcContainer(
-            final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
+   
 
-        TypeGraphArc tga = this.getTypeGraphArc(
-                t.getBasisType(),
-                ((Arc) go.getBasisObject()).getSourceType(),
-                ((Arc) go.getBasisObject()).getTargetType());
-
-        if (tga != null) {
-            Hashtable<TypeGraphArc, List<EdGraphObject>> tCntnr = container.get(t);
-            if (tCntnr == null) {
-                tCntnr = new Hashtable<TypeGraphArc, List<EdGraphObject>>();
-                container.put(t, tCntnr);
-            }
-            List<EdGraphObject> list = tCntnr.get(tga);
-            if (list == null) {
-                list = new Vector<EdGraphObject>();
-                tCntnr.put(tga, list);
-            }
-            list.add(go);
-        }
-    }
-
-    private TypeGraphArc getTypeGraphArc(Type t, Type src, Type tar) {
-        if (this.bTypeSet.getTypeGraph() != null) {
-            Arc typeArc = ((TypeGraph) this.bTypeSet.getTypeGraph()).getTypeGraphArc(t, src, tar);
-            if (typeArc != null) {
-                return t.getTypeGraphArc(typeArc.getSourceType(), typeArc.getTargetType());
-            }
-        }
-        return null;
-    }
+     
 
     public void removeTypeUser(final EdType t, final EdGraphObject go) {
         if (t.isNodeType()) {
             removeTypeUserFromTypeContainer(t, go, this.nodeTypeUsers);
             removeTypeUserFromTypeGraphNodeContainer(t, go, this.typeGraphNodeUsers);
         } else if (t.isArcType()) {
-            removeTypeUserFromTypeContainer(t, go, this.arcTypeUsers);
-            removeTypeUserFromTypeGraphArcContainer(t, go, this.typeGraphArcUsers);
+            removeTypeUserFromTypeContainer(t, go, this.arcTypeUsers); 
         }
     }
 
     public void removeArcTypeUser(final EdType t, final EdGraphObject go, final EdType nType) {
         if (t.isArcType()) {
-            removeTypeUserFromTypeContainer(t, go, this.arcTypeUsers);
-            removeTypeUserFromTypeGraphArcContainer(t, go, this.typeGraphArcUsers, nType);
+            removeTypeUserFromTypeContainer(t, go, this.arcTypeUsers); 
         }
     }
 
@@ -1650,64 +1566,9 @@ public class EdTypeSet {
         }
     }
 
-    private void removeTypeUserFromTypeGraphArcContainer(
-            final EdType t,
-            final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
+  
 
-//		if (t.getBasisType().hasTypeGraphArc(((EdArc)go).getSource().getBasisObject().getType(), 
-//				((EdArc)go).getTarget().getBasisObject().getType())) 
-        if (this.edTypeGraph != null) {
-            TypeGraphArc tga = this.getTypeGraphArc(
-                    t.getBasisType(),
-                    ((EdArc) go).getSource().getBasisObject().getType(),
-                    ((EdArc) go).getTarget().getBasisObject().getType());
-
-            if (tga != null) {
-                Hashtable<TypeGraphArc, List<EdGraphObject>> tCntnr = container.get(t);
-                if (tCntnr != null) {
-                    List<EdGraphObject> list = tCntnr.get(tga);
-                    if (list != null) {
-                        list.remove(go);
-                        if (list.isEmpty()) {
-                            tCntnr.remove(tga);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void removeTypeUserFromTypeGraphArcContainer(
-            final EdType t,
-            final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container,
-            final EdType nType) {
-
-        Type srcT = (((EdArc) go).getSource().getBasisObject() == null
-                || ((EdArc) go).getSource().getBasisObject().getType() == null)
-                ? nType.getBasisType() : ((EdArc) go).getSource().getBasisObject().getType();
-        Type tarT = (((EdArc) go).getTarget().getBasisObject() == null
-                || ((EdArc) go).getTarget().getBasisObject().getType() == null) ? nType.getBasisType()
-                : ((EdArc) go).getTarget().getBasisObject().getType();
-
-//		if (t.getBasisType().hasTypeGraphArc(srcT, tarT)) 
-        if (this.edTypeGraph != null) {
-            TypeGraphArc tga = this.getTypeGraphArc(t.getBasisType(), srcT, tarT);
-            if (tga != null) {
-                Hashtable<TypeGraphArc, List<EdGraphObject>> tCntnr = container.get(t);
-                if (tCntnr != null) {
-                    List<EdGraphObject> list = tCntnr.get(tga);
-                    if (list != null) {
-                        list.remove(go);
-                        if (list.isEmpty()) {
-                            tCntnr.remove(tga);
-                        }
-                    }
-                }
-            }
-        }
-    }
+   
 
     public boolean hasTypeUser(final EdType t) {
         if (t.isNodeType()) {
@@ -1830,24 +1691,7 @@ public class EdTypeSet {
         return false;
     }
 
-    public boolean isTypeGraphArcUsed(final EdType t, final EdType src, final EdType tar) {
-        if (t.isArcType() && this.edTypeGraph != null) {
-            TypeGraphArc tga = this.getTypeGraphArc(t.getBasisType(), src.getBasisType(), tar.getBasisType());
-            if (tga != null) {
-                Hashtable<TypeGraphArc, List<EdGraphObject>> tCntnr = this.typeGraphArcUsers.get(t);
-                if (tCntnr != null) {
-                    List<EdGraphObject> list = tCntnr.get(tga);
-                    if (list != null && !list.isEmpty()) {
-                        if (list.size() == 1 && list.get(0).isElementOfTypeGraph()) {
-                            return false;
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
+   
 
     public boolean isClanUsed(final Type t) {
         boolean used = false;

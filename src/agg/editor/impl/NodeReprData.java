@@ -16,11 +16,8 @@ import agg.attribute.impl.ValueTuple;
 import agg.util.Pair;
 import agg.xt_basis.Node;
 import agg.xt_basis.Type;
-import agg.xt_basis.TypeGraph;
-import agg.xt_basis.TypeSet;
 import java.awt.Point;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Vector;
 import javax.swing.undo.*;
 
@@ -150,11 +147,6 @@ public class NodeReprData implements StateEditable {
         this.typeRepresentation.restoreTypeFromTypeRepr(n.getType());
         n.setContextUsage(this.nodeHC);
 
-        if (n.isElementOfTypeGraph()) {
-            restoreParentsAndChildren(n);
-            restoreMultiplicity(n, this.typeRepresentation);
-        }
-
         if (!this.attributes.isEmpty()) {
             if (n.getBasisObject().getAttribute() != null) {
                 Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
@@ -185,85 +177,6 @@ public class NodeReprData implements StateEditable {
             }
         }
         return null;
-    }
-
-    private void restoreParentsAndChildren(EdNode n) {
-        // System.out.println("NodeReprData.restoreParentsAndChildren:: n:
-        // "+n.isElementOfTypeGraph()+"
-        // "+n.getBasisNode().getContext().isTypeGraph());
-        if (n.getBasisNode().getContext().isTypeGraph()) { // n.isElementOfTypeGraph()){
-            TypeGraph tg = (TypeGraph) n.getBasisNode().getContext();
-            Type myType = n.getBasisNode().getType();
-
-            // restore inheritance, first parents
-            // System.out.println("NodeReprData.restoreParentsAndChildren::
-            // parents: "+parents);
-            if (this.parents.isEmpty()) {
-                int lastTypeGraphCheck = tg.getTypeSet()
-                        .getLevelOfTypeGraphCheck();
-                tg.getTypeSet().setLevelOfTypeGraphCheck(TypeSet.DISABLED);
-                List<Type> pars = myType.getParents();
-                for (int i = 0; i < pars.size(); i++) {
-                    Type parType = pars.get(i);
-//					boolean res = 
-                    tg.getTypeSet().removeInheritanceRelation(myType, parType);
-                }
-                tg.getTypeSet().setLevelOfTypeGraphCheck(lastTypeGraphCheck);
-            } else {
-                // first remove current parent
-                List<Type> pars = myType.getParents();
-                for (int i = 0; i < pars.size(); i++) {
-                    Type parType = pars.get(i);
-                    if (!this.parents.contains(parType.getName())) {
-//						boolean res = 
-                        tg.getTypeSet().removeInheritanceRelation(myType, parType);
-                    }
-                }
-                // now reset parent
-                for (int i = 0; i < this.parents.size(); i++) {
-                    String pn = this.parents.get(i);
-                    Type t = tg.getTypeSet().getTypeByName(pn);
-                    if (t == myType) {
-                        continue;
-                    }
-                    List<Node> vec = tg.getNodes(t);
-                    if (vec != null) {
-                        for (int j = 0; j < vec.size(); j++) {
-                            Node parNode = vec.get(j);
-                            if (parNode.getType().getName().equals(pn)) {
-//								TypeError error = 
-                                tg.getTypeSet().addInheritanceRelation(myType,
-                                        parNode.getType());
-                                // System.out.println("add parent : "+pn);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // now children
-            // System.out.println("NodeReprData.restoreParentsAndChildren::
-            // children: "+children);
-            for (int i = 0; i < this.children.size(); i++) {
-                String cn = this.children.get(i);
-                Type t = tg.getTypeSet().getTypeByName(cn);
-                if (t == myType) {
-                    continue;
-                }
-                List<Node> vec = tg.getNodes(t);
-                if (vec != null) {
-                    for (int j = 0; j < vec.size(); j++) {
-                        Node childNode = vec.get(j);
-                        if (childNode.getType().getName().equals(cn)) {
-//							TypeError error = 
-                            tg.getTypeSet().addInheritanceRelation(
-                                    childNode.getType(), myType);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private void restoreMultiplicity(EdNode n, TypeReprData typedata) {
@@ -310,11 +223,6 @@ public class NodeReprData implements StateEditable {
         n = g.addNode(basis, type);
 
         n.addContextUsage(this.nodeHC);
-
-        if (n.isElementOfTypeGraph()) {
-            restoreParentsAndChildren(n);
-            restoreMultiplicity(n, this.typeRepresentation);
-        }
 
         refreshAttributes(n);
 

@@ -1213,19 +1213,7 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (this.nextCompletion()) {
             result = true;
 
-            // additionally, check type of source - target nodes in case of
-            // Typegraph with Node Type Inheritance
-            if (this.itsOrig.getTypeSet().getTypeGraph() != null
-                    //					&& this.itsOrig.getTypeSet().getLevelOfTypeGraphCheck() >= TypeSet.ENABLED
-                    && this.itsOrig.getTypeSet().hasInheritance()) {
-                Iterator<Node> origs = this.itsOrig.itsNodes.iterator();
-                while (origs.hasNext() && result) {
-                    final Node orig = origs.next();
-                    if (!orig.getType().compareTo(this.getImage(orig).getType())) {
-                        result = false;
-                    }
-                }
-            }
+ 
         }
         return result;
     }

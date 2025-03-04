@@ -532,22 +532,12 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
 
         this.animatedCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (NodeTypePropertyEditor.this.typeEditor.getTypeSet().getBasisTypeSet().getTypeGraph() != null) {
-                    if (NodeTypePropertyEditor.this.animatedCB.isSelected()) {
-                        //					NodeTypePropertyEditor.this.animationDialog = new AnimationParamDialog(animationParam);
-                        NodeTypePropertyEditor.this.animationDialog = new AnimationParamDialog(
-                                NodeTypePropertyEditor.this.animationParam,
-                                NodeTypePropertyEditor.this.typeEditor.getSelectedNodeType().getBasisType(),
-                                NodeTypePropertyEditor.this.typeEditor.getTypeSet().getBasisTypeSet().getTypeGraph());
-
-                        NodeTypePropertyEditor.this.animationDialog.showParameterDialog(300, 300);
-                    }
-                } else {
+                 
                     NodeTypePropertyEditor.this.animatedCB.setSelected(false);
                     JOptionPane.showMessageDialog(null,
                             "This option is only evailable for grammars with a TypeGraph",
                             "TypeGraph missed", JOptionPane.WARNING_MESSAGE);
-                }
+                 
             }
         });
 

@@ -25,8 +25,7 @@ import agg.gui.event.TreeViewEvent;
 import agg.gui.event.TreeViewEventListener;
 import agg.gui.treeview.GraGraTreeView;
 import agg.termination.TerminationLGTS;
-import agg.termination.TerminationLGTSInterface;
-import agg.termination.TerminationLGTSTypedByTypeGraph;
+import agg.termination.TerminationLGTSInterface; 
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TypeSet;
@@ -68,16 +67,7 @@ public class TerminationAnalysis implements TreeViewEventListener {
                 this.terminationLGTS = new TerminationLGTS();
             }
             if (this.gragra.getBasisGraGra() != this.terminationLGTS.getGrammar()) {
-                if (this.gragra.getTypeGraph() != null
-                        && this.gragra.getLevelOfTypeGraphCheck() > TypeSet.DISABLED) {
-                    if (this.terminationLGTS instanceof TerminationLGTS) {
-                        ((TerminationLGTS) this.terminationLGTS).dispose();
-                        this.terminationLGTS = new TerminationLGTSTypedByTypeGraph();
-                    }
-                } else if (this.terminationLGTS instanceof TerminationLGTSTypedByTypeGraph) {
-                    ((TerminationLGTSTypedByTypeGraph) this.terminationLGTS).dispose();
-                    this.terminationLGTS = new TerminationLGTS();
-                }
+                
 
                 this.terminationLGTS.setGrammar(this.gragra.getBasisGraGra());
             }

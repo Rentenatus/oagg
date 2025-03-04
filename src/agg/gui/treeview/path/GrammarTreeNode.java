@@ -242,63 +242,7 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
         return graIndex;
     }
 
-    public TreePath deleteTypeGraph(
-            final GraGraTreeView treeView,
-            final DefaultMutableTreeNode delNode,
-            final TreePath selPath,
-            boolean withWarning) {
-
-        final GraGraTreeNodeData data = (GraGraTreeNodeData) delNode.getUserObject();
-        final TreePath graPath = selPath.getParentPath();
-        if (graPath != null) {
-            DefaultMutableTreeNode graNode = (DefaultMutableTreeNode) graPath
-                    .getLastPathComponent();
-            GraGraTreeNodeData graData = (GraGraTreeNodeData) graNode
-                    .getUserObject();
-            if (graData.getGraGra().getBasisGraGra().getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
-                if (data.isTypeGraph()
-                        && (data.getGraph() != treeView.getCurrentGraph())) {
-                    int answer = treeView.removeWarning("Type Graph");
-                    if (answer == JOptionPane.YES_OPTION) {
-                        int row = treeView.getTree().getRowForPath(selPath);
-                        treeView.fireTreeViewEvent(new TreeViewEvent(this,
-                                TreeViewEvent.DELETED, selPath));
-                        treeView.getTreeModel().removeNodeFromParent(delNode);
-                        treeView.getGraGraStore().storeTypeGraph(graData.getGraGra(), graData
-                                .getGraGra().getTypeGraph());
-                        graData.getGraGra().removeTypeGraph();
-                        treeView.setEditPath(row);
-                        treeView.setFlagForNew();
-                        treeView.fireTreeViewEvent(new TreeViewEvent(this,
-                                TreeViewEvent.SELECTED, treeView.getEditorPath()));
-                        return treeView.getSelectedPath();
-                    }
-                } else {
-                    int answer = treeView.removeCurrentObjectWarning("Type Graph");
-                    if (answer == JOptionPane.YES_OPTION) {
-                        int row = treeView.getTree().getRowForPath(selPath);
-                        treeView.fireTreeViewEvent(new TreeViewEvent(this,
-                                TreeViewEvent.DELETED, selPath));
-                        treeView.getTreeModel().removeNodeFromParent(delNode);
-                        treeView.getGraGraStore().storeTypeGraph(graData.getGraGra(), graData
-                                .getGraGra().getTypeGraph());
-                        graData.getGraGra().removeTypeGraph();
-                        treeView.setEditPath(row);
-                        treeView.setFlagForNew();
-                        treeView.fireTreeViewEvent(new TreeViewEvent(this,
-                                TreeViewEvent.SELECTED, treeView.getEditorPath()));
-                        graData.getGraGra().setChanged(true);
-                        return treeView.getSelectedPath();
-                    }
-                }
-            } else {
-                JOptionPane.showMessageDialog(treeView.getFrame(),
-                        "Please disable the type graph first.",
-                        "", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-        return selPath;
-    }
+   
 
     public TreePath deleteGraph(
             final GraGraTreeView treeView,

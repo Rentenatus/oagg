@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -2173,87 +2173,6 @@ public class TypeImpl implements Type {
                         + " needed ( graph \""
                         + tarnode.getContext().getName() + "\" ).",
                         arc,
-                        this);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * The spcified node must be an instance of my.
-     */
-    public TypeError checkIfRemovable(final Node node, final int level) {
-        if (node.getType() != this
-                || level != TypeSet.ENABLED_MAX_MIN) {
-            return null;
-        }
-
-        if (node.getContext() instanceof TypeGraph) {
-            return null;
-        }
-
-        return checkMinMultiplicityOfNodeType(node);
-    }
-
-    /**
-     * The spcified node must be an instance of my.
-     */
-    private TypeError checkMinMultiplicityOfNodeType(final Node node) {
-        if (this.typeGraphNode == null) {
-            return null;
-        }
-
-        int minValue = this.typeGraphNode.getSourceMin();
-        if (minValue != UNDEFINED) {
-            List<Node> list = node.getContext().getNodes(this);
-            int count = list != null ? list.size() : 0;
-            if (count - 1 < minValue) {
-                return new TypeError(TypeError.TO_LESS_NODES,
-                        "Not enough nodes of type \"" + getNameForType(this)
-                        + "\"" + " .\nThere are at least " + minValue
-                        + " needed ( graph \""
-                        + node.getContext().getName() + "\" ).", node,
-                        this);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * This type must be a node type. The specified Graph is not a type graph. Check the max maltiplicity of this type
-     * because a new node should be created. Returns an error if this check failed, otherwise - null.
-     */
-    public TypeError checkIfNodeCreatable(final Graph g, final int level) {
-        if (level != TypeSet.ENABLED_MAX_MIN) {
-            return null;
-        }
-
-        if (g instanceof TypeGraph) {
-            return null;
-        }
-
-        return checkMaxMultiplicityOfNodeType(g);
-    }
-
-    /**
-     * The spcified Graph is not a type graph. Check the max maltiplicity of this type because a new node should be
-     * created. Returns an error if this check failed, otherwise - null.
-     */
-    private TypeError checkMaxMultiplicityOfNodeType(final Graph g) {
-        if (this.typeGraphNode == null) {
-            return null;
-        }
-
-        int maxValue = this.typeGraphNode.getSourceMax();
-        if (maxValue != UNDEFINED) {
-            List<Node> list = g.getNodes(this);
-            int count = list != null ? list.size() : 0;
-            if (count + 1 > maxValue) {
-                return new TypeError(TypeError.TO_MUCH_NODES,
-                        "Too many nodes of type \"" + getNameForType(this)
-                        + "\"" + " .\nThere are at most " + maxValue
-                        + " allowed ( graph \""
-                        + g.getName() + "\" ).",
                         this);
             }
         }

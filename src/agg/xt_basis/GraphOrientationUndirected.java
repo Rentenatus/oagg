@@ -58,15 +58,6 @@ public class GraphOrientationUndirected implements GraphOrientation {
     }
 
     @Override
-    public Arc getTypeGraphArc(final Graph g, Type edgeType, Node src, Node tar) {
-        Arc typearc = g.itsTypes.getTypeGraphArc(edgeType, src.getType(), tar.getType());
-        if (typearc != null) {
-            return typearc;
-        }
-        return g.itsTypes.getTypeGraphArc(edgeType, tar.getType(), src.getType());
-    }
-
-    @Override
     public boolean isParallelArcAllowed(final Graph g, Type edgeType, Node src, Node tar) {
         return g.itsTypes.isArcParallel()
                 || (src.getOutgoingArc(edgeType, tar) == null

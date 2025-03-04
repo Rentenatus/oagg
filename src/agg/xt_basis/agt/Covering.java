@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -1444,15 +1444,6 @@ public class Covering {
         }
 
         m.getTarget().getTypeSet().setLevelOfTypeGraph(tgCheckLevel);
-        if (result) {
-            if (amalgamRule.getTypeSet().checkType(amalgamRule.getLeft(), tgCheckLevel).isEmpty()
-                    && amalgamRule.getTypeSet().checkType(amalgamRule.getRight(), tgCheckLevel).isEmpty()) {
-                result = true;
-            } else {
-                this.errorMsg = "Gluing of graph objects failed (type check). ";
-                result = false;
-            }
-        }
 
         return result;
     }

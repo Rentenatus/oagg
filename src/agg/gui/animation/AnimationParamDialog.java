@@ -37,8 +37,7 @@ import javax.swing.border.TitledBorder;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Graph;
 import agg.xt_basis.Node;
-import agg.xt_basis.Type;
-import agg.xt_basis.TypeGraph;
+import agg.xt_basis.Type; 
 
 /**
  * @author olga
@@ -117,29 +116,7 @@ public class AnimationParamDialog //extends JPanel
 
         this.targetEdgeTypeNames = new Vector<String>();
 
-        if (typeGraph instanceof TypeGraph) {
-            final List<Node> list = typeGraph.getNodes(nodeType);
-            if (list != null && list.size() == 1) {
-                final Node n = list.get(0);
-                final Iterator<Arc> outarcs = n.getOutgoingArcsSet().iterator();
-                while (outarcs.hasNext()) {
-                    final Arc arc = outarcs.next();
-                    if (arc.isInheritance()) {
-                        getNameOfParentEdge((Node) arc.getTarget());
-                    } else {
-                        String tname = arc.getType().getName();
-                        if ("".equals(tname)) {
-                            tname = "[unnamed";
-                        }
-                        if (!this.targetEdgeTypeNames.contains(tname)) {
-                            this.targetEdgeTypeNames.add(tname);
-                        }
-                    }
-                }
-            }
-
-            this.targetEdgeTypesField = new JComboBox(this.targetEdgeTypeNames);
-        }
+         
 
         final JPanel content = initDialog();
 

@@ -53,11 +53,6 @@ public class GraphOrientationDirected implements GraphOrientation {
         return g.itsTypes.canCreateArc(g, edgeType, source, target, currentTypeGraphLevel);
     }
 
-    @Override
-    public Arc getTypeGraphArc(final Graph g, Type edgeType, Node src, Node tar) {
-        return g.itsTypes.getTypeGraphArc(edgeType, src.getType(), tar.getType());
-    }
-
     public boolean isParallelArcAllowed(final Graph g, Type edgeType, Node src, Node tar) {
         return g.itsTypes.isArcParallel()
                 || (src.getOutgoingArc(edgeType, tar) == null);

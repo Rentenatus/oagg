@@ -4297,8 +4297,7 @@ public class ExcludePair implements CriticalPair {
 
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged();
-            nextMatch = nextMatch && testm.isTypeMaxMultiplicitySatisfied();
+            nextMatch = nextMatch && testm.isMappingChanged(); 
 
             if (nextMatch) {
 //				BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);				
@@ -4875,8 +4874,7 @@ public class ExcludePair implements CriticalPair {
 
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged();
-            nextMatch = nextMatch && testm.isTypeMaxMultiplicitySatisfied();
+            nextMatch = nextMatch && testm.isMappingChanged(); 
 
             if (nextMatch) {
 //				BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);
@@ -5017,8 +5015,7 @@ public class ExcludePair implements CriticalPair {
 
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged();
-            nextMatch = nextMatch && testm.isTypeMaxMultiplicitySatisfied();
+            nextMatch = nextMatch && testm.isMappingChanged(); 
 
             if (nextMatch) {
 //				BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);
@@ -5231,8 +5228,7 @@ public class ExcludePair implements CriticalPair {
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
 //			System.out.println(testm.getErrorMsg());
-            nextMatch = nextMatch && testm.isMappingChanged();
-            nextMatch = nextMatch && testm.isTypeMaxMultiplicitySatisfied();
+            nextMatch = nextMatch && testm.isMappingChanged(); 
 //			System.out.println(testm.getErrorMsg());		
             if (nextMatch) {
                 BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);
@@ -5371,8 +5367,7 @@ public class ExcludePair implements CriticalPair {
 
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged();
-            nextMatch = nextMatch && testm.isTypeMaxMultiplicitySatisfied();
+            nextMatch = nextMatch && testm.isMappingChanged(); 
 
             if (nextMatch) {
 //				BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);
@@ -5596,8 +5591,7 @@ public class ExcludePair implements CriticalPair {
         boolean nextMatch = true;
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged();
-            nextMatch = nextMatch && testm.isTypeMaxMultiplicitySatisfied();
+            nextMatch = nextMatch && testm.isMappingChanged(); 
 
             boolean condOK = this.tryValidateNACAttrCond(r2, nac, extendedNAC2iso, testm);
 
@@ -7353,18 +7347,7 @@ public class ExcludePair implements CriticalPair {
         while (iso.nextCompletion()) {
             result = true;
 
-            // additionally, check type of source - target nodes in case of
-            // Typegraph with Node Type Inheritance
-            if (iso.getOriginal().getTypeSet().getTypeGraph() != null
-                    && iso.getOriginal().getTypeSet().hasInheritance()) {
-                Iterator<Node> origs = iso.getOriginal().getNodesCollection().iterator();
-                while (origs.hasNext() && result) {
-                    final Node orig = origs.next();
-                    if (!orig.getType().compareTo(iso.getImage(orig).getType())) {
-                        result = false;
-                    }
-                }
-            }
+ 
 
             if (result && m1.isCommutative(m2, iso)) {
                 return true;

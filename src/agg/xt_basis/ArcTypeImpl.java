@@ -1453,21 +1453,6 @@ public class ArcTypeImpl implements Type {
     }
 
     /* (non-Javadoc)
-	 * @see agg.xt_basis.Type#checkIfNodeCreatable(agg.xt_basis.Graph, int)
-     */
-    public TypeError checkIfNodeCreatable(Graph basisGraph,
-            int levelOfTypeGraphCheck) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-	 * @see agg.xt_basis.Type#checkIfRemovable(agg.xt_basis.Node, int)
-     */
-    public TypeError checkIfRemovable(Node node, int level) {
-        return null;
-    }
-
-    /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getAllChildren()
      */
     public Vector<Type> getAllChildren() {

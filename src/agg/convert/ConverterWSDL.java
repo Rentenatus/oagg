@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 package agg.convert;
 
@@ -54,7 +53,6 @@ public class ConverterWSDL {
     boolean convert() {
         // create a new gragra with empty TypeGraph and a host graph
         gragra = new GraGra(true);
-        gragra.getTypeSet().createTypeGraph();
 
         wsdl2agg = new WSDL2ggx(gragra);
         xmlH.getTopObject(wsdl2agg);

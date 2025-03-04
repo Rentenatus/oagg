@@ -543,13 +543,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
     }
 
     public boolean nextCompletion() {
-        if (this.getOriginal().getTypeSet().getLevelOfTypeGraphCheck() == TypeSet.ENABLED_MAX_MIN) {
-            TypeError error = this.itsRule.checkNewNodeRequiresArc();
-            if (error != null) {
-                this.errorMsg = error.getMessage();
-                return false;
-            }
-        }
+ 
 
         adjustCompletionStrategy();
 
@@ -578,7 +572,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
                     && getRule().getConstraints().isEmpty()) {
                 // long time0 = System.currentTimeMillis();
                 if (this.itsRule.isInjective() && this.isInjective()) {
-                    result = isTypeMultiplicitySatisfied();
+                    result = true;
                 }
             }
 
@@ -1056,33 +1050,9 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    /*
-	private boolean checkVariableToNullMappping() {
-		if (this.getSource().isAttributed())
-			return MatchHelper.checkVariableToNullMappping(this);
-		else
-			return true;
-	}
-     */
-    /**
-     * Checks multiplicity of node resp. edge types due to the type graph of the given match.
-     *
-     * @return true if type multiplicity satisfied, otherwise false.
-     */
-    public boolean isTypeMultiplicitySatisfied() {
-        this.errorMsg = MatchHelper.isTypeMultiplicitySatisfied(this);
-        return (this.errorMsg == null || this.errorMsg.equals(""));
-    }
+    
 
-    /**
-     * Checks multiplicity of node resp. edge types due to the type graph of the given match.
-     *
-     * @return true if type multiplicity satisfied, otherwise false.
-     */
-    public boolean isTypeMaxMultiplicitySatisfied() {
-        this.errorMsg = MatchHelper.isTypeMultiplicitySatisfied(this);
-        return (this.errorMsg == null || this.errorMsg.equals(""));
-    }
+    
 
     private OrdinaryMorphism makeTestStep(final Match m2, boolean allowVariables) {
         // make test step to check post conditions:

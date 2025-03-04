@@ -1296,16 +1296,6 @@ public class Graph extends ExtObservable
      */
     public synchronized void destroyNode(final Node node, boolean checkFirst,
             boolean forceDestroy) throws TypeException {
-        // can we remove this node?
-        // check for multiplicity
-        if (checkFirst && this.isCompleteGraph()
-                && !forceDestroy) {
-            TypeError typeError = this.itsTypes.checkIfRemovable(node);
-            if (typeError != null) {
-                typeError.setContainingGraph(this);
-                throw new TypeException(typeError);
-            }
-        }
 
         synchronized (monitorMorphs) {
             removeMapping(node);
@@ -1380,20 +1370,9 @@ public class Graph extends ExtObservable
      */
     protected Arc newArc(Type t, Node src, Node tar) throws TypeException {
 
-        TypeError typeError = this.checkConnectValid(t, src, tar);
-        if (typeError != null) {
-            throw new TypeException(typeError);
-        }
-
         Arc anArc = createArcFast(t, src, tar);
         anArc.setDirected(!(this instanceof UndirectedGraph));
 //		check for type mismatches, also multiplicity max of source and target
-        typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
-        if (typeError != null) {
-            sourceRemoveArc(anArc);
-            targetRemoveArc(anArc);
-            throw new TypeException(typeError);
-        }
 
         this.attributed = this.attributed || anArc.getAttribute() != null;
 
@@ -1448,11 +1427,6 @@ public class Graph extends ExtObservable
             if (arcType.getAdditionalRepr().indexOf("[EDGE]") == -1) {
                 arcType.setAdditionalRepr("[EDGE]");
             }
-        }
-
-        TypeError typeError = this.checkConnectValid(arcType, src, tar);
-        if (typeError != null) {
-            throw new TypeException(typeError);
         }
 
         Arc anArc = createArcFast(arcType, src, tar);
@@ -2250,18 +2224,10 @@ public class Graph extends ExtObservable
      */
     public boolean isUsingType(GraphObject t) {
         if (t.isArc()) {
-            boolean hasTypeGraphArc = this.getTypeSet().getTypeGraphArc(
-                    t.getType(), ((Arc) t).getSource().getType(),
-                    ((Arc) t).getTarget().getType()) != null ? true : false;
-
             Iterator<Arc> iter = this.itsArcs.iterator();
             while (iter.hasNext()) {
                 Arc o = iter.next();
-                if (hasTypeGraphArc) {
-                    return (orientation.isUsingArcType(o, (Arc) t));
-                } else {
-                    return (o.getType().compareTo(t.getType()));
-                }
+                return (o.getType().compareTo(t.getType()));
             }
         } else {
             while (this.itsNodes.iterator().hasNext()) {
@@ -2715,19 +2681,6 @@ public class Graph extends ExtObservable
         if (h.nextCompletion()) {
             result = true;
 
-            // additionally, check type of source - target nodes in case of
-            // Typegraph with Node Type Inheritance
-            if (this.getTypeSet().getTypeGraph() != null
-                    //					&& this.getTypeSet().getLevelOfTypeGraphCheck() >= TypeSet.ENABLED
-                    && this.getTypeSet().hasInheritance()) {
-                Iterator<Node> origs = this.itsNodes.iterator();
-                while (origs.hasNext() && result) {
-                    final Node orig = origs.next();
-                    if (!orig.getType().compareTo(h.getImage(orig).getType())) {
-                        result = false;
-                    }
-                }
-            }
         }
 
         if (!result) {
@@ -2773,19 +2726,7 @@ public class Graph extends ExtObservable
         // make possible completions
         while (h.nextCompletion()) {
             boolean result = true;
-            // additionally, check type of source - target nodes in case of
-            // Typegraph with Node Type Inheritance
-            if (this.getTypeSet().getTypeGraph() != null
-                    && this.getTypeSet().getLevelOfTypeGraphCheck() >= TypeSet.ENABLED
-                    && this.getTypeSet().hasInheritance()) {
-                Iterator<Node> origs = this.itsNodes.iterator();
-                while (origs.hasNext() && result) {
-                    final Node orig = origs.next();
-                    if (!orig.getType().compareTo(h.getImage(orig).getType())) {
-                        result = false;
-                    }
-                }
-            }
+
             if (result) {
                 // store this completion 
                 OrdinaryMorphism m = BaseFactory.theFactory().createMorphism(this, g);
@@ -2828,19 +2769,7 @@ public class Graph extends ExtObservable
         // make possible completions
         while (h.nextCompletion()) {
             boolean result = true;
-            // additionally, check type of source - target nodes in case of
-            // Typegraph with Node Type Inheritance
-            if (this.getTypeSet().getTypeGraph() != null
-                    && this.getTypeSet().getLevelOfTypeGraphCheck() >= TypeSet.ENABLED
-                    && this.getTypeSet().hasInheritance()) {
-                Iterator<Node> origs = this.itsNodes.iterator();
-                while (origs.hasNext() && result) {
-                    final Node orig = origs.next();
-                    if (!orig.getType().compareTo(h.getImage(orig).getType())) {
-                        result = false;
-                    }
-                }
-            }
+
             if (result) {
                 // store this completion 
                 OrdinaryMorphism m = BaseFactory.theFactory().createMorphism(this, g);
@@ -3405,11 +3334,9 @@ public class Graph extends ExtObservable
      * its own {@link TypeSet}.
      */
     public boolean isTypeGraph() {
-        if (this.itsTypes == null) {
-            return false;
-        }
 
-        return this == this.itsTypes.getTypeGraph();
+        return false;
+
     }
 
     public boolean isAttributed() {
@@ -3604,59 +3531,8 @@ public class Graph extends ExtObservable
      * @param tar
      * @return
      */
-    public TypeError checkConnectValid(Type edgeType, Node src, Node tar) {
-        if (this.itsTypes.getTypeGraph() == null
-                || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED
-                || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.ENABLED_INHERITANCE) {
-            if (isParallelArcAllowed(edgeType, src, tar)) {
-                return null;
-            }
-
-            return new TypeError(TypeError.NO_PARALLEL_ARC,
-                    "No parallel edges allowed");
-        }
-
-        Arc typearc = orientation.getTypeGraphArc(this, edgeType, src, tar);
-        if (typearc != null) {
-            if (isParallelArcAllowed(edgeType, src, tar)) {
-                return null;
-            }
-
-            return new TypeError(TypeError.NO_PARALLEL_ARC,
-                    "No parallel edges allowed");
-        }
-
-        return new TypeError(TypeError.NO_SUCH_TYPE,
-                "The edge of the type \"" + edgeType.getName()
-                + "\" is not allowed between node types \""
-                + src.getType().getName() + "\"  and  \""
-                + tar.getType().getName() + "\".");
-    }
-
     public boolean isParallelArcAllowed(Type edgeType, Node src, Node tar) {
         return orientation.isParallelArcAllowed(this, edgeType, src, tar);
-    }
-
-    public TypeError checkNodeRequiresArc(final int actTypeGraphLevel) {
-        if (this.itsTypes.getTypeGraph() == null
-                || actTypeGraphLevel != TypeSet.ENABLED_MAX_MIN) {
-            return null;
-        }
-
-        Iterator<Node> iter = this.itsNodes.iterator();
-        while (iter.hasNext()) {
-            Node n = iter.next();
-            List<String> list = this.itsTypes.nodeRequiresArc(n);
-            if (list != null && !list.isEmpty()) {
-                return new TypeError(TypeError.TO_LESS_ARCS,
-                        "Node type  "
-                        + "\"" + n.getType().getName() + "\" \n"
-                        + "requires edge(s) of type: \n"
-                        + list.toString(), n.getType());
-            }
-
-        }
-        return null;
     }
 
     /**

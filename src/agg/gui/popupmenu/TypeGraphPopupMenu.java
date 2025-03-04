@@ -5,8 +5,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
+ * </copyright> *****************************************************************************
  */
 // $Id: TypeGraphPopupMenu.java,v 1.2 2010/09/23 08:21:34 olga Exp $
 package agg.gui.popupmenu;
@@ -50,54 +49,11 @@ public class TypeGraphPopupMenu extends JPopupMenu {
 //		this.disabled.addActionListener(this.treeView);
         this.disabled.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setTypeGraphLevel(TypeSet.DISABLED);
+                //setTypeGraphLevel(TypeSet.DISABLED);
             }
         });
         states.add(this.disabled);
         this.add(this.disabled);
-
-//		enabledInheritance = new JRadioButtonMenuItem("Inheritance only");
-//		enabledInheritance.setActionCommand("checkTypeGraph.ENABLED_INHERITANCE");
-//		enabledInheritance.addActionListener(this.treeView);
-//		enabledInheritance.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				setTypeGraphLevel(TypeSet.ENABLED_INHERITANCE);
-//			}
-//		});
-//		states.add(enabledInheritance);
-//		this.add(enabledInheritance);
-        this.enabled = new JRadioButtonMenuItem("enabled");
-        this.enabled.setActionCommand("checkTypeGraph.ENABLED");
-//		this.enabled.addActionListener(this.treeView);
-        this.enabled.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setTypeGraphLevel(TypeSet.ENABLED);
-            }
-        });
-        states.add(this.enabled);
-        this.add(this.enabled);
-
-        this.enabledMax = new JRadioButtonMenuItem("enabled with max");
-        this.enabledMax.setActionCommand("checkTypeGraph.ENABLED_MAX");
-//		this.enabledMax.addActionListener(this.treeView);
-        this.enabledMax.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setTypeGraphLevel(TypeSet.ENABLED_MAX);
-            }
-        });
-        states.add(this.enabledMax);
-        this.add(this.enabledMax);
-
-        this.enabledMaxMin = new JRadioButtonMenuItem("enabled with min and max");
-        this.enabledMaxMin.setActionCommand("checkTypeGraph.ENABLED_MAX_MIN");
-//		this.enabledMaxMin.addActionListener(this.treeView);
-        this.enabledMaxMin.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setTypeGraphLevel(TypeSet.ENABLED_MAX_MIN);
-            }
-        });
-        states.add(this.enabledMaxMin);
-        this.add(this.enabledMaxMin);
 
         this.addSeparator();
 
@@ -108,8 +64,7 @@ public class TypeGraphPopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 if (treeView.hasMultipleSelection()) {
                     treeView.delete("selected");
-                } else {
-                    treeView.deleteTypeGraph(node, path, true);
+                
                 }
             }
         });
@@ -153,21 +108,11 @@ public class TypeGraphPopupMenu extends JPopupMenu {
                     int level = gragra.getLevelOfTypeGraphCheck();
                     if (level == TypeSet.DISABLED) {
                         this.disabled.setSelected(true);
-                    } else if (level == TypeSet.ENABLED_INHERITANCE) {
-                        this.enabledInheritance.setSelected(true);
-                    } else if (level == TypeSet.ENABLED) {
-                        this.enabled.setSelected(true);
-                    } else if (level == TypeSet.ENABLED_MAX) {
-                        this.enabledMax.setSelected(true);
-                    } else if (level == TypeSet.ENABLED_MAX_MIN) {
-                        this.enabledMaxMin.setSelected(true);
+
                     } else {
                         // unknown level?
                         this.disabled.setSelected(false);
-                        this.enabledInheritance.setSelected(false);
-                        this.enabled.setSelected(false);
-                        this.enabledMax.setSelected(false);
-                        this.enabledMaxMin.setSelected(false);
+
                     }
                     // this.treeView.selectPath(x,y);
                     return true;
@@ -176,23 +121,6 @@ public class TypeGraphPopupMenu extends JPopupMenu {
         }// if row != -1
         return false;
     }// invoked
-
-    public void setTypeGraphLevel(final int level) {
-        // try get the gragra of the selected TypeGraph
-        if (this.path != null) {
-            DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.path.getPathComponent(1);
-            EdGraGra gragra = this.treeView.getGraGra(parent);
-
-            // if no type graph exists
-            if (gragra.getTypeSet().getBasisTypeSet().getTypeGraph() == null) {
-                return;
-            }
-
-            if (this.treeView.setLevelOfTypeGraphCheck(gragra, level, true)) {
-                this.treeView.updateTypeGraphTreeNode(node, gragra);
-            }
-        }
-    }
 
     void editComments() {
         if (graph != null) {
@@ -210,8 +138,7 @@ public class TypeGraphPopupMenu extends JPopupMenu {
         }
     }
 
-    private JMenuItem disabled, enabledInheritance, enabled,
-            enabledMax, enabledMaxMin;
+    private JMenuItem disabled;
 
     GraGraTreeView treeView;
     TreePath path;

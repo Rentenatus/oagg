@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -40,10 +40,8 @@ import agg.xt_basis.TypeException;
 import agg.xt_basis.Type;
 import agg.xt_basis.Node;
 import agg.xt_basis.Arc;
-import agg.xt_basis.TypeGraph;
 import agg.xt_basis.TypeSet;
 import agg.xt_basis.UndirectedGraph;
-import agg.xt_basis.UndirectedTypeGraph;
 import agg.attribute.impl.ValueTuple;
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraGra;
@@ -554,19 +552,6 @@ public class GraphCanvas extends JPanel {
                 this.canCreateNode = false;
                 return false;
             }
-        } else if (this.eGraph == this.eGraph.getGraGra().getGraph()
-                && arcType != null && srcNodeType != null) {
-            List<String> arcTypes = this.eGraph.getTypeSet().getBasisTypeSet().nodeTypeRequiresArcType(
-                    t, arcType, srcNodeType, this.eGraph.getGraGra().getLevelOfTypeGraphCheck());
-            if (arcTypes != null && arcTypes.size() > 0) {
-                String mesg = "Current node type  "
-                        + "\"" + t.getName() + "\" \n"
-                        + "requires edge(s) of type: \n"
-                        + arcTypes.toString();
-                cannotCreateErrorMessage(" Create Node ", " a node", mesg);
-                this.canCreateNode = false;
-                return false;
-            }
         }
 
         this.canCreateNode = true;
@@ -580,11 +565,7 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return null;
         }
-        if (this.eGraph.getBasisGraph().isTypeGraph()
-                && ((TypeGraph) this.eGraph.getBasisGraph())
-                        .getTypeNode(this.eGraph.getTypeSet().getSelectedNodeType().getBasisType()) != null) {
-            return null;
-        }
+
 //		TypeError error = this.eGraph.getTypeSet().getSelectedNodeType().getBasisType()
 //					.checkIfNodeCreatable(this.eGraph.getBasisGraph(), 
 //							this.eGraph.getTypeSet().getBasisTypeSet().getLevelOfTypeGraphCheck());
@@ -593,7 +574,6 @@ public class GraphCanvas extends JPanel {
 //						"Type Graph Error", JOptionPane.ERROR_MESSAGE);
 //			return null;
 //		}
-
         try {
             int X = (int) (x / this.scale);
             int Y = (int) (y / this.scale);
@@ -712,13 +692,9 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return null;
         }
-        boolean directed = !(this.eGraph.getBasisGraph() instanceof UndirectedGraph
-                || this.eGraph.getBasisGraph() instanceof UndirectedTypeGraph);
+        boolean directed = !(this.eGraph.getBasisGraph() instanceof UndirectedGraph);
 
-        boolean doAddArc = (!this.eGraph.isTypeGraph()
-                || addSimilarParentArc(this.eGraph.getTypeSet().getSelectedArcType().getBasisType(),
-                        s.getType().getBasisType(),
-                        t.getType().getBasisType())) ? true : false;
+        boolean doAddArc = (!this.eGraph.isTypeGraph());
         if (doAddArc) {
             try {
                 EdArc ea = null;
@@ -759,21 +735,6 @@ public class GraphCanvas extends JPanel {
         }
     }
 
-    private boolean addSimilarParentArc(final Type t, final Type source, final Type target) {
-        Arc a = ((TypeGraph) this.eGraph.getBasisGraph()).getTypeGraphChildArc(t, source, target);
-        if (a != null) {
-            Object[] options = {"Continue", "Cancel"};
-            int answer = JOptionPane.showOptionDialog(null,
-                    "The similar type edge: <" + t.getName() + "> is already defined between parent node types.\n"
-                    + "Do you want continue to create this type edge?",
-                    "Similar Parent and Child Type Graph Edge ",
-                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                    null, options, options[1]);
-            return (answer == 0);
-        }
-        return true;
-    }
-
     /**
      * Deletes an object on the position specified by the int x, int y Undo-Redo is not supported.
      */
@@ -802,9 +763,7 @@ public class GraphCanvas extends JPanel {
             return;
         }
 
-        if (this.eGraph.getBasisGraph().isTypeGraph()) {
-            deleteTypeGraphObject(go, new Vector<EdGraphObject>(), true);
-        } else if (this.eGraph.isTargetObjOfGraphEmbedding(go)) {
+         if (this.eGraph.isTargetObjOfGraphEmbedding(go)) {
             // warning this.msg
             if (this.getGraGraEditor() != null) {
                 JOptionPane.showMessageDialog(this.getGraGraEditor().applFrame,
@@ -1030,19 +989,16 @@ public class GraphCanvas extends JPanel {
             return;
         }
 
-        if (this.eGraph.getBasisGraph().isTypeGraph()) {
-            deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
-        } else {
-            try {
-                this.eGraph.deleteSelectedNodes();
-                this.changed = true;
-                if (this.eGraph.getGraGra() != null) {
-                    this.eGraph.getGraGra().setChanged(true);
-                }
-            } catch (TypeException e) {
-                cannotDeleteErrorMessage("Type Graph", " a node", e.getMessage());
+        try {
+            this.eGraph.deleteSelectedNodes();
+            this.changed = true;
+            if (this.eGraph.getGraGra() != null) {
+                this.eGraph.getGraGra().setChanged(true);
             }
+        } catch (TypeException e) {
+            cannotDeleteErrorMessage("Type Graph", " a node", e.getMessage());
         }
+
     }
 
     /**
@@ -1053,19 +1009,16 @@ public class GraphCanvas extends JPanel {
             return;
         }
 
-        if (this.eGraph.getBasisGraph().isTypeGraph()) {
-            deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
-        } else {
-            try {
-                this.eGraph.deleteSelectedArcs();
-                this.changed = true;
-                if (this.eGraph.getGraGra() != null) {
-                    this.eGraph.getGraGra().setChanged(true);
-                }
-            } catch (TypeException e) {
-                cannotDeleteErrorMessage("Type Graph", " an edge", e.getMessage());
+        try {
+            this.eGraph.deleteSelectedArcs();
+            this.changed = true;
+            if (this.eGraph.getGraGra() != null) {
+                this.eGraph.getGraGra().setChanged(true);
             }
+        } catch (TypeException e) {
+            cannotDeleteErrorMessage("Type Graph", " an edge", e.getMessage());
         }
+
     }
 
     /**
@@ -1076,176 +1029,18 @@ public class GraphCanvas extends JPanel {
             return;
         }
 
-        if (this.eGraph.getBasisGraph().isTypeGraph()) {
-            deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
-
-        } else {
-            List<?> list = new ArrayList<>(this.eGraph.getSelectedArcs());
-            for (int i = 0; i < list.size(); i++) {
-                final EdArc obj = (EdArc) list.get(i);
-                this.deleteArcObject(obj, obj.getSource().isSelected(), obj.getTarget().isSelected());
-            }
-
-            list = new ArrayList<>(this.eGraph.getSelectedNodes());
-            for (int i = 0; i < list.size(); i++) {
-                final EdNode obj = (EdNode) list.get(i);
-                this.deleteNodeObject(obj);
-            }
-        }
-    }
-
-    private void deleteTypeGraphObject(final List<?> gos) {
-        final List<EdGraphObject> deletedObjs = new Vector<EdGraphObject>();
-        final boolean showWarning = true;
-        for (int i = 0; i < gos.size(); i++) {
-            EdGraphObject go = (EdGraphObject) gos.get(i);
-            if (go.isNode()) {
-                continue;
-            }
-
-            // first delete edges
-            deleteTypeGraphObject(go, deletedObjs, !showWarning);
-        }
-        for (int i = 0; i < gos.size(); i++) {
-            EdGraphObject go = (EdGraphObject) gos.get(i);
-            if (go.isNode()) {
-                // now delete nodes
-                deleteTypeGraphObject(go, deletedObjs, !showWarning);
-            } else {
-                continue;
-            }
-        }
-    }
-
-    private void deleteTypeGraphObject(
-            final EdGraphObject go,
-            final List<EdGraphObject> deletedObjs, boolean showWarning) {
-
-        if (deletedObjs.contains(go)) {
-            // is already deleted
-            return;
+        List<?> list = new ArrayList<>(this.eGraph.getSelectedArcs());
+        for (int i = 0; i < list.size(); i++) {
+            final EdArc obj = (EdArc) list.get(i);
+            this.deleteArcObject(obj, obj.getSource().isSelected(), obj.getTarget().isSelected());
         }
 
-        boolean canDelete = false;
-        boolean used = true;
-        String objstr = "";
-        // check, if type graph node/edge was used
-        if (go.isNode()) {
-            objstr = "node";
-            if (!this.eGraph.getTypeSet().isTypeGraphNodeUsed(go.getType())
-                    && !this.eGraph.getTypeSet().isChildTypeGraphNodeUsed(go.getType())) {
-                used = false;
-            }
-        } else if (go.isArc()) {
-            objstr = "edge";
-            if (!this.eGraph.getTypeSet().isTypeGraphArcUsed(
-                    go.getType(),
-                    ((EdArc) go).getSource().getType(),
-                    ((EdArc) go).getTarget().getType())) {
-                used = false;
-            }
-        }
-        if (used) {
-            if (this.eGraph.getTypeSet().getBasisTypeSet()
-                    .getLevelOfTypeGraphCheck() != agg.xt_basis.TypeSet.DISABLED) {
-                JOptionPane
-                        .showMessageDialog(
-                                null,
-                                "<html><body>Cannot delete type "
-                                + objstr
-                                + ".<br> "
-                                + "There are objects of the type "
-                                + objstr
-                                + " &nbsp;<i>"
-                                + go.getType().getName()
-                                + "</i><br>"
-                                + "Please disable the type graph before delete this type "
-                                + objstr, // + ".</body></html>",
-                                " Delete type ", JOptionPane.ERROR_MESSAGE);
-                return;
-            } else if (showWarning) {
-                Object[] options = {"Delete", "Cancel"};
-                int answer = JOptionPane.showOptionDialog(null,
-                        "<html><body>Are you sure you want to delete the type "
-                        + objstr + " &nbsp;<i>"
-                        + go.getType().getName() + "</i> ?<br> "
-                        + "There are objects of it.", //</body></html>",
-                        " Delete type ", JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-                if (answer == JOptionPane.YES_OPTION) {
-                    canDelete = true;
-                }
-            } else {
-                canDelete = true;
-            }
-        } else {
-            canDelete = true;
+        list = new ArrayList<>(this.eGraph.getSelectedNodes());
+        for (int i = 0; i < list.size(); i++) {
+            final EdNode obj = (EdNode) list.get(i);
+            this.deleteNodeObject(obj);
         }
 
-        if (canDelete) {
-            List<EdGraphObject> objs = new Vector<EdGraphObject>();
-            objs.add(go);
-            deletedObjs.add(go);
-
-            if (go.isNode()) {
-                // // inheritance : TEST!
-                // List<EdNode> parents = this.eGraph.getParentsOf((EdNode) go);
-                // if(parents.size() > 0)
-                // this.eGraph.addChangedParentToUndo(go);
-                // List<EdNode> childrens = this.eGraph.getChildrenOf((EdNode) go);
-                // for(int j=0; j<childrens.size(); j++){
-                // EdNode ch = (EdNode) childrens.get(j);
-                // this.eGraph.addChangedParentToUndo(ch);
-                // }
-
-                List<EdArc> vIn = this.eGraph.getIncomingArcs((EdNode) go);
-                for (int i = 0; i < vIn.size(); i++) {
-                    EdArc a = vIn.get(i);
-                    if (!deletedObjs.contains(a)) {
-                        objs.add(a);
-                        deletedObjs.add(a);
-                    }
-                }
-                List<EdArc> vOut = this.eGraph.getOutgoingArcs((EdNode) go);
-                for (int i = 0; i < vOut.size(); i++) {
-                    EdArc a = vOut.get(i);
-                    if (!deletedObjs.contains(a)) {
-                        objs.add(a);
-                        deletedObjs.add(a);
-                    }
-                }
-            }
-            this.eGraph.addDeletedToUndo(objs);
-
-//			boolean canRemoveTypeGraphObject = false;
-//			if (go.isNode())
-//				canRemoveTypeGraphObject = this.eGraph.getTypeSet().getBasisTypeSet().canRemoveTypeGraphNode((Node)go.getBasisObject());
-//			else 
-//				canRemoveTypeGraphObject = this.eGraph.getTypeSet().getBasisTypeSet().canRemoveTypeGraphArc((Arc)go.getBasisObject());
-//			if (canRemoveTypeGraphObject) {
-            try {
-//					this.eGraph.deleteObj(go);
-
-                this.eGraph.forceDeleteObj(go);
-                this.eGraph.undoManagerEndEdit();
-                updateUndoButton();
-
-                this.eGraph.refreshInheritanceArcs();
-                this.changed = true;
-                if (this.eGraph.getGraGra() != null) {
-                    this.eGraph.getGraGra().setChanged(true);
-                }
-            } catch (TypeException e) {
-                cannotDeleteErrorMessage("Type Graph", " this object", e.getMessage());
-
-                if (this.eGraph.getUndoManager() != null) {
-                    this.eGraph.getUndoManager().undo();
-                    this.eGraph.getUndoManager().redo();
-                }
-            }
-
-        }
-//		}
     }
 
     public EdGraph getGraph() {
@@ -1337,25 +1132,16 @@ public class GraphCanvas extends JPanel {
 
                 if (canRemoveIR) {
                     this.eGraph.addChangedParentToUndo(srcNode);
-                    if (this.eGraph.deleteInheritanceRelation(srcNode, tarNode)) {
-                        this.eGraph.undoManagerEndEdit();
 
-                        this.eGraph.update();
-                        this.canvas.repaint();
-                        this.changed = true;
-                        if (this.eGraph.getGraGra() != null) {
-                            this.eGraph.getGraGra().setChanged(true);
-                        }
-                    } else {
-                        this.eGraph.undoManagerLastEditDie();
-                        errSound();
-                        JOptionPane
-                                .showMessageDialog(
-                                        null,
-                                        "<html><body>This inheritance relation could not be removed.", //</body></html>",
-                                        " Remove Inheritance Relation ",
-                                        JOptionPane.ERROR_MESSAGE);
-                    }
+                    this.eGraph.undoManagerLastEditDie();
+                    errSound();
+                    JOptionPane
+                            .showMessageDialog(
+                                    null,
+                                    "<html><body>This inheritance relation could not be removed.", //</body></html>",
+                                    " Remove Inheritance Relation ",
+                                    JOptionPane.ERROR_MESSAGE);
+
                 }
 
             } else {
@@ -1363,10 +1149,10 @@ public class GraphCanvas extends JPanel {
                 // but any inheritance arc does not exist 
                 // inside of the (EdGraph) type graph,
                 // do remove this inheritance relation.
-                Type ptype = srcNode.getType().getBasisType().getParent();
-                if (ptype != null) {
-                    this.eGraph.getTypeSet().getBasisTypeSet().removeInheritanceRelation(srcNode.getType().getBasisType(), ptype);
-                }
+//                Type ptype = srcNode.getType().getBasisType().getParent();
+//                if (ptype != null) {
+//                    this.eGraph.getTypeSet().getBasisTypeSet().removeInheritanceRelation(srcNode.getType().getBasisType(), ptype);
+//                }
             }
         }
     }
@@ -1424,25 +1210,16 @@ public class GraphCanvas extends JPanel {
 
             if (canRemoveIR) {
                 this.eGraph.addChangedParentToUndo(srcNode);
-                if (this.eGraph.deleteInheritanceRelation(srcNode, tarNode)) {
-                    this.eGraph.undoManagerEndEdit();
 
-                    this.eGraph.update();
-                    this.canvas.repaint();
-                    this.changed = true;
-                    if (this.eGraph.getGraGra() != null) {
-                        this.eGraph.getGraGra().setChanged(true);
-                    }
-                } else {
-                    this.eGraph.undoManagerLastEditDie();
-                    errSound();
-                    JOptionPane
-                            .showMessageDialog(
-                                    null,
-                                    "<html><body>This inheritance relation could not be removed.", //</body></html>",
-                                    " Remove Inheritance Relation ",
-                                    JOptionPane.ERROR_MESSAGE);
-                }
+                this.eGraph.undoManagerLastEditDie();
+                errSound();
+                JOptionPane
+                        .showMessageDialog(
+                                null,
+                                "<html><body>This inheritance relation could not be removed.", //</body></html>",
+                                " Remove Inheritance Relation ",
+                                JOptionPane.ERROR_MESSAGE);
+
             }
 
         }
@@ -2122,16 +1899,11 @@ public class GraphCanvas extends JPanel {
                 EdType arcType = this.eGraph.getTypeSet().getSelectedArcType();
                 boolean error = false;
                 if (arcType != null) {
-                    if (this.eGraph.isTypeGraph()) {
-                        error = (this.eGraph.getTypeSet().getBasisTypeSet()
-                                .getTypeGraphArc(arcType.getBasisType(),
-                                        from.getType().getBasisType(),
-                                        to.getType().getBasisType()) != null);
-                    } else {
-                        error = !arcType.getBasisType()
-                                .isEdgeCreatable(from.getType().getBasisType(), to
-                                        .getType().getBasisType(), tgl);
-                    }
+
+                    error = !arcType.getBasisType()
+                            .isEdgeCreatable(from.getType().getBasisType(), to
+                                    .getType().getBasisType(), tgl);
+
                     if (error) {
                         return false;
                     }
@@ -2160,11 +1932,7 @@ public class GraphCanvas extends JPanel {
                 } else {
                     error = (this.eGraph.getTypeSet().getBasisTypeSet()
                             .getTypeGraphNode(to.getBasisType()) != null);
-                    if (!error) {
-                        error = (this.eGraph.getTypeSet().getBasisTypeSet()
-                                .getTypeGraphArc(arcType.getBasisType(),
-                                        from.getBasisType(), to.getBasisType()) != null);
-                    }
+
                 }
                 if (error) {
                     return false;
@@ -2172,11 +1940,7 @@ public class GraphCanvas extends JPanel {
             } else if (this.eGraph.isTypeGraph()) {
                 error = (this.eGraph.getTypeSet().getBasisTypeSet()
                         .getTypeGraphNode(to.getBasisType()) != null);
-                if (!error) {
-                    error = (this.eGraph.getTypeSet().getBasisTypeSet()
-                            .getTypeGraphArc(arcType.getBasisType(),
-                                    from.getBasisType(), to.getBasisType()) != null);
-                }
+
                 if (error) {
                     return false;
                 }

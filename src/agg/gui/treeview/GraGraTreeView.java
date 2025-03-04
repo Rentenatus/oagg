@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -324,8 +324,6 @@ public class GraGraTreeView extends JPanel implements
             resetEnabledOfFileMenuItems(command);
             this.filePopupMenu.resetEnabledOfFileMenuItems(command);
             resetEnabledOfToolBarItems(command);
-        } else if (command.equals("newTypeGraph")) {
-            addTypeGraph();
         } else if (command.equals("newGraph")) {
             addGraph(null, null);
         } else if (command.equals("newRule")) {
@@ -488,7 +486,7 @@ public class GraGraTreeView extends JPanel implements
         } else if (command.equals("undoDelete")) {
             undoDelete();
         } else if (command.equals("undoDeleteTypeGraph")) {
-            undoDeleteTypeGraph();
+            //undoDeleteTypeGraph();
         } else if (command.equals("undoDeleteRule")) {
             undoDeleteRule();
         } else if (command.equals("undoDeleteNAC")) {
@@ -1035,126 +1033,6 @@ public class GraGraTreeView extends JPanel implements
             lockWarning();
             return false;
         }
-    }
-
-    /**
-     * Adds a new type graph node for the selected gragra.
-     */
-    public EdGraph addTypeGraph() {
-        if (this.selPath == null) {
-            if (this.top.getChildCount() == 1) {
-                this.tree.setSelectionRow(1);
-                this.selPath = this.tree.getPathForRow(this.tree.getMinSelectionRow());
-                setFlagForNew();
-            } else {
-                JOptionPane.showMessageDialog(this.applFrame,
-                        "<html><body>"
-                        + "Bad selection.<br> Please select a grammar.",
-                        "",
-                        JOptionPane.WARNING_MESSAGE);
-                return null;
-            }
-        } else if (this.top.getChildCount() == 1) {
-            this.tree.setSelectionRow(1);
-            this.selPath = this.tree.getPathForRow(this.tree.getMinSelectionRow());
-            setFlagForNew();
-        } else if (this.selPath != this.tree.getSelectionPath()) {
-            this.selPath = this.tree.getSelectionPath();
-            setFlagForNew();
-        }
-        if (!this.newRuleOK) {
-            JOptionPane.showMessageDialog(this.applFrame,
-                    "<html><body>"
-                    + "Bad selection.<br> Please select a grammar.",
-                    "",
-                    JOptionPane.WARNING_MESSAGE);
-            return null;
-        }
-
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
-                .getLastPathComponent();
-        EdGraGra eGra = getGraGra(parent);
-        if (eGra.getTypeSet().getTypeGraph() != null) {
-            JOptionPane.showMessageDialog(this.applFrame,
-                    "<html><body>"
-                    + " The type graph already exists."
-                    + "</body></html>",
-                    "",
-                    JOptionPane.WARNING_MESSAGE);
-            return null;
-        }
-        EdGraph typeGraph = eGra.createTypeGraph();
-
-        TypeGraphTreeNodeData sdTypeGraph = new TypeGraphTreeNodeData(typeGraph);
-        sdTypeGraph.setString("[D]TypeGraph");
-
-        DefaultMutableTreeNode newTypeGraphNode = new DefaultMutableTreeNode(sdTypeGraph);
-        sdTypeGraph.setTreeNode(newTypeGraphNode);
-        this.treeModel.insertNodeInto(newTypeGraphNode, parent, 0);
-
-        // if (!this.tree.isExpanded(this.selPath)) this.tree.expandPath(this.selPath);
-        return typeGraph;
-    }
-
-    private boolean addTypeGraph(final EdGraGra gra, final EdGraph g) {
-        if (this.selPath == null) {
-            if (this.top.getChildCount() == 1) {
-                this.tree.setSelectionRow(1);
-                this.selPath = this.tree.getPathForRow(this.tree.getMinSelectionRow());
-                setFlagForNew();
-            } else {
-                JOptionPane.showMessageDialog(this.applFrame,
-                        "<html><body>"
-                        + "Bad selection.<br> Please select a grammar.",
-                        "",
-                        JOptionPane.WARNING_MESSAGE);
-                return false;
-            }
-        } else if (this.top.getChildCount() == 1) {
-            this.tree.setSelectionRow(1);
-            this.selPath = this.tree.getPathForRow(this.tree.getMinSelectionRow());
-            setFlagForNew();
-        } else if (this.selPath != this.tree.getSelectionPath()) {
-            this.selPath = this.tree.getSelectionPath();
-            setFlagForNew();
-        }
-        if (!this.newRuleOK) {
-            JOptionPane.showMessageDialog(this.applFrame,
-                    "<html><body>"
-                    + "Bad selection.<br> Please select a grammar.",
-                    "",
-                    JOptionPane.WARNING_MESSAGE);
-            return false;
-        }
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
-                .getLastPathComponent();
-        EdGraGra eGra = getGraGra(parent);
-        if (eGra.getTypeSet().getTypeGraph() != null && eGra.getTypeSet().getTypeGraph() != g) {
-            JOptionPane.showMessageDialog(this.applFrame,
-                    "<html><body>"
-                    + " The type graph already exists."
-                    + "</body></html>",
-                    "",
-                    JOptionPane.WARNING_MESSAGE);
-            return false;
-        } else if (eGra != gra) {
-            JOptionPane.showMessageDialog(this.applFrame,
-                    "<html><body>"
-                    + "Bad selection.<br> Please select the apropriate grammar.",
-                    "",
-                    JOptionPane.WARNING_MESSAGE);
-            return false;
-        }
-
-        eGra.setTypeGraph(g);
-
-        TypeGraphTreeNodeData sdTypeGraph = new TypeGraphTreeNodeData(g);
-        sdTypeGraph.setString("[D]TypeGraph");
-        DefaultMutableTreeNode newTypeGraphNode = new DefaultMutableTreeNode(sdTypeGraph);
-        sdTypeGraph.setTreeNode(newTypeGraphNode);
-        this.treeModel.insertNodeInto(newTypeGraphNode, parent, 0);
-        // if (!this.tree.isExpanded(this.selPath)) this.tree.expandPath(this.selPath);
-        return true;
     }
 
     /**
@@ -1902,7 +1780,7 @@ public class GraGraTreeView extends JPanel implements
     }
 
     public void setTypeGraphLevel(final int level) {
-        this.typeGraphPopupMenu.setTypeGraphLevel(level);
+
     }
 
     public void updateTypeGraphTreeNode(final DefaultMutableTreeNode node, final EdGraGra gragra) {
@@ -3977,14 +3855,6 @@ public class GraGraTreeView extends JPanel implements
                             "Bad selection.\nPlease select a grammar.",
                             "", JOptionPane.WARNING_MESSAGE);
                 }
-            } else if (treeItemString.equals("TypeGraph")) {
-                if (sd.isTypeGraph()) {
-                    deleteTypeGraph(aNode, this.selPath, true);
-                } else {
-                    JOptionPane.showMessageDialog(this.applFrame,
-                            "Bad selection.\nPlease select a type graph.",
-                            "", JOptionPane.WARNING_MESSAGE);
-                }
             } else if (treeItemString.equals("Graph")) {
                 if (sd.isGraph() && !sd.isTypeGraph()) {
                     deleteGraph(aNode, this.selPath, true);
@@ -4100,8 +3970,6 @@ public class GraGraTreeView extends JPanel implements
         if (sd != null) {
             if (sd.isGraGra()) {
                 deleteGraGra(aNode, path, withWarning);
-            } else if (sd.isTypeGraph()) {
-                deleteTypeGraph(aNode, path, withWarning);
             } else if (sd.isGraph() && !sd.isTypeGraph()) {
                 deleteGraph(aNode, path, withWarning);
             } else if (sd.isRuleScheme()) {
@@ -4251,10 +4119,6 @@ public class GraGraTreeView extends JPanel implements
             this.editorPath = this.selPath;
             setCurrentData(this.editorPath);
         }
-    }
-
-    public void deleteTypeGraph(final DefaultMutableTreeNode delNode, TreePath path, boolean withWarning) {
-        this.selPath = (new GrammarTreeNode()).deleteTypeGraph(this, delNode, path, withWarning);
     }
 
     private void deleteRule(final DefaultMutableTreeNode delNode, TreePath path, boolean withWarning) {
@@ -5939,9 +5803,7 @@ public class GraGraTreeView extends JPanel implements
                     if (this.gragraLoad.getGraGra() != null) {
                         EdGraGra loadedGraGra = this.gragraLoad.getGraGra();
 //						//test
-                        if (converter.getFileExtOfImport().equals(".ecore")) {
-                            loadedGraGra.createTypeGraphFrom(loadedGraGra.getGraph());
-                        }
+
                         this.gragraSave.setGraGra(loadedGraGra, loadedGraGra
                                 .getDirName(), loadedGraGra.getFileName());
                         this.gragraSave.save();
@@ -6006,7 +5868,7 @@ public class GraGraTreeView extends JPanel implements
                                 options[4]);
                 switch (answer) {
                     case 0:
-                        importAsTypeGraph(importGraGra, path);
+                        //  TypeGraph deprecated
                         break;
                     case 1:
                         importAsGraph(importGraGra, path);
@@ -6273,8 +6135,7 @@ public class GraGraTreeView extends JPanel implements
                 return;
             }
 
-            boolean typeGraphImported = importTypeGraph(imp, selGraGra, path);
-            if (!typeGraphImported && !this.rewriteTypeGraph) {
+            if (!this.rewriteTypeGraph) {
                 fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
                 this.applFrame.getRootPane().revalidate();
             }
@@ -6397,13 +6258,13 @@ public class GraGraTreeView extends JPanel implements
                 selGraGra.getTypeSet().getBasisTypeSet().adaptTypes(
                         importGraGra.getBasisGraGra().getTypeSet(), true);
             } else {
-                EdGraph tgraph = selGraGra.getTypeSet().createTypeGraph();
-                if (!importGraGra.getTypeGraph().getBasisGraph().isEmpty()) {
-                    tgraph.getBasisGraph().setHelpInfo(String.valueOf(
-                            importGraGra.getTypeGraph().getBasisGraph().hashCode()));
-                }
-                this.addTypeGraph(selGraGra, tgraph);
-                this.importTypeGraph(importGraGra, selGraGra, path);
+//                EdGraph tgraph = selGraGra.getTypeSet().createTypeGraph();
+//                if (!importGraGra.getTypeGraph().getBasisGraph().isEmpty()) {
+//                    tgraph.getBasisGraph().setHelpInfo(String.valueOf(
+//                            importGraGra.getTypeGraph().getBasisGraph().hashCode()));
+//                }
+//                this.addTypeGraph(selGraGra, tgraph);
+//                this.importTypeGraph(importGraGra, selGraGra, path);
             }
         } else if (selGraGra.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
             if (importGraGra.getTypeGraph() != null) {
@@ -6412,7 +6273,6 @@ public class GraGraTreeView extends JPanel implements
                     selGraGra.getTypeGraph().getBasisGraph().setHelpInfo(String.valueOf(
                             importGraGra.getTypeGraph().getBasisGraph().hashCode()));
                 }
-                this.importTypeGraph(importGraGra, selGraGra, path);
             } else {
                 if (selGraGra.getTypeSet().getBasisTypeSet().isEmpty()
                         && !importGraGra.getBasisGraGra().getTypeSet().isEmpty()) {
@@ -6441,7 +6301,6 @@ public class GraGraTreeView extends JPanel implements
         importGraphConstraints(importGraGra, selGraGra);
 
         selGraGra.getTypeSet().getBasisTypeSet().setHelpInfo("");
-        selGraGra.getTypeSet().getBasisTypeSet().getTypeGraph().setHelpInfo("");
 
         if (failed.size() > 0) {
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
@@ -6452,102 +6311,6 @@ public class GraGraTreeView extends JPanel implements
                     "", JOptionPane.WARNING_MESSAGE);
         }
         return true;
-    }
-
-    private boolean importTypeGraph(final EdGraGra importGraGra, final EdGraGra selGraGra, final TreePath path) {
-        boolean imported = false;
-        if (!selGraGra.getTypeSet().getBasisTypeSet().compareTypes(
-                importGraGra.getTypeSet().getBasisTypeSet())) {
-            fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
-            this.applFrame.getRootPane().revalidate();
-            Object[] options = {"OK"};
-            int answer = JOptionPane.showOptionDialog(
-                    this.applFrame,
-                    "There are mismatches of types. "
-                    + "\nDo you want to rewrite the current type graph \nby the import type graph?",
-                    "Import Type Graph",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.WARNING_MESSAGE, null, options,
-                    options[0]);
-            if (answer == JOptionPane.YES_OPTION) {
-                this.rewriteTypeGraph = true;
-            }
-        } else {
-            boolean selectAll = false;
-            if (selGraGra.getTypeSet().getTypeGraph() == null) {
-                addTypeGraph();
-                selectAll = true;
-                this.tree.treeDidChange();
-            } else if (selGraGra.importTypeGraph(importGraGra.getTypeGraph(), false)) {
-                imported = true;
-                if (selectAll) {
-                    selGraGra.getTypeSet().getTypeGraph().selectAll();
-                }
-            }
-        }
-
-        if (this.rewriteTypeGraph) {
-            if (selGraGra.importTypeGraph(importGraGra.getTypeGraph(), true)) {
-                imported = true;
-            }
-        } else if (!imported) {
-            if (!selGraGra.getTypeSet().getBasisTypeSet().compareTypes(
-                    importGraGra.getTypeSet().getBasisTypeSet())) {
-                Object[] options = {"OK"};
-                int answer = JOptionPane.showOptionDialog(
-                        this.applFrame,
-                        "There are mismatches of types. "
-                        + "\nDo you want to rewrite the current type graph "
-                        + "\nby the import type graph?",
-                        "Import Type Graph",
-                        JOptionPane.DEFAULT_OPTION,
-                        JOptionPane.WARNING_MESSAGE, null, options,
-                        options[0]);
-                if (answer == JOptionPane.YES_OPTION) {
-                    if (selGraGra.importTypeGraph(importGraGra
-                            .getTypeGraph(), true)) {
-                        imported = true;
-                    }
-                }
-            } else {
-                boolean selectAll = false;
-                if (selGraGra.getTypeSet().getTypeGraph() == null) {
-                    addTypeGraph();
-                    selectAll = true;
-                    this.tree.treeDidChange();
-                } else if (selGraGra.importTypeGraph(importGraGra.getTypeGraph(), true)) {
-                    imported = true;
-                    if (selectAll) {
-                        selGraGra.getTypeSet().getTypeGraph().selectAll();
-                    }
-                }
-            }
-        }
-        if (imported) {
-            this.rewriteTypeGraph = false;
-            DefaultMutableTreeNode pathComp = (DefaultMutableTreeNode) ((DefaultMutableTreeNode) path.getLastPathComponent()).getChildAt(0);
-            if (selGraGra.getBasisGraGra().getTypeGraph() != null) {
-                pathComp = (DefaultMutableTreeNode) ((DefaultMutableTreeNode) path.getLastPathComponent()).getChildAt(1);
-            }
-            ((GraGraTreeNodeData) pathComp.getUserObject()).setData(selGraGra.getGraph());
-            JOptionPane.showMessageDialog(
-                    this.applFrame,
-                    "<html><body>"
-                    + "Import Type Graph was successful."
-                    + "<br>( Please note: New type graph objects are selected."
-                    + "<br>You may move them to the right position, if you want. )"
-                    + "</body></html>");
-            fireTreeViewEvent(new TreeViewEvent(this,
-                    TreeViewEvent.IMPORT_TYPE_GRAPH));
-            return true;
-        }
-
-        this.rewriteTypeGraph = false;
-        fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
-        this.applFrame.getRootPane().revalidate();
-        JOptionPane.showMessageDialog(this.applFrame, "Import has failed!",
-                "", JOptionPane.WARNING_MESSAGE);
-        return false;
     }
 
     private boolean importGraphAsHostGraph(
@@ -6590,61 +6353,61 @@ public class GraGraTreeView extends JPanel implements
             graphToImport = importGraGra.getGraph();
         }
 
-        if (graphToImport != null && !graphToImport.getBasisGraph().isEmpty()) {
-            if ((importGraGra.getTypeGraph() != null)
-                    && ((selGraGra.getTypeGraph() == null)
-                    || (selGraGra.getTypeGraph().getBasisGraph().isEmpty()
-                    && (selGraGra.getLevelOfTypeGraphCheck() == TypeSet.DISABLED)))) {
-                if (importTypeGraph(importGraGra, selGraGra, path)) {
-                    doadapt = false;
-                }
-            }
-            if (doadapt) {
-                if (selGraGra.importGraph(graphToImport, doadapt)) {
-                    if (graphData != null) {
-                        graphData.setData(selGraGra.getGraph());
-                        if (!this.currentGraph.isTypeGraph()) {
-                            this.currentGraph = selGraGra.getGraph();
-                            this.currentGraph.getBasisGraph().setName(graphData.string());
-                        }
-                        fireTreeViewEvent(new TreeViewEvent(this,
-                                TreeViewEvent.IMPORT_GRAPH));
-                        return true;
-                    }
-                    return false;
-                }
-                fireTreeViewEvent(new TreeViewEvent(this,
-                        TreeViewEvent.ERROR));
-                this.applFrame.getRootPane().revalidate();
-                JOptionPane.showMessageDialog(this.applFrame,
-                        "Import has failed!",
-                        "", JOptionPane.ERROR_MESSAGE);
-                return false;
-            } else if (selGraGra.importGraph(importGraGra.getGraph())) {
-                if (graphData != null) {
-                    graphData.setData(selGraGra.getGraph());
-                    if (!this.currentGraph.isTypeGraph()) {
-                        this.currentGraph = selGraGra.getGraph();
-                        this.currentGraph.getBasisGraph()
-                                .setName(graphData.string());
-                    }
-                    fireTreeViewEvent(new TreeViewEvent(this,
-                            TreeViewEvent.IMPORT_GRAPH));
-                    return true;
-                }
-                return false;
-            }
-            fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
-            this.applFrame.getRootPane().revalidate();
-            JOptionPane.showMessageDialog(this.applFrame,
-                    "<html><body>"
-                    + "Import has failed!"
-                    + "\nPlease check the types of the import graph."
-                    + "\nThe current type graph should be disabled before."
-                    + "</body></html>",
-                    "", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
+//        if (graphToImport != null && !graphToImport.getBasisGraph().isEmpty()) {
+//            if ((importGraGra.getTypeGraph() != null)
+//                    && ((selGraGra.getTypeGraph() == null)
+//                    || (selGraGra.getTypeGraph().getBasisGraph().isEmpty()
+//                    && (selGraGra.getLevelOfTypeGraphCheck() == TypeSet.DISABLED)))) {
+//                if (importTypeGraph(importGraGra, selGraGra, path)) {
+//                    doadapt = false;
+//                }
+//            }
+//            if (doadapt) {
+//                if (selGraGra.importGraph(graphToImport, doadapt)) {
+//                    if (graphData != null) {
+//                        graphData.setData(selGraGra.getGraph());
+//                        if (!this.currentGraph.isTypeGraph()) {
+//                            this.currentGraph = selGraGra.getGraph();
+//                            this.currentGraph.getBasisGraph().setName(graphData.string());
+//                        }
+//                        fireTreeViewEvent(new TreeViewEvent(this,
+//                                TreeViewEvent.IMPORT_GRAPH));
+//                        return true;
+//                    }
+//                    return false;
+//                }
+//                fireTreeViewEvent(new TreeViewEvent(this,
+//                        TreeViewEvent.ERROR));
+//                this.applFrame.getRootPane().revalidate();
+//                JOptionPane.showMessageDialog(this.applFrame,
+//                        "Import has failed!",
+//                        "", JOptionPane.ERROR_MESSAGE);
+//                return false;
+//            } else if (selGraGra.importGraph(importGraGra.getGraph())) {
+//                if (graphData != null) {
+//                    graphData.setData(selGraGra.getGraph());
+//                    if (!this.currentGraph.isTypeGraph()) {
+//                        this.currentGraph = selGraGra.getGraph();
+//                        this.currentGraph.getBasisGraph()
+//                                .setName(graphData.string());
+//                    }
+//                    fireTreeViewEvent(new TreeViewEvent(this,
+//                            TreeViewEvent.IMPORT_GRAPH));
+//                    return true;
+//                }
+//                return false;
+//            }
+//            fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
+//            this.applFrame.getRootPane().revalidate();
+//            JOptionPane.showMessageDialog(this.applFrame,
+//                    "<html><body>"
+//                    + "Import has failed!"
+//                    + "\nPlease check the types of the import graph."
+//                    + "\nThe current type graph should be disabled before."
+//                    + "</body></html>",
+//                    "", JOptionPane.ERROR_MESSAGE);
+//            return false;
+//        }
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
         this.applFrame.getRootPane().revalidate();
         return false;
@@ -6959,17 +6722,7 @@ public class GraGraTreeView extends JPanel implements
             }
         }
         if (result) {
-            if (selGraGra.getBasisGraGra().getTypeGraph() != null
-                    && selGraGra.getTypeGraph() == null) {
-                JOptionPane
-                        .showMessageDialog(this.applFrame,
-                                "<html><body> A new Type Graph of the current grammar is created."
-                                + " \n To make it available, please add a new Type Graph path "
-                                + "\n into tree view of the current grammar.",
-                                "New Type Graph",
-                                JOptionPane.WARNING_MESSAGE);
 
-            }
             return true;
         }
 
@@ -8141,19 +7894,13 @@ public class GraGraTreeView extends JPanel implements
             if (path != null && this.selPath != path) {
                 resetSelection(path);
             }
-            if (((EdGraph) obj).isTypeGraph()) {
-                if (!addTypeGraph(((EdGraph) obj).getGraGra(), (EdGraph) obj)) {
-                    this.gragraStore.storeTypeGraph(((EdGraph) obj).getGraGra(),
-                            (EdGraph) obj);
-                    return;
-                }
-            } else {
-                if (!addGraph(((EdGraph) obj).getGraGra(), (EdGraph) obj)) {
-                    this.gragraStore.storeGraph(((EdGraph) obj).getGraGra(),
-                            (EdGraph) obj);
-                    return;
-                }
+
+            if (!addGraph(((EdGraph) obj).getGraGra(), (EdGraph) obj)) {
+                this.gragraStore.storeGraph(((EdGraph) obj).getGraGra(),
+                        (EdGraph) obj);
+                return;
             }
+
             fireTreeViewEvent(new TreeViewEvent(this,
                     TreeViewEvent.UNDO_DELETE, ""));
         } else if (obj instanceof EdAtomic) {
@@ -8229,22 +7976,6 @@ public class GraGraTreeView extends JPanel implements
         fireTreeViewEvent(new TreeViewEvent(
                 this, TreeViewEvent.SELECTED,
                 this.editorPath));
-    }
-
-    private void undoDeleteTypeGraph() {
-        if (this.currentGraGra != null) {
-            EdGraph g = this.gragraStore.getTypeGraph(this.currentGraGra);
-            if (g != null) {
-                addTypeGraph(this.currentGraGra, g);
-                fireTreeViewEvent(new TreeViewEvent(this,
-                        TreeViewEvent.UNDO_DELETE, ""));
-            }
-        } else {
-            JOptionPane.showMessageDialog(this.applFrame,
-                    "Bad selection.\n Please select a grammar.",
-                    "", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
     }
 
     /*

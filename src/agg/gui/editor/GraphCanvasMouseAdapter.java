@@ -316,29 +316,20 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                         this.canvas.getViewport().setLastEditMode(this.canvas.getLastEditMode());
                     } else {
                         if (this.canvas.getSourceObject() != null) {
-                            TypeError error = this.canvas.getGraph().getBasisGraph().getTypeSet()
-                                    .checkInheritanceValidity(
-                                            this.canvas.getSourceObject().getBasisObject().getType(),
-                                            this.canvas.getTargetObject().getBasisObject().getType());
-                            if (error == null) {
+                            
+                            
                                 this.canvas.getGraph().addChangedParentToUndo(this.canvas.getSourceObject());
 
-                                Arc inheritArc = this.canvas.getGraph().getBasisGraph().getTypeSet()
-                                        .addValidInheritanceRelation(
-                                                this.canvas.getSourceObject().getBasisObject().getType(),
-                                                this.canvas.getTargetObject().getBasisObject().getType());
+                           
                                 //						EdArc edinheritArc = 
                                 this.canvas.getGraph().newInheritanceArc(
-                                        inheritArc, this.canvas.getGraph().getArcs());
+                                        null, this.canvas.getGraph().getArcs());
 
                                 this.canvas.getGraph().undoManagerEndEdit();
 
                                 this.canvas.getGraph().update();
                                 this.canvas.repaint();
-                            } else {
-                                JOptionPane.showMessageDialog(null, error.getMessage(),
-                                        "Type Graph Error", JOptionPane.ERROR_MESSAGE);
-                            }
+                             
                             this.canvas.getViewport().setEditMode(this.canvas.getLastEditMode());
                         }
                         this.canvas.getSourceObject().setWeakselected(false);

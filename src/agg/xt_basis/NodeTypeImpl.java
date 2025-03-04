@@ -699,7 +699,8 @@ public class NodeTypeImpl implements Type {
 
     /**
      * Returns its direct children only.
-     * @return 
+     *
+     * @return
      */
     @Override
     public List<Type> getChildren() {
@@ -1350,56 +1351,6 @@ public class NodeTypeImpl implements Type {
      */
     public boolean isTypeGraphObjectDefined() {
         return this.typeGraphObjectDefined;
-    }
-
-    /**
-     * The specified node must be an instance of my.
-     */
-    public TypeError checkIfRemovable(final Node node, final int level) {
-        if (node.getType() != this
-                || level != TypeSet.ENABLED_MAX_MIN
-                || node.getContext() instanceof TypeGraph) {
-            return null;
-        }
-
-        return checkMinMultiplicityOfNodeType(node);
-    }
-
-    /**
-     * The specified node must be an instance of my.
-     */
-    private TypeError checkMinMultiplicityOfNodeType(final Node node) {
-        if (this.typeGraphNode == null) {
-            return null;
-        }
-
-        int minValue = this.typeGraphNode.getSourceMin();
-        if (minValue != UNDEFINED) {
-            List<Node> list = node.getContext().getNodes(this);
-            int count = list != null ? list.size() : 0;
-            if (count - 1 < minValue) {
-                return new TypeError(TypeError.TO_LESS_NODES,
-                        "Not enough nodes of type \"" + getName()
-                        + "\"" + " .\nThere are at least " + minValue
-                        + " needed ( graph \""
-                        + node.getContext().getName() + "\" ).", node,
-                        this);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * The specified Graph is not a type graph. Check the max multiplicity of this type because a new node should be
-     * created. Returns an error if this check failed, otherwise - null.
-     */
-    public TypeError checkIfNodeCreatable(final Graph g, final int level) {
-        if (level != TypeSet.ENABLED_MAX_MIN
-                || g instanceof TypeGraph) {
-            return null;
-        }
-
-        return checkMaxMultiplicityOfNodeType(g);
     }
 
     /**
