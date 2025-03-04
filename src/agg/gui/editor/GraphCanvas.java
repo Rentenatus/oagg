@@ -542,16 +542,6 @@ public class GraphCanvas extends JPanel {
                     return false;
                 }
             }
-        } else if (this.eGraph == this.eGraph.getGraGra().getGraph()
-                && arcType == null) {
-            TypeError error = this.eGraph.getTypeSet().getBasisTypeSet().canCreateNode(
-                    this.eGraph.getBasisGraph(), t, this.eGraph.getGraGra().getLevelOfTypeGraphCheck());
-            if (error != null) {
-                String mesg = error.getMessage();
-                cannotCreateErrorMessage(" Create Node ", " a node", mesg);
-                this.canCreateNode = false;
-                return false;
-            }
         }
 
         this.canCreateNode = true;
@@ -763,7 +753,7 @@ public class GraphCanvas extends JPanel {
             return;
         }
 
-         if (this.eGraph.isTargetObjOfGraphEmbedding(go)) {
+        if (this.eGraph.isTargetObjOfGraphEmbedding(go)) {
             // warning this.msg
             if (this.getGraGraEditor() != null) {
                 JOptionPane.showMessageDialog(this.getGraGraEditor().applFrame,
@@ -802,28 +792,12 @@ public class GraphCanvas extends JPanel {
             for (int i = 0; i < vIn.size(); i++) {
                 EdArc a = vIn.get(i);
 
-                if (this.getViewport().getParentEditor() instanceof GraphEditor) {
-                    typeError = this.eGraph.getTypeSet().getBasisTypeSet().checkIfRemovable(a.getBasisArc(), false, true);
-                    if (typeError != null) {
-                        cannotDeleteErrorMessage("Graph", " an arc", typeError.getMessage());
-                        return;
-                    }
-                }
-
                 this.eGraph.addDeletedToUndo(a);
             }
             // handle outgoing arcs	
             List<EdArc> vOut = this.eGraph.getOutgoingArcs(go);
             for (int i = 0; i < vOut.size(); i++) {
                 EdArc a = vOut.get(i);
-
-                if (this.getViewport().getParentEditor() instanceof GraphEditor) {
-                    typeError = this.eGraph.getTypeSet().getBasisTypeSet().checkIfRemovable(a.getBasisArc(), true, false);
-                    if (typeError != null) {
-                        cannotDeleteErrorMessage("Graph", " an arc", typeError.getMessage());
-                        return;
-                    }
-                }
 
                 if (!vIn.contains(a)) {
                     this.eGraph.addDeletedToUndo(a);
@@ -858,12 +832,7 @@ public class GraphCanvas extends JPanel {
 
         boolean forceRemoveArc = false;
         if (this.getViewport().getParentEditor() instanceof GraphEditor) {
-            TypeError typeError = this.eGraph.getTypeSet().getBasisTypeSet().checkIfRemovable(
-                    go.getBasisArc(), deleteSrc, deleteTar);
-            if (typeError != null) {
-                cannotDeleteErrorMessage("Graph", " an arc", typeError.getMessage());
-                return;
-            }
+
             forceRemoveArc = true;
         }
 

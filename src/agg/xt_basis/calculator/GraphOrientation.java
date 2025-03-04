@@ -34,26 +34,6 @@ public interface GraphOrientation {
     void sourceRemoveArc(final Arc anArc);
 
     /**
-     * Returns an error if the type multiplicity check failed after an edge of the specified type would be created,
-     * otherwise - null.
-     *
-     * @param g
-     * @param edgeType
-     * @param src
-     * @param tar
-     * @param currentTypeGraphLevel
-     * @return
-     */
-    public TypeError canCreateArc(final Graph g,
-            final Type edgeType,
-            final Node src,
-            final Node tar,
-            int currentTypeGraphLevel
-    );
-
-    
-
-    /**
      *
      * @param g
      * @param edgeType
@@ -63,7 +43,7 @@ public interface GraphOrientation {
      */
     public boolean isParallelArcAllowed(final Graph g, Type edgeType, Node src, Node tar);
 
-    /** 
+    /**
      *
      * @param arc
      * @return

@@ -51,31 +51,6 @@ public class TypeSet {
     public static final int DISABLED = 0;
 
     /**
-     * Level of type graph check to enable inheritance relation only
-     */
-    public static final int ENABLED_INHERITANCE = 5;
-
-    /**
-     * Level of type graph check to enable type graph and no multiplicity
-     */
-    public static final int ENABLED = 10;
-
-    /**
-     * Level of type graph check to enable type graph and max multiplicity
-     */
-    public static final int ENABLED_MAX = 20;
-
-    /**
-     * Level of type graph check to enable type graph and max and min multiplicity
-     */
-    public static final int ENABLED_MAX_MIN = 30;
-
-    /**
-     * Level of type graph check to enable type graph and min multiplicity
-     */
-    public static final int ENABLED_MIN = 40;
-
-    /**
      * returned instead of a list of {@link TypeError}s, if there were none.
      */
     private static final Collection<TypeError> SUCCESS = new ArrayList<>(0);
@@ -112,7 +87,8 @@ public class TypeSet {
 
     /**
      * holds the level of type graph check Possible values: null null null null null null null null null null null null
-     * null null null null null null null null     {@link #DISABLED}, {@link #ENABLED},
+     * null null null null null null null null null null null null null null null null null null null null null null
+     * null null     {@link #DISABLED}, {@link #ENABLED},
 	 * {@link #ENABLED_MAX}, {@link #ENABLED_MAX_MIN}
      */
     private int typeGraphLevel = DISABLED;
@@ -613,12 +589,6 @@ public class TypeSet {
         return this.attrManager;
     }
 
-    TypeError checkTypeInTypeGraph(final Graph g, final Type edgeType, final GraphObject src,
-            final GraphObject tar, final int tgl) {
-        return edgeType.checkIfEdgeCreatable(g, (Node) src,
-                (Node) tar, tgl);
-    }
-
     /**
      * Checks, if the specified Arc is valid typed as defined in the type graph: existence and multiplicity constraints
      * of its type edge. The type graph must be proofed before.
@@ -638,28 +608,7 @@ public class TypeSet {
                     arc,
                     arc.getType());
         }
-        // delegate multiplicity check to arc type
-        return arc.getType().check(arc, tgl);
-    }
-
-    /**
-     * Checks, if the specified Node is valid typed as defined in the type graph: existence and multiplicity constraints
-     * of its type node. The type graph must be proofed before.
-     *
-     * @param node a node in a graph
-     * @param tgl the level to use. {@see #setTypegraphLevel()}
-     * @return null if the node is valid typed, otherwise an error object
-     */
-    TypeError checkTypeInTypeGraph(final Node node, final int tgl) {
-        if (node.getType().getTypeGraphNodeObject() == null) {
-            return new TypeError(TypeError.NO_SUCH_TYPE,
-                    "The type graph does not contain a node type with name \""
-                    + node.getType().getName() + "\""
-                    + "\n ( see graph:  " + node.getContext().getName() + " ).",
-                    node,
-                    node.getType());
-        }
-        return checkMultiplicity(node, tgl);
+        return null;
     }
 
     public boolean isInheritanceArc(final Arc a) {
@@ -788,276 +737,6 @@ public class TypeSet {
     }
 
     /**
-     * Returns an error object if the type multiplicity check failed after a node of the specified type created,
-     * otherwise - null.
-     */
-    public TypeError canCreateNode(
-            final Graph g,
-            final Type nodeType,
-            final int currentTypeGraphLevel) {
-
-        if (currentTypeGraphLevel >= ENABLED_MAX) {
-            List<Type> parents = nodeType.getAllParents();
-            for (int i = 0; i < parents.size(); i++) {
-                Type t = parents.get(i);
-                int count = 0;
-                int maxValue = t.getSourceMax();
-
-                HashSet<GraphObject> set = g.getTypeObjectsMap().get(nodeType.convertToKey());
-                if (set != null && !set.isEmpty()) {
-                    count = g.getTypeObjectsMap().get(nodeType.convertToKey()).size();
-                }
-
-                if ((maxValue > 0) && (count + 1 > maxValue)) {
-                    TypeError actError = new TypeError(TypeError.TO_MUCH_NODES,
-                            "Too many nodes of type \"" + t.getName()
-                            + "\".\nThere are only " + maxValue
-                            + " allowed.", t);
-                    actError.setContainingGraph(g);
-                    return actError;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns an error object if the type multiplicity check failed after an edge of the specified type created,
-     * otherwise - null.
-     */
-    public TypeError canCreateArc(
-            final Graph g,
-            final Type edgeType,
-            final Node source,
-            final Node target,
-            final int currentTypeGraphLevel) {
-
-        return checkTypeInTypeGraph(g, edgeType, source, target,
-                currentTypeGraphLevel);
-    }
-
-    /**
-     * Checks edges of the specified graph due to type arc multiplicity of the specified type arc.
-     *
-     * @param typearc type arc of the current type graph
-     * @param graph a graph to check (not a type graph)
-     * @param currentTypeGraphLevel
-     * @return null if multiplicity is satisfied, otherwise an error object
-     */
-    public TypeError checkEdgeTypeMultiplicity(
-            final Arc typearc,
-            final Graph graph,
-            final int currentTypeGraphLevel) {
-
-        final Iterator<GraphObject> list = graph.getElementsOfType(
-                typearc.getType(),
-                typearc.getSourceType(),
-                typearc.getTargetType());
-        while (list.hasNext()) {
-            final Arc arc = (Arc) list.next();
-            // delegate multiplicity check to arc type
-            final TypeError error = arc.getType().check(arc, currentTypeGraphLevel);
-            if (error != null) {
-                return error;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Checks node type multiplicity of the specified node Type of the nodes of the specified Graph.
-     *
-     * @param nodeType node type of the current type graph
-     * @param graph a graph to check
-     * @param currentTypeGraphLevel
-     * @return null if multiplicity is satisfied, otherwise an error object
-     */
-    public TypeError checkNodeTypeMultiplicity(
-            final Type nodeType,
-            final Graph graph,
-            final int currentTypeGraphLevel) {
-
-        TypeError actError = null;
-        if (currentTypeGraphLevel > ENABLED) {
-            HashSet<GraphObject> set = graph.getTypeObjectsMap().get(nodeType.convertToKey());
-            if (set != null && !set.isEmpty()) {
-                int nc = graph.getTypeObjectsMap().get(nodeType.convertToKey()).size();
-
-                int maxValue = nodeType.getSourceMax();
-                if ((maxValue != UNDEFINED) && (nc > maxValue)) {
-                    actError = new TypeError(TypeError.TO_MUCH_NODES,
-                            "Too many (" + nc + ") nodes of type \"" + nodeType.getName()
-                            + "\".\nThere are only " + maxValue
-                            + " allowed ( graph \""
-                            + graph.getName() + "\" ).", graph);
-                    return actError;
-                }
-
-                if (currentTypeGraphLevel == ENABLED_MAX_MIN
-                        && graph.isCompleteGraph()) {
-                    int minValue = nodeType.getSourceMin();
-                    if (minValue > 0 && nc < minValue) {
-                        actError = new TypeError(TypeError.TO_LESS_NODES,
-                                "Not enough (" + nc + ") nodes of type \"" + nodeType.getName()
-                                + "\".\nThere are at least " + minValue
-                                + " needed ( graph \""
-                                + graph.getName() + "\" ).", graph);
-                        return actError;
-                    }
-                }
-            }
-        }
-        /*
-		for (int i = 0; i < nodeType.getAllParents().size(); i++) {
-			Type t = nodeType.getAllParents().get(i);
-			int nc = 0;
-			int minValue = t.getSourceMin();
-			int maxValue = t.getSourceMax();
-
-			List<Type> clan = getClan(t);
-			for (Iterator<Type> it = clan.iterator(); it.hasNext();) {
-				Type clanMember = it.next();
-				if (clanMember.getTypeGraphNode() != null) {
-					List<Node> list = graph.getNodes(clanMember);
-					if (list != null)
-						nc += list.size();
-				}
-			}
-			if (currentTypeGraphLevel >= ENABLED_MAX) {
-				if ((maxValue != UNDEFINED) && (nc > maxValue)) {
-					actError = new TypeError(TypeError.TO_MUCH_NODES,
-							"Too many ("+nc+") nodes of type \"" + t.getName()
-									+ "\".\nThere are only " + maxValue
-									+ " allowed ( graph \""
-									+ graph.getName() + "\" ).", graph);
-					return actError;
-				}
-			}
-			if (currentTypeGraphLevel == ENABLED_MAX_MIN
-					&& graph.isCompleteGraph()) {
-				if (minValue > 0 && nc < minValue) {
-					actError = new TypeError(TypeError.TO_LESS_NODES,
-							"Not enough ("+nc+") nodes of type \"" + t.getName()
-									+ "\".\nThere are at least " + minValue
-									+ " needed ( graph \""
-									+ graph.getName() + "\" ).", graph);
-					return actError;
-				}
-			}
-		}
-         */
-        return null;
-    }
-
-    /**
-     * Check node type multiplicity for the specified Node. The specified Node can be a new created node.
-     *
-     * @param n
-     * @param currentTypeGraphLevel
-     * @return null if node type multiplicity satisfied otherwise an error object
-     */
-    private TypeError checkMultiplicity(final Node n, final int currentTypeGraphLevel) {
-        TypeError actError = null;
-        if (currentTypeGraphLevel >= ENABLED_MAX) {
-            Type nodeType = n.getType();
-            List<Type> parents = nodeType.getAllParents();
-            for (int i = 0; i < parents.size(); i++) {
-                Type t = parents.get(i);
-                int count = 0;
-                int minValue = t.getSourceMin();
-                int maxValue = t.getSourceMax();
-
-                HashSet<GraphObject> set = n.getContext().getTypeObjectsMap().get(t.convertToKey());
-                if (set != null && !set.isEmpty()) {
-                    count = n.getContext().getTypeObjectsMap().get(t.convertToKey()).size();
-                }
-
-//				List<Type> clan = getClan(t);
-//				for (Iterator<Type> it = clan.iterator(); it.hasNext();) {
-//					Type member = it.next();
-//					if (member.getTypeGraphNode() != null) {
-//						List<Node> list = n.getContext().getNodes(member);
-//						if (list != null)
-//							count += list.size();
-//					}
-//				}
-                if (!n.getContext().isNode(n)) {
-                    count++; // a node is created and should be added to nodes of a graph
-                }
-                if ((maxValue != UNDEFINED) && (count > maxValue)) {
-                    actError = new TypeError(TypeError.TO_MUCH_NODES,
-                            "Too many (" + count + ") nodes of type \"" + t.getName()
-                            + "\".\nThere are only " + maxValue
-                            + " allowed ( graph \""
-                            + n.getContext().getName() + "\" ).", n, t);
-                    actError.setContainingGraph(n.getContext());
-                    return actError;
-                }
-                if (currentTypeGraphLevel == ENABLED_MAX_MIN
-                        && n.getContext().isCompleteGraph()) {
-                    if (minValue > 0 && count < minValue) {
-                        actError = new TypeError(TypeError.TO_LESS_NODES,
-                                "Not enough (" + count + ") nodes of type \"" + t.getName()
-                                + "\".\nThere are at least " + minValue
-                                + " needed ( graph \""
-                                + n.getContext().getName() + "\" ).", n, t);
-                        actError.setContainingGraph(n.getContext());
-                        return actError;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    // now checks the nodes about min/max multiplicity of the type graph nodes
-/*
-	private Vector<TypeError> checkTypeGraph(final Graph graph,
-			final int actTypeGraphLevel, final Vector<TypeError> errors) {
-		TypeError actError = null;
-		if ((actTypeGraphLevel == ENABLED_MAX)
-				|| (actTypeGraphLevel == ENABLED_MAX_MIN)) {
-			Iterator<Node> en = this.typeGraph.getNodesSet().iterator();
-			Node actNode = null;
-			while (en.hasNext()) {
-				actNode = en.next();
-				actError = checkMultiplicity(actNode, actTypeGraphLevel);
-				if (actError != null)
-					errors.add(actError);
-			}
-			return errors;
-		}
-		return errors;
-	}
-     */
-    // not used currently
-    /*
-	private Vector<TypeError> checkNodes(final Graph graph, final int actTypeGraphLevel,
-			final Vector<TypeError> errors) {
-		TypeError actError = null;
-		final List<Type> checkedTypes = new Vector<Type>();
-		
-		Iterator<Node> en = graph.getNodesSet().iterator();
-		Node actNode;
-		while (en.hasNext()) {
-			actNode = en.next();
-			if (!checkedTypes.contains(actNode.getType())) {
-				checkedTypes.add(actNode.getType());
-				
-				// check the actual node
-				actError = this.checkTypeInTypeGraph(actNode, actTypeGraphLevel);
-				if (actError != null) {
-					actError.setContainingGraph(graph);
-					errors.add(actError);
-				}
-			}
-		}
-		checkedTypes.clear();
-		
-		return errors;
-	}
-     */
-    /**
      * Checks edges of the specified graph over the type edges (multiplicity constraint) of the type graph.
      *
      * @param graph
@@ -1182,83 +861,6 @@ public class TypeSet {
     }// checkType(OrinaryMorphism)
 
     /**
-     * checks the given arc, if it is valid typed. The TypeSet of the graph which contains the arc must be this object.
-     * If in this TypeSet a proofed type graph is used, this arc must be represented there.
-     *
-     * @param arc the arc to check.
-     * @return An empty {@link Collection} if the given arc is valid typed. If there were type errors in the arc a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
-     *
-     * @see #checkTypeGraph
-     */
-    public TypeError checkType(final Arc arc, final boolean isComplete) {
-        // check if the type graph is validated
-        if (this.typeGraphLevel <= DISABLED) {
-            return null;
-        }
-
-        if (isComplete && this.typeGraphLevel >= ENABLED_MAX) {
-            return checkTypeInTypeGraph(arc, this.typeGraphLevel);
-        } else if (!isComplete && this.typeGraphLevel >= ENABLED_MAX) {
-            return checkTypeInTypeGraph(arc, ENABLED_MAX);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * checks the given node, if it is valid typed. The TypeSet of the graph which contains the node must be this
-     * object. If in this TypeSet a proofed type graph is used, this node must be represented there.
-     *
-     * @param node the node to check.
-     * @param isComplete true, if the containing graph is not a subgraph so we will also check for minimum multiplicity
-     * if activated.
-     * @return An empty {@link Collection} if the given node is valid typed. If there were type errors in the node a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
-     *
-     * @see #checkTypeGraph
-     */
-    public TypeError checkType(final Node node, final boolean isComplete) {
-        // check if the type graph is validated
-        if (this.typeGraphLevel == DISABLED) {
-            return null;
-        }
-
-        if (this.typeGraphLevel >= ENABLED_MAX) {
-            if (isComplete) {
-                return checkTypeInTypeGraph(node, this.typeGraphLevel);
-            }
-
-            return checkTypeInTypeGraph(node, ENABLED_MAX);
-        }
-
-        return null;
-    }
-
-    /**
-     * checks the given graph object, if it is valid typed. The TypeSet of the graph which contains the object must be
-     * this object. If in this TypeSet a proofed type graph is used, this object must be represented there.
-     *
-     * @param object the object to check.
-     * @return An empty {@link Collection} if the given object is valid typed. If there were type errors in the arc a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
-     *
-     * @see #checkTypeGraph
-     */
-    public TypeError checkType(final GraphObject object) {
-        if (object instanceof Node) {
-            return checkType((Node) object, false);
-        } else if (object instanceof Arc) {
-            return checkType((Arc) object, false);
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * changes the behavior of the type graph check and defines, how the type graph is used.
      *
      * @param level
@@ -1333,26 +935,6 @@ public class TypeSet {
     public int getLevelOfTypeGraphCheck() {
         return this.typeGraphLevel;
     }
-
-    /**
-     * marks the type graph as unchecked, so no longer the type graph will be used for type checks. Use
-     * {@link #checkTypeGraph()} to turn the type graph based checks on.
-     *
-     * @deprecated use {@link #setLevelOfTypeGraphCheck}
-     */
-    public void disableTypeGraphCheck() {
-        this.setLevelOfTypeGraphCheck(DISABLED);
-    }// turnTypeGraphCheckOff
-
-    /**
-     * marks the type graph as checked, so no longer the type graph will be used for type checks. Use
-     * {@link #checkTypeGraph()} to turn the type graph based checks on.
-     *
-     * @deprecated use {@link #setLevelOfTypeGraphCheck}
-     */
-    public Collection<TypeError> enableTypeGraphCheck() {
-        return this.setLevelOfTypeGraphCheck(ENABLED_MAX);
-    }// turnTypeGraphCheckOff
 
     public boolean compareTo(final TypeSet ts) {
         if (ts == this) {
@@ -1580,104 +1162,6 @@ public class TypeSet {
         }
 
         return true;
-    }
-
-    /**
-     * Checks if the given edge could be removed from its source and target.
-     *
-     * @param arc the edge to check
-     * @return null, if edge type multiplicity has not failed, otherwise {@link TypeError}
-     *
-     */
-    public TypeError checkIfRemovable(final Arc arc) {
-        if (this.typeGraphLevel != ENABLED_MAX_MIN) {
-            return null;
-        }
-        GraphObject node = arc.getSource();
-        TypeError error = node.getType().checkIfRemovableFromSource(node, arc,
-                this.typeGraphLevel);
-        if (error != null) {
-            return error;
-        }
-        node = arc.getTarget();
-        error = node.getType().checkIfRemovableFromTarget(node, arc,
-                this.typeGraphLevel);
-        return error;
-    }
-
-    /**
-     * Checks if the given edge could be removed from its source and target with respect to source and target to delete.
-     *
-     * @param arc	edge to delete
-     * @param deleteSrc	true if the source node will be deleted
-     * @param deleteTar	true if the target node will be deleted
-     *
-     * @return	null if edge type multiplicity has not failed, otherwise a type error {@link TypeError}
-     */
-    public TypeError checkIfRemovable(final Arc arc, boolean deleteSrc, boolean deleteTar) {
-        if (this.typeGraphLevel != ENABLED_MAX_MIN) {
-            return null;
-        }
-        TypeError error = null;
-        if (!deleteTar) {
-            GraphObject node = arc.getSource();
-            error = node.getType().checkIfRemovableFromSource(node, arc,
-                    deleteSrc, deleteTar,
-                    this.typeGraphLevel);
-        }
-        if ((error == null) && !deleteSrc) {
-            GraphObject node = arc.getTarget();
-            error = node.getType().checkIfRemovableFromTarget(node, arc,
-                    deleteSrc, deleteTar,
-                    this.typeGraphLevel);
-
-        }
-
-        return error;
-    }
-
-    /**
-     * Checks if the given arc could be removed from its source. This method ignores the multiplicity constraints of the
-     * target node. It should be only used when the target node should be destroyed.
-     *
-     * @param arc the edge to check
-     * @return null, if the removing is allowed otherwise a {@link TypeError}
-     */
-    public TypeError checkIfRemovableFromSource(final Arc arc) {
-        if (this.typeGraphLevel != ENABLED_MAX_MIN) {
-            return null;
-        }
-        GraphObject node = arc.getSource();
-        TypeError error = node.getType().checkIfRemovableFromSource(node, arc,
-                this.typeGraphLevel);
-        return error;
-    }
-
-    /**
-     * Checks if the given arc could be removed from its target. This method ignores the multiplicity constraints of the
-     * source node. It should be only used when the source node should be destroyed.
-     *
-     * @param arc the arc to check
-     * @return null, if the removing is allowed otherwise a {@link TypeError}
-     */
-    public TypeError checkIfRemovableFromTarget(final Arc arc) {
-        if (this.typeGraphLevel != ENABLED_MAX_MIN) {
-            return null;
-        }
-        GraphObject node = arc.getTarget();
-        TypeError error = node.getType().checkIfRemovableFromTarget(node, arc,
-                this.typeGraphLevel);
-        return error;
-    }
-
-    public TypeError checkIfEdgeCreatable(final Type type, final Node src, final Node tar) {
-        if ((this.typeGraphLevel == DISABLED)
-                || (this.typeGraphLevel == ENABLED)) {
-            return null;
-        }
-
-        return type.checkIfEdgeCreatable(src, tar,
-                this.typeGraphLevel);
     }
 
     public int getMaxMultiplicity(final Type type) {

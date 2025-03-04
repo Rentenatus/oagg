@@ -982,84 +982,6 @@ public class NodeTypeImpl implements Type {
     }
 
     /**
-     * returns if the given GraphObject is valid typed as defined in the type graph. Before this can be checked, all
-     * edges and nodes of the type graph must be added to theire types. The given object will not tested if this is its
-     * type.
-     *
-     * @return null, if the graphobject is valid typed otherwise a {@link TypeError} if there was a mismatch
-     *
-     */
-    public TypeError check(final GraphObject node, final int level) {
-        if (level == TypeSet.DISABLED) {
-            return null;
-        }
-
-        if (node instanceof Node) {
-            return check((Node) node, level);
-        }
-        throw new IllegalArgumentException(
-                "parameter must be of Node type.");
-    }
-
-    /**
-     * returns if the given Node is valid typed as defined in the type graph. Before this can be checked, all edges and
-     * nodes of the type graph must be added to their types.
-     *
-     * @return null, if the given Node is valid typed otherwise a {@link TypeError} if there was a mismatch
-     */
-    public TypeError check(final Node node, final int level) {
-        if (this.typeGraphNode != null) {
-            if (level >= TypeSet.ENABLED) {
-                List<Node> list = node.getContext().getNodes(node.getType());
-                int count = list != null ? list.size() : 0;
-                //???				
-                if (!node.getContext().isNode(node)) {
-                    count++; // a node is created and should be added to nodes of a graph
-                }
-                // if the level is set, check for max / min constraints
-                if (level == TypeSet.ENABLED_MAX
-                        || level == TypeSet.ENABLED_MAX_MIN) {
-                    int sourceMax = this.typeGraphNode.getSourceMax();
-                    if (sourceMax != UNDEFINED) {
-                        if ((count > sourceMax)) {
-                            return new TypeError(TypeError.TO_MUCH_NODES,
-                                    "- Too many (" + count + ") nodes of type \""
-                                    + getName()
-                                    + "\".\nThere are only "
-                                    + sourceMax + " allowed ( graph \""
-                                    + node.getContext().getName()
-                                    + "\" ).", node, this);
-                        }
-                    }
-                }
-                // check Min
-                if (level == TypeSet.ENABLED_MAX_MIN) {
-                    int sourceMin = this.typeGraphNode.getSourceMin();
-                    if (sourceMin > 0) {
-                        if (count < sourceMin) {
-                            return new TypeError(TypeError.TO_LESS_NODES,
-                                    "- Not enough (" + count + ") nodes of type \""
-                                    + getName()
-                                    + "\".\nThere are at least "
-                                    + sourceMin + " needed ( graph \""
-                                    + node.getContext().getName()
-                                    + "\" ).", node, this);
-                        }
-                    }
-                } // if ENABLED_MAX_MIN
-                return null;
-            }
-            return null;
-        } else if (level > TypeSet.ENABLED_INHERITANCE) {
-            return new TypeError(TypeError.NO_SUCH_TYPE,
-                    "The type graph does not contain a node type with name \""
-                    + getName() + "\".", node, this);
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Add the given GraphObject of a type graph to this type. The GraphObject nodeOrArc must be of this type: it is a
      * Node if this is a node type, it is an Arc if this is an edge type. In case of it is a node type and a node object
      * inside of a type graph is already exist, it should to be removed first.
@@ -1097,13 +1019,8 @@ public class NodeTypeImpl implements Type {
         }
 
         boolean allowedToRemove = false;
-        if (node.getContext().getTypeSet().getLevelOfTypeGraphCheck()
-                <= TypeSet.ENABLED_INHERITANCE
-                || forceToRemove) {
-            allowedToRemove = true;
-        } else {
-            allowedToRemove = false;
-        }
+
+        allowedToRemove = true;
 
         if (allowedToRemove) {
             if (this.typeGraphNode == null) {
@@ -1353,144 +1270,6 @@ public class NodeTypeImpl implements Type {
         return this.typeGraphObjectDefined;
     }
 
-    /**
-     * The specified Graph is not a type graph. Check the max multiplicity of this type because a new node should be
-     * created. Returns an error if this check failed, otherwise - null.
-     */
-    private TypeError checkMaxMultiplicityOfNodeType(final Graph g) {
-        if (this.typeGraphNode == null) {
-            return null;
-        }
-
-        int maxValue = this.typeGraphNode.getSourceMax();
-        if (maxValue != UNDEFINED) {
-            List<Node> list = g.getNodes(this);
-            int count = list != null ? list.size() : 0;
-            if (count + 1 > maxValue) {
-                return new TypeError(TypeError.TO_MUCH_NODES,
-                        "Too many nodes of type \"" + getName()
-                        + "\"" + " .\nThere are at most " + maxValue
-                        + " allowed ( graph \""
-                        + g.getName() + "\" ).",
-                        this);
-            }
-        }
-        return null;
-    }
-
-    /* (non-Javadoc)
-	 * @see agg.xt_basis.Type#checkIfRemovableFromSource(agg.xt_basis.GraphObject, agg.xt_basis.Arc, int)
-     */
-    public TypeError checkIfRemovableFromSource(
-            final GraphObject node, Arc arc,
-            int level) {
-        if (arc.getContext().isCompleteGraph()
-                && level == TypeSet.ENABLED_MAX_MIN) {
-            return checkSourceMin(node, arc, false, false);
-        }
-
-        return null;
-    }
-
-    /* (non-Javadoc)
-	 * @see agg.xt_basis.Type#checkIfRemovableFromSource(agg.xt_basis.GraphObject, agg.xt_basis.Arc, boolean, boolean, int)
-     */
-    public TypeError checkIfRemovableFromSource(final GraphObject node, final Arc arc,
-            boolean deleteSrc, boolean deleteTar, int level) {
-        if (arc.getContext().isCompleteGraph()
-                && level == TypeSet.ENABLED_MAX_MIN) {
-            return checkSourceMin(node, arc, deleteSrc, deleteTar);
-        }
-
-        return null;
-    }
-
-    /*
-	 * Source Max Multiplicity means how many ( at least ) nodes of the source node type
-	 * are incoming into the target node. 
-     */
-    private TypeError checkSourceMin(final GraphObject srcnode, final Arc arc,
-            boolean deleteSrc, boolean deleteTar) {
-//		System.out.println("NodeTypeImpl.checkSourceMin(final GraphObject srcnode, final Arc arc)");
-
-        int sourceMin = arc.getType().getSourceMin(this, arc.getTarget().getType());
-        if (sourceMin != UNDEFINED) {
-            int count = ((Node) arc.getTarget()).getNumberOfIncomingArcs(arc.getType(), srcnode.getType());
-            if (count - 1 < sourceMin
-                    && !deleteTar) {
-                return new TypeError(TypeError.TO_LESS_ARCS,
-                        "Too few edges of type \"" + arc.getType().getName()
-                        + "\"" + " (would) start at the source node  " + "\""
-                        + arc.getSource().getType().getName()
-                        + "\"." + "\nThere are at least " + sourceMin
-                        + " needed ( graph \""
-                        + srcnode.getContext().getName() + "\" ).",
-                        arc,
-                        this);
-            }
-        }
-        return null;
-    }
-
-    /* (non-Javadoc)
-	 * @see agg.xt_basis.Type#checkIfRemovableFromTarget(agg.xt_basis.GraphObject, agg.xt_basis.Arc, int)
-     */
-    public TypeError checkIfRemovableFromTarget(
-            final GraphObject node,
-            final Arc arc,
-            int level) {
-        if (arc.getContext().isCompleteGraph()
-                && level == TypeSet.ENABLED_MAX_MIN) {
-            return checkTargetMin(node, arc, false, false);
-        }
-
-        return null;
-    }
-
-    /* (non-Javadoc)
-	 * @see agg.xt_basis.Type#checkIfRemovableFromTarget(agg.xt_basis.GraphObject, agg.xt_basis.Arc, boolean, boolean, int)
-     */
-    public TypeError checkIfRemovableFromTarget(
-            final GraphObject node,
-            final Arc arc,
-            boolean deleteSrc,
-            boolean deleteTar,
-            int level) {
-        if (arc.getContext().isCompleteGraph()
-                && level == TypeSet.ENABLED_MAX_MIN) {
-            return checkTargetMin(node, arc, deleteSrc, deleteTar);
-        }
-
-        return null;
-    }
-
-    /*
-	 * Target Min Multiplicity means how many (at least ) nodes of the target node type
-	 * are outgoing from the source node. 
-     */
-    private TypeError checkTargetMin(final GraphObject tarnode, final Arc arc,
-            boolean deleteSrc, boolean deleteTar) {
-//		System.out.println("NodeTypeImpl.checkTargetMin(final GraphObject tarnode, final Arc arc)");
-
-        int targetMin = arc.getType().getTargetMin(arc.getSource().getType(), this);
-        if (targetMin != UNDEFINED) {
-            int count = ((Node) arc.getSource()).getNumberOfOutgoingArcs(arc.getType(), tarnode.getType());
-            if (count - 1 < targetMin
-                    && !deleteSrc) {
-                return new TypeError(TypeError.TO_LESS_ARCS,
-                        "Too few edges of type \"" + arc.getType().getName()
-                        + "\"" + " (would) end at the target node  " + "\""
-                        + arc.getTarget().getType().getName()
-                        + "\"." + "\nThere are at least " + targetMin
-                        + " needed ( graph \""
-                        + tarnode.getContext().getName() + "\" ).",
-                        arc,
-                        this);
-            }
-        }
-        return null;
-    }
-
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getSourceMax(agg.xt_basis.Type, agg.xt_basis.Type)
      */
@@ -1647,20 +1426,6 @@ public class NodeTypeImpl implements Type {
 	 * @see agg.xt_basis.Type#checkIfEdgeCreatable(agg.xt_basis.Graph, agg.xt_basis.Node, agg.xt_basis.Node, int)
      */
     public TypeError checkIfEdgeCreatable(Graph g, Node src, Node tar, int level) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-	 * @see agg.xt_basis.Type#checkSourceMax(agg.xt_basis.Graph, agg.xt_basis.Node, agg.xt_basis.Node)
-     */
-    public TypeError checkSourceMax(Graph g, Node src, Node tar) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-	 * @see agg.xt_basis.Type#checkTargetMax(agg.xt_basis.Graph, agg.xt_basis.Node, agg.xt_basis.Node)
-     */
-    public TypeError checkTargetMax(Graph g, Node src, Node tar) {
         return null;
     }
 

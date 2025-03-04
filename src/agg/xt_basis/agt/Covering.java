@@ -1294,7 +1294,7 @@ public class Covering {
 
     private boolean glueObjectsOfAmalgamatedRule(final Rule amalgamRule, final Match m) {
         int tgCheckLevel = m.getTarget().getTypeSet().getLevelOfTypeGraphCheck();
-        m.getTarget().getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+        m.getTarget().getTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
 
         final Hashtable<GraphObject, GraphObject> l2r = new Hashtable<GraphObject, GraphObject>();
         final Hashtable<GraphObject, List<GraphObject>> keep2glue = new Hashtable<GraphObject, List<GraphObject>>();

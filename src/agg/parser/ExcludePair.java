@@ -412,9 +412,7 @@ public class ExcludePair implements CriticalPair {
         {
             // set Type Multiplicity check to be TypeSet.ENABLED_MAX
             this.levelOfTypeGraphCheck = this.grammar.getTypeSet().getLevelOfTypeGraphCheck();
-            if (this.levelOfTypeGraphCheck > TypeSet.ENABLED_MAX) {
-                this.grammar.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
-            }
+
         }
 
         // check global NACs of r2 before all other checks;
@@ -660,7 +658,7 @@ public class ExcludePair implements CriticalPair {
         // store current value and disable constraints
 
         this.levelOfTypeGraphCheck = this.grammar.getTypeSet().getLevelOfTypeGraphCheck();
-        this.grammar.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+        this.grammar.getTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
 
         this.consistCheck = this.consistentOnly;
         this.consistentOnly = false;
@@ -860,7 +858,6 @@ public class ExcludePair implements CriticalPair {
      * of the new graph objects of the RHS of the rule1.
      * Note: only free unmapped nodes of a NAC are checked!
      */
-
     protected boolean needMoreCheckDueToDelConstAttr(final Rule r1, final Rule r2) {
         final List<GraphObject> delObjsLHS1 = r1.getElementsToDelete();
         final Hashtable<Type, List<GraphObject>> table = new Hashtable<>();
@@ -4297,7 +4294,7 @@ public class ExcludePair implements CriticalPair {
 
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged(); 
+            nextMatch = nextMatch && testm.isMappingChanged();
 
             if (nextMatch) {
 //				BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);				
@@ -4874,7 +4871,7 @@ public class ExcludePair implements CriticalPair {
 
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged(); 
+            nextMatch = nextMatch && testm.isMappingChanged();
 
             if (nextMatch) {
 //				BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);
@@ -5015,7 +5012,7 @@ public class ExcludePair implements CriticalPair {
 
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged(); 
+            nextMatch = nextMatch && testm.isMappingChanged();
 
             if (nextMatch) {
 //				BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);
@@ -5228,7 +5225,7 @@ public class ExcludePair implements CriticalPair {
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
 //			System.out.println(testm.getErrorMsg());
-            nextMatch = nextMatch && testm.isMappingChanged(); 
+            nextMatch = nextMatch && testm.isMappingChanged();
 //			System.out.println(testm.getErrorMsg());		
             if (nextMatch) {
                 BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);
@@ -5367,7 +5364,7 @@ public class ExcludePair implements CriticalPair {
 
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged(); 
+            nextMatch = nextMatch && testm.isMappingChanged();
 
             if (nextMatch) {
 //				BaseFactory.theFactory().replaceTransientTarVarBySrcVar(testm);
@@ -5591,7 +5588,7 @@ public class ExcludePair implements CriticalPair {
         boolean nextMatch = true;
         while (nextMatch) {
             nextMatch = testm.nextCompletion();
-            nextMatch = nextMatch && testm.isMappingChanged(); 
+            nextMatch = nextMatch && testm.isMappingChanged();
 
             boolean condOK = this.tryValidateNACAttrCond(r2, nac, extendedNAC2iso, testm);
 
@@ -7346,8 +7343,6 @@ public class ExcludePair implements CriticalPair {
 
         while (iso.nextCompletion()) {
             result = true;
-
- 
 
             if (result && m1.isCommutative(m2, iso)) {
                 return true;

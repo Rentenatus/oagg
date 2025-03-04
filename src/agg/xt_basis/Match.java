@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -543,7 +543,6 @@ public class Match extends OrdinaryMorphism implements XMLObject {
     }
 
     public boolean nextCompletion() {
- 
 
         adjustCompletionStrategy();
 
@@ -568,54 +567,40 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         if (result) {
             // check multiplicity constraints			
             int typeLevel = getImage().getTypeSet().getLevelOfTypeGraphCheck();
-            if (typeLevel > TypeSet.ENABLED
-                    && getRule().getConstraints().isEmpty()) {
-                // long time0 = System.currentTimeMillis();
-                if (this.itsRule.isInjective() && this.isInjective()) {
-                    result = true;
-                }
-            }
 
             // make test step to check (multiplicity)
             // rule post application condition
-            if (result
-                    && (!getRule().getConstraints().isEmpty()
-                    || (!this.itsRule.isInjective() && typeLevel > TypeSet.ENABLED))
-                    || (!this.isInjective() && typeLevel > TypeSet.ENABLED)) {
-                OrdinaryMorphism isocopy = getImage().isomorphicCopy();
-                if (isocopy != null) {
-                    isocopy.getImage().setName(getImage().getName());
-                    isocopy.getImage().setCompleteGraph(getImage().isCompleteGraph());
-                    OrdinaryMorphism com = this.compose(isocopy);
-                    if (com != null) {
-                        Match m2 = BaseFactory.theFactory().makeMatch(getRule(), com);
-                        OrdinaryMorphism comatch = null;
-                        if (m2 != null) {
-                            comatch = makeTestStep(m2, allowVariables);
-                            if (comatch == null) {
-                                // errorMsg set in makeTestStep 
-                                result = false;
-                            } else {// check consistency
-                                // errorMsg set in isConsistent
-                                result = result && isConsistent(comatch, m2);
-                                comatch.dispose();
-                            }
-                            m2.dispose();
+            OrdinaryMorphism isocopy = getImage().isomorphicCopy();
+            if (isocopy != null) {
+                isocopy.getImage().setName(getImage().getName());
+                isocopy.getImage().setCompleteGraph(getImage().isCompleteGraph());
+                OrdinaryMorphism com = this.compose(isocopy);
+                if (com != null) {
+                    Match m2 = BaseFactory.theFactory().makeMatch(getRule(), com);
+                    OrdinaryMorphism comatch = null;
+                    if (m2 != null) {
+                        comatch = makeTestStep(m2, allowVariables);
+                        if (comatch == null) {
+                            // errorMsg set in makeTestStep 
+                            result = false;
+                        } else {// check consistency
+                            // errorMsg set in isConsistent
+                            result = result && isConsistent(comatch, m2);
+                            comatch.dispose();
                         }
-                        com.dispose();
-                    } else {
-                        result = false;
+                        m2.dispose();
                     }
-                    isocopy.dispose(false, true);
-
-                    if (typeLevel > TypeSet.ENABLED) {
-                        this.getTarget().getTypeSet().setLevelOfTypeGraphCheck(TypeSet.ENABLED);
-                    }
-                    this.getTarget().getTypeSet().setLevelOfTypeGraphCheck(typeLevel);
+                    com.dispose();
                 } else {
                     result = false;
                 }
+                isocopy.dispose(false, true);
+
+                this.getTarget().getTypeSet().setLevelOfTypeGraphCheck(typeLevel);
+            } else {
+                result = false;
             }
+
         }
 
         this.matchValid = result;
@@ -1049,10 +1034,6 @@ public class Match extends OrdinaryMorphism implements XMLObject {
             throw ex;
         }
     }
-
-    
-
-    
 
     private OrdinaryMorphism makeTestStep(final Match m2, boolean allowVariables) {
         // make test step to check post conditions:

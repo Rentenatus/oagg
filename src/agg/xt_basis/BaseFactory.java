@@ -2277,7 +2277,7 @@ public class BaseFactory {
             OrdinaryMorphism acR = null;
             if (r.isACShiftPossible(acL)) {
                 int tglevelcheck = r.getTypeSet().getLevelOfTypeGraphCheck();
-                r.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+                r.getTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
                 acR = convertACLeft2Right(r, acL);
                 if (acR != null) {
                     r.getTypeSet().setLevelOfTypeGraph(tglevelcheck);
@@ -2328,7 +2328,7 @@ public class BaseFactory {
             OrdinaryMorphism acR = null;
             if (r.isACShiftPossible(acL)) {
                 int tglevelcheck = r.getTypeSet().getLevelOfTypeGraphCheck();
-                r.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+                r.getTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
                 acR = convertACLeft2Right(r, acL);
                 r.getTypeSet().setLevelOfTypeGraph(tglevelcheck);
                 Collection<TypeError> error = r.getTypeSet().checkType(acR.getTarget());
@@ -2382,7 +2382,7 @@ public class BaseFactory {
             Pair<OrdinaryMorphism, OrdinaryMorphism> pairPO = null;
             if (r.isACShiftPossible(acL)) {
                 int tglevelcheck = r.getTypeSet().getLevelOfTypeGraphCheck();
-                r.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+                r.getTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
                 pairPO = convertNestedACLeft2Right(r, acL);
                 r.getTypeSet().setLevelOfTypeGraph(tglevelcheck);
                 if (pairPO != null) {
@@ -2629,7 +2629,7 @@ public class BaseFactory {
             OrdinaryMorphism acR = null;
             if (r.isACShiftPossible(acL)) {
                 int tglevelcheck = r.getTypeSet().getLevelOfTypeGraphCheck();
-                r.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+                r.getTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
                 acR = convertACLeft2Right(r, acL);
                 r.getTypeSet().setLevelOfTypeGraph(tglevelcheck);
                 Collection<TypeError> error = r.getTypeSet().checkType(acR.getTarget());
@@ -2719,7 +2719,7 @@ public class BaseFactory {
                 && this.isDanglingSatisfied(m, r)) {
             try {
                 int levelOfTypeGraphCheck = r.getTypeSet().getLevelOfTypeGraphCheck();
-                r.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+                r.getTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
                 // apply rule to extend the graph (LHS+AC) by objects of the RHS			
                 acR = (OrdinaryMorphism) TestStep.execute(m, true);
                 // now the extended graph (RHS+AC) 
@@ -2900,7 +2900,7 @@ public class BaseFactory {
             OrdinaryMorphism acR = null;
             if (r.isACShiftPossible(acL)) {
                 int tglevelcheck = r.getTypeSet().getLevelOfTypeGraphCheck();
-                r.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+                r.getTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
                 acR = convertACLeft2Right(r, acL);
                 r.getTypeSet().setLevelOfTypeGraph(tglevelcheck);
                 Collection<TypeError> error = r.getTypeSet().checkType(acR.getTarget());

@@ -635,8 +635,6 @@ public class GraGra implements Disposable, XMLObject {
         return result;
     }
 
-    
-
     private Map<ValueTuple, ValueTuple> storeAttrValueOfAttrTypeObserver() {
 //		System.out.println("######  storeAttrValueOfAttrTypeObserver......");
         final Map<ValueTuple, ValueTuple> attrStore = new Hashtable<ValueTuple, ValueTuple>();
@@ -715,7 +713,7 @@ public class GraGra implements Disposable, XMLObject {
     public boolean importGraph(final Graph g) {
         boolean importTried = false;
         boolean result = false;
- 
+
         if (!importTried) {
             result = importGraph(g, false);
         }
@@ -782,7 +780,7 @@ public class GraGra implements Disposable, XMLObject {
                 impGraph = g.copy(this.typeSet);
             } else if (this.typeSet.contains(g.getTypeSet())) {
                 impGraph = g.copy(this.typeSet);
-            } else   {
+            } else {
                 final Vector<Type> typesToAdopt = new Vector<Type>(1);
                 final Iterator<Type> other = g.getTypeSet().getTypes();
                 while (other.hasNext()) {
@@ -805,7 +803,6 @@ public class GraGra implements Disposable, XMLObject {
                 impGraph.setAttrContext(agg.attribute.impl.AttrTupleManager
                         .getDefaultManager().newRightContext(aGraphContext()));
 
-                 
             }
         }
         return impGraph;
@@ -853,7 +850,6 @@ public class GraGra implements Disposable, XMLObject {
                     edgelist.addAll(m.getTarget().getArcsSet());
                 }
 
-                 
             }
         }
         return result;
@@ -897,7 +893,6 @@ public class GraGra implements Disposable, XMLObject {
         if (this.itsStartGraph != null) {
             this.itsStartGraph.dispose();
         }
- 
 
         this.typeSet.dispose();
 
@@ -994,8 +989,6 @@ public class GraGra implements Disposable, XMLObject {
         }
         return this.hasRuleApplCond;
     }
-
- 
 
     /**
      * Set my name.
@@ -1803,8 +1796,6 @@ public class GraGra implements Disposable, XMLObject {
         return result;
     }
 
-   
-
     /**
      * Dispose the specified rule.
      */
@@ -1891,7 +1882,7 @@ public class GraGra implements Disposable, XMLObject {
                 }
             }
         }
-        
+
         return failed;
     }
 
@@ -1959,7 +1950,6 @@ public class GraGra implements Disposable, XMLObject {
             }
         }
 
-         
         return failed;
     }
 
@@ -2201,10 +2191,6 @@ public class GraGra implements Disposable, XMLObject {
         }
     }
 
-   
-
-  
-
     /**
      * Create a new type for typing of GraphObjects.
      *
@@ -2359,15 +2345,6 @@ public class GraGra implements Disposable, XMLObject {
             // save the errors of more checks
             Vector<TypeError> errors = new Vector<TypeError>();
 
-            // the host graphs
-            Iterator<Graph> graphIt = this.itsGraphs.iterator();
-            while (graphIt.hasNext()) {
-                Graph g = graphIt.next();
-                if (!g.isEmpty() || level == TypeSet.ENABLED_MAX_MIN) {
-                    errors.addAll(this.typeSet.checkType(g));
-                }
-            }
-
             if (level != TypeSet.DISABLED) {
                 // if (level == TypeSet.ENABLED_MAX){
                 // all rules
@@ -2392,9 +2369,6 @@ public class GraGra implements Disposable, XMLObject {
             }
 
             if (!errors.isEmpty()) {
-                if (oldLevel == level) {
-                    oldLevel = TypeSet.ENABLED;
-                }
                 this.typeSet.setLevelOfTypeGraphCheck(oldLevel);
             }
             // return errors or empty list
@@ -2455,212 +2429,6 @@ public class GraGra implements Disposable, XMLObject {
         } else {
             return currentKind;
         }
-    }
-
-    /**
-     * Checks all graphs of this GraGra due to node type multiplicity of the specified type Node of the current type
-     * graph.
-     *
-     * @param typeNode
-     * @return null if all graphs satisfy multiplicity constraint, otherwise - a string with names of failed graphs
-     */
-    public String checkNodeTypeMultiplicity(final Node typeNode) {
-        int errorkind = -1;
-        final List<String> result = new Vector<String>();
-        // check graphs
-        for (int i = 0; i < this.itsGraphs.size(); i++) {
-            final Graph graph = this.itsGraphs.get(i);
-            TypeError error = this.typeSet.checkNodeTypeMultiplicity(
-                    typeNode.getType(),
-                    graph,
-                    this.getLevelOfTypeGraphCheck());
-            if (error != null) {
-                errorkind = getMultiplicityErrorKind(errorkind, error);
-                result.add(graph.getName());
-            }
-//			else {
-//				error = graph.checkNodeRequiresArc();
-//				errorkind = getMultiplicityErrorKind(errorkind, error);			
-//				result.add(graph.getName());
-//			}
-        }
-        // check graphs of rules
-        for (int i = 0; i < this.itsRules.size(); i++) {
-            final Rule rule = this.itsRules.get(i);
-            TypeError error = this.typeSet.checkNodeTypeMultiplicity(
-                    typeNode.getType(),
-                    rule.getLeft(),
-                    TypeSet.ENABLED_MAX);
-            if (error != null) {
-                errorkind = getMultiplicityErrorKind(errorkind, error);
-                result.add(rule.getLeft().getName());
-            }
-
-            error = this.typeSet.checkNodeTypeMultiplicity(
-                    typeNode.getType(),
-                    rule.getRight(),
-                    TypeSet.ENABLED_MAX);
-            if (error != null) {
-                errorkind = getMultiplicityErrorKind(errorkind, error);
-                result.add(rule.getRight().getName());
-            }
-            // check NACs
-            final List<OrdinaryMorphism> nacs = rule.getNACsList();
-            for (int l = 0; l < nacs.size(); l++) {
-                final Graph nacgraph = nacs.get(l).getTarget();
-                error = this.typeSet.checkNodeTypeMultiplicity(
-                        typeNode.getType(),
-                        nacgraph,
-                        TypeSet.ENABLED_MAX);
-                if (error != null) {
-                    errorkind = getMultiplicityErrorKind(errorkind, error);
-                    result.add(nacgraph.getName());
-                }
-            }
-            // check PACs
-            final List<OrdinaryMorphism> pacs = rule.getPACsList();
-            for (int l = 0; l < pacs.size(); l++) {
-                final Graph pacgraph = pacs.get(l).getTarget();
-                error = this.typeSet.checkNodeTypeMultiplicity(
-                        typeNode.getType(),
-                        pacgraph,
-                        TypeSet.ENABLED_MAX);
-                if (error != null) {
-                    errorkind = getMultiplicityErrorKind(errorkind, error);
-                    result.add(pacgraph.getName());
-                }
-            }
-        }
-        // check atomic graph constraints
-        for (int i = 0; i < this.itsAtomics.size(); i++) {
-            final AtomConstraint a = this.itsAtomics.get(i);
-            final Graph pgraph = a.getConclusion(0).getSource();
-            TypeError error = this.typeSet.checkNodeTypeMultiplicity(
-                    typeNode.getType(),
-                    pgraph,
-                    TypeSet.ENABLED_MAX);
-            if (error != null) {
-                errorkind = getMultiplicityErrorKind(errorkind, error);
-                result.add(pgraph.getName());
-            }
-            final Enumeration<AtomConstraint> concls = a.getConclusions();
-            while (concls.hasMoreElements()) {
-                final Graph cgraph = concls.nextElement().getTarget();
-                error = this.typeSet.checkNodeTypeMultiplicity(
-                        typeNode.getType(),
-                        cgraph,
-                        TypeSet.ENABLED_MAX);
-                if (error != null) {
-                    errorkind = getMultiplicityErrorKind(errorkind, error);
-                    result.add(cgraph.getName());
-                }
-            }
-        }
-        if (!result.isEmpty()) {
-            this.multiplErrKind = errorkind;
-        }
-
-        return (result.isEmpty()) ? null : result.toString();
-    }
-
-    /**
-     * Checks all graphs of this GraGra due to edge type multiplicity of the specified type Arc of the current type
-     * graph.
-     *
-     * @param typeArc
-     * @return null if all graphs satisfy multiplicity constraint, otherwise - a string with names of failed graphs
-     */
-    public String checkEdgeTypeMultiplicity(final Arc typeArc) {
-        int errorkind = -1;
-        final List<String> result = new Vector<String>();
-        // check graphs
-        for (int i = 0; i < this.itsGraphs.size(); i++) {
-            final Graph graph = this.itsGraphs.get(i);
-            TypeError error = this.typeSet.checkEdgeTypeMultiplicity(
-                    typeArc,
-                    graph,
-                    this.getLevelOfTypeGraphCheck());
-            if (error != null) {
-                errorkind = getMultiplicityErrorKind(errorkind, error);
-                result.add(graph.getName());
-            }
-        }
-        // check graphs of rules
-        for (int i = 0; i < this.itsRules.size(); i++) {
-            final Rule rule = this.itsRules.get(i);
-            TypeError error = this.typeSet.checkEdgeTypeMultiplicity(
-                    typeArc,
-                    rule.getLeft(),
-                    TypeSet.ENABLED_MAX);
-            if (error != null) {
-                errorkind = getMultiplicityErrorKind(errorkind, error);
-                result.add(rule.getLeft().getName());
-            }
-            error = this.typeSet.checkEdgeTypeMultiplicity(
-                    typeArc,
-                    rule.getRight(),
-                    TypeSet.ENABLED_MAX);
-            if (error != null) {
-                errorkind = getMultiplicityErrorKind(errorkind, error);
-                result.add(rule.getRight().getName());
-            }
-            // check NACs
-            final List<OrdinaryMorphism> nacs = rule.getNACsList();
-            for (int l = 0; l < nacs.size(); l++) {
-                final Graph nacgraph = nacs.get(l).getTarget();
-                error = this.typeSet.checkEdgeTypeMultiplicity(
-                        typeArc,
-                        nacgraph,
-                        TypeSet.ENABLED_MAX);
-                if (error != null) {
-                    errorkind = getMultiplicityErrorKind(errorkind, error);
-                    result.add(nacgraph.getName());
-                }
-            }
-            // check PACs
-            final List<OrdinaryMorphism> pacs = rule.getPACsList();
-            for (int l = 0; l < pacs.size(); l++) {
-                final Graph pacgraph = pacs.get(l).getTarget();
-                error = this.typeSet.checkEdgeTypeMultiplicity(
-                        typeArc,
-                        pacgraph,
-                        TypeSet.ENABLED_MAX);
-                if (error != null) {
-                    errorkind = getMultiplicityErrorKind(errorkind, error);
-                    result.add(pacgraph.getName());
-                }
-            }
-        }
-        // check atomic graph constraints
-        for (int i = 0; i < this.itsAtomics.size(); i++) {
-            final AtomConstraint a = this.itsAtomics.get(i);
-            final Graph pgraph = a.getConclusion(0).getSource();
-            TypeError error = this.typeSet.checkEdgeTypeMultiplicity(
-                    typeArc,
-                    pgraph,
-                    TypeSet.ENABLED_MAX);
-            if (error != null) {
-                errorkind = getMultiplicityErrorKind(errorkind, error);
-                result.add(pgraph.getName());
-            }
-            final Enumeration<AtomConstraint> concls = a.getConclusions();
-            while (concls.hasMoreElements()) {
-                final Graph cgraph = concls.nextElement().getTarget();
-                error = this.typeSet.checkEdgeTypeMultiplicity(
-                        typeArc,
-                        cgraph,
-                        TypeSet.ENABLED_MAX);
-                if (error != null) {
-                    errorkind = getMultiplicityErrorKind(errorkind, error);
-                    result.add(cgraph.getName());
-                }
-            }
-        }
-        if (!result.isEmpty()) {
-            this.multiplErrKind = errorkind;
-        }
-
-        return (result.isEmpty()) ? null : result.toString();
     }
 
     public int getMultiplicityErrorKind() {
@@ -4022,20 +3790,9 @@ public class GraGra implements Disposable, XMLObject {
         // save types and the type graph
         h.openSubTag("TaggedValue");
         h.addAttr("Tag", "TypeGraphLevel");
-        switch (this.typeSet.getLevelOfTypeGraphCheck()) {
-            case TypeSet.ENABLED:
-                h.addAttr("TagValue", "ENABLED");
-                break;
-            case TypeSet.ENABLED_MAX:
-                h.addAttr("TagValue", "ENABLED_MAX");
-                break;
-            case TypeSet.ENABLED_MAX_MIN:
-                h.addAttr("TagValue", "ENABLED_MAX_MIN");
-                break;
-            case TypeSet.DISABLED:
-            default:
-                h.addAttr("TagValue", "DISABLED");
-        }
+
+        h.addAttr("TagValue", "DISABLED");
+
         h.close(); // TaggedValue
 
         // <Types>
@@ -4043,8 +3800,6 @@ public class GraGra implements Disposable, XMLObject {
 
         // a <Type> tag for each type
         h.addEnumeration("", getTypes(), true);
-
-       
 
         // </Types>
         h.close();
@@ -4204,9 +3959,7 @@ public class GraGra implements Disposable, XMLObject {
 
         // do copy of saved host graph
         int tgl_check = this.typeSet.getLevelOfTypeGraphCheck();
-        if (this.typeSet.getLevelOfTypeGraphCheck() == TypeSet.ENABLED_MAX_MIN) {
-            this.typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX);
-        }
+
         this.itsStartGraph = cloneGraph();
         this.typeSet.setLevelOfTypeGraphCheck(tgl_check);
 
@@ -4263,20 +4016,9 @@ public class GraGra implements Disposable, XMLObject {
                 }
                 if (!tag.equals("AttrHandler")) {
                     if (tag.equalsIgnoreCase("TypeGraphLevel")) {
-                        if (v != null && !"".equals(v)) {
-                            if (v.equalsIgnoreCase("ENABLED")) {
-                                loadedLevel = TypeSet.ENABLED;
-                            } else if (v.equalsIgnoreCase("ENABLED_MAX")) {
-                                loadedLevel = TypeSet.ENABLED_MAX;
-                            } else if (v.equalsIgnoreCase("ENABLED_MAX_MIN")) {
-                                loadedLevel = TypeSet.ENABLED_MAX;
-                                tgl_ENABLED_MAX_MIN = true;
-                            } else if (v.equalsIgnoreCase("DISABLED")) {
-                                loadedLevel = TypeSet.DISABLED;
-                            }
-                        } else {
-                            loadedLevel = TypeSet.DISABLED;
-                        }
+
+                        loadedLevel = TypeSet.DISABLED;
+
                     } else {
 //						System.out.println(tag);
                         if (v != null && !"".equals(v)) {
@@ -4348,20 +4090,15 @@ public class GraGra implements Disposable, XMLObject {
                 }
             }// while hasMoreElements
 
-
-
             // close the <Types> tag
             h.close();
 
-            
         }// if readSubTag("Types")
 
-       
-            this.typeSet.setLevelOfTypeGraph(TypeSet.DISABLED);
-       
+        this.typeSet.setLevelOfTypeGraph(TypeSet.DISABLED);
+
 //		System.out.println("(Base) Grammar  Types: "
 //				+ (System.currentTimeMillis() - time0) + "ms");
-
         // read the graphs at <Graph> tags
 //		time0 = System.currentTimeMillis();
         this.itsGraphs.clear();
@@ -4657,15 +4394,9 @@ public class GraGra implements Disposable, XMLObject {
         }
 
         // set level of type graph check
-        if (tgl_ENABLED_MAX_MIN) {
-            loadedLevel = TypeSet.ENABLED_MAX_MIN;
-        }
-        if (loadedLevel == TypeSet.ENABLED_MAX
-                || loadedLevel == TypeSet.ENABLED_MAX_MIN) {
-            setLevelOfTypeGraphCheck(loadedLevel);
-        } else {
-            this.typeSet.setLevelOfTypeGraph(loadedLevel);
-        }
+        loadedLevel = TypeSet.DISABLED;
+
+        this.typeSet.setLevelOfTypeGraph(loadedLevel);
 
         setMorphismCompletionStrategy();
 

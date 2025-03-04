@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -315,9 +315,6 @@ public class ParallelRule extends Rule {
      */
     private void makeParallelRule() {
         int tgCheckLevel = this.getTypeSet().getLevelOfTypeGraphCheck();
-        if (tgCheckLevel > TypeSet.ENABLED_MAX) {
-            this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
-        }
 
         // rename variables where needed
         Hashtable<String, String> varNames = new Hashtable<String, String>();
@@ -1608,7 +1605,7 @@ public class ParallelRule extends Rule {
             final List<Formula> fl) {
 
         boolean ok = true;
-        while (conds.hasNext()&& ok) {
+        while (conds.hasNext() && ok) {
             OrdinaryMorphism cond = conds.next();
             ok = shiftPACOverEmbMorphOLD(indx, r, cond, morph, fl);
         }
@@ -1828,7 +1825,7 @@ public class ParallelRule extends Rule {
                 cond2shift.put(key, left);
             } else {
                 cond2shift.get(key).addAll(left);
-            } 
+            }
             return left;
         }
         return null;
@@ -1902,7 +1899,7 @@ public class ParallelRule extends Rule {
                 lc.dispose();
             }
             shift.clear();
-            shift = null; 
+            shift = null;
 
             // store the local list to be used later in the formula
             String key = String.valueOf(cond.hashCode() + indx);

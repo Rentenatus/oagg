@@ -3113,28 +3113,6 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Checks all graphs of this GraGra due to node type multiplicity of the specified type Node of the current type
-     * graph.
-     *
-     * @param typeNode
-     * @return null if all graphs satisfy multiplicity constraint, otherwise - a string with names of failed graphs
-     */
-    public String checkNodeTypeMultiplicity(final EdNode typeNode) {
-        return this.bGraGra.checkNodeTypeMultiplicity(typeNode.getBasisNode());
-    }
-
-    /**
-     * Checks all graphs of this GraGra due to edge type multiplicity of the specified type Arc of the current type
-     * graph.
-     *
-     * @param typeArc
-     * @return null if all graphs satisfy multiplicity constraint, otherwise - a string with names of failed graphs
-     */
-    public String checkEdgeTypeMultiplicity(final EdArc typeArc) {
-        return this.bGraGra.checkEdgeTypeMultiplicity(typeArc.getBasisArc());
-    }
-
-    /**
      * Trims the capacity of used vectors to be the vector's current size.
      */
     public void trimToSize() {

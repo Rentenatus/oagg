@@ -1098,8 +1098,6 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return true;
     }
 
- 
-
     /**
      * Try to destroy all graph objects of the specified type from its graphs (LHS, RHS, NACs, PACs, graph constraints).
      */
@@ -1254,9 +1252,6 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             final Map<String, String> failedAtomic2error = new HashMap<>();
 
             int tgLevel = this.getTypeSet().getLevelOfTypeGraphCheck();
-            if (tgLevel > TypeSet.ENABLED_MAX) {
-                this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
-            }
 
             for (int j = 0; j < this.itsUsedAtomics.size(); j++) {
                 AtomConstraint a = this.itsUsedAtomics.get(j);

@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -464,14 +464,6 @@ public final class MatchHelper {
         return varUsed;
     }
 
-     
-
-    
-
-   
-
-    
-
     private static int getCountOfArcsWithTypeAndSource(
             final String typekey,
             final GraphObject source,
@@ -511,10 +503,6 @@ public final class MatchHelper {
         }
         return nn;
     }
-
-    
-
-    
 
     private static int getIndexOfNode(
             final List<Triple<Node, Type, Type>> list,
@@ -595,13 +583,6 @@ public final class MatchHelper {
                 && count > max) {
             errorMsg = "Node type multiplicity failed!" + "\nType  \""
                     + go.getType().getName() + "\"" + " - maximum failed.";
-            return false;
-        }
-        if (tgchecklevel > TypeSet.ENABLED_MAX
-                && min > 0
-                && count < min) {
-            errorMsg = "Node type multiplicity failed!" + "\nType  \""
-                    + go.getType().getName() + "\"" + " - minimum failed.";
             return false;
         }
 

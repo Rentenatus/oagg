@@ -181,46 +181,6 @@ public interface Type extends XMLObject {
     public String resetKey();
 
     /**
-     * returns if the given GraphObject is valid typed as defined in the type graph. Before this can be checked, all
-     * edges and nodes of the type graph must be added to theire types. The given object will not tested if this is its
-     * type.
-     *
-     * @param graphObject the object to test
-     * @param level a type graph check level, as defined in {@link TypeSet#setLevelOfTypeGraphCheck}
-     * @return null, if the graphobject is valid typed otherwise a {@link TypeError} if there was a mismatch
-     */
-    public TypeError check(GraphObject graphObject, int level);
-
-    /**
-     * returns if the given arc could be removed from the given node so the node would be valid typed. This check makes
-     * only sense, if the minimum multiplicity check is activated.
-     *
-     * @param node the node which will be modified. This node has to be the source of the arc and has to have this type.
-     * @param arc the arc which will be removed
-     * @param level the actual level. If not set to {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
-     * @return null, if the node will be valid typed even after removing the arc otherwise a {@link TypeError}
-     * containing the possible fault.
-     */
-    TypeError checkIfRemovableFromSource(GraphObject node, Arc arc, int level);
-
-    TypeError checkIfRemovableFromSource(GraphObject node, Arc arc, boolean deleteSrc, boolean deleteTar, int level);
-
-    /**
-     * returns if the given arc could be removed from the given node so the node would be valid typed. This check makes
-     * only sense, if the minimum multiplicity check is activated.
-     *
-     * @param node the node which will be modified. This node has to be the target of the arc and has to have this type.
-     * @param arc the arc which will be removed
-     * @param level the actual level. If not set to {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
-     * @return null, if the node will be valid typed even after removing the arc otherwise a {@link TypeError}
-     * containing the possible fault.
-     */
-    TypeError checkIfRemovableFromTarget(final GraphObject node, final Arc arc, int level);
-
-    TypeError checkIfRemovableFromTarget(final GraphObject node, final Arc arc,
-            boolean deleteSrc, boolean deleteTar, int level);
-
-    /**
      * Add the given GraphObject to this type. The GraphObject is a node or an arc of a TypeGraph. Only one GraphObject
      * of each type is allowed.
      *
@@ -335,14 +295,6 @@ public interface Type extends XMLObject {
     public void checkDoubleAttributeType();
 
     public void adaptTypeAttribute(final Type type);
-
-    public TypeError checkIfEdgeCreatable(final Node src, final Node tar, final int level);
-
-    public TypeError checkIfEdgeCreatable(final Graph g, final Node src, final Node tar, final int level);
-
-    public TypeError checkSourceMax(final Graph g, final Node src, final Node tar);
-
-    public TypeError checkTargetMax(final Graph g, final Node src, final Node tar);
 
     public boolean compareTypeGraphArcs(final Type t);
 

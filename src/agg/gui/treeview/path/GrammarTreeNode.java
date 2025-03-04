@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -241,8 +241,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
 
         return graIndex;
     }
-
-   
 
     public TreePath deleteGraph(
             final GraGraTreeView treeView,
@@ -534,15 +532,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
                 .getLevelOfTypeGraphCheck()) {
             case TypeSet.DISABLED:
                 mode = "[D]";
-                break;
-            case TypeSet.ENABLED:
-                mode = "[E]";
-                break;
-            case TypeSet.ENABLED_MAX:
-                mode = "[Em]";
-                break;
-            case TypeSet.ENABLED_MAX_MIN:
-                mode = "[Emm]";
                 break;
             default:
                 mode = "[?]";

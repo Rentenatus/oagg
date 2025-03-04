@@ -445,9 +445,6 @@ public class Graph extends ExtObservable
         synchronized (this) {
             TypeError typeError = null;
             int tglevel = typeSet.getLevelOfTypeGraphCheck();
-            if (tglevel == TypeSet.ENABLED_MAX_MIN) {
-                typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX);
-            }
 
             boolean failed = false;
             final Map<Node, Node> memo1 = new HashMap<>(this.getSize());
@@ -469,36 +466,27 @@ public class Graph extends ExtObservable
                 Node vtxCopy = null;
                 Type type = vtxOrig.getType();
                 if (type != null) {
-                    try {
-                        vtxCopy = theCopy.createNode(type);
-                        /**
-                         * side effect!
-                         */
-                        if (vtxCopy != null) {
-                            // check this graph against the type graph
-                            typeError = typeSet.checkType(vtxCopy, this.isCompleteGraph());
-                            if (typeError != null) {
-                                theCopy.dispose();
-                                throw new TypeException(typeError);
+
+                    vtxCopy = theCopy.createNode(type);
+                    /**
+                     * side effect!
+                     */
+                    if (vtxCopy != null) {
+
+                        vtxCopy.setObjectName(vtxOrig.getObjectName());
+                        if (vtxOrig.getAttribute() != null) {
+                            if (vtxCopy.getAttribute() == null) {
+                                vtxCopy.createAttributeInstance();
                             }
-                            vtxCopy.setObjectName(vtxOrig.getObjectName());
-                            if (vtxOrig.getAttribute() != null) {
-                                if (vtxCopy.getAttribute() == null) {
-                                    vtxCopy.createAttributeInstance();
-                                }
-                                ((ValueTuple) vtxCopy.getAttribute())
-                                        .copyEntriesToSimilarMembers(vtxOrig
-                                                .getAttribute());
-                            }
-                            vtxCopy.setContextUsage(vtxOrig
-                                    .getContextUsage());
-                            memo1.put(vtxOrig, vtxCopy);
+                            ((ValueTuple) vtxCopy.getAttribute())
+                                    .copyEntriesToSimilarMembers(vtxOrig
+                                            .getAttribute());
                         }
-                    } catch (TypeException e) {
-                        // e.printStackTrace();
-                        failed = true;
-                        theCopy.dispose();
+                        vtxCopy.setContextUsage(vtxOrig
+                                .getContextUsage());
+                        memo1.put(vtxOrig, vtxCopy);
                     }
+
                 }
             }
 
@@ -542,11 +530,6 @@ public class Graph extends ExtObservable
                 }
             }
 
-            if (!failed) {
-                if (tglevel == TypeSet.ENABLED_MAX_MIN) {
-                    typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX_MIN);
-                }
-            }
             memo1.clear();
             if (failed) {
                 return null;
@@ -571,9 +554,6 @@ public class Graph extends ExtObservable
         synchronized (this) {
             TypeError typeError = null;
             int tglevel = typeSet.getLevelOfTypeGraphCheck();
-            if (tglevel == TypeSet.ENABLED_MAX_MIN) {
-                typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX);
-            }
 
             boolean failed = false;
             final Map<Node, Node> memo1 = new HashMap<>(this.getSize());
@@ -595,40 +575,25 @@ public class Graph extends ExtObservable
             while (!failed && iter.hasNext()) {
                 Node vtxOrig = (Node) iter.next();
                 Node vtxCopy = null;
-                try {
-                    Type type = vtxOrig.getType();
-                    if (type != null) {
-                        vtxCopy = theCopy.createNode(type);
-                        /**
-                         * side effect!
-                         */
-                        if (vtxCopy != null) {
 
-                            // not a type graph, so check this graph
-                            // against the type graph
-                            typeError = typeSet.checkType(vtxCopy, this
-                                    .isCompleteGraph());
-                            if (typeError != null) {
-                                theCopy.dispose();
-                                throw new TypeException(typeError);
-                            }
+                Type type = vtxOrig.getType();
+                if (type != null) {
+                    vtxCopy = theCopy.createNode(type);
+                    /**
+                     * side effect!
+                     */
+                    if (vtxCopy != null) {
 
-                            vtxCopy.setObjectName(vtxOrig.getObjectName());
-                            vtxCopy.copyAttributes(vtxOrig);
-                            vtxCopy.setContextUsage(vtxOrig.getContextUsage());
-                            memo1.put(vtxOrig, vtxCopy);
+                        vtxCopy.setObjectName(vtxOrig.getObjectName());
+                        vtxCopy.copyAttributes(vtxOrig);
+                        vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                        memo1.put(vtxOrig, vtxCopy);
 
-                            propagateChange(new Change(Change.OBJECT_CREATED,
-                                    vtxCopy));
-                        }
+                        propagateChange(new Change(Change.OBJECT_CREATED,
+                                vtxCopy));
                     }
-                } catch (TypeException e) {
-                    // If this graph is checked, the copy should also be ok
-                    // so no Exception should happen.
-                    // e.printStackTrace();
-                    failed = true;
-                    theCopy.dispose();
                 }
+
                 /**
                  * *************************************************************
                  * At loop termination, the memory Map contains * information about the node twins that are induced * by
@@ -674,16 +639,7 @@ public class Graph extends ExtObservable
                     theCopy.dispose();
                 }
             }
-            if (!failed) {
-                if (tglevel == TypeSet.ENABLED_MAX_MIN) {
-                    typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX_MIN);
-                }
 
-                // set Observers ???
-                // for(Iterator it = getObservers().iterator();
-                // it.hasNext();)
-                // theCopy.addObserver((Observer)it.next());
-            }
             memo1.clear();
             if (failed) {
                 return null;
@@ -714,9 +670,6 @@ public class Graph extends ExtObservable
     private Graph graphcopy(final Map<GraphObject, GraphObject> orig2copy) {
         synchronized (this) {
             int currentLevelOfTGcheck = this.getTypeSet().getLevelOfTypeGraphCheck();
-            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
-                this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
-            }
 
             boolean failed = false;
 
@@ -765,9 +718,6 @@ public class Graph extends ExtObservable
                     theCopy.dispose();
                 }
             }
-            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
-                this.getTypeSet().setLevelOfTypeGraph(currentLevelOfTGcheck);
-            }
 
             if (!failed) {
                 // set Observers ???
@@ -786,9 +736,6 @@ public class Graph extends ExtObservable
     public Graph graphcopy() {
         synchronized (this) {
             int currentLevelOfTGcheck = this.getTypeSet().getLevelOfTypeGraphCheck();
-            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
-                this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
-            }
 
             boolean failed = false;
 
@@ -844,9 +791,6 @@ public class Graph extends ExtObservable
                 }
             }
             memo1.clear();
-            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
-                this.getTypeSet().setLevelOfTypeGraph(currentLevelOfTGcheck);
-            }
 
             return failed ? null : theCopy;
         }
@@ -866,9 +810,6 @@ public class Graph extends ExtObservable
     public Graph graphcopy(Graph g) {
         synchronized (g) {
             int currentLevelOfTGcheck = this.getTypeSet().getLevelOfTypeGraphCheck();
-            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
-                this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
-            }
 
             boolean failed = false;
             final Map<Node, Node> memo1 = new HashMap<>(g.getSize());
@@ -913,9 +854,6 @@ public class Graph extends ExtObservable
                 }
             }
             memo1.clear();
-            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
-                this.getTypeSet().setLevelOfTypeGraph(currentLevelOfTGcheck);
-            }
 
             if (failed) {
                 theCopy.clear();
@@ -1185,12 +1123,6 @@ public class Graph extends ExtObservable
     protected Node newNode(Type t) throws TypeException {
         Node aNode = new Node(t, this);
 
-        // check for type mismatches, also multiplicity max
-        TypeError typeError = this.itsTypes.checkType(aNode, this.isCompleteGraph());
-        if (typeError != null) {
-            throw new TypeException(typeError);
-        }
-
         this.attributed = this.attributed || aNode.getAttribute() != null;
 
         this.itsNodes.add(aNode);
@@ -1438,14 +1370,7 @@ public class Graph extends ExtObservable
 
     protected void postCreatingArc(Arc anArc) throws TypeException {
         TypeError typeError;
-        // if this is not a type graph, so check this graph
-        // against its type graph
-        typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
-        if (typeError != null) {
-            sourceRemoveArc(anArc);
-            targetRemoveArc(anArc);
-            throw new TypeException(typeError);
-        }
+
         this.attributed = this.attributed || anArc.getAttribute() != null;
         this.itsArcs.add(anArc);
         addToTypeObjectsMap(anArc);
@@ -1525,18 +1450,6 @@ public class Graph extends ExtObservable
             final boolean forceDestroy) throws TypeException {
 
         if (arc != null) {
-
-            // can we remove this arc?
-            // check for multiplicity
-            if (checkFirst
-                    && this.isCompleteGraph()
-                    && !forceDestroy) {
-                TypeError typeError = this.itsTypes.checkIfRemovable(arc);
-                if (typeError != null) {
-                    typeError.setContainingGraph(this);
-                    throw new TypeException(typeError);
-                }
-            }
 
             propagateChange(new Change(Change.WANT_DESTROY_OBJECT, arc));
             synchronized (monitorMorphs) {
@@ -2403,32 +2316,22 @@ public class Graph extends ExtObservable
             final List<Arc> incoms = new ArrayList<>(((Node) glue).getIncomingArcsSet());
             for (int i = 0; i < incoms.size(); i++) {
                 Arc arc = incoms.get(i);
-                if ((this.itsTypes.checkIfRemovableFromTarget(arc) == null)
-                        && (this.itsTypes.checkIfEdgeCreatable(arc.getType(), (Node) arc
-                                .getSource(), (Node) keep) == null)) {
-                    propagateChange(new Change(Change.TARGET_UNSET, arc));
-                    arc.setTarget((Node) keep);
-                    propagateChange(new Change(Change.TARGET_SET, arc));
-                } else {
-                    throw new TypeException("Graph.glue: Checking arcs (type multiplicity) to glue failed!");
-//					return false;
-                }
+
+                propagateChange(new Change(Change.TARGET_UNSET, arc));
+                arc.setTarget((Node) keep);
+                propagateChange(new Change(Change.TARGET_SET, arc));
+
             }
             incoms.clear();
             // Move Outgoing Arcs context from "glue" to "keep"
             final List<Arc> outcoms = new ArrayList<>(((Node) glue).getOutgoingArcsSet());
             for (int i = 0; i < outcoms.size(); i++) {
                 Arc arc = outcoms.get(i);
-                if ((this.itsTypes.checkIfRemovableFromSource(arc) == null)
-                        && (this.itsTypes.checkIfEdgeCreatable(arc.getType(),
-                                (Node) keep, (Node) arc.getTarget()) == null)) {
-                    propagateChange(new Change(Change.SOURCE_UNSET, arc));
-                    arc.setSource((Node) keep);
-                    propagateChange(new Change(Change.SOURCE_SET, arc));
-                } else {
-                    throw new TypeException("Graph.glue: Checking arcs (type multiplicity) to glue failed!");
-//					return false;
-                }
+
+                propagateChange(new Change(Change.SOURCE_UNSET, arc));
+                arc.setSource((Node) keep);
+                propagateChange(new Change(Change.SOURCE_SET, arc));
+
             }
             outcoms.clear();
         }
@@ -3533,37 +3436,6 @@ public class Graph extends ExtObservable
      */
     public boolean isParallelArcAllowed(Type edgeType, Node src, Node tar) {
         return orientation.isParallelArcAllowed(this, edgeType, src, tar);
-    }
-
-    /**
-     * Returns en error if the type multiplicity check failed after a node of the specified type would be created,
-     * otherwise - null.
-     */
-    public TypeError canCreateNode(
-            final Type nodeType,
-            int currentTypeGraphLevel) {
-
-        return this.itsTypes.canCreateNode(this, nodeType,
-                currentTypeGraphLevel);
-    }
-
-    /**
-     * Returns an error if the type multiplicity check failed after an edge of the specified type would be created,
-     * otherwise - null.
-     *
-     * @param edgeType
-     * @param source
-     * @param target
-     * @param currentTypeGraphLevel
-     * @return
-     */
-    public TypeError canCreateArc(
-            final Type edgeType,
-            final Node source,
-            final Node target,
-            int currentTypeGraphLevel) {
-
-        return this.orientation.canCreateArc(this, edgeType, source, target, currentTypeGraphLevel);
     }
 
     public List<String> getVariableNamesOfAttributes() {

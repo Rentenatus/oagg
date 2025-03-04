@@ -1792,18 +1792,6 @@ public class GraGraTreeView extends JPanel implements
                 case TypeSet.DISABLED:
                     mode = "[D]";
                     break;
-                case TypeSet.ENABLED_INHERITANCE:
-                    mode = "[Inh]";
-                    break;
-                case TypeSet.ENABLED:
-                    mode = "[E]";
-                    break;
-                case TypeSet.ENABLED_MAX:
-                    mode = "[Em]";
-                    break;
-                case TypeSet.ENABLED_MAX_MIN:
-                    mode = "[Emm]";
-                    break;
                 default:
                     mode = "[?]";
             }
@@ -6870,37 +6858,7 @@ public class GraGraTreeView extends JPanel implements
                 resetGraph();
             }
         } else if (e.getMsg() == EditEvent.SET_TYPE_GRAPH_ENABLED) {
-            if (e.getObject() instanceof EdGraGra) {
-                if (((EdGraGra) e.getObject()).getLevelOfTypeGraphCheck() == TypeSet.ENABLED_MAX) {
-                    if (setLevelOfTypeGraphCheck(this.currentGraGra, TypeSet.ENABLED, false)) {
-                        DefaultMutableTreeNode node = getTreeNodeOfGrammarElement(
-                                ((EdGraGra) e.getObject()).getTypeGraph());
-                        updateTypeGraphTreeNode(node, (EdGraGra) e.getObject());
-                    }
-                } else if (((EdGraGra) e.getObject()).getLevelOfTypeGraphCheck() == TypeSet.ENABLED_MAX_MIN) {
-                    if (e.getMessage().equals(String.valueOf(TypeError.TO_MUCH_NODES))
-                            || e.getMessage().equals(String.valueOf(TypeError.TO_MUCH_ARCS))) {
-                        if (setLevelOfTypeGraphCheck(this.currentGraGra, TypeSet.ENABLED, false)) {
-                            DefaultMutableTreeNode node = getTreeNodeOfGrammarElement(
-                                    ((EdGraGra) e.getObject()).getTypeGraph());
-                            updateTypeGraphTreeNode(node, (EdGraGra) e.getObject());
-                        }
-                    } else if (e.getMessage().equals(String.valueOf(TypeError.TO_LESS_NODES))
-                            || e.getMessage().equals(String.valueOf(TypeError.TO_LESS_ARCS))) {
-                        if (setLevelOfTypeGraphCheck(this.currentGraGra, TypeSet.ENABLED_MAX, false)) {
-                            DefaultMutableTreeNode node = getTreeNodeOfGrammarElement(
-                                    ((EdGraGra) e.getObject()).getTypeGraph());
-                            updateTypeGraphTreeNode(node, (EdGraGra) e.getObject());
-                        } else { // should not be happen
-                            if (setLevelOfTypeGraphCheck(this.currentGraGra, TypeSet.ENABLED, false)) {
-                                DefaultMutableTreeNode node = getTreeNodeOfGrammarElement(
-                                        ((EdGraGra) e.getObject()).getTypeGraph());
-                                updateTypeGraphTreeNode(node, (EdGraGra) e.getObject());
-                            }
-                        }
-                    }
-                }
-            }
+
         } else if (e.getMsg() == EditEvent.DELETE_RULE_REQUEST) {
             if (e.getObject() instanceof EdRule) {
                 EdRule r = (EdRule) e.getObject();

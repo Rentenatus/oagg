@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -1807,7 +1807,7 @@ public class GraphDesktop implements InternalFrameListener {
 
     void addGraphToHostGraphs() {
         int levelOfTGcheck = this.layout.getLevelOfTypeGraphCheck();
-        this.layout.getTypeSet().getBasisTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+        this.layout.getTypeSet().getBasisTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
 
         EdGraph g = this.activeGraphPanel.getGraph().copy();
         g.unsetAttributeValueWhereVariable();
@@ -1854,7 +1854,7 @@ public class GraphDesktop implements InternalFrameListener {
                     if (path != null) {
                         ((agg.gui.AGGAppl) this.parentFrame).getGraGraTreeView().selectPath(
                                 ((agg.gui.AGGAppl) this.parentFrame).getGraGraTreeView().getTree().getRowForPath(path));
-                        ((agg.gui.AGGAppl) this.parentFrame).getGraGraTreeView().setTypeGraphLevel(TypeSet.ENABLED);
+                        ((agg.gui.AGGAppl) this.parentFrame).getGraGraTreeView().setTypeGraphLevel(TypeSet.DISABLED);
                     }
                     // add graph to current gragra
                     path = ((agg.gui.AGGAppl) this.parentFrame).getGraGraTreeView()
@@ -1907,7 +1907,7 @@ public class GraphDesktop implements InternalFrameListener {
                 && this.layout != null) {
 
             int levelOfTGcheck = this.layout.getLevelOfTypeGraphCheck();
-            this.layout.getTypeSet().getBasisTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
+            this.layout.getTypeSet().getBasisTypeSet().setLevelOfTypeGraph(TypeSet.DISABLED);
 
             // get the rule
             EdRule r = firstRule ? this.ruleEdit1.getRule() : this.ruleEdit2.getRule();

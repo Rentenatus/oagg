@@ -897,18 +897,6 @@ public class EditPopupMenu extends JPopupMenu {
 
         addSeparator();
 
-        this.mi = add(new JMenuItem("Multiplicity"));
-        this.miMultiplicity = this.mi;
-        this.mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setMultiplicityOfType();
-                if (EditPopupMenu.this.graphEditor != null) {
-                    EditPopupMenu.this.graphEditor.getGraph().update();
-                    EditPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
-                }
-            }
-        });
-
         this.mi = add(new JMenuItem("Set Parent"));
         this.miSetParent = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -1379,7 +1367,6 @@ public class EditPopupMenu extends JPopupMenu {
                             this.useDeleteMenu = true;
                             this.addIdentic.setEnabled(false);
                             this.miUnmap.setEnabled(false);
-                            this.miMultiplicity.setEnabled(true);
                             this.miAbstract.setEnabled(true);
                             if (this.ego.getBasisObject().getType().isAbstract()) {
                                 this.miAbstract.setSelected(true);
@@ -1412,7 +1399,6 @@ public class EditPopupMenu extends JPopupMenu {
                             this.miFrozen.setSelected(((EdNode) this.ego).getLNode().isFrozen());
                             this.useDeleteMenu = false;
                             this.addIdentic.setEnabled(false);
-                            this.miMultiplicity.setEnabled(false);
                             this.miAbstract.setEnabled(false);
                             this.miAbstract.setSelected(false);
                             this.miSetParent.setEnabled(false);
@@ -1433,11 +1419,9 @@ public class EditPopupMenu extends JPopupMenu {
                             this.useDeleteMenu = true;
                             this.addIdentic.setEnabled(false);
                             this.miUnmap.setEnabled(false);
-                            this.miMultiplicity.setEnabled(true);
                         } else {
                             this.useDeleteMenu = false;
                             this.addIdentic.setEnabled(false);
-                            this.miMultiplicity.setEnabled(false);
                         }
                         if (this.ruleEditor != null
                                 && this.gp == this.ruleEditor.getLeftPanel()) {
@@ -1476,77 +1460,6 @@ public class EditPopupMenu extends JPopupMenu {
 
             gp.setLastEditMode(gp.getEditMode());
             gp.setLastEditCursor(gp.getEditCursor());
-        }
-    }
-
-    /* Draws graphic of the graphobject go in the panel p */
- /*
-	private void drawGraphic(EdGraphObject go, GraphPanel p) {
-		if (go.isNode())
-			p.getGraph().drawNode(p.getCanvas().getGraphics(), (EdNode) go);
-		else
-			p.getGraph().drawArc(p.getCanvas().getGraphics(), (EdArc) go);
-	}
-     */
-    void setMultiplicityOfType() {
-        if (this.ego != null) {
-            this.gp.getGraph().addChangedMultiplicityToUndo(this.ego);
-
-            if (!this.ego.isNode()) {
-                this.multiplicity = new TypeCardinalityDialog(null, this.ego.getType()
-                        .getBasisType(), ((EdArc) this.ego).getSource().getType()
-                                .getBasisType(), ((EdArc) this.ego).getTarget().getType()
-                                .getBasisType());
-            } else {
-                this.multiplicity = new TypeCardinalityDialog(null, this.ego.getType()
-                        .getBasisType());
-            }
-            this.multiplicity.showGUI();
-
-            if (this.editor != null) {
-                if (!this.multiplicity.isChanged()) {
-                    this.gp.getGraph().undoManagerLastEditDie();
-                } else if (this.ego.isNode()) {
-                    String errors = this.gp.getGraph().getGraGra()
-                            .checkNodeTypeMultiplicity((EdNode) this.ego);
-                    if (errors != null) {
-                        errors = errors.replaceAll(",", ",\n");
-
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "<html><body>"
-                                + "Please check the graph(s): \n"
-                                + errors + ".\n"
-                                + "\nMultiplicity constraint of the node type:\n"
-                                + "\"" + this.ego.getType().getBasisType().getName() + "\"  \n"
-                                + "is not satisfied.",
-                                "Checking Node Type Multiplicity",
-                                JOptionPane.WARNING_MESSAGE
-                        );
-                    }
-                } else {
-                    String errors = this.gp.getGraph().getGraGra()
-                            .checkEdgeTypeMultiplicity((EdArc) this.ego);
-                    if (errors != null) {
-                        errors = errors.replaceAll(",", ",\n");
-
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "<html><body>"
-                                + "Please check the graph(s): \n"
-                                + errors + ".\n"
-                                + "\nMultiplicity constraint of the edge type:\n"
-                                + "\"" + this.ego.getType().getBasisType().getName() + "\"  \n"
-                                + "is not satisfied.",
-                                "Checking Edge Type Multiplicity",
-                                JOptionPane.WARNING_MESSAGE
-                        );
-                    }
-                }
-            }
-
-            this.gp.getCanvas().updateUndoButton();
-            this.gp.getGraph().undoManagerEndEdit();
         }
     }
 
@@ -1819,7 +1732,7 @@ public class EditPopupMenu extends JPopupMenu {
             miDelete, miMap, miUnmap, miStraighten, miVisibility,
             miAddIdenticToRule,
             miAddIdenticToNAC, miAddIdenticToPAC, miAddIdenticToGAC,
-            miMultiplicity, miSetParent, miUnsetParent, miComment, miObjName;
+            miSetParent, miUnsetParent, miComment, miObjName;
 
     private JMenu deleteMenu, addIdentic,
             //			statistic,

@@ -31,32 +31,6 @@ public class GraphOrientationUndirected implements GraphOrientation {
         ((Node) anArc.getSource()).removeOut(anArc);
     }
 
-    /**
-     * Returns an error if the type multiplicity check failed after an edge of the specified type would be created,
-     * otherwise - null.
-     *
-     * @param g
-     * @param edgeType
-     * @param source
-     * @param target
-     * @param currentTypeGraphLevel
-     * @return
-     */
-    @Override
-    public TypeError canCreateArc(final Graph g,
-            final Type edgeType,
-            final Node source,
-            final Node target,
-            int currentTypeGraphLevel) {
-        // check source->target already exists
-        TypeError error = g.itsTypes.canCreateArc(g, edgeType, source, target, currentTypeGraphLevel);
-        // check target->source already exists
-        if (error != null) {
-            return error;
-        }
-        return g.itsTypes.canCreateArc(g, edgeType, target, source, currentTypeGraphLevel);
-    }
-
     @Override
     public boolean isParallelArcAllowed(final Graph g, Type edgeType, Node src, Node tar) {
         return g.itsTypes.isArcParallel()

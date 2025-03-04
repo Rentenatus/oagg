@@ -950,10 +950,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                 for (int i = 0; i < vec.size(); i++) {
                     int tgCheckLevel = this.bGraph.getTypeSet()
                             .getLevelOfTypeGraphCheck();
-                    if (tgCheckLevel == TypeSet.ENABLED_MAX_MIN) {
-                        this.bGraph.getTypeSet().setLevelOfTypeGraphCheck(
-                                TypeSet.ENABLED_MAX);
-                    }
+
 //					System.out.println(vec.get(i));
                     if (vec.get(i) instanceof String) {
                         String hashCode = (String) vec.get(i);
@@ -1062,10 +1059,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                 for (int i = 0; i < vec.size(); i++) {
                     int tgCheckLevel = this.bGraph.getTypeSet()
                             .getLevelOfTypeGraphCheck();
-                    if (tgCheckLevel == TypeSet.ENABLED_MAX_MIN) {
-                        this.bGraph.getTypeSet().setLevelOfTypeGraphCheck(
-                                TypeSet.ENABLED_MAX);
-                    }
+
 //					System.out.println(vec.get(i));
                     if (vec.get(i) instanceof String) {
                         String hashCode = (String) vec.get(i);
@@ -3088,10 +3082,6 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
 
         int tglevel = this.bGraph.getTypeSet()
                 .getLevelOfTypeGraphCheck();
-        if (tglevel == TypeSet.ENABLED_MAX_MIN) {
-            this.bGraph.getTypeSet().setLevelOfTypeGraphCheck(
-                    TypeSet.ENABLED_MAX);
-        }
 
         EdGraph clone = new EdGraph(BaseFactory.theFactory().createGraph(
                 this.bGraph.getTypeSet(), this.bGraph.isCompleteGraph()), this.typeSet);
@@ -3165,10 +3155,6 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
             }
         }
 
-        if (tglevel == TypeSet.ENABLED_MAX_MIN) {
-            this.getBasisGraph().getTypeSet().setLevelOfTypeGraphCheck(
-                    TypeSet.ENABLED_MAX_MIN);
-        }
         table.clear();
         table = null;
         return clone;
@@ -3347,8 +3333,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
             while (edges.hasNext() && done) {
                 EdArc arc = this.findArc(edges.next());
                 if (arc != null) {
-                    if (this.typeSet.getBasisTypeSet().checkIfRemovable(arc.getBasisArc(), true, false) == null
-                            && this.deleteArc(arc, addToUndo)) {
+                    if (this.deleteArc(arc, addToUndo)) {
                         edges = go.getBasisNode().getOutgoingArcsSet().iterator();
                     } else {
                         done = false;
@@ -3359,8 +3344,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
             while (edges.hasNext() && done) {
                 EdArc arc = this.findArc(edges.next());
                 if (arc != null) {
-                    if (this.typeSet.getBasisTypeSet().checkIfRemovable(arc.getBasisArc(), false, true) == null
-                            && this.deleteArc(arc, addToUndo)) {
+                    if (this.deleteArc(arc, addToUndo)) {
                         edges = go.getBasisNode().getIncomingArcsSet().iterator();
                     } else {
                         done = false;
@@ -3633,20 +3617,11 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
      * Deletes all selected objects (nodes and arcs)
      */
     public void deleteSelected() throws TypeException {
-        int currentTypeGraphLevel = this.typeSet.getBasisTypeSet().getLevelOfTypeGraphCheck();
-        if (this.selectedNodes != null && this.selectedNodes.size() == this.nodes.size()
-                && currentTypeGraphLevel > TypeSet.ENABLED) {
-            this.typeSet.getBasisTypeSet().setLevelOfTypeGraphCheck(TypeSet.ENABLED);
-        }
 
         deleteSelectedArcs();
 
         deleteSelectedNodes();
 
-//		update();
-        if (currentTypeGraphLevel > TypeSet.ENABLED) {
-            this.typeSet.getBasisTypeSet().setLevelOfTypeGraphCheck(currentTypeGraphLevel);
-        }
     }
 
     /**
@@ -3655,16 +3630,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     public void deleteAll() throws TypeException {
         selectAll();
 
-        int currentTypeGraphLevel = this.typeSet.getBasisTypeSet().getLevelOfTypeGraphCheck();
-        if (currentTypeGraphLevel > TypeSet.ENABLED) {
-            this.typeSet.getBasisTypeSet().setLevelOfTypeGraphCheck(TypeSet.ENABLED);
-        }
-
         deleteSelected();
 
-        if (currentTypeGraphLevel > TypeSet.ENABLED) {
-            this.typeSet.getBasisTypeSet().setLevelOfTypeGraphCheck(currentTypeGraphLevel);
-        }
     }
 
     /**

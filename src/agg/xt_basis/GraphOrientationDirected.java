@@ -32,27 +32,6 @@ public class GraphOrientationDirected implements GraphOrientation {
         ((Node) anArc.getTarget()).removeIn(anArc);
     }
 
-    /**
-     * Returns an error if the type multiplicity check failed after an edge of the specified type would be created,
-     * otherwise - null.
-     *
-     * @param g
-     * @param edgeType
-     * @param src
-     * @param tar
-     * @param currentTypeGraphLevel
-     * @return
-     */
-    @Override
-    public TypeError canCreateArc(final Graph g,
-            final Type edgeType,
-            final Node source,
-            final Node target,
-            int currentTypeGraphLevel) {
-
-        return g.itsTypes.canCreateArc(g, edgeType, source, target, currentTypeGraphLevel);
-    }
-
     public boolean isParallelArcAllowed(final Graph g, Type edgeType, Node src, Node tar) {
         return g.itsTypes.isArcParallel()
                 || (src.getOutgoingArc(edgeType, tar) == null);
