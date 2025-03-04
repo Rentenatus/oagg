@@ -1,24 +1,24 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 import agg.attribute.AttrType;
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.DeclTuple;
 import agg.util.XMLHelper;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Implements the type of an edge graph object.
@@ -567,11 +567,7 @@ public class ArcTypeImpl implements Type {
                 while (iter.hasNext()) {
                     Type t = iter.next();
                     v.add(t);
-                    Vector<Type> childs = t.getChildren();
-                    for (int j = 0; j < childs.size(); j++) {
-                        Type cht = childs.get(j);
-                        v.add(cht);
-                    }
+                    v.addAll(t.getChildren());
                 }
             }
         }

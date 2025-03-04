@@ -1,29 +1,28 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ * </copyright>
  */
 package agg.editor.impl;
 
-import java.util.List;
-import java.util.Vector;
-import java.util.Hashtable;
-import java.awt.Point;
-import javax.swing.undo.*;
-
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
 import agg.util.Pair;
 import agg.xt_basis.Node;
 import agg.xt_basis.Type;
-import agg.xt_basis.TypeSet;
 import agg.xt_basis.TypeGraph;
-//import agg.xt_basis.TypeError;
-import agg.xt_basis.TypeException;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.impl.ValueMember;
+import agg.xt_basis.TypeSet;
+import java.awt.Point;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.undo.*;
 
 public class NodeReprData implements StateEditable {
 
@@ -203,7 +202,7 @@ public class NodeReprData implements StateEditable {
                 int lastTypeGraphCheck = tg.getTypeSet()
                         .getLevelOfTypeGraphCheck();
                 tg.getTypeSet().setLevelOfTypeGraphCheck(TypeSet.DISABLED);
-                Vector<Type> pars = myType.getParents();
+                List<Type> pars = myType.getParents();
                 for (int i = 0; i < pars.size(); i++) {
                     Type parType = pars.get(i);
 //					boolean res = 
@@ -212,7 +211,7 @@ public class NodeReprData implements StateEditable {
                 tg.getTypeSet().setLevelOfTypeGraphCheck(lastTypeGraphCheck);
             } else {
                 // first remove current parent
-                Vector<Type> pars = myType.getParents();
+                List<Type> pars = myType.getParents();
                 for (int i = 0; i < pars.size(); i++) {
                     Type parType = pars.get(i);
                     if (!this.parents.contains(parType.getName())) {

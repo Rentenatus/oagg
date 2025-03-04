@@ -1,30 +1,30 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
-import java.util.List;
-import java.util.Vector;
-
-import agg.attribute.AttrInstance;
 import agg.attribute.AttrEvent;
+import agg.attribute.AttrInstance;
 import agg.attribute.impl.AttrTupleManager;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.impl.ValueMember;
-import agg.attribute.impl.VarTuple;
-import agg.attribute.impl.VarMember;
 import agg.attribute.impl.ContextView;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
+import agg.attribute.impl.VarMember;
+import agg.attribute.impl.VarTuple;
 import agg.util.Change;
 import agg.util.Pair;
+import agg.util.XMLHelper;
+import agg.util.XMLObject;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @version $Id: Arc.java,v 1.40 2010/11/06 18:34:59 olga Exp $
@@ -153,9 +153,6 @@ public class Arc extends GraphObject implements XMLObject {
 //		System.out.println("Arc disposed  in: "+(System.nanoTime()-t)+"nano");
     }
 
-    public void finalize() {
-    }
-
     /**
      * If the specified parameter is <code>true</code> set this edge to be an inheritance edge of a type graph.
      *
@@ -167,15 +164,19 @@ public class Arc extends GraphObject implements XMLObject {
 
     /**
      * Returns true if this edge is an inheritance edge of a type graph.
+     *
+     * @return
      */
     public boolean isInheritance() {
         return this.inheritance;
     }
 
+    @Override
     public final boolean isArc() {
         return true;
     }
 
+    @Override
     public final boolean isNode() {
         return false;
     }
@@ -222,10 +223,13 @@ public class Arc extends GraphObject implements XMLObject {
 
     /**
      * Converts my type to the type key string that can be used for search operations:      <code> ((Arc) this).getSource().getType().convertToKey()
-	 * + ((Arc) this).getType().convertToKey()
+     * + ((Arc) this).getType().convertToKey()
      * + ((Arc) this).getTarget().getType().convertToKey()
      * </code>
+     *
+     * @return
      */
+    @Override
     public String convertToKey() {
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
@@ -233,6 +237,11 @@ public class Arc extends GraphObject implements XMLObject {
         return this.keyStr;
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public String resetTypeKey() {
         this.keyStr = this.itsSource.getType().resetKey()
                 .concat(this.itsType.resetKey())
@@ -241,16 +250,16 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     public List<String> convertToKeyParentExtended() {
-        final List<String> list = new Vector<String>();
+        final List<String> list = new Vector<>();
 
-        Vector<Type> mySrcParents = this.getSource().getType().getAllParents();
-        Vector<Type> myTarParents = this.getTarget().getType().getAllParents();
+        List<Type> mySrcParents = this.getSource().getType().getAllParents();
+        List<Type> myTrgParents = this.getTarget().getType().getAllParents();
 
-        for (int i = 0; i < mySrcParents.size(); ++i) {
-            for (int j = 0; j < myTarParents.size(); ++j) {
-                String keystr = mySrcParents.get(i).convertToKey()
+        for (Type srcParent : mySrcParents) {
+            for (Type trgParent : myTrgParents) {
+                String keystr = srcParent.convertToKey()
                         + this.getType().convertToKey()
-                        + myTarParents.get(j).convertToKey();
+                        + trgParent.convertToKey();
                 list.add(keystr);
             }
         }
@@ -280,6 +289,12 @@ public class Arc extends GraphObject implements XMLObject {
         return (this.itsSource == this.itsTarget);
     }
 
+    /**
+     *
+     * @param o
+     * @return
+     */
+    @Override
     public boolean compareTo(GraphObject o) {
         if (o == null || !o.isArc()) {
             return false;
@@ -293,7 +308,7 @@ public class Arc extends GraphObject implements XMLObject {
             return false;
         }
         if ((this.itsAttr == null && a.getAttribute() == null)
-                || ((this.attrExists() && a.attrExists())
+                || (this.attrExists() && a.attrExists()
                 && this.itsAttr.compareTo(a.getAttribute()))) {
             ;
         } else {
@@ -309,11 +324,8 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     protected boolean compareSrcTarTo(Arc a) {
-        if (!((Node) getSource()).compareTo(a.getSource())
-                || !((Node) getTarget()).compareTo(a.getTarget())) {
-            return false;
-        }
-        return true;
+        return ((Node) getSource()).compareTo(a.getSource())
+                && ((Node) getTarget()).compareTo(a.getTarget());
     }
 
     protected boolean compareMultiplicityTo(Arc a) {
@@ -351,6 +363,11 @@ public class Arc extends GraphObject implements XMLObject {
         return true;
     }
 
+    /**
+     *
+     * @param h
+     */
+    @Override
     public void XwriteObject(XMLHelper h) {
         h.openNewElem("Edge", this);
         if (!this.directed) {
@@ -402,13 +419,18 @@ public class Arc extends GraphObject implements XMLObject {
         h.close();
     }
 
+    /**
+     *
+     * @param h
+     */
+    @Override
     public void XreadObject(XMLHelper h) {
         if (h.isTag("Edge", this)) {
             String str = h.readAttr("directed");
-            this.directed = str.equals("false") ? false : true;
+            this.directed = !str.equals("false");
 
             str = h.readAttr("visible");
-            this.visible = str.equals("false") ? false : true;
+            this.visible = !str.equals("false");
 
             str = h.readAttr("name");
             this.setObjectName(str);
@@ -470,8 +492,13 @@ public class Arc extends GraphObject implements XMLObject {
         }
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public String toString() {
-        String result = "";
+        String result;
         String t = this.itsType.getStringRepr();
         if (t.equals("")) {
             t = "[unnamed]";
@@ -493,15 +520,14 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     /**
-     * Implements the AttrObserver. Propagates the change      <code>agg.util.Change.OBJECT_MODIFIED<code>
-	 * and object Pair (this, ev.getID())
-     * to its Graph if the attributes are changed.
+     * Implements the AttrObserver. Propagates the change <code>agg.util.Change.OBJECT_MODIFIED</code> and object Pair
+     * (this, ev.getID()) to its Graph if the attributes are changed.
      */
     @Override
     public void attributeChanged(AttrEvent ev) {
         super.attributeChanged(ev);
         if (this.itsContext != null) {
-            Pair<Object, AttrEvent> p = new Pair<Object, AttrEvent>(this, ev);
+            Pair<Object, AttrEvent> p = new Pair<>(this, ev);
             this.itsContext.propagateChange(new Change(Change.OBJECT_MODIFIED, p));
         }
     }

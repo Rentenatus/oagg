@@ -1,21 +1,21 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
+import agg.attribute.AttrType;
+import agg.util.XMLObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-
-import agg.attribute.AttrType;
-import agg.util.XMLObject;
 
 /**
  * Instances of this class are used for dynamic typing of graph objects. Each type is associated with a name (also
@@ -39,7 +39,7 @@ public interface Type extends XMLObject {
      */
     public Type getParent();
 
-    public Vector<Type> getParents();
+    public List<Type> getParents();
 
     public void removeChild(final Type t);
 
@@ -67,7 +67,7 @@ public interface Type extends XMLObject {
     /**
      * Returns its direct children only.
      */
-    public Vector<Type> getChildren();
+    public List<Type> getChildren();
 
     /**
      * Returns the associated attribute type.

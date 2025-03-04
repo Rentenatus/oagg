@@ -3097,11 +3097,7 @@ public class Graph extends ExtObservable
 
     /**
      * Returns an isomorphism between ad-hoc-created copy and this graph.
-     *
-     * @return
      */
-    s
-
     public OrdinaryMorphism reverseIsomorphicCopy() {
         synchronized (this) {
             boolean failed = false;
@@ -3112,7 +3108,8 @@ public class Graph extends ExtObservable
             OrdinaryMorphism iso = BaseFactory.theFactory().createMorphism(
                     theCopy, this);
             iso.setName("IsoMorph");
-            final Map<Node, Node> memo1 = new HashMap<>(this.getSize());
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(this
+                    .getSize());
             while (vtxList.hasNext()) {
                 Node vtxOrig = vtxList.next();
                 Node vtxCopy = null;

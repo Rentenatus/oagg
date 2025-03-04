@@ -116,7 +116,7 @@ public class TypeSet {
     private boolean typeGraphIsProved = false;
 
     /**
-     * holds the level of type graph check Possible values: null null null null null null     {@link #DISABLED}, {@link #ENABLED},
+     * holds the level of type graph check Possible values: null null null null null null null null     {@link #DISABLED}, {@link #ENABLED},
 	 * {@link #ENABLED_MAX}, {@link #ENABLED_MAX_MIN}
      */
     private int typeGraphLevel = DISABLED;
@@ -559,7 +559,7 @@ public class TypeSet {
     private void adaptTypeInheritance(
             final Graph tGraph,
             final Vector<Type> typesToAdapt,
-            final Map<Type, Vector<Type>> oldInheritance) {
+            final Map<Type, List<Type>> oldInheritance) {
         if (tGraph == null || this.typeGraph == null
                 || !this.typeGraph.getNodesSet().iterator().hasNext()
                 || typesToAdapt.isEmpty()) {
@@ -583,7 +583,7 @@ public class TypeSet {
                                                     .getAdditionalRepr()));
                         }
                     } else if (oldInheritance.get(t) != null) {
-                        Vector<Type> v = oldInheritance.get(t);
+                        List<Type> v = oldInheritance.get(t);
                         for (int i = 0; i < v.size(); i++) {
                             Type pi = v.get(i);
                             addInheritanceRelation(t, pi);
@@ -821,11 +821,11 @@ public class TypeSet {
      */
     public boolean importTypeGraph(final Graph tGraph, final boolean rewrite) {
 //		System.out.println("TypeSet.importTypeGraph rewrite: "+rewrite);
-        final Vector<Type> differentAttribute = new Vector<Type>(5);
-        final Vector<Type> differentInheritance = new Vector<Type>(5);
-        final Map<Type, Vector<Type>> oldInheritance = new HashMap<>(5, 5);
-        final Vector<Type> differentMultiplicity = new Vector<Type>(5);
-        final Vector<Type> typesToAdd = new Vector<Type>(5);
+        final Vector<Type> differentAttribute = new Vector<>(5);
+        final Vector<Type> differentInheritance = new Vector<>(5);
+        final Map<Type, List<Type>> oldInheritance = new HashMap<>(5, 5);
+        final Vector<Type> differentMultiplicity = new Vector<>(5);
+        final Vector<Type> typesToAdd = new Vector<>(5);
 
         boolean conflicting = !compareTypes(tGraph.getTypeSet(),
                 differentAttribute, differentInheritance,
@@ -1620,7 +1620,7 @@ public class TypeSet {
      */
     public void removeAllInheritanceRelations(final Type child) {
         while (!child.getParents().isEmpty()) {
-            Type p = child.getParents().firstElement();
+            Type p = child.getParents().get(0);
             removeInheritanceRelation(child, p);
         }
     }

@@ -1,15 +1,19 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.treeview.dialog;
 
+import agg.editor.impl.EdType;
+import agg.editor.impl.EdTypeSet;
+import agg.gui.editor.EditorConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -19,8 +23,7 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
-import java.util.Vector;
-
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -35,10 +38,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeSelectionModel;
-
-import agg.editor.impl.EdType;
-import agg.editor.impl.EdTypeSet;
-import agg.gui.editor.EditorConstants;
 
 @SuppressWarnings("serial")
 public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListener {
@@ -106,7 +105,7 @@ public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListen
     }
 
     private void initTypeTree(DefaultMutableTreeNode treetypenode, EdType nodetype) {
-        Vector<agg.xt_basis.Type> children = nodetype.getBasisType().getChildren();
+        List<agg.xt_basis.Type> children = nodetype.getBasisType().getChildren();
         for (int i = 0; i < children.size(); i++) {
             agg.xt_basis.Type childType = children.get(i);
             EdType edchildType = this.typeSet.getNodeType(childType);

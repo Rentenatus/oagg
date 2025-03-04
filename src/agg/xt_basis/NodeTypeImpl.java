@@ -3,7 +3,7 @@
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
@@ -11,15 +11,14 @@
  */
 package agg.xt_basis;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
 import agg.attribute.AttrType;
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.DeclTuple;
 import agg.util.XMLHelper;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Implements the type of a node graph object.
@@ -45,9 +44,9 @@ public class NodeTypeImpl implements Type {
     /**
      * the parents of the type
      */
-    final Vector<Type> itsParents = new Vector<Type>(1);
+    final List<Type> itsParents = new Vector<>(1);
 
-    final Vector<Type> itsChildren = new Vector<Type>(1);
+    final List<Type> itsChildren = new Vector<>(1);
 
     /**
      * the attributes of the type
@@ -129,9 +128,6 @@ public class NodeTypeImpl implements Type {
             this.typeGraphNode = null;
         }
         this.typeGraphObjectDefined = false;
-    }
-
-    public void finalize() {
     }
 
     public void createAttributeType() {
@@ -643,13 +639,16 @@ public class NodeTypeImpl implements Type {
      * Returns my last direct parent.
      */
     public Type getParent() {
-        return this.itsParents.isEmpty() ? null : this.itsParents.lastElement();
+        return this.itsParents.isEmpty() ? null : this.itsParents.get(this.itsParents.size() - 1);
     }
 
     /**
      * Returns my all direct parents.
+     *
+     * @return
      */
-    public Vector<Type> getParents() {
+    @Override
+    public List<Type> getParents() {
         return this.itsParents;
     }
 
@@ -658,7 +657,7 @@ public class NodeTypeImpl implements Type {
      */
     public void setParent(final Type t) {
         if (t == null && !this.itsParents.isEmpty()) {
-            removeParent(this.itsParents.lastElement());
+            removeParent(this.itsParents.get(this.itsParents.size() - 1));
             return;
         }
 
@@ -687,16 +686,23 @@ public class NodeTypeImpl implements Type {
         }
     }
 
-    public void addChild(final Type t) {
-        if (!this.itsChildren.contains(t)) {
-            this.itsChildren.add(t);
+    /**
+     *
+     * @param aType
+     */
+    @Override
+    public void addChild(final Type aType) {
+        if (!this.itsChildren.contains(aType)) {
+            this.itsChildren.add(aType);
         }
     }
 
     /**
      * Returns its direct children only.
+     * @return 
      */
-    public Vector<Type> getChildren() {
+    @Override
+    public List<Type> getChildren() {
         return this.itsChildren;
     }
 

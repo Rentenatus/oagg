@@ -1,12 +1,13 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -23,8 +24,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -617,7 +618,7 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
     }
 
     private void propagateMaxMultiplicityOfParent(agg.xt_basis.Type p, int value) {
-        Vector<agg.xt_basis.Type> v = p.getChildren();
+        List<agg.xt_basis.Type> v = p.getChildren();
         for (int i = 0; i < v.size(); i++) {
             agg.xt_basis.Type ch = v.get(i);
             if (ch.getSourceMax() == agg.xt_basis.Type.UNDEFINED
@@ -629,7 +630,7 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
     }
 
     private void propagateMinMultiplicityOfParent(agg.xt_basis.Type p, int value) {
-        Vector<agg.xt_basis.Type> v = p.getChildren();
+        List<agg.xt_basis.Type> v = p.getChildren();
         for (int i = 0; i < v.size(); i++) {
             agg.xt_basis.Type ch = v.get(i);
             if (ch.getSourceMin() == agg.xt_basis.Type.UNDEFINED
