@@ -18,6 +18,7 @@ Discord: https://discord.gg/JZtHQbxC
 **Dependencies:**
 
 * xerces-2_12_1
+* ndimcol4j (https://github.com/Rentenatus/ndimcol4j)
 
 ---
 
