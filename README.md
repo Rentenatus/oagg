@@ -11,6 +11,8 @@ The work on AGG started in the beginning of 1997. The system is developed and ma
 
 The Mirror Open AGG is managed by Janusch Rentenatus, providing code review since 2021 and Java upgrades.
 
+Discord: https://discord.gg/JZtHQbxC
+
 ---
 
 **Dependencies:**
