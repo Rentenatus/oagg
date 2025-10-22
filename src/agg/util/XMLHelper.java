@@ -150,7 +150,7 @@ public class XMLHelper implements ExceptionListener {
                 }
             }
         }
-
+ 
         FileOutputStream os = null;
         try {
             os = new FileOutputStream(f);
@@ -161,6 +161,7 @@ public class XMLHelper implements ExceptionListener {
 
             os.close();
         } catch (IOException ex) {
+            System.err.println("Absolute path: " + f.getAbsolutePath());
             ex.printStackTrace();
             return false;
         }

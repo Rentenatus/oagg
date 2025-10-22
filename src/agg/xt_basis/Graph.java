@@ -328,32 +328,63 @@ public class Graph extends ExtObservable
             if (!disabledTypeGraph
                     || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
                 boolean failed = false;
-                final Map<Node, Node> memo1 = new HashMap<>(g.getSize());
-                for (Node vtxOrig : g.getNodesSet()) {
-                    Type type = vtxOrig.getType();
-                    if (type != null) {
-                        Node vtxCopy = this.createNode(type);
-                        vtxCopy.setObjectName(vtxOrig.getObjectName());
-                        vtxCopy.copyAttributes(vtxOrig);
-                        vtxCopy.setContextUsage(vtxOrig.getContextUsage());
-                        memo1.put(vtxOrig, vtxCopy);
-                        propagateChange(new Change(Change.OBJECT_CREATED, vtxCopy));
+                final Map<Node, Node> memo1 = new HashMap<>(g
+                        .getSize());
+                Iterator<Node> vtxList = g.getNodesSet().iterator();
+                while (vtxList.hasNext()) {
+                    Node vtxOrig = vtxList.next();
+                    Node vtxCopy = null;
+                    Type type = this.itsTypes.getSimilarType(vtxOrig.getType());
+                    if (type == null) {
+                        type = this.itsTypes.getTypeByName(vtxOrig.getType()
+                                .getName());
+                        if (type != null && !type.isNodeType()) {
+                            type = null;
+                        }
+                    }
+                    try {
+                        if (type != null) {
+                            vtxCopy = this.createNode(type);
+                            vtxCopy.setObjectName(vtxOrig.getObjectName());
+                            vtxCopy.copyAttributes(vtxOrig);
+                            vtxCopy.setContextUsage(vtxOrig
+                                    .getContextUsage());
+                            memo1.put(vtxOrig, vtxCopy);
+
+                            propagateChange(new Change(
+                                    Change.OBJECT_CREATED, vtxCopy));
+                        }
+                    } catch (TypeException e) {
                     }
                 }
-                for (Arc arcOrig : g.getArcsSet()) {
-                    Type type = arcOrig.getType();
-                    if (type != null)   try {
-                        Node source = (Node) arcOrig.getSource();
-                        Node target = (Node) arcOrig.getTarget();
-                        Node srcImg = memo1.get(source);
-                        Node tgtImg = memo1.get(target);
-                        Arc arcCopy = this.createArc(type, srcImg, tgtImg);
-                        arcCopy.setObjectName(arcOrig.getObjectName());
-                        arcCopy.copyAttributes(arcOrig);
-                        arcCopy.setContextUsage(arcOrig.getContextUsage());
-                        propagateChange(new Change(Change.OBJECT_CREATED, arcCopy));
+                Iterator<Arc> arcList = g.getArcsSet().iterator();
+                while (arcList.hasNext()) {
+                    Arc arcOrig = arcList.next();
+                    Arc arcCopy = null;
+                    Type type = this.itsTypes.getSimilarType(arcOrig.getType());
+                    if (type == null) {
+                        type = this.itsTypes.getTypeByName(arcOrig.getType()
+                                .getName());
+                        if (type != null && !type.isArcType()) {
+                            type = null;
+                        }
+                    }
+                    try {
+                        if (type != null) {
+                            Node source = (Node) arcOrig.getSource();
+                            Node target = (Node) arcOrig.getTarget();
+                            Node srcImg = memo1.get(source);
+                            Node tgtImg = memo1.get(target);
+                            arcCopy = this.createArc(type, srcImg, tgtImg);
+                            arcCopy.setObjectName(arcOrig.getObjectName());
+                            arcCopy.copyAttributes(arcOrig);
+                            arcCopy.setContextUsage(arcOrig
+                                    .getContextUsage());
+
+                            propagateChange(new Change(
+                                    Change.OBJECT_CREATED, arcCopy));
+                        }
                     } catch (TypeException e) {
-                        failed = true;
                     }
                 }
                 memo1.clear();
@@ -367,70 +398,103 @@ public class Graph extends ExtObservable
 
     @SuppressWarnings("unused")
     private boolean integrateCopyOfGraph(Graph g) {
-        if (this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) synchronized (monitorMorphs) {
-            boolean failed = false;
-            final Map<Node, Node> memo1 = new HashMap<>(g.getSize());
-            for (Node vtxOrig : g.getNodesSet()) {
-                Type type = vtxOrig.getType();
-                if (type != null) {
-                    boolean found = false;
-                    String keystr = type.convertToKey();
-                    HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
-                    if (objSet != null) {
-                        for (GraphObject o : objSet) {
-                            if (vtxOrig.compareTo(o)) {
-                                found = true;
-                                memo1.put(vtxOrig, (Node) o);
-                            }
+        synchronized (this) {
+            if (this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
+                boolean failed = false;
+                final Map<Node, Node> memo1 = new HashMap<>(g
+                        .getSize());
+                Iterator<Node> vtxList = g.getNodesSet().iterator();
+                while (vtxList.hasNext()) {
+                    Node vtxOrig = vtxList.next();
+                    Node vtxCopy = null;
+                    Type type = this.itsTypes.getSimilarType(vtxOrig.getType());
+                    if (type == null) {
+                        type = this.itsTypes.getTypeByName(vtxOrig.getType()
+                                .getName());
+                        if (type != null && !type.isNodeType()) {
+                            type = null;
                         }
                     }
-                    if (!found) {
-                        Node vtxCopy = this.createNode(type);
-                        vtxCopy.setObjectName(vtxOrig.getObjectName());
-                        vtxCopy.copyAttributes(vtxOrig);
-                        vtxCopy.setContextUsage(vtxOrig.getContextUsage());
-                        memo1.put(vtxOrig, vtxCopy);
-                        propagateChange(new Change(Change.OBJECT_CREATED, vtxCopy));
-                    }
-                }
-            }
-            for (Arc arcOrig : g.getArcsSet()) {
-                Type type = arcOrig.getType();
-                try {
-                    if (type != null) {
-                        Node source = (Node) arcOrig.getSource();
-                        Node target = (Node) arcOrig.getTarget();
-                        Node src = memo1.get(source);
-                        Node tar = memo1.get(target);
-
-                        boolean found = false;
-                        String keystr = src.convertToKey()
-                                + arcOrig.getType().convertToKey()
-                                + tar.convertToKey();
-                        HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
-                        if (objSet != null) {
-                            for (GraphObject o : objSet) {
-                                if (arcOrig.compareTo(o)) {
-                                    found = true;
-                                    break;
+                    try {
+                        if (type != null) {
+                            boolean found = false;
+                            String keystr = type.convertToKey();
+                            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
+                            if (objSet != null) {
+                                Iterator<GraphObject> iter = objSet.iterator();
+                                while (iter.hasNext()) {
+                                    GraphObject o = iter.next();
+                                    if (vtxOrig.compareTo(o)) {
+                                        found = true;
+                                        memo1.put(vtxOrig, (Node) o);
+                                    }
                                 }
                             }
+                            if (!found) {
+                                vtxCopy = this.createNode(type);
+                                vtxCopy.setObjectName(vtxOrig.getObjectName());
+                                vtxCopy.copyAttributes(vtxOrig);
+                                vtxCopy.setContextUsage(vtxOrig
+                                        .getContextUsage());
+                                memo1.put(vtxOrig, vtxCopy);
+
+                                propagateChange(new Change(
+                                        Change.OBJECT_CREATED, vtxCopy));
+                            }
                         }
-                        if (!found) {
-                            Arc arcCopy = this.createArc(type, src, tar);
-                            arcCopy.setObjectName(arcOrig.getObjectName());
-                            arcCopy.copyAttributes(arcOrig);
-                            arcCopy.setContextUsage(arcOrig.getContextUsage());
-                            propagateChange(new Change(Change.OBJECT_CREATED, arcCopy));
+                    } catch (TypeException e) {
+                    }
+                }
+                Iterator<Arc> arcList = g.getArcsSet().iterator();
+                while (arcList.hasNext()) {
+                    Arc arcOrig = arcList.next();
+                    Type type = this.itsTypes.getSimilarType(arcOrig.getType());
+                    if (type == null) {
+                        type = this.itsTypes.getTypeByName(arcOrig.getType()
+                                .getName());
+                        if (type != null && !type.isArcType()) {
+                            type = null;
                         }
                     }
-                } catch (TypeException e) {
-                    failed = true;
+                    try {
+                        if (type != null) {
+                            Node source = (Node) arcOrig.getSource();
+                            Node target = (Node) arcOrig.getTarget();
+                            Node src = memo1.get(source);
+                            Node tar = memo1.get(target);
+
+                            boolean found = false;
+                            String keystr = src.convertToKey()
+                                    + arcOrig.getType().convertToKey()
+                                    + tar.convertToKey();
+                            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
+                            if (objSet != null) {
+                                Iterator<GraphObject> iter = objSet.iterator();
+                                while (iter.hasNext()) {
+                                    GraphObject o = iter.next();
+                                    if (arcOrig.compareTo(o)) {
+                                        found = true;
+                                    }
+                                }
+                            }
+                            if (!found) {
+                                Arc arcCopy = this.createArc(type, src, tar);
+                                arcCopy.setObjectName(arcOrig.getObjectName());
+                                arcCopy.copyAttributes(arcOrig);
+                                arcCopy.setContextUsage(arcOrig
+                                        .getContextUsage());
+
+                                propagateChange(new Change(
+                                        Change.OBJECT_CREATED, arcCopy));
+                            }
+                        }
+                    } catch (TypeException e) {
+                    }
                 }
-            }
-            memo1.clear();
-            if (!failed) {
-                return true;
+                memo1.clear();
+                if (!failed) {
+                    return true;
+                }
             }
         }
         return false;
@@ -450,14 +514,16 @@ public class Graph extends ExtObservable
             }
 
             boolean failed = false;
-            final Map<Node, Node> memo1 = new HashMap<>(this.getSize());
+            final Map<Node, Node> memo1 = new HashMap<>(this
+                    .getSize());
 
             Graph theCopy = BaseFactory.theFactory().createGraph(typeSet);
             theCopy.setCompleteGraph(this.isCompleteGraph());
             if ((this.getAttrContext() != null)
-                    && ((ContextView) this.getAttrContext()).getAllowedMapping() == AttrMapping.GRAPH_MAP) {
-                agg.attribute.AttrContext aGraphContext
-                        = agg.attribute.impl.AttrTupleManager.getDefaultManager().newContext(
+                    && ((ContextView) this.getAttrContext())
+                            .getAllowedMapping() == AttrMapping.GRAPH_MAP) {
+                agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newContext(
                                 agg.attribute.AttrMapping.GRAPH_MAP);
                 theCopy.setAttrContext(agg.attribute.impl.AttrTupleManager
                         .getDefaultManager().newRightContext(aGraphContext));
@@ -467,7 +533,13 @@ public class Graph extends ExtObservable
             while (iter.hasNext()) {
                 Node vtxOrig = (Node) iter.next();
                 Node vtxCopy = null;
-                Type type = vtxOrig.getType();
+                Type type = typeSet.getSimilarType(vtxOrig.getType());
+                if (type == null) {
+                    type = typeSet.getTypeByName(vtxOrig.getType().getName());
+                    if (type != null && !type.isNodeType()) {
+                        type = null;
+                    }
+                }
                 if (type != null) {
                     try {
                         vtxCopy = theCopy.createNode(type);
@@ -476,7 +548,8 @@ public class Graph extends ExtObservable
                          */
                         if (vtxCopy != null) {
                             // check this graph against the type graph
-                            typeError = typeSet.checkType(vtxCopy, this.isCompleteGraph());
+                            typeError = typeSet.checkType(vtxCopy, this
+                                    .isCompleteGraph());
                             if (typeError != null) {
                                 theCopy.dispose();
                                 throw new TypeException(typeError);
@@ -596,7 +669,7 @@ public class Graph extends ExtObservable
                 Node vtxOrig = (Node) iter.next();
                 Node vtxCopy = null;
                 try {
-                    Type type = vtxOrig.getType();
+                    Type type = typeSet.getSimilarType(vtxOrig.getType());
                     if (type != null) {
                         vtxCopy = theCopy.createNode(type);
                         /**
@@ -1221,17 +1294,41 @@ public class Graph extends ExtObservable
     /**
      * Creates and adds a new Node of the specified type.
      *
-     * @param type
-     * @return
      */
-    public Node createNode(Type type) {
+    public Node createNode(Type type) throws TypeException {
         Type t = this.itsTypes.adoptClan(type);
         Node aNode = new Node(t, this);
+
+        // check for type mismatches
+        TypeError typeError = this.itsTypes.checkType(aNode, this.isCompleteGraph());
+        if (typeError != null) {
+            throw new TypeException(typeError);
+        }
+
         this.attributed = this.attributed || aNode.getAttribute() != null;
+
         this.itsNodes.add(aNode);
+
         addToTypeObjectsMap(aNode);
+
         this.changed = true;
+
         propagateChange(new Change(Change.OBJECT_CREATED, aNode));
+
+        return aNode;
+    }
+
+    /**
+     * @deprecated use the method <code>copyNode(Node orig)</code>
+     */
+    public Node createNode(Node orig) throws TypeException {
+        Node aNode = createNode(orig.getType());
+        if (aNode != null) {
+            if (orig.getAttribute() != null) {
+                ((ValueTuple) aNode.getAttribute()).copyEntries(orig
+                        .getAttribute());
+            }
+        }
         return aNode;
     }
 
@@ -3047,21 +3144,23 @@ public class Graph extends ExtObservable
             Iterator<?> iter = this.itsNodes.iterator();
             while (!failed && iter.hasNext()) {
                 Node vtxOrig = (Node) iter.next();
-
-                Node vtxCopy = theCopy.createNode(vtxOrig.getType());
-                vtxCopy.setObjectName(vtxOrig.getObjectName());
-                vtxCopy.setContextUsage(vtxOrig.getContextUsage());
-                memo1.put(vtxOrig, vtxCopy);
                 try {
-                    if (inverse) {
-                        iso.addPlainMapping(vtxCopy, vtxOrig);
-                    } else {
-                        iso.addPlainMapping(vtxOrig, vtxCopy);
+                    Node vtxCopy = theCopy.createNode(vtxOrig.getType());
+                    vtxCopy.setObjectName(vtxOrig.getObjectName());
+                    vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                    memo1.put(vtxOrig, vtxCopy);
+                    try {
+                        if (inverse) {
+                            iso.addPlainMapping(vtxCopy, vtxOrig);
+                        } else {
+                            iso.addPlainMapping(vtxOrig, vtxCopy);
+                        }
+                    } catch (BadMappingException bme) {
+                        failed = true;
+                        iso.dispose();
+                        theCopy.dispose();
                     }
-                } catch (BadMappingException bme) {
-                    failed = true;
-                    iso.dispose();
-                    theCopy.dispose();
+                } catch (TypeException ex) {
                 }
             }
 

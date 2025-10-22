@@ -960,17 +960,19 @@ public class TypeSet {
         if (nodes != null && nodes.isEmpty()) {
             for (int i = 0; i < nodes.size(); i++) {
                 Node n = nodes.get(i);
-
-                this.typeGraph.createNode(n.getType());
-
+                try {
+                    this.typeGraph.createNode(n.getType());
+                } catch (TypeException ex) {
+                }
             }
         } else {
             for (int i = 0; i < this.types.size(); i++) {
                 Type t = this.types.get(i);
                 if (t.isNodeType()) {
-
-                    this.typeGraph.createNode(t);
-
+                    try {
+                        this.typeGraph.createNode(t);
+                    } catch (TypeException ex) {
+                    }
                 }
             }
         }
@@ -1030,7 +1032,10 @@ public class TypeSet {
                 Node n = nodes.next();
                 Type t = n.getType();
                 if (this.typeGraph.getNodes(t) == null) {
-                    this.typeGraph.createNode(t);
+                    try {
+                        this.typeGraph.createNode(t);
+                    } catch (TypeException ex) {
+                    }
                 }
             }
         } else {
@@ -1038,7 +1043,10 @@ public class TypeSet {
                 Type t = this.types.get(i);
                 if (t.isNodeType()) {
                     if (this.typeGraph.getNodes(t) == null) {
-                        this.typeGraph.createNode(t);
+                        try {
+                            this.typeGraph.createNode(t);
+                        } catch (TypeException ex) {
+                        }
                     }
                 }
             }

@@ -2327,6 +2327,18 @@ public class GraGra implements Disposable, XMLObject {
         return this.typeSet.createType();
     }
 
+    /*
+	 * Create a new type for typing of GraphObjects. 
+	 * 
+	 * @deprecated  replaced by 
+	 * 		<code>Type createNodeType(boolean withAttributes)</code> for node type
+	 * and  
+	 * 		<code>Type createArcType(boolean withAttributes)</code> for edge type
+     */
+    public Type createType(boolean withAttributes) {
+        return this.typeSet.createType(withAttributes);
+    } 
+
     /**
      * Creates a new node type for typing of Node.
      *

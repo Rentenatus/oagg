@@ -2274,14 +2274,26 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         while (rnodes.hasNext()) {
             Node rNode = rnodes.next();
             Node linverseNode = null;
-            linverseNode = linverse.createNode(rNode.getType());
+            try {
+                linverseNode = linverse.createNode(rNode.getType());
+            } catch (TypeException e) {
+                // if the old rule was well typed, the new
+                // rule should be also well typed
+                e.printStackTrace();
+            }
             rmorph.addMapping(rNode, linverseNode);
         }
         Iterator<Node> lnodes = lgraph.getNodesSet().iterator();
         while (lnodes.hasNext()) {
             Node lNode = lnodes.next();
             Node rinverseNode = null;
-            rinverseNode = rinverse.createNode(lNode.getType());
+            try {
+                rinverseNode = rinverse.createNode(lNode.getType());
+            } catch (TypeException e) {
+                // if the old rule was well typed, the new
+                // rule should be also well typed
+                e.printStackTrace();
+            }
             lmorph.addMapping(lNode, rinverseNode);
             GraphObject rn = this.getImage(lNode);
             if (rn != null) {
@@ -2346,14 +2358,26 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         while (rnodes.hasNext()) {
             Node rNode = rnodes.next();
             Node linverseNode = null;
-            linverseNode = linverse.createNode(rNode.getType());
+            try {
+                linverseNode = linverse.createNode(rNode.getType());
+            } catch (TypeException e) {
+                // if the old rule was well typed, the new
+                // rule should be also well typed
+                e.printStackTrace();
+            }
             rmorph.addMapping(rNode, linverseNode);
         }
         Iterator<Node> lnodes = lgraph.getNodesSet().iterator();
         while (lnodes.hasNext()) {
             Node lNode = lnodes.next();
             Node rinverseNode = null;
-            rinverseNode = rinverse.createNode(lNode.getType());
+            try {
+                rinverseNode = rinverse.createNode(lNode.getType());
+            } catch (TypeException e) {
+                // if the old rule was well typed, the new
+                // rule should be also well typed
+                e.printStackTrace();
+            }
             lmorph.addMapping(lNode, rinverseNode);
             GraphObject rn = this.getImage(lNode);
             if (rn != null) {

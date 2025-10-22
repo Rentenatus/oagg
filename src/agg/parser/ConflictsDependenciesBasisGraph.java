@@ -575,10 +575,13 @@ public class ConflictsDependenciesBasisGraph {
     private Node createNode(Graph g, Type t, Rule r) {
         Node n = getNode(g, r);
         if (n == null) {
-            n = g.createNode(t);
-            ValueTuple vt = (ValueTuple) n.getAttribute();
-            String rname = r.getQualifiedName();
-            vt.getValueMemberAt("name").setExprAsObject(rname);
+            try {
+                n = g.createNode(t);
+                ValueTuple vt = (ValueTuple) n.getAttribute();
+                String rname = r.getQualifiedName();
+                vt.getValueMemberAt("name").setExprAsObject(rname);
+            } catch (TypeException e) {
+            }
         }
         return n;
     }

@@ -451,12 +451,15 @@ public class BaseFactory {
             if (g.hasInverseImage(n) && f.hasInverseImage(n)) {
                 Node n_f = (Node) f.firstOfInverseImage(n);
                 Node n_g = (Node) g.firstOfInverseImage(n);
-                Node nn = L.createNode(n.getType());
                 try {
-                    r.addMapping(nn, n_g);
-                    m.addMapping(nn, n_f);
-                    n2n.put(n_g, nn);
-                } catch (BadMappingException ex1) {
+                    Node nn = L.createNode(n.getType());
+                    try {
+                        r.addMapping(nn, n_g);
+                        m.addMapping(nn, n_f);
+                        n2n.put(n_g, nn);
+                    } catch (BadMappingException ex1) {
+                    }
+                } catch (TypeException ex) {
                 }
             }
         }
@@ -578,10 +581,13 @@ public class BaseFactory {
             Node n = nodes.next();
             if (n2n_L.get(n) == null
                     && !g.hasInverseImage(n)) {
-                Node n_L = L.createNode(n.getType());
                 try {
-                    b3.addMapping(n_L, n);
-                } catch (BadMappingException ex1) {
+                    Node n_L = L.createNode(n.getType());
+                    try {
+                        b3.addMapping(n_L, n);
+                    } catch (BadMappingException ex1) {
+                    }
+                } catch (TypeException ex) {
                 }
             }
         }
@@ -612,12 +618,15 @@ public class BaseFactory {
         while (nodes.hasNext()) {
             Node n = nodes.next();
             if (t.getImage(n) != null) {
-                Node nn = D.createNode(n.getType());
                 try {
-                    f.addMapping(nn, t.getImage(n));
-                    g.addMapping(nn, n);
-                    n2n.put(n, nn);
-                } catch (BadMappingException ex1) {
+                    Node nn = D.createNode(n.getType());
+                    try {
+                        f.addMapping(nn, t.getImage(n));
+                        g.addMapping(nn, n);
+                        n2n.put(n, nn);
+                    } catch (BadMappingException ex1) {
+                    }
+                } catch (TypeException ex) {
                 }
             }
         }
