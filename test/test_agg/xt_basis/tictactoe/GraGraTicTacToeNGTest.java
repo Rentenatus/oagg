@@ -7,6 +7,7 @@
  */
 package test_agg.xt_basis.tictactoe;
 
+import agg.xt_basis.Graph;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -42,6 +43,24 @@ public class GraGraTicTacToeNGTest {
 
     @Test
     public void testSomeMethod() {
+        long startTime = System.nanoTime();
+        AggRuleSystem ars = loadAggSemantics();
+        Graph startGraph = ars.getDataGraph();
+        for (int i = 0; i < 32; i++) {
+            System.out.println(i+" / 32 ...");
+            ars.useGraph(startGraph.copy());
+            play(ars);
+        }
+        checkRedu(ars);
+        long endTime = System.nanoTime();
+        long duration = (endTime - startTime) / 1_000_000; // Zeit in Millisekunden
+        System.out.println(">>>>>>>>>>>>>");
+        System.out.println(">>>>>>>>>>>>>");
+        System.out.println(">>>>>>>>>>>>> Dauer: " + (duration / 100d) + " s  (Trg: 950 s)\n\n");
+        System.out.println(">>>>>>>>>>>>>");
+    }
+
+    protected AggRuleSystem loadAggSemantics() {
         AggRuleSystem ars = new AggRuleSystem();
         boolean okay = ars.loadSemantics("test_agg/xt_basis/tictactoe/TicTacToeSem.ggx");
         if (!okay) {
@@ -51,7 +70,37 @@ public class GraGraTicTacToeNGTest {
         if (!okay) {
             fail("Start graph not found.");
         }
-        okay = ars.execute("prodSteinB",
+        return ars;
+    }
+
+    protected void checkRedu(AggRuleSystem ars) {
+        Map<String, Object> returnMap = new TreeMap<String, Object>();
+        ars.reduce("reduNaechsterZug", returnMap);
+
+        returnMap.forEach((s, ob) -> System.out.println("    > " + s + " :    " + ob));
+
+        int check = 0;
+        for (Map.Entry<String, Object> entry : returnMap.entrySet()) {
+            if ("drohung".equals(entry.getValue())) {
+                String it = entry.getKey().substring(0, 20);
+                assertEquals(returnMap.get(it + "Feld.x"), 2);
+                assertEquals(returnMap.get(it + "Feld.y"), 2);
+                assertEquals(returnMap.get(it + "msg.param"), "F");
+                check++;
+            }
+            if ("setzeABlock".equals(entry.getValue())) {
+                String it = entry.getKey().substring(0, 20);
+                assertEquals(returnMap.get(it + "Feld.x"), 2);
+                assertEquals(returnMap.get(it + "Feld.y"), 2);
+                assertEquals(returnMap.get(it + "Workrecord.indexR"), 11);
+                check++;
+            }
+        }
+        assertEquals(check, 2);
+    }
+
+    protected void play(AggRuleSystem ars) {
+        boolean okay = ars.execute("prodSteinB",
                 // Auf RB wird von 1 bis 3 (menschnelesbar) nummeriert:
                 new ParameterInteger("paramX", 1),
                 new ParameterInteger("paramY", 1)
@@ -135,31 +184,6 @@ public class GraGraTicTacToeNGTest {
         if (okay) {
             fail("NAC of chance failed.");
         }
-
-        Map<String, Object> returnMap = new TreeMap<String, Object>();
-        ars.reduce("reduNaechsterZug", returnMap);
-
-        returnMap.forEach((s, ob) -> System.out.println("    > " + s + " :    " + ob));
-
-        int check = 0;
-        for (Map.Entry<String, Object> entry : returnMap.entrySet()) {
-            if ("drohung".equals(entry.getValue())) {
-                String it = entry.getKey().substring(0, 20);
-                assertEquals(returnMap.get(it + "Feld.x"), 2);
-                assertEquals(returnMap.get(it + "Feld.y"), 2);
-                assertEquals(returnMap.get(it + "msg.param"), "F");
-                check++;
-            }
-            if ("setzeABlock".equals(entry.getValue())) {
-                String it = entry.getKey().substring(0, 20);
-                assertEquals(returnMap.get(it + "Feld.x"), 2);
-                assertEquals(returnMap.get(it + "Feld.y"), 2);
-                assertEquals(returnMap.get(it + "Workrecord.indexR"), 11);
-                check++;
-            }
-        }
-        assertEquals(check, 2);
-
     }
 
 }
