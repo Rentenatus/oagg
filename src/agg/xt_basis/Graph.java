@@ -31,6 +31,7 @@ import agg.util.XMLObject;
 import agg.xt_basis.calculator.GraphOrientation;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
+import de.jare.ndimcol.ref.ArraySeason;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -1137,14 +1138,14 @@ public class Graph extends ExtObservable
         return this.comment;
     }
 
-    public List<Type> getUsedTypes() {
-        final List<Type> vec = new ArrayList<>();
+    public ArrayMovie<Type> getUsedTypes() {
+        final ArrayMovie<Type> vec = new ArraySeason<>();
         getTypesOfGOs(this.itsNodes.iterator(), vec);
         getTypesOfGOs(this.itsArcs.iterator(), vec);
         return vec;
     }
 
-    private void getTypesOfGOs(final Iterator<?> iter, final List<Type> result) {
+    private void getTypesOfGOs(final Iterator<?> iter, final ArrayMovie<Type> result) {
         while (iter.hasNext()) {
             GraphObject o = (GraphObject) iter.next();
             if (!result.contains(o.getType())) {

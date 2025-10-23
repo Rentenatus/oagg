@@ -258,6 +258,10 @@ public class TypeSet {
     public final Iterator<Type> getTypes() {
         return this.types.iterator();
     }
+    
+    public final IteratorWalker<Type> getTypeWalker() {
+        return this.types.softWalker();
+    }
 
     public final int getTypesCount() {
         return this.types.size();
@@ -499,7 +503,7 @@ public class TypeSet {
      * found types.
      */
     public void adaptTypes(final TypeSet otherTypes, final boolean all) {
-        doAdaptTypes(otherTypes.getTypes(), all);
+        doAdaptTypes(otherTypes.getTypeWalker(), all);
     }
 
     /**
@@ -507,11 +511,11 @@ public class TypeSet {
      * each type of the <code>otherTypes</code>, otherwise only of not found
      * type.
      */
-    public void adaptTypes(final Iterator<Type> otherTypes, final boolean all) {
+    public void adaptTypes(final IteratorWalker<Type> otherTypes, final boolean all) {
         doAdaptTypes(otherTypes, all);
     }
 
-    private void doAdaptTypes(final Iterator<Type> otherTypes, final boolean all) {
+    private void doAdaptTypes(final IteratorWalker<Type> otherTypes, final boolean all) {
         Vector<Pair<Type, Type>> v = new Vector<Pair<Type, Type>>(5);
         while (otherTypes.hasNext()) {
             Type t = otherTypes.next();
@@ -2944,7 +2948,7 @@ public class TypeSet {
             return true;
         }
         // compare types size
-        Iterator<Type> e = ts.getTypes();
+        IteratorWalker<Type> e = ts.getTypeWalker();
         Vector<Type> another = new Vector<Type>();
         while (e.hasNext()) {
             another.add(e.next());

@@ -27,6 +27,7 @@ import agg.attribute.impl.AttrTupleManager;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import de.jare.ndimcol.ref.ArrayMovie;
 
 /**
  * This class is used to represent matches (morphism from the left side graph of a rule into a host graph). Note that
@@ -124,7 +125,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         }
 
         // check types: all types of the orig. graph should be in image, too
-        final List<Type> origTypes = this.itsOrig.getUsedTypes();
+        final ArrayMovie<Type> origTypes = this.itsOrig.getUsedTypes();
         final List<Type> imagTypes = this.itsImag.getUsedAndInheritedTypes();
         for (int i = 0; i < origTypes.size(); i++) {
             if (!imagTypes.contains(origTypes.get(i))) {

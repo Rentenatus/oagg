@@ -6705,7 +6705,7 @@ public class GraGraTreeView extends JPanel implements
             List<String> failed = new Vector<String>();
             if (ruleNames.size() > 0) {
                 selGraGra.getTypeSet().getBasisTypeSet().adaptTypes(
-                        importGraGra.getBasisGraGra().getTypes(), true);
+                        importGraGra.getBasisGraGra().getTypeWalker(), true);
                 selGraGra.getTypeSet().refreshTypes(true);
 
 //				List<Rule> set = new Vector<Rule>(); // test
@@ -6834,7 +6834,7 @@ public class GraGraTreeView extends JPanel implements
         List<String> failed = new Vector<String>();
         if (names.size() > 0) {
             selGraGra.getTypeSet().getBasisTypeSet().adaptTypes(
-                    importGraGra.getBasisGraGra().getTypes(), true);
+                    importGraGra.getBasisGraGra().getTypeWalker(), true);
             selGraGra.getTypeSet().refreshTypes(true);
 
             for (int i = 0; i < names.size(); i++) {

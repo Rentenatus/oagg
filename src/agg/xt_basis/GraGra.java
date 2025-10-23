@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -49,14 +51,19 @@ import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.xt_basis.csp.Completion_CSP_NoBJ;
+import de.jare.ndimcol.ref.ArrayMovie;
+import de.jare.ndimcol.ref.ArraySeason;
+import de.jare.ndimcol.ref.ArrayTape;
+import de.jare.ndimcol.ref.IteratorWalker;
 import org.w3c.dom.Element;
 
 /**
- * This class provides functionality of a graph grammar, consisting of an arbitrary number of graphs (the "host
- * graphs"), an arbitrary number of rules, an arbitrary number of match morphisms from the rules into the host graph.
+ * This class provides functionality of a graph grammar, consisting of an
+ * arbitrary number of graphs (the "host graphs"), an arbitrary number of rules,
+ * an arbitrary number of match morphisms from the rules into the host graph.
  * <p>
- * The implementation serves as a factory to create instances of classes Type, Graph, Rule and Match, AtomConstraint and
- * Formula,
+ * The implementation serves as a factory to create instances of classes Type,
+ * Graph, Rule and Match, AtomConstraint and Formula,
  *
  * @author $Author: olga $
  * @version $Id: GraGra.java,v 1.143 2010/12/16 17:31:39 olga Exp $
@@ -97,13 +104,15 @@ public class GraGra implements Disposable, XMLObject {
     final protected List<RuleSequence> itsRuleSequences = new Vector<RuleSequence>(1);
 
     /**
-     * The set of the used packages of the Java classes. These classes might be used for attributing. The first element
-     * of a Pair is the name of an attribute handler, the second - a list of class names.
+     * The set of the used packages of the Java classes. These classes might be
+     * used for attributing. The first element of a Pair is the name of an
+     * attribute handler, the second - a list of class names.
      */
     final protected Vector<Pair<String, List<String>>> itsPackages = new Vector<Pair<String, List<String>>>(5);
 
     /**
-     * My type set used in graphs and rules. It contains types of nodes and edges and evtl. a type graph.
+     * My type set used in graphs and rules. It contains types of nodes and
+     * edges and evtl. a type graph.
      */
     protected TypeSet typeSet;
 
@@ -113,8 +122,8 @@ public class GraGra implements Disposable, XMLObject {
     protected Graph itsGraph;
 
     /**
-     * My start graph. It cannot be changed. At the beginning the start is equal to the host graph. It will be used to
-     * reset my host graph.
+     * My start graph. It cannot be changed. At the beginning the start is equal
+     * to the host graph. It will be used to reset my host graph.
      */
     protected Graph itsStartGraph;
 
@@ -200,7 +209,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Construct a new graph grammar with a type set and/or type graph specified by the TypeSet newTypeSet
+     * Construct a new graph grammar with a type set and/or type graph specified
+     * by the TypeSet newTypeSet
      */
     public GraGra(TypeSet newTypeSet) {
         this.dirName = "";
@@ -343,8 +353,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Remove the specified graph from my host graphs and destroy it. The current host graph and the specified graph
-     * have to be different.
+     * Remove the specified graph from my host graphs and destroy it. The
+     * current host graph and the specified graph have to be different.
      */
     public void destroyGraph(final Graph g) {
         if (this.itsGraphs.remove(g)) {
@@ -364,8 +374,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Remove the specified graph from my graphs. Return FALSE if the specified graph does not belong to my graphs. The
-     * current host graph and the specified graph have to be different.
+     * Remove the specified graph from my graphs. Return FALSE if the specified
+     * graph does not belong to my graphs. The current host graph and the
+     * specified graph have to be different.
      */
     public boolean removeGraph(final Graph g) {
         if (this.itsGraphs.contains(g)) {
@@ -395,7 +406,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Return true, if the specified Graph g is once of my host graphs, otherwise - false.
+     * Return true, if the specified Graph g is once of my host graphs,
+     * otherwise - false.
      */
     public boolean isElement(final Graph g) {
         return this.itsGraphs.contains(g);
@@ -517,8 +529,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Reset my host graph by the Graph g. The types of the graph g have to be similar of my types. The given graph g
-     * will be added to my list of graphs if it is not already contained.
+     * Reset my host graph by the Graph g. The types of the graph g have to be
+     * similar of my types. The given graph g will be added to my list of graphs
+     * if it is not already contained.
      */
     public boolean resetGraph(final Graph g) {
         if (this.typeSet == null || g.getTypeSet() == null) {
@@ -548,8 +561,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Reset my host graph by the Graph g. The graph g has not to be in the list of my graphs. The types of the graph g
-     * have to be similar of my types.
+     * Reset my host graph by the Graph g. The graph g has not to be in the list
+     * of my graphs. The types of the graph g have to be similar of my types.
      */
     public boolean resetGraph(int atIndex, final Graph g) {
         if (this.typeSet == null
@@ -608,8 +621,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Reset my host graph by the Graph g without type guarantee. The types of the graph g should be similar to my
-     * types.
+     * Reset my host graph by the Graph g without type guarantee. The types of
+     * the graph g should be similar to my types.
      */
     public boolean resetGraphWithoutGuarantee(final Graph g) {
         boolean result = true;
@@ -636,11 +649,13 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Adds the specified Graph g to the current type graph if it exists or to a new created type graph otherwise. The
-     * Graph g is a type graph, g.isTypeGraph() should return true. The type graph check should be disabled. The new
-     * node/edge types of the Graph g are added to the current types. The current type graph structure and the structure
-     * of the Graph g are united dis-jointly. Double occurrence of the nodes/arcs are possible and they have to be
-     * resolved manually by the user.
+     * Adds the specified Graph g to the current type graph if it exists or to a
+     * new created type graph otherwise. The Graph g is a type graph,
+     * g.isTypeGraph() should return true. The type graph check should be
+     * disabled. The new node/edge types of the Graph g are added to the current
+     * types. The current type graph structure and the structure of the Graph g
+     * are united dis-jointly. Double occurrence of the nodes/arcs are possible
+     * and they have to be resolved manually by the user.
      */
     public boolean importTypeGraph(final Graph g, final boolean rewrite) {
         boolean result = false;
@@ -673,7 +688,7 @@ public class GraGra implements Disposable, XMLObject {
     private Map<ValueTuple, ValueTuple> storeAttrValueOfAttrTypeObserver() {
 //		System.out.println("######  storeAttrValueOfAttrTypeObserver......");
         final Map<ValueTuple, ValueTuple> attrStore = new Hashtable<ValueTuple, ValueTuple>();
-        final Iterator<Type> types = this.typeSet.getTypes();
+        final IteratorWalker<Type> types = this.typeSet.getTypeWalker();
         while (types.hasNext()) {
             final Type t = types.next();
             if (t.getAttrType() != null) {
@@ -713,7 +728,7 @@ public class GraGra implements Disposable, XMLObject {
 
     private void restoreAttrValueOfObserver(final Map<ValueTuple, ValueTuple> attrStore) {
 //		System.out.println("######  restoreAttrValueOfAttrTypeObserver......");
-        final Iterator<Type> types = this.typeSet.getTypes();
+        final IteratorWalker<Type> types = this.typeSet.getTypeWalker();
         while (types.hasNext()) {
             final Type t = types.next();
             if (t.getAttrType() == null) {
@@ -743,7 +758,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Reset my host graph by the Graph g. The types of the graph objects of the Graph g have to be similar to my types.
+     * Reset my host graph by the Graph g. The types of the graph objects of the
+     * Graph g have to be similar to my types.
      */
     public boolean importGraph(final Graph g) {
         boolean importTried = false;
@@ -766,9 +782,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Reset my host graph by the Graph g. If the parameter <code>adapt</code> is true, the types of the Graph g are
-     * tried to be adapted to my types. The types with the same name are equal. Otherwise, the types of the Graph g
-     * should be found among my types.
+     * Reset my host graph by the Graph g. If the parameter <code>adapt</code>
+     * is true, the types of the Graph g are tried to be adapted to my types.
+     * The types with the same name are equal. Otherwise, the types of the Graph
+     * g should be found among my types.
      */
     public boolean importGraph(final Graph g, final boolean adapt) {
         boolean result;
@@ -792,17 +809,18 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Add a copy of the Graph g to the list of my (host) graphs. The types of the Graph g have to be similar to my
-     * types.
+     * Add a copy of the Graph g to the list of my (host) graphs. The types of
+     * the Graph g have to be similar to my types.
      */
     public boolean addImportGraph(final Graph g) {
         return addImportGraph(g, false);
     }
 
     /**
-     * Add a copy of the Graph g to the list of my (host) graphs. If the parameter <code>adapt</code> is true, the types
-     * of the Graph g are tried to be adapted to my types. The types with the same name are equal. Otherwise, the types
-     * of the Graph g should be found among my types.
+     * Add a copy of the Graph g to the list of my (host) graphs. If the
+     * parameter <code>adapt</code> is true, the types of the Graph g are tried
+     * to be adapted to my types. The types with the same name are equal.
+     * Otherwise, the types of the Graph g should be found among my types.
      */
     public boolean addImportGraph(final Graph g, final boolean adapt) {
         boolean result;
@@ -821,14 +839,14 @@ public class GraGra implements Disposable, XMLObject {
         if ((this.typeSet != null) && (g.getTypeSet() != null)) {
             final String extStr = "_import";
             if (this.typeSet.isEmpty()
-                    && adoptTypes(g.getTypeSet().getTypes())) {
+                    && adoptTypes(g.getTypeSet().getTypeWalker())) {
                 impGraph = g.copy(this.typeSet);
             } else if (this.typeSet.contains(g.getTypeSet())) {
                 impGraph = g.copy(this.typeSet);
             } else if ((this.typeSet.getTypeGraph() == null)
                     || (this.typeSet.getLevelOfTypeGraphCheck() == TypeSet.DISABLED)) {
-                final Vector<Type> typesToAdopt = new Vector<Type>(1);
-                final Iterator<Type> other = g.getTypeSet().getTypes();
+                final ArrayMovie<Type> typesToAdopt = new ArrayTape<Type>(1);
+                final IteratorWalker<Type> other = g.getTypeSet().getTypeWalker();
                 while (other.hasNext()) {
                     final Type tOther = other.next();
                     if (!this.typeSet.containsType(tOther)
@@ -837,9 +855,9 @@ public class GraGra implements Disposable, XMLObject {
                     }
                 }
                 if (adapt) {
-                    this.typeSet.adaptTypes(g.getTypeSet().getTypes(), false);
+                    this.typeSet.adaptTypes(g.getTypeSet().getTypeWalker(), false);
                     impGraph = g.copyLight(this.typeSet);
-                } else if (adoptTypes(typesToAdopt.iterator())) {
+                } else if (adoptTypes(typesToAdopt.softWalker())) {
                     impGraph = g.copy(this.typeSet);
                 }
             }
@@ -856,15 +874,17 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Add a copy of the Rule r to the list of my rules. The types of the Rule r have to be similar to my types.
+     * Add a copy of the Rule r to the list of my rules. The types of the Rule r
+     * have to be similar to my types.
      */
     public boolean addImportRule(final Rule r) {
         return addImportRule(r, false);
     }
 
     /**
-     * Add a copy of the Rule r to the list of my rules. If the parameter <code>adapt</code> is true, the types of the
-     * Rule r are tried to be adapted to my types. The types with the same name are similar.
+     * Add a copy of the Rule r to the list of my rules. If the parameter
+     * <code>adapt</code> is true, the types of the Rule r are tried to be
+     * adapted to my types. The types with the same name are similar.
      *
      * Otherwise, the types of the Rule r should be found among my types.
      *
@@ -908,7 +928,7 @@ public class GraGra implements Disposable, XMLObject {
 	 * types which will be added to my types. Returns false, if at least one of
 	 * the new types has failed, otherwise true.
      */
-    public boolean adoptTypes(final Iterator<Type> types) {
+    public boolean adoptTypes(final IteratorWalker<Type> types) {
         boolean result = true;
         while (types.hasNext()) {
             final Type t = types.next();
@@ -960,8 +980,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * After this method was called: - the type graph check is set to <code>DISABLED</code> - existent rule sequences,
-     * matches, rules, graphs, graph constraints, type set are empty
+     * After this method was called: - the type graph check is set to
+     * <code>DISABLED</code> - existent rule sequences, matches, rules, graphs,
+     * graph constraints, type set are empty
      */
     private void clear() {
         this.setLevelOfTypeGraphCheck(TypeSet.DISABLED);
@@ -1161,18 +1182,21 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Return my start graph. At the beginning the start graph is similar to my current host graph. In process the host
-     * graph will be changed, the start graph lieves unchanged.
+     * Return my start graph. At the beginning the start graph is similar to my
+     * current host graph. In process the host graph will be changed, the start
+     * graph lieves unchanged.
      */
     public final Graph getStartGraph() {
         return this.itsStartGraph;
     }
 
     /**
-     * Sets my start graph to Graph g. The type set of the graph g has to be similar to my type set.<br>
-     * The start graph should not be confused with a host graph. The start graph is a copy of a (mostly first) host
-     * graph after a grammar loaded. A host graph is my current work graph. The start graph can be used to overwrite my
-     * current host graph <code>this.resetGraph()</code>.
+     * Sets my start graph to Graph g. The type set of the graph g has to be
+     * similar to my type set.<br>
+     * The start graph should not be confused with a host graph. The start graph
+     * is a copy of a (mostly first) host graph after a grammar loaded. A host
+     * graph is my current work graph. The start graph can be used to overwrite
+     * my current host graph <code>this.resetGraph()</code>.
      */
     public void setStartGraph(final Graph g) {
         if (g == null) {
@@ -1415,8 +1439,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returns constraints (formulae) that should be satisfied for all layers of a layered grammar. In case of a
-     * non-layered grammar it returns all its constraints. Vector elements are of type <code>Formula</code>.
+     * Returns constraints (formulae) that should be satisfied for all layers of
+     * a layered grammar. In case of a non-layered grammar it returns all its
+     * constraints. Vector elements are of type <code>Formula</code>.
      *
      * @see agg.cons.Formula
      */
@@ -1425,7 +1450,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returns constraints (formulae) for the specified layer. Vector elements are of type <code>Formula</code>.
+     * Returns constraints (formulae) for the specified layer. Vector elements
+     * are of type <code>Formula</code>.
      *
      * @see agg.cons.Formula
      */
@@ -1450,8 +1476,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returns constraints (formulae) for the specified rule priority. If p is -1, returns all constraints. Vector
-     * elements are of type <code>Formula</code>.
+     * Returns constraints (formulae) for the specified rule priority. If p is
+     * -1, returns all constraints. Vector elements are of type
+     * <code>Formula</code>.
      *
      * @see agg.cons.Formula
      */
@@ -1551,8 +1578,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Create a rule scheme with an empty kernel rule and an empty list of multi rules. Add the new rule scheme at the
-     * end of the rule list.
+     * Create a rule scheme with an empty kernel rule and an empty list of multi
+     * rules. Add the new rule scheme at the end of the rule list.
      *
      * @return	RuleScheme
      */
@@ -1568,8 +1595,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Create a rule scheme with a kernel rule as a copy of the specified rule and an empty list of multi rules. Add the
-     * new rule scheme after the given rule in case it belongs to this grammar or at the end of the rule list.
+     * Create a rule scheme with a kernel rule as a copy of the specified rule
+     * and an empty list of multi rules. Add the new rule scheme after the given
+     * rule in case it belongs to this grammar or at the end of the rule list.
      *
      * @return	RuleScheme or null if creation failed
      */
@@ -1955,8 +1983,10 @@ public class GraGra implements Disposable, XMLObject {
     /**
      *
      * @param ts A type set
-     * @param fromTypeGraph Is to destroy the graph objects from the Type Graph or not
-     * @return <code>null</code> if destroying was successful, otherwise - a list with failed types.
+     * @param fromTypeGraph Is to destroy the graph objects from the Type Graph
+     * or not
+     * @return <code>null</code> if destroying was successful, otherwise - a
+     * list with failed types.
      */
     public List<String> destroyGraphObjectsOfTypes(final Vector<Type> ts,
             final boolean fromTypeGraph) {
@@ -2031,7 +2061,8 @@ public class GraGra implements Disposable, XMLObject {
 
     /**
      * @param t A node or an edge type
-     * @return <code>true</code> if destroying was successful, otherwise >code>false</code>
+     * @return <code>true</code> if destroying was successful, otherwise
+     * >code>false</code>
      */
     public boolean destroyGraphObjectsOfTypeFromHostGraph(final Type t) {
         // delete from host graph
@@ -2041,7 +2072,8 @@ public class GraGra implements Disposable, XMLObject {
     /**
      *
      * @param ts A type list
-     * @return <code>null</code> if destroying was successful, otherwise - a list with failed types.
+     * @return <code>null</code> if destroying was successful, otherwise - a
+     * list with failed types.
      */
     public List<String> destroyGraphObjectsOfTypesFromHostGraph(
             final List<Type> ts) {
@@ -2051,7 +2083,8 @@ public class GraGra implements Disposable, XMLObject {
 
     /**
      * @param t A node or an edge type
-     * @return <code>empty list</code> if destroying was successful, otherwise - a list with names of failed rules.
+     * @return <code>empty list</code> if destroying was successful, otherwise -
+     * a list with names of failed rules.
      */
     public Vector<String> destroyGraphObjectsOfTypeFromRules(final Type t) {
         Vector<String> failed = new Vector<String>(5);
@@ -2068,7 +2101,8 @@ public class GraGra implements Disposable, XMLObject {
 
     /**
      * @param ts A list of types
-     * @return <code>empty list</code> if destroying was successful, otherwise - a list with names of failed rules.
+     * @return <code>empty list</code> if destroying was successful, otherwise -
+     * a list with names of failed rules.
      */
     public Vector<String> destroyGraphObjectsOfTypesFromRules(final Vector<Type> ts) {
         Vector<String> failed = new Vector<String>(5);
@@ -2086,8 +2120,8 @@ public class GraGra implements Disposable, XMLObject {
 
     /**
      * @param t A node or an edge type
-     * @return <code>empty list</code> if destroying was successful, otherwise - a list with names of failed graph
-     * constraints.
+     * @return <code>empty list</code> if destroying was successful, otherwise -
+     * a list with names of failed graph constraints.
      */
     public Vector<String> destroyGraphObjectsOfTypeFromGraphConstraints(final Type t) {
         Vector<String> failed = new Vector<String>(5);
@@ -2109,8 +2143,8 @@ public class GraGra implements Disposable, XMLObject {
 
     /**
      * @param ts A list of types
-     * @return <code>empty list</code> if destroying was successful, otherwise - a list with names of failed graph
-     * constraints.
+     * @return <code>empty list</code> if destroying was successful, otherwise -
+     * a list with names of failed graph constraints.
      */
     public List<String> destroyGraphObjectsOfTypesFromGraphConstraints(
             final Vector<Type> ts) {
@@ -2142,8 +2176,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Iterate through all of the matches existing between the given rule and the start graph. Enumeration elements are
-     * of type <code>Match</code>.
+     * Iterate through all of the matches existing between the given rule and
+     * the start graph. Enumeration elements are of type <code>Match</code>.
      *
      * @see agg.xt_basis.Match
      *
@@ -2163,8 +2197,9 @@ public class GraGra implements Disposable, XMLObject {
     }// getMatches
 
     /**
-     * Iterate through all of the matches existing between the given rule and all graphs of this grammar. Returns the
-     * match for the specified rule and graph if such is found, otherwise null.
+     * Iterate through all of the matches existing between the given rule and
+     * all graphs of this grammar. Returns the match for the specified rule and
+     * graph if such is found, otherwise null.
      */
     public final Match getMatch(final Rule rule, final Graph g) {
         Match m = null;
@@ -2180,9 +2215,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Create an empty match morphism between the left hand side of the given rule and my current host graph. Note that
-     * this does not yield a valid match (unless the left hand side of the given rule is empty), because a match has to
-     * be a total morphism.
+     * Create an empty match morphism between the left hand side of the given
+     * rule and my current host graph. Note that this does not yield a valid
+     * match (unless the left hand side of the given rule is empty), because a
+     * match has to be a total morphism.
      */
     public Match createMatch(Rule rule) {
 //		if (rule instanceof RuleScheme) {
@@ -2203,9 +2239,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Create an empty match morphism between the left hand side of the given rule and the given graph. Note that this
-     * does not yield a valid match (unless the left hand side of the given rule is empty), because a match has to be a
-     * total morphism.<br>
+     * Create an empty match morphism between the left hand side of the given
+     * rule and the given graph. Note that this does not yield a valid match
+     * (unless the left hand side of the given rule is empty), because a match
+     * has to be a total morphism.<br>
      */
     public Match createMatchIndependent(Rule rule, Graph g) {
         Match m = new Match(rule, g);
@@ -2301,7 +2338,8 @@ public class GraGra implements Disposable, XMLObject {
 	}
      */
     /**
-     * Creates an empty type graph. If a type graph was already defined, it will be lost.
+     * Creates an empty type graph. If a type graph was already defined, it will
+     * be lost.
      */
     public Graph createTypeGraph() {
         Graph tg = this.typeSet.createTypeGraph();
@@ -2311,7 +2349,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returns the type graph or <code>null</code>, if no type graph was created before.
+     * Returns the type graph or <code>null</code>, if no type graph was created
+     * before.
      */
     public Graph getTypeGraph() {
         return this.typeSet.getTypeGraph();
@@ -2320,8 +2359,9 @@ public class GraGra implements Disposable, XMLObject {
     /**
      * Create a new type for typing of GraphObjects.
      *
-     * @deprecated replaced by <code>Type createNodeType(boolean withAttributes)</code> for node type and
-     * <code>Type createArcType(boolean withAttributes)</code> for edge type
+     * @deprecated replaced by
+     * <code>Type createNodeType(boolean withAttributes)</code> for node type
+     * and <code>Type createArcType(boolean withAttributes)</code> for edge type
      */
     public Type createType() {
         return this.typeSet.createType();
@@ -2337,7 +2377,7 @@ public class GraGra implements Disposable, XMLObject {
      */
     public Type createType(boolean withAttributes) {
         return this.typeSet.createType(withAttributes);
-    } 
+    }
 
     /**
      * Creates a new node type for typing of Node.
@@ -2426,13 +2466,17 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Iterate through all of the types that may be assigned to GraphObjects. Enumeration elements are of type
-     * <code>Type</code>.
+     * Iterate through all of the types that may be assigned to GraphObjects.
+     * Enumeration elements are of type <code>Type</code>.
      *
      * @see agg.xt_basis.Type
      */
     public Iterator<Type> getTypes() {
         return this.typeSet.getTypes();
+    }
+
+    public final IteratorWalker<Type> getTypeWalker() {
+        return this.typeSet.getTypeWalker();
     }
 
     /**
@@ -2443,32 +2487,39 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * changes the behavior of the type graph check and defines, how the type graph is used. The host graph must
-     * satisfies the new level, so it is checked first. If the host graph satisfies the constraints, an empty collection
-     * will be returned and a collection of {@link agg.xt_basis.TypeError} if there were problems during the test.
+     * changes the behavior of the type graph check and defines, how the type
+     * graph is used. The host graph must satisfies the new level, so it is
+     * checked first. If the host graph satisfies the constraints, an empty
+     * collection will be returned and a collection of
+     * {@link agg.xt_basis.TypeError} if there were problems during the test.
      *
      * @param level
      * <table>
      * <tr>
      * <td>{@link agg.xt_basis.TypeSet#DISABLED}</td>
-     * <td>The type graph will be ignored, so all graphs can contain objects with types undefined in the type graph.
-     * Multiplicity will be also ignored.</td>
+     * <td>The type graph will be ignored, so all graphs can contain objects
+     * with types undefined in the type graph. Multiplicity will be also
+     * ignored.</td>
      * </tr>
      * <tr>
      * <td>{@link agg.xt_basis.TypeSet#ENABLED}</td>
-     * <td>The type graph will be basicaly used, so all graphs can only contain objects with types defined in the type
-     * graph. But the multiplicity will not be checked.</td>
+     * <td>The type graph will be basicaly used, so all graphs can only contain
+     * objects with types defined in the type graph. But the multiplicity will
+     * not be checked.</td>
      * </tr> }
      *
      * <tr>
      * <td>{@link agg.xt_basis.TypeSet#ENABLED_MAX}</td>
-     * <td>The type graph will be basicaly used, so all graphs can only contain objects with types defined in the type
-     * graph. Multiplicities in all graphs should satisfy the defined maximum constraints.</td>
+     * <td>The type graph will be basicaly used, so all graphs can only contain
+     * objects with types defined in the type graph. Multiplicities in all
+     * graphs should satisfy the defined maximum constraints.</td>
      * </tr>
      * <tr>
      * <td>{@link agg.xt_basis.TypeSet#ENABLED_MAX_MIN}</td>
-     * <td>The type graph is defined and used, so all graphs can only contain objects with types defined in the type
-     * graph. All graphs must satisfy the defined maximum/minimum multiplicity constraints of node and edge types.</td>
+     * <td>The type graph is defined and used, so all graphs can only contain
+     * objects with types defined in the type graph. All graphs must satisfy the
+     * defined maximum/minimum multiplicity constraints of node and edge
+     * types.</td>
      * </tr>
      * </table>
      */
@@ -2537,23 +2588,27 @@ public class GraGra implements Disposable, XMLObject {
      * @return <table>
      * <tr>
      * <td>{@link agg.xt_basis.TypeSet#DISABLED}</td>
-     * <td>The type graph will be ignored, so all graphs can contain objects with types undefined in the type graph.
-     * Multiplicity will be also ignored.</td>
+     * <td>The type graph will be ignored, so all graphs can contain objects
+     * with types undefined in the type graph. Multiplicity will be also
+     * ignored.</td>
      * </tr>
      * <tr>
      * <td>{@link agg.xt_basis.TypeSet#ENABLED}</td>
-     * <td>The type graph will be basicaly used, so all graphs can only contain objects with types defined in the type
-     * graph. But the multiplicity will not be checked.</td>
+     * <td>The type graph will be basicaly used, so all graphs can only contain
+     * objects with types defined in the type graph. But the multiplicity will
+     * not be checked.</td>
      * </tr>
      * <tr>
      * <td>{@link agg.xt_basis.TypeSet#ENABLED_MAX}</td>
-     * <td>The type graph will be basicaly used, so all graphs can only contain objects with types defined in the type
-     * graph. Multiplicities in all graphs should satisfy the defined maximum constraints.</td>
+     * <td>The type graph will be basicaly used, so all graphs can only contain
+     * objects with types defined in the type graph. Multiplicities in all
+     * graphs should satisfy the defined maximum constraints.</td>
      * </tr>
      * <tr>
      * <td>{@link agg.xt_basis.TypeSet#ENABLED_MAX_MIN}</td>
-     * <td>The type graph will be used, so all graphs can only contain objects with types defined in the type graph.
-     * Multiplicities in all graphs must satisfy the defined maximum constraints and the hosting graph must</td>
+     * <td>The type graph will be used, so all graphs can only contain objects
+     * with types defined in the type graph. Multiplicities in all graphs must
+     * satisfy the defined maximum constraints and the hosting graph must</td>
      * </tr>
      * </table>
      */
@@ -2582,11 +2637,12 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Checks all graphs of this GraGra due to node type multiplicity of the specified type Node of the current type
-     * graph.
+     * Checks all graphs of this GraGra due to node type multiplicity of the
+     * specified type Node of the current type graph.
      *
      * @param typeNode
-     * @return null if all graphs satisfy multiplicity constraint, otherwise - a string with names of failed graphs
+     * @return null if all graphs satisfy multiplicity constraint, otherwise - a
+     * string with names of failed graphs
      */
     public String checkNodeTypeMultiplicity(final Node typeNode) {
         int errorkind = -1;
@@ -2688,11 +2744,12 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Checks all graphs of this GraGra due to edge type multiplicity of the specified type Arc of the current type
-     * graph.
+     * Checks all graphs of this GraGra due to edge type multiplicity of the
+     * specified type Arc of the current type graph.
      *
      * @param typeArc
-     * @return null if all graphs satisfy multiplicity constraint, otherwise - a string with names of failed graphs
+     * @return null if all graphs satisfy multiplicity constraint, otherwise - a
+     * string with names of failed graphs
      */
     public String checkEdgeTypeMultiplicity(final Arc typeArc) {
         int errorkind = -1;
@@ -2792,8 +2849,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * This method checks if all graph constraints (formulas) are valid and then when parameter <code>validity</code> is
-     * TRUE if the host graph is consistent.
+     * This method checks if all graph constraints (formulas) are valid and then
+     * when parameter <code>validity</code> is TRUE if the host graph is
+     * consistent.
      */
     public boolean checkGraphConstraints(boolean validity) {
         boolean all_valid = true;
@@ -2851,17 +2909,20 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returns TRUE if the graph g satisfies all graph constraints of this graph grammar. Pre-condition: The graph
-     * constraints have to be valid and the graph g is a graph of the graph set defined with this grammar.
+     * Returns TRUE if the graph g satisfies all graph constraints of this graph
+     * grammar. Pre-condition: The graph constraints have to be valid and the
+     * graph g is a graph of the graph set defined with this grammar.
      */
     public boolean checkGraphConsistency(Graph g) {
         return checkGraphConsistency(g, this.itsConstraints);
     }
 
     /**
-     * Returns TRUE if the graph g satisfies the specified container with graph constraints of this graph grammar. If
-     * the parameter constraints is null, all constraints of this grammar should be satisfied. Pre-condition: The graph
-     * constraints have to be valid and the graph g is a graph of the graph set defined with this grammar.
+     * Returns TRUE if the graph g satisfies the specified container with graph
+     * constraints of this graph grammar. If the parameter constraints is null,
+     * all constraints of this grammar should be satisfied. Pre-condition: The
+     * graph constraints have to be valid and the graph g is a graph of the
+     * graph set defined with this grammar.
      */
     public boolean checkGraphConsistency(Graph g, final List<Formula> constraints) {
 //		System.out.println("GraGra.checkGraphConsistency(Graph, Vector constraints");
@@ -2907,8 +2968,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * This method checks if all atomic graph constraints are valid and then when parameter
-     * <code>checkAtomicValidityOnly</code> is FALSE if the host graph fulfills all atomic graph constraints.
+     * This method checks if all atomic graph constraints are valid and then
+     * when parameter <code>checkAtomicValidityOnly</code> is FALSE if the host
+     * graph fulfills all atomic graph constraints.
      */
     public boolean checkAtomics(boolean checkAtomicValidityOnly) {
         this.consistErrMsg = "";
@@ -2943,8 +3005,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Converts all constraints (formulas) to post application conditions for all rules. Returns empty message if all
-     * atomic graph constraints are valid and converting for each rule was successful, otherwise - error message.
+     * Converts all constraints (formulas) to post application conditions for
+     * all rules. Returns empty message if all atomic graph constraints are
+     * valid and converting for each rule was successful, otherwise - error
+     * message.
      */
     public String convertConstraints() {
         String msg = "";
@@ -2983,7 +3047,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Clear such post application constraints of rules which contain the specified atomic graph constraint.
+     * Clear such post application constraints of rules which contain the
+     * specified atomic graph constraint.
      */
     public void clearRuleConstraints(AtomConstraint ac) {
         Iterator<Rule> en = this.itsRules.iterator();
@@ -2993,7 +3058,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Clear such post application constraints of rules which contain the specified formula.
+     * Clear such post application constraints of rules which contain the
+     * specified formula.
      */
     public void clearRuleConstraints(Formula f) {
         Iterator<Rule> en = this.itsRules.iterator();
@@ -3380,12 +3446,14 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Checks the types, rules and graph constraints of this grammar. Prepares infos of rules if
-     * <code>prepareRuleInfo</code> is true.
+     * Checks the types, rules and graph constraints of this grammar. Prepares
+     * infos of rules if <code>prepareRuleInfo</code> is true.
      *
-     * @return Pair object or null. A Pair object contains the failed element of the grammar. This element is the
-     * Pair.first object which can be of type agg.xt_basis.Type, agg.xt_basis.Rule or agg.cons.AtomConstraint. The
-     * second object is a message of type String which is a text about failed object.
+     * @return Pair object or null. A Pair object contains the failed element of
+     * the grammar. This element is the Pair.first object which can be of type
+     * agg.xt_basis.Type, agg.xt_basis.Rule or agg.cons.AtomConstraint. The
+     * second object is a message of type String which is a text about failed
+     * object.
      */
     public Pair<Object, String> isReadyToTransform(boolean prepareRuleInfo) {
         Pair<Object, String> result = this.isReadyToTransform();
@@ -3398,14 +3466,16 @@ public class GraGra implements Disposable, XMLObject {
     /**
      * Checks the types, rules and graph constraints of this grammar.
      *
-     * @return Pair object or null. A Pair object contains the failed element of the grammar. This element is the
-     * Pair.first object which can be of type agg.xt_basis.Type, agg.xt_basis.Rule or agg.cons.AtomConstraint. The
-     * second object is a message of type String which is a text about failed object.
+     * @return Pair object or null. A Pair object contains the failed element of
+     * the grammar. This element is the Pair.first object which can be of type
+     * agg.xt_basis.Type, agg.xt_basis.Rule or agg.cons.AtomConstraint. The
+     * second object is a message of type String which is a text about failed
+     * object.
      */
     public Pair<Object, String> isReadyToTransform() {
         String msg = "";
         // check attr. types exist
-        Iterator<Type> e = this.typeSet.getTypes();
+        IteratorWalker<Type> e = this.typeSet.getTypeWalker();
         while (e.hasNext()) {
             Type t = e.next();
             if (!doesAttrTypeExist(t)) {
@@ -3445,7 +3515,8 @@ public class GraGra implements Disposable, XMLObject {
     /**
      * Checks atomic graph constraints.
      *
-     * @return The first failed agg.cons.AtomConstraint object or null, if all graph constraints were OK.
+     * @return The first failed agg.cons.AtomConstraint object or null, if all
+     * graph constraints were OK.
      */
     public Pair<Object, String> isGraphConstraintReadyForTransform() {
         for (int i = 0; i < this.itsAtomics.size(); i++) {
@@ -3469,7 +3540,7 @@ public class GraGra implements Disposable, XMLObject {
      */
     public Type doAttrTypesExist() {
         // check attr. types exist
-        Iterator<Type> e = this.typeSet.getTypes();
+        IteratorWalker<Type> e = this.typeSet.getTypeWalker();
         while (e.hasNext()) {
             Type t = e.next();
             if (!doesAttrTypeExist(t)) {
@@ -3542,7 +3613,7 @@ public class GraGra implements Disposable, XMLObject {
     public Pair<Object, String> checkInheritedAttributesValid() {
         if (this.typeSet.getLevelOfTypeGraphCheck() <= TypeSet.DISABLED
                 && this.typeSet.hasInheritance()) {
-            Iterator<Type> e = this.typeSet.getTypes();
+            IteratorWalker<Type> e = this.typeSet.getTypeWalker();
             while (e.hasNext()) {
                 Type t = e.next();
                 // hier multiple inheritance!!!
@@ -3563,8 +3634,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returned list contains plain rules and plain multi rules of the rule schemes. The plain multi rules are used for
-     * computing critical pairs of the CPA. This work is still in progress.
+     * Returned list contains plain rules and plain multi rules of the rule
+     * schemes. The plain multi rules are used for computing critical pairs of
+     * the CPA. This work is still in progress.
      *
      * @return	extended list of rules
      */
@@ -3589,8 +3661,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returned list contains plain rules and plain kernel and multi rules of the rule schemes. The plain kernel and
-     * multi rules are used for computing critical pairs of the CPA. This work is still in progress.
+     * Returned list contains plain rules and plain kernel and multi rules of
+     * the rule schemes. The plain kernel and multi rules are used for computing
+     * critical pairs of the CPA. This work is still in progress.
      *
      * @return	extended list of rules
      */
@@ -3637,14 +3710,16 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returns applicable rules due to the specified morphism completion strategy and current host graph.
+     * Returns applicable rules due to the specified morphism completion
+     * strategy and current host graph.
      */
     public Vector<Rule> getApplicableRules(MorphCompletionStrategy aStrategy) {
         return getApplicableRules(this.itsGraph, aStrategy);
     }
 
     /**
-     * Returns applicable rules due to the specified host graph and morphism completion strategy.
+     * Returns applicable rules due to the specified host graph and morphism
+     * completion strategy.
      */
     public Vector<Rule> getApplicableRules(Graph g,
             MorphCompletionStrategy aStrategy) {
@@ -3817,10 +3892,12 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Set rule subsequences of the current rule sequence. The first Vector element of a Pair is a rule subsequence. The
-     * first String element of a Pair is a rule name. The second element of a Pair represents the iteration count of a
-     * rule subsequence or of an individual rule. The value for the iteration count may be "*" or a decimal > 0. The
-     * current rule sequence can be used for graph transformation.
+     * Set rule subsequences of the current rule sequence. The first Vector
+     * element of a Pair is a rule subsequence. The first String element of a
+     * Pair is a rule name. The second element of a Pair represents the
+     * iteration count of a rule subsequence or of an individual rule. The value
+     * for the iteration count may be "*" or a decimal > 0. The current rule
+     * sequence can be used for graph transformation.
      */
     public void setSubsequencesOfCurrentRuleSequence(
             final List<Pair<List<Pair<String, String>>, String>> sequences) {
@@ -3858,8 +3935,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * If true, the ApplRuleSequencesGraTra - a transformation by validated rule sequence - will be started.<br>
-     * Precondition: the current rule sequence exists and its applicability is checked.
+     * If true, the ApplRuleSequencesGraTra - a transformation by validated rule
+     * sequence - will be started.<br>
+     * Precondition: the current rule sequence exists and its applicability is
+     * checked.
      *
      */
     public boolean trafoByApplicableRuleSequence() {
@@ -3891,9 +3970,11 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Returns the rule sequences. The first Vector element of a Pair is a rule subsequence. The first String element of
-     * a Pair is a rule name. The second element of a Pair represents the iteration count of a rule subsequence or of an
-     * individual rule. The value for the iteration count may be "*" or a decimal.
+     * Returns the rule sequences. The first Vector element of a Pair is a rule
+     * subsequence. The first String element of a Pair is a rule name. The
+     * second element of a Pair represents the iteration count of a rule
+     * subsequence or of an individual rule. The value for the iteration count
+     * may be "*" or a decimal.
      */
     public List<Pair<List<Pair<String, String>>, String>> getRuleSequenceList() {
         if (this.itsRuleSequence != null) {
@@ -3989,7 +4070,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * The specified file name is the full name of the file to save this grammar into.
+     * The specified file name is the full name of the file to save this grammar
+     * into.
      *
      * @param filename
      */
@@ -4029,7 +4111,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * The specified file name is the full name of the file to load a grammar from.
+     * The specified file name is the full name of the file to load a grammar
+     * from.
      *
      * @param filename
      */
@@ -4108,8 +4191,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * saves the properties and values of all elements of this gragra in the open element of the given XMLHelper. If the
-     * gragra should also create its own element use XwriteObject.
+     * saves the properties and values of all elements of this gragra in the
+     * open element of the given XMLHelper. If the gragra should also create its
+     * own element use XwriteObject.
      *
      * @param h an XMLHelper with an open Element for this gragra
      * @see agg.xt_basis.GraGra#XwriteObject
@@ -4340,8 +4424,9 @@ public class GraGra implements Disposable, XMLObject {
     }// saveXML
 
     /**
-     * reads the properties and values of all elements of this gragra from the open element of the given XMLHelper. If
-     * the gragra element should be searched and open use XreadObject.
+     * reads the properties and values of all elements of this gragra from the
+     * open element of the given XMLHelper. If the gragra element should be
+     * searched and open use XreadObject.
      *
      * @param h an XMLHelper with an open Element for this gragra
      * @see agg.xt_basis.GraGra#XreadObject
@@ -4828,8 +4913,8 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Save the properties and values of all elements of this gragra in an own element in the XML file saved by the
-     * given XMLHelper.
+     * Save the properties and values of all elements of this gragra in an own
+     * element in the XML file saved by the given XMLHelper.
      *
      * @param h an XMLHelper, without an open element for this gragra.
      * @see agg.xt_basis.GraGra#saveXML
@@ -4847,8 +4932,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * reads the properties and values of all elements of this gragra from an element called
-     * <CODE>&lt;GraphTransformationSystem&gt;</CODE> in the XML file opened by the given XMLHelper.
+     * reads the properties and values of all elements of this gragra from an
+     * element called <CODE>&lt;GraphTransformationSystem&gt;</CODE> in the XML
+     * file opened by the given XMLHelper.
      *
      * @param h an XMLHelper, with an not yet opened element for this gragra.
      * @see agg.xt_basis.GraGra#loadXML

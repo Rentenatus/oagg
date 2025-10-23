@@ -27,6 +27,7 @@ import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeException;
+import de.jare.ndimcol.ref.ArrayMovie;
 import java.util.Iterator;
 
 /**
@@ -349,8 +350,8 @@ public class EdNestedApplCond extends EdPAC {
                 this.typeSet.getBasisTypeSet())) {
             if (((NestedApplCond) this.morphism)
                     .addNestedAC((NestedApplCond) ac.getMorphism())) {
-                List<Type> v = ac.getMorphism().getUsedTypes();
-                this.morphism.getSource().getTypeSet().adaptTypes(v.iterator(), false);
+                ArrayMovie<Type> v = ac.getMorphism().getUsedTypes();
+                this.morphism.getSource().getTypeSet().adaptTypes(v.softWalker(), false);
                 this.typeSet.refreshTypes();
                 ac.getBasisGraph().setKind(GraphKind.AC);
                 ac.setRule(this.getRule());

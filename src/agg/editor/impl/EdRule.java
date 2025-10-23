@@ -40,6 +40,7 @@ import agg.xt_basis.agt.MultiRule;
 import agg.attribute.impl.CondTuple;
 import agg.gui.animation.NodeAnimation;
 import agg.util.Pair;
+import de.jare.ndimcol.ref.ArrayMovie;
 
 /**
  * An EdRule specifies the rule layout for the used object of the class an agg.xt_basis.Rule. The left and the right
@@ -1558,8 +1559,8 @@ public class EdRule implements XMLObject, StateEditable {
         if (pac.getTypeSet().getBasisTypeSet().compareTo(
                 this.typeSet.getBasisTypeSet())) {
             if (this.bRule.addPAC(pac.getMorphism())) {
-                List<Type> v = pac.getMorphism().getUsedTypes();
-                this.bRule.getLeft().getTypeSet().adaptTypes(v.iterator(), false);
+                ArrayMovie<Type> v = pac.getMorphism().getUsedTypes();
+                this.bRule.getLeft().getTypeSet().adaptTypes(v.softWalker(), false);
                 this.typeSet.refreshTypes();
                 // pac.update();
                 pac.setRule(this);
@@ -1812,8 +1813,8 @@ public class EdRule implements XMLObject, StateEditable {
         if (ac.getTypeSet().getBasisTypeSet().compareTo(
                 this.typeSet.getBasisTypeSet())) {
             if (this.bRule.addNestedAC(ac.getMorphism())) {
-                List<Type> v = ac.getMorphism().getUsedTypes();
-                this.bRule.getLeft().getTypeSet().adaptTypes(v.iterator(), false);
+                ArrayMovie<Type> v = ac.getMorphism().getUsedTypes();
+                this.bRule.getLeft().getTypeSet().adaptTypes(v.softWalker(), false);
                 this.typeSet.refreshTypes();
                 ac.getBasisGraph().setKind(GraphKind.AC);
                 ac.setRule(this);

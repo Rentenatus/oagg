@@ -31,6 +31,8 @@ import agg.xt_basis.TypeGraph;
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.DeclMember;
+import de.jare.ndimcol.ref.ArrayMovie;
+import de.jare.ndimcol.ref.IteratorWalker;
 
 /**
  * This class EdTypeSet specifies a set of layout types for typing nodes and edges of graphs. The type is defined by a
@@ -170,8 +172,8 @@ public class EdTypeSet {
         if (typeGraphLayout != null) {
             if (this.bTypeSet.compareTo(typeGraphLayout.getTypeSet()
                     .getBasisTypeSet())) {
-                List<Type> v = typeGraphLayout.getBasisGraph().getUsedTypes();
-                this.bTypeSet.adaptTypes(v.iterator(), false);
+                ArrayMovie<Type> v = typeGraphLayout.getBasisGraph().getUsedTypes();
+                this.bTypeSet.adaptTypes(v.softWalker(), false);
                 refreshTypes();
                 this.edTypeGraph = typeGraphLayout;
                 this.bTypeSet.setTypeGraph(this.edTypeGraph.getBasisGraph());
@@ -1000,7 +1002,7 @@ public class EdTypeSet {
     private void initTypesFromTypeSet() {
         this.nodeTypes.clear();
         this.arcTypes.clear();
-        Iterator<Type> types = this.bTypeSet.getTypes();
+        IteratorWalker<Type> types = this.bTypeSet.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             if (t.getStringRepr().equals("")
@@ -1126,7 +1128,7 @@ public class EdTypeSet {
 
     public void refreshTypes() {
         boolean hasChanged = false;
-        Iterator<Type> types = this.bTypeSet.getTypes();
+        IteratorWalker<Type> types = this.bTypeSet.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             if (getType(t) == null) {
@@ -1146,7 +1148,7 @@ public class EdTypeSet {
 
     public void refreshTypes(boolean byNameOnly) {
         boolean hasChanged = false;
-        Iterator<Type> types = this.bTypeSet.getTypes();
+        IteratorWalker<Type> types = this.bTypeSet.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             EdType type = getType(t);

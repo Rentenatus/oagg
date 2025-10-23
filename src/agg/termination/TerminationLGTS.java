@@ -24,6 +24,7 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
 import agg.xt_basis.Type;
+import de.jare.ndimcol.ref.IteratorWalker;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -374,7 +375,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 
     private void initCreationLayer(GraGra gragra) {
         this.creationLayer = new Hashtable<Type, Integer>();
-        Iterator<Type> types = gragra.getTypes();
+        IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             this.creationLayer.put(t, Integer.valueOf(0));
@@ -383,7 +384,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 
     private void reinitCreationLayer() {
         this.creationLayer.clear();
-        Iterator<Type> types = this.grammar.getTypes();
+        IteratorWalker<Type> types = this.grammar.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             this.creationLayer.put(t, Integer.valueOf(0));
@@ -399,7 +400,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 
     private void initDeletionLayer(GraGra gragra) {
         this.deletionLayer = new Hashtable<Type, Integer>();
-        Iterator<Type> types = gragra.getTypes();
+        IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             this.deletionLayer.put(t, Integer.valueOf(0));
@@ -408,7 +409,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 
     private void reinitDeletionLayer() {
         this.deletionLayer.clear();
-        Iterator<Type> types = this.grammar.getTypes();
+        IteratorWalker<Type> types = this.grammar.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             this.deletionLayer.put(t, Integer.valueOf(0));
@@ -769,7 +770,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
             }
         }
         // check totality of deletion/creation layer functions
-        for (Iterator<Type> en = this.grammar.getTypes(); en.hasNext();) {
+        for (IteratorWalker<Type> en = this.grammar.getTypeWalker(); en.hasNext();) {
             Type t = en.next();
             Integer dl = this.deletionLayer.get(t);
             Integer cl = this.creationLayer.get(t);
@@ -1562,7 +1563,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
      */
     public Hashtable<Object, Integer> getCreationLayer() {
         int size = 0;
-        Iterator<Type> en = this.grammar.getTypes();
+        IteratorWalker<Type> en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             en.next();
             size++;
@@ -1572,7 +1573,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
             return new Hashtable<Object, Integer>(this.creationLayer);
         }
 
-        en = this.grammar.getTypes();
+        en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             Object key = en.next();
             if (!this.creationLayer.containsKey(key)) {
@@ -1602,7 +1603,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
      */
     public Hashtable<Object, Integer> getDeletionLayer() {
         int size = 0;
-        Iterator<Type> en = this.grammar.getTypes();
+        IteratorWalker<Type> en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             en.next();
             size++;
@@ -1613,7 +1614,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
             return new Hashtable<Object, Integer>(this.deletionLayer);
         }
 
-        en = this.grammar.getTypes();
+        en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             Object key = en.next();
             if (!this.deletionLayer.containsKey(key)) {

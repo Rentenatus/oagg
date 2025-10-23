@@ -569,8 +569,8 @@ public class EdGraGra implements XMLObject {
         if (g.getTypeSet().getBasisTypeSet().compareTo(
                 this.typeSet.getBasisTypeSet())) {
             if (this.bGraGra.addGraph(g.getBasisGraph())) {
-                List<Type> v = g.getBasisGraph().getUsedTypes();
-                this.bGraGra.getTypeSet().adaptTypes(v.iterator(), false);
+                ArrayMovie<Type> v = g.getBasisGraph().getUsedTypes();
+                this.bGraGra.getTypeSet().adaptTypes(v.softWalker(), false);
                 this.typeSet.refreshTypes();
                 g.update();
                 g.setGraGra(this);
@@ -1104,8 +1104,8 @@ public class EdGraGra implements XMLObject {
                 }
 
                 if (this.bGraGra.addRule(r.getBasisRule())) {
-                    List<Type> v = r.getBasisRule().getUsedTypes();
-                    this.bGraGra.getTypeSet().adaptTypes(v.iterator(), false);
+                    ArrayMovie<Type> v = r.getBasisRule().getUsedTypes();
+                    this.bGraGra.getTypeSet().adaptTypes(v.softWalker(), false);
                     this.typeSet.refreshTypes();
                     this.eRules.add(r);
                     r.update();
@@ -1905,8 +1905,8 @@ public class EdGraGra implements XMLObject {
         if (c.getTypeSet().getBasisTypeSet().compareTo(
                 this.typeSet.getBasisTypeSet())) {
             if (this.bGraGra.addAtomic(c.getBasisAtomic())) {
-                List<Type> v = c.getBasisAtomic().getUsedTypes();
-                this.bGraGra.getTypeSet().adaptTypes(v.iterator(), false);
+                ArrayMovie<Type> v = c.getBasisAtomic().getUsedTypes();
+                this.bGraGra.getTypeSet().adaptTypes(v.softWalker(), false);
                 this.typeSet.refreshTypes();
                 c.update();
 

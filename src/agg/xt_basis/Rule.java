@@ -43,6 +43,7 @@ import agg.util.XMLObject;
 import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import de.jare.ndimcol.ref.ArrayMovie;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -4466,9 +4467,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     @Override
-    public List<Type> getUsedTypes() {
+    public ArrayMovie<Type> getUsedTypes() {
         // get types of LHS and RHS
-        final List<Type> vec = super.getUsedTypes();
+        final ArrayMovie<Type> vec = super.getUsedTypes();
         // add types of NACs
         for (int i = 0; i < this.itsNACs.size(); i++) {
             OrdinaryMorphism om = this.itsNACs.get(i);
@@ -4487,7 +4488,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return vec;
     }
 
-    private void addUsedTypes(final Graph g, final List<Type> vec) {
+    private void addUsedTypes(final Graph g, final ArrayMovie<Type> vec) {
         Iterator<Node> nodes = g.getNodesSet().iterator();
         while (nodes.hasNext()) {
             GraphObject o = nodes.next();
@@ -4525,7 +4526,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             }
         }
         // check types: all types of the orig. graph should be in image, too
-        List<Type> origTypes = getLeft().getUsedTypes();
+        ArrayMovie<Type> origTypes = getLeft().getUsedTypes();
 
         // TODO::mit PACs  origTypes erweitern
         List<Type> otherTypes = g.getUsedAndInheritedTypes();

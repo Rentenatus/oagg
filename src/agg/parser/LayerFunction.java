@@ -21,6 +21,7 @@ import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
+import de.jare.ndimcol.ref.IteratorWalker;
 
 /**
  * This layer function layers a set of rules of a given graph grammar.
@@ -79,7 +80,7 @@ public class LayerFunction implements XMLObject {
 
     private void initCreationLayer(GraGra gragra) {
         this.creationLayer = new Hashtable<Type, Integer>();
-        Iterator<Type> types = gragra.getTypes();
+        IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type type = types.next();
             this.creationLayer.put(type, new Integer(0));
@@ -88,7 +89,7 @@ public class LayerFunction implements XMLObject {
 
     private void initDeletionLayer(GraGra gragra) {
         this.deletionLayer = new Hashtable<Type, Integer>();
-        Iterator<Type> types = gragra.getTypes();
+        IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type type = types.next();
             this.deletionLayer.put(type, new Integer(0));
@@ -296,7 +297,7 @@ public class LayerFunction implements XMLObject {
      */
     public Hashtable<Type, Integer> getCreationLayer() {
         int size = 0;
-        Iterator<Type> en = this.grammar.getTypes();
+        IteratorWalker<Type> en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             en.next();
             size++;
@@ -306,7 +307,7 @@ public class LayerFunction implements XMLObject {
             return this.creationLayer;
         }
 
-        en = this.grammar.getTypes();
+        en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             Object key = en.next();
             if (!this.creationLayer.containsKey(key)) {
@@ -324,7 +325,7 @@ public class LayerFunction implements XMLObject {
      */
     public Hashtable<Type, Integer> getDeletionLayer() {
         int size = 0;
-        Iterator<Type> en = this.grammar.getTypes();
+        IteratorWalker<Type> en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             en.next();
             size++;
@@ -335,7 +336,7 @@ public class LayerFunction implements XMLObject {
             return this.deletionLayer;
         }
 
-        en = this.grammar.getTypes();
+        en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             Object key = en.next();
             if (!this.deletionLayer.containsKey(key)) {

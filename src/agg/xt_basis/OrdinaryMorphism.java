@@ -32,6 +32,8 @@ import agg.util.ExtObservable;
 import agg.util.Pair;
 import agg.util.XMLHelper;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import de.jare.ndimcol.ref.ArrayMovie;
+import de.jare.ndimcol.ref.ArraySeason;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -2284,7 +2286,7 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             }
         }
         // check types: all types of the orig. graph should be in image, too
-        final List<Type> origTypes = this.itsOrig.getUsedTypes();
+        final ArrayMovie<Type> origTypes = this.itsOrig.getUsedTypes();
         final List<Type> otherTypes = g.getUsedAndInheritedTypes();
         for (int i = 0; i < origTypes.size(); i++) {
             if (!otherTypes.contains(origTypes.get(i))) {
@@ -2306,7 +2308,7 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             }
         }
         // check types: all types of the orig. graph should be in image, too
-        final List<Type> origTypes = this.itsOrig.getUsedTypes();
+        final ArrayMovie<Type> origTypes = this.itsOrig.getUsedTypes();
         final List<Type> imagTypes = this.itsImag.getUsedAndInheritedTypes();
         for (int i = 0; i < origTypes.size(); i++) {
             if (!imagTypes.contains(origTypes.get(i))) {
@@ -4240,8 +4242,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         return AttrTupleManager.getDefaultManager().isClassName(name);
     }
 
-    public List<Type> getUsedTypes() {
-        final List<Type> vec = new ArrayList<>();
+    public ArrayMovie<Type> getUsedTypes() {
+        final ArrayMovie<Type> vec = new ArraySeason<>();
 
         addUsedType(this.itsOrig.getNodesSet().iterator(), vec);
         addUsedType(this.itsOrig.getArcsSet().iterator(), vec);
@@ -4252,7 +4254,7 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         return vec;
     }
 
-    private void addUsedType(final Iterator<?> elems, final List<Type> vec) {
+    private void addUsedType(final Iterator<?> elems, final ArrayMovie<Type> vec) {
         while (elems.hasNext()) {
             GraphObject o = (GraphObject) elems.next();
             if (!vec.contains(o.getType())) {
