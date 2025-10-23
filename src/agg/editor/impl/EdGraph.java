@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -50,13 +52,15 @@ import agg.xt_basis.agt.MultiRule;
 import agg.gui.editor.EditorConstants;
 import agg.layout.evolutionary.EvolutionaryGraphLayout;
 import agg.util.Pair;
+import de.jare.ndimcol.ref.IteratorWalker;
 import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * This class specifies a graph visualization of the class agg.xt_basis.Graph, where objects of class
- * agg.editor.impl.EdNode visualize objects of class agg.xt_basis.Node, objects of class agg.editor.impl.EdArc visualize
- * objects of class agg.xt_basis.Arc.
+ * This class specifies a graph visualization of the class agg.xt_basis.Graph,
+ * where objects of class agg.editor.impl.EdNode visualize objects of class
+ * agg.xt_basis.Node, objects of class agg.editor.impl.EdArc visualize objects
+ * of class agg.xt_basis.Arc.
  *
  * @author $Author: olga $
  * @version $Id: EdGraph.java,v 1.134 2010/12/17 15:43:25 olga Exp $
@@ -126,7 +130,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Creates an empty graph layout with a type set specified by the EdTypeSet types
+     * Creates an empty graph layout with a type set specified by the EdTypeSet
+     * types
      */
     public EdGraph(EdTypeSet types) {
         init();
@@ -154,8 +159,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Creates a graph layout with the used object specified by the Graph graph and the type set specified by the
-     * EdTypeSet types
+     * Creates a graph layout with the used object specified by the Graph graph
+     * and the type set specified by the EdTypeSet types
      */
     public EdGraph(Graph graph, EdTypeSet types) {
         init();
@@ -174,8 +179,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Creates a graph layout with the used object specified by the Graph graph, the type set specified by the EdTypeSet
-     * types and visibility of attributes specified by the attrsVisible.
+     * Creates a graph layout with the used object specified by the Graph graph,
+     * the type set specified by the EdTypeSet types and visibility of
+     * attributes specified by the attrsVisible.
      */
     public EdGraph(Graph graph, EdTypeSet types, boolean attrsVisible) {
         this(graph, types);
@@ -1460,8 +1466,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Creates layout nodes and edges of the new basis node and edges. The location of the new layout nodes is set to
-     * default.
+     * Creates layout nodes and edges of the new basis node and edges. The
+     * location of the new layout nodes is set to default.
      */
     public void makeGraphObjectsOfNewBasisObjects(boolean selectnew) {
         if (this.bGraph == null || this.bGraph.isEmpty()) {
@@ -1649,14 +1655,16 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Returns TRUE if this is a graph of Critical Pair Analysis with conflicts and dependencies between rules.
+     * Returns TRUE if this is a graph of Critical Pair Analysis with conflicts
+     * and dependencies between rules.
      */
     public boolean isCPAgraph() {
         return this.isCPA;
     }
 
     /**
-     * Set this graph to be a graph of Critical Pair Analysis with conflicts and dependencies between rules.
+     * Set this graph to be a graph of Critical Pair Analysis with conflicts and
+     * dependencies between rules.
      */
     public void setCPAgraph(boolean b) {
         this.isCPA = b;
@@ -1757,7 +1765,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Adds a new node layout of the basis node specified by the basis Node bNode.
+     * Adds a new node layout of the basis node specified by the basis Node
+     * bNode.
      */
     private EdNode newNode(Node bNode) {
         // find EdType
@@ -1787,7 +1796,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Adds a new node layout of the used object specified by the Node bNode using the type specified by the EdType et.
+     * Adds a new node layout of the used object specified by the Node bNode
+     * using the type specified by the EdType et.
      */
     public EdNode addNode(Node bNode, EdType et) {
         EdNode eNode = new EdNode(bNode, et);
@@ -1829,7 +1839,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Adds a new arc layout to my arcs. using the type specified by the EdType eType.
+     * Adds a new arc layout to my arcs. using the type specified by the EdType
+     * eType.
      */
     public EdArc addArc(EdType eType, EdGraphObject from, EdGraphObject to,
             Point anchor, boolean directed) throws TypeException {
@@ -1925,9 +1936,10 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Adds a new inheritance arc layout of the used object specified by the Arc bArc to the arcs container specified by
-     * the List eArcs. The source and the target of the new arc have to be under my nodes . The List eArcs can be my
-     * arcs vector.
+     * Adds a new inheritance arc layout of the used object specified by the Arc
+     * bArc to the arcs container specified by the List eArcs. The source and
+     * the target of the new arc have to be under my nodes . The List eArcs can
+     * be my arcs vector.
      */
     public EdArc newInheritanceArc(final Arc bArc, final List<EdArc> eArcs) {
         if (!this.isTG) {
@@ -2006,7 +2018,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Adds a new arc layout of the used object specified by the Arc bArc using the type specified by the EdType et.
+     * Adds a new arc layout of the used object specified by the Arc bArc using
+     * the type specified by the EdType et.
      */
     public EdArc addArc(Arc bArc, EdType et) throws TypeException {
         this.errMsg = "";
@@ -2045,7 +2058,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Gets the node layout of the used object specified by the GraphObject bNode
+     * Gets the node layout of the used object specified by the GraphObject
+     * bNode
      */
     public EdNode findNode(GraphObject bNode) {
         if (bNode == null) {
@@ -2215,7 +2229,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Gets the arc layout to the text on the position specifies by the int x, int y
+     * Gets the arc layout to the text on the position specifies by the int x,
+     * int y
      */
     public EdArc getPickedTextOfArc(int x, int y, FontMetrics fm) {
 //		for (int i=this.arcs.size()-1; i>=0; i--) {
@@ -2230,7 +2245,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
 
     // move
     /**
-     * Moves the specified EdNode to the position computed by pickedNode.getX()+dx and pickedNode.getY()+dy
+     * Moves the specified EdNode to the position computed by
+     * pickedNode.getX()+dx and pickedNode.getY()+dy
      */
     public void moveNode(EdNode pickedNode, int dx, int dy) {
 //		System.out.println("EdGraph.moveNode(EdNode, int dx, int dy) "+dx+"    "+dy);
@@ -2353,7 +2369,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Moves the bend of the specified EdArc to the position computed by pickedArc.getX()+dx and pickedArc.getY()+dy
+     * Moves the bend of the specified EdArc to the position computed by
+     * pickedArc.getX()+dx and pickedArc.getY()+dy
      */
     public void moveArc(EdArc pickedArc, int dx, int dy) {
         if (pickedArc != null) {
@@ -2376,7 +2393,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Moves the text of an arc specified by the EdArc pickedTextOfArc to the point specified by the int dx, int dy
+     * Moves the text of an arc specified by the EdArc pickedTextOfArc to the
+     * point specified by the int dx, int dy
      */
     public void moveTextOfArc(EdArc pickedTextOfArc, int dx, int dy) {
         pickedTextOfArc.translateTextOffset(dx, dy);
@@ -2735,8 +2753,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                             if (!trg.isSelected()) {
                                 trg.setSelected(true);
                             }
-                            singleNodes.remove (ea.getSource());
-                            singleNodes.remove (ea.getTarget());
+                            singleNodes.remove(ea.getSource());
+                            singleNodes.remove(ea.getTarget());
                         }
                     }
                 }
@@ -2830,8 +2848,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * States how to draw critical objects of CPA critical overlapping graphs: <code>EdGraphObject.CRITICAL_GREEN</code>
-     * or <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
+     * States how to draw critical objects of CPA critical overlapping graphs:
+     * <code>EdGraphObject.CRITICAL_GREEN</code> or
+     * <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
      */
     public void setDrawingStyleOfCriticalObjects(int criticalStyle) {
         this.criticalStyle = criticalStyle;
@@ -3271,8 +3290,10 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Returns true if this graph is the LHS (resp. RHS) of a KernelRule of a RuleScheme and therefore is the source
-     * graph of the left (resp. right) graph embedding into a MultiRule of a RuleScheme. Otherwise returns false.
+     * Returns true if this graph is the LHS (resp. RHS) of a KernelRule of a
+     * RuleScheme and therefore is the source graph of the left (resp. right)
+     * graph embedding into a MultiRule of a RuleScheme. Otherwise returns
+     * false.
      */
     public boolean isSourceGraphOfGraphEmbedding() {
         if (this.eGra != null) {
@@ -3286,8 +3307,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Returns true if this graph is the LHS of a KernelRule of a RuleScheme and therefore is the source graph of the
-     * left graph embedding into a MultiRule of a RuleScheme. Otherwise returns false.
+     * Returns true if this graph is the LHS of a KernelRule of a RuleScheme and
+     * therefore is the source graph of the left graph embedding into a
+     * MultiRule of a RuleScheme. Otherwise returns false.
      */
     public boolean isSourceGraphOfGraphEmbeddingLeft() {
         if (this.eGra != null) {
@@ -3302,8 +3324,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Returns true if this graph is the RHS of a KernelRule of a RuleScheme and therefore is the source graph of the
-     * right graph embedding into a MultiRule of a RuleScheme. Otherwise returns false.
+     * Returns true if this graph is the RHS of a KernelRule of a RuleScheme and
+     * therefore is the source graph of the right graph embedding into a
+     * MultiRule of a RuleScheme. Otherwise returns false.
      */
     public boolean isSourceGraphOfGraphEmbeddingRight() {
         if (this.eGra != null) {
@@ -3318,12 +3341,14 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Returns true if this graph is the LHS (resp. RHS) of a MultiRule of a RuleScheme and the specified graph object
-     * is the target object of the left (resp. right) graph embedding of the KernelRule of a RuleScheme. Otherwise
-     * returns false.
+     * Returns true if this graph is the LHS (resp. RHS) of a MultiRule of a
+     * RuleScheme and the specified graph object is the target object of the
+     * left (resp. right) graph embedding of the KernelRule of a RuleScheme.
+     * Otherwise returns false.
      *
      * @param go a graph object
-     * @return true if go is a target object of a graph embedding, otherwise - false
+     * @return true if go is a target object of a graph embedding, otherwise -
+     * false
      */
     public boolean isTargetObjOfGraphEmbedding(final EdGraphObject go) {
         if (this.eGra != null) {
@@ -3340,9 +3365,11 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Returns the object of the LHS (resp. RHS) of the KernelRule of a RuleScheme if the specified graph object is the
-     * target object of the left (resp. right) graph embedding of the KernelRule of a RuleScheme. Otherwise returns
-     * false. THe specified object belongs to a MultiRule of a RuleScheme.
+     * Returns the object of the LHS (resp. RHS) of the KernelRule of a
+     * RuleScheme if the specified graph object is the target object of the left
+     * (resp. right) graph embedding of the KernelRule of a RuleScheme.
+     * Otherwise returns false. THe specified object belongs to a MultiRule of a
+     * RuleScheme.
      *
      * @param go a graph object
      * @return a MultiRule graph object or null
@@ -3549,7 +3576,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Deletes an arc layout for the used object specified by the Arc bArc. The used object will be deleted too.
+     * Deletes an arc layout for the used object specified by the Arc bArc. The
+     * used object will be deleted too.
      */
     public void delArc(Arc bArc) throws TypeException {
         EdArc eArc = findArc(bArc);
@@ -3559,7 +3587,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Deletes a node layout for the used object specified by the Node bNode. The used object will be deleted too.
+     * Deletes a node layout for the used object specified by the Node bNode.
+     * The used object will be deleted too.
      */
     public void delNode(Node bNode) throws TypeException {
         Vector<EdArc> inArcs = new Vector<EdArc>();
@@ -3599,7 +3628,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Deletes a node layout specified by the EdNode eNode. The used object will be deleted too.
+     * Deletes a node layout specified by the EdNode eNode. The used object will
+     * be deleted too.
      */
     public void delSelectedNode(EdNode eNode) throws TypeException {
         delSelectedNode(eNode, false);
@@ -3636,7 +3666,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Deletes an arc layout specified by the EdArc eArc. The used object will be deleted too.
+     * Deletes an arc layout specified by the EdArc eArc. The used object will
+     * be deleted too.
      */
     public void delSelectedArc(EdArc eArc) throws TypeException {
         delSelectedArc(eArc, false);
@@ -3742,9 +3773,10 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Deletes an layout object specified by the EdGraphObject ego public void deleteObj(EdGraphObject ego) throws
-     * TypeException { if (ego == null) return; if (ego.isNode()) { delSelectedNode((EdNode) ego, false); } else { EdArc
-     * ea = ego.getArc(); delSelectedArc(ea, false); } //	update(); }
+     * Deletes an layout object specified by the EdGraphObject ego public void
+     * deleteObj(EdGraphObject ego) throws TypeException { if (ego == null)
+     * return; if (ego.isNode()) { delSelectedNode((EdNode) ego, false); } else
+     * { EdArc ea = ego.getArc(); delSelectedArc(ea, false); } //	update(); }
      */
     /**
      * Deletes an layout object specified by the EdGraphObject ego
@@ -4541,10 +4573,10 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                 List<EdArc> oldInhArcs = new Vector<>(this.inheritanceArcs);
                 this.inheritanceArcs.clear();
 
-                Enumeration<Arc> bInhArcs = this.typeSet.getBasisTypeSet()
-                        .getInheritanceArcs().elements();
-                while (bInhArcs.hasMoreElements()) {
-                    Arc bArc = bInhArcs.nextElement();
+                IteratorWalker<Arc> bInhArcs = this.typeSet.getBasisTypeSet()
+                        .getInheritanceArcs().softWalker();
+                while (bInhArcs.hasNext()) {
+                    Arc bArc = bInhArcs.next();
                     boolean found = false;
                     for (int k = 0; k < oldInhArcs.size(); k++) {
                         EdArc currentArc = oldInhArcs.get(k);
@@ -4568,10 +4600,10 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     private void makeInheritanceArcs() {
         synchronized (this) {
             if (this.isTG) {
-                Enumeration<Arc> bInhArcs = this.typeSet.getBasisTypeSet()
-                        .getInheritanceArcs().elements();
-                while (bInhArcs.hasMoreElements()) {
-                    Arc bArc = bInhArcs.nextElement();
+                IteratorWalker<Arc> bInhArcs = this.typeSet.getBasisTypeSet()
+                        .getInheritanceArcs().softWalker();
+                while (bInhArcs.hasNext()) {
+                    Arc bArc = bInhArcs.next();
                     if (this.findArc(bArc) == null) {
                         newInheritanceArc(bArc, this.arcs);
                     }
@@ -4648,7 +4680,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Updates graph layout considering morphisms specified by the OrdinaryMorphism m1, OrdinaryMorphism m2
+     * Updates graph layout considering morphisms specified by the
+     * OrdinaryMorphism m1, OrdinaryMorphism m2
      */
     public void updateGraph(final OrdinaryMorphism m1,
             final OrdinaryMorphism m2) {
@@ -4726,16 +4759,18 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Sets the layout from another EdGraph. The basis Graph of this and the specified EdGraph layout should be the
-     * same. The corresponding graph object is found by its basis object.
+     * Sets the layout from another EdGraph. The basis Graph of this and the
+     * specified EdGraph layout should be the same. The corresponding graph
+     * object is found by its basis object.
      */
     public void setLayoutByBasisObject(EdGraph layout) {
         setLayoutFrom(layout, true, true);
     }
 
     /**
-     * Sets the layout from another EdGraph. * The basis Graph of this and the specified EdGraph layout should be the
-     * same. The corresponding graph object is found by its basis object.
+     * Sets the layout from another EdGraph. * The basis Graph of this and the
+     * specified EdGraph layout should be the same. The corresponding graph
+     * object is found by its basis object.
      */
     private void setLayoutFrom(EdGraph layout, boolean ofNodes, boolean ofArcs) {
         if (this.bGraph == layout.getBasisGraph()) {
@@ -4785,8 +4820,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Sets the layout from another EdGraph. The basis graphs may be different. The corresponding graph objects are
-     * found by its Type. It is suitable for a type graph especially,
+     * Sets the layout from another EdGraph. The basis graphs may be different.
+     * The corresponding graph objects are found by its Type. It is suitable for
+     * a type graph especially,
      */
     public void setLayoutByType(EdGraph layout) {
 
@@ -4887,8 +4923,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Sets the layout from another EdGraph. The basis graphs may be different. The corresponding graph objects are
-     * found by its index.
+     * Sets the layout from another EdGraph. The basis graphs may be different.
+     * The corresponding graph objects are found by its index.
      */
     public void setLayoutByIndex(EdGraph layout, boolean ofNodesOnly) {
         if (this.nodes.size() == 0) {
@@ -4932,8 +4968,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Sets the layout from the specified EdGraph layout. The basis graph of the specified layout has to be the source
-     * graph and the basis graph of this EdGraph has to be the target graph of the specified OrdinaryMorphism om.
+     * Sets the layout from the specified EdGraph layout. The basis graph of the
+     * specified layout has to be the source graph and the basis graph of this
+     * EdGraph has to be the target graph of the specified OrdinaryMorphism om.
      */
     public boolean updateLayoutByIsoMorphism(
             final OrdinaryMorphism isoCopyOfBaseGraph, final EdGraph layout) {
@@ -5125,8 +5162,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Select the graph objects which are images of the given morphism. If the rule parameter is not NULL, select the
-     * new created graph objects only.
+     * Select the graph objects which are images of the given morphism. If the
+     * rule parameter is not NULL, select the new created graph objects only.
      */
     public void updateAlongMorph(Morphism coMorph, Rule r) {
         synchronized (this) {
@@ -5363,7 +5400,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Draws all nodes and arcs if parameter all is true otherwise only selected objects
+     * Draws all nodes and arcs if parameter all is true otherwise only selected
+     * objects
      *
      * @deprecated
      */
@@ -5396,8 +5434,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * To use this method please make sure that the method <code>this.updateVisibility()</code> is called at least ones
-     * after the visibility of node resp. arc type object of the type graph was changed.
+     * To use this method please make sure that the method
+     * <code>this.updateVisibility()</code> is called at least ones after the
+     * visibility of node resp. arc type object of the type graph was changed.
      *
      * @return list with visible nodes
      */
@@ -5410,8 +5449,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * To use this method please make sure that the method <code>this.updateVisibility()</code> is called at least ones
-     * after the visibility of node resp. arc type object of the type graph was changed.
+     * To use this method please make sure that the method
+     * <code>this.updateVisibility()</code> is called at least ones after the
+     * visibility of node resp. arc type object of the type graph was changed.
      *
      * @return list with visible edges
      */
@@ -5469,8 +5509,9 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Draws all nodes and arcs from the specified lists into the specified graphics if the parameter all is true,
-     * otherwise draws selected objects, only.
+     * Draws all nodes and arcs from the specified lists into the specified
+     * graphics if the parameter all is true, otherwise draws selected objects,
+     * only.
      */
     public void drawGraphics(
             final Graphics graphics,
@@ -5595,11 +5636,12 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * Erases the graphic of the node n public void eraseOnlyNode(Graphics g, double scale, EdNode n) {
-     * n.eraseGraphic(g, scale); }
+     * Erases the graphic of the node n public void eraseOnlyNode(Graphics g,
+     * double scale, EdNode n) { n.eraseGraphic(g, scale); }
      */
     /**
-     * Erases the graphic of the node n together with incoming and outgoing edges
+     * Erases the graphic of the node n together with incoming and outgoing
+     * edges
      */
     public void eraseNode(Graphics g, EdNode n) {
         eraseArcs(g, getIncomingArcs(n));
@@ -6209,8 +6251,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
 
     // Ab hier neu hinzugefuegtes fuer den Layouter
     /**
-     * setzt die Koordinaten aller EdNodes von this auf die werte, die in der jeweiligen LayoutNode der EdNode als akt
-     * gespeichert ist
+     * setzt die Koordinaten aller EdNodes von this auf die werte, die in der
+     * jeweiligen LayoutNode der EdNode als akt gespeichert ist
      *
      */
     public void updateNodePosLtoE(final List<EdNode> nodelist) {
@@ -6222,8 +6264,8 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     }
 
     /**
-     * setzt die Koordinaten aller LayoutNodes die zu EdNodes von this gehoeren auf die Werte der Koordinaten, der
-     * jeweiligen EdNode
+     * setzt die Koordinaten aller LayoutNodes die zu EdNodes von this gehoeren
+     * auf die Werte der Koordinaten, der jeweiligen EdNode
      */
     public void updateNodePosEtoL(final List<EdNode> nodelist) {
         for (int i = 0; i < nodelist.size(); i++) {

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -18,6 +20,9 @@ import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.ValueTuple;
 import agg.cons.AtomConstraint;
 import agg.util.Pair;
+import de.jare.ndimcol.ref.ArrayMovie;
+import de.jare.ndimcol.ref.ArraySeason;
+import de.jare.ndimcol.ref.IteratorWalker;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -27,13 +32,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.function.Predicate;
 
 /**
- * Manages the node/edge types of graphs. Especially the rules and host graphs of a graph transformation system (gratra)
- * should use the same type set.
+ * Manages the node/edge types of graphs. Especially the rules and host graphs
+ * of a graph transformation system (gratra) should use the same type set.
  *
- * Implements methods for creation, deletion and manipulation of node/edge types, a type graph, inheritance relations
- * between node types, checking type validity.
+ * Implements methods for creation, deletion and manipulation of node/edge
+ * types, a type graph, inheritance relations between node types, checking type
+ * validity.
  *
  * @version $Id: TypeSet.java,v 1.87 2010/12/02 19:37:59 olga Exp $
  * @author $Author: olga $
@@ -66,7 +73,8 @@ public class TypeSet {
     public static final int ENABLED_MAX = 20;
 
     /**
-     * Level of type graph check to enable type graph and max and min multiplicity
+     * Level of type graph check to enable type graph and max and min
+     * multiplicity
      */
     public static final int ENABLED_MAX_MIN = 30;
 
@@ -83,7 +91,7 @@ public class TypeSet {
     /**
      * the types of the edges and nodes will be hold in this list
      */
-    private final Vector<Type> types = new Vector<Type>();
+    private final ArraySeason<Type> types = new ArraySeason<Type>();
 
     private boolean directed = true;
     private boolean parallel = true;
@@ -97,7 +105,7 @@ public class TypeSet {
     /**
      * inheritance edges within the type graph
      */
-    private final Vector<Arc> inheritanceArcs = new Vector<Arc>();
+    private final ArraySeason<Arc> inheritanceArcs = new ArraySeason<Arc>();
 
     /**
      * the graph describing combinations of node and edge types
@@ -110,13 +118,14 @@ public class TypeSet {
     private final AttrManager attrManager = AttrTupleManager.getDefaultManager();
 
     /**
-     * is true, if a type graph exists and it was successfully checked Only if true, a TypeSet is able to check the
-     * types of graphs.
+     * is true, if a type graph exists and it was successfully checked Only if
+     * true, a TypeSet is able to check the types of graphs.
      */
     private boolean typeGraphIsProved = false;
 
     /**
-     * holds the level of type graph check Possible values: null null null null null null null null     {@link #DISABLED}, {@link #ENABLED},
+     * holds the level of type graph check Possible values: null null null null
+     * null null null null null null null null     {@link #DISABLED}, {@link #ENABLED},
 	 * {@link #ENABLED_MAX}, {@link #ENABLED_MAX_MIN}
      */
     private int typeGraphLevel = DISABLED;
@@ -126,7 +135,8 @@ public class TypeSet {
     protected String info = "";
 
     /**
-     * creates a new type manager. with no types defined and no type graph given.
+     * creates a new type manager. with no types defined and no type graph
+     * given.
      */
     public TypeSet() {
     }
@@ -178,10 +188,12 @@ public class TypeSet {
     }
 
     /**
-     * Creates a new Type instance without attribute type. It is useful for non-attributed graphs.
+     * Creates a new Type instance without attribute type. It is useful for
+     * non-attributed graphs.
      *
-     * @deprecated replaced by <code>Type createNodeType(boolean withAttributes)</code> for node type and
-     * <code>Type createArcType(boolean withAttributes)</code> for edge type
+     * @deprecated replaced by
+     * <code>Type createNodeType(boolean withAttributes)</code> for node type
+     * and <code>Type createArcType(boolean withAttributes)</code> for edge type
      */
     public final Type createType() {
         Type aType = createType(false);
@@ -237,9 +249,10 @@ public class TypeSet {
     }
 
     /**
-     * Iterate through all the valid types that may be given to a * GraphObject. Enumeration elements are of type
-     * <code>Type</code>. *
+     * Iterate through all the valid types that may be given to a *
+     * GraphObject.Enumeration elements are of type <code>Type</code>. *
      *
+     * @return
      * @see agg.xt_basis.Type
      */
     public final Iterator<Type> getTypes() {
@@ -254,7 +267,7 @@ public class TypeSet {
      *
      * @return a list with node/edge types
      */
-    public final List<Type> getTypeList() {
+    public final ArrayMovie<Type> getTypeList() {
         return this.types;
     }
 
@@ -262,15 +275,16 @@ public class TypeSet {
      * @deprecated replaced by List<Type> getTypeList()
      * @return a list with node/edge types
      */
-    public final Vector<Type> getTypesVec() {
+    public final ArrayMovie<Type> getTypesVec() {
         return this.types;
     }
 
     /**
-     * Returns a set of inheritance edges. An inheritance edge is especial edge kind. It is not in the edge set of a
-     * type graph and it cannot be get by typeSet.getTypeGraph().getArcs().
+     * Returns a set of inheritance edges. An inheritance edge is especial edge
+     * kind. It is not in the edge set of a type graph and it cannot be get by
+     * typeSet.getTypeGraph().getArcs().
      */
-    public final Vector<Arc> getInheritanceArcs() {
+    public final ArrayMovie<Arc> getInheritanceArcs() {
         return this.inheritanceArcs;
     }
 
@@ -279,50 +293,46 @@ public class TypeSet {
     }
 
     /**
-     * Returns true, if a type graph exists and it is a type graph with node type inheritance, otherwise returns false.
+     * Returns true, if a type graph exists and it is a type graph with node
+     * type inheritance, otherwise returns false.
      */
     public boolean hasInheritance() {
         return !this.inheritanceArcs.isEmpty();
     }
 
     /**
-     * Returns true, if a type graph exists and it is a type graph with node type inheritance, otherwise returns false.
+     * Returns true, if a type graph exists and it is a type graph with node
+     * type inheritance, otherwise returns false.
      */
     public boolean usesInheritance() {
         return !this.inheritanceArcs.isEmpty();
     }
 
     /**
-     * Returns a type with the specified name and additional graphical representation if it is found, otherwise
-     * <code>null</code>.
+     * Returns a type with the specified name and additional graphical
+     * representation if it is found, otherwise <code>null</code>.
      */
     public Type getTypeByNameAndAdditionalRepr(final String name, final String addRepr) {
-        for (int i = 0; i < this.types.size(); i++) {
-            Type t = this.types.elementAt(i);
-            if ((t.getStringRepr().equals(name)
-                    || ("unnamed".equals(name) && "".equals(t.getStringRepr())))
-                    && t.getAdditionalRepr().equals(addRepr)) {
-                return t;
-            }
-        }
-        return null;
+        final Predicate<? super Type> predicate = ti -> ((ti.getStringRepr().equals(name)
+                || ("unnamed".equals(name) && "".equals(ti.getStringRepr())))
+                && ti.getAdditionalRepr().equals(addRepr));
+        final IteratorWalker<Type> walker = this.types.filterFirst(predicate);
+        return walker == null ? null : walker.next();
     }
 
     /**
-     * Returns a type with the specified name if it is found, otherwise <code>null</code> Here the graphical
-     * represantation of a node or edge type is not taken in account. That can be a problem, when there exists a node
-     * type and an edge type with equal names. The method <c>Type getTypeByNameAndAdditionalRepr(String name, String
-     * addRepr)</c> should be used.
+     * Returns a type with the specified name if it is found, otherwise
+     * <code>null</code> Here the graphical represantation of a node or edge
+     * type is not taken in account. That can be a problem, when there exists a
+     * node type and an edge type with equal names. The method <c>Type
+     * getTypeByNameAndAdditionalRepr(String name, String addRepr)</c> should be
+     * used.
      */
     public Type getTypeByName(final String name) {
-        for (int i = 0; i < this.types.size(); i++) {
-            Type t = this.types.elementAt(i);
-            if (t.getStringRepr().equals(name)
-                    || ("unnamed".equals(name) && "".equals(t.getStringRepr()))) {
-                return t;
-            }
-        }
-        return null;
+        final Predicate<? super Type> predicate = ti -> (ti.getStringRepr().equals(name)
+                || ("unnamed".equals(name) && "".equals(ti.getStringRepr())));
+        final IteratorWalker<Type> walker = this.types.filterFirst(predicate);
+        return walker == null ? null : walker.next();
     }
 
     /**
@@ -331,29 +341,25 @@ public class TypeSet {
      * @deprecated <code>Type getTypeByName(String name)</code> should be used
      */
     public Type getTypeForName(final String name) {
-        for (int i = 0; i < this.types.size(); i++) {
-            Type t = this.types.elementAt(i);
-            if (t.getStringRepr().equals(name)
-                    || ("unnamed".equals(name) && "".equals(t.getStringRepr()))) {
-                return t;
-            }
-        }
-        return null;
+        final Predicate<? super Type> predicate = ti -> (ti.getStringRepr().equals(name)
+                || ("unnamed".equals(name) && "".equals(ti.getStringRepr())));
+        final IteratorWalker<Type> walker = this.types.filterFirst(predicate);
+        return walker == null ? null : walker.next();
     }
 
     /**
-     * Returns a type which is similar to the specified type: the type names, the graphical representation such as
-     * color, node shape of node type or edge style of edge type, the number of attributes, the name and type of
+     * Returns a type which is similar to the specified type: the type names,
+     * the graphical representation such as color, node shape of node type or
+     * edge style of edge type, the number of attributes, the name and type of
      * attribute member should be equal, otherwise returns <code>null</code>.
+     *
+     * @param t
+     * @return null or first similar type.
      */
     public Type getSimilarType(final Type t) {
-        for (int i = 0; i < this.types.size(); i++) {
-            Type ti = this.types.elementAt(i);
-            if (ti.compareTo(t)) {
-                return ti;
-            }
-        }
-        return null;
+        final Predicate<? super Type> predicate = ti -> ti.compareTo(t);
+        final IteratorWalker<Type> walker = this.types.filterFirst(predicate);
+        return walker == null ? null : walker.next();
     }
 
     /**
@@ -364,8 +370,9 @@ public class TypeSet {
     }
 
     /**
-     * Returns the type graph edge of the specified type <code>t</code>, with a source node of the specified type
-     * <code>source</code> and a target node of the specified type <code>target</code>, otherwise returns
+     * Returns the type graph edge of the specified type <code>t</code>, with a
+     * source node of the specified type <code>source</code> and a target node
+     * of the specified type <code>target</code>, otherwise returns
      * <code>null</code>.
      */
     public Arc getTypeGraphArcOLD(final Type t, final Type source, final Type target) {
@@ -415,7 +422,8 @@ public class TypeSet {
     }
 
     /**
-     * Returns the type graph or <code>null</code>, if no type graph was created before.
+     * Returns the type graph or <code>null</code>, if no type graph was created
+     * before.
      */
     public Graph getTypeGraph() {
         return this.typeGraph;
@@ -450,11 +458,13 @@ public class TypeSet {
     }
 
     /**
-     * Set the specified graph to be the type graph. The method {@link #checkTypeGraph} should be called before to use
+     * Set the specified graph to be the type graph. The method
+     * {@link #checkTypeGraph} should be called before to use
      * {@link #checkType}.
      *
-     * @param tGraph a Graph which uses <code>this</code> TypeSet and contains only one node of each type. In case of
-     * <code>null</code>, the type graph check will not be longer used.
+     * @param tGraph a Graph which uses <code>this</code> TypeSet and contains
+     * only one node of each type. In case of <code>null</code>, the type graph
+     * check will not be longer used.
      */
     public void setTypeGraph(final Graph tGraph) {
         if (tGraph != null) {
@@ -484,16 +494,18 @@ public class TypeSet {
     }
 
     /**
-     * If the parameter <code>all</code> is true, then a copy of each type of the <code>otherTypes</code> will be
-     * created, otherwise only of the not found types.
+     * If the parameter <code>all</code> is true, then a copy of each type of
+     * the <code>otherTypes</code> will be created, otherwise only of the not
+     * found types.
      */
     public void adaptTypes(final TypeSet otherTypes, final boolean all) {
         doAdaptTypes(otherTypes.getTypes(), all);
     }
 
     /**
-     * If the parameter <code>all</code> is true, then a copy will be created of each type of the
-     * <code>otherTypes</code>, otherwise only of not found type.
+     * If the parameter <code>all</code> is true, then a copy will be created of
+     * each type of the <code>otherTypes</code>, otherwise only of not found
+     * type.
      */
     public void adaptTypes(final Iterator<Type> otherTypes, final boolean all) {
         doAdaptTypes(otherTypes, all);
@@ -679,8 +691,10 @@ public class TypeSet {
     }
 
     /**
-     * Here the double attribute members of parent-child relation would be checked. If two or more attribute members
-     * with the same name are found, the name will be extended by "?". The double clan edges would be removed, too.
+     * Here the double attribute members of parent-child relation would be
+     * checked. If two or more attribute members with the same name are found,
+     * the name will be extended by "?". The double clan edges would be removed,
+     * too.
      */
     private void adaptClans() {
         if (this.typeGraph == null
@@ -815,9 +829,11 @@ public class TypeSet {
     }
 
     /**
-     * Imports (integrates) the specified Graph tGraph into my type graph. The tGraph has to be a type graph, too. If
-     * the parameter <code>rewrite</code> is true, my types would be adapted to the types imported, otherwise they have
-     * to be equal. Returns true, if the import was successful, otherwise false.
+     * Imports (integrates) the specified Graph tGraph into my type graph. The
+     * tGraph has to be a type graph, too. If the parameter <code>rewrite</code>
+     * is true, my types would be adapted to the types imported, otherwise they
+     * have to be equal. Returns true, if the import was successful, otherwise
+     * false.
      */
     public boolean importTypeGraph(final Graph tGraph, final boolean rewrite) {
 //		System.out.println("TypeSet.importTypeGraph rewrite: "+rewrite);
@@ -934,15 +950,17 @@ public class TypeSet {
     }
 
     /**
-     * This method does only work if a type graph does not exist or empty, otherwise returns existing type graph. <br>
+     * This method does only work if a type graph does not exist or empty,
+     * otherwise returns existing type graph. <br>
      * Creates a new type graph, if it does not already exist. <br>
-     * Tries to create a unique type graph node for each node of the specified node list. If the node list is empty,
-     * tries to create a unique type graph node for each existing node type. Creates an inheritance edge for already
+     * Tries to create a unique type graph node for each node of the specified
+     * node list. If the node list is empty, tries to create a unique type graph
+     * node for each existing node type. Creates an inheritance edge for already
      * existing inheritance relations.<br>
-     * Tries to create a unique type graph edge for each edge of the specified edge list. If the edge list is empty, no
-     * edges are created.<br>
-     * The level for the type graph check of the already existing type graph should be set to
-     * <code>TypeSet.DISABLED</code>.
+     * Tries to create a unique type graph edge for each edge of the specified
+     * edge list. If the edge list is empty, no edges are created.<br>
+     * The level for the type graph check of the already existing type graph
+     * should be set to <code>TypeSet.DISABLED</code>.
      *
      * @return type graph
      */
@@ -1008,13 +1026,14 @@ public class TypeSet {
 
     /**
      * Creates a new type graph, if it does not already exist. <br>
-     * Tries to create a unique type graph node for each node of the specified node list. If the node list is empty,
-     * tries to create a unique type graph node for each existing node type. Creates an inheritance edge for already
+     * Tries to create a unique type graph node for each node of the specified
+     * node list. If the node list is empty, tries to create a unique type graph
+     * node for each existing node type. Creates an inheritance edge for already
      * existing inheritance relations.<br>
-     * Tries to create a unique type graph edge for each edge of the specified edge list. If the edge list is empty, no
-     * edges are created.<br>
-     * The level for the type graph check of the already existing type graph should be set to
-     * <code>TypeSet.DISABLED</code>.
+     * Tries to create a unique type graph edge for each edge of the specified
+     * edge list. If the edge list is empty, no edges are created.<br>
+     * The level for the type graph check of the already existing type graph
+     * should be set to <code>TypeSet.DISABLED</code>.
      *
      * @return type graph
      */
@@ -1102,8 +1121,8 @@ public class TypeSet {
     }
 
     /**
-     * Adds the given type to this type manager. This should only called with independent types, types can't be part of
-     * two manager.
+     * Adds the given type to this type manager. This should only called with
+     * independent types, types can't be part of two manager.
      */
     public Type addType(final Type aType) {
         if (aType.isNodeType()) {
@@ -1199,10 +1218,12 @@ public class TypeSet {
     }
 
     /**
-     * Returns true if the attribute members of the specified Type type could be added without a conflict to an existing
-     * type which has the same name. A conflict could arise from the members which have an equal name but a different
-     * type. In this case the name of an existing attribute member is extended by "?", the new attribute member is added
-     * and the method returns false.
+     * Returns true if the attribute members of the specified Type type could be
+     * added without a conflict to an existing type which has the same name. A
+     * conflict could arise from the members which have an equal name but a
+     * different type. In this case the name of an existing attribute member is
+     * extended by "?", the new attribute member is added and the method returns
+     * false.
      */
     private boolean adaptTypeAttribute(final Type type) {
         Type myType = getTypeByName(type.getStringRepr()); // getName());
@@ -1216,8 +1237,8 @@ public class TypeSet {
     }
 
     /**
-     * The {@link #adaptTypeAttribute(Type type)} method will be aplied to each element of the specified Vector
-     * typesToAdapt.
+     * The {@link #adaptTypeAttribute(Type type)} method will be aplied to each
+     * element of the specified Vector typesToAdapt.
      */
     private void adaptTypeAttribute(final Vector<Type> typesToAdapt) {
         for (int i = 0; i < typesToAdapt.size(); i++) {
@@ -1276,8 +1297,9 @@ public class TypeSet {
     }
 
     /**
-     * Checks, if the specified Arc is valid typed as defined in the type graph: existence and multiplicity constraints
-     * of its type edge. The type graph must be proofed before.
+     * Checks, if the specified Arc is valid typed as defined in the type graph:
+     * existence and multiplicity constraints of its type edge. The type graph
+     * must be proofed before.
      *
      * @param arc an arc in a graph
      * @param tgl the level to use. {@see #setTypegraphLevel()}
@@ -1299,8 +1321,9 @@ public class TypeSet {
     }
 
     /**
-     * Checks, if the specified Node is valid typed as defined in the type graph: existence and multiplicity constraints
-     * of its type node. The type graph must be proofed before.
+     * Checks, if the specified Node is valid typed as defined in the type
+     * graph: existence and multiplicity constraints of its type node. The type
+     * graph must be proofed before.
      *
      * @param node a node in a graph
      * @param tgl the level to use. {@see #setTypegraphLevel()}
@@ -1319,14 +1342,17 @@ public class TypeSet {
     }
 
     /**
-     * Checks the type graph. The method must be called before edge type multiplicity will be set and before this
-     * TypeSet will check graphs, rules, etc. above the type graph. To turn off the type graph based checks use the
-     * method turnTypeGraphCheckOff()
+     * Checks the type graph. The method must be called before edge type
+     * multiplicity will be set and before this TypeSet will check graphs,
+     * rules, etc. above the type graph. To turn off the type graph based checks
+     * use the method turnTypeGraphCheckOff()
      *
-     * @return An empty Collection if for all node types exists exactly one node and for all edge/arc types exists at
-     * least one edge in the type graph, but not more then one of a type between the same nodes. If there were errors in
-     * the type graph a Collection with objects of class agg.xt_basis.TypeError will returned. For each mismatch an
-     * object will delivered. You can check if there were errors with Collection.isEmpty.
+     * @return An empty Collection if for all node types exists exactly one node
+     * and for all edge/arc types exists at least one edge in the type graph,
+     * but not more then one of a type between the same nodes. If there were
+     * errors in the type graph a Collection with objects of class
+     * agg.xt_basis.TypeError will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with Collection.isEmpty.
      *
      * @see TypeError
      */
@@ -1346,16 +1372,13 @@ public class TypeSet {
         // here will be all errors found
 
         // first disable all type graph objects of types
-        Enumeration<Type> enTypes = this.types.elements();
-        Type actType;
-        while (enTypes.hasMoreElements()) {
-            actType = enTypes.nextElement();
-            actType.disableTypeGraphObject();
-        }
+        this.types.forEach(ti -> ti.disableTypeGraphObject());
+
         // now propagate all graph objects from type graph
         // to its this.types
         Iterator<GraphObject> en = this.typeGraph.iteratorOfElems();
         GraphObject actGraphObject;
+        Type actType;
         while (en.hasNext()) {
             // link the type to the graph object
             actGraphObject = en.next();
@@ -1418,14 +1441,19 @@ public class TypeSet {
     }
 
     /**
-     * checks this new graph object in the type graph. This method will only find a wrong object, if the type graph was
-     * checked first (see {@link #checkTypeGraph()}). This method is designed to use <I>before</I>
-     * adding an object to the type graph, so the type graph will be used even if the check found mismatches.
+     * checks this new graph object in the type graph. This method will only
+     * find a wrong object, if the type graph was checked first (see
+     * {@link #checkTypeGraph()}). This method is designed to use <I>before</I>
+     * adding an object to the type graph, so the type graph will be used even
+     * if the check found mismatches.
      *
-     * @return An empty {@link Collection} if for all node types exists exactly one node and for all edge/arc types
-     * exists at least one edge in the type graph, but not more then one of a type between the same nodes. If there were
-     * errors in the type graph a Collection with objects of class {@link TypeError} will returned. For each mismatch an
-     * object will delivered. You can check if there were errors with {@link Collection#isEmpty}.
+     * @return An empty {@link Collection} if for all node types exists exactly
+     * one node and for all edge/arc types exists at least one edge in the type
+     * graph, but not more then one of a type between the same nodes. If there
+     * were errors in the type graph a Collection with objects of class
+     * {@link TypeError} will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with
+     * {@link Collection#isEmpty}.
      *
      * @see TypeError
      */
@@ -1462,8 +1490,9 @@ public class TypeSet {
     }
 
     /**
-     * Returns an error in the following cases: parent already exists, reflexive or cyclic inheritance, double attribute
-     * names when multiple inheritance used, otherwise - null.
+     * Returns an error in the following cases: parent already exists, reflexive
+     * or cyclic inheritance, double attribute names when multiple inheritance
+     * used, otherwise - null.
      *
      * @deprecated replaced by {@link #checkInheritanceValidity(Type, Type)}
      *
@@ -1473,8 +1502,9 @@ public class TypeSet {
     }
 
     /**
-     * Returns an error in the following cases: parent already exists, reflexive or cyclic inheritance, double attribute
-     * names when multiple inheritance used, otherwise - null.
+     * Returns an error in the following cases: parent already exists, reflexive
+     * or cyclic inheritance, double attribute names when multiple inheritance
+     * used, otherwise - null.
      */
     public TypeError checkInheritanceValidity(final Type child, final Type parent) {
         if (this.typeGraph == null || parent == null) {
@@ -1539,7 +1569,8 @@ public class TypeSet {
 
     /**
      * To use this method, a type graph must to be created and the method
-     * <code>checkInheritanceValidity(Type child, Type parent)</code> must be called before.
+     * <code>checkInheritanceValidity(Type child, Type parent)</code> must be
+     * called before.
      */
     public Arc addValidInheritanceRelation(final Type child, final Type parent) {
         if (this.typeGraph == null) {
@@ -1634,8 +1665,8 @@ public class TypeSet {
     }
 
     /**
-     * Remove inheritance relation from the specified <code>child</code> type to the specified direct
-     * <code>parent</code> type.
+     * Remove inheritance relation from the specified <code>child</code> type to
+     * the specified direct <code>parent</code> type.
      */
     public boolean removeInheritanceRelation(final Type child, final Type parent) {
         if (this.typeGraph == null || parent == null || child == parent) {
@@ -1732,7 +1763,8 @@ public class TypeSet {
     }
 
     /**
-     * Returns a set with all edges to inherit from the specified parent type, or empty set.
+     * Returns a set with all edges to inherit from the specified parent type,
+     * or empty set.
      */
     public Vector<Arc> getInheritedArcs(final Type parentType) {
         Vector<Arc> inheritedArcs = new Vector<Arc>();
@@ -1898,14 +1930,18 @@ public class TypeSet {
     }
 
     /**
-     * checks the given graph, if it is valid typed. If the TypeSet of the graph is not this object, the types of the
-     * nodes and edges must be also defined here. If in this TypeSet a proofed type graph is used, there must be a
-     * morphism from the given graph into the type graph (But a different algorithmus will be used).
+     * checks the given graph, if it is valid typed. If the TypeSet of the graph
+     * is not this object, the types of the nodes and edges must be also defined
+     * here. If in this TypeSet a proofed type graph is used, there must be a
+     * morphism from the given graph into the type graph (But a different
+     * algorithmus will be used).
      *
      * @param graph the graph to check
-     * @return an empty {@link Collection} if the given graph is valid typed. If there were type errors in the graph a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an error object will
-     * delivered. You can check if there were some errors {@link Collection#isEmpty}.
+     * @return an empty {@link Collection} if the given graph is valid typed. If
+     * there were type errors in the graph a Collection with objects of class
+     * {@link TypeError} will returned. For each mismatch an error object will
+     * delivered. You can check if there were some errors
+     * {@link Collection#isEmpty}.
      *
      * @see #checkTypeGraph
      */
@@ -1983,8 +2019,8 @@ public class TypeSet {
     }
 
     /**
-     * Returns an error object if the type multiplicity check failed after a node of the specified type created,
-     * otherwise - null.
+     * Returns an error object if the type multiplicity check failed after a
+     * node of the specified type created, otherwise - null.
      */
     public TypeError canCreateNode(
             final Graph g,
@@ -2028,8 +2064,8 @@ public class TypeSet {
     }
 
     /**
-     * Checks whether the given node type requires an outgoing resp. incoming edge type with respect to the current type
-     * graph.
+     * Checks whether the given node type requires an outgoing resp. incoming
+     * edge type with respect to the current type graph.
      *
      * @return a list with name of required arc type(s), otherwise null
      */
@@ -2074,8 +2110,8 @@ public class TypeSet {
     }
 
     /**
-     * Checks whether the given node type requires an outgoing resp. incoming edge type with respect to the current type
-     * graph.
+     * Checks whether the given node type requires an outgoing resp. incoming
+     * edge type with respect to the current type graph.
      *
      * @return a list with name of required arc type(s), otherwise null
      */
@@ -2189,8 +2225,8 @@ public class TypeSet {
     }
 
     /**
-     * Returns an error object if the type multiplicity check failed after an edge of the specified type created,
-     * otherwise - null.
+     * Returns an error object if the type multiplicity check failed after an
+     * edge of the specified type created, otherwise - null.
      */
     public TypeError canCreateArc(
             final Graph g,
@@ -2204,7 +2240,8 @@ public class TypeSet {
     }
 
     /**
-     * Checks edges of the specified graph due to type arc multiplicity of the specified type arc.
+     * Checks edges of the specified graph due to type arc multiplicity of the
+     * specified type arc.
      *
      * @param typearc type arc of the current type graph
      * @param graph a graph to check (not a type graph)
@@ -2232,7 +2269,8 @@ public class TypeSet {
     }
 
     /**
-     * Checks node type multiplicity of the specified node Type of the nodes of the specified Graph.
+     * Checks node type multiplicity of the specified node Type of the nodes of
+     * the specified Graph.
      *
      * @param nodeType node type of the current type graph
      * @param graph a graph to check
@@ -2317,11 +2355,13 @@ public class TypeSet {
     }
 
     /**
-     * Check node type multiplicity for the specified Node. The specified Node can be a new created node.
+     * Check node type multiplicity for the specified Node. The specified Node
+     * can be a new created node.
      *
      * @param n
      * @param currentTypeGraphLevel
-     * @return null if node type multiplicity satisfied otherwise an error object
+     * @return null if node type multiplicity satisfied otherwise an error
+     * object
      */
     private TypeError checkMultiplicity(final Node n, final int currentTypeGraphLevel) {
         TypeError actError = null;
@@ -2398,7 +2438,8 @@ public class TypeSet {
 	}
      */
     /**
-     * Checks nodes of the specified graph over the type nodes (multiplicity constraint) of the type graph.
+     * Checks nodes of the specified graph over the type nodes (multiplicity
+     * constraint) of the type graph.
      *
      * @param graph
      * @param actTypeGraphLevel
@@ -2458,7 +2499,8 @@ public class TypeSet {
 	}
      */
     /**
-     * Checks edges of the specified graph over the type edges (multiplicity constraint) of the type graph.
+     * Checks edges of the specified graph over the type edges (multiplicity
+     * constraint) of the type graph.
      *
      * @param graph
      * @param actTypeGraphLevel
@@ -2486,13 +2528,16 @@ public class TypeSet {
     }
 
     /**
-     * checks the given graph, if it is valid typed. The TypeSet of the graph has to be this object.
+     * checks the given graph, if it is valid typed. The TypeSet of the graph
+     * has to be this object.
      *
      * @param graph the graph to check
      * @param typeGraphCheckLevel the level of the check
-     * @return An empty {@link Collection} if the given graph is valid typed. If there were type errors in the graph a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
+     * @return An empty {@link Collection} if the given graph is valid typed. If
+     * there were type errors in the graph a Collection with objects of class
+     * {@link TypeError} will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with
+     * {@link Collection#isEmpty}.
      *
      * @see #checkTypeGraph
      */
@@ -2587,14 +2632,18 @@ public class TypeSet {
     }
 
     /**
-     * checks the given rule, if it is valid typed. If the TypeSet of the contained graphs is not this object, the types
-     * of the nodes and edges must be also defined here. If in this TypeSet a proofed type graph is used, there must be
-     * a morphism from the given graphs into the type graph.
+     * checks the given rule, if it is valid typed. If the TypeSet of the
+     * contained graphs is not this object, the types of the nodes and edges
+     * must be also defined here. If in this TypeSet a proofed type graph is
+     * used, there must be a morphism from the given graphs into the type graph.
      *
-     * @param rule the rule to check. The original and image graphs of the rule and of all NACs will be checked.
-     * @return An empty {@link Collection} if the given rule is valid typed. If there were type errors in the rule a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
+     * @param rule the rule to check. The original and image graphs of the rule
+     * and of all NACs will be checked.
+     * @return An empty {@link Collection} if the given rule is valid typed. If
+     * there were type errors in the rule a Collection with objects of class
+     * {@link TypeError} will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with
+     * {@link Collection#isEmpty}.
      *
      * @see #checkTypeGraph
      */
@@ -2631,14 +2680,17 @@ public class TypeSet {
     }
 
     /**
-     * checks the given atomic, if it is valid typed. If the TypeSet of the contained graphs is not this object, the
-     * types of the nodes and edges must be also defined here. If in this TypeSet a proofed type graph is used, there
-     * must be a morphism from the given graphs into the type graph.
+     * checks the given atomic, if it is valid typed. If the TypeSet of the
+     * contained graphs is not this object, the types of the nodes and edges
+     * must be also defined here. If in this TypeSet a proofed type graph is
+     * used, there must be a morphism from the given graphs into the type graph.
      *
      * @param atomic the atomic to check.
-     * @return An empty {@link Collection} if the given atomic is valid typed. If there were type errors in the atomic a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
+     * @return An empty {@link Collection} if the given atomic is valid typed.
+     * If there were type errors in the atomic a Collection with objects of
+     * class {@link TypeError} will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with
+     * {@link Collection#isEmpty}.
      *
      * @see #checkTypeGraph
      */
@@ -2660,14 +2712,18 @@ public class TypeSet {
     }// checkType(Rule)
 
     /**
-     * checks the given morphism, if it is valid typed. If the TypeSet of the contained graph is not this object, the
-     * types of the nodes and edges must be also defined here. If in this TypeSet a proofed type graph is used, there
-     * must be a morphism from the given graphs into the type graph.
+     * checks the given morphism, if it is valid typed. If the TypeSet of the
+     * contained graph is not this object, the types of the nodes and edges must
+     * be also defined here. If in this TypeSet a proofed type graph is used,
+     * there must be a morphism from the given graphs into the type graph.
      *
-     * @param morphism the morphism to check. The image and the original grpah of the morphism will be checked.
-     * @return An empty {@link Collection} if the given morphism is valid typed. If there were type errors in the
-     * morphism a Collection with objects of class {@link TypeError} will returned. For each mismatch an object will
-     * delivered. You can check if there were errors with {@link Collection#isEmpty}.
+     * @param morphism the morphism to check. The image and the original grpah
+     * of the morphism will be checked.
+     * @return An empty {@link Collection} if the given morphism is valid typed.
+     * If there were type errors in the morphism a Collection with objects of
+     * class {@link TypeError} will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with
+     * {@link Collection#isEmpty}.
      *
      * @see #checkTypeGraph
      */
@@ -2683,13 +2739,16 @@ public class TypeSet {
     }// checkType(OrinaryMorphism)
 
     /**
-     * checks the given arc, if it is valid typed. The TypeSet of the graph which contains the arc must be this object.
-     * If in this TypeSet a proofed type graph is used, this arc must be represented there.
+     * checks the given arc, if it is valid typed. The TypeSet of the graph
+     * which contains the arc must be this object. If in this TypeSet a proofed
+     * type graph is used, this arc must be represented there.
      *
      * @param arc the arc to check.
-     * @return An empty {@link Collection} if the given arc is valid typed. If there were type errors in the arc a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
+     * @return An empty {@link Collection} if the given arc is valid typed. If
+     * there were type errors in the arc a Collection with objects of class
+     * {@link TypeError} will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with
+     * {@link Collection#isEmpty}.
      *
      * @see #checkTypeGraph
      */
@@ -2709,15 +2768,18 @@ public class TypeSet {
     }
 
     /**
-     * checks the given node, if it is valid typed. The TypeSet of the graph which contains the node must be this
-     * object. If in this TypeSet a proofed type graph is used, this node must be represented there.
+     * checks the given node, if it is valid typed. The TypeSet of the graph
+     * which contains the node must be this object. If in this TypeSet a proofed
+     * type graph is used, this node must be represented there.
      *
      * @param node the node to check.
-     * @param isComplete true, if the containing graph is not a subgraph so we will also check for minimum multiplicity
-     * if activated.
-     * @return An empty {@link Collection} if the given node is valid typed. If there were type errors in the node a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
+     * @param isComplete true, if the containing graph is not a subgraph so we
+     * will also check for minimum multiplicity if activated.
+     * @return An empty {@link Collection} if the given node is valid typed. If
+     * there were type errors in the node a Collection with objects of class
+     * {@link TypeError} will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with
+     * {@link Collection#isEmpty}.
      *
      * @see #checkTypeGraph
      */
@@ -2739,13 +2801,16 @@ public class TypeSet {
     }
 
     /**
-     * checks the given graph object, if it is valid typed. The TypeSet of the graph which contains the object must be
-     * this object. If in this TypeSet a proofed type graph is used, this object must be represented there.
+     * checks the given graph object, if it is valid typed. The TypeSet of the
+     * graph which contains the object must be this object. If in this TypeSet a
+     * proofed type graph is used, this object must be represented there.
      *
      * @param object the object to check.
-     * @return An empty {@link Collection} if the given object is valid typed. If there were type errors in the arc a
-     * Collection with objects of class {@link TypeError} will returned. For each mismatch an object will delivered. You
-     * can check if there were errors with {@link Collection#isEmpty}.
+     * @return An empty {@link Collection} if the given object is valid typed.
+     * If there were type errors in the arc a Collection with objects of class
+     * {@link TypeError} will returned. For each mismatch an object will
+     * delivered. You can check if there were errors with
+     * {@link Collection#isEmpty}.
      *
      * @see #checkTypeGraph
      */
@@ -2760,34 +2825,40 @@ public class TypeSet {
     }
 
     /**
-     * changes the behavior of the type graph check and defines, how the type graph is used.
+     * changes the behavior of the type graph check and defines, how the type
+     * graph is used.
      *
      * @param level
      * <table>
      * <tr>
      * <td>{@link #DISABLED}</td>
-     * <td>The type graph will be ignored, so all graphs can contain objects with types undefined in the type graph.
-     * Multiplicity will be also ignored.</td>
+     * <td>The type graph will be ignored, so all graphs can contain objects
+     * with types undefined in the type graph. Multiplicity will be also
+     * ignored.</td>
      * </tr>
      * <tr>
      * <td>{@link #ENABLED}</td>
-     * <td>The type graph will be basicaly used, so all graphs can only contain objects with types defined in the type
-     * graph. But the multiplicity will not be checked.</td>
+     * <td>The type graph will be basicaly used, so all graphs can only contain
+     * objects with types defined in the type graph. But the multiplicity will
+     * not be checked.</td>
      * </tr>
      * <tr>
      * <td>{@link #ENABLED_MAX}</td>
-     * <td>The type graph will be basically used, so all graphs can only contain objects with types defined in the type
-     * graph. Multiplicity in all graphs should satisfy the defined maximum constraints.</td>
+     * <td>The type graph will be basically used, so all graphs can only contain
+     * objects with types defined in the type graph. Multiplicity in all graphs
+     * should satisfy the defined maximum constraints.</td>
      * </tr>
      * <tr>
      * <td>{@link #ENABLED_MAX_MIN}</td>
-     * <td>The type graph will be used, so all graphs can only contain objects with types defined in the type graph.
-     * Multiplicity in all graphs must satisfy the defined maximum constraints and the working graph must</td>
+     * <td>The type graph will be used, so all graphs can only contain objects
+     * with types defined in the type graph. Multiplicity in all graphs must
+     * satisfy the defined maximum constraints and the working graph must</td>
      * </tr>
      * </table>
      *
-     * @return {@link #SUCCESS} (an empty Collection), if the type graph is defined and is usable as type graph.
-     * Otherwise you get a Collection of {@link TypeError}.
+     * @return {@link #SUCCESS} (an empty Collection), if the type graph is
+     * defined and is usable as type graph. Otherwise you get a Collection of
+     * {@link TypeError}.
      */
     public Collection<TypeError> setLevelOfTypeGraphCheck(final int level) {
         // if the type graph is not proofed, check it
@@ -2804,7 +2875,8 @@ public class TypeSet {
     }
 
     /**
-     * Set the level of the type graph without checking whether the type multiplicity constraints are satisfied.
+     * Set the level of the type graph without checking whether the type
+     * multiplicity constraints are satisfied.
      *
      * @param level
      */
@@ -2818,23 +2890,26 @@ public class TypeSet {
      * @return <table>
      * <tr>
      * <td>{@link #DISABLED}</td>
-     * <td>The type graph will be ignored, so all graphs can contain objects with types undefined in the type
-     * graph.</td>
+     * <td>The type graph will be ignored, so all graphs can contain objects
+     * with types undefined in the type graph.</td>
      * </tr>
      * <tr>
      * <td>{@link #ENABLED}</td>
-     * <td>The type graph is used, so all graphs can only contain objects with types defined in the type graph.
-     * Multiplicity constraints will not be checked.</td>
+     * <td>The type graph is used, so all graphs can only contain objects with
+     * types defined in the type graph. Multiplicity constraints will not be
+     * checked.</td>
      * </tr>
      * <tr>
      * <td>{@link #ENABLED_MAX}</td>
-     * <td>The type graph is used, so all graphs can only contain objects with types defined in the type graph.
-     * Multiplicity constraints max will be checked.</td>
+     * <td>The type graph is used, so all graphs can only contain objects with
+     * types defined in the type graph. Multiplicity constraints max will be
+     * checked.</td>
      * </tr>
      * <tr>
      * <td>{@link #ENABLED_MAX_MIN}</td>
-     * <td>The type graph will be used, so all graphs can only contain objects with types defined in the type graph.
-     * Multiplicity constraints min, max will be checked.</td>
+     * <td>The type graph will be used, so all graphs can only contain objects
+     * with types defined in the type graph. Multiplicity constraints min, max
+     * will be checked.</td>
      * </tr>
      * </table>
      */
@@ -2843,8 +2918,9 @@ public class TypeSet {
     }
 
     /**
-     * marks the type graph as unchecked, so no longer the type graph will be used for type checks. Use
-     * {@link #checkTypeGraph()} to turn the type graph based checks on.
+     * marks the type graph as unchecked, so no longer the type graph will be
+     * used for type checks. Use {@link #checkTypeGraph()} to turn the type
+     * graph based checks on.
      *
      * @deprecated use {@link #setLevelOfTypeGraphCheck}
      */
@@ -2853,8 +2929,9 @@ public class TypeSet {
     }// turnTypeGraphCheckOff
 
     /**
-     * marks the type graph as checked, so no longer the type graph will be used for type checks. Use
-     * {@link #checkTypeGraph()} to turn the type graph based checks on.
+     * marks the type graph as checked, so no longer the type graph will be used
+     * for type checks. Use {@link #checkTypeGraph()} to turn the type graph
+     * based checks on.
      *
      * @deprecated use {@link #setLevelOfTypeGraphCheck}
      */
@@ -2876,16 +2953,15 @@ public class TypeSet {
             return false;
         }
         // compare this.types
-        for (int i = 0; i < this.types.size(); i++) {
-            Type t = this.types.elementAt(i);
+        this.types.forEach(thist -> {
             for (int j = another.size() - 1; j >= 0; j--) {
                 Type t1 = another.elementAt(j);
-                if (t.compareTo(t1)) {
+                if (thist.compareTo(t1)) {
                     another.remove(t1);
                     break;
                 }
             }
-        }
+        });
         if (another.size() != 0) {
             return false;
         }
@@ -2906,8 +2982,8 @@ public class TypeSet {
     }
 
     /**
-     * Compare my types with the types of the specified TypeSet ts. Returns true, if the types are compatible, otherwise
-     * false.
+     * Compare my types with the types of the specified TypeSet ts. Returns
+     * true, if the types are compatible, otherwise false.
      */
     public boolean compareTypes(final TypeSet ts) {
         if (String.valueOf(ts.hashCode()).equals(this.info)) {
@@ -2919,9 +2995,10 @@ public class TypeSet {
     }
 
     /**
-     * Compare my types with the types of the specified TypeSet ts. Fill the specified container with types that have
-     * equal name but different attributes, inheritance, multiplicity. Returns true, if the types are compatible,
-     * otherwise false.
+     * Compare my types with the types of the specified TypeSet ts. Fill the
+     * specified container with types that have equal name but different
+     * attributes, inheritance, multiplicity. Returns true, if the types are
+     * compatible, otherwise false.
      */
     public boolean compareTypes(final TypeSet ts,
             final Vector<Type> differentAttribute,
@@ -2936,9 +3013,10 @@ public class TypeSet {
     }
 
     /**
-     * Compare my types with the types of the specified TypeSet ts. Fill the specified container with types that have
-     * equal name but different attributes, inheritance, multiplicity, also not existing types. Returns true, if the
-     * types are compatible, otherwise false.
+     * Compare my types with the types of the specified TypeSet ts. Fill the
+     * specified container with types that have equal name but different
+     * attributes, inheritance, multiplicity, also not existing types. Returns
+     * true, if the types are compatible, otherwise false.
      */
     private boolean compareTypes(final TypeSet ts,
             final Vector<Type> differentAttribute,
@@ -2955,12 +3033,11 @@ public class TypeSet {
         differentAttribute.clear();
         differentMultiplicity.clear();
         typesToAdd.clear();
-        boolean conflict = false;
+        final boolean[] conflict = {false};
 
         Vector<Type> another = new Vector<Type>(ts.getTypeList());
         // compare types
-        for (int i = 0; i < this.types.size(); i++) {
-            Type t = this.types.elementAt(i);
+        this.types.forEach(t->{
             for (int j = 0; j < another.size(); j++) {
                 Type t1 = another.elementAt(j);
                 if (t.getStringRepr().equals(t1.getStringRepr())) {
@@ -2971,7 +3048,7 @@ public class TypeSet {
                             if (!differentAttribute.contains(t1)) {
                                 differentAttribute.add(t1);
                             }
-                            conflict = true;
+                            conflict[0] = true;
                         }
 
                         // check node type graph object
@@ -2984,13 +3061,13 @@ public class TypeSet {
                                     Vector<Type> tParents = t.getAllParents();
                                     Vector<Type> t1Parents = t1.getAllParents();
                                     if (!compareParents(tParents, t1Parents)) {
-                                        conflict = true;
+                                        conflict[0] = true;
                                         if (!differentInheritance.contains(t1)) {
                                             differentInheritance.add(t1);
                                         }
                                     }
                                 } else {
-                                    conflict = true;
+                                    conflict[0] = true;
                                     if (!differentInheritance.contains(t1)) {
                                         differentInheritance.add(t1);
                                     }
@@ -2998,12 +3075,12 @@ public class TypeSet {
                             }
                             // check multiplicity of node type							
                             if (t.getSourceMax() != t1.getSourceMax()) {
-                                conflict = true;
+                                conflict[0] = true;
                                 if (!differentMultiplicity.contains(t1)) {
                                     differentMultiplicity.add(t1);
                                 }
                             } else if (t.getSourceMin() != t1.getSourceMin()) {
-                                conflict = true;
+                                conflict[0] = true;
                                 if (!differentMultiplicity.contains(t1)) {
                                     differentMultiplicity.add(t1);
                                 }
@@ -3019,7 +3096,7 @@ public class TypeSet {
                             }
                             // check multiplicity of arc type graph object
                             if (!t.compareTypeGraphArcsMultiplicity(t1)) {
-                                conflict = true;
+                                conflict[0] = true;
                                 if (!differentMultiplicity.contains(t1)) {
                                     differentMultiplicity.add(t1);
                                 }
@@ -3040,7 +3117,7 @@ public class TypeSet {
                     }
                 }
             }
-        }
+        });
         if (typesToAdd.isEmpty()) {
             for (int j = 0; j < another.size(); j++) {
                 Type t1 = another.elementAt(j);
@@ -3056,7 +3133,7 @@ public class TypeSet {
             }
         }
         this.newTypeGraphObjectImported = !typesToAdd.isEmpty();
-        return !conflict;
+        return !conflict[0];
     }
 
     private boolean compareParents(final Vector<Type> allParents1,
@@ -3084,18 +3161,17 @@ public class TypeSet {
             return false;
         }
 
-        int count = 0;
-        for (int i = 0; i < this.types.size(); i++) {
-            Type ti = this.types.elementAt(i);
+        final int count[] = {0};
+        this.types.forEach(ti->{
             for (int j = 0; j < ts.getTypeList().size(); j++) {
                 Type tj = ts.getTypeList().get(j);
                 if (ti.compareTo(tj)) {
-                    count++;
+                    count[0]++;
                     break;
                 }
             }
-        }
-        if (count != ts.getTypeList().size()) {
+        });
+        if (count[0] != ts.getTypeList().size()) {
             return false;
         }
 
@@ -3128,7 +3204,8 @@ public class TypeSet {
      * Checks if the given edge could be removed from its source and target.
      *
      * @param arc the edge to check
-     * @return null, if edge type multiplicity has not failed, otherwise {@link TypeError}
+     * @return null, if edge type multiplicity has not failed, otherwise
+     * {@link TypeError}
      *
      */
     public TypeError checkIfRemovable(final Arc arc) {
@@ -3148,13 +3225,15 @@ public class TypeSet {
     }
 
     /**
-     * Checks if the given edge could be removed from its source and target with respect to source and target to delete.
+     * Checks if the given edge could be removed from its source and target with
+     * respect to source and target to delete.
      *
      * @param arc	edge to delete
      * @param deleteSrc	true if the source node will be deleted
      * @param deleteTar	true if the target node will be deleted
      *
-     * @return	null if edge type multiplicity has not failed, otherwise a type error {@link TypeError}
+     * @return	null if edge type multiplicity has not failed, otherwise a type
+     * error {@link TypeError}
      */
     public TypeError checkIfRemovable(final Arc arc, boolean deleteSrc, boolean deleteTar) {
         if (this.typeGraphLevel != ENABLED_MAX_MIN) {
@@ -3179,8 +3258,9 @@ public class TypeSet {
     }
 
     /**
-     * Checks if the given arc could be removed from its source. This method ignores the multiplicity constraints of the
-     * target node. It should be only used when the target node should be destroyed.
+     * Checks if the given arc could be removed from its source. This method
+     * ignores the multiplicity constraints of the target node. It should be
+     * only used when the target node should be destroyed.
      *
      * @param arc the edge to check
      * @return null, if the removing is allowed otherwise a {@link TypeError}
@@ -3196,8 +3276,9 @@ public class TypeSet {
     }
 
     /**
-     * Checks if the given arc could be removed from its target. This method ignores the multiplicity constraints of the
-     * source node. It should be only used when the source node should be destroyed.
+     * Checks if the given arc could be removed from its target. This method
+     * ignores the multiplicity constraints of the source node. It should be
+     * only used when the source node should be destroyed.
      *
      * @param arc the arc to check
      * @return null, if the removing is allowed otherwise a {@link TypeError}
@@ -3336,8 +3417,7 @@ public class TypeSet {
      * Trims the capacity of used vectors to be the vector's current size.
      */
     public void trimToSize() {
-        this.types.trimToSize();
-        this.inheritanceArcs.trimToSize();
+      
     }
 
 }

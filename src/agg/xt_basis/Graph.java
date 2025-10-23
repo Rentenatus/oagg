@@ -30,6 +30,7 @@ import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.calculator.GraphOrientation;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import de.jare.ndimcol.ref.ArrayMovie;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -3394,7 +3395,7 @@ public class Graph extends ExtObservable
         }
 
         if (this.isTypeGraph()) {
-            List<Arc> inheritArcs = this.getTypeSet().getInheritanceArcs();
+            ArrayMovie<Arc> inheritArcs = this.getTypeSet().getInheritanceArcs();
             e = inheritArcs.iterator();
             while (e.hasNext()) {
                 Arc arc = e.next();

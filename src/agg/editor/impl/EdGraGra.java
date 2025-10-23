@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -55,14 +57,17 @@ import agg.attribute.impl.CondMember;
 import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
 import agg.layout.evolutionary.LayoutPattern;
+import de.jare.ndimcol.ref.ArrayMovie;
 import org.w3c.dom.Element;
 
 /**
- * An EdGraGra consists of exactly one working graph and an arbitrary number of graph rules. The used object is an
- * object of the class agg.xt_basis.GraGra which provides the functionality of a simple graph grammar. The working graph
- * is an object of the class agg.editor.impl.EdGraph which used object is of type agg.xt_basis.Graph; the rules are
- * objects of the class agg.editor.impl.EdRule which used objects are of type agg.xt_basis.Rule. The EdGraGra has a set
- * of layout types for the typing of nodes and arcs.
+ * An EdGraGra consists of exactly one working graph and an arbitrary number of
+ * graph rules. The used object is an object of the class agg.xt_basis.GraGra
+ * which provides the functionality of a simple graph grammar. The working graph
+ * is an object of the class agg.editor.impl.EdGraph which used object is of
+ * type agg.xt_basis.Graph; the rules are objects of the class
+ * agg.editor.impl.EdRule which used objects are of type agg.xt_basis.Rule. The
+ * EdGraGra has a set of layout types for the typing of nodes and arcs.
  *
  * @author $Author: olga $
  * @version $Id: EdGraGra.java,v 1.114 2010/11/04 10:57:05 olga Exp $
@@ -91,7 +96,8 @@ public class EdGraGra implements XMLObject {
     private EdGraph eGraph;
 
     /**
-     * My start graph. The start graph will be set after saving/loading. It will be used to reset the work graph.
+     * My start graph. The start graph will be set after saving/loading. It will
+     * be used to reset the work graph.
      */
     transient private EdGraph startGraph;
 
@@ -135,8 +141,9 @@ public class EdGraGra implements XMLObject {
     protected boolean animated;
 
     /**
-     * Creates an empty gragra which name is specified by the String name and with an empty used object of the type
-     * agg.xt_basis.GraGra. The empty gragra has an empty working graph and no rules.
+     * Creates an empty gragra which name is specified by the String name and
+     * with an empty used object of the type agg.xt_basis.GraGra. The empty
+     * gragra has an empty working graph and no rules.
      */
     public EdGraGra(String name) {
         this.name = name;
@@ -393,7 +400,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Sets the used object to an object specified by the agg.xt_basis.GraGra gra
+     * Sets the used object to an object specified by the agg.xt_basis.GraGra
+     * gra
      */
     public void setBasisGraGra(agg.xt_basis.GraGra gra) {
         this.bGraGra = gra;
@@ -472,9 +480,11 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Returns the rule sequences. The first Vector element of a Pair is a rule subsequence. The first String element of
-     * a Pair is a rule name. The second element of a Pair represents the iteration count of a rule subsequence or of an
-     * individual rule. The value for the iteration count may be "*" or a decimal.
+     * Returns the rule sequences. The first Vector element of a Pair is a rule
+     * subsequence. The first String element of a Pair is a rule name. The
+     * second element of a Pair represents the iteration count of a rule
+     * subsequence or of an individual rule. The value for the iteration count
+     * may be "*" or a decimal.
      */
     public List<Pair<List<Pair<String, String>>, String>> getRuleSequenceList() {
         return this.bGraGra.getRuleSequenceList();
@@ -534,8 +544,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Reset my work graph to the Graph g. The types of the graph objects in the graph g have to be the same as of my
-     * work graph.
+     * Reset my work graph to the Graph g. The types of the graph objects in the
+     * graph g have to be the same as of my work graph.
      */
     public Vector<EdConstraint> getConstraintsForLayer(int l) {
         Vector<EdConstraint> v = new Vector<EdConstraint>(5);
@@ -601,11 +611,13 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Adds the specified EdGraph g to the current type graph if it exists, otherwise creates a type graph and then adds
-     * the EdGraph g. The graph g is a type graph, so g.isTypeGraph() should return true. The type graph check should be
-     * disabled. The new node/edge types are added to the current types. The current type graph structure and the
-     * structure of the graph g are united dis-jointly. Double occurrences of the nodes/arcs are possible and they have
-     * to be resolved by the user manually.
+     * Adds the specified EdGraph g to the current type graph if it exists,
+     * otherwise creates a type graph and then adds the EdGraph g. The graph g
+     * is a type graph, so g.isTypeGraph() should return true. The type graph
+     * check should be disabled. The new node/edge types are added to the
+     * current types. The current type graph structure and the structure of the
+     * graph g are united dis-jointly. Double occurrences of the nodes/arcs are
+     * possible and they have to be resolved by the user manually.
      */
     public synchronized boolean importTypeGraph(EdGraph g, boolean rewrite) {
         if (!g.isTypeGraph()) {
@@ -631,7 +643,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Reset my host graph by the EdGraph g. The types of the graph objects of the graph g must be found in my types.
+     * Reset my host graph by the EdGraph g. The types of the graph objects of
+     * the graph g must be found in my types.
      */
     public synchronized boolean importGraph(EdGraph g) {
         if (this.bGraGra.importGraph(g.getBasisGraph())) {
@@ -657,8 +670,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Add the EdGraph g to my list of (host) graphs. The types of the graph objects of the graph g must be found in my
-     * types.
+     * Add the EdGraph g to my list of (host) graphs. The types of the graph
+     * objects of the graph g must be found in my types.
      */
     public synchronized boolean addImportGraph(EdGraph g) {
         if (this.bGraGra.addImportGraph(g.getBasisGraph())) {
@@ -677,9 +690,10 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Reset my host graph by the EdGraph g. If the specified parameter boolean adapt is true, the types of the graph
-     * objects in the specified EdGraph g could be adapted to my types. In this case only names of the types have to be
-     * equal.
+     * Reset my host graph by the EdGraph g. If the specified parameter boolean
+     * adapt is true, the types of the graph objects in the specified EdGraph g
+     * could be adapted to my types. In this case only names of the types have
+     * to be equal.
      */
     public synchronized boolean importGraph(EdGraph g, boolean adapt) {
         if (this.bGraGra.importGraph(g.getBasisGraph(), adapt)) {
@@ -704,9 +718,10 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Add the EdGraph g to my list of (host) graphs. If the specified parameter boolean adapt is true, the types of the
-     * graph objects in the specified EdGraph g could be adapted to my types. In this case only names of the types have
-     * to be equal.
+     * Add the EdGraph g to my list of (host) graphs. If the specified parameter
+     * boolean adapt is true, the types of the graph objects in the specified
+     * EdGraph g could be adapted to my types. In this case only names of the
+     * types have to be equal.
      */
     public synchronized boolean addImportGraph(EdGraph g, boolean adapt) {
         if (this.bGraGra.addImportGraph(g.getBasisGraph(), adapt)) {
@@ -796,8 +811,9 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Reset my host graph by the EdGraph g. Precondition: (g.getGraGra() == this) Additionally, the types of the graph
-     * objects of the graph g have to be similar of my types.
+     * Reset my host graph by the EdGraph g. Precondition: (g.getGraGra() ==
+     * this) Additionally, the types of the graph objects of the graph g have to
+     * be similar of my types.
      */
     public synchronized boolean resetGraph(EdGraph g) {
         if (g.getGraGra() == this) {
@@ -828,8 +844,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Reset my work graph by the EdGraph g without type guarantee. The types of the graph g should be similar to my
-     * types.
+     * Reset my work graph by the EdGraph g without type guarantee. The types of
+     * the graph g should be similar to my types.
      */
     public synchronized boolean resetGraphWithoutGuarantee(EdGraph g) {
         if (g != null) {
@@ -867,13 +883,16 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * checks all elements of this gragra for valid typing. First of all the type graph will be checked and then all
-     * other elements with the type graph. all errous elements will be marked with an sign until this method is
-     * recalled.
+     * checks all elements of this gragra for valid typing. First of all the
+     * type graph will be checked and then all other elements with the type
+     * graph. all errous elements will be marked with an sign until this method
+     * is recalled.
      *
-     * @return An empty {@link Collection} if all the graphs are valid typed. If there were type errors in the graphs or
-     * the type graph was not valid a Collection with objects of class {@link TypeError} will returned. For each
-     * mismatch an object will delivered. You can check if there were errors with {@link Collection#isEmpty}.
+     * @return An empty {@link Collection} if all the graphs are valid typed. If
+     * there were type errors in the graphs or the type graph was not valid a
+     * Collection with objects of class {@link TypeError} will returned. For
+     * each mismatch an object will delivered. You can check if there were
+     * errors with {@link Collection#isEmpty}.
      *
      * @see TypeSet#checkType
      * @see TypeSet#checkTypeGraph
@@ -976,7 +995,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * marks the type graph as unchecked, so no longer the type graph will be used for type checks.
+     * marks the type graph as unchecked, so no longer the type graph will be
+     * used for type checks.
      *
      * @see TypeSet#disableTypeGraphCheck
      */
@@ -989,8 +1009,9 @@ public class EdGraGra implements XMLObject {
     }// isTypeGraphCheckEnabled
 
     /**
-     * internal method to put all graph objects of a graph in a map. The map will map the base {@link GraphObject} to
-     * the {@link EdGraphObject}. For each graph object the error mode will also set to false (see
+     * internal method to put all graph objects of a graph in a map. The map
+     * will map the base {@link GraphObject} to the {@link EdGraphObject}. For
+     * each graph object the error mode will also set to false (see
      * {@link EdGraphObject#setErrorMode})
      */
     private void putAllGraphObjectsInMap(Map<GraphObject, EdGraphObject> map,
@@ -1013,7 +1034,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a new rule scheme layout. The name is specified by the String name
+     * Creates a new rule scheme layout. The name is specified by the String
+     * name
      */
     public EdRuleScheme createRuleScheme(String ruleSchemeName) {
         if (ruleSchemeName != null) {
@@ -1029,8 +1051,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a new rule scheme layout with a kernel rule as a copy of the specified rule and empty list of multi
-     * rules.
+     * Creates a new rule scheme layout with a kernel rule as a copy of the
+     * specified rule and empty list of multi rules.
      *
      * @return	EdRuleScheme or null if creation failed
      */
@@ -1132,8 +1154,9 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates an inverse rule of the given Rule <code>r</code> and adds it to the rule set when the given parameter
-     * <code>doInsert</code> is true. Returns created inverse rule by success, otherwise null.
+     * Creates an inverse rule of the given Rule <code>r</code> and adds it to
+     * the rule set when the given parameter <code>doInsert</code> is true.
+     * Returns created inverse rule by success, otherwise null.
      */
     public EdRule reverseRule(EdRule r, boolean doInsert) {
         final Pair<Pair<Rule, Boolean>, Pair<OrdinaryMorphism, OrdinaryMorphism>> inverseRulePair = BaseFactory.theFactory().reverseRule(r.getBasisRule());
@@ -1162,8 +1185,9 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates an inverse rule scheme of the given RuleScheme <code>rs</code> and adds it to the rule set when the given
-     * parameter <code>doInsert</code> is true.
+     * Creates an inverse rule scheme of the given RuleScheme <code>rs</code>
+     * and adds it to the rule set when the given parameter
+     * <code>doInsert</code> is true.
      */
     public EdRuleScheme reverseRuleScheme(EdRuleScheme rs, boolean doInsert) {
         final RuleScheme inv = BaseFactory.theFactory().reverseRuleScheme(rs.getBasisRuleScheme());
@@ -1189,8 +1213,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates an inverse rule of the given Rule <code>r</code> and adds it to the rule set when the given parameter
-     * <code>doInsert</code> is true.
+     * Creates an inverse rule of the given Rule <code>r</code> and adds it to
+     * the rule set when the given parameter <code>doInsert</code> is true.
      */
     public EdRule makeConcurrentRule(
             final EdRule r1,
@@ -1471,15 +1495,17 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a clone of the given rule. The new rule is added at the end of the rule set.
+     * Creates a clone of the given rule. The new rule is added at the end of
+     * the rule set.
      */
     public EdRule cloneRule(EdRule rule) {
         return this.cloneRule(rule, false);
     }
 
     /**
-     * Creates a clone of the given rule. If the parameter doInsert is true, the copy will be inserted into the rule set
-     * after the given rule. Otherwise, the copy is added at the end of the rule set.
+     * Creates a clone of the given rule. If the parameter doInsert is true, the
+     * copy will be inserted into the rule set after the given rule. Otherwise,
+     * the copy is added at the end of the rule set.
      */
     public EdRule cloneRule(EdRule rule, boolean doInsert) {
         Rule r = BaseFactory.theFactory().cloneRule(rule.getBasisRule(),
@@ -1504,9 +1530,10 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a clone of the given amalgamated rule. If the parameter doInsert is true, the copy will be inserted into
-     * the rule set after the given EdRuleScheme rs which is the owner of the amalgamated rule. Otherwise, the copy is
-     * added at the end of the rule set.
+     * Creates a clone of the given amalgamated rule. If the parameter doInsert
+     * is true, the copy will be inserted into the rule set after the given
+     * EdRuleScheme rs which is the owner of the amalgamated rule. Otherwise,
+     * the copy is added at the end of the rule set.
      */
     public EdRule cloneAmalgamatedRule(EdRule rule, EdRuleScheme rs, boolean doInsert) {
         Rule r = BaseFactory.theFactory().cloneRule(rule.getBasisRule(),
@@ -1531,8 +1558,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Makes the minimal rule from the given rule. A minimal rule comprises the effects of a given rule in a minimal
-     * context.
+     * Makes the minimal rule from the given rule. A minimal rule comprises the
+     * effects of a given rule in a minimal context.
      */
     public EdRule makeMinimalRule(EdRule rule, boolean doInsert) {
         Rule r = BaseFactory.theFactory().cloneRule(rule.getBasisRule(),
@@ -1567,8 +1594,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a clone of the rule scheme. If the parameter doInsert is true, the copy will be inserted into its rule
-     * set.
+     * Creates a clone of the rule scheme. If the parameter doInsert is true,
+     * the copy will be inserted into its rule set.
      */
     public EdRuleScheme cloneRuleScheme(EdRuleScheme rs, boolean doInsert) {
         RuleScheme brs = BaseFactory.theFactory().cloneRuleScheme(rs.getBasisRuleScheme(),
@@ -1948,9 +1975,11 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a graph layout of type EdGraph for each Graph from the Enumeration basisGraphs.
+     * Creates a graph layout of type EdGraph for each Graph from the
+     * Enumeration basisGraphs.
      *
-     * @deprecated replaced by <code>createGraphs(List<Graph> basisGraphs)</code>
+     * @deprecated replaced by <code>createGraphs(List<Graph>
+     * basisGraphs)</code>
      */
     public Vector<EdGraph> createGraphs(Enumeration<Graph> basisGraphs) {
         while (basisGraphs.hasMoreElements()) {
@@ -1972,7 +2001,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a rule layout of type EdRule for each Rule from the Enumeration basisRules.
+     * Creates a rule layout of type EdRule for each Rule from the Enumeration
+     * basisRules.
      */
     public Vector<EdRule> createRules(final List<Rule> basisRules) {
 //		long time0 = System.currentTimeMillis();
@@ -1996,10 +2026,11 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a layout of type EdAtomic for each atomic graph constraint AtomConstraint from the Enumeration
-     * basisAtomics.
+     * Creates a layout of type EdAtomic for each atomic graph constraint
+     * AtomConstraint from the Enumeration basisAtomics.
      *
-     * @deprecated replaced by <code>createConstraints(List<Formula> formulae)</code>
+     * @deprecated replaced by <code>createConstraints(List<Formula>
+     * formulae)</code>
      */
     public Vector<EdAtomic> createAtomics(Enumeration<AtomConstraint> basisAtomics) {
         while (basisAtomics.hasMoreElements()) {
@@ -2013,8 +2044,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a layout of type EdAtomic for each atomic graph constraint AtomConstraint from the Enumeration
-     * basisAtomics.
+     * Creates a layout of type EdAtomic for each atomic graph constraint
+     * AtomConstraint from the Enumeration basisAtomics.
      */
     public List<EdAtomic> createAtomics(List<AtomConstraint> basisAtomics) {
         Iterator<AtomConstraint> basisAtomicsIter = basisAtomics.iterator();
@@ -2029,9 +2060,11 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a presentation of type EdConstraint for each Formula from the Enumeration formulae.
+     * Creates a presentation of type EdConstraint for each Formula from the
+     * Enumeration formulae.
      *
-     * @deprecated replaced by <code>createConstraints(List<Formula> formulae)</code>
+     * @deprecated replaced by <code>createConstraints(List<Formula>
+     * formulae)</code>
      */
     public Vector<EdConstraint> createConstraints(Enumeration<Formula> formulae) {
         while (formulae.hasMoreElements()) {
@@ -2044,7 +2077,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates a presentation of type EdConstraint for each Formula from the Enumeration formulae.
+     * Creates a presentation of type EdConstraint for each Formula from the
+     * Enumeration formulae.
      */
     public List<EdConstraint> createConstraints(List<Formula> formulae) {
         Iterator<Formula> formulaeIter = formulae.iterator();
@@ -2447,7 +2481,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Deletes all graph objects of the specified type inside the current host graph of this gragra.
+     * Deletes all graph objects of the specified type inside the current host
+     * graph of this gragra.
      */
     public boolean deleteGraphObjectsOfTypeFromHostGraph(
             final EdGraphObject tgo,
@@ -2501,9 +2536,11 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Deletes all graph objects of the specified type graph object inside all graphs of this gragra. If parameter
-     * <code>alsoFromTypeGraph</code> is <code>true</code>, the appropriate type object inside of the type graph is
-     * deleted, too. Returns a vector with names of graphs in which the deletion failed, otherwise - empty list.
+     * Deletes all graph objects of the specified type graph object inside all
+     * graphs of this gragra. If parameter <code>alsoFromTypeGraph</code> is
+     * <code>true</code>, the appropriate type object inside of the type graph
+     * is deleted, too. Returns a vector with names of graphs in which the
+     * deletion failed, otherwise - empty list.
      */
     public List<String> deleteGraphObjectsOfType(
             final EdGraphObject tgo,
@@ -2553,9 +2590,11 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Deletes all graph objects of the specified type inside all graphs of this gragra. If parameter
-     * <code>alsoFromTypeGraph</code> is <code>true</code>, the appropriate type object inside of the type graph is
-     * deleted, too. Returns a vector with names of graphs in which the deletion failed, otherwise - empty list.
+     * Deletes all graph objects of the specified type inside all graphs of this
+     * gragra. If parameter <code>alsoFromTypeGraph</code> is <code>true</code>,
+     * the appropriate type object inside of the type graph is deleted, too.
+     * Returns a vector with names of graphs in which the deletion failed,
+     * otherwise - empty list.
      */
     public List<String> deleteGraphObjectsOfType(
             final EdType t,
@@ -2613,7 +2652,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Removes the specified EdRule er. If the parameter dispose is true, the used basis rule is destroyed.
+     * Removes the specified EdRule er. If the parameter dispose is true, the
+     * used basis rule is destroyed.
      */
     public boolean removeRule(EdRule er, boolean dispose) {
         if (this.bGraGra == null) {
@@ -2665,7 +2705,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Removes an atomic constraint layout specified by the EdAtomic atom. The used object will be destroyed.
+     * Removes an atomic constraint layout specified by the EdAtomic atom. The
+     * used object will be destroyed.
      */
     public boolean removeAtomic(EdAtomic atom) {
         if (this.bGraGra == null) {
@@ -2876,7 +2917,8 @@ public class EdGraGra implements XMLObject {
 //		}
 //	}
     /**
-     * Updates layout of the type graph, the host graphs, the rule graphs and constraint graphs.
+     * Updates layout of the type graph, the host graphs, the rule graphs and
+     * constraint graphs.
      */
     public synchronized void update() {
         // update type graph
@@ -3077,7 +3119,8 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates and adds the default node layout type for the used object specified by the Type baseType.
+     * Creates and adds the default node layout type for the used object
+     * specified by the Type baseType.
      */
     public EdType createDefaultNodeType(Type baseType) {
         return this.typeSet.createDefaultNodeType(baseType);
@@ -3098,15 +3141,17 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Creates and adds the default edge layout type for the used object specified by the Type baseType.
+     * Creates and adds the default edge layout type for the used object
+     * specified by the Type baseType.
      */
     public EdType createDefaultArcType(Type baseType) {
         return this.typeSet.createDefaultArcType(baseType);
     }
 
     /**
-     * Removes all the node and arc layout types, all the node and arc layouts. The used object of the graph layout ,
-     * rule layouts, NAC layout, are remaining available.
+     * Removes all the node and arc layout types, all the node and arc layouts.
+     * The used object of the graph layout , rule layouts, NAC layout, are
+     * remaining available.
      */
     public void removeLayout() {
         this.typeSet.getNodeTypes().removeAllElements();
@@ -3135,8 +3180,9 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * This method compares instances only on the basic level : this.getBasisGraGra().compareTo(gra.getBasisGraGra())
-     * Return TRUE if the gragras are equal otherwise FALSE.
+     * This method compares instances only on the basic level :
+     * this.getBasisGraGra().compareTo(gra.getBasisGraGra()) Return TRUE if the
+     * gragras are equal otherwise FALSE.
      */
     public boolean compareTo(EdGraGra gra) {
         if (this.bGraGra == null || gra.getBasisGraGra() == null) {
@@ -3146,8 +3192,10 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * This method compares instances only on the basic level : this.getBasisGraGra().compareTo(gra.getBasisGraGra()).
-     * Transformation options are compared, too. Return TRUE if the gragras are equal otherwise FALSE.
+     * This method compares instances only on the basic level :
+     * this.getBasisGraGra().compareTo(gra.getBasisGraGra()). Transformation
+     * options are compared, too. Return TRUE if the gragras are equal otherwise
+     * FALSE.
      */
     public boolean compareTo(EdGraGra gra, boolean transOption) {
         if (this.bGraGra == null || gra.getBasisGraGra() == null) {
@@ -3208,22 +3256,24 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * Checks all graphs of this GraGra due to node type multiplicity of the specified type Node of the current type
-     * graph.
+     * Checks all graphs of this GraGra due to node type multiplicity of the
+     * specified type Node of the current type graph.
      *
      * @param typeNode
-     * @return null if all graphs satisfy multiplicity constraint, otherwise - a string with names of failed graphs
+     * @return null if all graphs satisfy multiplicity constraint, otherwise - a
+     * string with names of failed graphs
      */
     public String checkNodeTypeMultiplicity(final EdNode typeNode) {
         return this.bGraGra.checkNodeTypeMultiplicity(typeNode.getBasisNode());
     }
 
     /**
-     * Checks all graphs of this GraGra due to edge type multiplicity of the specified type Arc of the current type
-     * graph.
+     * Checks all graphs of this GraGra due to edge type multiplicity of the
+     * specified type Arc of the current type graph.
      *
      * @param typeArc
-     * @return null if all graphs satisfy multiplicity constraint, otherwise - a string with names of failed graphs
+     * @return null if all graphs satisfy multiplicity constraint, otherwise - a
+     * string with names of failed graphs
      */
     public String checkEdgeTypeMultiplicity(final EdArc typeArc) {
         return this.bGraGra.checkEdgeTypeMultiplicity(typeArc.getBasisArc());
@@ -3302,8 +3352,9 @@ public class EdGraGra implements XMLObject {
     }
 
     /**
-     * save the properties and values of all elements of this gragra in the elements of the base objects in the XML file
-     * opened by the given XMLHelper.
+     * save the properties and values of all elements of this gragra in the
+     * elements of the base objects in the XML file opened by the given
+     * XMLHelper.
      *
      * @param h an XMLHelper, without an open element for this gragra.
      */
@@ -3416,7 +3467,7 @@ public class EdGraGra implements XMLObject {
                 h.close();
             }
             // create inheritance pattern
-            Vector<Arc> inheritArcs = this.typeSet.getBasisTypeSet()
+            ArrayMovie<Arc> inheritArcs = this.typeSet.getBasisTypeSet()
                     .getInheritanceArcs();
             createInheritancePattern(inheritArcs);
             h.close();
@@ -3485,7 +3536,7 @@ public class EdGraGra implements XMLObject {
     }
 
     // Layout Teil
-    public void createInheritancePattern(Vector<Arc> inheritanceArcs) {
+    public void createInheritancePattern(ArrayMovie<Arc> inheritanceArcs) {
         for (int i = 0; i < inheritanceArcs.size(); i++) {
             Arc inharc = inheritanceArcs.get(i);
             // String inhTypeName =
