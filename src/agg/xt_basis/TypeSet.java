@@ -125,7 +125,7 @@ public class TypeSet {
 
     /**
      * holds the level of type graph check Possible values: null null null null
-     * null null null null null null null null     {@link #DISABLED}, {@link #ENABLED},
+     * null null null null null null null null null null null null     {@link #DISABLED}, {@link #ENABLED},
 	 * {@link #ENABLED_MAX}, {@link #ENABLED_MAX_MIN}
      */
     private int typeGraphLevel = DISABLED;
@@ -246,19 +246,16 @@ public class TypeSet {
 
     public boolean isEmpty() {
         return (this.types.size() == 0) ? true : false;
-    }
+    } 
 
     /**
-     * Iterate through all the valid types that may be given to a *
-     * GraphObject.Enumeration elements are of type <code>Type</code>. *
+     * Iterate through all the valid types that may be given to a
+     * GraphObject elements are of type <code>Type</code>.
      *
-     * @return
-     * @see agg.xt_basis.Type
+     * @return IteratorWalker, a simple shared iterator for this types. This
+     * simple iterator can not be used parallel.
+     * @see agg.xt_basis.Type 
      */
-    public final Iterator<Type> getTypes() {
-        return this.types.iterator();
-    }
-    
     public final IteratorWalker<Type> getTypeWalker() {
         return this.types.softWalker();
     }
@@ -3041,7 +3038,7 @@ public class TypeSet {
 
         Vector<Type> another = new Vector<Type>(ts.getTypeList());
         // compare types
-        this.types.forEach(t->{
+        this.types.forEach(t -> {
             for (int j = 0; j < another.size(); j++) {
                 Type t1 = another.elementAt(j);
                 if (t.getStringRepr().equals(t1.getStringRepr())) {
@@ -3166,7 +3163,7 @@ public class TypeSet {
         }
 
         final int count[] = {0};
-        this.types.forEach(ti->{
+        this.types.forEach(ti -> {
             for (int j = 0; j < ts.getTypeList().size(); j++) {
                 Type tj = ts.getTypeList().get(j);
                 if (ti.compareTo(tj)) {
@@ -3421,7 +3418,7 @@ public class TypeSet {
      * Trims the capacity of used vectors to be the vector's current size.
      */
     public void trimToSize() {
-      
+
     }
 
 }

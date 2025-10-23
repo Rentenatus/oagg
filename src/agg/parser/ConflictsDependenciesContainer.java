@@ -604,7 +604,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
         if (this.cpaBasisGraph != null) {
             h.openSubTag("ConflictDependencyGraph");
             h.openSubTag("Types");
-            h.addEnumeration("", this.cpaBasisGraph.getTypeSet().getTypes(), true);
+            h.addEnumeration("", this.cpaBasisGraph.getTypeSet().getTypeWalker(), true);
             h.close();
             h.addObject("", this.cpaBasisGraph, true);
             h.close();

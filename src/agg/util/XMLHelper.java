@@ -11,6 +11,7 @@
  */
 package agg.util;
 
+import de.jare.ndimcol.ref.IteratorWalker;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -659,7 +660,59 @@ public class XMLHelper implements ExceptionListener {
         templ.XreadObject(this);
     }
 
+    @Deprecated
     public void addEnumeration(String mem_name, Iterator<?> e, boolean sub) {
+        String refs = "";
+        while (e.hasNext()) {
+            XMLObject o = (XMLObject) e.next();
+            String newi = getO2I(o);
+            if (newi.length() == 0) {
+                newi = newO2I(o);
+                this.index2element.put(newi, null);
+                o.XwriteObject(this);
+                if (this.index2element.get(newi) == null) {
+                    /*
+					 * this O decided to _not_ create any element or reopen
+					 * other Elements. I don't know yet, but I tend to forbid
+					 * that.
+                     */
+                    System.err
+                            .println("XMLHelper: Enumeration-Object has no DOM-Elements "
+                                    + o.toString());
+                } else {
+                    if (sub) {
+                        top().appendChild((Element) this.index2element.get(newi));
+                    } else {
+                        top().getParentNode().appendChild(
+                                (Element) this.index2element.get(newi));
+                    }
+                }
+            } else {
+                /*
+				 * Its an error, if o should be an subobject, but its already
+				 * saved Diagnostic it.
+                 */
+                if (sub) {
+                    // System.err.println("XMLHelper: A subobject is already
+                    // saved");
+                }
+            }
+            if (!sub) {
+                String s = newi;
+                if (refs.length() == 0) {
+                    refs = s;
+                } else {
+                    refs += "," + s;
+                }
+            }
+        }
+        if (!sub) {
+            top().setAttribute(mem_name, refs);
+        }
+    }
+    
+    
+    public void addEnumeration(String mem_name, IteratorWalker<?> e, boolean sub) {
         String refs = "";
         while (e.hasNext()) {
             XMLObject o = (XMLObject) e.next();

@@ -2466,15 +2466,13 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Iterate through all of the types that may be assigned to GraphObjects.
-     * Enumeration elements are of type <code>Type</code>.
+     * Iterate through all the valid types that may be given to a GraphObject
+     * elements are of type <code>Type</code>.
      *
+     * @return IteratorWalker, a simple shared iterator for this types. This
+     * simple iterator can not be used parallel.
      * @see agg.xt_basis.Type
      */
-    public Iterator<Type> getTypes() {
-        return this.typeSet.getTypes();
-    }
-
     public final IteratorWalker<Type> getTypeWalker() {
         return this.typeSet.getTypeWalker();
     }
@@ -4250,7 +4248,7 @@ public class GraGra implements Disposable, XMLObject {
         h.openSubTag("Types");
 
         // a <Type> tag for each type
-        h.addEnumeration("", getTypes(), true);
+        h.addEnumeration("", getTypeWalker(), true);
 
         // a <Graph> tag for the type graph
         // the types must defined here, because the XwriteObject
