@@ -381,7 +381,7 @@ public class TypeSet {
             return null;
         }
         Arc result = null;
-        Vector<Type> parents = source.getAllParents();
+        List<Type> parents = source.getAllParents();
         for (int j = 0; j < parents.size(); j++) {
             Type p = parents.get(j);
             Iterator<Node> nodes = this.typeGraph.getNodesSet().iterator();
@@ -1607,7 +1607,7 @@ public class TypeSet {
             inheritArc.setInheritance(true);
 
             // add inherited edge to its type when it is not already done
-            Vector<Arc> inheritedArcs = this.getInheritedArcs(parent);
+            List<Arc> inheritedArcs = this.getInheritedArcs(parent);
             for (int i = 0; i < inheritedArcs.size(); i++) {
                 GraphObject a = inheritedArcs.get(i);
                 a.getType().addTypeGraphObject(a);
@@ -1687,7 +1687,7 @@ public class TypeSet {
                 }
             }
             if (inheritArc != null) {
-                Vector<Arc> inheritedArcs = this.getInheritedArcs(inheritArc.getTarget()
+                List<Arc> inheritedArcs = this.getInheritedArcs(inheritArc.getTarget()
                         .getType());
                 for (int i = 0; i < inheritedArcs.size(); i++) {
                     Arc a = inheritedArcs.get(i);
@@ -1767,9 +1767,9 @@ public class TypeSet {
      * Returns a set with all edges to inherit from the specified parent type,
      * or empty set.
      */
-    public Vector<Arc> getInheritedArcs(final Type parentType) {
-        Vector<Arc> inheritedArcs = new Vector<Arc>();
-        Vector<Type> allparents = parentType.getAllParents();
+    public List<Arc> getInheritedArcs(final Type parentType) {
+        List<Arc> inheritedArcs = new Vector<Arc>();
+        List<Type> allparents = parentType.getAllParents();
         for (int i = 0; i < allparents.size(); i++) {
             Type p = allparents.get(i);
             Node go = p.getTypeGraphNodeObject();
@@ -3059,8 +3059,8 @@ public class TypeSet {
                             // check inheritance
                             if (!t1.getParents().isEmpty()) {
                                 if (!t.getParents().isEmpty()) {
-                                    Vector<Type> tParents = t.getAllParents();
-                                    Vector<Type> t1Parents = t1.getAllParents();
+                                    List<Type> tParents = t.getAllParents();
+                                    List<Type> t1Parents = t1.getAllParents();
                                     if (!compareParents(tParents, t1Parents)) {
                                         conflict[0] = true;
                                         if (!differentInheritance.contains(t1)) {
@@ -3137,8 +3137,8 @@ public class TypeSet {
         return !conflict[0];
     }
 
-    private boolean compareParents(final Vector<Type> allParents1,
-            final Vector<Type> allParents2) {
+    private boolean compareParents(final List<Type> allParents1,
+            final List<Type> allParents2) {
         int nm = allParents1.size();
         int i = 1;
         while (i < nm) {

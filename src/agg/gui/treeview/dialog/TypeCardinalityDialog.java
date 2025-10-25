@@ -588,7 +588,7 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
     private int checkMaxMultiplicityOfParent(int value) {
         this.failedTypes.clear();
         int res = value;
-        Vector<agg.xt_basis.Type> v = this.type.getAllParents();
+        List<agg.xt_basis.Type> v = this.type.getAllParents();
         for (int i = 1; i < v.size(); i++) {
             agg.xt_basis.Type p = v.get(i);
             if (p.getSourceMax() == agg.xt_basis.Type.UNDEFINED) {
@@ -604,7 +604,7 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
     private int checkMinMultiplicityOfParent(int value) {
         this.failedTypes.clear();
         int res = value;
-        Vector<agg.xt_basis.Type> v = this.type.getAllParents();
+        List<agg.xt_basis.Type> v = this.type.getAllParents();
         for (int i = 1; i < v.size(); i++) {
             agg.xt_basis.Type p = v.get(i);
             if (p.getSourceMin() == agg.xt_basis.Type.UNDEFINED) {

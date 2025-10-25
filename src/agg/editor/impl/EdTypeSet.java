@@ -1741,9 +1741,9 @@ public class EdTypeSet {
      * @param parentType
      * @return a set with used types of inherit edges or an empty set
      */
-    public Vector<Type> getTypeOfInheritedArcsInUse(final Type childType, final Type parentType) {
-        Vector<Type> result = new Vector<Type>();
-        Vector<Arc> inhArcs = this.bTypeSet.getInheritedArcs(parentType);
+    public List<Type> getTypeOfInheritedArcsInUse(final Type childType, final Type parentType) {
+        List<Type> result = new Vector<Type>();
+        List<Arc> inhArcs = this.bTypeSet.getInheritedArcs(parentType);
         for (int i = 0; i < inhArcs.size(); i++) {
             Type arcType = inhArcs.get(i).getType();
             EdType t = this.getArcType(arcType);
@@ -1760,9 +1760,9 @@ public class EdTypeSet {
         return result;
     }
 
-    public Vector<EdArc> getTypeArcOfInheritedArcsInUse(final Type childType, final Type parentType) {
-        Vector<EdArc> result = new Vector<EdArc>();
-        Vector<Arc> inhArcs = this.bTypeSet.getInheritedArcs(parentType);
+    public List<EdArc> getTypeArcOfInheritedArcsInUse(final Type childType, final Type parentType) {
+        List<EdArc> result = new Vector<EdArc>();
+        List<Arc> inhArcs = this.bTypeSet.getInheritedArcs(parentType);
         for (int i = 0; i < inhArcs.size(); i++) {
             Type arcType = inhArcs.get(i).getType();
             EdType t = this.getArcType(arcType);
@@ -1790,7 +1790,7 @@ public class EdTypeSet {
     }
 
     private boolean isChildTypeUsed(final EdType t) {
-        Vector<Type> allChildren = t.getBasisType().getAllChildren();
+        List<Type> allChildren = t.getBasisType().getAllChildren();
         if (!allChildren.isEmpty()) {
             for (int i = 1; i < allChildren.size(); i++) {
                 Type ch = allChildren.get(i);
@@ -1819,7 +1819,7 @@ public class EdTypeSet {
     }
 
     public boolean isChildTypeGraphNodeUsed(final EdType t) {
-        Vector<Type> allChildren = t.getBasisType().getAllChildren();
+        List<Type> allChildren = t.getBasisType().getAllChildren();
         if (!allChildren.isEmpty()) {
             for (int i = 1; i < allChildren.size(); i++) {
                 Type ch = allChildren.get(i);

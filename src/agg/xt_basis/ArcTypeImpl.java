@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,10 +17,10 @@ import agg.attribute.AttrType;
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.DeclTuple;
 import agg.util.XMLHelper;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Implements the type of an edge graph object.
@@ -41,8 +43,9 @@ public class ArcTypeImpl implements Type {
     AttrType itsAttrType;
 
     /**
-     * an additional String for special informations. It will be saved together with {@link #itsStringRepr} as the name
-     * and can contain any information as string. It is used for example for the layout information of
+     * an additional String for special informations. It will be saved together
+     * with {@link #itsStringRepr} as the name and can contain any information
+     * as string. It is used for example for the layout information of
      * {@link agg.editor.EdType}.
      */
     String additionalRepr;
@@ -50,13 +53,16 @@ public class ArcTypeImpl implements Type {
     String imageFileName = "";
 
     /**
-     * a map to a vector of types. This map will only created for edge types. If there is an edge between sourceType and
-     * targetType edgeTypeGraphObjects.get(sourceType).contains(targetType) will return true.
+     * a map to a list of types. This map will only created for edge types. If
+     * there is an edge between sourceType and targetType
+     * edgeTypeGraphObjects.get(sourceType).contains(targetType) will return
+     * true.
      */
     HashMap<Type, HashMap<Type, TypeGraphArc>> edgeTypeGraphObjects;
 
     /**
-     * this value will be true, if a graph object inside of a type graph was defined.
+     * this value will be true, if a graph object inside of a type graph was
+     * defined.
      */
     boolean typeGraphObjectDefined;
 
@@ -71,7 +77,8 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Creates a new type with the given name. There is still not attributed type.
+     * Creates a new type with the given name. There is still not attributed
+     * type.
      *
      * @param name the name of the type
      */
@@ -160,7 +167,8 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Returns result string of <code>this.getStringRepr()+this.getAdditionalRepr()</code>
+     * Returns result string of
+     * <code>this.getStringRepr()+this.getAdditionalRepr()</code>
      *
      * @see <code>getStringRepr()</code> and <code>getAdditionalRepr()</code>
      */
@@ -179,9 +187,11 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Adds those attribute members of the specified Type type which are not found in this type. A conflict can arise
-     * when a new member and an existing member have equal names but different types. In this case the name of the
-     * existing attribute member will be extended by "?" and then the new attribute member will be added.
+     * Adds those attribute members of the specified Type type which are not
+     * found in this type. A conflict can arise when a new member and an
+     * existing member have equal names but different types. In this case the
+     * name of the existing attribute member will be extended by "?" and then
+     * the new attribute member will be added.
      */
     public void adaptTypeAttribute(final Type type) {
         if (type.getAttrType() == null) {
@@ -287,11 +297,12 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Returns TRUE if this type is different to the type t. The Vector difference will contain all found differences
-     * between the types, otherwise it is empty. This method should be used sooner for information about differences of
-     * types.
+     * Returns TRUE if this type is different to the type t. The list difference
+     * will contain all found differences between the types, otherwise it is
+     * empty. This method should be used sooner for information about
+     * differences of types.
      */
-    public boolean differentTo(final Type t, final Vector<String> difference) {
+    public boolean differentTo(final Type t, final List<String> difference) {
         String diff = "";
         if (!getStringRepr().equals(t.getStringRepr())) {
             diff = "Type name# " + getStringRepr() + " != " + t.getStringRepr();
@@ -370,8 +381,8 @@ public class ArcTypeImpl implements Type {
         return this.comment;
     }
 
-    public Vector<String> checkDoubleAttributeName(final Type otherType) {
-        Vector<String> v = new Vector<String>(5, 5);
+    public List<String> checkDoubleAttributeName(final Type otherType) {
+        List<String> v = new ArrayList<String>(5);
         if (this.itsAttrType == null || otherType.getAttrType() == null) {
             return v;
         }
@@ -406,8 +417,9 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Set its additional graphical representation, which is always saved together with its name. Predefined minimal
-     * additional representation string of an Arc - ":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:".
+     * Set its additional graphical representation, which is always saved
+     * together with its name. Predefined minimal additional representation
+     * string of an Arc - ":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:".
      */
     public void setAdditionalRepr(final String repr) {
         if (repr.equals("EDGE") || repr.equals("[EDGE]")) {
@@ -498,8 +510,10 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * internal function to convert a type into a string. If the type contains an empty string representation, this
-     * function will return "unnamed" otherwise the string representation of the type ({@link #getStringRepr()})
+     * internal function to convert a type into a string. If the type contains
+     * an empty string representation, this function will return "unnamed"
+     * otherwise the string representation of the type
+     * ({@link #getStringRepr()})
      */
     public String getName() {
         String stringRepr = this.getStringRepr();
@@ -510,11 +524,13 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * returns if the given GraphObject is valid typed as defined in the type graph. Before this can be checked, all
-     * edges and nodes of the type graph must be added to their types. The given object is not taken in account when
-     * this is its type.
+     * returns if the given GraphObject is valid typed as defined in the type
+     * graph. Before this can be checked, all edges and nodes of the type graph
+     * must be added to their types. The given object is not taken in account
+     * when this is its type.
      *
-     * @return null, if the graph object is valid typed otherwise a {@link TypeError} if there was a mismatch
+     * @return null, if the graph object is valid typed otherwise a
+     * {@link TypeError} if there was a mismatch
      *
      */
     public TypeError check(final GraphObject nodeOrArc, final int level) {
@@ -530,11 +546,12 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Returns true if at least one edge exists from the specified source type to any other type, otherwise false.
+     * Returns true if at least one edge exists from the specified source type
+     * to any other type, otherwise false.
      */
     public boolean hasTypeGraphArc(final Type sourceType) {
         if (this.edgeTypeGraphObjects != null) {
-            Vector<Type> mySrcParents = sourceType.getAllParents();
+            List<Type> mySrcParents = sourceType.getAllParents();
             for (int i = 0; i < mySrcParents.size(); ++i) {
                 Type mySrcType = mySrcParents.get(i);
                 HashMap<Type, TypeGraphArc> targets = this.edgeTypeGraphObjects.get(mySrcType);
@@ -548,15 +565,16 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Searches for a type that is the target type of this edge type with the specified source type. Returns a vector
-     * with all found target types, otherwise empty vector.
+     * Searches for a type that is the target type of this edge type with the
+     * specified source type. Returns a list with all found target types,
+     * otherwise empty list.
      *
      */
-    public Vector<Type> getTargetsOfArc(final Type sourceType) {
-        final Vector<Type> v = new Vector<Type>();
+    public List<Type> getTargetsOfArc(final Type sourceType) {
+        final List<Type> v = new ArrayList<Type>();
         // try to find any edge between any pair of src-tar parents
         if (this.edgeTypeGraphObjects != null) {
-            Vector<Type> mySrcParents = sourceType.getAllParents();
+            List<Type> mySrcParents = sourceType.getAllParents();
             for (int i = 0; i < mySrcParents.size(); ++i) {
                 Type mySrcType = mySrcParents.get(i);
                 HashMap<Type, TypeGraphArc> targets = this.edgeTypeGraphObjects.get(mySrcType);
@@ -581,8 +599,8 @@ public class ArcTypeImpl implements Type {
         Type myTarType = targetType;
 
         // find out all parents of source and target
-        Vector<Type> mySrcParents = sourceType.getAllParents();
-        Vector<Type> myTarParents = targetType.getAllParents();
+        List<Type> mySrcParents = sourceType.getAllParents();
+        List<Type> myTarParents = targetType.getAllParents();
 
         TypeGraphArc subType = null;
 
@@ -632,10 +650,12 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Returns null, if the specified arc is valid typed as defined in the type graph. Before this can be checked, all
-     * edges and nodes of the type graph must be added to theire types.
+     * Returns null, if the specified arc is valid typed as defined in the type
+     * graph. Before this can be checked, all edges and nodes of the type graph
+     * must be added to theire types.
      *
-     * @return null, if the Arc is valid typed otherwise a {@link TypeError} if there was a mismatch
+     * @return null, if the Arc is valid typed otherwise a {@link TypeError} if
+     * there was a mismatch
      */
     public TypeError check(final Arc arc, final int level) {
         if (this.edgeTypeGraphObjects != null) {
@@ -644,8 +664,8 @@ public class ArcTypeImpl implements Type {
             final Type targetType = arc.getTarget().getType();
 
             // find out all parents of source and target
-            final Vector<Type> mySrcParents = sourceType.getAllParents();
-            final Vector<Type> myTarParents = targetType.getAllParents();
+            final List<Type> mySrcParents = sourceType.getAllParents();
+            final List<Type> myTarParents = targetType.getAllParents();
 
             Type mySrcType = arc.getSource().getType();
             Type myTarType = arc.getTarget().getType();
@@ -842,8 +862,8 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Target Max Multiplicity means how many ( at most ) nodes of the target node type are outgoing from the source
-     * node.
+     * Target Max Multiplicity means how many ( at most ) nodes of the target
+     * node type are outgoing from the source node.
      */
     public TypeError checkTargetMax(final Graph g, final Node src, final Node tar) {
         String graphName = "";
@@ -889,9 +909,11 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Add the given GraphObject of a type graph to this type. The GraphObject nodeOrArc must be of this type: it is a
-     * Node if this is a node type, it is an Arc if this is an edge type. In case of it is a node type and a node object
-     * inside of a type graph is already exist, it should to be removed first.
+     * Add the given GraphObject of a type graph to this type. The GraphObject
+     * nodeOrArc must be of this type: it is a Node if this is a node type, it
+     * is an Arc if this is an edge type. In case of it is a node type and a
+     * node object inside of a type graph is already exist, it should to be
+     * removed first.
      */
     public boolean addTypeGraphObject(final GraphObject arc) {
         if (arc instanceof Arc && arc.getContext().isTypeGraph()) {
@@ -908,8 +930,9 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Remove the given GraphObject from the type graph and from this type. Returns true if remove is done, otherwise
-     * false. To remove an GraphObject is not possible when the type graph check is activated.
+     * Remove the given GraphObject from the type graph and from this type.
+     * Returns true if remove is done, otherwise false. To remove an GraphObject
+     * is not possible when the type graph check is activated.
      */
     public boolean removeTypeGraphObject(final GraphObject arc, final boolean forceToRemove) {
         if (arc == null
@@ -961,7 +984,7 @@ public class ArcTypeImpl implements Type {
             // or some using graph objects, we can destroy it
             targets.remove(targetType);
 
-            // remove vector, if it is empty
+            // remove list, if it is empty
             if (targets.isEmpty()) {
                 this.edgeTypeGraphObjects.remove(sourceType);
 
@@ -977,72 +1000,77 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Remove the given GraphObject from the type graph and from this type. Returns true if remove is done, otherwise
-     * false. To remove an GraphObject is not possible when the type graph check is activated.
+     * Remove the given GraphObject from the type graph and from this type.
+     * Returns true if remove is done, otherwise false. To remove an GraphObject
+     * is not possible when the type graph check is activated.
      */
     public boolean removeTypeGraphObject(final GraphObject arc) {
         return removeTypeGraphObject(arc, false);
     }
 
     /**
-     * Set the min of the source multiplicity of an edge type to the value. The edge type is defined by the node type
-     * sourceType and the node type targetType.
+     * Set the min of the source multiplicity of an edge type to the value. The
+     * edge type is defined by the node type sourceType and the node type
+     * targetType.
      */
     public void setSourceMin(final Type sourceType, final Type targetType, final int value) {
         this.getTypeGraphArc(sourceType, targetType).setSourceMin(value);
     }
 
     /**
-     * Set the max of the source multiplicity of an edge type to the value. The edge type is defined by the node type
-     * sourceType and the node type targetType.
+     * Set the max of the source multiplicity of an edge type to the value. The
+     * edge type is defined by the node type sourceType and the node type
+     * targetType.
      */
     public void setSourceMax(final Type sourceType, final Type targetType, final int value) {
         this.getTypeGraphArc(sourceType, targetType).setSourceMax(value);
     }
 
     /**
-     * Set the min of the target multiplicity of an edge type to the value. The edge type is defined by the node type
-     * sourceType and the node type targetType.
+     * Set the min of the target multiplicity of an edge type to the value. The
+     * edge type is defined by the node type sourceType and the node type
+     * targetType.
      */
     public void setTargetMin(final Type sourceType, final Type targetType, final int value) {
         this.getTypeGraphArc(sourceType, targetType).setTargetMin(value);
     }
 
     /**
-     * Set the max of the target multiplicity of an edge type to the value. The edge type is defined by the node type
-     * sourceType and the node type targetType.
+     * Set the max of the target multiplicity of an edge type to the value. The
+     * edge type is defined by the node type sourceType and the node type
+     * targetType.
      */
     public void setTargetMax(final Type sourceType, final Type targetType, final int value) {
         this.getTypeGraphArc(sourceType, targetType).setTargetMax(value);
     }
 
     /**
-     * Return the min of the source multiplicity of an edge type. The edge type is defined by the node type sourceType
-     * and the node type targetType.
+     * Return the min of the source multiplicity of an edge type. The edge type
+     * is defined by the node type sourceType and the node type targetType.
      */
     public int getSourceMin(final Type sourceType, final Type targetType) {
         return this.getTypeGraphArc(sourceType, targetType).getSourceMin();
     }
 
     /**
-     * Return the max of the source multiplicity of an edge type. The edge type is defined by the node type sourceType
-     * and the node type targetType.
+     * Return the max of the source multiplicity of an edge type. The edge type
+     * is defined by the node type sourceType and the node type targetType.
      */
     public int getSourceMax(final Type sourceType, final Type targetType) {
         return this.getTypeGraphArc(sourceType, targetType).getSourceMax();
     }
 
     /**
-     * Return the min of the target multiplicity of an edge type. The edge type is defined by the node type sourceType
-     * and the node type targetType.
+     * Return the min of the target multiplicity of an edge type. The edge type
+     * is defined by the node type sourceType and the node type targetType.
      */
     public int getTargetMin(final Type sourceType, final Type targetType) {
         return this.getTypeGraphArc(sourceType, targetType).getTargetMin();
     }
 
     /**
-     * Return the max of the target multiplicity of an edge type. The edge type is defined by the node type sourceType
-     * and the node type targetType.
+     * Return the max of the target multiplicity of an edge type. The edge type
+     * is defined by the node type sourceType and the node type targetType.
      */
     public int getTargetMax(final Type sourceType, final Type targetType) {
         return this.getTypeGraphArc(sourceType, targetType).getTargetMax();
@@ -1069,8 +1097,8 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Returns the subtype object for this source and target combination. The subtype will be created, if it does not
-     * exist.
+     * Returns the subtype object for this source and target combination. The
+     * subtype will be created, if it does not exist.
      */
     public TypeGraphArc getTypeGraphArc(final Type sourceType, final Type targetType) {
         // iterator for the parents of the src and target type of the current
@@ -1079,8 +1107,8 @@ public class ArcTypeImpl implements Type {
         Type myTarType = targetType;
 
         // find out all parents of source and target
-        Vector<Type> mySrcParents = sourceType.getAllParents();
-        Vector<Type> myTarParents = targetType.getAllParents();
+        List<Type> mySrcParents = sourceType.getAllParents();
+        List<Type> myTarParents = targetType.getAllParents();
 
         HashMap<Type, TypeGraphArc> targets = null;
         TypeGraphArc subType = null;
@@ -1169,8 +1197,8 @@ public class ArcTypeImpl implements Type {
         Type mySrcType = sourceType;
         Type myTarType = targetType;
 
-        Vector<Type> mySrcParents = sourceType.getAllParents();
-        Vector<Type> myTarParents = targetType.getAllParents();
+        List<Type> mySrcParents = sourceType.getAllParents();
+        List<Type> myTarParents = targetType.getAllParents();
 
         TypeGraphArc subType = null;
 
@@ -1315,7 +1343,8 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * returns true, if there is at least one object in the type graph for this type.
+     * returns true, if there is at least one object in the type graph for this
+     * type.
      */
     public boolean isTypeGraphObjectDefined() {
         return this.typeGraphObjectDefined;
@@ -1470,29 +1499,29 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getAllChildren()
      */
-    public Vector<Type> getAllChildren() {
-        return new Vector<Type>(0);
+    public List<Type> getAllChildren() {
+        return new ArrayList<Type>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getAllParents()
      */
-    public Vector<Type> getAllParents() {
-        return new Vector<Type>(0);
+    public List<Type> getAllParents() {
+        return new ArrayList<Type>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getChildren()
      */
-    public Vector<Type> getChildren() {
-        return new Vector<Type>(0);
+    public List<Type> getChildren() {
+        return new ArrayList<Type>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getCommonParentWith(agg.xt_basis.Type)
      */
     public List<Type> getCommonParentWith(Type t) {
-        return new Vector<Type>(0);
+        return new ArrayList<Type>(0);
     }
 
     /* (non-Javadoc)
@@ -1512,8 +1541,8 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getParents()
      */
-    public Vector<Type> getParents() {
-        return new Vector<Type>(0);
+    public List<Type> getParents() {
+        return new ArrayList<Type>(0);
     }
 
     /* (non-Javadoc)
@@ -1652,29 +1681,29 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getOwnIncomingArcs()
      */
-    public Vector<Arc> getOwnIncomingArcs() {
-        return new Vector<Arc>(0);
+    public List<Arc> getOwnIncomingArcs() {
+        return new ArrayList<Arc>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getOwnIncomingArcTypes()
      */
-    public Vector<Type> getOwnIncomingArcTypes() {
-        return new Vector<Type>(0);
+    public List<Type> getOwnIncomingArcTypes() {
+        return new ArrayList<Type>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getOwnOutgoingArcTypes()
      */
-    public Vector<Type> getOwnOutgoingArcTypes() {
-        return new Vector<Type>(0);
+    public List<Type> getOwnOutgoingArcTypes() {
+        return new ArrayList<Type>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getOwnOutgoingArcs()
      */
-    public Vector<Arc> getOwnOutgoingArcs() {
-        return new Vector<Arc>(0);
+    public List<Arc> getOwnOutgoingArcs() {
+        return new ArrayList<Arc>(0);
     }
 
     /* (non-Javadoc)
@@ -1694,7 +1723,7 @@ public class ArcTypeImpl implements Type {
 	 * @see agg.xt_basis.Type#getClan()
      */
     public List<Type> getClan() {
-        return new Vector<Type>(0);
+        return new ArrayList<Type>(0);
     }
 
     /* (non-Javadoc)

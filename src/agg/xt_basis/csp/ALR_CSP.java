@@ -34,6 +34,7 @@ import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
 import agg.xt_basis.Type;
+import java.util.List;
 
 /**
  * A CSP whose solutions represent morphisms between two graphs.
@@ -460,7 +461,7 @@ public class ALR_CSP extends CSP {
             String keystr = anObj.convertToKey();
 
             if (anObj.getType().hasParent()) {
-                Vector<Type> myParents = anObj.getType().getAllParents();
+                List<Type> myParents = anObj.getType().getAllParents();
                 if (myParents != null) {
                     for (int i = 0; i < myParents.size(); ++i) {
                         keystr = myParents.get(i).convertToKey();
@@ -483,8 +484,8 @@ public class ALR_CSP extends CSP {
 
             if (anObj.getSource().getType().hasParent()
                     || anObj.getTarget().getType().hasParent()) {
-                Vector<Type> mySrcParents = anObj.getSource().getType().getAllParents();
-                Vector<Type> myTarParents = anObj.getTarget().getType().getAllParents();
+                List<Type> mySrcParents = anObj.getSource().getType().getAllParents();
+                List<Type> myTarParents = anObj.getTarget().getType().getAllParents();
 
                 for (int i = 0; i < mySrcParents.size(); ++i) {
 
@@ -529,7 +530,7 @@ public class ALR_CSP extends CSP {
     protected void removeFromTypeObjectsMap(GraphObject anObj) {
         if (anObj.isNode()) {
             if (anObj.getType().hasParent()) {
-                Vector<Type> myParents = anObj.getType().getAllParents();
+                List<Type> myParents = anObj.getType().getAllParents();
                 if (myParents != null) {
                     for (int i = 0; i < myParents.size(); ++i) {
                         String keystr = myParents.get(i).convertToKey();
@@ -550,8 +551,8 @@ public class ALR_CSP extends CSP {
             if (((Arc) anObj).getSource().getType().hasParent()
                     || ((Arc) anObj).getTarget().getType().hasParent()) {
 
-                Vector<Type> mySrcParents = ((Arc) anObj).getSource().getType().getAllParents();
-                Vector<Type> myTarParents = ((Arc) anObj).getTarget().getType().getAllParents();
+                List<Type> mySrcParents = ((Arc) anObj).getSource().getType().getAllParents();
+                List<Type> myTarParents = ((Arc) anObj).getTarget().getType().getAllParents();
 
                 for (int i = 0; i < mySrcParents.size(); ++i) {
                     for (int j = 0; j < myTarParents.size(); ++j) {

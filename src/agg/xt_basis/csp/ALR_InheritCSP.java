@@ -353,7 +353,7 @@ public class ALR_InheritCSP extends CSP {
 			Node anObj = (Node) anEnum.next();
 			String keystr = anObj.convertToKey();
 			if (anObj.getType().hasParent()) {
-				Vector<Type> myParents = anObj.getType().getAllParents();
+				List<Type> myParents = anObj.getType().getAllParents();
 				for (int i = 0; i < myParents.size(); ++i) {
 					Type anObjType = myParents.get(i);
 					keystr = anObjType.convertToKey();
@@ -376,8 +376,8 @@ public class ALR_InheritCSP extends CSP {
 			if (anObj.getSource().getType().hasParent()
 					|| anObj.getTarget().getType().hasParent()) {
 										
-				Vector<Type> mySrcParents = anObj.getSource().getType().getAllParents();
-				Vector<Type> myTarParents = anObj.getTarget().getType().getAllParents();
+				List<Type> mySrcParents = anObj.getSource().getType().getAllParents();
+				List<Type> myTarParents = anObj.getTarget().getType().getAllParents();
 	
 				for (int i = 0; i < mySrcParents.size(); ++i) {
 					for (int j = 0; j < myTarParents.size(); ++j) {
@@ -407,7 +407,7 @@ public class ALR_InheritCSP extends CSP {
 			if (g.getTypeObjectsMap().get(key) == null) {
 				final HashSet<GraphObject> v = new LinkedHashSet<GraphObject>();
 				if (lhsobj.isNode()) {
-					Vector<Type> parents = lhsobj.getType().getAllParents();
+					List<Type> parents = lhsobj.getType().getAllParents();
 					for (int p = 1; p < parents.size(); p++) {
 						Type pt = parents.get(p);
 						List<GraphObject> vp = g.getElementsOfTypeAsVector(pt);
@@ -420,8 +420,8 @@ public class ALR_InheritCSP extends CSP {
 					GraphObject src = ((Arc)lhsobj).getSource();
 					GraphObject tar = ((Arc)lhsobj).getTarget();
 					
-					Vector<Type> src_parents = src.getType().getAllParents();
-					Vector<Type> tar_parents = tar.getType().getAllParents();
+					List<Type> src_parents = src.getType().getAllParents();
+					List<Type> tar_parents = tar.getType().getAllParents();
 					for (int i = 0; i < src_parents.size(); i++) {
 						Type srcp = src_parents.get(i);
 						List<GraphObject> vsrcp = g.getElementsOfTypeAsVector(lhsobj.getType(), srcp, tar.getType());

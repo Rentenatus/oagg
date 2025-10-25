@@ -1264,8 +1264,8 @@ public class TypeGraph extends Graph {
      */
     protected void addArcToTypeObjectsMap(Arc arc) {
 
-        Vector<Type> mySrcChildren = arc.getSource().getType().getAllChildren();
-        Vector<Type> myTarChildren = arc.getTarget().getType().getAllChildren();
+        List<Type> mySrcChildren = arc.getSource().getType().getAllChildren();
+        List<Type> myTarChildren = arc.getTarget().getType().getAllChildren();
 
         for (int i = 0; i < mySrcChildren.size(); ++i) {
 

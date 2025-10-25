@@ -98,8 +98,8 @@ public class UndirectedArc extends Arc {
     public List<String> convertToInverseKeyParentExtended() {
         final List<String> list = new Vector<String>();
 
-        Vector<Type> mySrcParents = this.getSource().getType().getAllParents();
-        Vector<Type> myTarParents = this.getTarget().getType().getAllParents();
+        List<Type> mySrcParents = this.getSource().getType().getAllParents();
+        List<Type> myTarParents = this.getTarget().getType().getAllParents();
 
         for (int i = 0; i < mySrcParents.size(); ++i) {
             for (int j = 0; j < myTarParents.size(); ++j) {
