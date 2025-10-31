@@ -13,48 +13,46 @@
  */
 package agg.xt_basis;
 
-import java.io.File;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Vector;
-import java.util.Hashtable;
-
-import agg.attribute.impl.ContextView;
-import agg.attribute.impl.DeclTuple;
-import agg.attribute.impl.DeclMember;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.impl.ValueMember;
-import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.AttrType;
-import agg.attribute.facade.impl.DefaultInformationFacade;
 import agg.attribute.facade.InformationFacade;
+import agg.attribute.facade.impl.DefaultInformationFacade;
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.impl.javaExpr.JexHandler;
+import agg.attribute.impl.AttrTupleManager;
+import agg.attribute.impl.ContextView;
+import agg.attribute.impl.DeclMember;
+import agg.attribute.impl.DeclTuple;
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
 import agg.cons.AtomConstraint;
-import agg.cons.Evaluable;
-import agg.cons.Formula;
 import agg.cons.ConstraintLayer;
 import agg.cons.ConstraintPriority;
+import agg.cons.Evaluable;
+import agg.cons.Formula;
 import agg.ruleappl.ObjectFlow;
 import agg.ruleappl.RuleSequence;
 import agg.util.Disposable;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
+import agg.util.Pair;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
-import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.xt_basis.csp.Completion_CSP_NoBJ;
 import de.jare.ndimcol.ref.ArrayMovie;
-import de.jare.ndimcol.ref.ArraySeason;
 import de.jare.ndimcol.ref.ArrayTape;
 import de.jare.ndimcol.ref.IteratorWalker;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import java.io.File;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import org.w3c.dom.Element;
 
 /**
@@ -436,7 +434,7 @@ public class GraGra implements Disposable, XMLObject {
         final RuleLayer layers = new RuleLayer(this.itsRules);
         final Map<Integer, HashSet<Rule>> invRuleLayers = layers.invertLayer();
         Integer currentLayer = layers.getStartLayer();
-        final OrderedSet<Integer> ruleLayers = new OrderedSet<Integer>(new IntComparator<Integer>());
+        final SortedSeasonSet<Integer> ruleLayers = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (final Iterator<Integer> en = invRuleLayers.keySet().iterator(); en.hasNext();) {
             ruleLayers.add(en.next());
         }
@@ -459,7 +457,7 @@ public class GraGra implements Disposable, XMLObject {
         final RuleLayer layers = new RuleLayer(this.getEnabledRules());
         final Map<Integer, HashSet<Rule>> invRuleLayers = layers.invertLayer();
         Integer currentLayer = layers.getStartLayer();
-        final OrderedSet<Integer> ruleLayers = new OrderedSet<Integer>(new IntComparator<Integer>());
+        final SortedSeasonSet<Integer> ruleLayers = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (final Iterator<Integer> en = invRuleLayers.keySet().iterator(); en.hasNext();) {
             ruleLayers.add(en.next());
         }
@@ -486,7 +484,7 @@ public class GraGra implements Disposable, XMLObject {
         final RulePriority priors = new RulePriority(this.itsRules);
         final Map<Integer, HashSet<Rule>> invRulePriors = priors.invertPriority();
         Integer currentPrior = priors.getStartPriority();
-        final OrderedSet<Integer> rulePriors = new OrderedSet<Integer>(new IntComparator<Integer>());
+        final SortedSeasonSet<Integer> rulePriors = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (final Iterator<Integer> en = invRulePriors.keySet().iterator(); en.hasNext();) {
             rulePriors.add(en.next());
         }
@@ -509,7 +507,7 @@ public class GraGra implements Disposable, XMLObject {
         final RulePriority priors = new RulePriority(this.getEnabledRules());
         final Map<Integer, HashSet<Rule>> invRulePriors = priors.invertPriority();
         Integer currentPrior = priors.getStartPriority();
-        final OrderedSet<Integer> rulePriors = new OrderedSet<Integer>(new IntComparator<Integer>());
+        final SortedSeasonSet<Integer> rulePriors = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (final Iterator<Integer> en = invRulePriors.keySet().iterator(); en.hasNext();) {
             rulePriors.add(en.next());
         }
@@ -1644,7 +1642,7 @@ public class GraGra implements Disposable, XMLObject {
         Integer startPriority = priority.getStartPriority();
         Hashtable<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
 
-        OrderedSet<Integer> rulePrioritySet = new OrderedSet<Integer>(new IntComparator<Integer>());
+        SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Enumeration<Integer> en = invertedRulePriority.keys(); en
                 .hasMoreElements();) {
             rulePrioritySet.add(en.nextElement());
@@ -1682,7 +1680,7 @@ public class GraGra implements Disposable, XMLObject {
         RuleLayer layer = new RuleLayer(this.itsRules);
         Integer startLayer = layer.getStartLayer();
         Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
-        OrderedSet<Integer> ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
+        SortedSeasonSet<Integer> ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Iterator<Integer> en = invertedRuleLayer.keySet().iterator(); en.hasNext();) {
             ruleLayer.add(en.next());
         }
@@ -1719,7 +1717,7 @@ public class GraGra implements Disposable, XMLObject {
         ConstraintLayer layer = new ConstraintLayer(this.itsConstraints);
         Integer startLayer = layer.getStartLayer();
         Map<Integer, HashSet<Object>> invLayer = layer.invertLayer();
-        OrderedSet<Integer> formulaLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
+        SortedSeasonSet<Integer> formulaLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Iterator<Integer> en = invLayer.keySet().iterator(); en.hasNext();) {
             formulaLayer.add(en.next());
         }
@@ -1755,7 +1753,7 @@ public class GraGra implements Disposable, XMLObject {
         ConstraintPriority cons = new ConstraintPriority(this.itsConstraints);
         Integer start = cons.getStartPriority();
         Map<Integer, HashSet<Object>> inverted = cons.invertPriority();
-        OrderedSet<Integer> set = new OrderedSet<Integer>(new IntComparator<Integer>());
+        SortedSeasonSet<Integer> set = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Iterator<Integer> en = inverted.keySet().iterator(); en.hasNext();) {
             set.add(en.next());
         }

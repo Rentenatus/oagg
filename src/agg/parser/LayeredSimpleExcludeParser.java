@@ -11,13 +11,7 @@
  */
 package agg.parser;
 
-import java.util.EmptyStackException;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
+import agg.util.Pair;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.Match;
@@ -25,9 +19,13 @@ import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.util.Pair;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import java.util.EmptyStackException;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 // ---------------------------------------------------------------------------+
@@ -87,7 +85,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
 
         boolean result = true;
         Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer(); // layer.getRuleLayer());
-        OrderedSet<Integer> ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
+        SortedSeasonSet<Integer> ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Enumeration<Integer> en = invertedRuleLayer.keys(); en.hasMoreElements();) {
             ruleLayer.add(en.nextElement());
         }

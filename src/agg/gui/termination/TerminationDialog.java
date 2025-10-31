@@ -10,27 +10,37 @@
  */
 package agg.gui.termination;
 
+import agg.gui.IconResource;
+import agg.gui.help.HtmlBrowser;
+import agg.termination.TerminationLGTSInterface;
+import agg.xt_basis.Arc;
+import agg.xt_basis.GraphObject;
+import agg.xt_basis.Node;
+import agg.xt_basis.Rule;
+import agg.xt_basis.RuleLayer;
+import agg.xt_basis.RulePriority;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
 import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -43,18 +53,6 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-
-import agg.termination.TerminationLGTSInterface;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.gui.IconResource;
-import agg.gui.help.HtmlBrowser;
-import agg.xt_basis.Arc;
-import agg.xt_basis.GraphObject;
-import agg.xt_basis.Node;
-import agg.xt_basis.Rule;
-import agg.xt_basis.RuleLayer;
-import agg.xt_basis.RulePriority;
 
 /**
  * This class provides a window for a user dialog. This dialog is necessary to enter the layer function.
@@ -172,7 +170,7 @@ public class TerminationDialog extends JDialog implements ActionListener {
             // this.table=layer.getRuleLayer();
 
             Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
-            OrderedSet<Integer> ruleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
+            SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
             for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
                     .hasMoreElements();) {
                 ruleLayerSet.add(en.nextElement());
@@ -216,7 +214,7 @@ public class TerminationDialog extends JDialog implements ActionListener {
             this.table.putAll(priority.getRulePriority());
 
             Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = priority.invertPriority();
-            OrderedSet<Integer> ruleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
+            SortedSeasonSet<Integer>  ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
             for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
                     .hasMoreElements();) {
                 ruleLayerSet.add(en.nextElement());

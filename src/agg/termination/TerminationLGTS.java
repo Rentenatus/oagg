@@ -11,8 +11,6 @@
  */
 package agg.termination;
 
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
 import agg.util.Pair;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BaseFactory;
@@ -25,6 +23,8 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
 import agg.xt_basis.Type;
 import de.jare.ndimcol.ref.IteratorWalker;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -71,15 +71,15 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 
     private Hashtable<Integer, HashSet<Rule>> invertedRuleLayer;
 
-    private OrderedSet<Integer> orderedRuleLayerSet;
+    private SortedSeasonSet<Integer> orderedRuleLayerSet;
 
     private Hashtable<Integer, HashSet<Object>> invertedTypeDeletionLayer;
 
-    private OrderedSet<Integer> orderedTypeDeletionLayerSet;
+    private SortedSeasonSet<Integer> orderedTypeDeletionLayerSet;
 
     private Hashtable<Integer, HashSet<Object>> invertedTypeCreationLayer;
 
-    private OrderedSet<Integer> orderedTypeCreationLayerSet;
+    private SortedSeasonSet<Integer> orderedTypeCreationLayerSet;
 
     private Integer //startLayer, 
             startRuleLayer;
@@ -427,7 +427,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         RuleLayer layer = new RuleLayer(this.listOfRules);
         this.invertedRuleLayer = layer.invertLayer();
         this.startRuleLayer = layer.getStartLayer();
-        this.orderedRuleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
+        this.orderedRuleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Enumeration<Integer> en = this.invertedRuleLayer.keys(); en.hasMoreElements();) {
             this.orderedRuleLayerSet.add(en.nextElement());
         }
@@ -448,7 +448,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         this.invertedTypeDeletionLayer = layer.invertLayer();
 //		startLayer = layer.getStartLayer();
         this.invertedTypeDeletionLayer = layer.invertLayer();
-        this.orderedTypeDeletionLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
+        this.orderedTypeDeletionLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Enumeration<Integer> en = this.invertedTypeDeletionLayer.keys(); en
                 .hasMoreElements();) {
             this.orderedTypeDeletionLayerSet.add(en.nextElement());
@@ -460,7 +460,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         this.invertedTypeCreationLayer = layer.invertLayer();
 //		startLayer = layer.getStartLayer();
         this.invertedTypeCreationLayer = layer.invertLayer();
-        this.orderedTypeCreationLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
+        this.orderedTypeCreationLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Enumeration<Integer> en = this.invertedTypeCreationLayer.keys();
                 en.hasMoreElements();) {
             this.orderedTypeCreationLayerSet.add(en.nextElement());

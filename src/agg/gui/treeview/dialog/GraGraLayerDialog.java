@@ -10,6 +10,10 @@
  */
 package agg.gui.treeview.dialog;
 
+import agg.xt_basis.Rule;
+import agg.xt_basis.RuleLayer;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -27,7 +31,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -37,12 +40,6 @@ import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
-//import agg.editor.impl.EdGraGra;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.xt_basis.Rule;
-import agg.xt_basis.RuleLayer;
 
 /**
  * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers.
@@ -123,7 +120,7 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
             Integer startLayer = layer.getStartLayer();
             Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
 
-            OrderedSet<Integer> ruleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
+            SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
             for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
                     .hasMoreElements();) {
                 ruleLayerSet.add(en.nextElement());

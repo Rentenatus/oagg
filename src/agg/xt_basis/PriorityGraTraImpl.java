@@ -10,24 +10,23 @@
  */
 package agg.xt_basis;
 
+import agg.cons.AtomConstraint;
+import agg.util.Pair;
+import agg.xt_basis.agt.RuleScheme;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import java.util.Date;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
-
-import agg.cons.AtomConstraint;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.util.Pair;
-import agg.xt_basis.agt.RuleScheme;
 
 public class PriorityGraTraImpl extends GraTra {
 
@@ -82,7 +81,7 @@ public class PriorityGraTraImpl extends GraTra {
         Integer startPriority = priority.getStartPriority();
         Hashtable<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
 
-        OrderedSet<Integer> rulePrioritySet = new OrderedSet<Integer>(new IntComparator<Integer>());
+        SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Enumeration<Integer> en = invertedRulePriority.keys(); en
                 .hasMoreElements();) {
             rulePrioritySet.add(en.nextElement());

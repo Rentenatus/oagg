@@ -10,6 +10,16 @@
  */
 package agg.xt_basis;
 
+import agg.cons.AtomConstraint;
+import agg.util.Pair;
+import agg.xt_basis.agt.RuleScheme;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -17,17 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Vector;
-import java.util.Date;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
-
-import agg.cons.AtomConstraint;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.util.Pair;
-import agg.xt_basis.agt.RuleScheme;
 
 public class LayeredGraTraImpl extends GraTra {
 
@@ -60,7 +59,7 @@ public class LayeredGraTraImpl extends GraTra {
 
     private Hashtable<Integer, HashSet<Rule>> invertedRuleLayer;
 
-    private OrderedSet<Integer> ruleLayer;
+    private SortedSeasonSet<Integer> ruleLayer;
 
     private Integer currentLayer;
 
@@ -75,6 +74,7 @@ public class LayeredGraTraImpl extends GraTra {
     FileOutputStream os;
 
     String protocolFileName = "";
+    int i;
 
     public LayeredGraTraImpl() {
         this.nextLayerExists = true;
@@ -273,7 +273,7 @@ public class LayeredGraTraImpl extends GraTra {
         this.startLayer = this.layer.getStartLayer();
         this.invertedRuleLayer = this.layer.invertLayer();
 
-        this.ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
+        this.ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
                 .hasMoreElements();) {
             this.ruleLayer.add(en.nextElement());
@@ -349,7 +349,6 @@ public class LayeredGraTraImpl extends GraTra {
         this.startTransform = b;
     }
 
-    int i;
 
     @SuppressWarnings({"unused", "rawtypes"})
     private void transformCurrentLayer() {

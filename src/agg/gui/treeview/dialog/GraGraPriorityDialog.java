@@ -10,6 +10,10 @@
  */
 package agg.gui.treeview.dialog;
 
+import agg.xt_basis.Rule;
+import agg.xt_basis.RulePriority;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -27,24 +31,17 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import javax.swing.JOptionPane;
-
-//import agg.editor.impl.EdGraGra;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.xt_basis.Rule;
-import agg.xt_basis.RulePriority;
 
 //import com.objectspace.jgl.HashSet;
 //import com.objectspace.jgl.OrderedSet;
@@ -130,7 +127,7 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
             Integer startPriority = priority.getStartPriority();
             Hashtable<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
 
-            OrderedSet<Integer> rulePrioritySet = new OrderedSet<Integer>(new IntComparator<Integer>());
+            SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
             for (Enumeration<Integer> en = invertedRulePriority.keys(); en
                     .hasMoreElements();) {
                 rulePrioritySet.add(en.nextElement());
