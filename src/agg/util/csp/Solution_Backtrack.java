@@ -161,7 +161,7 @@ public class Solution_Backtrack implements SolutionStrategy {
     private SearchStrategy itsSearcher = new Search_BreadthFirst();
 
     /**
-     * Vector elements are of type <code>OrderedSet</code> of <code>Variable</code>. Elements are of type
+     * Elements are of type
      * <code>Variable</code>.
      */
 //	final private HashSet itsBackjumpTargets = new HashSet();
