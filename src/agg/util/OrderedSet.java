@@ -1,7 +1,8 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
  */
@@ -29,7 +30,6 @@ public class OrderedSet<E> implements SortedSet<E> {
     private ArrayList<E> list;
 
     @SuppressWarnings("rawtypes")
-    Comparator comp;
     BinaryPredicate predicate;
     Iterator<E> iter;
     E obj;
@@ -39,12 +39,6 @@ public class OrderedSet<E> implements SortedSet<E> {
         list = new ArrayList<>();
     }
 
-    @SuppressWarnings("rawtypes")
-    public OrderedSet(Comparator comparator) {
-        this();
-        this.comp = comparator;
-    }
-
     public OrderedSet(BinaryPredicate bp) {
         this();
         this.predicate = bp;
@@ -52,17 +46,6 @@ public class OrderedSet<E> implements SortedSet<E> {
 
     public OrderedSet(Collection<E> col) {
         this();
-
-        Iterator<E> iter = col.iterator();
-        while (iter.hasNext()) {
-            this.add(iter.next());
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-    public OrderedSet(Collection<E> col, Comparator comparator) {
-        this(comparator);
-
         Iterator<E> iter = col.iterator();
         while (iter.hasNext()) {
             this.add(iter.next());
@@ -71,20 +54,17 @@ public class OrderedSet<E> implements SortedSet<E> {
 
     public OrderedSet(SortedSet<E> ss) {
         super();
-
-        this.comp = ss.comparator();
         Iterator<E> iter = ss.iterator();
         while (iter.hasNext()) {
             this.add(iter.next());
         }
     }
 
+    @Override
     public synchronized boolean add(E e) {
         boolean res = false;
         if (this.isEmpty()) {
             res = list.add(e);
-        } else if (this.comp != null) {
-            res = addByComparator(e);
         } else if (this.predicate != null) {
             res = addByPredicate(e);
         } else if (!list.contains(e)) {
@@ -93,6 +73,7 @@ public class OrderedSet<E> implements SortedSet<E> {
         return res;
     }
 
+    @Override
     public boolean remove(Object o) {
         int i = (this.iter != null && this.obj != null) ? list.indexOf(this.obj) : -1;
         int i1 = list.indexOf(o);
@@ -140,59 +121,35 @@ public class OrderedSet<E> implements SortedSet<E> {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
-    private boolean addByComparator(E e) {
-        for (int i = this.size() - 1; i >= 0; i--) {
-            int c = this.comp.compare(e, list.get(i));
-            if (c == 0) {
-                return false;
-            }
-            if (c > 0) {
-                if (i == this.size() - 1) {
-                    return list.add(e);
-                } else {
-                    list.add(i + 1, e);
-                    return true;
-                }
-            } else if (i > 0 && this.comp.compare(e, list.get(i - 1)) > 0) {
-                list.add(i, e);
-                return true;
-            } else if (i == 0) {
-                list.add(i, e);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
+ 
+    @Override
     public Comparator<? super E> comparator() {
-        return this.comp;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public BinaryPredicate binaryPredicate() {
         return this.predicate;
     }
 
+    @Override
     public SortedSet<E> subSet(E fromElement, E toElement) {
         OrderedSet<E> set = new OrderedSet<E>();
         int start = list.indexOf(fromElement);
         int end = list.indexOf(toElement);
         for (int i = start; i <= end; i++) {
             set.add(list.get(i));
-        }
-        set.comp = this.comp;
+        } 
         set.predicate = this.predicate;
         return set;
     }
 
+    @Override
     public SortedSet<E> headSet(E toElement) {
-        OrderedSet<E> set = new OrderedSet<E>(this.comp);
+        OrderedSet<E> set = new OrderedSet<E>(this.predicate);
         int end = list.indexOf(toElement);
         for (int i = 0; i <= end; i++) {
             set.add(list.get(i));
-        }
-        set.comp = this.comp;
+        } 
         set.predicate = this.predicate;
         return set;
     }
@@ -202,8 +159,7 @@ public class OrderedSet<E> implements SortedSet<E> {
         int start = list.indexOf(fromElement);
         for (int i = start; i < this.size(); i++) {
             set.add(list.get(i));
-        }
-        set.comp = this.comp;
+        } 
         set.predicate = this.predicate;
         return set;
     }
@@ -241,7 +197,6 @@ public class OrderedSet<E> implements SortedSet<E> {
         for (int i = 0; i < os.size(); i++) {
             set.add(os.get(i));
         }
-        set.comp = this.comp;
         set.predicate = this.predicate;
         return set;
     }
