@@ -96,8 +96,8 @@
                     </Value>
                 </Attribute>
             </Node>
-            <Edge ID="I32" source="I27" target="I22" type="I6"/>
-            <Edge ID="I33" source="I22" target="I27" type="I6"/>
+            <Edge ID="I32" source="I22" target="I27" type="I6"/>
+            <Edge ID="I33" source="I27" target="I22" type="I6"/>
         </Graph>
         <Constraints>
             <Graphconstraint_Atomic ID="I34" name="opposed">
