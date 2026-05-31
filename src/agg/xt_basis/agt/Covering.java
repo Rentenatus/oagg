@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -15,7 +15,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.AttrContext;
 import agg.attribute.AttrMapping;
@@ -162,8 +163,8 @@ public class Covering {
 //					s.getProperties().get(CompletionPropertyBits.IDENTIFICATION));		
         }
 
-        this.amalgamationData = new Vector<AmalgamationDataOfSingleKernelMatch>();
-        this.disjointObjects = new Vector<List<GraphObject>>();
+        this.amalgamationData = new ArrayList<AmalgamationDataOfSingleKernelMatch>();
+        this.disjointObjects = new ArrayList<List<GraphObject>>();
         this.amalgamRHS2kernelRHS = new Hashtable<GraphObject, GraphObject>();
         this.amalgamLHS2kernelLHS = new Hashtable<GraphObject, GraphObject>();
     }
@@ -315,7 +316,7 @@ public class Covering {
         this.lastKernelData = kernelData;
         this.lastDataOfSKM = dataOfSKM;
 
-        this.localDisjointObjs = new Vector<GraphObject>();
+        this.localDisjointObjs = new ArrayList<GraphObject>();
 
         boolean atLeastOneRule = false; //this.multiRules.isEmpty(); 
         boolean matchValid = true;
@@ -380,7 +381,7 @@ public class Covering {
      * Makes own list of enabled multi rules from the given list.
      */
     private List<Rule> getEnabledMultiRules(List<Rule> multis) {
-        this.multiRules = new Vector<Rule>(multis.size());
+        this.multiRules = new ArrayList<Rule>(multis.size());
         // add enabled multi rules from list
         for (int i = 0; i < multis.size(); i++) {
             final MultiRule multiRule = (MultiRule) multis.get(i);
@@ -527,7 +528,7 @@ public class Covering {
      * @return true by success
      */
     private boolean isDisjoint(final Match multiMatch, final MultiRule rule) {
-        final List<GraphObject> owns = new Vector<GraphObject>();
+        final List<GraphObject> owns = new ArrayList<GraphObject>();
         final Iterator<GraphObject> objs = multiMatch.getDomain();
         while (objs.hasNext()) {
             final GraphObject obj = objs.next();
@@ -570,7 +571,7 @@ public class Covering {
             final MultiRule rule,
             final AmalgamationDataOfSingleKernelMatch askMultiMatchData) {
 
-        final List<GraphObject> owns = new Vector<GraphObject>();
+        final List<GraphObject> owns = new ArrayList<GraphObject>();
         final Iterator<GraphObject> objs = multiMatch.getDomain();
         while (objs.hasNext()) {
             final GraphObject obj = objs.next();
@@ -852,7 +853,7 @@ public class Covering {
         for (int i = 0; i < this.multiRules.size(); i++) {
             final Rule rule = this.multiRules.get(i);
 
-            final List<AmalgamationRuleData> datas = new Vector<AmalgamationRuleData>();
+            final List<AmalgamationRuleData> datas = new ArrayList<AmalgamationRuleData>();
             for (int j = 0; j < amalgamData.size(); j++) {
                 if (amalgamData.get(j).getRuleData(rule) != null) {
                     datas.addAll(amalgamData.get(j).getRuleData(rule));
@@ -1298,7 +1299,7 @@ public class Covering {
 
         final Hashtable<GraphObject, GraphObject> l2r = new Hashtable<GraphObject, GraphObject>();
         final Hashtable<GraphObject, List<GraphObject>> keep2glue = new Hashtable<GraphObject, List<GraphObject>>();
-        final List<GraphObject> toDelete = new Vector<GraphObject>();
+        final List<GraphObject> toDelete = new ArrayList<GraphObject>();
 
         Iterator<GraphObject> matchCodom = m.getCodomain();
         while (matchCodom.hasNext()) {
@@ -1307,7 +1308,7 @@ public class Covering {
             if (codomObj instanceof Arc) {
                 List<GraphObject> listL = m.getInverseImageList(codomObj); // LHS arcs				 
                 if (listL.size() > 1) {
-                    List<GraphObject> listR = new Vector<GraphObject>(); // RHS arcs
+                    List<GraphObject> listR = new ArrayList<GraphObject>(); // RHS arcs
                     for (int i = 0; i < listL.size(); i++) {
                         GraphObject img = amalgamRule.getImage(listL.get(i));
                         if (img != null) {
@@ -1336,7 +1337,7 @@ public class Covering {
             if (codomObj instanceof Node) {
                 List<GraphObject> listL = m.getInverseImageList(codomObj); // LHS nodes
                 if (listL.size() > 1) {
-                    List<GraphObject> listR = new Vector<GraphObject>();
+                    List<GraphObject> listR = new ArrayList<GraphObject>();
                     for (int i = 0; i < listL.size(); i++) {
                         GraphObject obj = listL.get(i);
                         GraphObject img = amalgamRule.getImage(obj);
@@ -1779,7 +1780,7 @@ public class Covering {
 //						 final VarMember toVM = vars.getVarMemberAt(to);
                         final JexExpr oldExpr = (JexExpr) fromVM.getExpr();
 
-                        final Vector<String> variables = new Vector<String>();
+                        final List<String> variables = new ArrayList<String>();
                         oldExpr.getAllVariables(variables);
 
                         this.findPrimaryAndReplace(
@@ -1828,10 +1829,10 @@ public class Covering {
                 for (int j = 0; j < conds.getSize(); j++) {
                     final CondMember cm = conds.getCondMemberAt(j);
 //	    			 final String condStr = cm.getExprAsText();		   
-                    final Vector<String> v1 = cm.getAllVariables();
+                    final List<String> v1 = cm.getAllVariables();
                     if (v1.contains(from)) {
                         final JexExpr oldExpr = (JexExpr) cm.getExpr();
-                        final Vector<String> variables = new Vector<String>();
+                        final List<String> variables = new ArrayList<String>();
                         oldExpr.getAllVariables(variables);
 
                         this.findPrimaryAndReplace((SimpleNode) oldExpr.getAST(),
@@ -1927,3 +1928,6 @@ public class Covering {
     }
 
 }
+
+
+

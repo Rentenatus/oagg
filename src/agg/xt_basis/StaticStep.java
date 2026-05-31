@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -14,7 +14,8 @@ package agg.xt_basis;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Hashtable;
 
 import agg.util.Change;
@@ -324,7 +325,7 @@ public final class StaticStep {
         final Rule r = match.getRule();
         boolean nonInjectiveRule = !match.getRule().isInjective();
         final List<GraphObject> done = nonInjectiveRule
-                ? new Vector<GraphObject>(match.getSource().getSize()) : null;
+                ? new ArrayList<GraphObject>(match.getSource().getSize()) : null;
         GraphObject lhsObj, rhsObj, gObj;
 
 //		compute attributes of preserved objects
@@ -427,7 +428,7 @@ public final class StaticStep {
 
         boolean nonInjectiveRule = !r.isInjective();
         final List<GraphObject> done = nonInjectiveRule
-                ? new Vector<GraphObject>(match.getSource().getSize()) : null;
+                ? new ArrayList<GraphObject>(match.getSource().getSize()) : null;
         GraphObject lhsObj, rhsObj, gObj, hObj;
 
 //		compute attributes of preserved objects
@@ -1292,7 +1293,7 @@ public final class StaticStep {
             final Rule r,
             final Morphism comatch) {
 
-        final List<GraphObject> list = new Vector<GraphObject>();
+        final List<GraphObject> list = new ArrayList<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
             Iterator<GraphObject> dom = comatch.getDomain();
             while (dom.hasNext()) {
@@ -1309,7 +1310,7 @@ public final class StaticStep {
             final Rule r,
             final Morphism comatch) {
 
-        final List<GraphObject> list = new Vector<GraphObject>();
+        final List<GraphObject> list = new ArrayList<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
             Iterator<GraphObject> dom = comatch.getDomain();
             while (dom.hasNext()) {
@@ -1326,7 +1327,7 @@ public final class StaticStep {
             final Rule r,
             final Morphism comatch) {
 
-        final List<GraphObject> list = new Vector<GraphObject>();
+        final List<GraphObject> list = new ArrayList<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
             Iterator<GraphObject> dom = comatch.getDomain();
             while (dom.hasNext()) {
@@ -1399,3 +1400,5 @@ public final class StaticStep {
 	}
      */
 }
+
+

@@ -68,7 +68,7 @@ public class PriorityDependencyPair extends DependencyPair {
 
     protected boolean checkGraphConsistency(Graph g, int l) {
         // System.out.println("PriorityDependencyPair.checkGraphConsistency...");
-        Vector<Formula> constraints = this.grammar.getConstraintsForPriority(-1);
+        List<Formula> constraints = this.grammar.getConstraintsForPriority(-1);
         if (this.grammar.checkGraphConsistency(g, constraints)) {
             constraints = this.grammar.getConstraintsForPriority(l);
             if (this.grammar.checkGraphConsistency(g, constraints)) {

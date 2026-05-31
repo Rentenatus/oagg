@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
@@ -12,7 +12,8 @@
 package agg.xt_basis;
 
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
@@ -166,7 +167,7 @@ public class NACStarMorphism extends OrdinaryMorphism {
 //		((VarTuple) this.itsRelatedMatchContext.getVariables()).showVariables();
 //		((VarTuple) this.getAttrContext().getVariables()).showVariables();
 		
-		final Vector<String> nacVars = this.itsOrig.getVariableNamesOfAttributes();
+		final List<String> nacVars = this.itsOrig.getVariableNamesOfAttributes();
 		final VarTuple vt = (VarTuple) itsRelatedMatchContext.getVariables();
 		for (int i = 0; i < vt.getNumberOfEntries(); i++) {
 			final VarMember vm = (VarMember) vt.getEntryAt(i);
@@ -197,3 +198,5 @@ public class NACStarMorphism extends OrdinaryMorphism {
     }
 
 }
+
+

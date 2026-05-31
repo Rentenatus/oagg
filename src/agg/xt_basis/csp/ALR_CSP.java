@@ -1,8 +1,7 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
@@ -17,7 +16,8 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.AttrContext;
 import agg.attribute.impl.AttrTupleManager;
@@ -60,7 +60,7 @@ public class ALR_CSP extends CSP {
      * A mapping of every <code>Type.convertToKey()</code> of the variable graph to the set of graph objects of this
      * type in the domain graph.
      * <p>
-     * Keys are of type <code>String</code>, values of type <code>Vector</code> of <code>GraphObject</code>.
+     * Keys are of type <code>String</code>, values of type <code>List</code> of <code>GraphObject</code>.
      *
      * @see agg.xt_basis.Type
      * @see agg.xt_basis.GraphObject
@@ -664,11 +664,11 @@ public class ALR_CSP extends CSP {
     protected void unsetAttrContextVariable(final GraphObject go) {
         if (go.getAttribute() != null
                 && this.itsSolver.hasQueries()) {
-            final Vector<String> attrVars = ((ValueTuple) go.getAttribute())
+            final List<String> attrVars = ((ValueTuple) go.getAttribute())
                     .getAllVariableNames();
             final VarTuple varTup = (VarTuple) this.itsAttrContext.getVariables();
             for (int i = 0; i < attrVars.size(); i++) {
-                final String name = attrVars.elementAt(i);
+                final String name = attrVars.get(i);
                 final VarMember vm = varTup.getVarMemberAt(name);
                 if (vm != null) {
                     vm.setExpr(null);
@@ -678,3 +678,6 @@ public class ALR_CSP extends CSP {
     }
 
 }
+
+
+

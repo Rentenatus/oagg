@@ -52,6 +52,7 @@ import agg.parser.CriticalPairOption;
 import agg.parser.OptionEventListener;
 import agg.parser.ParserOption;
 import agg.parser.ExcludePairContainer;
+import java.util.List;
 
 /**
  * This is the panel for the option of the critical pair analysis. This option sets the algorithm and the some display
@@ -854,8 +855,8 @@ public class CriticalPairOptionGUI extends AbstractOptionGUI implements
         return "Options of Critical Pair Analysis";
     }
 
-    @SuppressWarnings("unchecked")
-    public void initLayers(Vector<String> v) {
+    @SuppressWarnings("unchecked") 
+    public void initLayers(List<String> v) {
         this.layers.removeAllItems();
         this.layers.addItem("All");
         for (int i = 0; i < v.size(); i++) {

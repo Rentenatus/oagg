@@ -1,8 +1,7 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
@@ -12,7 +11,8 @@ package agg.xt_basis;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
@@ -64,8 +64,8 @@ public class DefaultGraTraImpl extends GraTra {
         if (!this.allRulesEnabled) {
             // remove disabled rules from currentRuleSet
             for (int j = 0; j < this.currentRuleSet.size(); j++) {
-                if (!this.currentRuleSet.elementAt(j).isEnabled()) {
-                    this.currentRuleSet.removeElementAt(j);
+                if (!this.currentRuleSet.get(j).isEnabled()) {
+                    this.currentRuleSet.remove(j);
                     j--;
                 }
             }
@@ -79,7 +79,7 @@ public class DefaultGraTraImpl extends GraTra {
 
             if (!this.applyContinue) {
                 int i = this.ran.nextInt(this.currentRuleSet.size());
-                this.currentRule = this.currentRuleSet.elementAt(i);
+                this.currentRule = this.currentRuleSet.get(i);
             } else {
                 this.applyContinue = false;
             }
@@ -136,7 +136,7 @@ public class DefaultGraTraImpl extends GraTra {
                 String ss = getRuleNames(ruleSet);
                 writeTransformProtocol(ss);
             }
-            this.currentRuleSet = new Vector<Rule>(ruleSet);
+            this.currentRuleSet = new ArrayList<Rule>(ruleSet);
 
             applicable = apply();
 
@@ -164,7 +164,7 @@ public class DefaultGraTraImpl extends GraTra {
                 writeTransformProtocol(ss);
             }
 
-            this.currentRuleSet = new Vector<Rule>(ruleSet);
+            this.currentRuleSet = new ArrayList<Rule>(ruleSet);
 
             long t0 = System.currentTimeMillis();
 
@@ -269,7 +269,7 @@ public class DefaultGraTraImpl extends GraTra {
             this.grammarChecked = true;
         }
 
-        Vector<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
+        List<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
 
         // set start time
         long startTime = System.currentTimeMillis();
@@ -299,11 +299,11 @@ public class DefaultGraTraImpl extends GraTra {
                 this.errorMsg));
     }
 
-    private Vector<Rule> getEnabledRules(Vector<Rule> ruleSet) {
-        Vector<Rule> vec = new Vector<Rule>(ruleSet.size());
+    private List<Rule> getEnabledRules(List<Rule> ruleSet) {
+        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
-            if (ruleSet.elementAt(j).isEnabled()) {
-                vec.add(ruleSet.elementAt(j));
+            if (ruleSet.get(j).isEnabled()) {
+                vec.add(ruleSet.get(j));
             }
         }
         return vec;
@@ -414,3 +414,7 @@ public class DefaultGraTraImpl extends GraTra {
     }
 
 }
+
+
+
+

@@ -1,8 +1,7 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
@@ -26,7 +25,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PriorityGraTraImpl extends GraTra {
 
@@ -37,7 +37,7 @@ public class PriorityGraTraImpl extends GraTra {
 //	private boolean allRulesEnabled = false;
     private boolean priorityGraTra = false;
 
-    private Vector<Pair<Integer, HashSet<Rule>>> sortedRules;
+    private List<Pair<Integer, HashSet<Rule>>> sortedRules;
 
     private File f;
 
@@ -49,7 +49,7 @@ public class PriorityGraTraImpl extends GraTra {
 
 //	private long time0;
     public PriorityGraTraImpl() {
-        this.sortedRules = new Vector<Pair<Integer, HashSet<Rule>>>();
+        this.sortedRules = new ArrayList<Pair<Integer, HashSet<Rule>>>();
     }
 
     public void dispose() {
@@ -76,7 +76,7 @@ public class PriorityGraTraImpl extends GraTra {
         return false;
     }
 
-    private void sortByPriority(Vector<Rule> rules) {
+    private void sortByPriority(List<Rule> rules) {
         RulePriority priority = new RulePriority(rules);
         Integer startPriority = priority.getStartPriority();
         Hashtable<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
@@ -175,12 +175,12 @@ public class PriorityGraTraImpl extends GraTra {
     }
 
     @SuppressWarnings("rawtypes")
-    private boolean applyRandomly(Vector<Rule> rules, boolean asLongAsPossible) {
+    private boolean applyRandomly(List<Rule> rules, boolean asLongAsPossible) {
         boolean result = false;
         boolean applied = true;
         while (applied) {
             applied = false;
-            Vector<?> v = (Vector) rules.clone();
+            List<?> v = new ArrayList<>(rules);
             while (!v.isEmpty()) {
                 int j = this.ran.nextInt(v.size());
                 this.currentRule = (Rule) v.get(j);
@@ -208,7 +208,7 @@ public class PriorityGraTraImpl extends GraTra {
 
     @SuppressWarnings("rawtypes")
     private boolean applyRandomly(HashSet rules, boolean asLongAsPossible) {
-        Vector<Rule> rulesVec = new Vector<Rule>(rules.size());
+        List<Rule> rulesVec = new ArrayList<Rule>(rules.size());
         Iterator<?> en = rules.iterator();
         while (en.hasNext()) {
             Rule r = (Rule) en.next();
@@ -240,7 +240,7 @@ public class PriorityGraTraImpl extends GraTra {
 		while (!this.stopping && (currentRuleSet.size() > 0) && !applied) {
 			int i = ran.nextInt(currentRuleSet.size());
 			// System.out.println("random i: "+i);
-			this.currentRule = currentRuleSet.elementAt(i);
+			this.currentRule = currentRuleSet.get(i);
 
 			if (this.currentRule instanceof RuleScheme) {
     			applied = apply((RuleScheme) this.currentRule);
@@ -257,7 +257,7 @@ public class PriorityGraTraImpl extends GraTra {
 				s1 = s1 + getErrorMsg();
 				writeTransformProtocol(s1);
 
-				currentRuleSet.removeElementAt(i);
+				currentRuleSet.remove(i);
 				String ss1 = getRuleNames(currentRuleSet);
 				writeTransformProtocol(ss1);
 			} else {
@@ -348,7 +348,7 @@ public class PriorityGraTraImpl extends GraTra {
         long startTime = System.currentTimeMillis();
 //		time0 = startTime;
 
-        Vector<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
+        List<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
         transform(ruleSet);
 
         if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
@@ -376,11 +376,11 @@ public class PriorityGraTraImpl extends GraTra {
 //		time0 = System.currentTimeMillis();
     }
 
-    private Vector<Rule> getEnabledRules(Vector<Rule> ruleSet) {
-        Vector<Rule> vec = new Vector<Rule>(ruleSet.size());
+    private List<Rule> getEnabledRules(List<Rule> ruleSet) {
+        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
-            if (ruleSet.elementAt(j).isEnabled()) {
-                vec.add(ruleSet.elementAt(j));
+            if (ruleSet.get(j).isEnabled()) {
+                vec.add(ruleSet.get(j));
             }
         }
         return vec;
@@ -405,10 +405,10 @@ public class PriorityGraTraImpl extends GraTra {
         return this.protocolFileName;
     }
 
-    private String getRuleNames(Vector<Rule> rules) {
+    private String getRuleNames(List<Rule> rules) {
         String names = "[ ";
         for (int j = 0; j < rules.size(); j++) {
-            Rule r = rules.elementAt(j);
+            Rule r = rules.get(j);
             names = names + r.getName() + " ";
         }
         names = names + "]";
@@ -491,3 +491,7 @@ public class PriorityGraTraImpl extends GraTra {
     }
 
 }
+
+
+
+

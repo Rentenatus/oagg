@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -35,7 +35,8 @@ import agg.xt_basis.TypeSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class implements an interaction rule scheme which contains a kernel rule (subrule) and a set of multi rules
@@ -57,7 +58,7 @@ public class RuleScheme extends Rule //implements Observer
 
     private KernelRule kernelRule;
 
-    private final List<Rule> multiRules = new Vector<Rule>();
+    private final List<Rule> multiRules = new ArrayList<Rule>();
 
     private AmalgamatedRule amalgamRule;
 
@@ -907,7 +908,7 @@ public class RuleScheme extends Rule //implements Observer
                 String varName = nacVars.get(j);
                 for (int k = 0; k < act.getNumberOfEntries(); k++) {
                     CondMember cond = (CondMember) act.getMemberAt(k);
-                    Vector<String> condVars = cond.getAllVariables();
+                    List<String> condVars = cond.getAllVariables();
                     if (condVars.contains(varName)
                             && condVars.contains(var.getName())) {
                         return true;
@@ -934,7 +935,7 @@ public class RuleScheme extends Rule //implements Observer
                 String varName = pacVars.get(j);
                 for (int k = 0; k < act.getNumberOfEntries(); k++) {
                     CondMember cond = (CondMember) act.getMemberAt(k);
-                    Vector<String> condVars = cond.getAllVariables();
+                    List<String> condVars = cond.getAllVariables();
                     if (condVars.contains(varName)
                             && condVars.contains(var.getName())) {
                         return true;
@@ -1563,3 +1564,6 @@ public class RuleScheme extends Rule //implements Observer
     }
 
 }
+
+
+

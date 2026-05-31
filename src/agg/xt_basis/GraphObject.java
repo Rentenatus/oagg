@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright> *****************************************************************************
  */
 package agg.xt_basis;
-
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrTuple;
@@ -163,8 +162,8 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         return this.itsAttr == null ? 0 : this.itsAttr.getNumberOfEntries();
     }
 
-    public final Vector<String> getVariableNamesOfAttribute() {
-        return this.itsAttr == null ? new Vector<String>(0) : ((ValueTuple) this.itsAttr).getAllVariableNames();
+    public final List<String> getVariableNamesOfAttribute() {
+        return this.itsAttr == null ? new ArrayList<String>(0) : ((ValueTuple) this.itsAttr).getAllVariableNames();
     }
 
     public synchronized void copyAttributes(GraphObject orig) {
@@ -304,3 +303,6 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
     }
 
 }
+
+
+

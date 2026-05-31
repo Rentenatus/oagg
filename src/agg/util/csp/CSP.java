@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: CSP.java,v 1.14 2010/08/23 07:35:26 olga Exp $
 // $Log: CSP.java,v $
@@ -106,7 +106,8 @@ import java.util.Enumeration;
 import agg.xt_basis.GraphObject;
 
 /**
- * An abstract class for Constraint Satisfaction Problems with only binary constraints.
+ * An abstract class for Constraint Satisfaction Problems with only binary
+ * constraints.
  */
 public abstract class CSP {
 
@@ -122,6 +123,8 @@ public abstract class CSP {
      * Construct myself with an initial SolutionStrategy.
      * <p>
      * <b>Post:</b> <code>getDomain() == null</code>.
+     *
+     * @param solver
      */
     public CSP(SolutionStrategy solver) {
         this.itsDomain = null;
@@ -133,34 +136,46 @@ public abstract class CSP {
     }
 
     /**
-     * Return an Enumeration of all my variables. Enumeration elements are of type <code>Variable</code>.
+     * Return an Enumeration of all my variables.Enumeration elements are of
+     * type <code>Variable</code>.
+     *
+     * @return
      */
     public abstract Enumeration<Variable> getVariables();
 
     public abstract Variable getVariable(agg.xt_basis.GraphObject obj);
 
     /**
-     * An additional object name constraint will be added for the CSP variable of the given GraphObject anObj. This
-     * constraint requires equality of the object names.
+     * An additional object name constraint will be added for the CSP variable
+     * of the given GraphObject anObj.This constraint requires equality of the
+     * object names.
+     *
+     * @param anObj
      */
     public abstract void addObjectNameConstraint(GraphObject anObj);
 
     /**
-     * Removes the object name constraint for the CSP variable of the given GraphObject anObj.
+     * Removes the object name constraint for the CSP variable of the given
+     * GraphObject anObj.
+     *
+     * @param anObj
      */
     public abstract void removeObjectNameConstraint(GraphObject anObj);
 
     /**
      * Return the number of variables in the CSP.
+     *
+     * @return
      */
     public abstract int getSize();
 
     /**
-     * Set the global domain of values for the variables, and call <code>preprocessDomain()</code> with the given
-     * <code>domain</code>.
+     * Set the global domain of values for the variables, and call
+     * <code>preprocessDomain()</code> with the given <code>domain</code>.
      * <p>
      * <b>Post:</b> <code>getDomain() == domain</code>.
      *
+     * @param domain
      * @see agg.util.csp.CSP#preprocessDomain
      */
     public final void setDomain(Object domain) {
@@ -185,25 +200,31 @@ public abstract class CSP {
     }
 
     /**
-     * Pre-process the given domain for optimization purposes (to get more accurate data for Constraint weights, or to
-     * initialize Query databases). This is a template method to be implemented in subclasses, and is invoked out of
+     * Pre-process the given domain for optimization purposes (to get more
+     * accurate data for Constraint weights, or to initialize Query
+     * databases).This is a template method to be implemented in subclasses, and
+     * is invoked out of
      * <code>setDomain()</code>.
      *
+     * @param domain
      * @see agg.util.csp.CSP#setDomain
      */
     protected abstract void preprocessDomain(Object domain);
 
     /**
      * Return the current global domain of values.
+     *
+     * @return
      */
     public final Object getDomain() {
         return this.itsDomain;
     }
 
     /**
-     * Compute my next solution, and instantiate my variables appropriately. Variables already instantiated will not be
-     * altered, so this method can be used to complete partial solutions. Invoke this method repeatedly to get all
-     * solutions.
+     * Compute my next solution, and instantiate my variables appropriately.
+     * Variables already instantiated will not be altered, so this method can be
+     * used to complete partial solutions. Invoke this method repeatedly to get
+     * all solutions.
      * <p>
      * <b>Pre:</b> <code>getDomain() != null</code>.
      *
@@ -219,6 +240,8 @@ public abstract class CSP {
 
     /**
      * Set the search algorithm which is used to compute my solutions.
+     *
+     * @param solver
      */
     public final void setSolutionStrategy(SolutionStrategy solver) {
         this.itsSolver = solver;
@@ -242,15 +265,19 @@ public abstract class CSP {
     }
 
     /**
-     * Reset the object domain of the query <code>Query_Type</code> of the search algorithms.
+     * Reset the object domain of the query <code>Query_Type</code> of the
+     * search algorithms.
      */
     public final void resetQuery_Type() {
         this.itsSolver.resetQuery_Type();
     }
 
     /**
-     * Reinitialize my search algorithm. The search queries will be generated newly if the given parameter is
+     * Reinitialize my search algorithm.The search queries will be generated
+     * newly if the given parameter is
      * <code>true</code>.
+     *
+     * @param doUpdateQueries
      */
     public final void reinitialize(boolean doUpdateQueries) {
         this.itsSolver.reinitialize(doUpdateQueries);

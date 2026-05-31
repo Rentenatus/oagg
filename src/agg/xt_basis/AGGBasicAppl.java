@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -281,7 +281,7 @@ public class AGGBasicAppl implements GraTraEventListener {
             /*
 			 * if(XMLHelper.hasGermanSpecialCh(fileName)){
 			 * System.out.println("\nRead file name exception occurred! "
-			 * +"\nMaybe the German umlaut like ä, ö, ü or ß were used. "
+			 * +"\nMaybe the German umlaut like Ã¤, Ã¶, Ã¼ or ÃŸ were used. "
 			 * +"\nPlease replace it by ae, oe, ue or ss " +"\nand try again.");
 			 * return null; }
              */
@@ -360,7 +360,7 @@ public class AGGBasicAppl implements GraTraEventListener {
         /*
 		 * if(XMLHelper.hasGermanSpecialCh(fn)){ System.out.println("File name:
 		 * "+fn); System.out.println("\nRead file name exception occurred! "
-		 * +"\nMaybe the German umlaut like ä, ö, ü or ß were used. " +"\nPlease
+		 * +"\nMaybe the German umlaut like Ã¤, Ã¶, Ã¼ or ÃŸ were used. " +"\nPlease
 		 * replace it by ae, oe, ue or ss " +"\nand try again."); return null; }
          */
         ConverterXML converter = new ConverterXML();
@@ -481,7 +481,7 @@ public class AGGBasicAppl implements GraTraEventListener {
         }
         /*
 		 * test: there is a one way to set transformation options Vector gto =
-		 * new Vector(); gto.add("layered"); gto.add("CSP");
+		 * new ArrayList(); gto.add("layered"); gto.add("CSP");
 		 * gto.add("injective"); gto.add("dangling");
 		 * gragra.setGraTraOptions(gto);
          */
@@ -595,3 +595,4 @@ public class AGGBasicAppl implements GraTraEventListener {
     }
 
 }
+

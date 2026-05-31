@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -16,7 +16,8 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.AttrContext;
 import agg.attribute.impl.CondMember;
@@ -44,17 +45,17 @@ public class ParallelRule extends Rule {
 
     // private Rule r1, r2;
     List<Rule> sources;
-    Vector<OrdinaryMorphism> embeddingLeft;
-    Vector<OrdinaryMorphism> embeddingRight;
-    private final List<OrdinaryMorphism> failedApplConds = new Vector<OrdinaryMorphism>();
+    List<OrdinaryMorphism> embeddingLeft;
+    List<OrdinaryMorphism> embeddingRight;
+    private final List<OrdinaryMorphism> failedApplConds = new ArrayList<OrdinaryMorphism>();
 
     public ParallelRule(final TypeSet types, final Rule rule1, final Rule rule2) {
         super(types);
 
         if (rule1 != null && rule2 != null) {
-            sources = new Vector<Rule>();
-            embeddingLeft = new Vector<OrdinaryMorphism>();
-            embeddingRight = new Vector<OrdinaryMorphism>();
+            sources = new ArrayList<Rule>();
+            embeddingLeft = new ArrayList<OrdinaryMorphism>();
+            embeddingRight = new ArrayList<OrdinaryMorphism>();
 
             this.sources.add(rule1);
             this.sources.add(rule2);
@@ -67,9 +68,9 @@ public class ParallelRule extends Rule {
         super(types);
 
         if (rules != null && !rules.isEmpty()) {
-            sources = new Vector<Rule>();
-            embeddingLeft = new Vector<OrdinaryMorphism>();
-            embeddingRight = new Vector<OrdinaryMorphism>();
+            sources = new ArrayList<Rule>();
+            embeddingLeft = new ArrayList<OrdinaryMorphism>();
+            embeddingRight = new ArrayList<OrdinaryMorphism>();
 
             this.sources.addAll(rules);
             makeParallelRule();
@@ -208,7 +209,7 @@ public class ParallelRule extends Rule {
             final List<Rule> rules, final Graph graph,
             final MorphCompletionStrategy strategy) {
 
-        final List<HashMap<GraphObject, GraphObject>> result = new Vector<HashMap<GraphObject, GraphObject>>(
+        final List<HashMap<GraphObject, GraphObject>> result = new ArrayList<HashMap<GraphObject, GraphObject>>(
                 rules.size());
 
         for (int i = 0; i < rules.size(); i++) {
@@ -510,7 +511,7 @@ public class ParallelRule extends Rule {
             final Graph graph,
             final OrdinaryMorphism r2rl) {
 
-        List<GraphObject> del = new Vector<GraphObject>();
+        List<GraphObject> del = new ArrayList<GraphObject>();
         Graph g1 = r2rl.getTarget();
         List<GraphObject> codom = embRight.getCodomainObjects();
         for (int i = 0; i < codom.size(); i++) {
@@ -569,7 +570,7 @@ public class ParallelRule extends Rule {
                 // morphism left1 = (L1+L2) -> (R2+L1)
             }
 
-            List<Evaluable> flist = new Vector<Evaluable>();
+            List<Evaluable> flist = new ArrayList<Evaluable>();
 
             // shift appl. conditions over embedding morphism
             ok = shiftCondsOverEmbMorphOLD(
@@ -615,7 +616,7 @@ public class ParallelRule extends Rule {
 
     @SuppressWarnings("unused")
     private boolean handleRuleApplConditionsOLD() {
-        List<Evaluable> flist = new Vector<Evaluable>();
+        List<Evaluable> flist = new ArrayList<Evaluable>();
         boolean ok = true;
         for (int i = 0; i < this.sources.size() && ok; i++) {
             Rule r = this.sources.get(i);
@@ -671,7 +672,7 @@ public class ParallelRule extends Rule {
     }
 
     private boolean handleRuleApplConditions() {
-        List<Evaluable> flist = new Vector<Evaluable>();
+        List<Evaluable> flist = new ArrayList<Evaluable>();
         boolean ok = true;
         for (int i = 0; i < this.sources.size() && ok; i++) {
             Rule r = this.sources.get(i);
@@ -736,11 +737,11 @@ public class ParallelRule extends Rule {
 
         boolean ok = true;
         // shift PACs
-        List<Formula> fl = new Vector<Formula>();
+        List<Formula> fl = new ArrayList<Formula>();
         ok = this.shiftPACsOverMorphAndLeftOLD(indx, r, r.getPACs(), morph, left, embMorph, fl);
         if (ok) {
             if (!fl.isEmpty()) {
-                List<Evaluable> evals = new Vector<Evaluable>(fl.size());
+                List<Evaluable> evals = new ArrayList<Evaluable>(fl.size());
                 for (int k = 0; k < fl.size(); k++) {
                     evals.add(fl.get(k));
                 }
@@ -783,12 +784,12 @@ public class ParallelRule extends Rule {
             final List<Formula> fl) {
 
         this.notApplicable = false;
-        List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> result = new ArrayList<OrdinaryMorphism>();
         if (cond.getSize() > 0) {
             // here: LHS -> cond mapping is not empty
             List<Pair<OrdinaryMorphism, OrdinaryMorphism>> list = shiftCondOverMorph(rule, cond, morph);
             if (list != null && list.size() > 0) {
-                List<OrdinaryMorphism> list2 = new Vector<OrdinaryMorphism>();
+                List<OrdinaryMorphism> list2 = new ArrayList<OrdinaryMorphism>();
                 for (int i = 0; i < list.size(); i++) {
                     Pair<OrdinaryMorphism, OrdinaryMorphism> p = list.get(i);
                     OrdinaryMorphism c = p.second;
@@ -855,7 +856,7 @@ public class ParallelRule extends Rule {
             final List<Formula> fl) {
 
         this.notApplicable = false;
-        List<OrdinaryMorphism> list = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> list = new ArrayList<OrdinaryMorphism>();
         if (cond.getSize() > 0) {
             // here: LHS -> cond mapping is not empty
             List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverMorph(rule, cond, morph);
@@ -897,13 +898,13 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph) {
 
-        List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> result = new ArrayList<OrdinaryMorphism>();
         while (conds.hasNext()) {
             OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
                 // here: LHS -> cond is not empty
                 List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverMorph(rule, cond, morph);
-                List<OrdinaryMorphism> list2 = new Vector<OrdinaryMorphism>(shift.size());
+                List<OrdinaryMorphism> list2 = new ArrayList<OrdinaryMorphism>(shift.size());
                 for (int i = 0; i < shift.size(); i++) {
                     Pair<OrdinaryMorphism, OrdinaryMorphism> p = shift.get(i);
                     OrdinaryMorphism c = p.second;
@@ -968,7 +969,7 @@ public class ParallelRule extends Rule {
         final OrdinaryMorphism leftToCond = cond.compose(condIsom);
 
         final List<GraphObject> condDom = cond.getDomainObjects();
-        final List<Object> requiredObjs = new Vector<Object>(condDom.size());
+        final List<Object> requiredObjs = new ArrayList<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
                 condDom.size());
 
@@ -987,7 +988,7 @@ public class ParallelRule extends Rule {
                         condIsom.getTarget(), morph.getTarget(), requiredObjs,
                         objmap, true);
 
-        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> list = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> list = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
         while (overlaps.hasNext()) {
             Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.next();
             if (!p.second.getTarget().isEmpty()) {
@@ -1046,7 +1047,7 @@ public class ParallelRule extends Rule {
         boolean ok = true;
         // delete arc to be created or without a mapping
         // from its pre-image into the condL
-        List<GraphObject> todelete = new Vector<GraphObject>();
+        List<GraphObject> todelete = new ArrayList<GraphObject>();
         final Iterator<Arc> arcs = condCR.getTarget().getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc go_condCR = arcs.next();
@@ -1158,7 +1159,7 @@ public class ParallelRule extends Rule {
     }
 
     private void removeIsomorphicMorph(List<OrdinaryMorphism> list) {
-        List<OrdinaryMorphism> list1 = new Vector<OrdinaryMorphism>(list);
+        List<OrdinaryMorphism> list1 = new ArrayList<OrdinaryMorphism>(list);
         for (int i = 0; i < list1.size(); i++) {
             OrdinaryMorphism m1 = list1.get(i);
             if (list.contains(m1)) {
@@ -1181,7 +1182,7 @@ public class ParallelRule extends Rule {
     }
 
     private void removeIsomorphicNestedMorph(List<NestedApplCond> list) {
-        List<NestedApplCond> list1 = new Vector<NestedApplCond>(list);
+        List<NestedApplCond> list1 = new ArrayList<NestedApplCond>(list);
         for (int i = 0; i < list1.size(); i++) {
             OrdinaryMorphism m1 = list1.get(i);
             if (list.contains(m1)) {
@@ -1204,9 +1205,9 @@ public class ParallelRule extends Rule {
     }
 
     private void removeIsomorphicMorph(List<OrdinaryMorphism> list1, List<OrdinaryMorphism> list2) {
-        List<OrdinaryMorphism> list = new Vector<OrdinaryMorphism>(list1);
+        List<OrdinaryMorphism> list = new ArrayList<OrdinaryMorphism>(list1);
         list.addAll(list2);
-        List<OrdinaryMorphism> list3 = new Vector<OrdinaryMorphism>(list);
+        List<OrdinaryMorphism> list3 = new ArrayList<OrdinaryMorphism>(list);
         for (int i = 0; i < list.size(); i++) {
             OrdinaryMorphism m1 = list.get(i);
             if (list3.contains(m1)) {
@@ -1240,11 +1241,11 @@ public class ParallelRule extends Rule {
         // shift PACs
         if (r.getPACs().hasNext()) {
             // shift over left embedding
-            List<Formula> fl = new Vector<Formula>();
+            List<Formula> fl = new ArrayList<Formula>();
             result = shiftPACsOverEmbMorphOLD(indx, r, r.getPACs(), morph, fl);
             if (result) {
                 if (!fl.isEmpty()) {
-                    List<Evaluable> evals = new Vector<Evaluable>(fl.size());
+                    List<Evaluable> evals = new ArrayList<Evaluable>(fl.size());
                     for (int k = 0; k < fl.size(); k++) {
                         evals.add(fl.get(k));
                     }
@@ -1293,7 +1294,7 @@ public class ParallelRule extends Rule {
         // shift PACs
         if (r.getPACs().hasNext()) {
             // shift over left embedding
-            List<Formula> fl = new Vector<Formula>();
+            List<Formula> fl = new ArrayList<Formula>();
             Iterator<OrdinaryMorphism> conds = r.getPACs();
             while (conds.hasNext() && ok) {
                 OrdinaryMorphism cond = conds.next();
@@ -1302,7 +1303,7 @@ public class ParallelRule extends Rule {
                 if (list1 != null && !list1.isEmpty()
                         && list2 != null && !list2.isEmpty()) {
                     this.removeIsomorphicMorph(list1, list2);
-                    List<OrdinaryMorphism> list = new Vector<OrdinaryMorphism>(list1);
+                    List<OrdinaryMorphism> list = new ArrayList<OrdinaryMorphism>(list1);
                     list.addAll(list2);
                     if (list.size() > 1) {
                         // make GACs and formula = GAC1 || GAC2 || ...
@@ -1324,7 +1325,7 @@ public class ParallelRule extends Rule {
             }
             if (ok) {
                 if (!fl.isEmpty()) {
-                    List<Evaluable> evals = new Vector<Evaluable>(fl.size());
+                    List<Evaluable> evals = new ArrayList<Evaluable>(fl.size());
                     for (int k = 0; k < fl.size(); k++) {
                         evals.add(fl.get(k));
                     }
@@ -1385,7 +1386,7 @@ public class ParallelRule extends Rule {
                             if (cond2shift != null) {
                                 List<NestedApplCond> shift = cond2shift.get(key);
                                 if (shift != null) {
-                                    List<Evaluable> shiftEvals = new Vector<Evaluable>(shift.size());
+                                    List<Evaluable> shiftEvals = new ArrayList<Evaluable>(shift.size());
                                     for (int k = 0; k < shift.size(); k++) {
                                         shiftEvals.add(shift.get(k));
                                     }
@@ -1480,7 +1481,7 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism cond,
             final OrdinaryMorphism morph) {
 
-        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> list = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> list = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
 
         // make an iso-copy of the rule LHS
         final OrdinaryMorphism condSrcIsom = cond.getSource().isomorphicCopy();
@@ -1497,7 +1498,7 @@ public class ParallelRule extends Rule {
         final Graph dCondGraph = condSrcIsom.getTarget();
 
         final List<GraphObject> condDom = condSrcIsom.getDomainObjects();
-        final List<Object> requiredObjs = new Vector<Object>(condDom.size());
+        final List<Object> requiredObjs = new ArrayList<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
                 condDom.size());
         // fill a map with objects required
@@ -1625,7 +1626,7 @@ public class ParallelRule extends Rule {
             // shift condition cond over morphism iL
             List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverEmbMorph(cond, morph);
             if (shift != null && shift.size() > 0) {
-                List<OrdinaryMorphism> list = new Vector<OrdinaryMorphism>();
+                List<OrdinaryMorphism> list = new ArrayList<OrdinaryMorphism>();
                 for (int i = 0; i < shift.size(); i++) {
                     Pair<OrdinaryMorphism, OrdinaryMorphism> p = shift.get(i);
                     OrdinaryMorphism lc = p.second;
@@ -1704,7 +1705,7 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism morph,
             final List<Formula> fl) {
 
-        List<OrdinaryMorphism> list = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> list = new ArrayList<OrdinaryMorphism>();
         if (cond.getSize() > 0) {
             // shift condition cond over morphism iL
             List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverEmbMorph(cond, morph);
@@ -1773,7 +1774,7 @@ public class ParallelRule extends Rule {
         // shift condition over morphism mo
         List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverEmbMorph(cond, morph);
         if (shift != null && shift.size() > 0) {
-            List<NestedApplCond> left = new Vector<NestedApplCond>(shift.size());
+            List<NestedApplCond> left = new ArrayList<NestedApplCond>(shift.size());
             for (int i = 0; i < shift.size(); i++) {
                 Pair<OrdinaryMorphism, OrdinaryMorphism> p = shift.get(i);
                 OrdinaryMorphism c = p.second;
@@ -1846,7 +1847,7 @@ public class ParallelRule extends Rule {
         // shift condition over morph
         List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverMorph(r, cond, morph);
         if (shift != null && shift.size() > 0) {
-            final List<NestedApplCond> list = new Vector<NestedApplCond>(shift.size());
+            final List<NestedApplCond> list = new ArrayList<NestedApplCond>(shift.size());
             for (int i = 0; i < shift.size(); i++) {
                 Pair<OrdinaryMorphism, OrdinaryMorphism> p = shift.get(i);
                 OrdinaryMorphism c = p.second;
@@ -1928,7 +1929,7 @@ public class ParallelRule extends Rule {
             // shift nc over morphism mo1
             final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverEmbMorph(nc, mo1);
             if (shift != null && shift.size() > 0) {
-                List<NestedApplCond> l = new Vector<NestedApplCond>(shift.size());
+                List<NestedApplCond> l = new ArrayList<NestedApplCond>(shift.size());
                 for (int j = 0; j < shift.size(); j++) {
                     Pair<OrdinaryMorphism, OrdinaryMorphism> p = shift.get(j);
                     OrdinaryMorphism sc = p.second;
@@ -1967,7 +1968,7 @@ public class ParallelRule extends Rule {
                     }
                 }
 
-                List<Evaluable> shiftEvals = new Vector<Evaluable>(l.size());
+                List<Evaluable> shiftEvals = new ArrayList<Evaluable>(l.size());
                 for (int k = 0; k < l.size(); k++) {
                     shiftEvals.add(l.get(k));
                 }
@@ -1985,7 +1986,7 @@ public class ParallelRule extends Rule {
 
     private void filterNotNeededObjs(final OrdinaryMorphism cond,
             final OrdinaryMorphism iL) {
-        List<GraphObject> delete = new Vector<GraphObject>();
+        List<GraphObject> delete = new ArrayList<GraphObject>();
         // delete mapped arcs
         final Iterator<Arc> arcs = cond.getTarget().getArcsSet().iterator();
         while (arcs.hasNext()) {
@@ -2050,7 +2051,7 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism condL,
             final OrdinaryMorphism leftEmbMorph) {
 
-        List<GraphObject> del = new Vector<GraphObject>();
+        List<GraphObject> del = new ArrayList<GraphObject>();
         Iterator<Arc> iter2 = cond.getSource().getArcsSet().iterator();
         while (iter2.hasNext()) {
             GraphObject go = iter2.next();
@@ -2250,3 +2251,6 @@ public class ParallelRule extends Rule {
     }
 
 }
+
+
+

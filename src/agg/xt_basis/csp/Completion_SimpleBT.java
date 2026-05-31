@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -15,7 +15,8 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Stack;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Hashtable;
@@ -48,7 +49,7 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
 
     private boolean initialized;
 
-//	private Vector<GraphObject> domain;
+//	private List<GraphObject> domain;
     public Completion_SimpleBT(int i) {
         // no properties supported:
         super(new BitSet(1));
@@ -67,7 +68,7 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
         this.itsMorphism = morph;
         this.itsStack = new Stack<StackItem>();
 //		this.itsObjectsToMap = new Deque();
-        this.itsObjectsToMap = new Vector<GraphObject>();
+        this.itsObjectsToMap = new ArrayList<GraphObject>();
         this.itsState = START;
 //		itsPreviousCompletion = null;
 
@@ -345,18 +346,18 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
     /*
 	private final void savePreviousCompletion() {
 		GraphObject obj;
-		itsPreviousCompletion = new Vector<GraphObject>(2 * this.itsStack.size());
+		itsPreviousCompletion = new ArrayList<GraphObject>(2 * this.itsStack.size());
 		for (int i = 0; i < this.itsStack.size(); i++) {
-			obj = this.itsStack.elementAt(i).object;
-			itsPreviousCompletion.addElement(obj);
-			itsPreviousCompletion.addElement(this.itsMorphism.getImage(obj));
+			obj = this.itsStack.get(i).object;
+			itsPreviousCompletion.add(obj);
+			itsPreviousCompletion.add(this.itsMorphism.getImage(obj));
 		}
 	}
 
 	private final void restorePreviousCompletion() {
 		for (int i = 0; i < itsPreviousCompletion.size();) {
-			this.itsMorphism.addMapping(itsPreviousCompletion.elementAt(i++),
-					itsPreviousCompletion.elementAt(i++));
+			this.itsMorphism.addMapping(itsPreviousCompletion.get(i++),
+					itsPreviousCompletion.get(i++));
 		}
 	}
      */
@@ -453,7 +454,7 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
         VarTuple variables = (VarTuple) morph.getAttrContext().getVariables();
         for (int i = 0; i < variables.getSize(); i++) {
             VarMember var = variables.getVarMemberAt(i);
-            Vector<Pair<GraphObject, String>> v = new Vector<Pair<GraphObject, String>>();
+            List<Pair<GraphObject, String>> v = new ArrayList<Pair<GraphObject, String>>();
             Iterator<?> iter = morph.getOriginal().getNodesSet().iterator();
             while (iter.hasNext()) {
                 GraphObject orig = (GraphObject) iter.next();
@@ -497,12 +498,12 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
                 }
             }
             if (v.size() > 1) {
-                Pair<GraphObject, String> p = v.elementAt(0);
+                Pair<GraphObject, String> p = v.get(0);
                 GraphObject img = morph.getImage(p.first);
                 ValueTuple val = (ValueTuple) img.getAttribute();
                 ValueMember mem = val.getValueMemberAt(p.second);
                 for (int j = 1; j < v.size(); j++) {
-                    Pair<GraphObject, String> pj = v.elementAt(j);
+                    Pair<GraphObject, String> pj = v.get(j);
                     GraphObject imgj = morph.getImage(pj.first);
                     ValueTuple valj = (ValueTuple) imgj.getAttribute();
                     ValueMember memj = valj.getValueMemberAt(pj.second);
@@ -550,13 +551,13 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
     private OrdinaryMorphism itsMorphism;
 
 //	private Deque itsObjectsToMap;
-    private Vector<GraphObject> itsObjectsToMap;
+    private List<GraphObject> itsObjectsToMap;
 
     private Stack<StackItem> itsStack;
 
     private int itsState = START;
 
-//	private Vector<GraphObject> itsPreviousCompletion;
+//	private List<GraphObject> itsPreviousCompletion;
     private HashMap<Integer, String> mapInputParameter = new HashMap<Integer, String>(
             1);
 
@@ -588,3 +589,7 @@ class StackItem {
 
     protected GraphObject object;
 }
+
+
+
+

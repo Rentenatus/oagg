@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
@@ -39,8 +39,8 @@ public class Node extends GraphObject implements XMLObject {
 //	// test: node XY-position as attribute
     public boolean xyAttr = false;
 
-//	final protected Vector<Arc> itsOutgoingArcs = new Vector<Arc>();	
-//	final protected Vector<Arc> itsIncomingArcs = new Vector<Arc>();
+//	final protected List<Arc> itsOutgoingArcs = new ArrayList<Arc>();	
+//	final protected List<Arc> itsIncomingArcs = new ArrayList<Arc>();
     final protected LinkedHashSet<Arc> itsOutgoingArcs = new LinkedHashSet<>();
     final protected LinkedHashSet<Arc> itsIncomingArcs = new LinkedHashSet<>();
 
@@ -778,3 +778,5 @@ public class Node extends GraphObject implements XMLObject {
     }
 
 }
+
+

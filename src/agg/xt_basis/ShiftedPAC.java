@@ -1,8 +1,7 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
@@ -14,7 +13,8 @@
 package agg.xt_basis;
 
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.cons.Evaluable;
 
@@ -27,7 +27,7 @@ import agg.cons.Evaluable;
  */
 public class ShiftedPAC implements Evaluable {
 
-    final Vector<OrdinaryMorphism> pacs = new Vector<OrdinaryMorphism>();
+    final List<OrdinaryMorphism> pacs = new ArrayList<OrdinaryMorphism>();
 
     public ShiftedPAC(final List<OrdinaryMorphism> list) {
         this.pacs.addAll(list);
@@ -90,3 +90,6 @@ public class ShiftedPAC implements Evaluable {
     }
 
 }
+
+
+

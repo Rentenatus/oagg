@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -17,7 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.TupleMapping;
@@ -66,7 +67,7 @@ public class MultiRule extends Rule implements Observer {
 
     private final Hashtable<GraphObject, GraphObject> objects2kernel = new Hashtable<GraphObject, GraphObject>();
 
-    private List<OrdinaryMorphism> shiftedApplConds = new Vector<OrdinaryMorphism>();
+    private List<OrdinaryMorphism> shiftedApplConds = new ArrayList<OrdinaryMorphism>();
 
     // private boolean isChanged = false;
     /**
@@ -505,7 +506,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
     public List<Node> getOwnNodesLeft() {
-        Vector<Node> list = new Vector<Node>();
+        List<Node> list = new ArrayList<Node>();
         Iterator<Node> nodes = this.itsOrig.getNodesSet().iterator();
         while (nodes.hasNext()) {
             Node n = nodes.next();
@@ -517,7 +518,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
     public List<Node> getOwnNodesRight() {
-        Vector<Node> list = new Vector<Node>();
+        List<Node> list = new ArrayList<Node>();
         Iterator<Node> nodes = this.itsImag.getNodesSet().iterator();
         while (nodes.hasNext()) {
             Node n = nodes.next();
@@ -529,7 +530,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
     public List<Arc> getOwnArcsLeft() {
-        Vector<Arc> list = new Vector<Arc>();
+        List<Arc> list = new ArrayList<Arc>();
         Iterator<Arc> arcs = this.itsOrig.getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc a = arcs.next();
@@ -541,7 +542,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
     public List<Arc> getOwnArcsRight() {
-        Vector<Arc> list = new Vector<Arc>();
+        List<Arc> list = new ArrayList<Arc>();
         Iterator<Arc> arcs = this.itsImag.getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc a = arcs.next();
@@ -708,10 +709,10 @@ public class MultiRule extends Rule implements Observer {
         if (morph.getImage(from) != null && from.getAttribute() != null
                 && to.getAttribute() != null) {
             final ContextView context = (ContextView) morph.getAttrContext();
-            Vector<TupleMapping> mappings = context
+            List<TupleMapping> mappings = context
                     .getMappingsToTarget((ValueTuple) to.getAttribute());
             if (mappings != null) {
-                mappings.elementAt(0).adoptEntriesWhereEmpty(
+                mappings.get(0).adoptEntriesWhereEmpty(
                         (ValueTuple) from.getAttribute(),
                         (ValueTuple) to.getAttribute());
             }
@@ -739,3 +740,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
 }
+
+
+
+

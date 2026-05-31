@@ -46,6 +46,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 //import agg.editor.impl.EdGraGra;
 import agg.gui.help.HtmlBrowser;
 import agg.cons.Formula;
+import java.util.List;
 
 /**
  * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers for graph
@@ -315,7 +316,7 @@ public class GraGraConstraintPriorityDialog extends JDialog implements
      * @param prioritiesAsString the priorities of a grammar
      */
     public GraGraConstraintPriorityDialog(JFrame parent,
-            Vector<Formula> constraints, Vector<String> prioritiesAsString) {
+            List<Formula> constraints, List<String> prioritiesAsString) {
         super(parent, true);
         // System.out.println("GraGraConstraintLayerGUI parent: "+parent);
         setTitle("Select Rule Priority");
@@ -325,7 +326,8 @@ public class GraGraConstraintPriorityDialog extends JDialog implements
             }
         });
         // this.constraintLayer = new ConstraintLayer(constraints);
-        this.constraints = constraints;
+         this.constraints = new Vector<>();
+        this.constraints .addAll(constraints) ;
         // this.priorities = layersAsString;
         this.priorities = new Vector<String>(prioritiesAsString.size());
         for (int i = 0; i < prioritiesAsString.size(); i++) {

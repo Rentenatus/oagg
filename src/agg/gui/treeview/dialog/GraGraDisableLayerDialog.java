@@ -35,6 +35,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.JCheckBox;
 
 import agg.editor.impl.EdGraGra;
+import java.util.List;
 
 /**
  * This class provides a window for a user dialog. This dialog allows to enable or disable the grammar layers.
@@ -70,7 +71,7 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
      * @param parent The parent frame of this gui.
      * @param layers The layers of a grammar.
      */
-    public GraGraDisableLayerDialog(JFrame parent, Vector<String> layers) {
+    public GraGraDisableLayerDialog(JFrame parent, List<String> layers) {
         super(parent, true);
 
         setTitle("Layer");
@@ -79,7 +80,11 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
                 exitForm(evt);
             }
         });
-        this.layers = layers;
+        
+        this.layers = new Vector<>();
+        this.layers.addAll(layers);
+        
+         
         this.table = new Hashtable<String, JCheckBox>(layers.size());
         if (parent != null) {
             setLocationRelativeTo(parent);

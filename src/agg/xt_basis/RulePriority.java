@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
@@ -14,11 +14,13 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 //import com.objectspace.jgl.HashSet;
 /**
- * Rule priority is a set of rule priority of a given graph grammar. The set is backed by a hash table.
+ * Rule priority is a set of rule priority of a given graph grammar. The set is
+ * backed by a hash table.
  *
  * @author $Author: olga $
  * @version $ID
@@ -28,7 +30,7 @@ public class RulePriority {
     private Hashtable<Rule, Integer> rulePriority;
 
 //	private Enumeration<Rule> rules;
-    private Vector<Rule> rulesVec;
+    private List<Rule> rulesVec;
 
     /**
      * Creates a new set of rule priorities for a given graph grammar.
@@ -37,24 +39,18 @@ public class RulePriority {
      */
     public RulePriority(Enumeration<Rule> rules) {
 //		this.rules = rules;
-        this.rulesVec = new Vector<Rule>(0);
+        this.rulesVec = new ArrayList<Rule>(0);
         while (rules.hasMoreElements()) {
-            this.rulesVec.addElement(rules.nextElement());
+            this.rulesVec.add(rules.nextElement());
         }
         initRulePriority();
     }
 
     public RulePriority(List<Rule> rules) {
-        this.rulesVec = new Vector<Rule>(0);
+        this.rulesVec = new ArrayList<Rule>(0);
         for (int i = 0; i < rules.size(); i++) {
             this.rulesVec.add(rules.get(i));
         }
-//		this.rules = rulesVec.elements();
-        initRulePriority();
-    }
-
-    public RulePriority(Vector<Rule> rules) {
-        this.rulesVec = rules;
 //		this.rules = rulesVec.elements();
         initRulePriority();
     }
@@ -72,10 +68,10 @@ public class RulePriority {
     private void initRulePriority() {
         this.rulePriority = new Hashtable<Rule, Integer>();
         for (int i = 0; i < this.rulesVec.size(); i++) {
-            Rule rule = this.rulesVec.elementAt(i);
+            Rule rule = this.rulesVec.get(i);
             this.rulePriority.put(rule, Integer.valueOf(rule.getPriority()));
 
-            // Object rule = rulesVec.elementAt(i);
+            // Object rule = rulesVec.get(i);
             // if(rule instanceof Rule)
             // rulePriority.put(rule, Integer.valueOf(((Rule) rule).getPriority()));
             // else if(rule instanceof String)
@@ -93,7 +89,8 @@ public class RulePriority {
     }
 
     /**
-     * Returns the highest priority of the rule priority. The highest priority means the smallest number > 0.
+     * Returns the highest priority of the rule priority. The highest priority
+     * means the smallest number > 0.
      *
      * @return The highest priority.
      */
@@ -113,7 +110,8 @@ public class RulePriority {
     }
 
     /**
-     * Inverts a rule priority so that the priority is the key and the value is a set.
+     * Inverts a rule priority so that the priority is the key and the value is
+     * a set.
      *
      * @return The inverted set.
      */

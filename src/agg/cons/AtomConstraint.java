@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -69,11 +71,14 @@ public class AtomConstraint extends OrdinaryMorphism
     final private Vector<GraphObject> failedObjs = new Vector<GraphObject>();
 
     /**
-     * Creates the parent object of a new atomic graph constraint with one conclusion. The parent is an empty morphism
-     * with premise as source and target and it is not visible and is not used for any edit and evaluation. The first
-     * conclusion morphism consists of premise and conclusion. It is available from the list of conclusions by
-     * <code>getConsclusions()</code> or by <code>getConsclusion(0)</code>. This constructor must be used only once. To
-     * add a new conclusion to this atomic constraint the method <code>createNextConclusion(Graph)</code> must be use.
+     * Creates the parent object of a new atomic graph constraint with one
+     * conclusion. The parent is an empty morphism with premise as source and
+     * target and it is not visible and is not used for any edit and evaluation.
+     * The first conclusion morphism consists of premise and conclusion. It is
+     * available from the list of conclusions by <code>getConsclusions()</code>
+     * or by <code>getConsclusion(0)</code>. This constructor must be used only
+     * once. To add a new conclusion to this atomic constraint the method
+     * <code>createNextConclusion(Graph)</code> must be use.
      *
      * @param premise
      * @param conclusion

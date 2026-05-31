@@ -561,7 +561,7 @@ public class EdGraGra implements XMLObject {
         return v;
     }
 
-    public Vector<String> getGraTraOptions() {
+    public List<String> getGraTraOptions() {
         return this.bGraGra.getGraTraOptions();
     }
 
@@ -1847,9 +1847,9 @@ public class EdGraGra implements XMLObject {
         v.addAll(this.eConstraints);
         this.eConstraints.removeAllElements();
         this.bGraGra.sortConstraintsByLayer();
-        Vector<Formula> constraints = this.bGraGra.getConstraintsVec();
+        List<Formula> constraints = this.bGraGra.getConstraintsVec();
         for (int i = 0; i < constraints.size(); i++) {
-            Formula f = constraints.elementAt(i);
+            Formula f = constraints.get(i);
             for (int j = 0; j < v.size(); j++) {
                 EdConstraint c = v.elementAt(j);
                 if (c.getBasisConstraint().equals(f)) {
@@ -1870,9 +1870,9 @@ public class EdGraGra implements XMLObject {
         v.addAll(this.eConstraints);
         this.eConstraints.removeAllElements();
         this.bGraGra.sortConstraintsByPriority();
-        Vector<Formula> constraints = this.bGraGra.getConstraintsVec();
+        List<Formula> constraints = this.bGraGra.getConstraintsVec();
         for (int i = 0; i < constraints.size(); i++) {
-            Formula f = constraints.elementAt(i);
+            Formula f = constraints.get(i);
             for (int j = 0; j < v.size(); j++) {
                 EdConstraint c = v.elementAt(j);
                 if (c.getBasisConstraint().equals(f)) {
@@ -3241,9 +3241,9 @@ public class EdGraGra implements XMLObject {
     /**
      * Returns applicable rules for the specified morphism completion strategy
      */
-    public Vector<Rule> getApplicableRules(MorphCompletionStrategy strategy) {
+    public List<Rule> getApplicableRules(MorphCompletionStrategy strategy) {
         boolean changed = this.isChanged;
-        Vector<Rule> applicableRules = null;
+        List<Rule> applicableRules = null;
 
         applicableRules = this.bGraGra.getApplicableRules(strategy);
 

@@ -2,7 +2,7 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
@@ -15,7 +15,8 @@ package agg.xt_basis.agt;
 
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.xt_basis.Rule;
 
@@ -59,7 +60,7 @@ public class AmalgamationDataOfSingleKernelMatch {
      */
     public void put(final Rule rule, final AmalgamationRuleData data) {
         if (this.instMultiData.get(rule) == null) {
-            this.instMultiData.put(rule, new Vector<AmalgamationRuleData>());
+            this.instMultiData.put(rule, new ArrayList<AmalgamationRuleData>());
         }
 
         this.instMultiData.get(rule).add(data);
@@ -137,3 +138,5 @@ public class AmalgamationDataOfSingleKernelMatch {
     }
 
 }
+
+

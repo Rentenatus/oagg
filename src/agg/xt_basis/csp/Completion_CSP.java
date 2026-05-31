@@ -1,10 +1,9 @@
 package agg.xt_basis.csp;
 
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
@@ -15,7 +14,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Hashtable;
@@ -68,7 +68,7 @@ public class Completion_CSP extends MorphCompletionStrategy {
 
     final protected HashMap<String, String> inputParameterMap = new HashMap<String, String>(1);
 
-    final protected List<VarMember> disabledInputParameter = new Vector<VarMember>(2);
+    final protected List<VarMember> disabledInputParameter = new ArrayList<VarMember>(2);
 
     protected String errorMsg;
 
@@ -263,11 +263,11 @@ public class Completion_CSP extends MorphCompletionStrategy {
     /*
 	private void unsetUsedVariable(GraphObject go, OrdinaryMorphism morph) {
 		if (go.getAttribute() != null) {
-			final Vector<String> attrVars = ((ValueTuple) go.getAttribute())
+			final List<String> attrVars = ((ValueTuple) go.getAttribute())
 					.getAllVariableNames();
 			final VarTuple varTup = (VarTuple) morph.getAttrContext().getVariables();
 			for (int i = 0; i < attrVars.size(); i++) {
-				final VarMember vm = varTup.getVarMemberAt(attrVars.elementAt(i));
+				final VarMember vm = varTup.getVarMemberAt(attrVars.get(i));
 				if (vm != null)
 					vm.setExpr(null);
 			}
@@ -652,7 +652,7 @@ public class Completion_CSP extends MorphCompletionStrategy {
         for (int i = 0; i < variables.getSize(); i++) {
             final VarMember var = variables.getVarMemberAt(i);
 
-            final Vector<Pair<GraphObject, String>> v = new Vector<Pair<GraphObject, String>>();
+            final List<Pair<GraphObject, String>> v = new ArrayList<Pair<GraphObject, String>>();
 
             final Iterator<Node> iter = morph.getOriginal().getNodesSet().iterator();
             while (iter.hasNext()) {
@@ -691,12 +691,12 @@ public class Completion_CSP extends MorphCompletionStrategy {
             }
 
             if (v.size() > 1) {
-                final Pair<GraphObject, String> p = v.elementAt(0);
+                final Pair<GraphObject, String> p = v.get(0);
                 final GraphObject img = morph.getImage(p.first);
                 final ValueTuple val = (ValueTuple) img.getAttribute();
                 final ValueMember mem = val.getValueMemberAt(p.second);
                 for (int j = 1; j < v.size(); j++) {
-                    final Pair<GraphObject, String> pj = v.elementAt(j);
+                    final Pair<GraphObject, String> pj = v.get(j);
                     final GraphObject imgj = morph.getImage(pj.first);
                     final ValueTuple valj = (ValueTuple) imgj.getAttribute();
                     final ValueMember memj = valj.getValueMemberAt(pj.second);
@@ -777,3 +777,7 @@ public class Completion_CSP extends MorphCompletionStrategy {
     }
 
 }
+
+
+
+

@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
@@ -14,10 +14,12 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Rule layer is a set of rule layer of a given layered graph grammar. The set is backed by a hash table.
+ * Rule layer is a set of rule layer of a given layered graph grammar. The set
+ * is backed by a hash table.
  *
  * @author $Author: olga $
  * @version $ID
@@ -27,7 +29,7 @@ public class RuleLayer {
     private Hashtable<Rule, Integer> ruleLayer;
 
 //	private Enumeration<Rule> rules;
-    private Vector<Rule> rulesVec;
+    private List<Rule> rulesVec;
 
     /**
      * Creates a new set of rule layers for a given layered graph grammar.
@@ -36,24 +38,18 @@ public class RuleLayer {
      */
     public RuleLayer(Enumeration<Rule> rules) {
 //		this.rules = rules;
-        this.rulesVec = new Vector<Rule>(0);
+        this.rulesVec = new ArrayList<Rule>(0);
         while (rules.hasMoreElements()) {
-            this.rulesVec.addElement(rules.nextElement());
+            this.rulesVec.add(rules.nextElement());
         }
         initRuleLayer();
     }
 
     public RuleLayer(List<Rule> rules) {
-        this.rulesVec = new Vector<Rule>(0);
+        this.rulesVec = new ArrayList<Rule>(0);
         for (int i = 0; i < rules.size(); i++) {
             this.rulesVec.add(rules.get(i));
         }
-//		this.rules = this.rulesVec.elements();
-        initRuleLayer();
-    }
-
-    public RuleLayer(Vector<Rule> rules) {
-        this.rulesVec = rules;
 //		this.rules = this.rulesVec.elements();
         initRuleLayer();
     }
@@ -75,7 +71,7 @@ public class RuleLayer {
     private void initRuleLayer() {
         this.ruleLayer = new Hashtable<Rule, Integer>();
         for (int i = 0; i < this.rulesVec.size(); i++) {
-            Rule rule = this.rulesVec.elementAt(i);
+            Rule rule = this.rulesVec.get(i);
             this.ruleLayer.put(rule, Integer.valueOf(rule.getLayer()));
         }
     }

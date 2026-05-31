@@ -1,8 +1,7 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
@@ -13,10 +12,11 @@
  */
 package agg.xt_basis;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
@@ -39,7 +39,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
 //	private boolean old_val;
     private boolean evaluable = true;
 
-    final List<NestedApplCond> itsACs = new Vector<NestedApplCond>(0, 1);
+    final List<NestedApplCond> itsACs = new ArrayList<NestedApplCond>(1);
 
     String formulaStr = "true";
     Formula itsFormula = new Formula(true);
@@ -179,7 +179,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     public void removeNestedAC(final NestedApplCond ac) {
         if (this.itsACs.remove(ac)) {
             this.itsFormula.patchOutEvaluable(ac, true);
-            this.refreshFormula(new Vector<Evaluable>(this.getEnabledACs()));
+            this.refreshFormula(new ArrayList<Evaluable>(this.getEnabledACs()));
 //			ac.getImage().dispose();
         }
     }
@@ -193,7 +193,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     public List<Evaluable> getEnabledGeneralACsAsEvaluable() {
-        List<Evaluable> list = new Vector<Evaluable>(this.itsACs.size());
+        List<Evaluable> list = new ArrayList<Evaluable>(this.itsACs.size());
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -212,7 +212,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     public boolean setDefaultFormulaTrue() {
-        final List<Evaluable> vars = new Vector<Evaluable>(this.itsACs.size());
+        final List<Evaluable> vars = new ArrayList<Evaluable>(this.itsACs.size());
 
         if (this.itsACs.size() == 0) {
             this.formulaStr = "true";
@@ -248,7 +248,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     public boolean setDefaultFormulaFalse() {
-        final List<Evaluable> vars = new Vector<Evaluable>(this.itsACs.size());
+        final List<Evaluable> vars = new ArrayList<Evaluable>(this.itsACs.size());
 
         if (this.itsACs.size() == 0) {
             this.formulaStr = "true";
@@ -317,7 +317,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
         }
 
         int n = 0;
-        final List<Evaluable> vars = new Vector<Evaluable>(n);
+        final List<Evaluable> vars = new ArrayList<Evaluable>(n);
         for (int i = 0; i < list.size(); i++) {
             NestedApplCond ac = list.get(i);
             if (ac.isEnabled()) {
@@ -419,15 +419,15 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
 		this.evaluable = true;
 		
 		VarTuple vars = (VarTuple) m.getAttrContext().getVariables();
-		Vector<String> varnames = g.getVariableNamesOfAttributes();
+		List<String> varnames = g.getVariableNamesOfAttributes();
 		CondTuple conds = (CondTuple) m.getAttrContext().getConditions();
 		
 		for (int i = 0; i < conds.getSize() && this.evaluable; i++) {
 			CondMember cond = conds.getCondMemberAt(i);
 			if (!cond.isEvaluable(vars)) {
-				Vector<String> condVars = cond.getAllVariables();
+				List<String> condVars = cond.getAllVariables();
 				for (int j = 0; j < condVars.size(); j++) {
-					String n = condVars.elementAt(j);
+					String n = condVars.get(j);
 					VarMember var = vars.getVarMemberAt(n);
 					if ((!var.isSet() && varnames.contains(n))
 //							|| (!var.isSet() && !varnames.contains(n))
@@ -508,7 +508,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     public List<NestedApplCond> getEnabledNestedACs() {
-        final List<NestedApplCond> vars = new Vector<NestedApplCond>();
+        final List<NestedApplCond> vars = new ArrayList<NestedApplCond>();
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -520,7 +520,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     public List<NestedApplCond> getEnabledACs() {
-        final List<NestedApplCond> vars = new Vector<NestedApplCond>();
+        final List<NestedApplCond> vars = new ArrayList<NestedApplCond>();
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -531,7 +531,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     public List<String> getNameOfEnabledACs() {
-        final List<String> vars = new Vector<String>();
+        final List<String> vars = new ArrayList<String>();
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -542,7 +542,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     public List<String> getNameOfEnabledNestedACs() {
-        final List<String> vars = new Vector<String>();
+        final List<String> vars = new ArrayList<String>();
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = this.itsACs.get(i);
             if (ac.isEnabled()) {
@@ -554,7 +554,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     public List<String> getNameOfNestedACs() {
-        final List<String> vars = new Vector<String>();
+        final List<String> vars = new ArrayList<String>();
         for (int i = 0; i < this.itsACs.size(); i++) {
             NestedApplCond ac = this.itsACs.get(i);
             vars.add(ac.getName());
@@ -627,7 +627,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
         AttrConditionTuple condt = this.getAttrContext().getConditions();
         int num = condt.getNumberOfEntries();
         // nested ACs
-        Enumeration<OrdinaryMorphism> nested = (new Vector<OrdinaryMorphism>(this.itsACs)).elements();
+        Enumeration<OrdinaryMorphism> nested = Collections.enumeration(new ArrayList<OrdinaryMorphism>(this.itsACs));
         if (nested.hasMoreElements()) {
             h.openSubTag("ApplCondition");
             while (nested.hasMoreElements()) {
@@ -669,3 +669,7 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
 }
+
+
+
+

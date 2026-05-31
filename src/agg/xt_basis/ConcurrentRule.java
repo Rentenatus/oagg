@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -15,7 +15,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.AttrContext;
 import agg.attribute.handler.AvailableHandlers;
@@ -85,7 +86,7 @@ public class ConcurrentRule {
 
     protected boolean injective = true;
 
-    private final List<OrdinaryMorphism> failedApplConds = new Vector<OrdinaryMorphism>();
+    private final List<OrdinaryMorphism> failedApplConds = new ArrayList<OrdinaryMorphism>();
 
     public long freeM, usedM;
 
@@ -524,7 +525,7 @@ public class ConcurrentRule {
             return null;
         }
 
-        List<GraphObject> list = new Vector<GraphObject>();
+        List<GraphObject> list = new ArrayList<GraphObject>();
         Iterator<?> elems = this.overlap1.getTarget().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
@@ -553,7 +554,7 @@ public class ConcurrentRule {
             return null;
         }
 
-        List<GraphObject> list = new Vector<GraphObject>();
+        List<GraphObject> list = new ArrayList<GraphObject>();
         Iterator<?> elems = this.overlap1.getTarget().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
@@ -1212,7 +1213,7 @@ public class ConcurrentRule {
 
     private void removeIsomorphicMorph(List<OrdinaryMorphism> list) {
         if (list.size() >= 2) {
-            List<OrdinaryMorphism> list1 = new Vector<OrdinaryMorphism>(list);
+            List<OrdinaryMorphism> list1 = new ArrayList<OrdinaryMorphism>(list);
             for (int i = 0; i < list1.size(); i++) {
                 OrdinaryMorphism m1 = list1.get(i);
                 if (list.contains(m1)) {
@@ -1464,7 +1465,7 @@ public class ConcurrentRule {
             final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph) {
 
-        List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> result = new ArrayList<OrdinaryMorphism>();
         while (conds.hasNext()) {
             OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) { // morphism mapping exists
@@ -1515,7 +1516,7 @@ public class ConcurrentRule {
             final Iterator<OrdinaryMorphism> conds,
             final OrdinaryMorphism morph) {
 
-        final List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
+        final List<OrdinaryMorphism> result = new ArrayList<OrdinaryMorphism>();
         while (conds.hasNext()) {
             OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
@@ -1554,7 +1555,7 @@ public class ConcurrentRule {
             final OrdinaryMorphism right,
             final OrdinaryMorphism embMorph) {
 
-        List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> result = new ArrayList<OrdinaryMorphism>();
         while (conds.hasNext()) {
             OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
@@ -1562,7 +1563,7 @@ public class ConcurrentRule {
                 List<OrdinaryMorphism> list = shiftCondOverMorph(rule, cond, morph);
                 List<OrdinaryMorphism> list2 = null;
                 if (list != null && list.size() > 0) {
-                    list2 = new Vector<OrdinaryMorphism>();
+                    list2 = new ArrayList<OrdinaryMorphism>();
                     for (int i = 0; i < list.size(); i++) {
                         OrdinaryMorphism c = list.get(i);
                         // shift c left
@@ -1623,14 +1624,14 @@ public class ConcurrentRule {
             final OrdinaryMorphism right,
             final OrdinaryMorphism embMorph) {
 
-        List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> result = new ArrayList<OrdinaryMorphism>();
         while (conds.hasNext()) {
             OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) { // morphism mapping exists
                 // here: LHS -> cond is not empty
                 List<OrdinaryMorphism> list = shiftCondOverMorph(rule, cond, morph);
 
-                List<OrdinaryMorphism> list2 = new Vector<OrdinaryMorphism>();
+                List<OrdinaryMorphism> list2 = new ArrayList<OrdinaryMorphism>();
                 for (int i = 0; i < list.size(); i++) {
                     OrdinaryMorphism c = list.get(i);
                     // shift c left
@@ -1682,7 +1683,7 @@ public class ConcurrentRule {
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph) {
 
-        List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> result = new ArrayList<OrdinaryMorphism>();
         while (conds.hasNext()) {
             OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
@@ -1690,7 +1691,7 @@ public class ConcurrentRule {
                 List<OrdinaryMorphism> list = shiftCondOverMorph(rule, cond, morph);
                 List<OrdinaryMorphism> list2 = null;
                 if (list != null && list.size() > 0) {
-                    list2 = new Vector<OrdinaryMorphism>();
+                    list2 = new ArrayList<OrdinaryMorphism>();
                     for (int i = 0; i < list.size(); i++) {
                         OrdinaryMorphism c = list.get(i);
                         // shift c left
@@ -1745,14 +1746,14 @@ public class ConcurrentRule {
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph) {
 
-        List<OrdinaryMorphism> result = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> result = new ArrayList<OrdinaryMorphism>();
         while (conds.hasNext()) {
             OrdinaryMorphism cond = conds.next();
             if (cond.getSize() > 0) {
                 // here: LHS -> cond is not empty
                 List<OrdinaryMorphism> list = shiftCondOverMorph(rule, cond, morph);
 
-                List<OrdinaryMorphism> list2 = new Vector<OrdinaryMorphism>();
+                List<OrdinaryMorphism> list2 = new ArrayList<OrdinaryMorphism>();
                 for (int i = 0; i < list.size(); i++) {
                     OrdinaryMorphism c = list.get(i);
                     // shift c left
@@ -1788,7 +1789,7 @@ public class ConcurrentRule {
     private void filterNotNeededObjs(
             final OrdinaryMorphism cond,
             final OrdinaryMorphism iL) {
-        List<GraphObject> delete = new Vector<GraphObject>();
+        List<GraphObject> delete = new ArrayList<GraphObject>();
         // delete mapped arcs 
         final Iterator<Arc> arcs = cond.getTarget().getArcsSet().iterator();
         while (arcs.hasNext()) {
@@ -1919,7 +1920,7 @@ public class ConcurrentRule {
             final OrdinaryMorphism cond,
             final OrdinaryMorphism morph) {
 
-        final List<OrdinaryMorphism> list = new Vector<OrdinaryMorphism>();
+        final List<OrdinaryMorphism> list = new ArrayList<OrdinaryMorphism>();
 
         // make an iso-copy of the rule LHS
         final OrdinaryMorphism condSrcIsom = cond.getSource().isomorphicCopy();
@@ -1935,7 +1936,7 @@ public class ConcurrentRule {
         final Graph dCondGraph = condSrcIsom.getTarget();
 
         final List<GraphObject> condDom = condSrcIsom.getDomainObjects();
-        final List<Object> requiredObjs = new Vector<Object>(condDom.size());
+        final List<Object> requiredObjs = new ArrayList<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
                 condDom.size());
         // fill a map with objects required
@@ -1993,7 +1994,7 @@ public class ConcurrentRule {
         final OrdinaryMorphism leftToCond = cond.compose(condIsom);
 
         final List<GraphObject> condDom = cond.getDomainObjects();
-        final List<Object> requiredObjs = new Vector<Object>(condDom.size());
+        final List<Object> requiredObjs = new ArrayList<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(condDom.size());
 
         for (int j = 0; j < condDom.size(); j++) {
@@ -2013,7 +2014,7 @@ public class ConcurrentRule {
                 objmap,
                 true);
 
-        final List<OrdinaryMorphism> list = new Vector<OrdinaryMorphism>();
+        final List<OrdinaryMorphism> list = new ArrayList<OrdinaryMorphism>();
         while (overlaps.hasNext()) {
             Pair<OrdinaryMorphism, OrdinaryMorphism> p = overlaps.next();
             OrdinaryMorphism condCR = p.second;
@@ -2042,7 +2043,7 @@ public class ConcurrentRule {
         boolean ok = true;
         // delete arc to be created or without a mapping
         // from its pre-image into the condL
-        List<GraphObject> todelete = new Vector<GraphObject>();
+        List<GraphObject> todelete = new ArrayList<GraphObject>();
         final Iterator<Arc> arcs = condCR.getTarget().getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc go_condCR = arcs.next();
@@ -2349,7 +2350,7 @@ public class ConcurrentRule {
     }
 
     private boolean isAttrCondRelevant(final Rule r, final CondMember cond) {
-        Vector<String> condvars = cond.getAllVariables();
+        List<String> condvars = cond.getAllVariables();
         for (int i = 0; i < this.failedApplConds.size(); i++) {
             OrdinaryMorphism morph = this.failedApplConds.get(i);
             if (r.getLeft() == morph.getSource()) {
@@ -2369,7 +2370,7 @@ public class ConcurrentRule {
             final Rule rule,
             final OrdinaryMorphism ruleLeftt2leftCR) {
 //		System.out.println("ConcurrentRule.adjustLeftMappedAttrs::  "+cr.getName()+"        "+rule.getName());
-        List<String> varToDelete = new Vector<String>();
+        List<String> varToDelete = new ArrayList<String>();
 
         Iterator<GraphObject> dom1 = rule.getDomain();
         while (dom1.hasNext()) {
@@ -2513,7 +2514,7 @@ public class ConcurrentRule {
                                 }
                             }
                         } else if (vm.getExpr().isComplex()) {
-                            Vector<String> v = new Vector<String>();
+                            List<String> v = new ArrayList<String>();
                             vm.getExpr().getAllVariables(v);
                             if (v.contains(from)) {
                                 BaseFactory.theFactory().renameVariableOfExpression(ac, vt, from, to);
@@ -2546,7 +2547,7 @@ public class ConcurrentRule {
                     ValueMember vm = vt.getValueMemberAt(i);
                     if (vm.isSet()) {
                         if (vm.getExpr().isComplex()) {
-                            Vector<String> v = new Vector<String>();
+                            List<String> v = new ArrayList<String>();
                             vm.getExpr().getAllVariables(v);
                             for (int j = 0; j < v.size(); j++) {
                                 if (vars.getVarMemberAt(v.get(j)) == null) {
@@ -2605,8 +2606,8 @@ public class ConcurrentRule {
     }
 
     private void setInputParameterIfNeeded(final Rule concurRule) {
-//		final Hashtable<Graph, Vector<String>> 
-//		graph2Varnames = new Hashtable<Graph, Vector<String>>();
+//		final Hashtable<Graph, List<String>> 
+//		graph2Varnames = new Hashtable<Graph, List<String>>();
 
         VarTuple vars = (VarTuple) concurRule.getAttrContext().getVariables();
         List<String> varNamesRHS = concurRule.getTarget().getVariableNamesOfAttributes();
@@ -2629,7 +2630,7 @@ public class ConcurrentRule {
 						if (graph2Varnames.get(morph.getTarget()) == null) {
 							graph2Varnames.put(morph.getTarget(), morph.getTarget().getVariableNamesOfAttributes());
 						}
-						Vector<String> 
+						List<String> 
 						varNames = graph2Varnames.get(morph.getTarget());
 						if (varNames.contains(var.getName())) {
 							found = true;
@@ -2643,7 +2644,7 @@ public class ConcurrentRule {
 							if (graph2Varnames.get(morph.getTarget()) == null) {
 								graph2Varnames.put(morph.getTarget(), morph.getTarget().getVariableNamesOfAttributes());
 							}
-							Vector<String> 
+							List<String> 
 							varNames = graph2Varnames.get(morph.getTarget());
 							if (varNames.contains(var.getName())) {
 								found = true;
@@ -2698,7 +2699,7 @@ public class ConcurrentRule {
             final OrdinaryMorphism condL,
             final OrdinaryMorphism leftEmbMorph) {
 
-        Vector<GraphObject> del = new Vector<GraphObject>();
+        List<GraphObject> del = new ArrayList<GraphObject>();
         Iterator<Arc> iter2 = cond.getSource().getArcsSet().iterator();
         while (iter2.hasNext()) {
             GraphObject go = iter2.next();
@@ -2749,3 +2750,6 @@ public class ConcurrentRule {
     }
 
 }
+
+
+

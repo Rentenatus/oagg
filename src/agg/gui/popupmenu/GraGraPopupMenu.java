@@ -11,6 +11,7 @@
 // $Id: GraGraPopupMenu.java,v 1.11 2010/09/23 08:21:33 olga Exp $
 package agg.gui.popupmenu;
 
+import agg.cons.Formula;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -1365,9 +1366,10 @@ public class GraGraPopupMenu extends JPopupMenu {
                 JOptionPane.showMessageDialog(this.treeView.getFrame(),
                         "There isn't any graph constraints (formulae) available.");
             } else {
+                final List<Formula> constraintsVec = gra.getBasisGraGra().getConstraintsVec();
+                final List<String> priorities = gra.getBasisGraGra().getPriorities();
                 GraGraConstraintPriorityDialog lg = new GraGraConstraintPriorityDialog(
-                        this.treeView.getFrame(), gra.getBasisGraGra().getConstraintsVec(),
-                        gra.getBasisGraGra().getPriorities());
+                        this.treeView.getFrame(), constraintsVec, priorities);
                 Point p = this.treeView.getPopupMenuLocation();
                 if (p != null) {
                     lg.setLocation(p);

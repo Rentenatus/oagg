@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -11,13 +11,14 @@
  */
 package agg.xt_basis;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
-import java.util.Enumeration;
 
 import agg.attribute.AttrContext;
 import agg.attribute.AttrMapping;
@@ -485,16 +486,16 @@ public final class MatchHelper {
             return "";
         }
 
-        final List<Node> nodestodelete = new Vector<Node>(); // LHS objects
-        final List<Node> nodestocreate = new Vector<Node>(); // RHS objects
+        final List<Node> nodestodelete = new ArrayList<Node>(); // LHS objects
+        final List<Node> nodestocreate = new ArrayList<Node>(); // RHS objects
 
-        final List<Arc> arcstodelete = new Vector<Arc>();	// LHS objects		
-        final List<Arc> arcstocreate = new Vector<Arc>();	// RHS objects
+        final List<Arc> arcstodelete = new ArrayList<Arc>();	// LHS objects		
+        final List<Arc> arcstocreate = new ArrayList<Arc>();	// RHS objects
 
-        final List<Arc> insOfDelNode = new Vector<Arc>();	// Host graph objects	
-        final List<Arc> outsOfDelNode = new Vector<Arc>();	// Host graph objects	
+        final List<Arc> insOfDelNode = new ArrayList<Arc>();	// Host graph objects	
+        final List<Arc> outsOfDelNode = new ArrayList<Arc>();	// Host graph objects	
 
-        final List<GraphObject> nodestoglue = new Vector<GraphObject>();
+        final List<GraphObject> nodestoglue = new ArrayList<GraphObject>();
 
         // get nodes to delete: 
         Iterator<?> en = itsRule.getLeft().getNodesSet().iterator();
@@ -583,7 +584,7 @@ public final class MatchHelper {
             return errorMsg;
         }
 
-//		List<Arc> arcstocreatecopy = new Vector<Arc>(arcstocreate);
+//		List<Arc> arcstocreatecopy = new ArrayList<Arc>(arcstocreate);
         // check remained arcs to create
         // these arcs must preserve source and target
         if (!checkEdgeTargetMaxMultiplicity(
@@ -626,7 +627,7 @@ public final class MatchHelper {
 
                 List<Arc> list = type2newarcs.get(typekey);
                 if (list == null) {
-                    list = new Vector<Arc>();
+                    list = new ArrayList<Arc>();
                     type2newarcs.put(typekey, list);
                 }
                 list.add(a);
@@ -655,14 +656,14 @@ public final class MatchHelper {
             if (typesNeedMultiplicityCheck.contains(typekey)) {
                 List<Arc> list = type2delarcs.get(typekey);
                 if (list == null) {
-                    list = new Vector<Arc>();
+                    list = new ArrayList<Arc>();
                     type2delarcs.put(typekey, list);
                 }
                 list.add(a);
 
                 List<Arc> list2 = type2delarcs2.get(typekey);
                 if (list2 == null) {
-                    list2 = new Vector<Arc>();
+                    list2 = new ArrayList<Arc>();
                     type2delarcs2.put(typekey, list2);
                 }
                 list2.add(a);
@@ -679,7 +680,7 @@ public final class MatchHelper {
             if (typesNeedMultiplicityCheck.contains(typekey)) {
                 List<Arc> list = type2delarcs.get(typekey);
                 if (list == null) {
-                    list = new Vector<Arc>();
+                    list = new ArrayList<Arc>();
                     type2delarcs.put(typekey, list);
                 }
                 list.add(a);
@@ -701,7 +702,7 @@ public final class MatchHelper {
             if (typesNeedMultiplicityCheck.contains(typekey)) {
                 List<Arc> list = type2delarcs2.get(typekey);
                 if (list == null) {
-                    list = new Vector<Arc>();
+                    list = new ArrayList<Arc>();
                     type2delarcs2.put(typekey, list);
                 }
                 list.add(a);
@@ -725,9 +726,9 @@ public final class MatchHelper {
             int tgchecklevel) {
 
         errorMsg = "";
-        final List<Triple<Node, Type, Type>> srcNodes = new Vector<Triple<Node, Type, Type>>();
-        final List<Integer> ndel = new Vector<Integer>();
-        final List<Pair<Integer, Integer>> tarMinMax = new Vector<Pair<Integer, Integer>>();
+        final List<Triple<Node, Type, Type>> srcNodes = new ArrayList<Triple<Node, Type, Type>>();
+        final List<Integer> ndel = new ArrayList<Integer>();
+        final List<Pair<Integer, Integer>> tarMinMax = new ArrayList<Pair<Integer, Integer>>();
 
         Iterator<String> iter = type2delarcs.keySet().iterator();
         while (iter.hasNext()) {
@@ -827,9 +828,9 @@ public final class MatchHelper {
             int tgchecklevel) {
 
         errorMsg = "";
-        final List<Triple<Node, Type, Type>> tarNodes = new Vector<Triple<Node, Type, Type>>();
-        final List<Integer> ndel = new Vector<Integer>();
-        final List<Pair<Integer, Integer>> srcMinMax = new Vector<Pair<Integer, Integer>>();
+        final List<Triple<Node, Type, Type>> tarNodes = new ArrayList<Triple<Node, Type, Type>>();
+        final List<Integer> ndel = new ArrayList<Integer>();
+        final List<Pair<Integer, Integer>> srcMinMax = new ArrayList<Pair<Integer, Integer>>();
 
         Iterator<String> iter = type2delarcs.keySet().iterator();
         while (iter.hasNext()) {
@@ -967,9 +968,9 @@ public final class MatchHelper {
             int tgchecklevel) {
 
         errorMsg = "";
-        final List<Triple<Node, Type, Type>> srcNodes = new Vector<Triple<Node, Type, Type>>();
-        final List<Integer> nnew = new Vector<Integer>();
-        final List<Integer> tarMax = new Vector<Integer>();
+        final List<Triple<Node, Type, Type>> srcNodes = new ArrayList<Triple<Node, Type, Type>>();
+        final List<Integer> nnew = new ArrayList<Integer>();
+        final List<Integer> tarMax = new ArrayList<Integer>();
 
         final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();	// RHS objects
         // type2newarcs contains arcs sorted by type.convertToKey() string which contains
@@ -980,7 +981,7 @@ public final class MatchHelper {
             final String typekey = a.convertToKey();
             List<Arc> list = type2newarcs.get(typekey);
             if (list == null) {
-                list = new Vector<Arc>();
+                list = new ArrayList<Arc>();
                 type2newarcs.put(typekey, list);
             }
             list.add(a);
@@ -1086,9 +1087,9 @@ public final class MatchHelper {
             int tgchecklevel) {
 
         errorMsg = "";
-        final List<Triple<Node, Type, Type>> tarNodes = new Vector<Triple<Node, Type, Type>>();
-        final List<Integer> nnew = new Vector<Integer>();
-        final List<Integer> srcMax = new Vector<Integer>();
+        final List<Triple<Node, Type, Type>> tarNodes = new ArrayList<Triple<Node, Type, Type>>();
+        final List<Integer> nnew = new ArrayList<Integer>();
+        final List<Integer> srcMax = new ArrayList<Integer>();
 
         final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();	// RHS objects
         // type2newarcs will contain arcs  by type.convertToKey() string 
@@ -1099,7 +1100,7 @@ public final class MatchHelper {
             final String typekey = a.convertToKey();
             List<Arc> list = type2newarcs.get(typekey);
             if (list == null) {
-                list = new Vector<Arc>();
+                list = new ArrayList<Arc>();
                 type2newarcs.put(typekey, list);
             }
             list.add(a);
@@ -1403,7 +1404,7 @@ public final class MatchHelper {
         }
 
         final Rule itsRule = match.getRule();
-        final Vector<ValueMember> varToNull = new Vector<ValueMember>(2);
+        final List<ValueMember> varToNull = new ArrayList<ValueMember>(2);
 
         final VarTuple vars = (VarTuple) match.getAttrContext().getVariables();
         final Iterator<GraphObject> en = match.getDomain();
@@ -1437,7 +1438,7 @@ public final class MatchHelper {
             for (int j = 0; j < vt.getNumberOfEntries(); j++) {
                 final ValueMember vm = vt.getEntryAt(j);
                 if (vm.isSet() && vm.getExpr().isComplex()) {
-                    final Vector<String> exprVars = vm.getAllVariableNamesOfExpression();
+                    final List<String> exprVars = vm.getAllVariableNamesOfExpression();
                     for (int i = 0; i < varToNull.size(); i++) {
                         final VarMember var = (VarMember) varToNull.get(i);
                         if (exprVars.contains(var.getName())) {
@@ -1457,7 +1458,7 @@ public final class MatchHelper {
             for (int j = 0; j < vt.getNumberOfEntries(); j++) {
                 final ValueMember vm = vt.getEntryAt(j);
                 if (vm.isSet() && vm.getExpr().isComplex()) {
-                    final Vector<String> exprVars = vm.getAllVariableNamesOfExpression();
+                    final List<String> exprVars = vm.getAllVariableNamesOfExpression();
                     for (int i = 0; i < varToNull.size(); i++) {
                         final VarMember var = (VarMember) varToNull.get(i);
                         if (exprVars.contains(var.getName())) {
@@ -1471,7 +1472,7 @@ public final class MatchHelper {
         final CondTuple ct = (CondTuple) match.getAttrContext().getConditions();
         for (int j = 0; j < ct.getNumberOfEntries(); j++) {
             final CondMember cm = (CondMember) ct.getEntryAt(j);
-            final Vector<String> exprVars = cm.getAllVariables();
+            final List<String> exprVars = cm.getAllVariables();
             for (int i = 0; i < varToNull.size(); i++) {
                 final VarMember var = (VarMember) varToNull.get(i);
                 if ((cm.getExprAsText().indexOf(var.getName() + "==null") == -1)
@@ -1584,7 +1585,7 @@ public final class MatchHelper {
 	private int getCountOfNodesToGlue(
 			final Rule rule,
 			final Type nodetype, 
-			final Vector<GraphObject> nodesofglue) {
+			final List<GraphObject> nodesofglue) {
 		int c = 0;
 		for (int i = 0; i < nodesofglue.size(); i++) {
 			GraphObject go = nodesofglue.get(i);
@@ -1603,12 +1604,12 @@ public final class MatchHelper {
 	
 	private int getCountOfEdgesToGlue(final Match match, final Arc rhsEdge) {
 		int c = 0;
-		final Vector<GraphObject> srcVec = new Vector<GraphObject>(2);
+		final List<GraphObject> srcVec = new ArrayList<GraphObject>(2);
 		final Enumeration<GraphObject> e = match.getRule().getInverseImage(rhsEdge.getSource());
 		while (e.hasMoreElements()) {
 			srcVec.add(e.nextElement());
 		}
-		final Vector<GraphObject> tarVec = new Vector<GraphObject>(2);
+		final List<GraphObject> tarVec = new ArrayList<GraphObject>(2);
 		final Enumeration<GraphObject> e1 = match.getRule().getInverseImage(rhsEdge.getTarget());
 		while (e.hasMoreElements()) {
 			tarVec.add(e.nextElement());
@@ -1644,16 +1645,16 @@ public final class MatchHelper {
     public static Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final OrdinaryMorphism morph,
             final Object other, boolean left, boolean union) {
-        return getOverlappingsVector(morph, other, left, union).elements();
+        return Collections.enumeration(getOverlappingsVector(morph, other, left, union));
     }
 
-    public static Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingsVector(
+    public static List<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingsVector(
             final OrdinaryMorphism morph,
             final Object other,
             boolean left,
             boolean union) {
 
-        final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
 
         int minGraphSize = 1;
         if (union) {
@@ -1677,7 +1678,7 @@ public final class MatchHelper {
                         sizeOfInclusions, union);
 
                 while (overlapping.hasMoreElements()) {
-                    oSet.addElement(overlapping.nextElement());
+                    oSet.add(overlapping.nextElement());
                 }
                 sizeOfInclusions--;
             }
@@ -1700,18 +1701,17 @@ public final class MatchHelper {
             final OrdinaryMorphism morph,
             final Object other, boolean left,
             int sizeOfInclusions, boolean union) {
-        return getOverlappingsVector(morph, other, left, sizeOfInclusions, union)
-                .elements();
+        return Collections.enumeration(getOverlappingsVector(morph, other, left, sizeOfInclusions, union));
     }
 
-    public static Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingsVector(
+    public static List<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingsVector(
             final OrdinaryMorphism morph,
             final Object otherObj,
             boolean left,
             int sizeOfInclusions,
             boolean union) {
 
-        final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
 
         Graph other = null;
         if ((otherObj instanceof OrdinaryMorphism) && left) {
@@ -1725,7 +1725,7 @@ public final class MatchHelper {
             return oSet;
         }
 
-        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
+        List<OrdinaryMorphism> subs = new ArrayList<OrdinaryMorphism>();
         Iterator<GraphObject> itsGOs = null;
 
         if (left) {
@@ -1734,7 +1734,7 @@ public final class MatchHelper {
             itsGOs = morph.getTarget().iteratorOfElems();
         }
 
-        final Vector<GraphObject> itsGOSet = new Vector<GraphObject>();
+        final List<GraphObject> itsGOSet = new ArrayList<GraphObject>();
         boolean nextMatch = true;
         int minGraphSize;
 
@@ -1745,7 +1745,7 @@ public final class MatchHelper {
         }
 
         while (itsGOs.hasNext()) {
-            itsGOSet.addElement(itsGOs.next());
+            itsGOSet.add(itsGOs.next());
         }
         if (sizeOfInclusions >= minGraphSize) {
             boolean withIsomorphicInclusions = true;
@@ -1836,7 +1836,7 @@ public final class MatchHelper {
                                                     mStar, rStar);
                                             boolean isIsomorphic = false;
                                             if (!isIsomorphicOverlapping(oSet, p)) {
-                                                oSet.addElement(p);
+                                                oSet.add(p);
                                             } else {
                                                 isIsomorphic = true;
                                             }
@@ -1856,7 +1856,7 @@ public final class MatchHelper {
                                                     mStar, rStar);
                                             boolean isIsomorphic = false;
                                             if (!isIsomorphicOverlapping(oSet, p)) {
-                                                oSet.addElement(p);
+                                                oSet.add(p);
                                             } else {
                                                 isIsomorphic = true;
                                             }
@@ -1873,7 +1873,7 @@ public final class MatchHelper {
                                                     mStar, rStar);
                                             boolean isIsomorphic = false;
                                             if (!isIsomorphicOverlapping(oSet, p)) {
-                                                oSet.addElement(p);
+                                                oSet.add(p);
                                             } else {
                                                 isIsomorphic = true;
                                             }
@@ -1888,7 +1888,7 @@ public final class MatchHelper {
                                         p = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
                                                 mStar, rStar);
                                         if (!isIsomorphicOverlapping(oSet, p)) {
-                                            oSet.addElement(p);
+                                            oSet.add(p);
                                         } else {
                                             p = null;
                                         }
@@ -1940,11 +1940,11 @@ public final class MatchHelper {
     }
 
     private static boolean isIsomorphicOverlapping(
-            final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapGraphs,
+            final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapGraphs,
             final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapPair) {
         final Graph overlapGraph = overlapPair.first.getTarget();
         for (int j = 0; j < overlapGraphs.size(); j++) {
-            Pair<OrdinaryMorphism, OrdinaryMorphism> pj = overlapGraphs.elementAt(j);
+            Pair<OrdinaryMorphism, OrdinaryMorphism> pj = overlapGraphs.get(j);
             Graph gj = pj.first.getTarget();
             if (gj.isIsomorphicTo(overlapGraph)) {
                 if (pj.first.isIsomorphicTo(overlapPair.first)
@@ -1994,7 +1994,7 @@ public final class MatchHelper {
 
     public static List<CondMember> getConditionsOfNAC(final OrdinaryMorphism nacStar,
             final OrdinaryMorphism nac) {
-        final List<CondMember> condsNAC = new Vector<CondMember>();
+        final List<CondMember> condsNAC = new ArrayList<CondMember>();
         final VarTuple vart = (VarTuple) nacStar.getAttrContext().getVariables();
 //		vart.showVariables();
         if (vart.getSize() == 0) {
@@ -2003,7 +2003,7 @@ public final class MatchHelper {
 
         final CondTuple condt = (CondTuple) nacStar.getAttrContext().getConditions();
         final List<String> varNames = nac.getImage().getVariableNamesOfAttributes();
-        final List<VarMember> varsOfNAC = new Vector<VarMember>();
+        final List<VarMember> varsOfNAC = new ArrayList<VarMember>();
         for (int k = 0; k < vart.getSize(); k++) {
             final VarMember vm = vart.getVarMemberAt(k);
             if (varNames.contains(vm.getName())) {
@@ -2014,7 +2014,7 @@ public final class MatchHelper {
         }
         for (int k = 0; k < condt.getSize(); k++) {
             final CondMember cm = condt.getCondMemberAt(k);
-            final Vector<String> condVars = cm.getAllVariables();
+            final List<String> condVars = cm.getAllVariables();
             for (int l = 0; l < varsOfNAC.size(); l++) {
                 final VarMember vm = varsOfNAC.get(l);
                 if (((cm.getMark() == CondMember.NAC) || (cm.getMark() == CondMember.NAC_LHS))
@@ -2030,7 +2030,7 @@ public final class MatchHelper {
 
     public static List<CondMember> getConditionsOfPAC(final OrdinaryMorphism pacStar,
             final OrdinaryMorphism pac) {
-        final List<CondMember> condsPAC = new Vector<CondMember>();
+        final List<CondMember> condsPAC = new ArrayList<CondMember>();
         final VarTuple vart = (VarTuple) pacStar.getAttrContext().getVariables();
         if (vart.getSize() == 0) {
             return condsPAC;
@@ -2038,7 +2038,7 @@ public final class MatchHelper {
 
         final CondTuple condt = (CondTuple) pacStar.getAttrContext().getConditions();
         final List<String> varNames = pac.getImage().getVariableNamesOfAttributes();
-        final List<VarMember> varsOfPAC = new Vector<VarMember>();
+        final List<VarMember> varsOfPAC = new ArrayList<VarMember>();
         for (int k = 0; k < vart.getSize(); k++) {
             VarMember vm = vart.getVarMemberAt(k);
             if (varNames.contains(vm.getName())) {
@@ -2395,7 +2395,7 @@ public final class MatchHelper {
             final OrdinaryMorphism nac,
             final Match match) {
 
-//		List<GraphObject> gos = new Vector<GraphObject>(match.getSource().getNodesCount());
+//		List<GraphObject> gos = new ArrayList<GraphObject>(match.getSource().getNodesCount());
         Iterator<?> e = aNACstar.getSource().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject nacObj = (GraphObject) e.next();
@@ -2489,7 +2489,7 @@ public final class MatchHelper {
             final OrdinaryMorphism pac,
             final Match match) {
 
-//		List<GraphObject> gos = new Vector<GraphObject>(match.getSource().getNodesCount());
+//		List<GraphObject> gos = new ArrayList<GraphObject>(match.getSource().getNodesCount());
         Iterator<?> e = aPACstar.getSource().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject pacObj = (GraphObject) e.next();
@@ -3015,7 +3015,7 @@ public final class MatchHelper {
 
     public static List<CondMember> getConditionsOfNestedAC(final OrdinaryMorphism acStar,
             final OrdinaryMorphism ac) {
-        final List<CondMember> condsAC = new Vector<CondMember>();
+        final List<CondMember> condsAC = new ArrayList<CondMember>();
         final VarTuple vart = (VarTuple) acStar.getAttrContext().getVariables();
         if (vart.getSize() == 0) {
             return condsAC;
@@ -3023,7 +3023,7 @@ public final class MatchHelper {
 
         final CondTuple condt = (CondTuple) acStar.getAttrContext().getConditions();
         final List<String> varNames = ac.getImage().getVariableNamesOfAttributes();
-        final List<VarMember> varsOfAC = new Vector<VarMember>();
+        final List<VarMember> varsOfAC = new ArrayList<VarMember>();
         for (int k = 0; k < vart.getSize(); k++) {
             VarMember vm = vart.getVarMemberAt(k);
             if (varNames.contains(vm.getName())) {
@@ -3183,3 +3183,7 @@ public final class MatchHelper {
         }
     }
 }
+
+
+
+

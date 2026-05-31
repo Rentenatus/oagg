@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
@@ -26,7 +26,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LayeredGraTraImpl extends GraTra {
 
@@ -94,7 +95,7 @@ public class LayeredGraTraImpl extends GraTra {
         super.dispose();
     }
 
-    public void setGraTraOptions(Vector<String> newOptions) {
+    public void setGraTraOptions(List<String> newOptions) {
         super.setGraTraOptions(newOptions);
         if (newOptions.contains(GraTraOptions.BREAK_ALL_LAYER)) {
             this.breakAllLayerOpt = true;
@@ -175,7 +176,7 @@ public class LayeredGraTraImpl extends GraTra {
         // if(!allRulesEnabled) {
         // // remove disabled rules from currentRuleSet
         // for(int j=0; j<currentRuleSet.size(); j++) {
-        // if(!((Rule) currentRuleSet.elementAt(j)).isEnabled()) {
+        // if(!((Rule) currentRuleSet.get(j)).isEnabled()) {
         // currentRuleSet.removeElementAt(j);
         // j--;
         // }
@@ -191,7 +192,7 @@ public class LayeredGraTraImpl extends GraTra {
         // first try to apply a trigger rule
         int i;
         String trigger = "";
-        this.currentRule = this.currentRuleSet.elementAt(0);
+        this.currentRule = this.currentRuleSet.get(0);
         if (this.currentRule.isTriggerOfLayer()) {
             if (this.currentRule.isEnabled()) {
                 // System.out.println("trigger rule: "+currentRule.getName());
@@ -210,7 +211,7 @@ public class LayeredGraTraImpl extends GraTra {
                     }
 
                     this.currentRule.setEnabled(false);
-                    this.currentRuleSet.removeElement(this.currentRule);
+                    this.currentRuleSet.remove(this.currentRule);
 
                     if (this.os != null) {
                         writeTransformProtocol(this.currentRule.getName() + " "
@@ -223,12 +224,12 @@ public class LayeredGraTraImpl extends GraTra {
                         writeTransformProtocol(getErrorMsg());
                         writeTransformProtocol("The trigger rule of the current layer failed. \nContinue with the next layer.");
                     }
-                    this.currentRuleSet.removeAllElements();
+                    this.currentRuleSet.clear();
                 }
 
                 applied = false;
             } else {
-                this.currentRuleSet.removeElement(this.currentRule);
+                this.currentRuleSet.remove(this.currentRule);
             }
         }
 
@@ -236,7 +237,7 @@ public class LayeredGraTraImpl extends GraTra {
                 && this.currentRuleSet.size() > 0) {
 
             i = this.ran.nextInt(this.currentRuleSet.size());
-            this.currentRule = this.currentRuleSet.elementAt(i);
+            this.currentRule = this.currentRuleSet.get(i);
 
             if (this.currentRule instanceof RuleScheme) {
                 applied = apply((RuleScheme) this.currentRule);
@@ -349,7 +350,6 @@ public class LayeredGraTraImpl extends GraTra {
         this.startTransform = b;
     }
 
-
     @SuppressWarnings({"unused", "rawtypes"})
     private void transformCurrentLayer() {
         boolean oneApplied = false;
@@ -364,7 +364,7 @@ public class LayeredGraTraImpl extends GraTra {
         this.nextLayerExists = true;
 
         if (!this.stopping && this.nextLayerExists && (this.currentLayer != null)) {
-            Vector<Rule> rules = new Vector<Rule>();
+            List<Rule> rules = new ArrayList<Rule>();
             if (!this.applyContinue) {
                 // get rules of the current this.layer
                 HashSet rulesForLayer = this.invertedRuleLayer.get(this.currentLayer);
@@ -489,7 +489,7 @@ public class LayeredGraTraImpl extends GraTra {
 
                 // get rules of the current this.layer
                 HashSet rulesForLayer = this.invertedRuleLayer.get(this.currentLayer);
-                Vector<Rule> rules = new Vector<Rule>();
+                List<Rule> rules = new ArrayList<Rule>();
                 Iterator<?> en = rulesForLayer.iterator();
                 while (en.hasNext()) {
                     Rule rule = (Rule) en.next();
@@ -684,7 +684,7 @@ public class LayeredGraTraImpl extends GraTra {
         long startTime = System.currentTimeMillis();
         this.time0 = startTime;
 
-        Vector<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
+        List<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
 
         transform(ruleSet);
 
@@ -710,7 +710,7 @@ public class LayeredGraTraImpl extends GraTra {
         long startTime = System.currentTimeMillis();
         this.time0 = startTime;
 
-        Vector<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
+        List<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
 
         transform(ruleSet);
 
@@ -728,11 +728,11 @@ public class LayeredGraTraImpl extends GraTra {
         }
     }
 
-    private Vector<Rule> getEnabledRules(Vector<Rule> ruleSet) {
-        Vector<Rule> vec = new Vector<Rule>(ruleSet.size());
+    private List<Rule> getEnabledRules(List<Rule> ruleSet) {
+        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
-            if (ruleSet.elementAt(j).isEnabled()) {
-                vec.add(ruleSet.elementAt(j));
+            if (ruleSet.get(j).isEnabled()) {
+                vec.add(ruleSet.get(j));
             }
         }
         return vec;
@@ -798,9 +798,9 @@ public class LayeredGraTraImpl extends GraTra {
 //	public long getUsedTime() {
 //		return time;
 //	}
-    private void enableTriggerRuleOfLayer(Vector<Rule> rules) {
+    private void enableTriggerRuleOfLayer(List<Rule> rules) {
         for (int j = 0; j < rules.size(); j++) {
-            Rule r = rules.elementAt(j);
+            Rule r = rules.get(j);
             if (r.isTriggerOfLayer()) {
                 r.setEnabled(true);
                 break;

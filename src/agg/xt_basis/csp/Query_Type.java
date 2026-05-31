@@ -1,8 +1,7 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
@@ -14,7 +13,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.util.csp.Query;
 import agg.util.csp.Variable;
@@ -176,7 +176,7 @@ public class Query_Type extends Query {
     }
 
     private void randomize(HashSet<GraphObject> objects) {
-        final Vector<GraphObject> newDom = new Vector<GraphObject>(objects);
+        final List<GraphObject> newDom = new ArrayList<GraphObject>(objects);
         final Random r = new Random();
         while (newDom.size() > 0) {
             int domSize = newDom.size();
@@ -191,3 +191,6 @@ public class Query_Type extends Query {
     }
 
 }
+
+
+

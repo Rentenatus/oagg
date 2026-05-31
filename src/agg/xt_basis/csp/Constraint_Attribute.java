@@ -1,16 +1,15 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
  ******************************************************************************
  */
 package agg.xt_basis.csp;
-
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.AttrContext;
 import agg.attribute.AttrException;
@@ -201,12 +200,12 @@ public class Constraint_Attribute extends BinaryConstraint implements
     }
 
     private void unsetUsedVariable(GraphObject go) {
-        final Vector<String> attrVars = ((ValueTuple) go.getAttribute())
+        final List<String> attrVars = ((ValueTuple) go.getAttribute())
                 .getAllVariableNames();
         if (attrVars.size() > 0) {
             final VarTuple varTup = (VarTuple) this.itsAttrContext.getVariables();
             for (int i = 0; i < attrVars.size(); i++) {
-                final String name = attrVars.elementAt(i);
+                final String name = attrVars.get(i);
                 final VarMember vm = varTup.getVarMemberAt(name);
                 if (vm != null) {
                     vm.setExpr(null);
@@ -220,14 +219,17 @@ public class Constraint_Attribute extends BinaryConstraint implements
 		if (go.getAttribute() == null)
 			return;
 
-		Vector<String> attrVars = ((ValueTuple) go.getAttribute())
+		List<String> attrVars = ((ValueTuple) go.getAttribute())
 				.getAllVariableNames();
 		VarTuple varTup = (VarTuple) this.itsAttrContext.getVariables();
 		for (int i = 0; i < attrVars.size(); i++) {
-			String name = attrVars.elementAt(i);
+			String name = attrVars.get(i);
 			VarMember vm = varTup.getVarMemberAt(name);
 			System.out.println("Variable: "+name+" = "+vm.getExpr()+"  hash: "+vm.hashCode()+"    "+this.itsAttrContext.hashCode());
 		}
 	}
      */
 }
+
+
+

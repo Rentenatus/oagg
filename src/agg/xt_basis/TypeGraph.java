@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
@@ -23,7 +23,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -98,7 +100,7 @@ public class TypeGraph extends Graph {
      *
      * @param types is a subset of my type set.
      */
-    public void tryToExtendByTypeNodes(final Vector<Type> types) {
+    public void tryToExtendByTypeNodes(final List<Type> types) {
         for (int i = 0; i < types.size(); i++) {
             Type t = types.get(i);
             if (!this.itsTypes.containsType(t)) {
@@ -1383,7 +1385,7 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public boolean isReadyForTransform(Vector<GraphObject> storeOfFailedObjs) {
+    public boolean isReadyForTransform(List<GraphObject> storeOfFailedObjs) {
         return false;
     }
 
@@ -1607,7 +1609,7 @@ public class TypeGraph extends Graph {
     /**
      * This method is not implemented for this class.
      */
-    public Vector<OrdinaryMorphism> generateAllSubgraphs(int sizeOfInclusions,
+    public List<OrdinaryMorphism> generateAllSubgraphs(int sizeOfInclusions,
             boolean union, boolean withIsomorphic) {
         return null;
     }
@@ -1615,8 +1617,8 @@ public class TypeGraph extends Graph {
     /**
      * This method is not implemented for this class.
      */
-    public Vector<OrdinaryMorphism> generateAllSubgraphsWithInclusionsOfSize(
-            int i, Vector<GraphObject> itsGOSet, Vector<OrdinaryMorphism> inclusions, boolean withIsomorphic) {
+    public List<OrdinaryMorphism> generateAllSubgraphsWithInclusionsOfSize(
+            int i, List<GraphObject> itsGOSet, List<OrdinaryMorphism> inclusions, boolean withIsomorphic) {
         return null;
     }
 
@@ -1644,14 +1646,14 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public Vector<String> getVariableNamesOfAttributes() {
+    public List<String> getVariableNamesOfAttributes() {
         return null;
     }
 
     /**
      * This method is not defined for this class.
      */
-    public Vector<VarMember> getSameVariablesOfAttributes() {
+    public List<VarMember> getSameVariablesOfAttributes() {
         return null;
     }
 
@@ -1670,9 +1672,11 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public Vector<Hashtable<GraphObject, GraphObject>> getPartialMorphismIntoSet(
-            Vector<GraphObject> set) {
+    public List<Map<GraphObject, GraphObject>> getPartialMorphismIntoSet(
+            List<GraphObject> set) {
         return null;
     }
 
 }
+
+

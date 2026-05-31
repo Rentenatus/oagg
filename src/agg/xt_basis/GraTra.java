@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,7 +17,8 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.attribute.AttrException;
 import agg.attribute.AttrVariableTuple;
@@ -40,7 +43,7 @@ public abstract class GraTra {
 
     protected Rule currentRule;
 
-    protected Vector<Rule> currentRuleSet = new Vector<Rule>();
+    protected List<Rule> currentRuleSet = new ArrayList<Rule>();
 
     protected Match currentMatch;
 
@@ -50,7 +53,7 @@ public abstract class GraTra {
 
     protected MorphCompletionStrategy strategy;
 
-    final protected Vector<GraTraEventListener> graTraListeners = new Vector<GraTraEventListener>();
+    final protected List<GraTraEventListener> graTraListeners = new ArrayList<GraTraEventListener>();
 
     protected boolean stopping = false;
 
@@ -188,10 +191,11 @@ public abstract class GraTra {
         setCompletionStrategy(this.options.getCompletionStrategy());
     }
 
-    public void setGraTraOptions(Vector<String> newOptions) {
+    
+    public void setGraTraOptions(List<String> newOptions) {
         GraTraOptions nOptions = new GraTraOptions();
         for (int i = 0; i < newOptions.size(); i++) {
-            String opt = newOptions.elementAt(i);
+            String opt = newOptions.get(i);
             nOptions.addOption(opt);
         }
         this.options = nOptions;
@@ -559,13 +563,13 @@ public abstract class GraTra {
 
     public synchronized void removeGraTraListener(GraTraEventListener l) {
         if (this.graTraListeners.contains(l)) {
-            this.graTraListeners.removeElement(l);
+            this.graTraListeners.remove(l);
         }
     }
 
     public synchronized void addGraTraListener(GraTraEventListener l) {
         if (!this.graTraListeners.contains(l)) {
-            this.graTraListeners.addElement(l);
+            this.graTraListeners.add(l);
         }
     }
 
@@ -579,7 +583,7 @@ public abstract class GraTra {
     protected void fireGraTra(GraTraEvent e) {
         int count = this.graTraListeners.size();
         for (int i = 0; i < count; i++) {
-            this.graTraListeners.elementAt(i).graTraEventOccurred(e);
+            this.graTraListeners.get(i).graTraEventOccurred(e);
         }
     }
 
@@ -590,7 +594,7 @@ public abstract class GraTra {
 //			Iterator<Rule> rules = grammar.getListOfRules().iterator();
 //			while ((rules.hasNext())) {
 //				Rule r = rules.next();
-//				currentRuleSet.addElement(r);
+//				currentRuleSet.add(r);
 //			}
         }
     }
@@ -648,7 +652,7 @@ public abstract class GraTra {
             }
             return false;
         } else if (this.grammar.trafoByPriority()) {
-            Vector<Formula> constraints = this.grammar.getConstraintsForPriority(-1);
+            List<Formula> constraints = this.grammar.getConstraintsForPriority(-1);
             // first check global constraints
             if (this.grammar.checkGraphConsistency(g, constraints)) {
                 constraints = this.grammar
@@ -720,7 +724,7 @@ public abstract class GraTra {
                 co_match.dispose();
                 return result;
             } else if (this.grammar.trafoByPriority()) {
-                Vector<Formula> constraints = this.grammar.getConstraintsForPriority(-1);
+                List<Formula> constraints = this.grammar.getConstraintsForPriority(-1);
                 // first check global constraints
                 if (this.grammar.checkGraphConsistency(co_match.getImage(), constraints)) {
                     constraints = this.grammar.getConstraintsForPriority(m.getRule().getPriority());
@@ -787,7 +791,7 @@ public abstract class GraTra {
                         copy.dispose();
                         return result;
                     } else if (this.grammar.trafoByPriority()) {
-                        Vector<Formula> constraints = this.grammar
+                        List<Formula> constraints = this.grammar
                                 .getConstraintsForPriority(-1);
                         // first check global constraints
                         if (this.grammar.checkGraphConsistency(co_match.getImage(),
@@ -892,9 +896,10 @@ public abstract class GraTra {
 
     //===================================================
     /**
-     * Try to apply the specified RuleScheme by creating an amalgamated rule and amalgamated match. Such an amalgamated
-     * match is a union of all valid matches of each multi rule based on the valid match of the kernel rule of the
-     * scheme.
+     * Try to apply the specified RuleScheme by creating an amalgamated rule and
+     * amalgamated match. Such an amalgamated match is a union of all valid
+     * matches of each multi rule based on the valid match of the kernel rule of
+     * the scheme.
      *
      * NOTE: This work still in progress.
      */

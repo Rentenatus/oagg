@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: GraTraOptionGUI.java,v 1.16 2010/10/21 11:19:07 olga Exp $
 package agg.gui.options;
@@ -351,10 +352,14 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
             if (this.transform.getEditor().getGraGra().getBasisGraGra().hasRuleChangedEvailability()) {
                 if (((this.layers.getItemCount() - 1)
                         != this.transform.getEditor().getGraGra().getBasisGraGra().getEnabledLayers().size())) {
-                    this.initLayers(this.transform.getEditor().getGraGra().getBasisGraGra().getEnabledLayers());
+                    Vector<String> list = new Vector<>();
+                    list.addAll(this.transform.getEditor().getGraGra().getBasisGraGra().getEnabledLayers());
+                    this.initLayers(list);
                 }
             } else if (this.layers.getItemCount() == 1) {
-                this.initLayers(this.transform.getEditor().getGraGra().getBasisGraGra().getEnabledLayers());
+                Vector<String> list = new Vector<>();
+                list.addAll(this.transform.getEditor().getGraGra().getBasisGraGra().getEnabledLayers());
+                this.initLayers(list);
             }
         }
     }
@@ -431,7 +436,9 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
      * Updates options setting.
      */
     public void update() {
-        update(this.transform.getGraTraOptionsList());
+        Vector<String> list = new Vector<>();
+        list.addAll(this.transform.getGraTraOptionsList());
+        update(list);
     }
 
     /**
@@ -543,7 +550,8 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
     }
 
     /**
-     * Returns TRUE if the transformation option - non-deterministically - is set.
+     * Returns TRUE if the transformation option - non-deterministically - is
+     * set.
      */
     public boolean nondeterministicallyEnabled() {
         return this.nondeterministically;
@@ -585,8 +593,8 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
     }
 
     /**
-     * Returns TRUE if the option - reset graph - is set in this case the host graph will be reset for each loop over
-     * layers.
+     * Returns TRUE if the option - reset graph - is set in this case the host
+     * graph will be reset for each loop over layers.
      */
     public boolean resetGraphEnabled() {
         return this.resetGraph;

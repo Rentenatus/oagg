@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
@@ -14,7 +14,8 @@ package agg.xt_basis;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Hashtable;
 
 import agg.attribute.AttrMapping;
@@ -316,10 +317,10 @@ public class Match extends OrdinaryMorphism implements XMLObject {
 	 *
 	private boolean isReadyToTransform() {
 		final AttrVariableTuple avt = this.itsAttrContext.getVariables();
-		final Vector<String> names = avt.getVariableNames();
-		final Vector<Pair<String, String>> vars = getVariableDeclarations();
+		final List<String> names = avt.getVariableNames();
+		final List<Pair<String, String>> vars = getVariableDeclarations();
 		for (int i = 0; i < vars.size(); i++) {
-			final Pair<String, String> p = vars.elementAt(i);
+			final Pair<String, String> p = vars.get(i);
 			if (!names.contains(p.second)) {
 				if (isClassName(p.second) == null) {
 					this.errorMsg = "The variable:  " + p.second + "  isn't declared!";
@@ -971,7 +972,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
 	private void unsetVariablesOfNAC(final AttrContext attrContext, 
 			final OrdinaryMorphism nac) {
 		final VarTuple vars = (VarTuple)attrContext.getVariables();
-		final Vector<String> nacVars = nac.getTarget().getVariableNamesOfAttributes();
+		final List<String> nacVars = nac.getTarget().getVariableNamesOfAttributes();
 		for (int i = 0; i < vars.getSize(); i++) {
 			VarMember vm = vars.getVarMemberAt(i);
 			if (nacVars.contains(vm.getName())
@@ -985,7 +986,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
 	private void unsetVariablesOfPAC(final AttrContext attrContext, 
 			final OrdinaryMorphism pac) {
 		final VarTuple vars = (VarTuple)attrContext.getVariables();
-		final Vector<String> pacVars = pac.getTarget().getVariableNamesOfAttributes();
+		final List<String> pacVars = pac.getTarget().getVariableNamesOfAttributes();
 		for (int i = 0; i < vars.getSize(); i++) {
 			VarMember vm = vars.getVarMemberAt(i);
 			if (pacVars.contains(vm.getName())
@@ -1014,7 +1015,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         for (int i = 0; i < ct.getSize(); i++) {
             CondMember cm = ct.getCondMemberAt(i);
             if (cm.isEnabled()) {
-                Vector<String> names = cm.getAllVariables();
+                List<String> names = cm.getAllVariables();
                 for (int k = 0; k < names.size(); k++) {
                     String n = names.get(k);
                     VarMember var = vars.getVarMemberAt(n);
@@ -1123,3 +1124,6 @@ public class Match extends OrdinaryMorphism implements XMLObject {
     }
 
 }
+
+
+

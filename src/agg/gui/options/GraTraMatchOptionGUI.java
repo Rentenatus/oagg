@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: GraTraMatchOptionGUI.java,v 1.8 2010/10/07 20:08:03 olga Exp $
 package agg.gui.options;
@@ -337,7 +338,9 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
      * Updates options setting.
      */
     public void update() {
-        update(this.transform.getGraTraOptionsList());
+        Vector<String> list = new Vector<>();
+        list.addAll(this.transform.getGraTraOptionsList());
+        update(list);
     }
 
     /**
@@ -487,7 +490,8 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
     }
 
     /**
-     * Returns TRUE if the option -consistency check during transformation- is set.
+     * Returns TRUE if the option -consistency check during transformation- is
+     * set.
      */
     public boolean consistencyEnabled() {
         return this.consistency;
@@ -516,7 +520,8 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
     }
 
     /**
-     * Returns TRUE if the option -check rule applicability on current graph- is set.
+     * Returns TRUE if the option -check rule applicability on current graph- is
+     * set.
      */
     public boolean checkRuleApplicabilityEnabled() {
         return this.checkRuleAppl;

@@ -23,8 +23,8 @@ import agg.util.Change;
 import agg.util.Pair;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * @version $Id: Arc.java,v 1.40 2010/11/06 18:34:59 olga Exp $
@@ -250,7 +250,7 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     public List<String> convertToKeyParentExtended() {
-        final List<String> list = new Vector<>();
+        final List<String> list = new ArrayList<>();
 
         List<Type> mySrcParents = this.getSource().getType().getAllParents();
         List<Type> myTrgParents = this.getTarget().getType().getAllParents();

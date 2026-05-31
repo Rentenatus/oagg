@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
@@ -15,7 +15,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Hashtable;
 
 import agg.attribute.AttrInstance;
@@ -1768,7 +1769,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //				.createSubGraph());
 //		if (itsSubRules == null)
 //			itsSubRules = new List<SubRule>(5, 1);
-//		itsSubRules.addElement(sr);
+//		itsSubRules.add(sr);
 //		return sr;
 //	}
     /**
@@ -1791,7 +1792,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //		SubRule sr = new SubRule(this, left, right);
 //		if (itsSubRules == null)
 //			itsSubRules = new List<SubRule>(5, 1);
-//		itsSubRules.addElement(sr);
+//		itsSubRules.add(sr);
 //		return sr;
 //
 //	}
@@ -1799,7 +1800,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //	public final SubRule createSubRule(SubGraGra sgg) {
 //		SubRule sr = new SubRule(this, new SubGraph(this.getLeft()),
 //				new SubGraph(this.getRight()));
-//		itsSubRules.addElement(sr);
+//		itsSubRules.add(sr);
 //		if (sgg != null)
 //			sgg.addRule(sr);
 //		return sr;
@@ -5028,3 +5029,5 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 }
+
+

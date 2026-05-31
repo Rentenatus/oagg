@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
@@ -9,6 +9,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
+
 package agg.xt_basis;
 
 import agg.attribute.AttrContext;
@@ -34,6 +35,7 @@ import de.jare.ndimcol.ref.ArrayMovie;
 import de.jare.ndimcol.ref.ArraySeason;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Vector;
 
 /**
  * This class extends simple graphs with the possibility to have arcs between nodes.
@@ -1773,7 +1774,7 @@ public class Graph extends ExtObservable
      * @deprecated replaced by <code>HashSet<Node> getNodesSet()</code>
      */
     public Enumeration<Node> getNodes() {
-        return this.itsNodes.elements();
+        return Collections.enumeration(this.itsNodes);
     }
 
     /**
@@ -1833,7 +1834,7 @@ public class Graph extends ExtObservable
      * @deprecated replaced by <code>HashSet<Arc> getArcsSet()</code>
      */
     public Enumeration<Arc> getArcs() {
-        return this.itsArcs.elements();
+        return Collections.enumeration(this.itsArcs);
     }
 
     /**
@@ -4256,3 +4257,4 @@ public class Graph extends ExtObservable
     }
 
 }
+

@@ -13,6 +13,7 @@
  */
 package agg.util.csp;
 
+
 import java.util.function.BiPredicate;
 
 public class SimpleBiPredicateVariable implements BiPredicate<Variable, Variable> {

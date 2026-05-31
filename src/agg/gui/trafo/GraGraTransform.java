@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -33,10 +35,12 @@ import agg.xt_basis.RuleSequencesGraTraImpl;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.ruleappl.RuleSequence;
 import agg.util.Pair;
+import java.util.ArrayList;
 
 /**
- * The class GraGraTransform handles a step by step (debugger) and interpreting (interpreter) transformation of a
- * gragra. It uses the class TransformDebug for the debugger and the class TransformInterpret for the interpreter. It
+ * The class GraGraTransform handles a step by step (debugger) and interpreting
+ * (interpreter) transformation of a gragra. It uses the class TransformDebug
+ * for the debugger and the class TransformInterpret for the interpreter. It
  * provides the procedures to the Transform menu.
  *
  * @author $Author: olga $
@@ -84,7 +88,8 @@ public class GraGraTransform {
     }
 
     /**
-     * Returns GraTraOptionGUI instance which allows to set the possible graph transformation options.
+     * Returns GraTraOptionGUI instance which allows to set the possible graph
+     * transformation options.
      */
     public GraTraOptionGUI getOptionGUI() {
         return this.optionGUI;
@@ -150,95 +155,107 @@ public class GraGraTransform {
     }
 
     /**
-     * If return value is TRUE, the rule to be applied is choosen non-deterministically.
+     * If return value is TRUE, the rule to be applied is choosen
+     * non-deterministically.
      */
     public boolean nondeterministicallyEnabled() {
         return this.optionGUI.nondeterministicallyEnabled();
     }
 
     /**
-     * If return value is TRUE, the user defined rule priorities are used for graph transformation.
+     * If return value is TRUE, the user defined rule priorities are used for
+     * graph transformation.
      */
     public boolean priorityEnabled() {
         return this.optionGUI.priorityEnabled();
     }
 
     /**
-     * If return value is TRUE, the user defined rule layers are used for graph transformation.
+     * If return value is TRUE, the user defined rule layers are used for graph
+     * transformation.
      */
     public boolean layeredEnabled() {
         return this.optionGUI.layeredEnabled();
     }
 
     /**
-     * If return value is TRUE, the user defined rule sequences are used for graph transformation.
+     * If return value is TRUE, the user defined rule sequences are used for
+     * graph transformation.
      */
     public boolean ruleSequenceEnabled() {
         return this.optionGUI.ruleSequenceEnabled();
     }
 
     /**
-     * In case of TRUE, the consistency check will be done after each transformation step. If the consistency check
-     * fails, the next valid match is taken for the graph transformation.
+     * In case of TRUE, the consistency check will be done after each
+     * transformation step. If the consistency check fails, the next valid match
+     * is taken for the graph transformation.
      */
     public boolean consistencyEnabled() {
         return this.generalOptionGUI.consistencyEnabled();
     }
 
     /**
-     * In case of TRUE, the consistency check will be done after the graph transformation finished. For layered graph
-     * transformation the consistency check will be done at the end of a layer.
+     * In case of TRUE, the consistency check will be done after the graph
+     * transformation finished. For layered graph transformation the consistency
+     * check will be done at the end of a layer.
      */
     public boolean consistencyCheckAfterGraphTrafoEnabled() {
         return this.generalOptionGUI.consistencyCheckAfterGraphTrafoEnabled();
     }
 
     /**
-     * If return value is TRUE, the layer's table is displayed before transformation starts to give the user a
-     * possibility to change the current rule-layer setting.
+     * If return value is TRUE, the layer's table is displayed before
+     * transformation starts to give the user a possibility to change the
+     * current rule-layer setting.
      */
     public boolean showLayerEnabled() {
         return this.optionGUI.showLayerEnabled();
     }
 
     /**
-     * If return value is TRUE, the graph transformation will stop after each layer and wait for a user action.
+     * If return value is TRUE, the graph transformation will stop after each
+     * layer and wait for a user action.
      */
     public boolean stopLayerAndWaitEnabled() {
         return this.optionGUI.stopLayerAndWaitEnabled();
     }
 
     /**
-     * If return value is TRUE, the only current layer will break when the tool button "Stop" transformation is pressed.
+     * If return value is TRUE, the only current layer will break when the tool
+     * button "Stop" transformation is pressed.
      */
     public boolean breakLayerEnabled() {
         return this.optionGUI.breakLayerEnabled();
     }
 
     /**
-     * If return value is TRUE, the layered transformation will break when the tool button "Stop" transformation is
-     * pressed.
+     * If return value is TRUE, the layered transformation will break when the
+     * tool button "Stop" transformation is pressed.
      */
     public boolean breakAllLayerEnabled() {
         return this.optionGUI.breakAllLayerEnabled();
     }
 
     /**
-     * If return value is TRUE, the modified host graph will be shown after each transformation step.
+     * If return value is TRUE, the modified host graph will be shown after each
+     * transformation step.
      */
     public boolean showGraphAfterStepEnabled() {
         return this.generalOptionGUI.showGraphAfterStepEnabled();
     }
 
     /**
-     * If return value is TRUE, the graph transformation will stop after each step and wait for a user action.
+     * If return value is TRUE, the graph transformation will stop after each
+     * step and wait for a user action.
      */
     public boolean waitAfterStepEnabled() {
         return this.generalOptionGUI.waitAfterStepEnabled();
     }
 
     /**
-     * If return value is TRUE, the rule applicability check will be done after each transformation step.
+     * If return value is TRUE, the rule applicability check will be done after
+     * each transformation step.
      */
     public boolean checkRuleApplicabilityEnabled() {
         return this.generalOptionGUI.checkRuleApplicabilityEnabled();
@@ -255,22 +272,24 @@ public class GraGraTransform {
     }
 
     /**
-     * If return value is TRUE, all nodes and edges created during transformation step are shown as selected objects.
+     * If return value is TRUE, all nodes and edges created during
+     * transformation step are shown as selected objects.
      */
     public boolean selectNewAfterStepEnabled() {
         return this.generalOptionGUI.selectNewAfterStepEnabled();
     }
 
     /**
-     * If return value is TRUE, the layered transformation starts with the first layer again.
+     * If return value is TRUE, the layered transformation starts with the first
+     * layer again.
      */
     public boolean layeredLoopEnabled() {
         return this.optionGUI.layeredLoopEnabled();
     }
 
     /**
-     * Returns TRUE if the option - reset graph - is set in this case the host graph will be reset for each loop over
-     * layers.
+     * Returns TRUE if the option - reset graph - is set in this case the host
+     * graph will be reset for each loop over layers.
      */
     public boolean resetGraphEnabled() {
         return this.optionGUI.resetGraphEnabled();
@@ -281,7 +300,8 @@ public class GraGraTransform {
     }
 
     /**
-     * Sets the current completion strategy. The completion strategy of the transform debugger will be set too.
+     * Sets the current completion strategy. The completion strategy of the
+     * transform debugger will be set too.
      */
     public void setCompletionStrategy(MorphCompletionStrategy strat) {
         this.strategy = strat;
@@ -295,7 +315,7 @@ public class GraGraTransform {
     /**
      * The current transformation options, backed by a vector of option names.
      */
-    public Vector<String> getGraTraOptionsList() {
+    public List<String> getGraTraOptionsList() {
         GraTraOptions gratraOptions = getGraTraOptions();
         return gratraOptions.getOptions();
     }
@@ -386,10 +406,12 @@ public class GraGraTransform {
         }
     }
 
-    public void updateGraTraOptionGUI(Vector<String> optionsList) {
-        this.optionGUI.update(optionsList);
+    public void updateGraTraOptionGUI(List<String> optionsList) {
+        Vector<String> list = new Vector<>();
+        list.addAll(optionsList);
+        this.optionGUI.update(list);
         this.optionGUI.updateLayerToStopIfNeeded();
-        this.generalOptionGUI.update(optionsList);
+        this.generalOptionGUI.update(list);
     }
 
     public void setRulesOfGraphRuleSequenceGUI(List<EdRule> rules) {

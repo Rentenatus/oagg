@@ -1,18 +1,19 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
  ******************************************************************************
  */
+
 package agg.xt_basis;
 
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
@@ -118,12 +119,12 @@ public class RuleSequencesGraTraImpl extends GraTra {
     protected void setRuleSequence(
             final List<Pair<List<Pair<String, String>>, String>> sequence) {
 
-        this.ruleSubsequences = new Vector<Pair<List<Pair<Rule, String>>, String>>(
+        this.ruleSubsequences = new ArrayList<Pair<List<Pair<Rule, String>>, String>>(
                 sequence.size());
         for (int i = 0; i < sequence.size(); i++) {
             Pair<List<Pair<String, String>>, String> pi = sequence.get(i);
             List<Pair<String, String>> v = pi.first;
-            List<Pair<Rule, String>> vec = new Vector<Pair<Rule, String>>(v
+            List<Pair<Rule, String>> vec = new ArrayList<Pair<Rule, String>>(v
                     .size());
             for (int j = 0; j < v.size(); j++) {
                 Pair<String, String> pj = v.get(j);
@@ -580,11 +581,11 @@ public class RuleSequencesGraTraImpl extends GraTra {
         return this.trafoSequenceBroken;
     }
 
-    protected Vector<Rule> getEnabledRules(Vector<Rule> ruleSet) {
-        Vector<Rule> vec = new Vector<Rule>(ruleSet.size());
+    protected List<Rule> getEnabledRules(List<Rule> ruleSet) {
+        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
-            if (ruleSet.elementAt(j).isEnabled()) {
-                vec.add(ruleSet.elementAt(j));
+            if (ruleSet.get(j).isEnabled()) {
+                vec.add(ruleSet.get(j));
             }
         }
         return vec;
@@ -609,17 +610,17 @@ public class RuleSequencesGraTraImpl extends GraTra {
         return this.protocolFileName;
     }
 
-    protected String getRuleNames(Vector<Rule> rules) {
+    protected String getRuleNames(List<Rule> rules) {
         String names = "[  ";
         for (int j = 0; j < rules.size(); j++) {
-            Rule r = rules.elementAt(j);
+            Rule r = rules.get(j);
             names = names + r.getName() + "  ";
         }
         names = names + "]";
         return names;
     }
 
-    protected String getRuleNamesOfSubsequence(Vector<Pair<Rule, String>> rules) {
+    protected String getRuleNamesOfSubsequence(List<Pair<Rule, String>> rules) {
         String names = "Rule subsequence: ( ";
         for (int j = 0; j < rules.size(); j++) {
             Pair<Rule, String> p = rules.get(j);
@@ -721,7 +722,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
     }
 
     public String getRuleSequenceAsText() {
-        this.ruleNameSequences = new Vector<String>(this.ruleSubsequences.size());
+        this.ruleNameSequences = new ArrayList<String>(this.ruleSubsequences.size());
         String s = "";
         for (int i = 0; i < this.ruleSubsequences.size(); i++) {
             Pair<List<Pair<Rule, String>>, String> grp = this.ruleSubsequences.get(i);
@@ -799,3 +800,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
     }
 
 }
+
+
+
+

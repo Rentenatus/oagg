@@ -1,31 +1,35 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
 import java.util.BitSet;
 import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import agg.xt_basis.csp.CompletionPropertyBits;
 
 /**
- * This class defines the options for graph transformation, backed by a vector of names. Possible options are: for
- * completion strategy (it is always the first element of the vector): "CSP", "CSP w/o BJ" for match : "injective",
- * "dangling", "identification", "NACs", other general options: "consistency", "checkRuleApplicability",
- * "showGraphAfterStep", "waitAfterStep", "selectNewAfterStep", for kind of graph transformation: "layered", "priority",
- * "ruleSequence", other options of layered graph transformation: "layeredLoop", "stopLayerAndWait", "breakLayer",
- * "breakAllLayer".
+ * This class defines the options for graph transformation, backed by a vector
+ * of names. Possible options are: for completion strategy (it is always the
+ * first element of the vector): "CSP", "CSP w/o BJ" for match : "injective",
+ * "dangling", "identification", "NACs", other general options: "consistency",
+ * "checkRuleApplicability", "showGraphAfterStep", "waitAfterStep",
+ * "selectNewAfterStep", for kind of graph transformation: "layered",
+ * "priority", "ruleSequence", other options of layered graph transformation:
+ * "layeredLoop", "stopLayerAndWait", "breakLayer", "breakAllLayer".
  *
- * Please node: Options: "checkRuleApplicability", "showGraphAfterStep", "waitAfterStep", "selectNewAfterStep",
- * "stopLayerAndWait", "breakLayer", "breakAllLayer" can be used with AGG GUI, only.
+ * Please node: Options: "checkRuleApplicability", "showGraphAfterStep",
+ * "waitAfterStep", "selectNewAfterStep", "stopLayerAndWait", "breakLayer",
+ * "breakAllLayer" can be used with AGG GUI, only.
  */
 public class GraTraOptions {
 
@@ -87,7 +91,7 @@ public class GraTraOptions {
 
     public final static String XY_POS_ATTRIBUTE = "xyPosAttribute";
 
-    final private Vector<String> options;
+    final private List<String> options;
 
     private MorphCompletionStrategy strategy;
 
@@ -95,7 +99,7 @@ public class GraTraOptions {
      * Creates an new empty list
      */
     public GraTraOptions() {
-        this.options = new Vector<String>();
+        this.options = new ArrayList<String>();
     }
 
     /**
@@ -103,7 +107,7 @@ public class GraTraOptions {
      */
     public void addOption(String name) {
         if (!this.options.contains(name)) {
-            this.options.addElement(name);
+            this.options.add(name);
         }
     }
 
@@ -112,7 +116,7 @@ public class GraTraOptions {
      */
     public void removeOption(String name) {
         if (this.options.contains(name)) {
-            this.options.removeElement(name);
+            this.options.remove(name);
         }
     }
 
@@ -130,7 +134,7 @@ public class GraTraOptions {
     /**
      * Returns current option names
      */
-    public Vector<String> getOptions() {
+    public List<String> getOptions() {
         return this.options;
     }
 
@@ -144,19 +148,20 @@ public class GraTraOptions {
 
     public String toString() {
         int l = this.options.size();
-        String result = this.options.elementAt(0);
+        String result = this.options.get(0);
         result += " [ ";
         for (int i = 1; i < l - 1; i++) {
-            result += this.options.elementAt(i);
+            result += this.options.get(i);
             result += ", ";
         }
-        result += this.options.elementAt(l - 1);
+        result += this.options.get(l - 1);
         result += " ]";
         return result;
     }
 
     /**
-     * Updates morphism completion strategy and its properties (match conditions) using current list of option names.
+     * Updates morphism completion strategy and its properties (match
+     * conditions) using current list of option names.
      */
     public void updateMorphismCompletionStrategy() {
         // set strategy

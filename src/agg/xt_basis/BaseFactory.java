@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
+ * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
@@ -11,13 +11,14 @@
  */
 package agg.xt_basis;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
@@ -61,7 +62,7 @@ public class BaseFactory {
     /**
      * The factory models GraGras.
      */
-    private final List<GraGra> itsGraGras = new Vector<GraGra>();
+    private final List<GraGra> itsGraGras = new ArrayList<GraGra>();
 
     protected static BaseFactory theBaseFactory;
 
@@ -122,7 +123,7 @@ public class BaseFactory {
     }
 
     public Enumeration<GraGra> getGraGras() {
-        return ((Vector<GraGra>) this.itsGraGras).elements();
+        return Collections.enumeration(this.itsGraGras);
     }
 
     public int getCountOfGraGras() {
@@ -230,7 +231,7 @@ public class BaseFactory {
         final OrdinaryMorphism k = new OrdinaryMorphism(K, C,
                 g.getAttrManager().newContext(AttrMapping.PLAIN_MAP));
 
-        List<Node> del = new Vector<Node>();
+        List<Node> del = new ArrayList<Node>();
         Iterator<Node> nodes = L.getNodesCollection().iterator();
         while (nodes.hasNext()) {
             Node nL = nodes.next();
@@ -1884,7 +1885,7 @@ public class BaseFactory {
                 cr.setIndexOfFirstSourceRule(i1);
                 cr.setIndexOfSecondSourceRule(i2);
 
-                List<ObjectFlow> newObjFlows = new Vector<ObjectFlow>();
+                List<ObjectFlow> newObjFlows = new ArrayList<ObjectFlow>();
                 if (byObjectFlow) {
                     List<ObjectFlow> r1ObjFlow = rs.getObjFlowForRule(r1, i1);
                     List<ObjectFlow> r2ObjFlow = rs.getObjFlowForRule(r2, i2);
@@ -2128,7 +2129,7 @@ public class BaseFactory {
 
         for (int i = 0; i < conds.getNumberOfEntries(); i++) {
             CondMember cond = conds.getCondMemberAt(i);
-//			Vector<String> condVars = cond.getAllVariables();			
+//			List<String> condVars = cond.getAllVariables();			
             condsOfInverseR.addCondition(cond.getExprAsText());
         }
     }
@@ -2165,7 +2166,7 @@ public class BaseFactory {
 		
 		for (int i=0; i<conds.getNumberOfEntries(); i++) {
 			CondMember cond = conds.getCondMemberAt(i);
-			Vector<String> condVars = cond.getAllVariables();
+			List<String> condVars = cond.getAllVariables();
 			boolean varsOK = true;
 			for (int j=0; j<condVars.size(); j++) {
 				String varN = condVars.get(j);
@@ -2382,7 +2383,7 @@ public class BaseFactory {
             final OrdinaryMorphism isoRight) {
 
         boolean failed = false;
-//		Vector<OrdinaryMorphism> racs = new Vector<OrdinaryMorphism>();
+//		List<OrdinaryMorphism> racs = new ArrayList<OrdinaryMorphism>();
 
         final List<OrdinaryMorphism> acs = r.getNestedACsList();
         for (int i = 0; i < acs.size() && !failed; i++) {
@@ -2455,7 +2456,7 @@ public class BaseFactory {
             final Hashtable<GraphObject, GraphObject> isoRight) {
 
         boolean failed = false;
-//		Vector<OrdinaryMorphism> racs = new Vector<OrdinaryMorphism>();
+//		List<OrdinaryMorphism> racs = new ArrayList<OrdinaryMorphism>();
 
         final List<OrdinaryMorphism> acs = r.getNestedACsList();
         for (int i = 0; i < acs.size() && !failed; i++) {
@@ -2518,7 +2519,7 @@ public class BaseFactory {
             final Rule inverseRule) {
 
         boolean failed = false;
-//		Vector<OrdinaryMorphism> racs = new Vector<OrdinaryMorphism>();
+//		List<OrdinaryMorphism> racs = new ArrayList<OrdinaryMorphism>();
 
         for (int i = 0; i < acL.getNestedACs().size() /*&& !failed*/; i++) {
             NestedApplCond ncL = acL.getNestedACs().get(i);
@@ -3354,7 +3355,7 @@ public class BaseFactory {
      */
     public boolean removePreservedUnchangedObjs(final Rule r) {
         boolean removed = false;
-        Vector<GraphObject> del = new Vector<GraphObject>();
+        List<GraphObject> del = new ArrayList<GraphObject>();
         // remove preserved unchanged objects from LHS and RHS
         Iterator<GraphObject> dom = r.getDomain();
         while (dom.hasNext()) {
@@ -4675,7 +4676,7 @@ public class BaseFactory {
      */
     public Formula replacePACsByGACs(final List<OrdinaryMorphism> list) {
         // replace PACs by GACs and build formula = GAC1 || GAC2 || ... 
-        List<Evaluable> shiftEvals = new Vector<Evaluable>(list.size());
+        List<Evaluable> shiftEvals = new ArrayList<Evaluable>(list.size());
         for (int k = 0; k < list.size(); k++) {
             OrdinaryMorphism c = list.get(k);
             NestedApplCond nc = BaseFactory.theBaseFactory.createGeneralMorphism(c.getSource(), c.getTarget());
@@ -4710,7 +4711,7 @@ public class BaseFactory {
      */
     public Formula replaceNACsByGACs(final List<OrdinaryMorphism> list) {
         // replace NACs by GACs and build formula = !(GAC1 || GAC2 || ...) 
-        List<Evaluable> shiftEvals = new Vector<Evaluable>(list.size());
+        List<Evaluable> shiftEvals = new ArrayList<Evaluable>(list.size());
         for (int k = 0; k < list.size(); k++) {
             OrdinaryMorphism c = list.get(k);
             NestedApplCond nc = BaseFactory.theBaseFactory.createGeneralMorphism(c.getSource(), c.getTarget());
@@ -5005,7 +5006,7 @@ public class BaseFactory {
         // rename variables in conditions
         for (int j = 0; j < conds.getSize(); j++) {
             CondMember cm = conds.getCondMemberAt(j);
-            Vector<String> v1 = cm.getAllVariables();
+            List<String> v1 = cm.getAllVariables();
             if (v1.contains(from)) {
                 JexExpr oldExpr = (JexExpr) cm.getExpr();
 //				System.out.println(cm.getExpr());
@@ -5013,7 +5014,7 @@ public class BaseFactory {
                 // System.out.println("ast: "+oldExpr.getAST());
                 // System.out.println("Children of ast:
                 // "+oldExpr.getAST().jjtGetNumChildren());
-//				Vector<String> variables = new Vector<String>();
+//				List<String> variables = new ArrayList<String>();
 //				oldExpr.getAllVariables(variables);
                 /*
 				 * System.out.println("Variables of ast: "+variables.size());
@@ -5037,14 +5038,14 @@ public class BaseFactory {
         // rename variables in conditions
         for (int j = 0; j < value.getSize(); j++) {
             ValueMember vm = value.getValueMemberAt(j);
-            Vector<String> v1 = vm.getAllVariableNamesOfExpression();
+            List<String> v1 = vm.getAllVariableNamesOfExpression();
             if (v1.contains(from)) {
                 JexExpr oldExpr = (JexExpr) vm.getExpr();
                 // test output
                 // System.out.println("ast: "+oldExpr.getAST());
                 // System.out.println("Children of ast:
                 // "+oldExpr.getAST().jjtGetNumChildren());
-//				Vector<String> variables = new Vector<String>();
+//				List<String> variables = new ArrayList<String>();
 //				oldExpr.getAllVariables(variables);
                 /*
 				 * System.out.println("Variables of ast: "+variables.size());
@@ -5098,7 +5099,7 @@ public class BaseFactory {
                         // System.out.println("ast: "+oldExpr.getAST());
                         // System.out.println("Children of ast:
                         // "+oldExpr.getAST().jjtGetNumChildren());
-                        Vector<String> variables = new Vector<String>();
+                        List<String> variables = new ArrayList<String>();
                         oldExpr.getAllVariables(variables);
                         /*
 						 * System.out.println("Variables of ast:
@@ -5143,7 +5144,7 @@ public class BaseFactory {
                         // System.out.println("ast: "+oldExpr.getAST());
                         // System.out.println("Children of ast:
                         // "+oldExpr.getAST().jjtGetNumChildren());
-                        Vector<String> variables = new Vector<String>();
+                        List<String> variables = new ArrayList<String>();
                         oldExpr.getAllVariables(variables);
                         /*
 						 * System.out.println("Variables of ast:
@@ -5279,10 +5280,10 @@ public class BaseFactory {
             final boolean union,
             final boolean withIsomorphic) {
 
-        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        List<OrdinaryMorphism> subs = new ArrayList<OrdinaryMorphism>();
         final Iterator<GraphObject> itsGOs = thisGraph.iteratorOfElems();
-        final List<GraphObject> itsGOSet = new Vector<GraphObject>();
+        final List<GraphObject> itsGOSet = new ArrayList<GraphObject>();
         int size = 0;
         int minGraphSize;
 
@@ -5323,10 +5324,10 @@ public class BaseFactory {
             final boolean union,
             final boolean withIsomorphic) {
 
-        final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        List<OrdinaryMorphism> subs = new ArrayList<OrdinaryMorphism>();
         final Iterator<GraphObject> itsGOs = thisGraph.iteratorOfElems();
-        final List<GraphObject> itsGOSet = new Vector<GraphObject>();
+        final List<GraphObject> itsGOSet = new ArrayList<GraphObject>();
         int size = 0;
         int minGraphSize;
 
@@ -5342,7 +5343,7 @@ public class BaseFactory {
 
         List<Object> requiredInsideSubgraphs = null;
         if (objectMap != null && !objectMap.isEmpty()) {
-            requiredInsideSubgraphs = new Vector<Object>(objectMap.keySet());
+            requiredInsideSubgraphs = new ArrayList<Object>(objectMap.keySet());
         }
 
         if (sizeOfInclusion == -1) {
@@ -5355,13 +5356,13 @@ public class BaseFactory {
             subs = generateAllSubgraphsWithInclusionsOfSize(thisGraph, sizeOfInclusion,
                     itsGOSet, subs, withIsomorphic, requiredInsideSubgraphs, true);
         } else {
-            return oSet.elements();
+            return Collections.enumeration(oSet);
         }
 
         makeOverlappingPairs(thisGraph, g, subs, oSet, objectMap);
         subs.clear();
 
-        return (oSet.elements());
+        return Collections.enumeration(oSet);
     }
 
     private void makeOverlappingPairs(
@@ -5799,7 +5800,7 @@ public class BaseFactory {
         if (intersection != null && !intersection.isEmpty()) {
 
             final Set<Object> intersectionOfThisGraph = intersection.keySet();
-            List<GraphObject> goSet = new Vector<GraphObject>();
+            List<GraphObject> goSet = new ArrayList<GraphObject>();
             Iterator<Object> keys = intersectionOfThisGraph.iterator();
             while (keys.hasNext()) {
                 Object obj = keys.next();
@@ -5820,11 +5821,11 @@ public class BaseFactory {
                     strategy = new Completion_InjCSP();
                 }
 
-                final Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>(1);
+                final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>(1);
 
                 makeOverlappingPairByPredefinedIntersection(thisGraph, g, intersection, inclusion, strategy, oSet);
                 if (!oSet.isEmpty()) {
-                    return oSet.elements();
+                    return Collections.enumeration(oSet);
                 }
             }
         }
@@ -5838,9 +5839,9 @@ public class BaseFactory {
             final Hashtable<Object, Object> partialIntersection,
             boolean onlyRequiredObjectsInsideSubgraphs) {
 
-        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new Vector<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>();
-        final List<GraphObject> itsGOSet = new Vector<GraphObject>();
+        final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+        List<OrdinaryMorphism> subs = new ArrayList<OrdinaryMorphism>();
+        final List<GraphObject> itsGOSet = new ArrayList<GraphObject>();
         final Iterator<GraphObject> itsGOs = thisGraph.iteratorOfElems();
         int size = 0;
 
@@ -5873,9 +5874,9 @@ public class BaseFactory {
             boolean union,
             boolean withIsomorphic) {
 
-        List<OrdinaryMorphism> subs = new Vector<OrdinaryMorphism>(0);
+        List<OrdinaryMorphism> subs = new ArrayList<OrdinaryMorphism>(0);
         Iterator<GraphObject> itsGOs = thisGraph.iteratorOfElems();
-        List<GraphObject> itsGOSet = new Vector<GraphObject>();
+        List<GraphObject> itsGOSet = new ArrayList<GraphObject>();
         int size = 0;
         int minGraphSize;
 
@@ -5922,10 +5923,10 @@ public class BaseFactory {
             boolean onlyRequiredObjectsInsideSubgraphs) {
 
         if (i == 0) {
-            return putInclusion(thisGraph, new Vector<GraphObject>(), inclusions);
+            return putInclusion(thisGraph, new ArrayList<GraphObject>(), inclusions);
         }
 
-        List<Integer> select = new Vector<Integer>();
+        List<Integer> select = new ArrayList<Integer>();
         if (i <= itsGOSet.size()) {
             for (int j = 1; j <= i; j++) {
                 select.add(Integer.valueOf(j - 1));
@@ -5992,7 +5993,7 @@ public class BaseFactory {
             final List<Object> requiredObjectsInsideSubgraph,
             boolean onlyRequiredObjectsInsideSubgraphs) {
 
-        final List<GraphObject> tmp = new Vector<GraphObject>();
+        final List<GraphObject> tmp = new ArrayList<GraphObject>();
 
         if (requiredObjectsInsideSubgraph == null
                 || requiredObjectsInsideSubgraph.isEmpty()) {
@@ -6544,3 +6545,5 @@ public class BaseFactory {
     }
 
 }
+
+

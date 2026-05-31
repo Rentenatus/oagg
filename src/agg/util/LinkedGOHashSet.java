@@ -1,5 +1,4 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
@@ -7,17 +6,16 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
  ******************************************************************************
- */
-/**
- *
- */
+ */ 
 package agg.util;
 
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import agg.xt_basis.GraphObject;
 
@@ -79,11 +77,11 @@ public class LinkedGOHashSet<T extends GraphObject> extends
     }
 
     public Enumeration<T> elements() {
-        return (new Vector<T>(this)).elements();
+        return Collections.enumeration(new ArrayList<T>(this));
     }
 
     public List<T> list() {
-        return (new Vector<T>(this));
+        return new ArrayList<T>(this);
     }
 
 }

@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -31,7 +31,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -513,7 +514,7 @@ public class TypeSet {
     }
 
     private void doAdaptTypes(final IteratorWalker<Type> otherTypes, final boolean all) {
-        Vector<Pair<Type, Type>> v = new Vector<Pair<Type, Type>>(5);
+        List<Pair<Type, Type>> v = new ArrayList<Pair<Type, Type>>(5);
         while (otherTypes.hasNext()) {
             Type t = otherTypes.next();
             Type similar = getTypeByNameAndAdditionalRepr(t.getStringRepr(), t
@@ -571,7 +572,7 @@ public class TypeSet {
 
     private void adaptTypeInheritance(
             final Graph tGraph,
-            final Vector<Type> typesToAdapt,
+            final List<Type> typesToAdapt,
             final Map<Type, List<Type>> oldInheritance) {
         if (tGraph == null || this.typeGraph == null
                 || !this.typeGraph.getNodesSet().iterator().hasNext()
@@ -612,7 +613,7 @@ public class TypeSet {
         }
     }
 
-    private void adaptTypeMultiplicity(final Graph tGraph, final Vector<Type> typesToAdapt) {
+    private void adaptTypeMultiplicity(final Graph tGraph, final List<Type> typesToAdapt) {
         if (tGraph == null || this.typeGraph == null
                 || !this.typeGraph.getNodesSet().iterator().hasNext()
                 || typesToAdapt.isEmpty()) {
@@ -709,7 +710,7 @@ public class TypeSet {
             Node n = e.next();
             Type t = n.getType();
             List<Type> clan = t.getClan();
-            List<Node> clanNodes = new Vector<Node>(5);
+            List<Node> clanNodes = new ArrayList<Node>(5);
 
             // check double attrs of the clan types
             for (int i = 0; i < clan.size(); i++) {
@@ -721,7 +722,7 @@ public class TypeSet {
                 }
             }
             // check edges of a clan
-            Vector<Arc> clanArcs = new Vector<Arc>(5);
+            List<Arc> clanArcs = new ArrayList<Arc>(5);
             for (int i = 0; i < clanNodes.size(); i++) {
                 Node cn = clanNodes.get(i);
                 Iterator<Arc> arcs = cn.getIncomingArcsSet().iterator();
@@ -748,7 +749,7 @@ public class TypeSet {
                 }
             }
             // find clan arcs with equal name
-            Vector<Arc> arcsToDelete = new Vector<Arc>(5);
+            List<Arc> arcsToDelete = new ArrayList<Arc>(5);
             int nn = clanArcs.size();
             int k = 0;
             while (nn > 0 && k < nn) {
@@ -775,12 +776,12 @@ public class TypeSet {
                 k++;
             }
             // store arc, source and target types of a clan arc, then destroy the arc
-            Map<Type, Vector<Pair<?, ?>>> table = new HashMap<>(5, 5);
+            Map<Type, List<Pair<?, ?>>> table = new HashMap<>(5, 5);
             for (int i = 0; i < arcsToDelete.size(); i++) {
                 Arc a = arcsToDelete.get(i);
                 TypeGraphArc subt = t.getTypeGraphArc(a.getSource().getType(), a.getTarget().getType());
                 if (subt != null) {
-                    Vector<Pair<?, ?>> tmp = new Vector<Pair<?, ?>>(3);
+                    List<Pair<?, ?>> tmp = new ArrayList<Pair<?, ?>>(3);
                     Pair<Type, Type> srcTtarT = new Pair<Type, Type>(a.getSource()
                             .getType(), a.getTarget().getType());
                     Pair<Integer, Integer> srcMult = new Pair<Integer, Integer>(
@@ -804,7 +805,7 @@ public class TypeSet {
                 Iterator<Type> keys = table.keySet().iterator();
                 while (keys.hasNext()) {
                     Type arcT = keys.next();
-                    Vector<Pair<?, ?>> tmp = table.get(arcT);
+                    List<Pair<?, ?>> tmp = table.get(arcT);
                     Pair<?, ?> srcTtarT = tmp.get(0);
                     Pair<?, ?> srcMult = tmp.get(1);
                     Pair<?, ?> tarMult = tmp.get(2);
@@ -838,11 +839,11 @@ public class TypeSet {
      */
     public boolean importTypeGraph(final Graph tGraph, final boolean rewrite) {
 //		System.out.println("TypeSet.importTypeGraph rewrite: "+rewrite);
-        final Vector<Type> differentAttribute = new Vector<>(5);
-        final Vector<Type> differentInheritance = new Vector<>(5);
+        final List<Type> differentAttribute = new ArrayList<>(5);
+        final List<Type> differentInheritance = new ArrayList<>(5);
         final Map<Type, List<Type>> oldInheritance = new HashMap<>(5, 5);
-        final Vector<Type> differentMultiplicity = new Vector<>(5);
-        final Vector<Type> typesToAdd = new Vector<>(5);
+        final List<Type> differentMultiplicity = new ArrayList<>(5);
+        final List<Type> typesToAdd = new ArrayList<>(5);
 
         boolean conflicting = !compareTypes(tGraph.getTypeSet(),
                 differentAttribute, differentInheritance,
@@ -1241,7 +1242,7 @@ public class TypeSet {
      * The {@link #adaptTypeAttribute(Type type)} method will be aplied to each
      * element of the specified Vector typesToAdapt.
      */
-    private void adaptTypeAttribute(final Vector<Type> typesToAdapt) {
+    private void adaptTypeAttribute(final List<Type> typesToAdapt) {
         for (int i = 0; i < typesToAdapt.size(); i++) {
             Type other_t = typesToAdapt.get(i);
             adaptTypeAttribute(other_t);
@@ -1362,7 +1363,7 @@ public class TypeSet {
         this.typeGraphIsProved = false;
         // use a Vector to create the Enumeration
         // containing all errors found
-        Vector<TypeError> errors = new Vector<TypeError>();
+        List<TypeError> errors = new ArrayList<TypeError>();
         // check if a type graph is defined
         if (this.typeGraph == null) {
             errors.add(new TypeError(TypeError.NO_TYPE_GRAPH,
@@ -1725,7 +1726,7 @@ public class TypeSet {
             return;
         }
 
-        final Vector<Arc> oldInheritanceArcs = new Vector<Arc>(this.inheritanceArcs.size());
+        final List<Arc> oldInheritanceArcs = new ArrayList<Arc>(this.inheritanceArcs.size());
         oldInheritanceArcs.addAll(this.inheritanceArcs);
         this.inheritanceArcs.clear();
 
@@ -1768,7 +1769,7 @@ public class TypeSet {
      * or empty set.
      */
     public List<Arc> getInheritedArcs(final Type parentType) {
-        List<Arc> inheritedArcs = new Vector<Arc>();
+        List<Arc> inheritedArcs = new ArrayList<Arc>();
         List<Type> allparents = parentType.getAllParents();
         for (int i = 0; i < allparents.size(); i++) {
             Type p = allparents.get(i);
@@ -1948,7 +1949,7 @@ public class TypeSet {
      */
     public Collection<TypeError> checkType(final Graph graph) {
         // count the type mismatches
-        Vector<TypeError> errors = new Vector<TypeError>();
+        List<TypeError> errors = new ArrayList<TypeError>();
         // the given graph has another TypeSet
         checkTypeSet(graph, errors);
 
@@ -1980,7 +1981,7 @@ public class TypeSet {
     }
 
     // the given graph has another TypeSet
-    private Vector<TypeError> checkTypeSet(final Graph graph, final Vector<TypeError> errors) {
+    private List<TypeError> checkTypeSet(final Graph graph, final List<TypeError> errors) {
         if (!this.equals(graph.getTypeSet())) {
             // checks all edges/arcs
             Iterator<?> en = graph.getArcsSet().iterator();
@@ -2078,7 +2079,7 @@ public class TypeSet {
             return null;
         }
 
-        List<String> arcTypes = new Vector<String>();
+        List<String> arcTypes = new ArrayList<String>();
         final List<Type> parents = nodeType.getAllParents();
         if (parents.size() > 0) {
             for (int i = parents.size() - 1; i >= 0; i--) {
@@ -2127,7 +2128,7 @@ public class TypeSet {
             return null;
         }
 
-        List<String> arcTypes = new Vector<String>();
+        List<String> arcTypes = new ArrayList<String>();
         final List<Type> parents = nodeType.getAllParents();
         if (parents.size() > 0) {
             for (int i = 0; i < parents.size(); i++) {
@@ -2167,8 +2168,8 @@ public class TypeSet {
 
         final List<Type> parents = node.getType().getAllParents();
         if (parents.size() > 0) {
-            List<Arc> outcoms = new Vector<Arc>(node.getOutgoingArcsSet());
-            List<Arc> incoms = new Vector<Arc>(node.getIncomingArcsSet());
+            List<Arc> outcoms = new ArrayList<Arc>(node.getOutgoingArcsSet());
+            List<Arc> incoms = new ArrayList<Arc>(node.getIncomingArcsSet());
 
             for (int i = 0; i < parents.size(); i++) {
                 List<Node> list = this.typeGraph.getNodes(parents.get(i));
@@ -2192,7 +2193,7 @@ public class TypeSet {
                         }
                         if (!ok) {
                             if (arcTypes == null) {
-                                arcTypes = new Vector<String>();
+                                arcTypes = new ArrayList<String>();
                             }
                             arcTypes.add(arc.getType().getName());
                         }
@@ -2214,7 +2215,7 @@ public class TypeSet {
                         }
                         if (!ok) {
                             if (arcTypes == null) {
-                                arcTypes = new Vector<String>();
+                                arcTypes = new ArrayList<String>();
                             }
                             arcTypes.add(arc.getType().getName());
                         }
@@ -2420,8 +2421,8 @@ public class TypeSet {
 
     // now checks the nodes about min/max multiplicity of the type graph nodes
 /*
-	private Vector<TypeError> checkTypeGraph(final Graph graph,
-			final int actTypeGraphLevel, final Vector<TypeError> errors) {
+	private List<TypeError> checkTypeGraph(final Graph graph,
+			final int actTypeGraphLevel, final List<TypeError> errors) {
 		TypeError actError = null;
 		if ((actTypeGraphLevel == ENABLED_MAX)
 				|| (actTypeGraphLevel == ENABLED_MAX_MIN)) {
@@ -2447,10 +2448,10 @@ public class TypeSet {
      * @param errors
      * @return	errors
      */
-    private Vector<TypeError> checkNodesOverTypeGraph(
+    private List<TypeError> checkNodesOverTypeGraph(
             final Graph graph,
             final int actTypeGraphLevel,
-            final Vector<TypeError> errors) {
+            final List<TypeError> errors) {
 
         boolean localresult = true;
         Iterator<Node> nodesTG = this.typeGraph.getNodesSet().iterator();
@@ -2474,10 +2475,10 @@ public class TypeSet {
 
     // not used currently
     /*
-	private Vector<TypeError> checkNodes(final Graph graph, final int actTypeGraphLevel,
-			final Vector<TypeError> errors) {
+	private List<TypeError> checkNodes(final Graph graph, final int actTypeGraphLevel,
+			final List<TypeError> errors) {
 		TypeError actError = null;
-		final List<Type> checkedTypes = new Vector<Type>();
+		final List<Type> checkedTypes = new ArrayList<Type>();
 		
 		Iterator<Node> en = graph.getNodesSet().iterator();
 		Node actNode;
@@ -2508,10 +2509,10 @@ public class TypeSet {
      * @param errors
      * @return	errors
      */
-    private Vector<TypeError> checkArcsOverTypeGraph(
+    private List<TypeError> checkArcsOverTypeGraph(
             final Graph graph,
             final int actTypeGraphLevel,
-            Vector<TypeError> errors) {
+            List<TypeError> errors) {
 
         TypeError actError = null;
         final Iterator<Arc> en = graph.getArcsSet().iterator();
@@ -2545,7 +2546,7 @@ public class TypeSet {
     public Collection<TypeError> checkType(final Graph graph,
             final int typeGraphCheckLevel) {
         // count the type mismatches
-        Vector<TypeError> errors = new Vector<TypeError>();
+        List<TypeError> errors = new ArrayList<TypeError>();
         // check with type graph
         if ((this.typeGraph == null) || (typeGraphCheckLevel == DISABLED)) {
             return errors;
@@ -2573,7 +2574,7 @@ public class TypeSet {
         }
 
         int actTypeGraphLevel = ENABLED_MAX;
-        final List<Type> checkedTypes = new Vector<Type>();
+        final List<Type> checkedTypes = new ArrayList<Type>();
         Node n;
         TypeError actError;
         // checks all nodes in the graph
@@ -2650,7 +2651,7 @@ public class TypeSet {
      */
     public Collection<TypeError> checkType(final Rule rule) {
         // count the type mismatches
-        Vector<TypeError> errors = new Vector<TypeError>();
+        List<TypeError> errors = new ArrayList<TypeError>();
 
         // check LHS
         errors.addAll(checkType(rule.getOriginal()));
@@ -2697,7 +2698,7 @@ public class TypeSet {
      */
     public Collection<TypeError> checkType(final AtomConstraint atomic) {
         // count the type mismatches
-        Vector<TypeError> errors = new Vector<TypeError>();
+        List<TypeError> errors = new ArrayList<TypeError>();
         // check left side / original
         errors.addAll(checkType(atomic.getOriginal()));
         // check all right sides / conclusions
@@ -2730,7 +2731,7 @@ public class TypeSet {
      */
     public Collection<TypeError> checkType(final OrdinaryMorphism morphism) {
         // count the type mismatches
-        Vector<TypeError> errors = new Vector<TypeError>();
+        List<TypeError> errors = new ArrayList<TypeError>();
         // check left side / original
         errors.addAll(checkType(morphism.getOriginal()));
         // check right side / image
@@ -2946,7 +2947,7 @@ public class TypeSet {
         }
         // compare types size
         IteratorWalker<Type> e = ts.getTypeWalker();
-        Vector<Type> another = new Vector<Type>();
+        List<Type> another = new ArrayList<Type>();
         while (e.hasNext()) {
             another.add(e.next());
         }
@@ -2956,7 +2957,7 @@ public class TypeSet {
         // compare this.types
         this.types.forEach(thist -> {
             for (int j = another.size() - 1; j >= 0; j--) {
-                Type t1 = another.elementAt(j);
+                Type t1 = another.get(j);
                 if (thist.compareTo(t1)) {
                     another.remove(t1);
                     break;
@@ -2991,8 +2992,8 @@ public class TypeSet {
             return true;
         }
 
-        return compareTypes(ts, new Vector<Type>(), new Vector<Type>(),
-                new Vector<Type>(), new Vector<Type>());
+        return compareTypes(ts, new ArrayList<Type>(), new ArrayList<Type>(),
+                new ArrayList<Type>(), new ArrayList<Type>());
     }
 
     /**
@@ -3002,11 +3003,11 @@ public class TypeSet {
      * compatible, otherwise false.
      */
     public boolean compareTypes(final TypeSet ts,
-            final Vector<Type> differentAttribute,
-            final Vector<Type> differentInheritance,
-            final Vector<Type> differentMultiplicity) {
+            final List<Type> differentAttribute,
+            final List<Type> differentInheritance,
+            final List<Type> differentMultiplicity) {
         return compareTypes(ts, differentAttribute, differentInheritance,
-                differentMultiplicity, new Vector<Type>());
+                differentMultiplicity, new ArrayList<Type>());
     }
 
     public boolean isNewTypeGraphObjectImported() {
@@ -3020,10 +3021,10 @@ public class TypeSet {
      * true, if the types are compatible, otherwise false.
      */
     private boolean compareTypes(final TypeSet ts,
-            final Vector<Type> differentAttribute,
-            final Vector<Type> differentInheritance,
-            final Vector<Type> differentMultiplicity,
-            final Vector<Type> typesToAdd) {
+            final List<Type> differentAttribute,
+            final List<Type> differentInheritance,
+            final List<Type> differentMultiplicity,
+            final List<Type> typesToAdd) {
 
         if (ts == this
                 || String.valueOf(ts.hashCode()).equals(this.info)) {
@@ -3036,11 +3037,11 @@ public class TypeSet {
         typesToAdd.clear();
         final boolean[] conflict = {false};
 
-        Vector<Type> another = new Vector<Type>(ts.getTypeList());
+        List<Type> another = new ArrayList<Type>(ts.getTypeList());
         // compare types
         this.types.forEach(t -> {
             for (int j = 0; j < another.size(); j++) {
-                Type t1 = another.elementAt(j);
+                Type t1 = another.get(j);
                 if (t.getStringRepr().equals(t1.getStringRepr())) {
                     if ((t.isNodeType() && t1.isNodeType())
                             || (t.isArcType() && t1.isArcType())) {
@@ -3121,7 +3122,7 @@ public class TypeSet {
         });
         if (typesToAdd.isEmpty()) {
             for (int j = 0; j < another.size(); j++) {
-                Type t1 = another.elementAt(j);
+                Type t1 = another.get(j);
                 if (t1.hasTypeGraphNode()) {
                     if (!typesToAdd.contains(t1)) {
                         typesToAdd.add(t1);
@@ -3366,7 +3367,7 @@ public class TypeSet {
 
         this.refreshInheritance();
         /*		
-		Vector<Arc> checkedArcs = new Vector<Arc>();
+		List<Arc> checkedArcs = new ArrayList<Arc>();
 		Enumeration<Node> en = this.typeGraph.getNodes();
 		while (en.hasMoreElements()) {
 			Node tnode = en.nextElement();
@@ -3512,7 +3513,7 @@ public class TypeSet {
 // Inheritance events added
 //
 // Revision 1.60  2008/08/21 13:08:13  jurack
-// Benachrichtigung an Observer, wenn Inheritance hinzugef�gt wird
+// Benachrichtigung an Observer, wenn Inheritance hinzugefÃ¯Â¿Â½gt wird
 //
 // Revision 1.59 2008/07/09 13:34:26 olga
 // Applicability of RS - bug fixed
@@ -3875,3 +3876,7 @@ public class TypeSet {
 // Revision 1.1 1998/05/27 17:29:02 mich
 // Initial revision
 //
+
+
+
+
