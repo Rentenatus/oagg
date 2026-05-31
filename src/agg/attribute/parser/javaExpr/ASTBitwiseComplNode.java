@@ -30,7 +30,7 @@ public class ASTBitwiseComplNode extends NUMtoNUMnode {
     public void interpret() {
         jjtGetChild(0).interpret();
 //		stack[top] = new Integer(~((Integer) stack[top]).intValue());
-        stack.set(top, new Integer(~((Integer) stack.get(top)).intValue()));
+        stack.set(top, ~((Integer) stack.get(top)).intValue());
     }
 
     public String getString() {

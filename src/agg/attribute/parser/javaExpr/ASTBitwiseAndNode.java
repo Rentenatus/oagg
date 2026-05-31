@@ -40,8 +40,8 @@ public class ASTBitwiseAndNode extends NUMxNUMtoNUMnode {
             stack.set(--top, Boolean.valueOf(((Boolean) stack.get(top)).booleanValue()
                     & ((Boolean) stack.get(+1)).booleanValue()));
         } else if (stack.get(top) instanceof Integer) {
-            stack.set(--top, new Integer(((Integer) stack.get(top)).intValue()
-                    & ((Integer) stack.get(+1)).intValue()));
+            stack.set(--top, ((Integer) stack.get(top)).intValue()
+                    & ((Integer) stack.get(+1)).intValue());
         }
     }
 

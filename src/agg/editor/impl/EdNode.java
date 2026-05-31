@@ -1145,13 +1145,13 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
             if (s.length() == 0) {
                 this.x = 20;
             } else {
-                this.x = (new Integer(s)).intValue();
+                this.x = Integer.parseInt(s);
             }
             s = xmlh.readAttr("Y");
             if (s.length() == 0) {
                 this.y = 20;
             } else {
-                this.y = (new Integer(s)).intValue();
+                this.y = Integer.parseInt(s);
             }
             xmlh.close();
         } else {
@@ -1248,7 +1248,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                     dist = (int) Math.round(Math.sqrt((xdist * xdist)
                             + (ydist * ydist)));
                     if (dist <= epsilon) {
-                        this.cluster.add(new Integer(node.getNodeID()));
+                        this.cluster.add(node.getNodeID());
                     }
                 }
             }

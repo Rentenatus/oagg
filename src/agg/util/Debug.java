@@ -145,10 +145,10 @@ public final class Debug {
         }
         Integer i = hash.get(o);
         if (i == null) {
-            i = new Integer(new_id++);
+            i = new_id++;
             hash.put(o, i);
         }
-        return i.intValue();
+        return i;
     }
 
     public static void printlnGraph(Graph g, String name) {

@@ -818,13 +818,13 @@ public class Formula implements Evaluable, XMLObject, Serializable {
         boolean added = false;
         for (int i = 0; i < this.layer.size(); i++) {
             if (l <= this.layer.get(i).intValue()) {
-                this.layer.add(i, new Integer(l));
+                this.layer.add(i, l);
                 added = true;
                 break;
             }
         }
         if (!added) {
-            this.layer.add(new Integer(l));
+            this.layer.add(l);
         }
     }
 
@@ -862,13 +862,13 @@ public class Formula implements Evaluable, XMLObject, Serializable {
         boolean added = false;
         for (int i = 0; i < this.priority.size(); i++) {
             if (p <= this.priority.get(i).intValue()) {
-                this.priority.add(i, new Integer(p));
+                this.priority.add(i, p);
                 added = true;
                 break;
             }
         }
         if (!added) {
-            this.priority.add(new Integer(p));
+            this.priority.add(p);
         }
     }
 
@@ -915,7 +915,7 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                     String[] array = l.split(",");
                     for (int i = 0; i < array.length; i++) {
                         try {
-                            this.layer.add(new Integer(array[i]));
+                            this.layer.add(Integer.parseInt(array[i]));
                         } catch (java.lang.NumberFormatException ex) {
                         }
                     }
@@ -942,7 +942,7 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                     String[] array = p.split(",");
                     for (int i = 0; i < array.length; i++) {
                         try {
-                            this.priority.add(new Integer(array[i]));
+                            this.priority.add(Integer.parseInt(array[i]));
                         } catch (java.lang.NumberFormatException ex) {
                         }
                     }

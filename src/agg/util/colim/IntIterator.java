@@ -205,7 +205,7 @@ public final class IntIterator implements BidirectionalIterator {
      * is invalid.
      */
     public Object get(int offset) {
-        return new Integer(buffer[index + offset]);
+        return buffer[index + offset];
     }
 
     public int getInt(int offset) {

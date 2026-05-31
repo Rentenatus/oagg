@@ -30,7 +30,7 @@ public class ASTNegNode extends NUMtoNUMnode {
     public void interpret() {
         jjtGetChild(0).interpret();
 //		stack[top] = new Integer(-1 * ((Integer) stack[top]).intValue());
-        stack.set(top, new Integer(-1 * ((Integer) stack.get(top)).intValue()));
+        stack.set(top, -1 * ((Integer) stack.get(top)).intValue());
     }
 
     public String getString() {

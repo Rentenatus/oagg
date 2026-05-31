@@ -956,9 +956,9 @@ public class NodeAnimation {
             hasResult = true;
         }
         if (hasResult) {
-            result.add(new Integer(l));
-            result.add(new Integer(sX));
-            result.add(new Integer(sY));
+            result.add(l);
+            result.add(sX);
+            result.add(sY);
         }
         return result;
     }

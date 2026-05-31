@@ -136,7 +136,7 @@ public class LayerGUI extends JDialog implements ActionListener {
                     Rule rule = (Rule) en.next();
                     Vector<Object> tmpVector = new Vector<Object>();
                     tmpVector.addElement(rule);
-                    tmpVector.addElement(new Integer(rule.getLayer()));
+                    tmpVector.addElement(rule.getLayer());
                     addRow(tmpVector);
                 }
                 // set next Layer
@@ -192,7 +192,7 @@ public class LayerGUI extends JDialog implements ActionListener {
         public void setValueAt(Object aValue, int row, int column) {
             Object key = super.getValueAt(row, 0);
             try {
-                Integer i = new Integer((String) aValue);
+                Integer i = Integer.valueOf((String) aValue);
                 super.setValueAt(i, row, column);
                 if (key instanceof Rule) {
                     this.table.put((Rule) key, i);

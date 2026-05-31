@@ -34,8 +34,8 @@ public class ASTDivNode extends NUMxNUMtoNUMnode {
         Object op2Result = stack.get(top);
         Object result;
         if (typeCode() <= typeCode(Integer.TYPE)) {
-            result = new Integer(((Number) op1Result).intValue()
-                    / ((Number) op2Result).intValue());
+            result = ((Number) op1Result).intValue()
+                    / ((Number) op2Result).intValue();
         } else {
             result = new Float(((Number) op1Result).floatValue()
                     / ((Number) op2Result).floatValue());

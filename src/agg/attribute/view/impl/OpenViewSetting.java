@@ -276,7 +276,7 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
 									+ mi.getHoldingTuple().hashCode()
 									+ "  ==  "
 									+ mj.getHoldingTuple().hashCode());
-							v.add(new Integer(j));
+							v.add(j);
 						}
 					}
 				}

@@ -1896,19 +1896,19 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             if (s.length() == 0) {
                 this.textOffset.x = 0;
             } else {
-                this.textOffset.x = (new Integer(s)).intValue();
+                this.textOffset.x = Integer.parseInt(s);
             }
             s = xmlh.readAttr("textOffsetY");
             if (s.length() == 0) {
                 this.textOffset.y = 0;
             } else {
-                this.textOffset.y = (new Integer(s)).intValue();
+                this.textOffset.y = Integer.parseInt(s);
             }
             s = xmlh.readAttr("bendX");
             if ((s.length() == 0) || (s.equals("0"))) {
                 this.x = 0;
             } else {
-                this.x = (new Integer(s)).intValue();
+                this.x = Integer.parseInt(s);
                 if (this.x < 0) {
                     this.x = 0;
                 }
@@ -1920,7 +1920,7 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             if ((s.length() == 0) || (s.equals("0"))) {
                 this.y = 0;
             } else {
-                this.y = (new Integer(s)).intValue();
+                this.y = Integer.parseInt(s);
                 if (this.y < 0) {
                     this.y = 0;
                 }
@@ -1933,13 +1933,13 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                 if (s.length() == 0) {
                     loopW = 0;
                 } else {
-                    loopW = (new Integer(s)).intValue();
+                    loopW = Integer.parseInt(s);
                 }
                 s = xmlh.readAttr("loopH");
                 if (s.length() == 0) {
                     loopH = 0;
                 } else {
-                    loopH = (new Integer(s)).intValue();
+                    loopH = Integer.parseInt(s);
                 }
             }
             if (this.elemOfTG) {
@@ -1948,25 +1948,25 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                 if (s.length() == 0) {
                     this.srcMultiplicityOffset.x = 0;
                 } else {
-                    this.srcMultiplicityOffset.x = (new Integer(s)).intValue();
+                    this.srcMultiplicityOffset.x = Integer.parseInt(s);
                 }
                 s = xmlh.readAttr("sourceMultiplicityOffsetY");
                 if (s.length() == 0) {
                     this.srcMultiplicityOffset.y = 0;
                 } else {
-                    this.srcMultiplicityOffset.y = (new Integer(s)).intValue();
+                    this.srcMultiplicityOffset.y = Integer.parseInt(s);
                 }
                 s = xmlh.readAttr("targetMultiplicityOffsetX");
                 if (s.length() == 0) {
                     this.trgMultiplicityOffset.x = 0;
                 } else {
-                    this.trgMultiplicityOffset.x = (new Integer(s)).intValue();
+                    this.trgMultiplicityOffset.x = Integer.parseInt(s);
                 }
                 s = xmlh.readAttr("targetMultiplicityOffsetY");
                 if (s.length() == 0) {
                     this.trgMultiplicityOffset.y = 0;
                 } else {
-                    this.trgMultiplicityOffset.y = (new Integer(s)).intValue();
+                    this.trgMultiplicityOffset.y = Integer.parseInt(s);
                 }
             }
             xmlh.close();

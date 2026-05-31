@@ -684,7 +684,7 @@ public final class MatchHelper {
                 int indx = getIndexOfNode(srcNodes, (Node) a.getSource(), a.getType(), a.getTargetType());
                 if (indx >= 0) {
                     int nn = ndel.get(indx).intValue() + 1;
-                    ndel.add(indx, new Integer(nn));
+                    ndel.add(indx, nn);
                     ndel.remove(indx + 1);
                 } else {
                     final List<Arc> newarcs = type2newarcs.get(typekey);
@@ -703,12 +703,12 @@ public final class MatchHelper {
                     } else {
                         nn = 1;
                     }
-                    ndel.add(new Integer(nn));
+                    ndel.add(nn);
                     int tarMin = a.getType().getTargetMin(a.getSource().getType(),
                             a.getTarget().getType());
                     int tarMax = a.getType().getTargetMax(a.getSource().getType(),
                             a.getTarget().getType());
-                    tarMinMax.add(new Pair<Integer, Integer>(new Integer(tarMin), new Integer(tarMax)));
+                    tarMinMax.add(new Pair<Integer, Integer>(tarMin, tarMax));
                 }
                 Type targetNodeType = a.getTarget().getType();
                 List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
@@ -774,7 +774,7 @@ public final class MatchHelper {
                 int indx = getIndexOfNode(tarNodes, (Node) a.getTarget(), a.getType(), a.getSourceType());
                 if (indx >= 0) {
                     int nn = ndel.get(indx).intValue() + 1;
-                    ndel.set(indx, new Integer(nn));
+                    ndel.set(indx, nn);
                 } else {
                     final List<Arc> newarcs = type2newarcs.get(typekey);
                     int nn = 0;
@@ -793,12 +793,12 @@ public final class MatchHelper {
                     } else {
                         nn = 1;
                     }
-                    ndel.add(new Integer(nn));
+                    ndel.add(nn);
                     int srcMin = a.getType().getSourceMin(a.getSource().getType(),
                             a.getTarget().getType());
                     int srcMax = a.getType().getSourceMax(a.getSource().getType(),
                             a.getTarget().getType());
-                    srcMinMax.add(new Pair<Integer, Integer>(new Integer(srcMin), new Integer(srcMax)));
+                    srcMinMax.add(new Pair<Integer, Integer>(srcMin, srcMax));
                 }
                 Type sourceNodeType = a.getSource().getType();
                 final List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
@@ -923,7 +923,7 @@ public final class MatchHelper {
             int indx = getIndexOfNode(srcNodes, src, a.getType(), a.getTargetType());
             if (indx >= 0) {
                 int nn = nnew.get(indx).intValue() + 1;
-                nnew.set(indx, new Integer(nn));
+                nnew.set(indx, nn);
             } else {
 //				final List<Arc> newarcs = type2newarcs.get(typekey);
 //				int nn = getCountOfArcsWithTypeAndSource(typekey, 
@@ -931,10 +931,10 @@ public final class MatchHelper {
 //						newarcs, arcstocreate);	
                 srcNodes.add(new Triple<Node, Type, Type>(src, a.getType(), a.getTargetType()));
                 indx = srcNodes.size() - 1;
-                nnew.add(new Integer(1)); //(nn));
+                nnew.add(1); //(nn));
                 int max = a.getType().getTargetMax(a.getSource().getType(),
                         a.getTarget().getType());
-                tarMax.add(new Integer(max));
+                tarMax.add(max);
             }
             Type targetNodeType = a.getTarget().getType();
             List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
@@ -1029,7 +1029,7 @@ public final class MatchHelper {
             int indx = getIndexOfNode(tarNodes, tar, a.getType(), a.getSourceType());
             if (indx >= 0) {
                 int nn = nnew.get(indx).intValue() + 1;
-                nnew.set(indx, new Integer(nn));
+                nnew.set(indx, nn);
             } else {
 //				final List<Arc> newarcs = type2newarcs.get(typekey);				
 //				int nn = getCountOfArcsWithTypeAndTarget(typekey, 
@@ -1037,10 +1037,10 @@ public final class MatchHelper {
 //						newarcs, arcstocreate);
                 tarNodes.add(new Triple<Node, Type, Type>(tar, a.getType(), a.getSourceType()));
                 indx = tarNodes.size() - 1;
-                nnew.add(new Integer(1)); //nn));
+                nnew.add(1); //nn));
                 int max = a.getType().getSourceMax(a.getSource().getType(),
                         a.getTarget().getType());
-                srcMax.add(new Integer(max));
+                srcMax.add(max);
             }
             Type sourceNodeType = a.getSource().getType();
             final List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());

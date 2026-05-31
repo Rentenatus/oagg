@@ -103,8 +103,7 @@ public class PriorityGraTraImpl extends GraTra {
         }
         if (priority0Set != null && maxPriorityInt != null) {
             int maxPriority = maxPriorityInt.intValue() + 1;
-            Pair<Integer, HashSet<Rule>> p0 = new Pair<Integer, HashSet<Rule>>(new Integer(
-                    maxPriority), priority0Set);
+            Pair<Integer, HashSet<Rule>> p0 = new Pair<Integer, HashSet<Rule>>(maxPriority, priority0Set);
             this.sortedRules.add(p0);
         }
     }

@@ -70,7 +70,7 @@ public class LayerFunction implements XMLObject {
         this.ruleLayer = new Hashtable<Rule, Integer>();
         for (int i = 0; i < gragra.getListOfRules().size(); i++) {
             Rule rule = gragra.getListOfRules().get(i);
-            this.ruleLayer.put(rule, new Integer(rule.getLayer()));
+            this.ruleLayer.put(rule, rule.getLayer());
         }
     }
 
@@ -79,7 +79,7 @@ public class LayerFunction implements XMLObject {
         IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type type = types.next();
-            this.creationLayer.put(type, new Integer(0));
+            this.creationLayer.put(type, 0);
         }
     }
 
@@ -88,7 +88,7 @@ public class LayerFunction implements XMLObject {
         IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type type = types.next();
-            this.deletionLayer.put(type, new Integer(0));
+            this.deletionLayer.put(type, 0);
         }
     }
 
@@ -596,3 +596,4 @@ public class LayerFunction implements XMLObject {
  * Revision 1.1.2.1 2000/12/10 14:55:48 shultzke um Layer erweitert
  * 
  */
+

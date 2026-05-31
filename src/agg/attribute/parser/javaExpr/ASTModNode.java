@@ -46,8 +46,8 @@ public class ASTModNode extends SimpleNode {
     public void interpret() {
         jjtGetChild(0).interpret();
         jjtGetChild(1).interpret();
-        stack.set(--top, new Integer(((Integer) stack.get(top)).intValue()
-                % ((Integer) stack.get(top + 1)).intValue()));
+        stack.set(--top, ((Integer) stack.get(top)).intValue()
+                % ((Integer) stack.get(top + 1)).intValue());
     }
 
     public String getString() {

@@ -1687,7 +1687,7 @@ public class RuleEditor extends JPanel {
             } else {
                 this.ruleDividerLocation = this.ruleSplitPane.getDividerLocation();
                 this.ruleSplitPane.setDividerLocation(this.ruleDividerLocation);
-                this.dividerLocationSet.put(this.eRule, new Integer(this.ruleDividerLocation));
+                this.dividerLocationSet.put(this.eRule, this.ruleDividerLocation);
             }
             if (this.exportJPEGButton != null
                     && this.exportJPEG != null) {

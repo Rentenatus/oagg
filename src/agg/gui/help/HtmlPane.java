@@ -79,7 +79,7 @@ public class HtmlPane extends JScrollPane implements HyperlinkListener {
     }
 
     public String toString() {
-        return (new Integer(hashCode())).toString();
+        return Integer.toString(hashCode());
     }
 
     /**

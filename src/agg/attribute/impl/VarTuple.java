@@ -428,7 +428,7 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
             for (int i = 0; i < this.getSize(); i++) {
                 VarMember m = (VarMember) this.getMemberAt(i);
                 if (m.isInputParameter()) {
-                    this.signaturOrder.add(new Integer(i));
+                    this.signaturOrder.add(i);
                 }
             }
         }
@@ -460,7 +460,7 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
                 if (i != -1) {
                     this.signaturOrder.remove(i);
                 }
-                this.signaturOrder.add(new Integer(indxOfVar));
+                this.signaturOrder.add(indxOfVar);
             }
         }
     }

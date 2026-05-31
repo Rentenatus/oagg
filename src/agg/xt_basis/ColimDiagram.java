@@ -99,7 +99,7 @@ public class ColimDiagram implements COLIM_DEFS {
         allObjectsAttrs.trimToSize();
         int i = this.itsDiagram.insert_object(allObjects, allObjectsRefs,
                 allObjectsAttrs, graph.getName());
-        this.itsGraphIndexMap.put(graph, new Integer(i));
+        this.itsGraphIndexMap.put(graph, i);
     }
 
     private void fillObjects(
@@ -113,7 +113,7 @@ public class ColimDiagram implements COLIM_DEFS {
         for (int i = count; anObjectIter.hasNext(); i++) {
             GraphObject anObject = (GraphObject) anObjectIter.next();
             allObjects.push_back(anObject);
-            anIndexMap.put(anObject, new Integer(i));
+            anIndexMap.put(anObject, i);
             INT_VECTOR anObjectsRefs = new INT_VECTOR(2);
             if (anObject.isNode()) {
                 // set source and target references to undefined:
@@ -156,13 +156,13 @@ public class ColimDiagram implements COLIM_DEFS {
         Iterator<?> anObjectIter = aTargetGraph.getNodesSet().iterator();
         for (int i = count; anObjectIter.hasNext(); i++) {
             aTargetIndexMap.put((GraphObject) anObjectIter.next(),
-                    new Integer(i));
+                    i);
         }
         count = aTargetIndexMap.size();
         anObjectIter = aTargetGraph.getArcsSet().iterator();
         for (int i = count; anObjectIter.hasNext(); i++) {
             aTargetIndexMap.put((GraphObject) anObjectIter.next(),
-                    new Integer(i));
+                    i);
         }
         INT_VECTOR aMorphism = new INT_VECTOR(64);
         anObjectIter = aSourceGraph.getNodesSet().iterator();

@@ -176,8 +176,8 @@ public class EditUndoManager extends UndoManager {
     }
 
     public void setUndoEndOfTransformStep() {
-        if (!this.undoEndOfTransStep.contains(new Integer(this.undoStateID + 1))) {
-            this.undoEndOfTransStep.add(new Integer(this.undoStateID + 1));
+        if (!this.undoEndOfTransStep.contains(this.undoStateID + 1)) {
+            this.undoEndOfTransStep.add(this.undoStateID + 1);
         }
     }
 

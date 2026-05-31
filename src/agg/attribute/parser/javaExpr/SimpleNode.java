@@ -173,12 +173,12 @@ public class SimpleNode implements Node {
             neverCalled = false;
             int codeNr = 0;
             codeNr = 0;
-            numberTypes.put(Byte.TYPE, new Integer(codeNr++));
-            numberTypes.put(Short.TYPE, new Integer(codeNr++));
-            numberTypes.put(Long.TYPE, new Integer(codeNr++));
-            numberTypes.put(Integer.TYPE, new Integer(codeNr++));
-            numberTypes.put(Float.TYPE, new Integer(codeNr++));
-            numberTypes.put(Double.TYPE, new Integer(codeNr++));
+            numberTypes.put(Byte.TYPE, codeNr++);
+            numberTypes.put(Short.TYPE, codeNr++);
+            numberTypes.put(Long.TYPE, codeNr++);
+            numberTypes.put(Integer.TYPE, codeNr++);
+            numberTypes.put(Float.TYPE, codeNr++);
+            numberTypes.put(Double.TYPE, codeNr++);
             try {
                 stringClass = Class.forName("java.lang.String");
                 objectClass = Class.forName("java.lang.Object");

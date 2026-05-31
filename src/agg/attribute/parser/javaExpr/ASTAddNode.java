@@ -48,8 +48,8 @@ public class ASTAddNode extends SimpleNode {
             result = new String("" + op1Result + op2Result);
         } else {
             if (typeCode() <= typeCode(Integer.TYPE)) {
-                result = new Integer(((Number) op1Result).intValue()
-                        + ((Number) op2Result).intValue());
+                result = ((Number) op1Result).intValue()
+                        + ((Number) op2Result).intValue();
             } else {
                 result = new Float(((Number) op1Result).floatValue()
                         + ((Number) op2Result).floatValue());

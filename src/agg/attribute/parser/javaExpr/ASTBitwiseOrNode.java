@@ -38,8 +38,8 @@ public class ASTBitwiseOrNode extends NUMxNUMtoNUMnode {
         } else if (stack.get(top) instanceof Integer) {
 //			stack[--top] = new Integer(((Integer) stack[top]).intValue()
 //					| ((Integer) stack[+1]).intValue());
-            stack.set(--top, new Integer(((Integer) stack.get(top)).intValue()
-                    | ((Integer) stack.get(+1)).intValue()));
+            stack.set(--top, ((Integer) stack.get(top)).intValue()
+                    | ((Integer) stack.get(+1)).intValue());
         }
     }
 

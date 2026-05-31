@@ -2366,9 +2366,9 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             }
         }
         for (int i = 0; i < this.separatedFrames.size(); i++) {
-            if (this.separatedFrames.get(new Integer(i)) != null) {
+            if (this.separatedFrames.get(i) != null) {
                 CriticalPairAnalysisSeparated cpas = this.separatedFrames
-                        .get(new Integer(i));
+                        .get(i);
                 ExcludePairContainer excludePC = cpas
                         .getPairContainer(CriticalPairOption.EXCLUDEONLY);
                 ExcludePairContainer excludePC2 = cpas

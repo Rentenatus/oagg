@@ -33,7 +33,7 @@ public class ASTIntConstNode extends SimpleNode {
     }
 
     public void interpret() {
-        stack.add(++top, new Integer(this.val));
+        stack.add(++top, this.val);
     }
 
     public String getString() {

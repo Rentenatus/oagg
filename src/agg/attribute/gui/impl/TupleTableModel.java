@@ -101,11 +101,11 @@ public class TupleTableModel extends AbstractTableModel implements
         }
         // Making all columns invisible.
         for (int i = 0; i < N_TUPLE_KEYS; i++) {
-            this.columnData[i][COLUMN_INDEX] = new Integer(-1);
+            this.columnData[i][COLUMN_INDEX] = -1;
         }
         // Assigning column numbers to wanted columns.
         for (int i = 0; i < this.columnArray.length; i++) {
-            this.columnData[this.columnArray[i]][COLUMN_INDEX] = new Integer(i);
+            this.columnData[this.columnArray[i]][COLUMN_INDEX] = i;
         }
     }
 

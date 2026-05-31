@@ -242,7 +242,7 @@ public class ComputeCriticalPairs implements ParserEventListener {
                         nn = args[i].substring(2);
                     }
                     try {
-                        this.pairsNumberToWrite = (new Integer(nn)).intValue();
+                        this.pairsNumberToWrite = Integer.parseInt(nn);
                     } catch (NumberFormatException ex) {
                         this.pairsNumberToWrite = 10;
                     }

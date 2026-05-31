@@ -354,7 +354,7 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
                 if (var.isInputParameter()) {
                     String val = var.getExprAsText();
                     if (val != null) {
-                        Integer key = new Integer(i);
+                        Integer key = i;
                         this.mapInputParameter.put(key, val);
                         // System.out.println("Store input param:
                         // "+var.getName()+" :: " +var);

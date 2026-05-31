@@ -1164,20 +1164,20 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 if (!rule.isTotal()) {
                     this.errMsg = "Rule <" + rule.getName()
                             + "> is not total.";
-                    addErrorMessage(this.errorMsgNonDeletion, new Integer(errKey), this.errMsg);
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
                     return false;
                 }
                 /* 1. rule is injective */
                 if (!rule.isInjective()) {
                     this.errMsg = "Rule <" + rule.getName()
                             + "> is not injective.";
-                    addErrorMessage(this.errorMsgNonDeletion, new Integer(errKey), this.errMsg);
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
                     return false;
                 } /* 2. rule has a NAC */ else if (rule.isCreating()
                         && rule.getNACsList().isEmpty()) {
                     this.errMsg = "Rule <" + rule.getName()
                             + "> does not have any NAC.";
-                    addErrorMessage(this.errorMsgNonDeletion, new Integer(errKey), this.errMsg);
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
                     return false;
                 } /* 2. NAC : L -> N with N -> R injective */ else if (!this.ruleWithRightInjNAC(errKey, rule)) {
                     return false;
@@ -1306,7 +1306,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         if (!result) {
             this.errMsg = "Rule <" + rule.getName() + "> "
                     + "does not have any right injective NACs.";
-            addErrorMessage(this.errorMsgNonDeletion, new Integer(errKey), this.errMsg);
+            addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
         }
         return result;
     }

@@ -95,7 +95,7 @@ public class ASTField extends MemberNode {
         if (recClass.isArray()) {
             if (fieldName.equals("length")) {
 //				stack[++top] = new Integer(Array.getLength(stack[top - 1]));
-                stack.add(++top, new Integer(Array.getLength(stack.get(top - 1))));
+                stack.add(++top, Array.getLength(stack.get(top - 1)));
             }
             return;
         }

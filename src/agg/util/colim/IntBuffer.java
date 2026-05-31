@@ -276,7 +276,7 @@ public class IntBuffer implements Container {
      * @exception java.lang.IndexOutOfBoundsException If the index is invalid.
      */
     public Object at(int index) {
-        return new Integer(intAt(index));
+        return intAt(index);
     }
 
     /**
@@ -330,7 +330,7 @@ public class IntBuffer implements Container {
      */
     public synchronized Object remove(int index) {
         IntArray.checkIndex(index, length);
-        Object retval = new Integer(storage[index]);
+        Object retval = storage[index];
         System.arraycopy(storage, index + 1, storage, index, length - index - 1);
         storage[--length] = defaultValue;
         return retval;
@@ -369,7 +369,7 @@ public class IntBuffer implements Container {
         if (length == 0) {
             throw new RuntimeException("IntBuffer is empty");
         }
-        Object r = new Integer(storage[--length]);
+        Object r = storage[--length];
         storage[length] = defaultValue;
         return r;
     }
@@ -670,7 +670,7 @@ public class IntBuffer implements Container {
         if (length == 0) {
             throw new RuntimeException("IntBuffer is empty");
         }
-        Object result = new Integer(storage[0]);
+        Object result = storage[0];
         remove(0);
         return result;
     }

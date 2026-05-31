@@ -194,7 +194,7 @@ public class IntArray implements Container {
      * @param index The index.
      */
     public Object at(int index) {
-        return new Integer(intAt(index));
+        return intAt(index);
     }
 
     /**

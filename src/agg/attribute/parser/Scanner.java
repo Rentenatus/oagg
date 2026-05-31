@@ -73,7 +73,7 @@ public class Scanner {
      * Initialize the lookup table.
      */
     void initialize() {
-        Integer k = new Integer(KEY);
+        Integer k = KEY;
         for (int i = 0; i < this.fgKeywords.length; i++) {
             this.fgKeys.put(this.fgKeywords[i], k);
         }

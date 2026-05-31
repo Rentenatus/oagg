@@ -2167,7 +2167,7 @@ public final class ExcludePairHelper {
         if (i > 0 && i <= itsGOSet.size()) {
             final List<Integer> select = new Vector<>(i);
             for (int j = 0; j < i; j++) {
-                select.add(new Integer(j));
+                select.add(j);
             }
             computeSelection(//g, 
                     1, itsGOSet, select, inclusions, graphLike);
@@ -2183,7 +2183,7 @@ public final class ExcludePairHelper {
         if (i > 0 && i <= itsGOSet.size()) {
             final List<Integer> select = new Vector<Integer>(i);
             for (int j = 0; j < i; j++) {
-                select.add(new Integer(j));
+                select.add(j);
             }
             computeSelection(1, itsGOSet, select, inclusions, graphLike);
         }
@@ -2211,15 +2211,15 @@ public final class ExcludePairHelper {
                         goSet = makeGraphObjectSet(select, itsGOSet);
                         inclusions = putGraphInclusionSet(goSet, inclusions, graphLike);
                     }
-                    select.set(new Integer(v + 1), s - 1);
+                    select.set(v + 1, s - 1);
                     v = select.get(s - 1).intValue();
                 }
                 if (s > 1) {
                     v = select.get(s - 2).intValue();
                     if (v < max - selSize + s + 1) {
-                        select.set(new Integer(v + 1), s - 2);
+                        select.set(v + 1, s - 2);
                         for (int j = 1; j <= selSize - s + 1; j++) {
-                            select.set(new Integer(v + 1 + j), s + j
+                            select.set(v + 1 + j, s + j
                                     - 2);
                         }
                     }

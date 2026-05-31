@@ -33,7 +33,7 @@ public class ASTEmptyDimension extends SimpleNode {
 
     public void interpret() {
 //		stack[++top] = new Integer(0);
-        stack.add(++top, new Integer(0));
+        stack.add(++top, 0);
     }
 }
 /*

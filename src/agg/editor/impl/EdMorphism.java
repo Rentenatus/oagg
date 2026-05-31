@@ -45,8 +45,8 @@ public class EdMorphism {
         int i = 1;
         while (graphObjects.hasNext()) {
             GraphObject go = graphObjects.next();
-            this.source.put(go, new Integer(i));
-            this.target1.put(o.getImage(go), new Integer(i));
+            this.source.put(go, i);
+            this.target1.put(o.getImage(go), i);
             i++;
         }
     }
@@ -58,7 +58,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             Iterator<GraphObject> inverse = o1.getInverseImage(go);
             while (inverse.hasNext()) {
@@ -81,7 +81,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             if (o2.getSource() == r2.getLeft()) {
                 Iterator<GraphObject> inverse = o2.getInverseImage(go);
@@ -118,7 +118,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             Iterator<GraphObject> inverse = o1.getInverseImage(go);
             while (inverse.hasNext()) {
@@ -141,7 +141,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             if (o2.getSource() == r2.getLeft()) {
                 Iterator<GraphObject> inverse = o2.getInverseImage(go);
@@ -172,7 +172,7 @@ public class EdMorphism {
                 GraphObject go = graphObjects.next();
                 if (this.source.get(go) == null) {
                     i++;
-                    this.source.put(go, new Integer(i));
+                    this.source.put(go, i);
                 }
                 Iterator<GraphObject> inverse = o2.getInverseImage(go);
                 if (inverse.hasNext()) {
@@ -234,7 +234,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             Iterator<GraphObject> inverse = o1.getInverseImage(go);
             while (inverse.hasNext()) {
@@ -257,7 +257,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             if (o2.getSource() == r2.getLeft()) {
                 Iterator<GraphObject> inverse = o2.getInverseImage(go);
@@ -286,7 +286,7 @@ public class EdMorphism {
                 GraphObject go = graphObjects.next();
                 if (this.source.get(go) == null) {
                     i++;
-                    this.source.put(go, new Integer(i));
+                    this.source.put(go, i);
                 }
                 Iterator<GraphObject> inverse1 = morphPac2G.getInverseImage(go);
                 if (inverse1.hasNext()) {
@@ -322,7 +322,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             Iterator<GraphObject> inverse = o1.getInverseImage(go);
             while (inverse.hasNext()) {
@@ -335,7 +335,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             Iterator<GraphObject> inverse = o2.getInverseImage(go);
             while (inverse.hasNext()) {
