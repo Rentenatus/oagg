@@ -1,27 +1,30 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * </copyright>
+ * *****************************************************************************
  */
 package agg.xt_basis;
+
+import agg.attribute.AttrEvent;
+import agg.attribute.AttrInstance;
+import agg.attribute.AttrObserver;
+import agg.attribute.AttrTuple;
+import agg.attribute.impl.AttrTupleManager;
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
+import agg.util.XMLHelper;
+import agg.util.XMLObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import agg.attribute.AttrInstance;
-import agg.attribute.AttrTuple;
-import agg.attribute.AttrObserver;
-import agg.attribute.AttrEvent;
-import agg.attribute.impl.AttrTupleManager;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.impl.ValueMember;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
-
 /**
- * GraphObject defines the common interface and implementations for Nodes and Arcs.
+ * GraphObject defines the common interface and implementations for Nodes and
+ * Arcs.
  *
  * @version $Id: GraphObject.java,v 1.51 2010/11/14 23:51:48 olga Exp $
  * @author $Author: olga $
@@ -31,19 +34,12 @@ import agg.util.XMLObject;
 public abstract class GraphObject implements XMLObject, AttrObserver {
 
     protected String name = "";
-
     protected Graph itsContext = null;
-
     protected Type itsType = null;
-
     protected AttrInstance itsAttr = null;
-
     protected int itsContextUsage;
-
     protected boolean critical = false;
-
     protected boolean visible = true;
-
     protected NNVector inputVector;
 
     public NNVector getInputVector() {
@@ -62,7 +58,6 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         if (this.itsType.getAttrType() == null) {
             this.itsType.createAttributeType();
         }
-
         if (this.itsType.getAttrType() != null) {
             if (this.itsAttr == null) {
                 this.itsAttr = AttrTupleManager.getDefaultManager().newInstance(
@@ -72,7 +67,6 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
             } else if (this.itsAttr.getType() != this.itsType.getAttrType()) {
                 this.itsAttr.removeObserver(this);
                 ((ValueTuple) this.itsAttr).dispose();
-
                 this.itsAttr = AttrTupleManager.getDefaultManager().newInstance(
                         this.itsType.getAttrType(), this.itsContext.getAttrContext());
                 this.itsAttr.addObserver(this);
@@ -133,7 +127,8 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
     }
 
     /**
-     * Converts my type to a type key string that can be used for search operations. For a node it is similar to
+     * Converts my type to a type key string that can be used for search
+     * operations. For a node it is similar to
 	 * <code> ((Node) this).getType().convertToKey() </code>, for an edge to      <code> ((Arc) this).getSource().getType().convertToKey()
      * + ((Arc) this).getType().convertToKey()
      * + ((Arc) this).getTarget().getType().convertToKey()
@@ -171,13 +166,13 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
             if (this.itsAttr == null) {
                 this.createAttributeInstance();
             }
-
             this.itsAttr.copyEntries(orig.getAttribute());
         }
     }
 
     /**
-     * Implements the AttrObserver and propagates attribute changes to the attribute observers.
+     * Implements the AttrObserver and propagates attribute changes to the
+     * attribute observers.
      *
      * @param ev
      */
@@ -197,7 +192,6 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
             ValueMember mem = (ValueMember) this.itsAttr.getMemberAt(i);
             result += "name: " + mem.getName() + "   value: " + mem.getExpr()
                     + "\n";
-
         }
         result += " }\n";
         return result;
@@ -296,13 +290,10 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
     public abstract void XreadObject(XMLHelper h);
 
     /**
-     * Checks whether the attribute observer wants a persistent connection to the given attribute.
+     * Checks whether the attribute observer wants a persistent connection to
+     * the given attribute.
      */
     public boolean isPersistentFor(AttrTuple at) {
         return false;
     }
-
 }
-
-
-

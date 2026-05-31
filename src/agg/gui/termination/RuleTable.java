@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.termination;
 
@@ -28,14 +29,12 @@ public class RuleTable extends JPanel {
         super(new BorderLayout());
         setBackground(Color.orange);
         setBorder(new TitledBorder(title));
-
         JPanel rulePanel = new JPanel(new BorderLayout());
         JTable ruleTable = new JTable(rules.size(), 1);
         ruleTable.setEnabled(false);
         for (int i = 0; i < rules.size(); i++) {
             ruleTable.setValueAt(rules.elementAt(i), i, 0);
         }
-
         this.hght = getHeight(ruleTable.getRowCount(), ruleTable.getRowHeight());
         ruleTable.doLayout();
         JScrollPane ruleScrollPane = new JScrollPane(ruleTable);

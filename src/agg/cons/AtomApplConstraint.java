@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -17,11 +19,8 @@ import java.util.List;
 public class AtomApplConstraint implements Evaluable {
 
     private int old_tick;
-
     private boolean old_val;
-
     private List<Object> atomApplConditions; // Element is AtomApplCond
-
     private int n; // counter
 
     public AtomApplConstraint(List<Object> atomApplConditions) {
@@ -57,20 +56,18 @@ public class AtomApplConstraint implements Evaluable {
         this.old_val = eval((Pair) o, negate);
         return this.old_val;
     }
-
 //	 Pair<OrdinaryMorphism, OrdinaryMorphism>
+
     private boolean eval(Pair<?, ?> pair) {
         return eval(pair, false);
     }
-
 //	 Pair<OrdinaryMorphism, OrdinaryMorphism>
-    private boolean eval(Pair<?, ?> pair, boolean negate) {
 
+    private boolean eval(Pair<?, ?> pair, boolean negate) {
         if ((this.atomApplConditions == null)
                 || (this.atomApplConditions.size() == 0)) {
             return true;
         }
-
         // to get co-match morphism :: (OrdinaryMorphism) pair.first;
         // to get match morphism :: (Match) pair.second;
         boolean result = true;
@@ -105,5 +102,4 @@ public class AtomApplConstraint implements Evaluable {
     public String getName() {
         return "Unnamed";
     }
-
 }

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -40,7 +42,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 /**
- * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers.
+ * This class provides a window for a user dialog. This dialog is necessary to
+ * enter the grammar layers.
  *
  * @author $Author: olga $
  * @version $Id: TypeCardinalityDialog.java,v 1.4 2010/09/23 08:23:03 olga Exp $
@@ -50,50 +53,32 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         DocumentListener {
 
     private JTextField textSrcMin, textSrcMax;
-
     private JTextField textTrgMin, textTrgMax;
-
     private String stringSrcMin, stringSrcMax;
-
     private String stringTrgMin, stringTrgMax;
-
     private JButton closeButton;
-
     private JButton cancelButton;
-
     private boolean isCanceled;
-
     /**
      * the type of the arc
      */
     private agg.xt_basis.Type type;
-
     /**
      * the type of the source node
      */
     private agg.xt_basis.Type sourceType;
-
     /**
      * the type of the target node
      */
     private agg.xt_basis.Type targetType;
-
     private int srcMin;
-
     private int trgMin;
-
     private int srcMax;
-
     private int trgMax;
-
     private String name = "";
-
     private boolean multiplicityOK;
-
     private boolean isEdgeType = true;
-
     private boolean changed = false;
-
     final private Vector<agg.xt_basis.Type> failedTypes = new Vector<agg.xt_basis.Type>();
 
     public TypeCardinalityDialog(JFrame parent, agg.xt_basis.Type arcType, agg.xt_basis.Type sourceType,
@@ -119,7 +104,6 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         this.srcMin = arcType.getSourceMin(sourceType, targetType);
         this.trgMax = arcType.getTargetMax(sourceType, targetType);
         this.trgMin = arcType.getTargetMin(sourceType, targetType);
-
         if (parent != null) {
             setLocationRelativeTo(parent);
         } else {
@@ -150,7 +134,6 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         this.srcMin = nodeType.getSourceMin();
         this.trgMax = this.srcMax;
         this.trgMin = this.srcMin;
-
         if (parent != null) {
             setLocationRelativeTo(parent);
         } else {
@@ -163,15 +146,12 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
     private void initComponentsOfEdgeType() {
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.lightGray);
-
         JPanel multiplicityPanel = new JPanel(new GridBagLayout());
-
         JPanel panelSrc = new JPanel(new BorderLayout());
         panelSrc.setBorder(new TitledBorder("  Source of < " + this.name + " > "));
         panelSrc.setBackground(Color.orange);
         JPanel contentSrc = new JPanel(new GridBagLayout());
         panelSrc.add(contentSrc);
-
         JPanel panelSrcMin = new JPanel(new BorderLayout());
         JLabel label = new JLabel(" min ");
         this.textSrcMin = new JTextField(5);
@@ -186,7 +166,6 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         this.textSrcMin.getDocument().addDocumentListener(this);
         panelSrcMin.add(label, BorderLayout.NORTH);
         panelSrcMin.add(this.textSrcMin, BorderLayout.CENTER);
-
         JPanel panelSrcMax = new JPanel(new BorderLayout());
         label = new JLabel(" max ");
         this.textSrcMax = new JTextField(5);
@@ -201,20 +180,17 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         this.textSrcMax.getDocument().addDocumentListener(this);
         panelSrcMax.add(label, BorderLayout.NORTH);
         panelSrcMax.add(this.textSrcMax, BorderLayout.CENTER);
-
         constrainBuild(contentSrc, panelSrcMin, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 10, 10, 5);
         constrainBuild(contentSrc, panelSrcMax, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 5, 10, 10);
-
         JPanel panelTrg = new JPanel(new BorderLayout());
         panelTrg.setBorder(new TitledBorder("  Target of < " + this.name + " > "));
         panelTrg.setBackground(Color.orange);
         JPanel contentTrg = new JPanel(new GridBagLayout());
         panelTrg.add(contentTrg);
-
         JPanel panelTrgMin = new JPanel(new BorderLayout());
         label = new JLabel(" min ");
         this.textTrgMin = new JTextField(5);
@@ -229,7 +205,6 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         this.textTrgMin.getDocument().addDocumentListener(this);
         panelTrgMin.add(label, BorderLayout.NORTH);
         panelTrgMin.add(this.textTrgMin, BorderLayout.CENTER);
-
         JPanel panelTrgMax = new JPanel(new BorderLayout());
         label = new JLabel(" max ");
         this.textTrgMax = new JTextField(5);
@@ -244,45 +219,37 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         this.textTrgMax.getDocument().addDocumentListener(this);
         panelTrgMax.add(label, BorderLayout.NORTH);
         panelTrgMax.add(this.textTrgMax, BorderLayout.CENTER);
-
         constrainBuild(contentTrg, panelTrgMin, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 10, 10, 5);
         constrainBuild(contentTrg, panelTrgMax, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 5, 10, 10);
-
         constrainBuild(multiplicityPanel, panelSrc, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 20, 20, 10, 10);
         constrainBuild(multiplicityPanel, panelTrg, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 20, 10, 10, 20);
-
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("ok");
         this.closeButton.setText("Set");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.isCanceled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.addActionListener(this);
-
         constrainBuild(buttonPanel, this.closeButton, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 30, 20, 20);
         constrainBuild(buttonPanel, this.cancelButton, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 50, 20, 30);
-
         contentPane.add(multiplicityPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
         contentPane.revalidate();
-
         setContentPane(contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -292,10 +259,8 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
     private void initComponentsOfNodeType() {
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.lightGray);
-
         JPanel multiplicityPanel = new JPanel(new BorderLayout());
         JPanel contentSrc = new JPanel(new GridBagLayout());
-
         JPanel panelSrcMin = new JPanel(new BorderLayout());
         JLabel labelMin = new JLabel(" min ");
         this.textSrcMin = new JTextField(5);
@@ -310,7 +275,6 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         this.textSrcMin.getDocument().addDocumentListener(this);
         panelSrcMin.add(labelMin, BorderLayout.NORTH);
         panelSrcMin.add(this.textSrcMin, BorderLayout.CENTER);
-
         JPanel panelSrcMax = new JPanel(new BorderLayout());
         JLabel labelMax = new JLabel(" max ");
         this.textSrcMax = new JTextField(5);
@@ -325,40 +289,32 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         this.textSrcMax.getDocument().addDocumentListener(this);
         panelSrcMax.add(labelMax, BorderLayout.NORTH);
         panelSrcMax.add(this.textSrcMax, BorderLayout.CENTER);
-
         constrainBuild(contentSrc, panelSrcMin, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 10, 10, 5);
         constrainBuild(contentSrc, panelSrcMax, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 5, 10, 10);
-
         multiplicityPanel.add(contentSrc, BorderLayout.CENTER);
-
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("ok");
         this.closeButton.setText("Set");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.isCanceled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.addActionListener(this);
-
         constrainBuild(buttonPanel, this.closeButton, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 30, 20, 20);
         constrainBuild(buttonPanel, this.cancelButton, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 50, 20, 30);
-
         contentPane.add(multiplicityPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
         contentPane.revalidate();
-
         setContentPane(contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -484,13 +440,11 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
                     && ((this.trgMin >= 0 && this.trgMax >= 0 && this.trgMax >= this.trgMin)
                     || (this.trgMax == agg.xt_basis.Type.UNDEFINED) || (this.trgMin == agg.xt_basis.Type.UNDEFINED))) {
                 setVisible(false);
-
                 if (this.isEdgeType) {
                     this.type.setSourceMin(this.sourceType, this.targetType, this.srcMin);
                     this.type.setSourceMax(this.sourceType, this.targetType, this.srcMax);
                     this.type.setTargetMin(this.sourceType, this.targetType, this.trgMin);
                     this.type.setTargetMax(this.sourceType, this.targetType, this.trgMax);
-
                     this.multiplicityOK = true;
                 } else { // is Node this.type
                     boolean ok = true;
@@ -520,14 +474,12 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
                         if (this.srcMin != agg.xt_basis.Type.UNDEFINED) {
                             propagateMinMultiplicityOfParent(this.type, this.srcMin);
                         }
-
                         this.type.setSourceMax(this.srcMax);
                         if (this.srcMax != agg.xt_basis.Type.UNDEFINED) {
                             propagateMaxMultiplicityOfParent(this.type, this.srcMax);
                         }
                     }
                 }
-
                 if (this.multiplicityOK) {
                     setVisible(false);
                     dispose();
@@ -556,7 +508,6 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
     private int convertTextField(JTextField textField, String text) {
         String str = text;
         int result = -100;
-
         if ((str == null) || (str.equals("")) || (str.equals("*"))) {
             result = agg.xt_basis.Type.UNDEFINED;
         } else {
@@ -667,5 +618,4 @@ public class TypeCardinalityDialog extends JDialog implements ActionListener,
         ((GridBagLayout) container.getLayout()).setConstraints(component, c);
         container.add(component);
     }
-
 }

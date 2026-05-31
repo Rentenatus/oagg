@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
@@ -14,7 +15,8 @@ import java.util.EventObject;
 import java.util.Vector;
 
 /**
- * The parser option provides some settings for the parser. So the parser algorithm can be chosen.
+ * The parser option provides some settings for the parser. So the parser
+ * algorithm can be chosen.
  *
  * @version $Id: ParserOption.java,v 1.3 2010/09/23 08:25:00 olga Exp $
  * @author $Author: olga $
@@ -25,23 +27,17 @@ public class ParserOption {
      * A simple backtracking.
      */
     public static final int SIMPLEPARSER = 0;
-
     /**
      * Parsing with critical pairs.
      */
     public static final int EXCLUDEPARSER = 1;
-
     /**
      * A simple algorithm with critical pair analysis.
      */
     public static final int SIMPLEEXCLUDEPARSER = 2;
-
     private static final int DEFAULTPARSER = EXCLUDEPARSER;
-
     private int selectedParser;
-
     private Vector<OptionEventListener> listener;
-
     private boolean layered;
 
     /**
@@ -127,7 +123,6 @@ public class ParserOption {
             this.listener.elementAt(i).optionEventOccurred(event);
         }
     }
-
 }
 /*
  * $Log: ParserOption.java,v $

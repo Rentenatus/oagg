@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Dictionary;
-
 import agg.attribute.impl.VarTuple;
 import agg.attribute.AttrContext;
 import agg.util.csp.Variable;
@@ -27,20 +28,19 @@ import agg.xt_basis.csp.CompletionPropertyBits;
 import java.util.Iterator;
 
 /**
- * A decorator class which adds support for negative application conditions (NACs) to a given completion strategy
- * implementation.
+ * A decorator class which adds support for negative application conditions
+ * (NACs) to a given completion strategy implementation.
  */
 public class Completion_NAC extends MorphCompletionStrategy {
 
     private MorphCompletionStrategy itsStrategy;
-
     private final List<GraphObject> itsSavedState = new ArrayList<GraphObject>();
-
     private boolean globalNAC, globalPAC;
 
     /**
-     * Construct myself to be a NAC-supporting completion strategy. This uses the given <code>strategy</code> for the
-     * basic (non-NAC related) morphism completion functionality. The same holds for PAC-supporting.
+     * Construct myself to be a NAC-supporting completion strategy. This uses
+     * the given <code>strategy</code> for the basic (non-NAC related) morphism
+     * completion functionality. The same holds for PAC-supporting.
      * <p>
      * <b>Post:</b> <code>getProperties().get(NAC) == true</code>.
      * <b>Post:</b> <code>getProperties().get(PAC) == true</code>.
@@ -52,7 +52,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
         aSupportedBits.set(CompletionPropertyBits.PAC);
         aSupportedBits.set(CompletionPropertyBits.GAC);
         initialize(aSupportedBits, strategy.getProperties());
-
         getProperties().set(CompletionPropertyBits.NAC);
         getProperties().set(CompletionPropertyBits.PAC);
         getProperties().set(CompletionPropertyBits.GAC);
@@ -182,13 +181,11 @@ public class Completion_NAC extends MorphCompletionStrategy {
         aClone.randomDomain = this.randomDomain;
         aClone.parallel = this.parallel;
         aClone.startParallelMatchByFirstCSPVar = this.startParallelMatchByFirstCSPVar;
-
         return aClone;
     }
 
     public final boolean next(final OrdinaryMorphism morph) {
         if (morph instanceof Match) {
-
 //			((VarTuple) aMatch.getAttrContext().getVariables())
 //						.unsetNotInputVariables();
 //			((VarTuple) morph.getAttrContext().getVariables()).showVariables();
@@ -203,9 +200,7 @@ public class Completion_NAC extends MorphCompletionStrategy {
     public final boolean next(final OrdinaryMorphism morph,
             Collection<Node> nodes,
             Collection<Arc> edges) {
-
         if (morph instanceof Match) {
-
 //			((VarTuple) aMatch.getAttrContext().getVariables())
 //						.unsetNotInputVariables();
             if (this.itsStrategy.next(morph, nodes, edges)) {
@@ -219,7 +214,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
     private boolean areLeftApplCondSatisfied(final Match aMatch) {
         boolean matchCompletionDone = true;
         while (matchCompletionDone) {
-
             if (!this.itsProperties.get(CompletionPropertyBits.GAC)
                     || aMatch.getRule().evalFormula()) {
                 // check more
@@ -236,7 +230,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
                                             .getVariables()).getSize() == 0)) {
                                 return false;
                             }
-
                             //						((VarTuple) aMatch.getAttrContext().getVariables())
                             //									.unsetNotInputVariables();
                             matchCompletionDone = this.itsStrategy.next(aMatch);
@@ -250,7 +243,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
                                         .getVariables()).getSize() == 0)) {
                             return false;
                         }
-
                         //					((VarTuple) aMatch.getAttrContext().getVariables())
                         //								.unsetNotInputVariables();						
                         matchCompletionDone = this.itsStrategy.next(aMatch);
@@ -265,7 +257,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
                                     .getVariables()).getSize() == 0)) {
                         return false;
                     }
-
                     //				((VarTuple) aMatch.getAttrContext().getVariables())
                     //							.unsetNotInputVariables();
                     matchCompletionDone = this.itsStrategy.next(aMatch);
@@ -276,7 +267,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
                 matchCompletionDone = this.itsStrategy.next(aMatch);
             }
         }
-
         return false;
     }
 
@@ -286,15 +276,12 @@ public class Completion_NAC extends MorphCompletionStrategy {
             final Iterator<OrdinaryMorphism> nacs = match.getRule().getNACs();
             while (nacs.hasNext()) {
                 final OrdinaryMorphism nac = nacs.next();
-
                 if (!nac.isEnabled()) {
                     continue;
                 }
-
                 if (nac.getSize() != 0) {
                     this.globalNAC = false;
                 }
-
                 if (!MatchHelper.isDomainOfApplCondEmpty(match, nac)) {
                     if (match.checkNAC(nac) != null) {
                         return false;
@@ -315,7 +302,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
                     if (pac.getSize() != 0) {
                         this.globalPAC = false;
                     }
-
                     if (!MatchHelper.isDomainOfApplCondEmpty(match, pac)) {
                         if (match.checkPAC(pac) == null) {
                             return false;
@@ -326,12 +312,10 @@ public class Completion_NAC extends MorphCompletionStrategy {
                 }
             }
         }
-
         // check PACs shifted from source rule to concurrent rule during its creation
         if (!areShiftedPACsSatisfied(match)) {
             return false;
         }
-
         return true;
     }
 
@@ -349,7 +333,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
         }
         return ok;
     }
-
     /*
 	private final void saveState(OrdinaryMorphism morph) {
 		GraphObject anObj;
@@ -361,7 +344,6 @@ public class Completion_NAC extends MorphCompletionStrategy {
 			itsSavedState.add(morph.getImage(anObj));
 		}
 	}
-
 	private final void restoreState(OrdinaryMorphism morph) {
 		morph.clear();
 		for (int i = 0; i < itsSavedState.size() - 1; i = i + 2) {
@@ -372,7 +354,3 @@ public class Completion_NAC extends MorphCompletionStrategy {
 	}
      */
 }
-
-
-
-

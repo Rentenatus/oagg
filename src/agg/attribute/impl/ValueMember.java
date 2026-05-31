@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrInstanceMember;
@@ -32,7 +32,8 @@ import agg.attribute.parser.javaExpr.SimpleNode;
 import agg.util.XMLHelper;
 
 /**
- * Holds an attribute handler expression, its type and the functionality for matching and transforming thereof.
+ * Holds an attribute handler expression, its type and the functionality for
+ * matching and transforming thereof.
  *
  * @author $Author: olga $
  * @version $Id: ValueMember.java,v 1.45 2010/11/29 08:42:25 olga Exp $
@@ -45,31 +46,23 @@ public class ValueMember extends Member implements AttrInstanceMember,
      * This string is shown for an empty value.
      */
     static public final String EMPTY_VALUE_SYMBOL = "";
-
     // Protected instance variables.
     /**
      * Declaration
      */
     protected DeclMember decl;
-
     /**
      * Instance tuple that this value is a member of.
      */
     protected ValueTuple tuple;
-
     /**
      * Attribute handler expression.
      */
     protected HandlerExpr expression;
-
     protected String expressionText;
-
     protected Object expressionObject;
-
     transient protected Exception currentException;
-
     transient protected String errorMsg;
-
     protected boolean isTransient;
 
     // Public constructors.
@@ -86,7 +79,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
         checkValidity();
         this.errorMsg = "";
         this.isTransient = false;
-
 //		logPrintln(VerboseControl.logContextOfInstances,
 //				"Member created for Tuple:" + tuple);
     }
@@ -125,7 +117,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
         if (getExpr() != null) {
             return getExpr().getValue();
         }
-
         return null;
     }
 
@@ -137,12 +128,12 @@ public class ValueMember extends Member implements AttrInstanceMember,
         if (getExpr() == null) {
             return this.expressionText;
         }
-
         return getExpr().toString();
     }
 
     /**
-     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
+     * Setting the value and fire event
+     * <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
      */
     public void setExpr(HandlerExpr expr) {
         if (expr == null) {
@@ -158,7 +149,8 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
+     * Setting the value and fire event
+     * <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
      */
     public void setExprAsObject(Object obj) {
         rawSetExprAsObject(obj);
@@ -180,7 +172,8 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Set expression and try to initialize it if it should be a new instance of a Class. Exmpl: "new Integer(x)"
+     * Set expression and try to initialize it if it should be a new instance of
+     * a Class. Exmpl: "new Integer(x)"
      */
     public void setExprAsText(String exprText, boolean initialize) throws AttrImplException {
         setExprAsText(exprText);
@@ -194,14 +187,14 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
+     * Setting the value and fire event
+     * <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
      */
     public void setExprAsText(String exprText) {
         String s = exprText;
         if (exprText == null) {
             s = new String();
         }
-
         if (s.length() == 0) {
             ContextView context = getContext();
             if (context == null || context.doesAllowEmptyValues()) {
@@ -209,7 +202,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                 return;
             }
         }
-
         if ((s.length() != 0) && (s.charAt(0) == '(')) {
 //			char ch = 
             s.charAt(0);
@@ -230,7 +222,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
         } else {
             rawSetExprAsText(exprText);
         }
-
         if (this.currentException == null) {
             fireChanged(AttrEvent.MEMBER_VALUE_MODIFIED);
         }
@@ -248,12 +239,10 @@ public class ValueMember extends Member implements AttrInstanceMember,
             this.expressionText = exprText;
             this.expressionObject = null;
             HandlerExpr test = null;
-
             if (exprText != null) {
                 if (exprText.length() != 0) {
                     test = getHandler().newHandlerExpr(getType(), exprText);
                     checkValidity(test);
-
                     if (this.currentException == null) {
                         this.expression = test;
                         this.expressionText = exprText;
@@ -264,7 +253,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                     }
                 }
             }
-
             checkValidity();
             // try to initialize attr. member in a graph (host graph)
             if (this.currentException == null
@@ -279,7 +267,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                     }
                 }
             }
-
         } catch (AttrImplException aiex) {
             this.currentException = aiex;
             this.errorMsg = aiex.getMessage();
@@ -296,7 +283,8 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
+     * Setting the value and fire event
+     * <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>.
      */
     public void setExprAsEvaluatedText(String exprText) {
         try {
@@ -317,9 +305,10 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Setting the value and fire event <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>. This method is recommended when
-     * using AGG engine and the attribute value of an object of RHS of a rule is a complex expression containing calls
-     * of class methods.
+     * Setting the value and fire event
+     * <code>AttrEvent.MEMBER_VALUE_MODIFIED</code>. This method is recommended
+     * when using AGG engine and the attribute value of an object of RHS of a
+     * rule is a complex expression containing calls of class methods.
      */
     public void trySetExprAsText(String exprText) throws AttrHandlerException {
         try {
@@ -342,7 +331,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
 
     public void typeChanged() {
         boolean prevValidity = isValid();
-
         this.expression = null;
         try {
             if (this.expressionText != null) {
@@ -357,7 +345,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
             this.expressionText = null;
             this.expressionObject = null;
         }
-
         checkValidity();
         if (prevValidity != isValid()) {
             fireChanged(AttrEvent.MEMBER_VALUE_CORRECTNESS);
@@ -379,8 +366,9 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * This method is used inside of the method rawSetExprAsText(String text) to initialize the attribute members with
-     * type of Java class. For example, an expression like "new Integer(7)" will be initialized to 7.
+     * This method is used inside of the method rawSetExprAsText(String text) to
+     * initialize the attribute members with type of Java class. For example, an
+     * expression like "new Integer(7)" will be initialized to 7.
      *
      * @param expr
      */
@@ -404,7 +392,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
             } catch (AttrHandlerException ex1) {
                 this.currentException = ex1;
                 this.expression = oldExpr;
-
                 throw new AttrImplException(EXPR_EVAL_ERR, ex1.getMessage()
                         + "\n" + expr + "  don't match to  " + this.expression);
             } catch (Exception ex) {
@@ -424,7 +411,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
      */
     public void apply(ValueMember rightSide, AttrContext context) {
 //		if (this.getName().equals("HASHCODE")) return;
-
         if ((rightSide != null) && (rightSide.getExpr() != null)) {
             HandlerExpr oldExpr = getExpr();
             this.expression = rightSide.getExpr().getCopy();
@@ -454,8 +440,8 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Transform application like apply( ValueMember, AttrContext), additionally do allow using variables without value
-     * as value of attribute member.
+     * Transform application like apply( ValueMember, AttrContext), additionally
+     * do allow using variables without value as value of attribute member.
      */
     public void apply(final ValueMember rightSide,
             final AttrContext context,
@@ -464,40 +450,35 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Transform application like apply( ValueMember, AttrContext), additionally do allow using variables without value
-     * as value of attribute member. If equalVariableName is TRUE, then the name of the variable from rightSide must be
-     * equal to the name of the current variable. The equalVariableName option is only used when
-     * allowVariableWithoutValue is TRUE.
+     * Transform application like apply( ValueMember, AttrContext), additionally
+     * do allow using variables without value as value of attribute member. If
+     * equalVariableName is TRUE, then the name of the variable from rightSide
+     * must be equal to the name of the current variable. The equalVariableName
+     * option is only used when allowVariableWithoutValue is TRUE.
      */
     public void apply(final ValueMember rightSide,
             final AttrContext context,
             boolean allowVarWithoutValue,
             boolean equalVarName) {
 //		if (this.getName().equals("HASHCODE"))	return;
-
         if (!allowVarWithoutValue) {
             apply(rightSide, context);
             return;
         }
-
         if ((rightSide != null) && (rightSide.getExpr() != null)) {
-
             if (equalVarName
                     && this.getExpr() != null
                     && this.getExpr().isVariable()
                     && rightSide.getExpr().isVariable()) {
-
                 if (this.getExprAsText().equals(rightSide.getExprAsText())) {
                     return;
                 }
-
                 if (!this.isTransient && !rightSide.isTransient()) {
                     throw new AttrImplException(EXPR_EVAL_ERR,
                             rightSide.getExpr() + "  don't match to  "
                             + this.expression);
                 }
             }
-
 //			System.out.println(this.isTransient+"   "+this.getExpr()+"    "+rightSide.getExprAsText()
 //					+"   "+rightSide.getExpr().isVariable()+"   "+rightSide.isTransient()
 //					+"   "+context.getExpr(rightSide.getExprAsText()));
@@ -510,11 +491,9 @@ public class ValueMember extends Member implements AttrInstanceMember,
                 }
                 return;
             }
-
             if (getExpr() == null
                     || (this.getExpr().isConstant() && rightSide.getExpr().isConstant())
                     || this.isTransient) {
-
                 HandlerExpr oldExpr = getExpr();
                 HandlerExpr exp = null;
                 this.expression = rightSide.getExpr().getCopy();
@@ -553,7 +532,8 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Check if matching is possible into 'target' within the match context 'context'.
+     * Check if matching is possible into 'target' within the match context
+     * 'context'.
      *
      * @return 'true' if possible, 'false' otherwise.
      */
@@ -568,7 +548,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
             if (src == null) {
                 return true;
             }
-
             boolean result = false;
             result = result || tar.isVariable(); // auf Variable matchen
             result = result || tar.isComplex();
@@ -599,7 +578,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
             if (result) {
                 return true;
             }
-
             this.errorMsg = this.errorMsg.concat(context.getErrorMsg());
             /*
 				if (!src.isUnifiableWith(tar, context)) {
@@ -645,15 +623,13 @@ public class ValueMember extends Member implements AttrInstanceMember,
     /**
      * Performs matching with 'target' in the match context 'context'.
      *
-     * @return The name of the variable that this match has affected, i.e. assigned value to. If no variable is
-     * concerned, returns null.
+     * @return The name of the variable that this match has affected, i.e.
+     * assigned value to. If no variable is concerned, returns null.
      */
     public String matchTo(ValueMember target, ContextView context) {
 //		if (this.getName().equals("HASHCODE")) return null;
-
         HandlerExpr srcExpr = this.getExpr();
         String varName = null;
-
         if (srcExpr != null && srcExpr.isVariable()) {
             varName = srcExpr.toString();
             try {
@@ -693,15 +669,12 @@ public class ValueMember extends Member implements AttrInstanceMember,
      * Tests if the handler expressions are equal.
      */
     public boolean equals(ValueMember testObject) {
-
         if (this.getName().equals("HASHCODE")) {
             return true;
         }
-
         if (testObject == null) {
             return false;
         }
-
         if (getExpr() != null) {
             return getExpr().equals(testObject.getExpr());
         }
@@ -719,28 +692,24 @@ public class ValueMember extends Member implements AttrInstanceMember,
         if (this.getName().equals("HASHCODE")) {
             return true;
         }
-
         if (member == null) {
             return false;
         }
-
         if (getExpr() != null) {
             if (member.getExpr() != null) {
                 return getExpr().toString().equals(member.getExpr().toString());
             }
-
             return false;
         }
-
         if (this.expressionText != null) {
             return this.expressionText.equals(member.expressionText);
         }
-
         return false;
     }
 
     /**
-     * @return The textual representation of the expression or 'EMPTY_VALUE_SYMBOL' if that is null.
+     * @return The textual representation of the expression or
+     * 'EMPTY_VALUE_SYMBOL' if that is null.
      */
     public String toString() {
         if (this.getExpr() != null) {
@@ -874,7 +843,8 @@ public class ValueMember extends Member implements AttrInstanceMember,
     }
 
     /**
-     * Checking the validity of the expression 'hExpr' relative to the context 'ctx'.
+     * Checking the validity of the expression 'hExpr' relative to the context
+     * 'ctx'.
      */
     protected void checkInContext(HandlerExpr hExpr, AttrContext ctx) {
         ContextView context = (ContextView) ctx;
@@ -884,7 +854,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
             }
             return;
         }
-
         String exprText = hExpr.toString();
         AttrHandler handler = getHandler();
         HandlerType type = getType();
@@ -903,9 +872,7 @@ public class ValueMember extends Member implements AttrInstanceMember,
                 throw (AttrImplException) this.currentException;
             }
         } else if (context.getAllowedMapping() == AttrMapping.GRAPH_MAP) {
-
         }
-
         if (hExpr.isConstant()) {
             try {
                 hExpr.checkConstant(context);
@@ -940,7 +907,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                     && this.expressionObject == null) {
                 return;
             }
-
             try {
                 hExpr.check(context);
             } catch (AttrHandlerException ex) {
@@ -970,7 +936,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
         if ((this.decl == null) || (this.decl.getType() == null)) {
             return;
         }
-
         h.openSubTag("Attribute");
         h.addObject("type", this.decl, false);
         HandlerExpr ex = getExpr();
@@ -1035,7 +1000,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                             + "\" :  type declaration of attribute value is null.");
             return;
         }
-
 //		String readError = null;
         if (h.getDocumentVersion().equals("1.0")) {
             if (h.readAttr("constant") != "") {
@@ -1053,7 +1017,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                             obj = h.getElementData(h.top());
                         }
                         h.close();
-
                         if (obj == null) {
                             obj = new String();
                         } else if (obj instanceof String) {
@@ -1068,7 +1031,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                         h.close();
                         return;
                     }
-
                     if (obj instanceof String) {
                         // test if value is null
                         if (((String) obj).equals("null")) {
@@ -1078,7 +1040,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                             return;
                         }
                     }
-
                     String valueAsString = "";
                     if (this.decl.getType().toString().equals("String")) {
                         setExprAsObject(obj);
@@ -1180,7 +1141,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
                         setExprAsObject(vo);
                     }
                     // readError = getValidityReport();
-
                 } catch (Exception e) {
                 }
             } else {
@@ -1198,7 +1158,6 @@ public class ValueMember extends Member implements AttrInstanceMember,
             s1 = s2.replaceAll("  ", " ");
             s2 = s1.toString();
         }
-
         return s1;
     }
 

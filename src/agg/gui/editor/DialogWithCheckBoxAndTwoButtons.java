@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -20,7 +21,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -37,15 +37,10 @@ import javax.swing.JPanel;
 public class DialogWithCheckBoxAndTwoButtons {
 
     public final static int YES_OPTION = 0;
-
     protected final JDialog dialog;
-
     protected final JButton button, button2;
-
     protected final JCheckBox checkBox;
-
     protected final JLabel contentText;
-
     protected int answer;
 
     public DialogWithCheckBoxAndTwoButtons(
@@ -55,7 +50,6 @@ public class DialogWithCheckBoxAndTwoButtons {
             final Object[] options,
             final Object option,
             final String textOfCheckBox) {
-
         this.dialog = new JDialog(parent, title);
         this.dialog.setModal(true);
         this.dialog.setLocationRelativeTo(parent);
@@ -64,9 +58,7 @@ public class DialogWithCheckBoxAndTwoButtons {
                 DialogWithCheckBoxAndTwoButtons.this.dialog.setVisible(false);
             }
         });
-
         this.contentText = new JLabel("   " + text + "   ");
-
         this.button = new JButton("Option");
         this.button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -74,7 +66,6 @@ public class DialogWithCheckBoxAndTwoButtons {
                 DialogWithCheckBoxAndTwoButtons.this.dialog.setVisible(false);
             }
         });
-
         this.button2 = new JButton("Option2");
         this.button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -82,7 +73,6 @@ public class DialogWithCheckBoxAndTwoButtons {
                 DialogWithCheckBoxAndTwoButtons.this.dialog.setVisible(false);
             }
         });
-
         if (options.length == 2) {
             if (options[0] instanceof String) {
                 this.button.setText((String) options[0]);
@@ -91,7 +81,6 @@ public class DialogWithCheckBoxAndTwoButtons {
                 this.button2.setText((String) options[1]);
             }
         }
-
         if (option != null && (option instanceof String)) {
             if (((String) option).equals(this.button.getText())) {
                 this.answer = 0;
@@ -99,7 +88,6 @@ public class DialogWithCheckBoxAndTwoButtons {
                 this.answer = 1;
             }
         }
-
         this.checkBox = new JCheckBox(textOfCheckBox, false);
         this.checkBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -110,13 +98,10 @@ public class DialogWithCheckBoxAndTwoButtons {
                 }
             }
         });
-
         final JPanel content = new JPanel(new BorderLayout());
         initContent(content);
-
         this.dialog.getContentPane().add(content);
         this.dialog.validate();
-
         this.dialog.setSize(300, 300);
         this.dialog.pack();
     }
@@ -128,13 +113,11 @@ public class DialogWithCheckBoxAndTwoButtons {
         p.add(this.contentText);
         p.add(new JLabel("          "));
         content.add(p, BorderLayout.NORTH);
-
         final JPanel p1 = new JPanel();
         p1.add(this.button);
         p1.add(new JLabel("          "));
         p1.add(this.button2);
         content.add(p1, BorderLayout.CENTER);
-
         final JPanel p2 = new JPanel(new GridLayout(3, 1));
         p2.add(new JLabel("          "));
         p2.add(this.checkBox);

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -35,26 +37,20 @@ public class Arc extends GraphObject implements XMLObject {
 
     protected boolean inheritance = false;
     protected boolean directed = true;
-
     protected GraphObject itsSource;
     protected GraphObject itsTarget;
-
     protected String keyStr = null;
 
     protected Arc(final Type type,
             final GraphObject src,
             final GraphObject tar,
             final Graph context) {
-
         this.itsContext = context;
         this.itsType = type;
-
         this.itsSource = src;
         this.itsTarget = tar;
         addToSrcTar(this.itsSource, this.itsTarget);
-
         this.itsContextUsage = hashCode();
-
         if (!this.itsType.isAttrTypeEmpty()) {
             this.itsAttr = AttrTupleManager.getDefaultManager().newInstance(
                     this.itsType.getAttrType(), context.getAttrContext());
@@ -62,39 +58,35 @@ public class Arc extends GraphObject implements XMLObject {
         if (this.itsAttr != null) {
             this.itsAttr.addObserver(this);
         }
-
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
     }
 
     /**
-     * @param attr An attribute instance of a new arc if it should have attributes. May be <code>null</code>.
+     * @param attr An attribute instance of a new arc if it should have
+     * attributes. May be <code>null</code>.
      * @param type An arc type of a new arc.
      * @param src A source node of a new arc.
      * @param tar A target node of a new arc.
-     * @param context A graph in which to consider a new arc with its source and target nodes.
+     * @param context A graph in which to consider a new arc with its source and
+     * target nodes.
      */
     public Arc(final AttrInstance attr,
             final Type type,
             final GraphObject src,
             final GraphObject tar,
             final Graph context) {
-
         this.itsContext = context;
         this.itsType = type;
-
         this.itsSource = src;
         this.itsTarget = tar;
         addToSrcTar(this.itsSource, this.itsTarget);
-
         this.itsContextUsage = hashCode();
-
         this.itsAttr = attr;
         if (this.itsAttr != null) {
             this.itsAttr.addObserver(this);
         }
-
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
@@ -104,16 +96,13 @@ public class Arc extends GraphObject implements XMLObject {
             final GraphObject src,
             final GraphObject tar,
             final Graph context) {
-
         this(orig.getType(), src, tar, context);
-
         if (orig.getAttribute() != null) {
             if (this.itsAttr == null) {
                 this.createAttributeInstance();
             }
             ((ValueTuple) this.itsAttr).copyEntries(orig.getAttribute());
         }
-
         // object name is not jet used in AGG GUI
         if (!"".equals(orig.getObjectName())) {
             this.setObjectName(orig.getObjectName());
@@ -133,28 +122,24 @@ public class Arc extends GraphObject implements XMLObject {
 
     public void dispose() {
 //		long t = System.nanoTime();
-
         ((Node) this.itsTarget).removeIn(this);
         ((Node) this.itsSource).removeOut(this);
-
         if (this.itsAttr != null) {
             this.itsAttr.removeObserver(this);
             ((ValueTuple) this.itsAttr).dispose();
             this.itsAttr = null;
         }
-
         this.itsType = null;
         this.itsContext = null;
         this.itsContextUsage = -1;
-
         this.itsTarget = null;
         this.itsSource = null;
-
 //		System.out.println("Arc disposed  in: "+(System.nanoTime()-t)+"nano");
     }
 
     /**
-     * If the specified parameter is <code>true</code> set this edge to be an inheritance edge of a type graph.
+     * If the specified parameter is <code>true</code> set this edge to be an
+     * inheritance edge of a type graph.
      *
      * @param inherit
      */
@@ -197,7 +182,6 @@ public class Arc extends GraphObject implements XMLObject {
         ((Node) this.itsSource).removeOut(this);
         this.itsSource = n;
         n.addOut(this);
-
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
@@ -207,7 +191,6 @@ public class Arc extends GraphObject implements XMLObject {
         ((Node) this.itsTarget).removeIn(this);
         this.itsTarget = n;
         n.addIn(this);
-
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
@@ -222,7 +205,8 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     /**
-     * Converts my type to the type key string that can be used for search operations:      <code> ((Arc) this).getSource().getType().convertToKey()
+     * Converts my type to the type key string that can be used for search
+     * operations:      <code> ((Arc) this).getSource().getType().convertToKey()
      * + ((Arc) this).getType().convertToKey()
      * + ((Arc) this).getTarget().getType().convertToKey()
      * </code>
@@ -251,10 +235,8 @@ public class Arc extends GraphObject implements XMLObject {
 
     public List<String> convertToKeyParentExtended() {
         final List<String> list = new ArrayList<>();
-
         List<Type> mySrcParents = this.getSource().getType().getAllParents();
         List<Type> myTrgParents = this.getTarget().getType().getAllParents();
-
         for (Type srcParent : mySrcParents) {
             for (Type trgParent : myTrgParents) {
                 String keystr = srcParent.convertToKey()
@@ -268,8 +250,8 @@ public class Arc extends GraphObject implements XMLObject {
 
     /**
      * The edge type map key is the string:
-     * getSource().getType().convertToKey()+getType().convertToKey()+getTarget().getType().convertToKey() and is used to
-     * fill the type to objects map of a graph.
+     * getSource().getType().convertToKey()+getType().convertToKey()+getTarget().getType().convertToKey()
+     * and is used to fill the type to objects map of a graph.
      *
      * @return String key
      */
@@ -299,7 +281,6 @@ public class Arc extends GraphObject implements XMLObject {
         if (o == null || !o.isArc()) {
             return false;
         }
-
         Arc a = (Arc) o;
 //		if (!this.getObjectName().equals(a.getObjectName())) {
 //			return false;
@@ -376,46 +357,37 @@ public class Arc extends GraphObject implements XMLObject {
         if (!this.visible) {
             h.addAttr("visible", "false");
         }
-
         if (!this.getObjectName().equals("")) {
             h.addAttr("name", this.getObjectName());
         }
-
         h.addObject("type", this.itsType, false);
         h.addObject("source", getSource(), false);
         h.addObject("target", getTarget(), false);
-
         // save multiplicity, if part of type graph
         if (this.itsContext != null && this.itsContext.isTypeGraph()) {
             // System.out.println("Arc.Xwrite... is elem of type graph");
             Type sourceType = getSource().getType();
             Type targetType = getTarget().getType();
-
             int minmax = this.itsType.getSourceMin(sourceType, targetType);
             if (minmax != Type.UNDEFINED) {
                 h.addAttr("sourcemin", Integer.toString(minmax));
             }
-
             minmax = this.itsType.getTargetMin(sourceType, targetType);
             // System.out.println("targetmin " +minmax);
             if (minmax != Type.UNDEFINED) {
                 h.addAttr("targetmin", Integer.toString(minmax));
             }
-
             minmax = this.itsType.getSourceMax(sourceType, targetType);
             if (minmax != Type.UNDEFINED) {
                 h.addAttr("sourcemax", Integer.toString(minmax));
             }
-
             minmax = this.itsType.getTargetMax(sourceType, targetType);
             // System.out.println("targetmax " +minmax);
             if (minmax != Type.UNDEFINED) {
                 h.addAttr("targetmax", Integer.toString(minmax));
             }
         }
-
         h.addObject("", this.itsAttr, true);
-
         h.close();
     }
 
@@ -428,18 +400,14 @@ public class Arc extends GraphObject implements XMLObject {
         if (h.isTag("Edge", this)) {
             String str = h.readAttr("directed");
             this.directed = !str.equals("false");
-
             str = h.readAttr("visible");
             this.visible = !str.equals("false");
-
             str = h.readAttr("name");
             this.setObjectName(str);
-
             if (this.itsType.getAttrType() != null
                     || this.itsType.hasInheritedAttribute()) {
                 this.createAttributeInstance();
             }
-
             AttrInstance attri = this.itsAttr;
             if (attri != null) {
                 // if(Debug.HASHCODE){
@@ -456,11 +424,9 @@ public class Arc extends GraphObject implements XMLObject {
                 // mem.setExprAsObject(hc);
                 // mem.checkValidity();
                 // }
-
                 h.enrichObject(attri);
             }
             h.close();
-
             // if this node uses variable
             // in its attribute so the variable will be marked
             if (this.itsContext != null
@@ -520,8 +486,9 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     /**
-     * Implements the AttrObserver. Propagates the change <code>agg.util.Change.OBJECT_MODIFIED</code> and object Pair
-     * (this, ev.getID()) to its Graph if the attributes are changed.
+     * Implements the AttrObserver. Propagates the change
+     * <code>agg.util.Change.OBJECT_MODIFIED</code> and object Pair (this,
+     * ev.getID()) to its Graph if the attributes are changed.
      */
     @Override
     public void attributeChanged(AttrEvent ev) {
@@ -531,5 +498,4 @@ public class Arc extends GraphObject implements XMLObject {
             this.itsContext.propagateChange(new Change(Change.OBJECT_MODIFIED, p));
         }
     }
-
 }

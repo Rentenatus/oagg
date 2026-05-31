@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
@@ -27,42 +28,34 @@ import agg.util.XMLHelper;
 public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
 
     static final long serialVersionUID = -1967468240702798334L;
-
     /**
      * The Tuple containing this declaration.
      */
     protected DeclTuple tuple;
-
     /**
      * The type of this declaration.
      */
     protected HandlerType type;
-
     /**
      * Type name.
      */
     protected String typeName;
-
     /**
      * The name of this declaration.
      */
     protected String name;
-
     /**
      * The attribute handler that created the type.
      */
     protected AttrHandler handler;
-
     /**
      * Flag if the the member name is unique within its tuple.
      */
     protected boolean isNameValid = false;
-
     /**
      * Last error message from the attribute handler.
      */
     protected String handlerMessage;
-
     protected boolean visible;
 
     public DeclMember(DeclTuple tuple) {
@@ -143,7 +136,6 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
         } else if (!this.isNameValid) {
             report += "Name is not unique or a Java data class name.\n";
         }
-
         return report;
     }
 
@@ -201,14 +193,12 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
         if (getTuple() == null) {
             return;
         }
-
         String prevName = this.name;
         this.name = name.replaceAll(" ", "");
         getTuple().checkNameValidity(this.name);
         if (!this.isNameValid) {
             this.name = prevName;
         }
-
         fireChanged(AttrEvent.MEMBER_RENAMED);
     }
 
@@ -233,9 +223,11 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
     }
 
     /**
-     * This member and the specified member must be valid: its type and name is not empty string and the type is
-     * available in case of a Class. Compares the handler name, the type name and the name of this member and the
-     * specified member. Returns true, if all properties are equal, otherwise - false.
+     * This member and the specified member must be valid: its type and name is
+     * not empty string and the type is available in case of a Class. Compares
+     * the handler name, the type name and the name of this member and the
+     * specified member. Returns true, if all properties are equal, otherwise -
+     * false.
      */
     public boolean compareTo(AttrTypeMember mem) {
         if (mem != null
@@ -249,9 +241,10 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
     }
 
     /**
-     * This member and the specified member must be defined: its type and name is not empty string. Compares the handler
-     * name, the type name and the name of this member and the specified member. Returns true, if all properties are
-     * equal, otherwise - false.
+     * This member and the specified member must be defined: its type and name
+     * is not empty string. Compares the handler name, the type name and the
+     * name of this member and the specified member. Returns true, if all
+     * properties are equal, otherwise - false.
      */
     public boolean weakcompareTo(AttrTypeMember mem) {
         if (mem != null
@@ -280,8 +273,7 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
             this.name = h.readAttr("attrname");
             // this check was needed because reported garbled names of the attributes
             this.name = XMLHelper.checkNameDueToSpecialCharacters(this.name);
-
-//			if (name.indexOf('¬') != -1) {
+//			if (name.indexOf('Ã‚Â¬') != -1) {
 //				String test = "";
 //				for(int i=0; i<name.length(); i++) {
 //					Character ch = Character.valueOf(name.charAt(i));
@@ -322,7 +314,6 @@ public class DeclMember extends Member implements AttrMsgCode, AttrTypeMember {
         }
     }
 }
-
 /*
  * $Log: DeclMember.java,v $
  * Revision 1.13  2010/11/28 22:11:37  olga

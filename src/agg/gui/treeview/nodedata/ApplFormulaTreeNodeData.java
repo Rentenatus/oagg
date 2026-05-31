@@ -2,21 +2,20 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: ApplFormulaTreeNodeData.java,v 1.8 2010/11/11 17:19:52 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JLabel;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.cons.Evaluable;
 import agg.cons.Formula;
 import agg.editor.impl.EdNestedApplCond;
@@ -25,27 +24,25 @@ import agg.util.Pair;
 import agg.xt_basis.NestedApplCond;
 
 /**
- * The RuleAttrConditionTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The RuleAttrConditionTreeNodeData implements an user object of a tree node in
+ * the GraGraTreeModel.
  *
  * @author $Author: olga $
- * @version $Id: ApplFormulaTreeNodeData.java,v 1.8 2010/11/11 17:19:52 olga Exp $
+ * @version $Id: ApplFormulaTreeNodeData.java,v 1.8 2010/11/11 17:19:52 olga Exp
+ * $
  */
 public class ApplFormulaTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     JLabel treeCell;
     private Object data;
-
     private Formula f;
     private List<String> names;
     private List<Evaluable> acs;
-
     private boolean enabled = true;
-
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */
@@ -87,7 +84,6 @@ public class ApplFormulaTreeNodeData extends GraGraTreeNodeDataAdapter {
         } else {
             this.string = formula;
         }
-
         replace();
     }
 
@@ -126,13 +122,15 @@ public class ApplFormulaTreeNodeData extends GraGraTreeNodeDataAdapter {
     }
 
     /**
-     * Do not use this method to set the string to display for this object, do use <code>update()<\code> instead.
+     * Do not use this method to set the string to display for this object, do
+     * use <code>update()<\code> instead.
      */
     public void setString(String str) {
     }
 
     /**
-     * Do not use this method to set the string to display for this object, do use <code>update()<\code> instead.
+     * Do not use this method to set the string to display for this object, do
+     * use <code>update()<\code> instead.
      */
     public void setString(String tag, String newString) {
     }
@@ -167,13 +165,11 @@ public class ApplFormulaTreeNodeData extends GraGraTreeNodeDataAdapter {
                 }
             }
         }
-
         if (!this.enabled) {
             this.string = "[D]" + (String) ((Pair<?, ?>) this.data).first;
         } else {
             this.string = (String) ((Pair<?, ?>) this.data).first;
         }
-
         replace();
     }
 
@@ -227,5 +223,4 @@ public class ApplFormulaTreeNodeData extends GraGraTreeNodeDataAdapter {
     public boolean isTreeTextEditable() {
         return false;
     }
-
 }

@@ -1,16 +1,17 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.util;
-
 
 import de.jare.ndimcol.ref.IteratorWalker;
 import java.io.BufferedInputStream;
@@ -37,14 +38,12 @@ import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-
 import org.xml.sax.*;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
-
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
 import org.w3c.dom.traversal.DocumentTraversal;
@@ -57,46 +56,31 @@ public class XMLHelper implements ExceptionListener {
     private long lID;
     boolean isAGG;
     private Document doc;
-
     private Map<Object, Object> object2index;
     private Map<Object, Object> index2object;
-
     private Map<Object, Object> index2element;
     private Map<Object, Object> element2index;
-
     private Vector<Node> estack;
-
     private Vector<Node> chld_stack;
-
     private int esp;
-
     private static final String VERSION = "1.0";
-
     private String version = "";
-
     private String ioException = "";
-
     private String dir = System.getProperty("user.dir");
 
     public XMLHelper() {
-
         // Java XML Document
         this.doc = new DocumentImpl();
-
         Element top_elem = null;
         Element e = this.doc.createElement("Document");
-
         this.version = VERSION;
         e.setAttribute("version", this.version);
-
         this.doc.appendChild(e);
         top_elem = this.doc.getDocumentElement();
-
         this.object2index = new HashMap<Object, Object>(400);
         this.index2object = new HashMap<Object, Object>(400);
         this.index2element = new HashMap<Object, Object>(400);
         this.element2index = new HashMap<Object, Object>(400);
-
         this.estack = new Vector<Node>();
         this.chld_stack = new Vector<Node>();
         this.esp = 0;
@@ -152,15 +136,13 @@ public class XMLHelper implements ExceptionListener {
                 }
             }
         }
- 
+
         FileOutputStream os = null;
         try {
             os = new FileOutputStream(f);
-
             XMLSerializer serializer = new XMLSerializer(os, format);
             serializer.setOutputByteStream(os);
             serializer.serialize(this.doc);
-
             os.close();
         } catch (IOException ex) {
             System.err.println("Absolute path: " + f.getAbsolutePath());
@@ -177,7 +159,6 @@ public class XMLHelper implements ExceptionListener {
             if (this.dir == null) {
                 this.dir = System.getProperty("user.dir");
             }
-
             if (!(new File(this.dir)).canWrite()) {
                 this.dir = System.getProperty("user.dir");
                 if (!(new File(this.dir)).canWrite()) {
@@ -192,14 +173,12 @@ public class XMLHelper implements ExceptionListener {
                     + fname + "  doesn't exist!");
             return false;
         }
-
         this.esp = 0;
         try {
             // read file
             InputSource inSrc = new InputSource();
             BufferedReader in = new BufferedReader(new FileReader(fname));
             inSrc.setCharacterStream(in);
-
             // java xml parser
             DOMParser parser = new DOMParser();
             try {
@@ -219,11 +198,8 @@ public class XMLHelper implements ExceptionListener {
 //			e.printStackTrace();
             return false;
         }
-
         isAGG = fname.endsWith(".ggx") || fname.endsWith(".cpx") || fname.endsWith(".rsx");
-
         push(this.doc.getDocumentElement());
-
         NodeIterator ni = ((DocumentTraversal) this.doc).createNodeIterator(top(),
                 NodeFilter.SHOW_ALL, new NodeFilter() {
             public short acceptNode(Node n) {
@@ -254,24 +230,22 @@ public class XMLHelper implements ExceptionListener {
                 break;
             }
         }
-
         this.version = this.doc.getDocumentElement().getAttribute("version");
-
         return true;
     }
 
     /*
 	 * public static boolean hasGermanSpecialCh(String str){
-	 * if((str.indexOf('ö') != -1) || (str.indexOf('Ö') != -1) ||
-	 * (str.indexOf('ä') != -1) || (str.indexOf('Ä') != -1) || (str.indexOf('ü') !=
-	 * -1) || (str.indexOf('Ü') != -1) || (str.indexOf('ß') != -1) ||
+	 * if((str.indexOf('ÃƒÂ¶') != -1) || (str.indexOf('Ãƒâ€“') != -1) ||
+	 * (str.indexOf('ÃƒÂ¤') != -1) || (str.indexOf('Ãƒâ€ž') != -1) || (str.indexOf('ÃƒÂ¼') !=
+	 * -1) || (str.indexOf('ÃƒÅ“') != -1) || (str.indexOf('ÃƒÅ¸') != -1) ||
 	 * (str.indexOf(' ') != -1)) return true; else return false; }
 	 * 
 	 * public static String replaceGermanSpecialCh(String name){ String str =
-	 * name; str = str.replaceAll("ö","oe"); str = str.replaceAll("Ö","Oe"); str =
-	 * str.replaceAll("ä","ae"); str = str.replaceAll("Ä","Ae"); str =
-	 * str.replaceAll("ü","ue"); str = str.replaceAll("Ü","Ue"); str =
-	 * str.replaceAll("ß","ss"); str = str.replaceAll(" ",""); return str; }
+	 * name; str = str.replaceAll("ÃƒÂ¶","oe"); str = str.replaceAll("Ãƒâ€“","Oe"); str =
+	 * str.replaceAll("ÃƒÂ¤","ae"); str = str.replaceAll("Ãƒâ€ž","Ae"); str =
+	 * str.replaceAll("ÃƒÂ¼","ue"); str = str.replaceAll("ÃƒÅ“","Ue"); str =
+	 * str.replaceAll("ÃƒÅ¸","ss"); str = str.replaceAll(" ",""); return str; }
      */
     public String getIOException() {
         return this.ioException;
@@ -294,7 +268,8 @@ public class XMLHelper implements ExceptionListener {
 
     /**
      * Cycled above the children of the current DOM-Element.<br>
-     * Only elements of the type <code>Node.ELEMENT_NODE</code> taken in account.
+     * Only elements of the type <code>Node.ELEMENT_NODE</code> taken in
+     * account.
      */
     private Element top_child() {
         return next_child(this.esp - 1);
@@ -349,8 +324,9 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Opens already saved object XMLObject o for further work. The XMLObject t must point to <code>this</code> when
-     * this method is called inside of the XwriteObject(XMLHelper).
+     * Opens already saved object XMLObject o for further work. The XMLObject t
+     * must point to <code>this</code> when this method is called inside of the
+     * XwriteObject(XMLHelper).
      */
     public boolean openObject(XMLObject o, XMLObject t) {
         if (o == null) {
@@ -404,8 +380,9 @@ public class XMLHelper implements ExceptionListener {
 
     /**
      * Creates a new DOM-Element (with ID) of the specified XMLObject t.<br>
-     * This method is called in The XMLObject t must point to <code>this</code> when this method is called inside of the
-     * method <code>XwriteObject(XMLHelper h)</code>.
+     * This method is called in The XMLObject t must point to <code>this</code>
+     * when this method is called inside of the method
+     * <code>XwriteObject(XMLHelper h)</code>.
      */
     public void openNewElem(String tagname, XMLObject t) {
         Element e;
@@ -467,7 +444,8 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Reads one DOM-Element only. Returns the name of this element or null if no more elements.
+     * Reads one DOM-Element only. Returns the name of this element or null if
+     * no more elements.
      */
     public String readSubTag() {
         Element e;
@@ -482,13 +460,13 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Real work routine of object saving. Used by addObjectRef() and addObjectSub().
+     * Real work routine of object saving. Used by addObjectRef() and
+     * addObjectSub().
      */
     public void addObject(String mem_name, XMLObject o, boolean sub) {
         if (o == null) {
             return;
         }
-
         String newi = getO2I(o);
         if (newi.length() == 0) {
             newi = newO2I(o);
@@ -522,16 +500,17 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * The specified XMLObject o will be saved as a Sub-Element of the current DOM-Element. The XMLObject o must not be
-     * saved before. It gets an ID. The ID is saved as Attribut <code>mem_name</code> of the current DOM-Element.
+     * The specified XMLObject o will be saved as a Sub-Element of the current
+     * DOM-Element. The XMLObject o must not be saved before. It gets an ID. The
+     * ID is saved as Attribut <code>mem_name</code> of the current DOM-Element.
      */
     public void addObjectRef(String mem_name, XMLObject o) {
         addObject(mem_name, o, false);
     }
 
     /**
-     * The specified XMLObject o will be saved as a Sub-Element of the current DOM-Element. The XMLObject o must not be
-     * saved before. It gets an ID.
+     * The specified XMLObject o will be saved as a Sub-Element of the current
+     * DOM-Element. The XMLObject o must not be saved before. It gets an ID.
      */
     public void addObjectSub(XMLObject o) {
         addObject("", o, true);
@@ -576,7 +555,6 @@ public class XMLHelper implements ExceptionListener {
                 // "+e+" as it has no ID");
             }
         } while (s.equals(""));
-
         if (!s.equals("")) {
             String i = s;
             if (this.index2object.get(i) != null) {
@@ -599,10 +577,12 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * The specified <code>mem_name</code> is interpreted as the ID to find a DOM-Element. If the DOM-Element already
-     * read, the XMLObject associated with this DOM-Element is returned (also null can be returned). Otherwise, the
-     * specified <code>templ</code> has to be a (empty) XMLObject which will be filled with the content of the
-     * DOM-Element (using templ.XreadObject()) and up to now associated with given ID.<br>
+     * The specified <code>mem_name</code> is interpreted as the ID to find a
+     * DOM-Element. If the DOM-Element already read, the XMLObject associated
+     * with this DOM-Element is returned (also null can be returned). Otherwise,
+     * the specified <code>templ</code> has to be a (empty) XMLObject which will
+     * be filled with the content of the DOM-Element (using templ.XreadObject())
+     * and up to now associated with given ID.<br>
      * In case the specified <code>mem_name</code> is not found, returns null.
      */
     public XMLObject getObjectRef(String mem_name, XMLObject templ) {
@@ -610,9 +590,11 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * The next Sub-Element of the current DOM-Element with an ID attribute will be associated with the specified
-     * XMLObject <code>templ</code>. The <code>templ</code> will be filled with the content of the Sub-Element. This
-     * Sub-Element must not be read before and the <code>templ</code> is not null.<br>
+     * The next Sub-Element of the current DOM-Element with an ID attribute will
+     * be associated with the specified XMLObject <code>templ</code>. The
+     * <code>templ</code> will be filled with the content of the Sub-Element.
+     * This Sub-Element must not be read before and the <code>templ</code> is
+     * not null.<br>
      * Returns the  <code>templ</code> object,
      */
     public XMLObject getObjectSub(XMLObject templ) {
@@ -620,9 +602,11 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Here the <code>top()</code> element is interpreted as object to read. The specified XMLObject <code>templ</code>
-     * will be filled with the content.<br>
-     * Such a XMLObject <code>templ</code> can be get by <code>peekElement()</code>.
+     * Here the <code>top()</code> element is interpreted as object to read. The
+     * specified XMLObject <code>templ</code> will be filled with the
+     * content.<br>
+     * Such a XMLObject <code>templ</code> can be get by
+     * <code>peekElement()</code>.
      */
     public XMLObject loadObject(XMLObject templ) {
         Element e = top();
@@ -636,7 +620,6 @@ public class XMLHelper implements ExceptionListener {
                     + " as it has no ID");
             return null;
         }
-
         String i = s;
         if (this.index2object.get(i) != null) {
             System.err.println("XMLHelper: FATAL: subobject ID=" + i
@@ -654,7 +637,8 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * This method calls <code>templ.XreadObject(this)</code> with aim to enrich its content.
+     * This method calls <code>templ.XreadObject(this)</code> with aim to enrich
+     * its content.
      */
     public void enrichObject(XMLObject templ) {
 //		String id = getO2I(templ);
@@ -711,8 +695,7 @@ public class XMLHelper implements ExceptionListener {
             top().setAttribute(mem_name, refs);
         }
     }
-    
-    
+
     public void addEnumeration(String mem_name, IteratorWalker<?> e, boolean sub) {
         String refs = "";
         while (e.hasNext()) {
@@ -823,7 +806,7 @@ public class XMLHelper implements ExceptionListener {
                 v.add(e);
             }
         }
-        pop(); 
+        pop();
         return v.iterator();
     }
 
@@ -960,7 +943,6 @@ public class XMLHelper implements ExceptionListener {
         if (e == null) {
             return null;
         }
-
         String i = "";
         String s = e.getAttribute("ID");
         if (!s.equals("")) {
@@ -1010,8 +992,9 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * O wird direkt ins Document eingehangen, wenns noch nicht gespeichert war. Da dies ein TopLevel-Objekt ist, wird
-     * natuerlich hier nirgends eine Referenz darauf eingehangen.
+     * O wird direkt ins Document eingehangen, wenns noch nicht gespeichert war.
+     * Da dies ein TopLevel-Objekt ist, wird natuerlich hier nirgends eine
+     * Referenz darauf eingehangen.
      */
     public void addTopObject(String tagname, XMLObject o) {
         Element e;
@@ -1032,8 +1015,8 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Gibt eine Representation des String S zurueck, die als Attribut-Wert verwendbar ist. (Probleme machen z.b.
-     * "#xxx;" Character Einbettungen)
+     * Gibt eine Representation des String S zurueck, die als Attribut-Wert
+     * verwendbar ist. (Probleme machen z.b. "#xxx;" Character Einbettungen)
      */
     public String escapeString(String s) {
         // System.out.println("XMLHelper.escapeString");
@@ -1057,8 +1040,8 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Wandelt einen String aus escapeString() wieder in urspruengliche Form zurueck. Es gilt also:
-     * unescapeString(escapeString(s)) == s.
+     * Wandelt einen String aus escapeString() wieder in urspruengliche Form
+     * zurueck. Es gilt also: unescapeString(escapeString(s)) == s.
      */
     public String unescapeString(String s) {
         // System.out.println("XMLHelper.unescapeString");
@@ -1087,8 +1070,9 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * In aktuell offenes DOM-Element wird ein Attribut namens NAME mit Wert VALUE angelegt. E.g. addAttr("bla",
-     * "whatever") resultiert (wenn gerade ein <BLUBB> Element offen ist) in: "<BLUBB bla="whatever"> ...".
+     * In aktuell offenes DOM-Element wird ein Attribut namens NAME mit Wert
+     * VALUE angelegt. E.g. addAttr("bla", "whatever") resultiert (wenn gerade
+     * ein <BLUBB> Element offen ist) in: "<BLUBB bla="whatever"> ...".
      */
     public void addAttr(String name, String value) {
         top().setAttribute(name, value);
@@ -1104,7 +1088,8 @@ public class XMLHelper implements ExceptionListener {
     /**
      * Beispiel: Value von Basistypen int/Integer mit Wert 999: <int>999</int>;
      *
-     * Value von komplexeren Typen (auch String) Vector mit String "hhh" und "hohoho" sieht so aus: <java version="1.4.1"
+     * Value von komplexeren Typen (auch String) Vector mit String "hhh" und
+     * "hohoho" sieht so aus: <java version="1.4.1"
      * class="java.beans.XMLDecoder"> <object class="java.util.Vector"> <void
      * method="add"> <string>hhh</string> </void> <void method="add">
      * <string>hohoho</string> </void> </object> </java>
@@ -1125,12 +1110,10 @@ public class XMLHelper implements ExceptionListener {
             close();
             return;
         }
-
         Class<?> cl = value.getClass();
         String className = cl.getName();
         // System.out.println("type : "+typeName);
         // System.out.println("Class: "+className);
-
         if (typeName.equals("string")) { // simulate String			
             String str = (String) value;
             if (str.indexOf("\"") == -1) {
@@ -1212,7 +1195,6 @@ public class XMLHelper implements ExceptionListener {
             }
             close();
             return;
-
         } else if (typeName.equals("double") || typeName.equals("Double")) {
             if (value instanceof Double) {
                 openSubTag("double");
@@ -1242,7 +1224,6 @@ public class XMLHelper implements ExceptionListener {
             }
             close();
             return;
-
         } else if (typeName.equals("long") || typeName.equals("Long")) {
             if (value instanceof Long) {
                 openSubTag("long");
@@ -1351,7 +1332,6 @@ public class XMLHelper implements ExceptionListener {
                 useXMLEncoder = false;
             }
         }
-
         if (useXMLEncoder) {
             addAttrUsingXMLEncoder("Value", value);
         } else if (typeName.equals("Enumeration")) {
@@ -1362,10 +1342,8 @@ public class XMLHelper implements ExceptionListener {
             addAttrUsingXMLEncoder("Value", vec);
         } else {
             System.out.println("\tContinue with using SerializedData for saving.");
-
             addAttrUsingSerializedData("Value", typeName, value);
         }
-
         this.doc.getDocumentElement().normalize();
     }
 
@@ -1397,7 +1375,6 @@ public class XMLHelper implements ExceptionListener {
             close();
             return result;
         }
-
         if (typeName.equals("int") || typeName.equals("Integer")) {
             if (readSubTag("int")) {
                 Element e = top();
@@ -1549,17 +1526,14 @@ public class XMLHelper implements ExceptionListener {
         } else {
             useXMLDecoder = true;
         }
-
         if (useXMLDecoder) {
             result = getAttrUsingXMLDecoder("Value");
         }
-
         if (typeName.equals("Enumeration") && result instanceof Vector) {
             Vector<?> vec = (Vector<?>) result;
             Enumeration<?> en = vec.elements();
             result = en;
         }
-
         return result;
     }
 
@@ -1570,7 +1544,6 @@ public class XMLHelper implements ExceptionListener {
         // System.out.println("XMLHelper.addAttrUsingXMLEncoder ...");
         // use ByteArrayOutputStream !
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
         // speichere XMLEncoder Ausgabe in tmp File
         // String xmlFilename = dir+File.separator+"AGG_tmpout1.xml";
         // File xmlFile = new File(xmlFilename);
@@ -1581,14 +1554,12 @@ public class XMLHelper implements ExceptionListener {
             // new FileOutputStream(xmlFile)));
             // e.writeObject(value);
             // e.close();
-
             // use ByteArrayOutputStream !
             final XMLEncoder e1 = new XMLEncoder(new BufferedOutputStream(baos));
             e1.writeObject(value);
             e1.close();
             // System.out.println("XMLEncoder using ByteArrayOutputStream::
             // "+baos.toString());
-
         } // catch(java.io.FileNotFoundException ex) {
         // System.out.println("agg.util.XMLHelper.addAttrUsingXMLEncoder: write
         // attribute value FAILED!");
@@ -1598,20 +1569,16 @@ public class XMLHelper implements ExceptionListener {
             System.out
                     .println("agg.util.XMLHelper.addAttrUsingXMLEncoder: write attribute value FAILED!");
         }
-
         // use ByteArrayInputStream
         final ByteArrayInputStream bais = new ByteArrayInputStream(baos
                 .toByteArray());
-
         try {
             DOMParser parser = new DOMParser();
-
             // parser.parse(xmlFilename);
             // use ByteArrayInputStream
             parser.parse(new InputSource(bais));
             Document tmpDoc = parser.getDocument();
             tmpDoc.getDocumentElement().normalize();
-
             // System.out.println("tmpDoc: "+tmpDoc);
             // get element of tmp document
             Element element = tmpDoc.getDocumentElement();
@@ -1641,11 +1608,9 @@ public class XMLHelper implements ExceptionListener {
         if (top().getElementsByTagName("java").getLength() == 0) {
             return null;
         }
-
         Object result = null;
         Element element = top();
         // System.out.println(element.getTagName()+" java ");
-
         Document tmpDoc = new DocumentImpl();
         try {
             Node n = tmpDoc.importNode(element, true);
@@ -1656,12 +1621,9 @@ public class XMLHelper implements ExceptionListener {
                             + ex2.getMessage());
             return null;
         }
-
         final OutputFormat format = new OutputFormat(tmpDoc, "UTF-8", true);
-
         // use ByteArrayOutputStream
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
         // use tmp file
         // String xmlFile = dir+File.separator+"AGG_tmpout2.xml";
         // File f = new File(xmlFile);
@@ -1672,14 +1634,12 @@ public class XMLHelper implements ExceptionListener {
             // final XMLSerializer serializer = new XMLSerializer(os, format);
             // serializer.setOutputByteStream(os);
             // serializer.serialize(tmpDoc);
-
             // use ByteArrayOutputStream
             final XMLSerializer serializer = new XMLSerializer(baos, format);
             serializer.setOutputByteStream(baos);
             serializer.serialize(tmpDoc);
             // System.out.println("XMLSerializer using ByteArrayInputStream::
             // "+baos.toString());
-
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -1689,11 +1649,9 @@ public class XMLHelper implements ExceptionListener {
             } catch (IOException ex) {
             }
         }
-
         // use ByteArrayInputStream
         final ByteArrayInputStream bais = new ByteArrayInputStream(baos
                 .toByteArray());
-
         // lese File mit XMLDecoder und hole Object result
         try {
             // use file
@@ -1703,7 +1661,6 @@ public class XMLHelper implements ExceptionListener {
             // this, this);
             // result = d.readObject();
             // d.close();
-
             // use ByteArrayInputStream
             final XMLDecoder d = new XMLDecoder(new BufferedInputStream(bais),
                     this, this);
@@ -1740,12 +1697,10 @@ public class XMLHelper implements ExceptionListener {
                             + "  CANNOT BE SAVED.\n\tClass name and the name of the AttributeMember type are not equal.");
             return;
         }
-
         openSubTag("object");
         addAttr("class", typeName);
         openSubTag("SerializedData");
         boolean successfullySaved = true;
-
         try {
             ByteArrayOutputStream baOut = new ByteArrayOutputStream();
             ObjectOutputStream oOut = new ObjectOutputStream(baOut);
@@ -1777,7 +1732,6 @@ public class XMLHelper implements ExceptionListener {
         } catch (IOException e) {
             successfullySaved = false;
         }
-
         if (!successfullySaved) {
             Text text = this.doc.createTextNode("isNULL");
             top().appendChild(text);
@@ -1791,13 +1745,11 @@ public class XMLHelper implements ExceptionListener {
     private Object getAttrUsingSerializedData(String tagName) {
         // System.out.println("XMLHelper.getAttrUsingSerializedData");
         Object object = null;
-
         if (top().getNodeName().equals(tagName)) { // "SerializedData"
             // build a list of all hex data strings
             Vector<String> dataList = new Vector<String>();
             int byteCount = 0;
             String data = null;
-
             Element e = top();
             if (e.hasChildNodes()) {
                 Text text = (Text) e.getFirstChild();
@@ -1807,7 +1759,6 @@ public class XMLHelper implements ExceptionListener {
                 } catch (DOMException ex) {
                 }
             }
-
             if ((data != null) && !data.equals("isNULL")) {
                 int len = data.length();
                 if (len >= 2) {
@@ -1815,7 +1766,6 @@ public class XMLHelper implements ExceptionListener {
                     byteCount += len / 2;
                 }
             }
-
             // convert the list into a byte array
             byte[] bytes = new byte[byteCount];
             Iterator<?> dataIt = dataList.iterator();
@@ -1913,8 +1863,9 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Liest aus aktuell offenem DOM-Element das Attribut namens NAME aus, und gibt es als String zurueck. Falls kein
-     * solches Attribut existiert wird "" zurueckgegeben.
+     * Liest aus aktuell offenem DOM-Element das Attribut namens NAME aus, und
+     * gibt es als String zurueck. Falls kein solches Attribut existiert wird ""
+     * zurueckgegeben.
      */
     public String readAttr(String name) {
         String r = top().getAttribute(name);
@@ -1925,7 +1876,8 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Wie readAttr(String), nur wird der Attributwert versucht als Integer zu interpretieren.
+     * Wie readAttr(String), nur wird der Attributwert versucht als Integer zu
+     * interpretieren.
      */
     public int readIAttr(String name) {
         String s = readAttr(name);
@@ -1948,7 +1900,8 @@ public class XMLHelper implements ExceptionListener {
     }
 
     /**
-     * Implements interface ExceptionListener This method is called when a recoverable exception has been caught.
+     * Implements interface ExceptionListener This method is called when a
+     * recoverable exception has been caught.
      */
     public void exceptionThrown(Exception e) {
         // System.out.println("agg.util.XMLHelper: "+e.getMessage());
@@ -1956,8 +1909,7 @@ public class XMLHelper implements ExceptionListener {
 
     public static String checkNameDueToSpecialCharacters(final String nameStr) {
         // this check was needed because reported garbled names of the attributes
-
-        if (//nameStr.indexOf('�') != -1 ||
+        if (//nameStr.indexOf('Ã¯Â¿Â½') != -1 ||
                 nameStr.indexOf('&') != -1
                 || nameStr.indexOf('|') != -1
                 || nameStr.indexOf('_') != -1
@@ -1969,7 +1921,7 @@ public class XMLHelper implements ExceptionListener {
             for (int i = 0; i < nameStr.length(); i++) {
                 Character ch = Character.valueOf(nameStr.charAt(i));
                 if (Character.getNumericValue(nameStr.charAt(i)) == -1) {
-                    if (//ch.charValue() == '�' ||
+                    if (//ch.charValue() == 'Ã¯Â¿Â½' ||
                             ch.charValue() == '&'
                             || ch.charValue() == '|'
                             || ch.charValue() == '_'
@@ -1988,8 +1940,8 @@ public class XMLHelper implements ExceptionListener {
 //						+" def "+Character.isDefined(nameStr.charAt(i))
 //						+" ISOcont  "+Character.isISOControl(nameStr.charAt(i)));
             }
-//			while (test.indexOf("��") != -1) {
-//				test = test.replaceAll("��", "�");
+//			while (test.indexOf("Ã¯Â¿Â½Ã¯Â¿Â½") != -1) {
+//				test = test.replaceAll("Ã¯Â¿Â½Ã¯Â¿Â½", "Ã¯Â¿Â½");
 //			}
             return test;
         }

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -22,7 +24,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenu;
-
 import agg.editor.impl.EdGraphObject;
 import agg.editor.impl.EdNode;
 import agg.editor.impl.EdRule;
@@ -49,14 +50,11 @@ public class EditSelPopupMenu extends JPopupMenu {
         super("Operations");
         setLabel("Operations");
         setBorderPainted(true);
-
         this.deleteMenu = createDeleteMenu();
         this.useDeleteMenu = false;
-
         this.mi = add(new JMenuItem("      Operations"));
         // mi.setEnabled(false);
         addSeparator();
-
         this.mi = add(new JMenuItem("Attributes ..."));
         this.mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -66,21 +64,17 @@ public class EditSelPopupMenu extends JPopupMenu {
                         || (EditSelPopupMenu.this.ego == null)) {
                     return;
                 }
-
                 EditSelPopupMenu.this.mapping = false;
                 // gp.getCanvas().saveScrollBarValue();
-
                 if (EditSelPopupMenu.this.ruleEditor == null) {
                     EditSelPopupMenu.this.editor.setAttrEditorOnTopForGraphObject(EditSelPopupMenu.this.ego);
                 } else {
                     EditSelPopupMenu.this.editor.setAttrEditorOnBottomForGraphObject(EditSelPopupMenu.this.ego);
                 }
-
                 EditSelPopupMenu.this.gp.updateGraphics();
             }
         });
         addSeparator();
-
         this.mi = add(new JMenuItem("Copy Selected"));
         this.mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -89,7 +83,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                         || (EditSelPopupMenu.this.gp.getGraph() == null)) {
                     return;
                 }
-
                 EditSelPopupMenu.this.mapping = false;
                 if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
 //					EditSelPopupMenu.this.gp.setLastEditMode(EditSelPopupMenu.this.gp.getEditMode());
@@ -98,13 +91,11 @@ public class EditSelPopupMenu extends JPopupMenu {
 //					if (EditSelPopupMenu.this.editor != null)
 //						EditSelPopupMenu.this.editor
 //								.setMsg("To place a copy click on the background of the panel.");
-
                     AGGAppl.getInstance().getGraGraEditor().copyProc();
                     AGGAppl.getInstance().setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
                 }
             }
         });
-
         this.mi = add(new JMenuItem("Deselect"));
         this.mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -116,7 +107,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = add(new JMenuItem("Deselect All"));
         this.mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -128,7 +118,6 @@ public class EditSelPopupMenu extends JPopupMenu {
             }
         });
         addSeparator();
-
         this.miDelete = createDeleteItem();
         this.deleteMenu = createDeleteMenu();
         add(this.miDelete);
@@ -136,7 +125,6 @@ public class EditSelPopupMenu extends JPopupMenu {
             add(this.deleteMenu);
         }
         addSeparator();
-
         this.mi = add(new JMenuItem("Straighten Selected"));
         this.miStraighten = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -146,13 +134,11 @@ public class EditSelPopupMenu extends JPopupMenu {
                         || (EditSelPopupMenu.this.gp.getGraph() == null)) {
                     return;
                 }
-
                 EditSelPopupMenu.this.mapping = false;
                 EditSelPopupMenu.this.gp.straightenSelectedArcs();
             }
         });
         addSeparator();
-
         this.addIdentic = new JMenu("Add Identic To");
         this.add(this.addIdentic);
         this.mi = this.addIdentic.add(new JMenuItem("Rule RHS"));
@@ -174,7 +160,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = this.addIdentic.add(new JMenuItem("NAC"));
         this.miAddIdenticToNAC = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -208,7 +193,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = this.addIdentic.add(new JMenuItem("PAC"));
         this.miAddIdenticToPAC = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -242,7 +226,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = this.addIdentic.add(new JMenuItem("General AC"));
         this.miAddIdenticToGAC = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -276,7 +259,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = add(new JMenuItem("Map Selected"));
         this.miMap = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -285,10 +267,8 @@ public class EditSelPopupMenu extends JPopupMenu {
                         || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
                     return;
                 }
-
                 EditSelPopupMenu.this.mapping = true;
                 setLastEditModeBeforMapping(EditSelPopupMenu.this.gp);
-
                 if (EditSelPopupMenu.this.editor != null) {
                     EditSelPopupMenu.this.editor.getGraphEditor().setEditMode(EditorConstants.MAPSEL);
                     EditSelPopupMenu.this.editor.getRuleEditor().setEditMode(EditorConstants.MAPSEL);
@@ -303,7 +283,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = add(new JMenuItem("Unmap Selected"));
         this.miUnmap = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -312,14 +291,11 @@ public class EditSelPopupMenu extends JPopupMenu {
                         || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
                     return;
                 }
-
                 EditSelPopupMenu.this.mapping = false;
                 unmapSelectedGraphObjects(false);
             }
         });
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Set Parent"));
         this.miSetParent = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -328,7 +304,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                         || EditSelPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
                     return;
                 }
-
                 if (EditSelPopupMenu.this.editor != null) {
                     EditSelPopupMenu.this.editor.getGraphEditor().setEditMode(
                             EditorConstants.SET_PARENT);
@@ -336,7 +311,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = add(new JMenuItem("Unset Parent"));
         this.miUnsetParent = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -346,7 +320,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                         || !EditSelPopupMenu.this.gp.getGraph().isEditable()) {
                     return;
                 }
-
                 if (EditSelPopupMenu.this.ego instanceof EdNode) {
                     Node bNode = EditSelPopupMenu.this.ego.getNode().getBasisNode();
                     Graph bGraph = bNode.getContext();
@@ -366,16 +339,12 @@ public class EditSelPopupMenu extends JPopupMenu {
                                     return;
                                 }
                             }
-
                             if (bNode.getType().getParents().size() == 1) {
                                 EditSelPopupMenu.this.graphEditor.getGraph().addChangedParentToUndo(
                                         EditSelPopupMenu.this.ego);
                                 EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
-
                                 EditSelPopupMenu.this.gp.getCanvas().performDeleteInheritanceRel((EdNode) EditSelPopupMenu.this.ego);
-
                                 EditSelPopupMenu.this.graphEditor.getGraph().undoManagerEndEdit();
-
                                 EditSelPopupMenu.this.graphEditor.getGraph().updateGraph();
                                 EditSelPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
                             } else {
@@ -388,7 +357,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         pack();
         setBorderPainted(true);
         // setDefaultLightWeightPopupEnabled(false);
@@ -427,7 +395,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 || (this.gp.getGraph() == null)) {
             return false;
         }
-
         return true;
     }
 
@@ -479,7 +446,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 if (!canDo()) {
                     return;
                 }
-
                 if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
                     int answer = removeWarning();
                     if (answer == JOptionPane.YES_OPTION) {
@@ -522,7 +488,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                     return;
                 }
                 EditSelPopupMenu.this.mapping = false;
-
                 if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
                     List<EdGraphObject> selTypes = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs();
                     for (int i = 0; i < selTypes.size(); i++) {
@@ -539,17 +504,14 @@ public class EditSelPopupMenu extends JPopupMenu {
 //									"Delete Objects of Type", JOptionPane.WARNING_MESSAGE);
 //						}
 //						boolean addToUndo = (failStr == null);	
-
                         boolean addToUndo = true;
                         if (ok == 0) {
                             List<String> failed = EditSelPopupMenu.this.gp.getGraph().getGraGra()
                                     .deleteGraphObjectsOfType(tgo, false, addToUndo);
-
                             showMessageDialog(failed, tgo.getType().getName(), tgo.isNode());
                         }
                     }
                 }
-
                 doUpdateAfterDelete();
                 EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
                 EditSelPopupMenu.this.gp.getGraph().getGraGra().update();
@@ -565,7 +527,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                     return;
                 }
                 EditSelPopupMenu.this.mapping = false;
-
                 if (EditSelPopupMenu.this.gp.getGraph().hasSelection()) {
                     List<EdGraphObject> selTypes = EditSelPopupMenu.this.gp.getGraph().getSelectedObjs();
                     List<String> failed = new Vector<String>();
@@ -579,13 +540,11 @@ public class EditSelPopupMenu extends JPopupMenu {
                         failed.clear();
                     }
                 }
-
                 doUpdateAfterDelete();
                 EditSelPopupMenu.this.gp.getCanvas().updateUndoButton();
                 EditSelPopupMenu.this.gp.getGraph().getGraGra().getGraph().update();
             }
         });
-
         /*
 		 * jmi = m.add(new JMenuItem("Delete Objects of Rules"));
 		 * jmi.addActionListener(new ActionListener() {public void
@@ -658,12 +617,10 @@ public class EditSelPopupMenu extends JPopupMenu {
                 this.ego = this.gp.getGraph().getPickedTextOfArc(x, y,
                         this.gp.getCanvas().getGraphics().getFontMetrics());
             }
-
             if (this.ego != null && this.ego.isVisible() && this.ego.isSelected()) {
 //				if (gp.getGraph().isTargetObjOfGraphEmbedding(ego)) {
 //					return false;
 //				}
-
                 if (this.ruleEditor != null) {
                     if (this.ruleEditor.getRule().getLeft() == this.gp.getGraph()) {
                         this.miAddIdenticToRule.setEnabled(true);
@@ -688,7 +645,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                         this.miAddIdenticToGAC.setEnabled(false);
                     }
                 }
-
                 if (this.ego.isNode()) {
                     this.miStraighten.setEnabled(false);
                     if (this.ego.isElementOfTypeGraph()) {
@@ -762,7 +718,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                 EdGraphObject lgo = null;
                 for (int i = 0; i < rule.getLeft().getSelectedObjs().size(); i++) {
                     lgo = rule.getLeft().getSelectedObjs().get(i);
-
                     if (wantDeleteGraphObject) {
                         if (this.editor.getRuleEditor().removeNacMapping(lgo)
                                 || this.editor.getRuleEditor().removePacMapping(lgo)
@@ -776,7 +731,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                             unmapdone = true;
                         }
                     }
-
                     if (rule.getMatch() != null) {
                         if (this.editor.getRuleEditor().removeMatchMapping(lgo, true)) {
                             unmapdone = true;
@@ -785,7 +739,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                             rule.getMatch().getCompletionStrategy().removeFromObjectVarMap(lgo.getBasisObject());
                         }
                     }
-
                     if (this.editor.getRuleEditor().removeRuleMapping(lgo, true)) {
                         unmapdone = true;
                     }
@@ -873,7 +826,6 @@ public class EditSelPopupMenu extends JPopupMenu {
                         this.ruleEditor.getRule().removePACMapping(lObj,
                                 this.ruleEditor.getPAC().getMorphism());
                     }
-
                     this.ruleEditor.getRule().removeMatchMapping(lObj);
                 }
                 this.ruleEditor.getRule().update();
@@ -937,33 +889,21 @@ public class EditSelPopupMenu extends JPopupMenu {
                 options, options[1]);
         return answer;
     }
-
     JFrame applFrame;
-
     JMenuItem mi, miDelete, miMap, miUnmap, miStraighten, miAddIdenticToRule,
             miAddIdenticToNAC, miAddIdenticToPAC, miAddIdenticToGAC,
             miSetParent, miUnsetParent;
-
     JMenu deleteMenu, addIdentic;
-
     boolean mapping = false;
-
     GraGraEditor editor;
-
     RuleEditor ruleEditor;
-
     GraphEditor graphEditor;
-
     GraphPanel gp;
-
     EdGraphObject ego;
-
     boolean useDeleteMenu = false;
     ;
-
 	Vector<Type> selectedTypes;
 }
-
 // $Log: EditSelPopupMenu.java,v $
 // Revision 1.18  2010/10/16 22:44:43  olga
 // improved undo for RuleScheme graph objects
@@ -1138,3 +1078,4 @@ public class EditSelPopupMenu extends JPopupMenu {
 // Revision 1.13 1999/12/22 12:36:45 shultzke
 // The user cannot edit the context of graphs. Only in rules it is possible.
 //
+

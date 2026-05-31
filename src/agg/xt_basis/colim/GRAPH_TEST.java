@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.colim;
 //-------------------------------------------------------------------
@@ -29,7 +30,6 @@ public class GRAPH_TEST implements COLIM_DEFS {
         COLIM_GRAPH L = new COLIM_GRAPH();
         COLIM_GRAPH G = new COLIM_GRAPH();
         COLIM_GRAPH R = new COLIM_GRAPH();
-
         String _L1 = "L1";
         String _L2 = "L2";
         String _L3 = "L3";
@@ -52,7 +52,6 @@ public class GRAPH_TEST implements COLIM_DEFS {
         String _Ln = "L";
         String _Rn = "R";
         String _Gn = "G";
-
         int L1_ = L.insert_node(_L1);
         int L2_ = L.insert_node(_L2);
         int L3_ = L.insert_node(_L3);
@@ -65,19 +64,16 @@ public class GRAPH_TEST implements COLIM_DEFS {
         int G3_ = G.insert_node(_G3);
         int G4_ = G.insert_node(_G4);
         int G5_ = G.insert_node(_G5);
-
         int R31_ = R.insert_edge(_R33, R3_, R3_);
         int R32_ = R.insert_edge(_R31, R3_, R1_);
         int R23_ = R.insert_edge(_R23, R2_, R3_);
         int G34_ = G.insert_edge(_G34, G3_, G4_);
         int G54_ = G.insert_edge(_G54, G5_, G4_);
-
         INT_VECTOR r = new INT_VECTOR();
         r.setSize(4);
         INT_VECTOR m = new INT_VECTOR();
         m.setSize(4);
         INT_VECTOR empty = new INT_VECTOR();
-
         r.put(R1_, L1_);
         r.put(R2_, L2_);
         r.put(R3_, L3_);
@@ -86,13 +82,11 @@ public class GRAPH_TEST implements COLIM_DEFS {
         m.put(G2_, L2_);
         m.put(G3_, L3_);
         m.put(G3_, L4_);
-
         int L_ = graph_diagram.insert_object(L, _Ln);
         int R_ = graph_diagram.insert_object(R, _Rn);
         int G_ = graph_diagram.insert_object(G, _Gn);
         graph_diagram.insert_morphism(r, empty, L_, R_);
         graph_diagram.insert_morphism(m, empty, L_, G_);
     }
-
     public GRAPH_DIAGRAM graph_diagram;
 }

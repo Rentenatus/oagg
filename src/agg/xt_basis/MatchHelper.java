@@ -1,24 +1,17 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universiaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import agg.attribute.AttrContext;
 import agg.attribute.AttrMapping;
@@ -37,6 +30,13 @@ import agg.util.Pair;
 import agg.util.Triple;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author olga
@@ -47,9 +47,10 @@ public final class MatchHelper {
     protected static String errorMsg = "";
 
     /**
-     * Check whether each object of the target graph of the specified application condition <code>cond</code> which does
-     * not have a pre-image in the source graph can be mapped (domain is not empty) into the target graph of the
-     * specified match.
+     * Check whether each object of the target graph of the specified
+     * application condition <code>cond</code> which does not have a pre-image
+     * in the source graph can be mapped (domain is not empty) into the target
+     * graph of the specified match.
      *
      * @param match
      * @param cond
@@ -114,7 +115,8 @@ public final class MatchHelper {
     }
 
     /**
-     * Check Dangling condition for nodes to delete. All edges of the image node must have a pre-image in the match.
+     * Check Dangling condition for nodes to delete. All edges of the image node
+     * must have a pre-image in the match.
      *
      * @param match
      * @return error message if check failed, otherwise - empty string
@@ -123,7 +125,6 @@ public final class MatchHelper {
         errorMsg = "";
         if (match.getCompletionStrategy().getProperties().get(
                 CompletionPropertyBits.DANGLING)) {
-
             final Iterator<Node> objects = match.getRule().getSource().getNodesSet().iterator();
             while (objects.hasNext()) {
                 final Node x = objects.next();
@@ -162,7 +163,8 @@ public final class MatchHelper {
     }
 
     /**
-     * Check Identification condition for non-injective match objects. They are must be preserved.
+     * Check Identification condition for non-injective match objects. They are
+     * must be preserved.
      *
      * @param match
      * @return error message if check failed, otherwise - empty string
@@ -173,14 +175,12 @@ public final class MatchHelper {
                 CompletionPropertyBits.INJECTIVE)
                 && match.getCompletionStrategy().getProperties().get(
                         CompletionPropertyBits.IDENTIFICATION)) {
-
             final Rule itsRule = match.getRule();
             // check nodes first
             final Iterator<Node> nodes = itsRule.getOriginal().getNodesSet().iterator();
             while (nodes.hasNext()) {
                 int k = 0;
                 boolean preserved = true;
-
                 final Iterator<GraphObject> en = match.getInverseImage(match.getImage(nodes.next()));
                 int del = 0;
                 while (en.hasNext()) {
@@ -201,7 +201,6 @@ public final class MatchHelper {
             while (arcs.hasNext()) {
                 int k = 0;
                 boolean preserved = true;
-
                 final Iterator<GraphObject> en = match.getInverseImage(match.getImage(arcs.next()));
                 int del = 0;
                 while (en.hasNext()) {
@@ -241,7 +240,6 @@ public final class MatchHelper {
                 if (!f.isEnabled()) {
                     continue;
                 }
-
                 List<Evaluable> vec = new ArrayList<>();
                 String form = f.getAsString(vec);
                 // do copy of vec into v
@@ -257,7 +255,6 @@ public final class MatchHelper {
                     }
                     v.add(new EvalSet(v1));
                 }
-
                 Formula f1 = new Formula(true);
                 f1.setFormula(v, form);
                 boolean b = f1.eval(new Pair<Morphism, Morphism>(testComatch, testMatch));
@@ -283,7 +280,6 @@ public final class MatchHelper {
         errorMsg = "";
         if (!match.getCompletionStrategy().getProperties().get(
                 CompletionPropertyBits.INJECTIVE)) {
-
             // check attributes :
             // attributes of glue object must have the same value as of keep
             // object
@@ -296,7 +292,6 @@ public final class MatchHelper {
     private static String attrsOfGlueObjectsCorrect(
             final Match match,
             final Iterator<?> elems) {
-
         // check attributes :
         // attributes of glue object must have the same value as of keep
         // object
@@ -305,7 +300,6 @@ public final class MatchHelper {
             if (go.getAttribute() == null) {
                 continue;
             }
-
             final Iterator<GraphObject> invers = match.getInverseImage(go);
             final List<GraphObject> origs = new ArrayList<>(2);
             while (invers.hasNext()) {
@@ -314,7 +308,6 @@ public final class MatchHelper {
             if (origs.size() <= 1) {
                 continue;
             }
-
             final List<GraphObject> ruleImgs = new ArrayList<>(2);
             for (int i = 0; i < origs.size(); i++) {
                 GraphObject ruleImg = match.getRule().getImage(origs.get(i));
@@ -325,26 +318,20 @@ public final class MatchHelper {
             if (ruleImgs.size() <= 1) {
                 continue;
             }
-
             GraphObject ruleImg = ruleImgs.get(0);
             if (ruleImg.getAttribute() == null) {
                 continue;
             }
-
             ValueTuple imgAttrs = (ValueTuple) ruleImg.getAttribute();
             GraphObject ruleOrig = match.getRule().firstOfInverseImage(ruleImg);
-
             for (int i = 1; i < ruleImgs.size(); i++) {
                 GraphObject otherRuleImg = ruleImgs.get(i);
                 if (otherRuleImg.getAttribute() == null) {
                     continue;
                 }
-
                 boolean replace1 = true;
-
                 ValueTuple otherAttrs = (ValueTuple) otherRuleImg.getAttribute();
                 GraphObject otherOrig = match.getRule().firstOfInverseImage(otherRuleImg);
-
                 for (int j = 0; j < imgAttrs.getNumberOfEntries(); j++) {
                     ValueMember vmImg = imgAttrs.getValueMemberAt(j);
                     if (vmImg != null) {
@@ -354,11 +341,9 @@ public final class MatchHelper {
                             if (vmImg.getExpr() == null) {
                                 continue;
                             }
-
                             if (vmOtherImg.getExpr() != null) {
                                 if (!vmImg.getExprAsText().equals(
                                         vmOtherImg.getExprAsText())) {
-
                                     boolean attrFailed = vmImg.getExpr().isComplex()
                                             && vmOtherImg.getExpr().isComplex();
                                     if (!attrFailed) {
@@ -380,7 +365,6 @@ public final class MatchHelper {
                                             }
                                         }
                                     }
-
                                     if (!attrFailed) {
                                         boolean varchanged1 = false;
                                         if (vmImg.getExpr().isVariable()) {
@@ -418,7 +402,6 @@ public final class MatchHelper {
                                         }
                                         attrFailed = varchanged1 && varchanged2;
                                     }
-
                                     if (attrFailed) {
                                         errorMsg = "The rule  <"
                                                 + match.getRule().getName() + ">  "
@@ -434,13 +417,11 @@ public final class MatchHelper {
                         }
                     }
                 }
-
                 if ((i < ruleImgs.size()) && replace1) {
                     ruleImg = otherRuleImg;
                     imgAttrs = (ValueTuple) ruleImg.getAttribute();
                     ruleOrig = match.getRule().firstOfInverseImage(ruleImg);
                 }
-
             }
         }
         return "";
@@ -466,7 +447,8 @@ public final class MatchHelper {
     }
 
     /**
-     * Checks multiplicity of node resp. edge types due to the type graph of the given match.
+     * Checks multiplicity of node resp. edge types due to the type graph of the
+     * given match.
      *
      * @param match
      * @return Error string if check failed, otherwise - empty string.
@@ -477,33 +459,25 @@ public final class MatchHelper {
         if (tgchecklevel <= TypeSet.ENABLED) {
             return "";
         }
-
         final Rule itsRule = match.getRule();
         match.clearErrorMsg();
-
         List<String> typesNeedMultiplicityCheck = itsRule.getTypesWhichNeedMultiplicityCheck();
         if (typesNeedMultiplicityCheck.isEmpty()) {
             return "";
         }
-
         final List<Node> nodestodelete = new ArrayList<Node>(); // LHS objects
         final List<Node> nodestocreate = new ArrayList<Node>(); // RHS objects
-
         final List<Arc> arcstodelete = new ArrayList<Arc>();	// LHS objects		
         final List<Arc> arcstocreate = new ArrayList<Arc>();	// RHS objects
-
         final List<Arc> insOfDelNode = new ArrayList<Arc>();	// Host graph objects	
         final List<Arc> outsOfDelNode = new ArrayList<Arc>();	// Host graph objects	
-
         final List<GraphObject> nodestoglue = new ArrayList<GraphObject>();
-
         // get nodes to delete: 
         Iterator<?> en = itsRule.getLeft().getNodesSet().iterator();
         while (en.hasNext()) {
             final Node go = (Node) en.next();
             if (itsRule.getImage(go) == null) {
                 nodestodelete.add(go);
-
                 final Node n = (Node) match.getImage(go);
                 insOfDelNode.addAll(n.getIncomingArcsSet());
                 outsOfDelNode.addAll(n.getOutgoingArcsSet());
@@ -520,7 +494,6 @@ public final class MatchHelper {
                 }
             }
         }
-
         // get nodes to create: 
         en = itsRule.getRight().getNodesSet().iterator();
         while (en.hasNext()) {
@@ -539,7 +512,6 @@ public final class MatchHelper {
                 arcstocreate.add(go);
             }
         }
-
         // check nodes to delete  
         // check only node type multiplicity		
         int vecSize = nodestodelete.size();
@@ -553,11 +525,9 @@ public final class MatchHelper {
                         nodestoglue, tgchecklevel)) {
                     return errorMsg;
                 }
-
                 vecSize = nodestodelete.size();
             }
         }
-
         // check remained nodes to create
         vecSize = nodestocreate.size();
         for (int i = 0; i < vecSize; i++) {
@@ -569,10 +539,8 @@ public final class MatchHelper {
                     nodestoglue, tgchecklevel)) {
                 return errorMsg;
             }
-
             vecSize = nodestocreate.size();
         }
-
         // check edge multiplicity due to edge to delete
         if (!checkEdgeMultiplicityDueToEdgeToDelete(
                 typesNeedMultiplicityCheck,
@@ -583,7 +551,6 @@ public final class MatchHelper {
                 arcstocreate, nodestoglue, tgchecklevel)) {
             return errorMsg;
         }
-
 //		List<Arc> arcstocreatecopy = new ArrayList<Arc>(arcstocreate);
         // check remained arcs to create
         // these arcs must preserve source and target
@@ -597,7 +564,6 @@ public final class MatchHelper {
                 match, arcstocreate, tgchecklevel)) {
             return errorMsg;
         }
-
         return "";
     }
 
@@ -610,21 +576,17 @@ public final class MatchHelper {
             final List<Arc> arcstocreate, // RHS objects
             final List<GraphObject> nodestoglue,
             int tgchecklevel) {
-
         final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();
         // type2newarcs contains RHS arcs
         // sorted by Arc.convertToKey() string which contains
         // name of source and target type, too
-
         for (int i = 0; i < arcstocreate.size(); i++) {
             // Arc of RHS 
             final Arc a = arcstocreate.get(i);
-
 //			final String typekey = a.convertToKey();
             final List<String> typekeys = a.convertToKeyParentExtended();
             for (int l = 0; l < typekeys.size(); l++) {
                 final String typekey = typekeys.get(l);
-
                 List<Arc> list = type2newarcs.get(typekey);
                 if (list == null) {
                     list = new ArrayList<Arc>();
@@ -633,23 +595,18 @@ public final class MatchHelper {
                 list.add(a);
             }
         }
-
         final Map<String, List<Arc>> type2delarcs = new Hashtable<String, List<Arc>>();
         final Map<String, List<Arc>> type2delarcs2 = new Hashtable<String, List<Arc>>();
         // type2delarcs will contain edges of the HostGraph
         // sorted by type.convertToKey()  which contains
         // name of source and target type, too
-
         // arcs to delete with source and target to preserve
         for (int i = 0; i < arcstodelete.size(); i++) {
             // Arc of LHS
             final Arc da = arcstodelete.get(i);
-
             final String typekey = da.convertToKey();
-
             // Arc of Host Graph
             final Arc a = (Arc) match.getImage(da);
-
 //			final List<String> typekeys = da.convertToKeyParentExtended();
 //			for (int l=0; l<typekeys.size(); l++) {
 //				final String typekey = typekeys.get(l);
@@ -660,7 +617,6 @@ public final class MatchHelper {
                     type2delarcs.put(typekey, list);
                 }
                 list.add(a);
-
                 List<Arc> list2 = type2delarcs2.get(typekey);
                 if (list2 == null) {
                     list2 = new ArrayList<Arc>();
@@ -670,13 +626,10 @@ public final class MatchHelper {
             }
 //			}
         }
-
         for (int i = 0; i < incomsofnodetodelete.size(); i++) {
             // Arc of Host Graph
             final Arc a = incomsofnodetodelete.get(i);
-
             final String typekey = a.convertToKey();
-
             if (typesNeedMultiplicityCheck.contains(typekey)) {
                 List<Arc> list = type2delarcs.get(typekey);
                 if (list == null) {
@@ -685,20 +638,16 @@ public final class MatchHelper {
                 }
                 list.add(a);
             }
-
         }
         // check the edge type target multiplicity
         if (!checkEdgeTargetMinMaxMultiplicity(match, type2delarcs,
                 type2newarcs, arcstocreate, tgchecklevel)) {
             return false;
         }
-
         for (int i = 0; i < outcomsofnodetodelete.size(); i++) {
             // Arc of Host Graph
             final Arc a = outcomsofnodetodelete.get(i);
-
             final String typekey = a.convertToKey();
-
             if (typesNeedMultiplicityCheck.contains(typekey)) {
                 List<Arc> list = type2delarcs2.get(typekey);
                 if (list == null) {
@@ -707,14 +656,12 @@ public final class MatchHelper {
                 }
                 list.add(a);
             }
-
         }
         // check the edge type source multiplicity
         if (!checkEdgeSourceMinMaxMultiplicity(match, type2delarcs2,
                 type2newarcs, arcstocreate, tgchecklevel)) {
             return false;
         }
-
         return true;
     }
 
@@ -724,21 +671,17 @@ public final class MatchHelper {
             final Map<String, List<Arc>> type2newarcs,
             final List<Arc> arcstocreate,
             int tgchecklevel) {
-
         errorMsg = "";
         final List<Triple<Node, Type, Type>> srcNodes = new ArrayList<Triple<Node, Type, Type>>();
         final List<Integer> ndel = new ArrayList<Integer>();
         final List<Pair<Integer, Integer>> tarMinMax = new ArrayList<Pair<Integer, Integer>>();
-
         Iterator<String> iter = type2delarcs.keySet().iterator();
         while (iter.hasNext()) {
             final String typekey = iter.next();
-
             final List<Arc> incoms = type2delarcs.get(typekey);
             for (int j = 0; j < incoms.size(); j++) {
                 final Arc a = incoms.get(j); // edge in host graph
                 int indx = getIndexOfNode(srcNodes, (Node) a.getSource(), a.getType(), a.getTargetType());
-
                 if (indx >= 0) {
                     int nn = ndel.get(indx).intValue() + 1;
                     ndel.add(indx, new Integer(nn));
@@ -753,26 +696,21 @@ public final class MatchHelper {
                                     newarcs, arcstocreate);
                         }
                     }
-
                     srcNodes.add(new Triple<Node, Type, Type>((Node) a.getSource(), a.getType(), a.getTargetType()));
                     indx = srcNodes.size() - 1;
-
                     if (nn > 0) {
                         nn--;
                     } else {
                         nn = 1;
                     }
                     ndel.add(new Integer(nn));
-
                     int tarMin = a.getType().getTargetMin(a.getSource().getType(),
                             a.getTarget().getType());
                     int tarMax = a.getType().getTargetMax(a.getSource().getType(),
                             a.getTarget().getType());
                     tarMinMax.add(new Pair<Integer, Integer>(new Integer(tarMin), new Integer(tarMax)));
                 }
-
                 Type targetNodeType = a.getTarget().getType();
-
                 List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
                 if (vec != null) {
                     if (vec.size() == 1) {
@@ -792,7 +730,6 @@ public final class MatchHelper {
                 int nn = ndel.get(indx).intValue();
                 final Node src = srcNodes.get(indx).first;
                 int outs = src.getNumberOfOutgoingArcs(a.getType(), targetNodeType);
-
                 if (tgchecklevel > TypeSet.ENABLED_MAX
                         && tarMinMax.get(indx).first.intValue() > 0
                         && (outs - nn) < tarMinMax.get(indx).first.intValue()) {
@@ -811,11 +748,9 @@ public final class MatchHelper {
                     return false;
                 }
             }
-
             srcNodes.clear();
             ndel.clear();
             tarMinMax.clear();
-
         }
         return true;
     }
@@ -826,19 +761,16 @@ public final class MatchHelper {
             final Map<String, List<Arc>> type2newarcs,
             final List<Arc> arcstocreate,
             int tgchecklevel) {
-
         errorMsg = "";
         final List<Triple<Node, Type, Type>> tarNodes = new ArrayList<Triple<Node, Type, Type>>();
         final List<Integer> ndel = new ArrayList<Integer>();
         final List<Pair<Integer, Integer>> srcMinMax = new ArrayList<Pair<Integer, Integer>>();
-
         Iterator<String> iter = type2delarcs.keySet().iterator();
         while (iter.hasNext()) {
             final String typekey = iter.next();
             final List<Arc> outcoms = type2delarcs.get(typekey);
             for (int j = 0; j < outcoms.size(); j++) {
                 final Arc a = outcoms.get(j);
-
                 int indx = getIndexOfNode(tarNodes, (Node) a.getTarget(), a.getType(), a.getSourceType());
                 if (indx >= 0) {
                     int nn = ndel.get(indx).intValue() + 1;
@@ -854,26 +786,21 @@ public final class MatchHelper {
                                     newarcs, arcstocreate);
                         }
                     }
-
                     tarNodes.add(new Triple<Node, Type, Type>((Node) a.getTarget(), a.getType(), a.getSourceType()));
                     indx = tarNodes.size() - 1;
-
                     if (nn > 0) {
                         nn--;
                     } else {
                         nn = 1;
                     }
                     ndel.add(new Integer(nn));
-
                     int srcMin = a.getType().getSourceMin(a.getSource().getType(),
                             a.getTarget().getType());
                     int srcMax = a.getType().getSourceMax(a.getSource().getType(),
                             a.getTarget().getType());
                     srcMinMax.add(new Pair<Integer, Integer>(new Integer(srcMin), new Integer(srcMax)));
                 }
-
                 Type sourceNodeType = a.getSource().getType();
-
                 final List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
                 if (vec != null) {
                     if (vec.size() == 1) {
@@ -893,7 +820,6 @@ public final class MatchHelper {
                 int nn = ndel.get(indx).intValue();
                 final Node tar = tarNodes.get(indx).first;
                 int ins = tar.getNumberOfIncomingArcs(a.getType(), sourceNodeType);
-
                 if (tgchecklevel > TypeSet.ENABLED_MAX
                         && srcMinMax.get(indx).first.intValue() > 0
                         && (ins - nn) < srcMinMax.get(indx).first.intValue()) {
@@ -912,11 +838,9 @@ public final class MatchHelper {
                     return false;
                 }
             }
-
             tarNodes.clear();
             ndel.clear();
             srcMinMax.clear();
-
         }
         return true;
     }
@@ -966,16 +890,13 @@ public final class MatchHelper {
             final Match match,
             final List<Arc> arcstocreate,
             int tgchecklevel) {
-
         errorMsg = "";
         final List<Triple<Node, Type, Type>> srcNodes = new ArrayList<Triple<Node, Type, Type>>();
         final List<Integer> nnew = new ArrayList<Integer>();
         final List<Integer> tarMax = new ArrayList<Integer>();
-
         final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();	// RHS objects
         // type2newarcs contains arcs sorted by type.convertToKey() string which contains
         // name of source and target type, too
-
         for (int i = 0; i < arcstocreate.size(); i++) {
             final Arc a = arcstocreate.get(i);
             final String typekey = a.convertToKey();
@@ -986,23 +907,19 @@ public final class MatchHelper {
             }
             list.add(a);
         }
-
         for (int i = 0; i < arcstocreate.size(); i++) {
             final Arc a = arcstocreate.get(i);
-
             // Arc a must preserve its source or target
             if (!match.getRule().hasInverseImage(a.getSource())
                     || !typesNeedMultiplicityCheck.contains(a.convertToKey())) {
                 continue;
             }
-
 //			final String typekey = a.convertToKey();
             final Node src = (Node) match.getImage(
                     match.getRule().firstOfInverseImage(a.getSource()));
             if (src == null) {
                 continue;
             }
-
             int indx = getIndexOfNode(srcNodes, src, a.getType(), a.getTargetType());
             if (indx >= 0) {
                 int nn = nnew.get(indx).intValue() + 1;
@@ -1012,19 +929,14 @@ public final class MatchHelper {
 //				int nn = getCountOfArcsWithTypeAndSource(typekey, 
 //						a.getSource(), 
 //						newarcs, arcstocreate);	
-
                 srcNodes.add(new Triple<Node, Type, Type>(src, a.getType(), a.getTargetType()));
                 indx = srcNodes.size() - 1;
-
                 nnew.add(new Integer(1)); //(nn));
-
                 int max = a.getType().getTargetMax(a.getSource().getType(),
                         a.getTarget().getType());
                 tarMax.add(new Integer(max));
             }
-
             Type targetNodeType = a.getTarget().getType();
-
             List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
             if (vec != null) {
                 if (vec.size() == 1) {
@@ -1042,7 +954,6 @@ public final class MatchHelper {
                 }
             }
             int nn = nnew.get(indx).intValue();
-
             List<Arc> outarcs = src.getOutgoingArcs(a.getType(), targetNodeType);
             int outs = outarcs.size();
             for (int k = 0; k < outarcs.size(); k++) {
@@ -1054,14 +965,12 @@ public final class MatchHelper {
                         src.getType(),
                         outarc.getType(),
                         outarc.getTarget().getType())) {
-
                     if (match.hasInverseImage(outarc)
                             && match.getRule().getImage(match.firstOfInverseImage(outarc)) == null) {
                         outs--;
                     }
                 }
             }
-
 //			System.out.println("MatchHelper:  Target Max: "
 //					+src.getType().getName()+"   "
 //					+a.getType().getName()+"   "+outs+"   "+nn);
@@ -1072,7 +981,6 @@ public final class MatchHelper {
                         + " - target maximum failed.";
                 return false;
             }
-
             if (i < 0) {
                 break;
             }
@@ -1085,12 +993,10 @@ public final class MatchHelper {
             final Match match,
             final List<Arc> arcstocreate,
             int tgchecklevel) {
-
         errorMsg = "";
         final List<Triple<Node, Type, Type>> tarNodes = new ArrayList<Triple<Node, Type, Type>>();
         final List<Integer> nnew = new ArrayList<Integer>();
         final List<Integer> srcMax = new ArrayList<Integer>();
-
         final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();	// RHS objects
         // type2newarcs will contain arcs  by type.convertToKey() string 
         // with name of source and target type, too
@@ -1105,7 +1011,6 @@ public final class MatchHelper {
             }
             list.add(a);
         }
-
         for (int i = 0; i < arcstocreate.size(); i++) {
             final Arc a = arcstocreate.get(i);
             // Arc a must preserve its source and target
@@ -1113,7 +1018,6 @@ public final class MatchHelper {
                     || !typesNeedMultiplicityCheck.contains(a.convertToKey())) {
                 continue;
             }
-
 //			final String typekey = a.convertToKey();
             // target node in a host graph
             final Node tar = (Node) match.getImage(
@@ -1131,18 +1035,14 @@ public final class MatchHelper {
 //				int nn = getCountOfArcsWithTypeAndTarget(typekey, 
 //						a.getTarget(), 
 //						newarcs, arcstocreate);
-
                 tarNodes.add(new Triple<Node, Type, Type>(tar, a.getType(), a.getSourceType()));
                 indx = tarNodes.size() - 1;
                 nnew.add(new Integer(1)); //nn));
-
                 int max = a.getType().getSourceMax(a.getSource().getType(),
                         a.getTarget().getType());
                 srcMax.add(new Integer(max));
             }
-
             Type sourceNodeType = a.getSource().getType();
-
             final List<Arc> vec = match.getTarget().getTypeSet().getTypeGraph().getArcs(a.getType());
             if (vec != null) {
                 if (vec.size() == 1) {
@@ -1162,7 +1062,6 @@ public final class MatchHelper {
             int nn = nnew.get(nnew.size() - 1).intValue();
             List<Arc> inarcs = tar.getIncomingArcs(a.getType(), sourceNodeType);
             int ins = inarcs.size();
-
             for (int k = 0; k < inarcs.size(); k++) {
                 Arc inarc = inarcs.get(k);
                 if (match.hasInverseImage(inarc)
@@ -1172,7 +1071,6 @@ public final class MatchHelper {
                         tar.getType(),
                         inarc.getType(),
                         inarc.getSource().getType())) {
-
                     if (match.hasInverseImage(inarc)
                             && match.getRule().getImage(match.firstOfInverseImage(inarc)) == null) {
                         ins--;
@@ -1183,7 +1081,6 @@ public final class MatchHelper {
 //			System.out.println("MatchHelper:  Source Max: "
 //					+tar.getType().getName()+"   "
 //					+a.getType().getName()+"   " +ins+"   "+nn);
-
             if (srcMax.get(indx).intValue() != TypeSet.UNDEFINED
                     && (ins + nn) > srcMax.get(indx).intValue()) {
                 errorMsg = "Source multiplicity of edge type failed!"
@@ -1191,7 +1088,6 @@ public final class MatchHelper {
                         + " - source maximum failed.";
                 return false;
             }
-
             if (i < 0) {
                 break;
             }
@@ -1204,21 +1100,17 @@ public final class MatchHelper {
             final Node nodeOfArc,
             final Type arcType,
             final Type otherType) {
-
         // if p.first is the source of an arc of type p.second == arcType,
         // then p.third is the target of the arc, or wise versa;
         // p.first and p.third are nodes inside of a host graph,
         // but in CPA - a graph which can be the LHS | RHS graph of a rule.
         for (int i = 0; i < list.size(); i++) {
             final Triple<Node, Type, Type> p = list.get(i);
-
             if (p.first == nodeOfArc
                     && p.second == arcType) {
-
                 if (p.third.isInClanOf(otherType)) {
                     return i;
                 }
-
 //				if (otherType.isParentOf(p.third)) {
 //					return i;
 //				} 
@@ -1241,20 +1133,16 @@ public final class MatchHelper {
             final List<Node> tocreate,
             final List<GraphObject> nodestoglue,
             int tgchecklevel) {
-
         errorMsg = "";
         if (!typesNeedMultiplicityCheck.contains(go.getType().convertToKey())) {
             return true;
         }
-
         int min = go.getType().getSourceMin();
         int max = go.getType().getSourceMax();
         int count = 0;
-
         if (match.getTarget().getTypeObjectsMap().get(go.getType().convertToKey()) != null) {
             count = match.getTarget().getTypeObjectsMap().get(go.getType().convertToKey()).size();
         }
-
         count--;
         for (int j = startindex; j < todelete.size(); j++) {
             Node n = todelete.get(j);
@@ -1264,7 +1152,6 @@ public final class MatchHelper {
                 j--;
             }
         }
-
         for (int i = 0; i < tocreate.size(); i++) {
             Node n = tocreate.get(i);
             if (go.getType().isRelatedTo(n.getType())) {
@@ -1273,7 +1160,6 @@ public final class MatchHelper {
                 i--;
             }
         }
-
         if (max != TypeSet.UNDEFINED
                 && count > max) {
             errorMsg = "Node type multiplicity failed!" + "\nType  \""
@@ -1287,7 +1173,6 @@ public final class MatchHelper {
                     + go.getType().getName() + "\"" + " - minimum failed.";
             return false;
         }
-
         return true;
     }
 
@@ -1299,23 +1184,19 @@ public final class MatchHelper {
             final List<Node> tocreate,
             final List<GraphObject> nodesofglue,
             int tgchecklevel) {
-
         errorMsg = "";
         if (!typesNeedMultiplicityCheck.contains(go.getType().convertToKey())) {
             return true;
         }
-
         int max = go.getType().getSourceMax();
         if (max == TypeSet.UNDEFINED) {
             return true;
         }
-
         int count = 0;
         if (match.getTarget().getTypeObjectsMap().get(go.getType().convertToKey()) != null) {
             count = match.getTarget().getTypeObjectsMap().get(go.getType().convertToKey()).size();
         }
         count++;
-
         for (int c = startindex; c < tocreate.size(); c++) {
             final Node goc = tocreate.get(c);
             if (go.getType().isRelatedTo(goc.getType())) {
@@ -1324,7 +1205,6 @@ public final class MatchHelper {
                 c--;
             }
         }
-
         if (count > max) {
             errorMsg = "Node type multiplicity failed!" + "\nType  \""
                     + go.getType().getName() + "\"" + " - maximum failed.";
@@ -1343,11 +1223,9 @@ public final class MatchHelper {
             final GraphObject goL = dom.next();
             final GraphObject imgC = cond.getImage(goL);
             final GraphObject imgG = match.getImage(goL);
-
             if (goL.getAttribute() != null
                     && imgC.getAttribute() != null
                     && imgG.getAttribute() != null) {
-
                 final ValueTuple vtL = (ValueTuple) goL.getAttribute();
                 final ValueTuple vtC = (ValueTuple) imgC.getAttribute();
                 final ValueTuple vtG = (ValueTuple) imgG.getAttribute();
@@ -1375,10 +1253,8 @@ public final class MatchHelper {
         while (dom.hasNext() && result) {
             final GraphObject go = dom.next();
             final GraphObject img = morph.getImage(go);
-
             if (go.getAttribute() != null
                     && img.getAttribute() != null) {
-
                 final ValueTuple vt1 = (ValueTuple) go.getAttribute();
                 final ValueTuple vt2 = (ValueTuple) img.getAttribute();
                 for (int i = 0; i < vt1.getNumberOfEntries(); i++) {
@@ -1402,10 +1278,8 @@ public final class MatchHelper {
         if (!match.getSource().isAttributed()) {
             return true;
         }
-
         final Rule itsRule = match.getRule();
         final List<ValueMember> varToNull = new ArrayList<ValueMember>(2);
-
         final VarTuple vars = (VarTuple) match.getAttrContext().getVariables();
         final Iterator<GraphObject> en = match.getDomain();
         while (en.hasNext()) {
@@ -1427,7 +1301,6 @@ public final class MatchHelper {
                 }
             }
         }
-
         final Iterator<Node> elems = itsRule.getRight().getNodesSet().iterator();
         while (elems.hasNext()) {
             final GraphObject obj = elems.next();
@@ -1468,7 +1341,6 @@ public final class MatchHelper {
                 }
             }
         }
-
         final CondTuple ct = (CondTuple) match.getAttrContext().getConditions();
         for (int j = 0; j < ct.getNumberOfEntries(); j++) {
             final CondMember cm = (CondMember) ct.getEntryAt(j);
@@ -1493,7 +1365,6 @@ public final class MatchHelper {
             } catch (BadMappingException ex) {
                 throw ex;
             }
-
             // check : rule edge image is a loop and
             // match edge image is a loop - OK,
             // otherwise - FAILED!	
@@ -1508,7 +1379,6 @@ public final class MatchHelper {
                             + "  ==  " + match.getRule().getImage(((Arc) orig).getTarget())));
                     System.out.println("required: " + (((Arc) image).getSource()
                             + " == " + ((Arc) image).getTarget()));
-
                     throw new BadMappingException(errorMsg);
                 }
             }
@@ -1532,7 +1402,6 @@ public final class MatchHelper {
 //					System.out.println(errorMsg);
 //					System.out.println("required: "+ ((Arc) image).getSource()
 //							+"  ==  "+morph.getImage(aSrc));
-
                     throw new BadMappingException(errorMsg);
                 }
             } else {
@@ -1544,7 +1413,6 @@ public final class MatchHelper {
 //					System.out.println(errorMsg);
 //					System.out.println("required: "+ ((Arc) image).getTarget()
 //							+"  ==  "+morph.getImage(aTar));
-
                     throw new BadMappingException(errorMsg);
                 }
             } else {
@@ -1565,7 +1433,6 @@ public final class MatchHelper {
      */
     public boolean isParallelArcAllowed(
             final Match m, final Type arct, final Node src, final Node tar) {
-
         if (!m.getOriginal().getTypeSet().isArcParallel() //				&& m.getRule().isArcCreating(src, arc.getType(), tar)
                 ) {
             if (!src.hasArc(arct, tar)) {
@@ -1577,7 +1444,6 @@ public final class MatchHelper {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -1600,7 +1466,6 @@ public final class MatchHelper {
 		}
 		return c;
 	}
-
 	
 	private int getCountOfEdgesToGlue(final Match match, final Arc rhsEdge) {
 		int c = 0;
@@ -1633,13 +1498,16 @@ public final class MatchHelper {
 	}
      */
     /**
-     * Computes an overlapping set of the graphs: - this.source with other.source if other instance of OrdinaryMorphism
-     * and left is true, or - this.target with other.target if other instance of OrdinaryMorphism and left is false, or
-     * - this.sorce with other if other instance of Graph and left is true, or - this.target with other if other
-     * instance of Graph and left is false, or with respect of the rules if this and other are instances of Rule.
+     * Computes an overlapping set of the graphs: - this.source with
+     * other.source if other instance of OrdinaryMorphism and left is true, or -
+     * this.target with other.target if other instance of OrdinaryMorphism and
+     * left is false, or - this.sorce with other if other instance of Graph and
+     * left is true, or - this.target with other if other instance of Graph and
+     * left is false, or with respect of the rules if this and other are
+     * instances of Rule.
      *
-     * @param union If true - the overlappings contain disjunion, too. Enumeration elements are of type
-     * <code>Pair</code>.
+     * @param union If true - the overlappings contain disjunion, too.
+     * Enumeration elements are of type <code>Pair</code>.
      * @return A set of overlappings.
      */
     public static Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
@@ -1653,16 +1521,12 @@ public final class MatchHelper {
             final Object other,
             boolean left,
             boolean union) {
-
         final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-
         int minGraphSize = 1;
         if (union) {
             minGraphSize = 0;
         }
-
         Graph left2 = null;
-
         if ((other instanceof OrdinaryMorphism) && left) {
             left2 = ((OrdinaryMorphism) other).getSource();
         } else if ((other instanceof OrdinaryMorphism) && !left) {
@@ -1670,13 +1534,11 @@ public final class MatchHelper {
         } else if (other instanceof Graph) {
             left2 = (Graph) other;
         }
-
         if (left2 != null) {
             int sizeOfInclusions = left2.getSize();
             while ((sizeOfInclusions >= (minGraphSize))) {
                 Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapping = getOverlappings(morph, other, left,
                         sizeOfInclusions, union);
-
                 while (overlapping.hasMoreElements()) {
                     oSet.add(overlapping.nextElement());
                 }
@@ -1687,14 +1549,17 @@ public final class MatchHelper {
     }
 
     /**
-     * Computes an overlapping set of the graphs: - this.source with other.source if other instance of OrdinaryMorphism
-     * and left is true, or - this.target with other.target if other instance of OrdinaryMorphism and left is false, or
-     * - this.sorce with other if other instance of Graph and left is true, or - this.target with other if other
-     * instance of Graph and left is false, or with respect of the rules if this and other are instances of Rule.
+     * Computes an overlapping set of the graphs: - this.source with
+     * other.source if other instance of OrdinaryMorphism and left is true, or -
+     * this.target with other.target if other instance of OrdinaryMorphism and
+     * left is false, or - this.sorce with other if other instance of Graph and
+     * left is true, or - this.target with other if other instance of Graph and
+     * left is false, or with respect of the rules if this and other are
+     * instances of Rule.
      *
      * @param sizeOfInclusions The size of graph object inclusions.
-     * @param union If true - the overlappings contain disjunion, too. Enumeration elements are of type
-     * <code>Pair</code>.
+     * @param union If true - the overlappings contain disjunion, too.
+     * Enumeration elements are of type <code>Pair</code>.
      * @return A set of overlappings.
      */
     public static Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
@@ -1710,9 +1575,7 @@ public final class MatchHelper {
             boolean left,
             int sizeOfInclusions,
             boolean union) {
-
         final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
-
         Graph other = null;
         if ((otherObj instanceof OrdinaryMorphism) && left) {
             other = ((OrdinaryMorphism) otherObj).getSource();
@@ -1724,26 +1587,21 @@ public final class MatchHelper {
         if (other == null) {
             return oSet;
         }
-
         List<OrdinaryMorphism> subs = new ArrayList<OrdinaryMorphism>();
         Iterator<GraphObject> itsGOs = null;
-
         if (left) {
             itsGOs = morph.getSource().iteratorOfElems();
         } else {
             itsGOs = morph.getTarget().iteratorOfElems();
         }
-
         final List<GraphObject> itsGOSet = new ArrayList<GraphObject>();
         boolean nextMatch = true;
         int minGraphSize;
-
         if (union) {
             minGraphSize = 0;
         } else {
             minGraphSize = 1;
         }
-
         while (itsGOs.hasNext()) {
             itsGOSet.add(itsGOs.next());
         }
@@ -1757,25 +1615,18 @@ public final class MatchHelper {
             itsGOSet.clear();
             return oSet;
         }
-
         Completion_InjCSP strategy = new Completion_InjCSP();
-
         for (int j = 0; j < subs.size(); j++) {
             OrdinaryMorphism h = subs.get(j);
-
             Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>> rulePair = (BaseFactory
                     .theFactory()).constructIsomorphicRule(h);
             Rule hr = rulePair.first;
-
             OrdinaryMorphism isoRHShr = rulePair.second.second;
-
             MorphCompletionStrategy localStrategy = new Completion_InjCSP();
-
             Match testm = (BaseFactory.theFactory()).createMatch(hr, other,
                     true, "1");
             testm.getTarget().setCompleteGraph(false);
             testm.setCompletionStrategy(localStrategy, true);
-
             OrdinaryMorphism rStar = null;
             Match m = null;
             nextMatch = true;
@@ -1787,7 +1638,6 @@ public final class MatchHelper {
                         m = (BaseFactory.theFactory()).createMatch(hr, rStar.getTarget());
                         m.doCompose(testm, rStar);
                         m.adaptAttrContextValues(testm.getAttrContext());
-
                         // step.execute throws a TypeException when
                         // resulting graph does broke the multiplicity condition
                         // so we catch this exception and try another match
@@ -1913,10 +1763,8 @@ public final class MatchHelper {
             } // while
             subs.remove(h);
             j--;
-
             testm.dispose();
             testm = null;
-
             // dispose helpers
             localStrategy = null;
             OrdinaryMorphism h1 = rulePair.second.first;
@@ -2000,7 +1848,6 @@ public final class MatchHelper {
         if (vart.getSize() == 0) {
             return condsNAC;
         }
-
         final CondTuple condt = (CondTuple) nacStar.getAttrContext().getConditions();
         final List<String> varNames = nac.getImage().getVariableNamesOfAttributes();
         final List<VarMember> varsOfNAC = new ArrayList<VarMember>();
@@ -2035,7 +1882,6 @@ public final class MatchHelper {
         if (vart.getSize() == 0) {
             return condsPAC;
         }
-
         final CondTuple condt = (CondTuple) pacStar.getAttrContext().getConditions();
         final List<String> varNames = pac.getImage().getVariableNamesOfAttributes();
         final List<VarMember> varsOfPAC = new ArrayList<VarMember>();
@@ -2067,16 +1913,15 @@ public final class MatchHelper {
      * @param nacStar
      * @param nac
      * @param condsNAC
-     * @return <code>true</code> if all attribute condition of the given NAC are satisfied, <code>false</code>.
+     * @return <code>true</code> if all attribute condition of the given NAC are
+     * satisfied, <code>false</code>.
      */
     public static boolean isAttrConditionOfNACSatisfied(final NACStarMorphism nacStar,
             final OrdinaryMorphism nac,
             final List<CondMember> condsNAC) {
-
 //		System.out.println("MatchHelper.isAttrConditionOfNACSatisfied ");
 //		((VarTuple)getAttrContext().getVariables()).showVariables();
         ((VarTuple) nacStar.getAttrContext().getVariables()).propagateValueFromParent();
-
 //		((VarTuple)nacStar.getAttrContext().getVariables()).showVariables();
         errorMsg = "NAC  \"" + nac.getName() + "\"  failed.";
         boolean nacCondTrue = false;
@@ -2107,15 +1952,14 @@ public final class MatchHelper {
      * @param pacStar
      * @param pac
      * @param condsPAC
-     * @return <code>true</code> if all attribute condition of the given PAC are satisfied, <code>false</code>.
+     * @return <code>true</code> if all attribute condition of the given PAC are
+     * satisfied, <code>false</code>.
      */
     public static boolean isAttrConditionOfPACSatisfied(final PACStarMorphism pacStar,
             final OrdinaryMorphism pac,
             final List<CondMember> condsPAC) {
 //		((VarTuple)getAttrContext().getVariables()).showVariables();
-
         ((VarTuple) pacStar.getAttrContext().getVariables()).propagateValueFromParent();
-
         // ((VarTuple)pacStar.getAttrContext().getVariables()).showVariables();
         errorMsg = "PAC  \"" + pac.getName() + "\"  failed.";
         boolean pacCondTrue = true;
@@ -2133,7 +1977,6 @@ public final class MatchHelper {
         if (pacCondTrue) {
             errorMsg = "";
         }
-
         return pacCondTrue;
     }
 
@@ -2145,7 +1988,6 @@ public final class MatchHelper {
         if (!makePartialNACStar(aNACstar, nac, match)) {
             return null;
         }
-
 //		System.out.println("match::  context");
 //		((VarTuple)match.getAttrContext().getVariables()).showVariables();
 //		System.out.println("NAC::  context");
@@ -2155,7 +1997,6 @@ public final class MatchHelper {
 //		((VarTuple)aNACstar.getAttrContext().getVariables()).showVariables();
         // now that we have a commuting nacstar, try to totalize it:
         Morphism result = null;
-
         if (aNACstar.tryToApplyAttrExpr()) {
             if (!withVars) {
                 result = makeNACStarCompletion(aNACstar, nac, match);
@@ -2208,10 +2049,8 @@ public final class MatchHelper {
             final Match match) {
 //		System.out.println(nac.getName());
 //		aNACstar.getCompletionStrategy().showProperties();
-
         ((VarTuple) aNACstar.getAttrContext().getVariables()).propagateValueFromParent();
 //		((VarTuple)aNACstar.getAttrContext().getVariables()).showVariables();
-
         Iterator<Node> nacNodes = nac.getSource().getNodesSet().iterator();
         while (nacNodes.hasNext()) {
             GraphObject leftObj = nacNodes.next();
@@ -2222,7 +2061,6 @@ public final class MatchHelper {
                     if (nacObjImg != match.getImage(leftObj)) {
                         return false;
                     }
-
                     continue;
                 }
                 try {
@@ -2232,7 +2070,6 @@ public final class MatchHelper {
                 }
             }
         }
-
         Iterator<Arc> nacArcs = nac.getSource().getArcsSet().iterator();
         while (nacArcs.hasNext()) {
             GraphObject leftObj = nacArcs.next();
@@ -2248,7 +2085,6 @@ public final class MatchHelper {
                         if (nacObjImg != match.getImage(leftObj)) {
                             return false;
                         }
-
                         continue;
                     }
                     try {
@@ -2259,12 +2095,10 @@ public final class MatchHelper {
                 }
             }
         }
-
         if (aNACstar.getSize() > 0) {
             if (!aNACstar.checkConstants()) {
                 return false;
             }
-
 //			((VarTuple)match.getAttrContext().getVariables()).showVariables();
 //			((VarTuple)aNACstar.getAttrContext().getVariables()).showVariables();
             aNACstar.setPartialMorphismCompletion(true);
@@ -2276,14 +2110,12 @@ public final class MatchHelper {
             final NACStarMorphism nacStar,
             final OrdinaryMorphism nac,
             final Match match) {
-
         errorMsg = "";
         Morphism result = null;
         boolean attrCondsExist = !((CondTuple) match.getAttrContext()
                 .getConditions()).isEmpty();
         List<CondMember> condsNAC = getConditionsOfNAC(nacStar, nac);
         boolean attrCondsNacExist = !condsNAC.isEmpty();
-
         if (nacStar.isTotal()) {
             // now check attribute conditions
             if (!attrCondsExist) {
@@ -2300,7 +2132,6 @@ public final class MatchHelper {
             nacStar.propagateValueFromParentAsInputParameter((VarTuple) match.getAttrContext().getVariables(), false);
             return result;
         }
-
         // NACstar is NOT total, so next completion is needed		
         while (nacStar.nextCompletion()) {
 //			if (!nacStar.getCompletionStrategy().hasRelatedInstanceVarMap()
@@ -2326,11 +2157,9 @@ public final class MatchHelper {
             unsetVariablesOfNAC(match.getAttrContext(), nac);
             unsetVariablesOfNAC(nacStar.getAttrContext(), nac);
         }
-
         unsetVariablesOfNAC(match.getAttrContext(), nac);
         unsetVariablesOfNAC(nacStar.getAttrContext(), nac);
         nacStar.propagateValueFromParentAsInputParameter((VarTuple) match.getAttrContext().getVariables(), false);
-
         return result;
     }
 
@@ -2338,15 +2167,12 @@ public final class MatchHelper {
             final NACStarMorphism nacStar,
             final OrdinaryMorphism nac,
             final Match match) {
-
         errorMsg = "";
         Morphism result = null;
-
         boolean attrCondsExist = !((CondTuple) match.getAttrContext()
                 .getConditions()).isEmpty();
         List<CondMember> condsNAC = getConditionsOfNAC(nacStar, nac);
         boolean attrCondsNacExist = !condsNAC.isEmpty();
-
         if (nacStar.isTotal()) {
             result = nacStar;
             // now check attribute conditions
@@ -2363,13 +2189,11 @@ public final class MatchHelper {
             nacStar.propagateValueFromParentAsInputParameter((VarTuple) match.getAttrContext().getVariables(), false);
             return result;
         }
-
         // NACstar is NOT total, so next completion is needed
         while (nacStar.nextCompletion()) {
             if (checkNACStarCodomain(nacStar, nac, match)) {
                 result = nacStar;
             }
-
             if (result != null) {
                 // now check attribute conditions
                 if (!attrCondsExist || !attrCondsNacExist
@@ -2394,7 +2218,6 @@ public final class MatchHelper {
             final NACStarMorphism aNACstar,
             final OrdinaryMorphism nac,
             final Match match) {
-
 //		List<GraphObject> gos = new ArrayList<GraphObject>(match.getSource().getNodesCount());
         Iterator<?> e = aNACstar.getSource().getNodesSet().iterator();
         while (e.hasNext()) {
@@ -2429,11 +2252,9 @@ public final class MatchHelper {
 //					return false;
 //			}
 //		}
-
         e = aNACstar.getSource().getArcsSet().iterator();
         while (e.hasNext()) {
             GraphObject nacObj = (GraphObject) e.next();
-
             if (nac.hasInverseImage(nacObj)) {
                 // check commutativity
                 GraphObject leftObj = nac.firstOfInverseImage(nacObj);
@@ -2451,7 +2272,6 @@ public final class MatchHelper {
                 }
             }
         }
-
         return true;
     }
 
@@ -2463,11 +2283,9 @@ public final class MatchHelper {
         if (!makePartialPACStar(aPACstar, pac, match)) {
             return null;
         }
-
 //		aPACstar.adaptAttrContextValues(match.getAttrContext());
         // now that we have a commuting pacstar, try to totalize it:
         Morphism result = null;
-
         if (aPACstar.tryToApplyAttrExpr()) {
             if (!withVars) {
                 result = makePACStarCompletion(aPACstar, pac, match);
@@ -2488,7 +2306,6 @@ public final class MatchHelper {
             final PACStarMorphism aPACstar,
             final OrdinaryMorphism pac,
             final Match match) {
-
 //		List<GraphObject> gos = new ArrayList<GraphObject>(match.getSource().getNodesCount());
         Iterator<?> e = aPACstar.getSource().getNodesSet().iterator();
         while (e.hasNext()) {
@@ -2522,7 +2339,6 @@ public final class MatchHelper {
 //					return false;
 //			}
 //		}
-
         e = aPACstar.getSource().getArcsSet().iterator();
         while (e.hasNext()) {
             GraphObject pacObj = (GraphObject) e.next();
@@ -2549,16 +2365,13 @@ public final class MatchHelper {
             final PACStarMorphism pacStar,
             final OrdinaryMorphism pac,
             final Match match) {
-
         errorMsg = "";
         Morphism result = null;
-
 //		((CondTuple) match.getAttrContext().getConditions()).showConditions();
         boolean attrCondsExist = !((CondTuple) match.getAttrContext()
                 .getConditions()).isEmpty();
         List<CondMember> condsPAC = getConditionsOfPAC(pacStar, pac);
         boolean attrCondsPacExist = !condsPAC.isEmpty();
-
         if (pacStar.isTotal()) {
             // now check attribute conditions
             if (!attrCondsExist) {
@@ -2574,7 +2387,6 @@ public final class MatchHelper {
             pacStar.propagateValueFromParentAsInputParameter((VarTuple) match.getAttrContext().getVariables(), false);
             return result;
         }
-
         // PACstar is NOT total, so next completion is needed
         while (pacStar.nextCompletion()) {
 //			if (!pacStar.getCompletionStrategy().hasRelatedInstanceVarMap() 
@@ -2600,25 +2412,20 @@ public final class MatchHelper {
             unsetVariablesOfPAC(match.getAttrContext(), pac);
             unsetVariablesOfPAC(pacStar.getAttrContext(), pac);
         }
-
         unsetVariablesOfPAC(match.getAttrContext(), pac);
         unsetVariablesOfPAC(pacStar.getAttrContext(), pac);
         pacStar.propagateValueFromParentAsInputParameter((VarTuple) match.getAttrContext().getVariables(), false);
-
         return result;
     }
 
     private static Morphism makePACStarCompletionWithVars(final PACStarMorphism pacStar,
             final OrdinaryMorphism pac, final Match match) {
-
         errorMsg = "";
         Morphism result = null;
-
         boolean attrCondsExist = !((CondTuple) match.getAttrContext()
                 .getConditions()).isEmpty();
         List<CondMember> condsPAC = getConditionsOfPAC(pacStar, pac);
         boolean attrCondsPacExist = !condsPAC.isEmpty();
-
         if (pacStar.isTotal()) {
             result = pacStar;
             // now check attribute conditions
@@ -2635,13 +2442,11 @@ public final class MatchHelper {
             pacStar.propagateValueFromParentAsInputParameter((VarTuple) match.getAttrContext().getVariables(), false);
             return null;
         }
-
         // PACstar is NOT total, so next completion is need
         while (pacStar.nextCompletion()) {
             if (checkPACStarCodomain(pacStar, pac, match)) {
                 result = pacStar;
             }
-
             if (result != null) {
                 // now check attribute conditions
                 if (!attrCondsExist || !attrCondsPacExist
@@ -2662,10 +2467,8 @@ public final class MatchHelper {
 
     private static boolean makePartialPACStar(final PACStarMorphism aPACstar,
             final OrdinaryMorphism pac, final Match match) {
-
         ((VarTuple) aPACstar.getAttrContext().getVariables()).propagateValueFromParent();
 //		((VarTuple)aPACstar.getAttrContext().getVariables()).showVariables();
-
         Iterator<Node> pacNodes = pac.getSource().getNodesSet().iterator();
         while (pacNodes.hasNext()) {
             GraphObject leftObj = pacNodes.next();
@@ -2676,7 +2479,6 @@ public final class MatchHelper {
                     if (pacObjImg != match.getImage(leftObj)) {
                         return false;
                     }
-
                     continue;
                 }
                 try {
@@ -2701,7 +2503,6 @@ public final class MatchHelper {
                         if (pacObjImg != match.getImage(leftObj)) {
                             return false;
                         }
-
                         continue;
                     }
                     try {
@@ -2752,19 +2553,14 @@ public final class MatchHelper {
     public static NACStarMorphism createNACstar(final OrdinaryMorphism nac, final Match match) {
         // System.out.println("Match.createNACstar ...
         // "+((Completion_NAC)this.getCompletionStrategy()).getSourceStrategy());
-
         NACStarMorphism aNACstar = new NACStarMorphism(nac.getImage(), match
                 .getImage(), match.getAttrManager().newContext(
                         AttrMapping.MATCH_MAP, match.getAttrContext()), match);
-
         aNACstar.itsNAC = nac;
         aNACstar.setName("NACstar");
-
         MorphCompletionStrategy strat = new Completion_InjCSP();
 //		 strat.showProperties();
-
         aNACstar.setCompletionStrategy(strat, true);
-
         return aNACstar;
     }
 
@@ -2777,16 +2573,12 @@ public final class MatchHelper {
             attrcontxt.setVariableContext(true);
             ((ContextView) ((CondTuple) attrcontxt.getConditions())
                     .getContext()).setVariableContext(true);
-
             NACStarMorphism aNACstar = new NACStarMorphism(nac.getImage(), match
                     .getImage(), attrcontxt, match);
-
             aNACstar.itsNAC = nac;
             aNACstar.setName("NACstar");
-
             MorphCompletionStrategy strat = new Completion_InjCSP();
 //			strat.showProperties();
-
             aNACstar.setCompletionStrategy(strat, true);
             return aNACstar;
         }
@@ -2797,13 +2589,10 @@ public final class MatchHelper {
         final PACStarMorphism aPACstar = new PACStarMorphism(pac.getImage(), match
                 .getImage(), match.getAttrManager().newContext(
                         AttrMapping.MATCH_MAP, match.getAttrContext()), match);
-
         aPACstar.itsPAC = pac;
         aPACstar.setName("PACstar");
-
         MorphCompletionStrategy strat = new Completion_InjCSP();
 //		 strat.showProperties();
-
         aPACstar.setCompletionStrategy(strat, true);
         return aPACstar;
     }
@@ -2816,37 +2605,28 @@ public final class MatchHelper {
             attrcontxt.setVariableContext(true);
             ((ContextView) ((CondTuple) attrcontxt.getConditions())
                     .getContext()).setVariableContext(true);
-
             PACStarMorphism aPACstar = new PACStarMorphism(pac.getImage(), match
                     .getImage(), attrcontxt, match);
-
             aPACstar.itsPAC = pac;
             aPACstar.setName("PACstar");
-
             MorphCompletionStrategy strat = new Completion_InjCSP();
 //			 strat.showProperties();
-
             aPACstar.setCompletionStrategy(strat, true);
             return aPACstar;
         }
-
         return createPACstar(pac, match);
     }
 
     public static PACStarMorphism createNestedACstar(
             final NestedApplCond ac,
             final OrdinaryMorphism relMorph) {
-
         final PACStarMorphism star = new PACStarMorphism(ac.getImage(), relMorph
                 .getImage(), relMorph.getAttrManager().newContext(
                         AttrMapping.MATCH_MAP, relMorph.getAttrContext()), relMorph);
-
         star.itsPAC = ac;
         star.setName("NestedACstar");
-
         MorphCompletionStrategy strat = new Completion_InjCSP();
 //		strat.showProperties();
-
         star.setCompletionStrategy(strat, true);
         return star;
     }
@@ -2856,11 +2636,9 @@ public final class MatchHelper {
             final NestedApplCond acMorph,
             final OrdinaryMorphism relatedMorph,
             boolean withVars) {
-
         if (!makePartialNestedACStar(acStar, acMorph, relatedMorph)) {
             return null;
         }
-
 //		acStar.adaptAttrContextValues(match.getAttrContext());
         // try to complete it
         Morphism result = null;
@@ -2881,10 +2659,8 @@ public final class MatchHelper {
             final PACStarMorphism acStar,
             final OrdinaryMorphism ac,
             final OrdinaryMorphism match) {
-
         ((VarTuple) acStar.getAttrContext().getVariables()).propagateValueFromParent();
 //		((VarTuple)acStar.getAttrContext().getVariables()).showVariables();
-
         Iterator<Node> pacNodes = ac.getSource().getNodesSet().iterator();
         while (pacNodes.hasNext()) {
             GraphObject leftObj = pacNodes.next();
@@ -2895,7 +2671,6 @@ public final class MatchHelper {
                     if (pacObjImg != match.getImage(leftObj)) {
                         return false;
                     }
-
                     continue;
                 }
                 try {
@@ -2920,7 +2695,6 @@ public final class MatchHelper {
                         if (pacObjImg != match.getImage(leftObj)) {
                             return false;
                         }
-
                         continue;
                     }
                     try {
@@ -2944,14 +2718,12 @@ public final class MatchHelper {
             final PACStarMorphism acStar,
             final NestedApplCond acMorph,
             final OrdinaryMorphism relatedMorph) {
-
         errorMsg = "";
         OrdinaryMorphism result = null;
 //		boolean attrCondsExist = !((CondTuple) relatedMorph.getAttrContext()
 //										.getConditions()).isEmpty();		
         List<CondMember> condsAC = getConditionsOfNestedAC(acStar, acMorph);
         boolean attrCondsACexist = !condsAC.isEmpty();
-
         if (acStar.isTotal()) {
             // check attribute conditions and (nested) appl conds
             if (checkConstantAttrValueFromSourceToTarget(acStar)
@@ -2972,7 +2744,6 @@ public final class MatchHelper {
             acStar.propagateValueFromParentAsInputParameter((VarTuple) relatedMorph.getAttrContext().getVariables(), false);
             return result;
         }
-
         boolean complFound = false;
         // ACstar is NOT total, so next completion is needed
         while (acStar.nextCompletion()) {
@@ -2997,7 +2768,6 @@ public final class MatchHelper {
                         }
                     }
                 }
-
                 unsetVariablesOfNestedAC(relatedMorph.getAttrContext(), acMorph);
                 unsetVariablesOfNestedAC(acStar.getAttrContext(), acMorph);
             }
@@ -3020,7 +2790,6 @@ public final class MatchHelper {
         if (vart.getSize() == 0) {
             return condsAC;
         }
-
         final CondTuple condt = (CondTuple) acStar.getAttrContext().getConditions();
         final List<String> varNames = ac.getImage().getVariableNamesOfAttributes();
         final List<VarMember> varsOfAC = new ArrayList<VarMember>();
@@ -3053,9 +2822,7 @@ public final class MatchHelper {
             final OrdinaryMorphism ac,
             final List<CondMember> condsAC) {
 //		((VarTuple)getAttrContext().getVariables()).showVariables();
-
         ((VarTuple) acStar.getAttrContext().getVariables()).propagateValueFromParent();
-
         // ((VarTuple)pacStar.getAttrContext().getVariables()).showVariables();
         errorMsg = "Appl Cond  \"" + ac.getName() + "\"  failed.";
         boolean acCondTrue = true;
@@ -3073,7 +2840,6 @@ public final class MatchHelper {
         if (acCondTrue) {
             errorMsg = "";
         }
-
         return acCondTrue;
     }
 
@@ -3128,7 +2894,6 @@ public final class MatchHelper {
             final GraphObject go,
             final NestedApplCond acMorph,
             final PACStarMorphism acStar) {
-
         // check related co-domain
         if (acMorph.getRelatedMorphism().getCodomainObjects().contains(acStar.getImage(go))) {
             return false;
@@ -3147,7 +2912,6 @@ public final class MatchHelper {
     private static boolean checkGACStarCodomain(
             final PACStarMorphism acStar,
             final NestedApplCond acMorph) {
-
         boolean result = true;
         // check nodes of ac(L)\L) at (G\match(L)
         Iterator<Node> elems = acMorph.getTarget().getNodesSet().iterator();
@@ -3183,7 +2947,3 @@ public final class MatchHelper {
         }
     }
 }
-
-
-
-

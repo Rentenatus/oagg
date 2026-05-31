@@ -2,24 +2,24 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
 import javax.swing.JPanel;
-
 import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrEditorManager;
 
 /**
- * Editor for all data of an attribute instance tuple. However, it does not complain if a type tuple is edited instead.
+ * Editor for all data of an attribute instance tuple. However, it does not
+ * complain if a type tuple is edited instead.
  *
  * @version $Id: LightInstanceEditor.java,v 1.3 2010/08/18 09:24:53 olga Exp $
  * @author $Author: olga $
@@ -33,24 +33,20 @@ public class LightInstanceEditor extends BasicTupleEditor {
 
     // Overriding...
     /**
-     * The heart of the matter. Columns are: [NAME, EXPR, CORRECTNESS] Extendable: false Titles: None. Editable: Only
-     * EXPR.
+     * The heart of the matter. Columns are: [NAME, EXPR, CORRECTNESS]
+     * Extendable: false Titles: None. Editable: Only EXPR.
      */
     protected TupleTableModel createTableModel() {
         int columns[] = {NAME, EXPR, CORRECTNESS};
-
         TupleTableModel tm = new TupleTableModel(this);
         tm.setColumnArray(columns);
         tm.setExtensible(false);
-
         tm.setColumnTitle(NAME, null);
         tm.setColumnTitle(EXPR, null);
         tm.setColumnTitle(CORRECTNESS, null);
-
         tm.setColumnEditable(NAME, false);
         tm.setColumnEditable(EXPR, true);
         tm.setColumnEditable(CORRECTNESS, false);
-
         return tm;
     }
 
@@ -69,7 +65,6 @@ public class LightInstanceEditor extends BasicTupleEditor {
      */
     protected void createTableView() {
         super.createTableView();
-
         // No reordering, since header titles are not shown,
         // the user might be confused.
         this.tableView.getTableHeader().setReorderingAllowed(false);

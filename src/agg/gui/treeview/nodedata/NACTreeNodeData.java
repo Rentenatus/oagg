@@ -2,21 +2,22 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: NACTreeNodeData.java,v 1.3 2010/09/23 08:23:33 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.editor.impl.EdNAC;
 
 /**
- * The NACTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The NACTreeNodeData implements an user object of a tree node in the
+ * GraGraTreeModel.
  *
  * @author $Author: olga $
  * @version $Id: NACTreeNodeData.java,v 1.3 2010/09/23 08:23:33 olga Exp $
@@ -24,14 +25,11 @@ import agg.editor.impl.EdNAC;
 public class NACTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private Object data;
-
     private EdNAC eNAC;
-
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */
@@ -98,7 +96,6 @@ public class NACTreeNodeData extends GraGraTreeNodeDataAdapter {
         }
         String newString = str.replaceAll(" ", "");
         this.string = newString;
-
         String newNacName = "";
         String sD = "";
         if (!this.eNAC.getMorphism().isEnabled()) {

@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
 import java.io.Serializable;
-
 import agg.attribute.impl.DeclTuple;
 import agg.attribute.view.AttrViewSetting;
 
@@ -69,13 +69,14 @@ public interface AttrTuple extends Serializable {
     /**
      * Translation between address- and number-oriented access.
      *
-     * @return The corresponding index if the member is within the tuple, -1 otherwise.
+     * @return The corresponding index if the member is within the tuple, -1
+     * otherwise.
      */
     public int getIndexForMember(AttrMember m);
 
     /**
-     * Getting the absolute (view-independent) total number of entries (lines); The retrieval index range is [0 ..
-     * (getNumberOfEntries() - 1)].
+     * Getting the absolute (view-independent) total number of entries (lines);
+     * The retrieval index range is [0 .. (getNumberOfEntries() - 1)].
      */
     public int getNumberOfEntries();
 
@@ -101,17 +102,19 @@ public interface AttrTuple extends Serializable {
     public String getValueAsString(int entryIndex);
 
     /**
-     * Getting the view-dependent number of attribute entries (lines). The retrieval index range is [0 ..
-     * (getNumberOfEntries() - 1)].
+     * Getting the view-dependent number of attribute entries (lines). The
+     * retrieval index range is [0 .. (getNumberOfEntries() - 1)].
      *
-     * @param viewSetting The view context which mandates how attribute tuples have to be represented.
+     * @param viewSetting The view context which mandates how attribute tuples
+     * have to be represented.
      */
     public int getNumberOfEntries(AttrViewSetting viewSetting);
 
     /**
      * Getting a view-dependent representation of a type as String.
      *
-     * @param viewSetting The view context which mandates how attribute tuples have to be represented.
+     * @param viewSetting The view context which mandates how attribute tuples
+     * have to be represented.
      * @param entryIndex Index of entry.
      */
     public String getTypeAsString(AttrViewSetting viewSetting, int entryIndex);
@@ -119,7 +122,8 @@ public interface AttrTuple extends Serializable {
     /**
      * Getting a view-dependent representation of a type as String.
      *
-     * @param viewSetting The view context which mandates how attribute tuples have to be represented.
+     * @param viewSetting The view context which mandates how attribute tuples
+     * have to be represented.
      * @param entryIndex Index of entry.
      */
     public String getNameAsString(AttrViewSetting viewSetting, int entryIndex);
@@ -127,7 +131,8 @@ public interface AttrTuple extends Serializable {
     /**
      * Getting a view-dependent representation of a type as String.
      *
-     * @param viewSetting The view context which mandates how attribute tuples have to be represented.
+     * @param viewSetting The view context which mandates how attribute tuples
+     * have to be represented.
      * @param entryIndex Index of entry.
      */
     public String getValueAsString(AttrViewSetting viewSetting, int entryIndex);

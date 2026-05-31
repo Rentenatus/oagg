@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -26,7 +28,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.BorderFactory;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
@@ -39,7 +40,6 @@ import javax.swing.border.MatteBorder;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.PopupMenuEvent;
-
 import agg.gui.parser.event.ParserGUIEvent;
 import agg.gui.parser.event.ParserGUIListener;
 import agg.gui.parser.event.CPAEventData;
@@ -55,8 +55,9 @@ import agg.xt_basis.Rule;
 import agg.util.Pair;
 
 /**
- * Shows a table with a row and a column for each rule, so that each element stands for a pair of rules. The color of
- * the pairs shows the state of them (critic, non-critic, unchecked).
+ * Shows a table with a row and a column for each rule, so that each element
+ * stands for a pair of rules. The color of the pairs shows the state of them
+ * (critic, non-critic, unchecked).
  *
  * @version $Id: CriticalPairPanel.java,v 1.17 2010/12/21 16:34:01 olga Exp $
  * @author $Author: olga $
@@ -66,30 +67,25 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         ParserEventListener, ItemListener, PopupMenuListener {
 
     static final Font bfont = new Font("Helvetica-Bold", Font.BOLD, 14);
-
     /**
      * the color for untested pairs
      */
     static final Color NOT_SET = Color.white;
-
     /**
      * the color for pairs which will be checked soon
      */
     static final Color SCHEDULED = Color.gray;
-
     /**
      * the color for pairs which are checked at the moment
      */
 //	static final Color COMPUTING = Color.yellow;
     static final Color COMPUTING = new Color(255, 255, 160);
-
     /**
      * the color for critic pairs
      */
 //	static final Color CRITIC = Color.red;
 //	static final Color CRITIC = new Color(255, 210, 160);
     static final Color CRITIC = new Color(255, 204, 204);
-
     /**
      * the color for critic pairs
      */
@@ -97,72 +93,47 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
 //	static final Color DEPEND = new Color(155, 205, 255);
     static final Color DEPEND = new Color(204, 204, 255);
     static final Color DEPEND2 = Color.cyan;
-
     /**
      * the color for non-critic pairs
      */
 //	static final Color NOT_CRITIC = Color.green;
 //	static final Color NOT_CRITIC = new Color(155, 255, 105);
     static final Color NOT_CRITIC = new Color(201, 255, 204);
-
     /**
      * the color for disabled rules
      */
     static final Color DISABLED = Color.lightGray;
-
     /**
      * the color for not related rules
      */
     static final Color NOT_RELATED = Color.lightGray;
-
     /**
      * the PairContainer, which is displayed here
      */
     private ExcludePairContainer container;
-
     private Hashtable<JButton, CriticalPairData> b2cpData = new Hashtable<JButton, CriticalPairData>();
-
     private Hashtable<Rule, Hashtable<Rule, JButton>> buttons = new Hashtable<Rule, Hashtable<Rule, JButton>>();
-
     private Hashtable<JButton, Rule> firstRules = new Hashtable<JButton, Rule>();
-
     private Hashtable<JButton, Rule> secondRules = new Hashtable<JButton, Rule>();
-
     /**
      * the listener for selections in the array
      */
     private List<ParserGUIListener> listeners = new Vector<ParserGUIListener>();
-
     private Rule first, second;
-
     private int tableW, tableH;
-
     final private JPopupMenu menu = new JPopupMenu();
-
     private JMenuItem miClear, miContinue, miComputeAndCheck, miVisibleRel, miVisibleRule;
-
     final static private String clearRelation = "Clear";
-
     final static private String continueCompute = "Continue Compute";
-
     final static private String computeAndCheck = "Compute & Check Host Graph";
-
     final static private String hideRelation = "Hide Relation ( in CPA Graph )";
-
     final static private String showRelation = "Show Relation ( in CPA Graph )";
-
     final static private String hideRule = "Hide Rule ( in CPA Graph )";
-
     final static private String showRule = "Show Rule ( in CPA Graph )";
-
     final static private javax.swing.border.Border border = (new JButton()).getBorder();
-
     int borderWidth = 7;
-
     final private JScrollPane main = new JScrollPane();
-
     MouseInputAdapter ml;
-
     boolean active;
 
     /**
@@ -170,17 +141,16 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      */
     public CriticalPairPanel(final List<Rule> rules, final ExcludePairContainer container) {
         super(new BorderLayout(), true);
-
         makePanel(rules, rules, container);
     }
 
     /**
-     * constructs a new panel for the given rules1 on horizontal and rules2 on vertical of the rule pairs table
+     * constructs a new panel for the given rules1 on horizontal and rules2 on
+     * vertical of the rule pairs table
      */
     public CriticalPairPanel(final List<Rule> rules1, final List<Rule> rules2,
             final ExcludePairContainer container) {
         super(new BorderLayout(), true);
-
         makePanel(rules1, rules2, container);
     }
 
@@ -188,19 +158,15 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             final List<Rule> somerules1,
             final List<Rule> somerules2,
             final ExcludePairContainer cpContainer) {
-
         if (somerules1 == null || somerules1.size() == 0
                 || somerules2 == null || somerules2.size() == 0) {
             return;
         }
-
         // store the container
         this.container = cpContainer;
         this.container.addPairEventListener(this);
-
         List<Rule> rules = getEnabledRules(somerules1);
         List<Rule> rules2 = (somerules1 == somerules2) ? rules : getEnabledRules(somerules2);
-
         // the head of the rows
         // add all rule names and numbers to the head
         int tablesize2 = rules2.size();
@@ -218,7 +184,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                 rowHead.add(act);
             }
         }
-
         // the head of the columns
         // add all rule numbers to the head
         int tablesize = rules.size();
@@ -240,23 +205,19 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                 colHead.add(act);
             }
         } // while col
-
         // create the center panel with a button for each rule
         final JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridLayout(tablesize2, tablesize));
         int i = 0;
         int ii;
-
         // create button pop-up menu
         this.menu.addPopupMenuListener(this);
         this.miClear = new JMenuItem(clearRelation);
         this.menu.add(this.miClear);
         this.miClear.addActionListener(this);
-
         this.miContinue = new JMenuItem(continueCompute);
         this.menu.add(this.miContinue);
         this.miContinue.addActionListener(this);
-
         this.miComputeAndCheck = this.menu.add(new JMenuItem(computeAndCheck));
         this.miComputeAndCheck.addActionListener(this);
         if (this.container instanceof DependencyPairContainer) {
@@ -265,17 +226,14 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             this.miComputeAndCheck.setEnabled(true);
         }
         this.menu.addSeparator();
-
         this.miVisibleRel = this.menu.add(new JMenuItem(hideRelation));
         this.miVisibleRel.addActionListener(this);
         this.miVisibleRule = new JMenuItem(hideRule);
         this.miVisibleRule.addActionListener(this);
         this.menu.add(this.miVisibleRule);
-
         this.ml = new MouseInputAdapter() {
 //			public void mousePressed(MouseEvent e) {}		
 //			public void mouseReleased(MouseEvent e) {}
-
             public void mouseEntered(MouseEvent e) {
                 if (e.getSource() instanceof JButton) {
                     JButton b = (JButton) e.getSource();
@@ -310,7 +268,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             }
         };
         addMouseListener(this.ml);
-
         while (i < tablesize2) {
             Rule r1 = rules2.get(i);
             ii = 0;
@@ -330,7 +287,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                         new Dimension(act.getHeight(), act.getHeight()));
                 // add popup menu
                 act.setComponentPopupMenu(this.menu);
-
                 addButton(r1, r2, act);
                 mainPanel.add(act);
                 refreshView(r1, r2, act, -1);
@@ -338,10 +294,8 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             }
             i++;
         } // while i
-
         // get the preferred size for the center panel
         Dimension dim = mainPanel.getPreferredSize();
-
         // calculate minimum/preferred size for column header
         Dimension dim2 = new Dimension();
         dim2.setSize(dim.getWidth(), colHead.getPreferredSize().getHeight());
@@ -359,17 +313,14 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         // set the main panel to its actual size
         mainPanel.setPreferredSize(dim);
         mainPanel.setMinimumSize(dim);
-
         // construct JScrollPane
         this.main.setRowHeaderView(rowHead);
         this.main.setColumnHeaderView(colHead);
         this.main.setViewportView(mainPanel);
         this.main.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, new JLabel(
                 " first \\ second"));
-
         // add JScrollPane to this
         this.add(this.main, BorderLayout.CENTER);
-
     } // paneTest
 
     private List<Rule> getEnabledRules(List<Rule> rules) {
@@ -388,19 +339,15 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             this.menu.removeAll();
             return;
         }
-
         this.first = this.firstRules.get(b);
         this.second = this.secondRules.get(b);
         ExcludePairContainer.Entry entry = this.container.getEntry(this.first, this.second);
-
         if (entry.getStatus() == ExcludePairContainer.Entry.NOT_COMPUTABLE) {
             this.menu.removeAll();
             return;
         }
-
         ExcludePairContainer.Entry entry1 = this.container.getEntry(this.first, this.first);
         ExcludePairContainer.Entry entry2 = this.container.getEntry(this.second, this.second);
-
         if (entry.getState() == ExcludePairContainer.Entry.DISABLED) {
             this.menu.removeAll();
             this.menu.add(new JMenuItem(this.first.getName() + " - disabled"));
@@ -420,7 +367,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                 this.menu.add(this.miVisibleRule);
             }
         }
-
         if (entry.getState() != ExcludePairContainer.Entry.COMPUTED
                 && entry.getState() != ExcludePairContainer.Entry.COMPUTED2
                 && entry.getState() != ExcludePairContainer.Entry.COMPUTED12) {
@@ -434,7 +380,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             this.miVisibleRel.setEnabled(true);
             this.miVisibleRule.setEnabled(true);
         }
-
         if (entry.isRelationVisible()) {
             this.miVisibleRel.setText(hideRelation);
         } else {
@@ -445,7 +390,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         } else {
             this.miVisibleRule.setText(showRule);
         }
-
         if (this.first != this.second) {
             this.miVisibleRule.setEnabled(false);
             if (!entry.isCritical()) {
@@ -543,7 +487,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                         }
                         b.setText("?");
                         clearRulePair(this.first, this.second);
-
 //						setRuleContextVisible(first, second, false);
 //						setRuleVisible(first, second, false);
                         fireParserGUIEvent(null);
@@ -670,7 +613,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             b.setToolTipText("[" + rule1.getQualifiedName() + ", " + rule2.getQualifiedName()
                     + "]");
         }
-
         if (this.container.getKindOfConflict() == CriticalPair.CONFLICT) {
             fireParserGUIEvent(new CPAEventData(rule1, rule2,
                     CPAEventData.SHOW_RULE, "C", vis));
@@ -720,7 +662,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                 b.setToolTipText("[" + rule1.getQualifiedName() + ", " + rule2.getQualifiedName()
                         + "]");
             }
-
             if (this.container.getKindOfConflict() == CriticalPair.CONFLICT) {
                 fireParserGUIEvent(new CPAEventData(rule1, rule2,
                         CPAEventData.SHOW_RELATION, "C", vis));
@@ -770,7 +711,8 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
     }
 
     /**
-     * adds the button to the internal structure, so it can be addressed for relabeling.
+     * adds the button to the internal structure, so it can be addressed for
+     * relabeling.
      */
     void addButton(Rule r1, Rule r2, JButton button) {
         // create buttons-Hashtable
@@ -816,10 +758,8 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         if (button == null) {
             return;
         }
-
         Rule r1 = pairData.getRule1();
         Rule r2 = pairData.getRule2();
-
         // gets the entry holding the informations of this pair
         ExcludePairContainer.Entry entry = this.container.getEntry(r1, r2);
         if (entry != null) {
@@ -856,7 +796,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         Enumeration<Rule> en1 = this.buttons.keys();
         while (en1.hasMoreElements()) {
             Rule r1 = en1.nextElement();
-
             Enumeration<Rule> en2 = this.buttons.get(r1).keys();
             while (en2.hasMoreElements()) {
                 Rule r2 = en2.nextElement();
@@ -870,7 +809,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         if (button == null) {
             return;
         }
-
         if (!button.getText().equals("?")) {
             button.setBackground(NOT_CRITIC);
             button.setText("0");
@@ -887,7 +825,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         Enumeration<Rule> en1 = this.buttons.keys();
         while (en1.hasMoreElements()) {
             Rule r1 = en1.nextElement();
-
             Enumeration<Rule> en2 = this.buttons.get(r1).keys();
             while (en2.hasMoreElements()) {
                 Rule r2 = en2.nextElement();
@@ -911,14 +848,12 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         if (button == null) {
             return;
         }
-
         button.setEnabled(true);
         button.setActionCommand("");
         // gets the entry holding the informations of this pair
         ExcludePairContainer.Entry entry = this.container.getEntry(r1, r2);
         ExcludePairContainer.Entry entry1 = this.container.getEntry(r1, r1);
         ExcludePairContainer.Entry entry2 = this.container.getEntry(r2, r2);
-
 //		System.out.println("key: "+key+"  entry.getState(): "+entry.getState());
         // the given pair was not tested yet
         if (entry.getState() == ExcludePairContainer.Entry.NOT_SET) {
@@ -963,18 +898,15 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                 } else if (this.container.getKindOfConflict() == CriticalPair.CONFLICT) {
                     button.setBackground(CRITIC);
                 }
-
                 if (entry.getStatus() == ExcludePairContainer.Entry.NOT_COMPLETE_COMPUTABLE) {
                     button.setBorder(BorderFactory.createMatteBorder(
                             3, 3, 3, 3, Color.BLACK));
                 }
-
                 if (entry.getOverlapping() != null) {
                     button.setText("" + entry.getOverlapping().size());
                 } else {
                     button.setText("!");
                 }
-
                 if (!entry.isRuleVisible() || !entry.isRelationVisible()) {
                     button.setForeground(Color.white);
                     if (button.getToolTipText().indexOf("HIDDEN") == -1) {
@@ -993,14 +925,12 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                     button.setToolTipText("[" + r1.getQualifiedName() + ", "
                             + r2.getQualifiedName() + "]");
                 }
-
                 if (key == CriticalPairEvent.UNCRITICAL
                         || entry.getStatus() == ExcludePairContainer.Entry.NON_RELEVANT) {
                     button.setEnabled(false);
                 } else if (entry.getState() != ExcludePairContainer.Entry.DISABLED) {
                     button.setEnabled(true);
                 }
-
             } else {
                 // or it is non-critic, so show  0
                 button.setBackground(NOT_CRITIC);
@@ -1028,7 +958,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
                             + r2.getQualifiedName() + "]");
                 }
             }
-
             if (key == CriticalPairEvent.NON_RELEVANT
                     || entry.getStatus() == ExcludePairContainer.Entry.NON_RELEVANT) {
                 button.setEnabled(false);
@@ -1040,7 +969,6 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             } else if (entry.getState() != ExcludePairContainer.Entry.DISABLED) {
                 button.setEnabled(true);
             }
-
         } else if (entry.getState() == ExcludePairContainer.Entry.DISABLED) {
             if (!r1.isEnabled() || !r2.isEnabled()) {
                 String s = r1.getName() + ": DISABLED";
@@ -1065,11 +993,11 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         } else if (entry.getState() == ExcludePairContainer.Entry.NON_RELEVANT) {
             button.setEnabled(false);
         }
-
     } // refreshView
 
     /**
-     * gets called if something changed in the critical pair container so the display must be updated.
+     * gets called if something changed in the critical pair container so the
+     * display must be updated.
      */
     public void parserEventOccured(ParserEvent p) {
         if (p instanceof CriticalPairEvent) {
@@ -1085,3 +1013,4 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         }
     } // parserEventOccured
 } // class CriticalPairPanel
+

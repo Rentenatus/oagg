@@ -2,23 +2,22 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-
 import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
-
 import agg.xt_basis.agt.MultiRule;
 import agg.gui.IconResource;
 import agg.gui.icons.NestedACIcon;
@@ -28,7 +27,8 @@ import agg.gui.treeview.nodedata.GraGraTreeNodeData;
 
 /**
  * @author $Author: olga $
- * @version $Id: GraGraTreeCellRenderer.java,v 1.10 2010/09/23 08:22:47 olga Exp $
+ * @version $Id: GraGraTreeCellRenderer.java,v 1.10 2010/09/23 08:22:47 olga Exp
+ * $
  */
 @SuppressWarnings("serial")
 public class GraGraTreeCellRenderer extends JLabel implements TreeCellRenderer {
@@ -37,41 +37,32 @@ public class GraGraTreeCellRenderer extends JLabel implements TreeCellRenderer {
      * Whether or not the item that was last configured is selected.
      */
     protected boolean selected;
-
     /**
      * Whether or not the item that is a rule is not applicable.
      */
     protected boolean notApplicable;
-
     /**
      * Whether or not the item that is a rule is a trigger rule of a layer.
      */
     protected boolean isTriggerRule = false;
-
     protected boolean isKernelRule = false;
-
     protected boolean isFormula = false;
-
     protected boolean isDisabled = false;
-
     /**
      * Color to use for the background when selected.
      */
     static protected final Color SelectedColor = new Color(153, 153,
             255);
-
     /**
      * Color to use for the background when a rule is not applicable.
      */
     static protected final Color NotApplicableColor = Color.LIGHT_GRAY;
-
     /**
-     * Color to use for the background when a rule is a trigger rule of its layer.
+     * Color to use for the background when a rule is a trigger rule of its
+     * layer.
      */
     static protected final Color TriggerRuleColor = Color.RED;
-
     static protected final Color RuleFormulaColor = Color.BLUE;
-
     static protected final Color DisabledColor = Color.LIGHT_GRAY;
 
     public GraGraTreeCellRenderer() {
@@ -80,23 +71,18 @@ public class GraGraTreeCellRenderer extends JLabel implements TreeCellRenderer {
     public Component getTreeCellRendererComponent(JTree tree, Object value,
             boolean sel, boolean expanded, boolean leaf, int row,
             boolean hasFocus) {
-
         String stringValue = tree.convertValueToText(value, sel, expanded,
                 leaf, row, hasFocus);
-
         /* Set the text. */
         setText(stringValue);
         setIconTextGap(5);
-
         GraGraTreeNodeData userObject = (GraGraTreeNodeData) ((DefaultMutableTreeNode) value)
                 .getUserObject();
-
         this.notApplicable = false;
         this.isTriggerRule = false;
         this.isKernelRule = false;
         this.isFormula = false;
         this.isDisabled = false;
-
         // TODO: integrate isDisabled
         if (userObject.isGraGra()) {
             setIcon(IconResource.getIconFromURL(IconResource.getURLGraGra()));
@@ -192,7 +178,6 @@ public class GraGraTreeCellRenderer extends JLabel implements TreeCellRenderer {
             setIcon(null);
             setToolTipText("");
         }
-
         this.selected = sel;
         return this;
     }
@@ -201,7 +186,6 @@ public class GraGraTreeCellRenderer extends JLabel implements TreeCellRenderer {
         Color bColor = Color.WHITE;
         Color fColor = Color.BLACK;
 //		Icon currentI = getIcon();
-
         // reset foreground color
         if (this.notApplicable) {
             fColor = NotApplicableColor;
@@ -222,17 +206,13 @@ public class GraGraTreeCellRenderer extends JLabel implements TreeCellRenderer {
         } else {
             bColor = getBackground();
         }
-
         // at the end, select rewrites the background color 
         if (this.selected) {
             bColor = SelectedColor;
         }
-
         g.setColor(bColor);
         setForeground(fColor);
-
         g.fillRect(0, 0, getWidth(), getHeight());
-
 //		if (currentI != null && getText() != null) {
 //			int offset = (currentI.getIconWidth() + getIconTextGap());
 //			g.fillRect(offset, 0, getWidth() - 1 - offset, getHeight() - 1);
@@ -240,5 +220,4 @@ public class GraGraTreeCellRenderer extends JLabel implements TreeCellRenderer {
 //			g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
         super.paintComponent(g);
     }
-
 }

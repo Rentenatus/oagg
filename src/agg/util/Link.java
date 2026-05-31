@@ -1,11 +1,12 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -21,7 +22,6 @@ import agg.xt_basis.GraphObject;
 public class Link {
 
     private Link up;
-
     private GraphObject o;
 
     public Link() {
@@ -36,10 +36,6 @@ public class Link {
         this.up = null;
 //		System.out.println("Step.Link.dispose()   DONE  "+this);
         this.o = null;
-    }
-
-    public void finalize() {
-//		System.out.println("Step.Link.finalize()   called  "+this);
     }
 
     public Link find() {
@@ -70,5 +66,4 @@ public class Link {
     public void set(GraphObject go) {
         find().o = go;
     }
-
 }

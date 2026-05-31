@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -16,9 +18,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.Vector;
-
 import javax.swing.SwingUtilities;
-
 import agg.editor.impl.EdAtomic;
 import agg.editor.impl.EdGraphObject;
 import agg.xt_basis.OrdinaryMorphism;
@@ -31,7 +31,6 @@ import java.util.List;
 public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
 
     private final RuleEditor editor;
-
     public Point movePoint;
 
     public RuleEditorMouseMotionAdapter(final RuleEditor ruleeditor) {
@@ -49,7 +48,6 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
         if (this.editor.getRule() == null) {
             return;
         }
-
         if (SwingUtilities.isMiddleMouseButton(e)
                 || (this.editor.getLeftPanel().getEditMode() == EditorConstants.MOVE)) {
             if (!this.editor.isSynchronMoveOfMappedObjectsEnabled()) {
@@ -137,7 +135,6 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
                     } else {
                         morph = this.editor.getRule().getBasisRule();
                     }
-
                     if (morph != null) {
                         invImages = this.editor.getInverseImages(this.editor.getRule().getLeft(), morph, v);
                         if (!invImages.isEmpty()) {
@@ -149,7 +146,6 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
                                     d.height);
                             this.editor.getLeftPanel().updateGraphics();
                         }
-
                         // move images of NAC
                         if (this.editor.getNAC() != null) {
                             List<EdGraphObject> imagesNAC = this.editor.getImages(this.editor.getNAC(), this.editor.getNAC()
@@ -200,7 +196,6 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
                                 d.height);
                         this.editor.getLeftPanel().updateGraphics();
                     }
-
                     // move images of RHS
                     List<EdGraphObject> images = this.editor.getImages(this.editor.getRule().getRight(),
                             this.editor.getRule().getBasisRule(), invImages);
@@ -216,5 +211,4 @@ public class RuleEditorMouseMotionAdapter implements MouseMotionListener {
             }
         }
     }
-
 }

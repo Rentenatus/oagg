@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -31,7 +31,6 @@ public class ASTArrayIndex extends SimpleNode {
 
     public static Class<?> getClassForName(String name) {
         Class<?> clazz = null;
-
         if (classResolver == null) {
             try {
                 clazz = Class.forName(name);
@@ -44,30 +43,32 @@ public class ASTArrayIndex extends SimpleNode {
     }
 
     /**
-     * Since there is no possibility to retrieve the dimension of an array class directly as something like: int
-     * dimensions = java.lang.reflect.Array.getNumDimensions( anArrayClass), the textual representation of the
-     * considered array class is parsed in order to determine it's dimension.
+     * Since there is no possibility to retrieve the dimension of an array class
+     * directly as something like: int dimensions =
+     * java.lang.reflect.Array.getNumDimensions( anArrayClass), the textual
+     * representation of the considered array class is parsed in order to
+     * determine it's dimension.
      */
     protected static int getNumDimensions(Class<?> arrayClass) {
         String classText = arrayClass.getName();
         int nDim = 0;
-
         while (classText.charAt(nDim++) == '[')
 			;
         return --nDim;
     }
 
     /**
-     * Since there is no possibility to retrieve the component class of an array class directly as something like: int
-     * componentClass = java.lang.reflect.Array.getDimensionCount( anArrayClass), the textual representation of the
-     * considered array class is parsed in order to determine it's component class.
+     * Since there is no possibility to retrieve the component class of an array
+     * class directly as something like: int componentClass =
+     * java.lang.reflect.Array.getDimensionCount( anArrayClass), the textual
+     * representation of the considered array class is parsed in order to
+     * determine it's component class.
      */
     protected static Class<?> getComponentClass(Class<?> arrayClass) {
         String classText = arrayClass.getName();
         String compClassName = "";
         int ptr = 0;
         Class<?> compClass = null;
-
         while (classText.charAt(ptr++) == '[')
 			;
         switch (classText.charAt(--ptr)) {
@@ -121,7 +122,6 @@ public class ASTArrayIndex extends SimpleNode {
         Class<?> componentClass, resultClass;
         Object arrayInst;
         int nDim;
-
         if (!arrayClass.isArray()) {
             throw new ASTWrongTypeException(
                     null,
@@ -135,10 +135,8 @@ public class ASTArrayIndex extends SimpleNode {
                     + ((SimpleNode) indexNode).getNodeClass() + "' as index.";
             throw new ASTWrongTypeException(reqSig, foundSig);
         }
-
         componentClass = getComponentClass(arrayClass);
         nDim = getNumDimensions(arrayClass) - 1;
-
         if (nDim == 0) {
             resultClass = componentClass;
         } else {
@@ -154,11 +152,9 @@ public class ASTArrayIndex extends SimpleNode {
     }
 
     public void interpret(SimpleNode arrayNode) {
-
         Node indexNode = jjtGetChild(0);
         Object array, result;
         int index, length;
-
         array = stack.get(top);
         indexNode.interpret();
         index = ((Integer) stack.get(top--)).intValue();

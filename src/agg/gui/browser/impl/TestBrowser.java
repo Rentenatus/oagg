@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -24,7 +26,6 @@ import java.awt.event.WindowListener;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -32,7 +33,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.browser.GraphBrowser;
 import agg.xt_basis.Arc;
@@ -49,34 +49,26 @@ import agg.xt_basis.TypeException;
 public class TestBrowser extends JPanel {
 
     static int ITS_WIDTH = 500;
-
     static int ITS_HEIGHT = 300;
-
     JFrame f;
-
     GraphBrowser browser;
-
     EdGraGra gragra;
 
     public TestBrowser(JFrame frame) {
         super(true);
         setLayout(new BorderLayout());
-
         this.f = frame;
-
         // create menubar
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(createFileMenu());
         menuBar.add(createLayoutMenu());
         menuBar.add(createBasisMenu());
         add(menuBar, BorderLayout.NORTH);
-
         // create graph browser
         this.browser = new GraphBrowserImpl();
         add(this.browser.getPanel(), BorderLayout.CENTER);
         // oder so
         // add((GraphBrowserImpl) browser, BorderLayout.CENTER);
-
     }
 
     JMenu createFileMenu() {
@@ -105,9 +97,7 @@ public class TestBrowser extends JPanel {
                 TestBrowser.this.browser.saveAs(TestBrowser.this.f);
             }
         });
-
         file.add(new JSeparator());
-
         mi = file.add(new JMenuItem("Show Graph"));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -115,18 +105,14 @@ public class TestBrowser extends JPanel {
                 TestBrowser.this.browser.showGraph();
             }
         });
-
         file.add(new JSeparator());
-
         mi = file.add(new JMenuItem("Update"));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TestBrowser.this.browser.updateGraphics();
             }
         });
-
         file.add(new JSeparator());
-
         mi = file.add(new JMenuItem("Exit"));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -160,42 +146,36 @@ public class TestBrowser extends JPanel {
                 modifyBaseGraGra();
             }
         });
-
         mi = basis.add(new JMenuItem("Show graph"));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showLG();
             }
         });
-
         mi = basis.add(new JMenuItem("Show left rule side"));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showLRS();
             }
         });
-
         mi = basis.add(new JMenuItem("Show right rule side"));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showRRS();
             }
         });
-
         mi = basis.add(new JMenuItem("Show NAC"));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showNAC();
             }
         });
-
         return basis;
     }
 
     void modifyBaseGraGra() {
         JOptionPane.showMessageDialog(this.f, "All arcs will be removed.");
         Graph graph = this.gragra.getBasisGraGra().getGraph();
-
         Iterator<Arc> arcs = graph.getArcsSet().iterator();
         while (arcs.hasNext()) {
             try {
@@ -245,13 +225,11 @@ public class TestBrowser extends JPanel {
     }
 
     public static void main(String[] args) {
-
         WindowListener l = new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
         };
-
         JFrame frame = new JFrame("AGG Graph Browser (extended)");
         frame.addWindowListener(l);
         frame.setBackground(Color.white);
@@ -260,11 +238,8 @@ public class TestBrowser extends JPanel {
         frame.setLocation(screenSize.width / 2 - ITS_WIDTH / 2, screenSize.height
                 / 2 - ITS_HEIGHT / 2);
         frame.setSize(ITS_WIDTH, ITS_HEIGHT);
-
         TestBrowser testbrowser = new TestBrowser(frame);
-
         frame.getContentPane().add(testbrowser, BorderLayout.CENTER);
-
         frame.setVisible(true);
     }
 }
@@ -320,3 +295,4 @@ public class TestBrowser extends JPanel {
 // Revision 1.3 1999/08/17 10:51:29 shultzke
 // neues Package hinzugefuegt
 //
+

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
@@ -16,13 +17,11 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Enumeration;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.TableColumn;
-
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrInstanceMember;
 import agg.attribute.AttrManager;
@@ -35,8 +34,9 @@ import agg.attribute.view.AttrViewObserver;
 import agg.attribute.view.AttrViewSetting;
 
 /**
- * Provides all necessary functionality for a lightweight editor of an attribute tuple. Extending classes just need to
- * redefine createTableModel() to set up a simple editor with desired columns, headers etc. For row dragging, tool bar
+ * Provides all necessary functionality for a lightweight editor of an attribute
+ * tuple. Extending classes just need to redefine createTableModel() to set up a
+ * simple editor with desired columns, headers etc. For row dragging, tool bar
  * actions etc. consider extending
  *
  * @author $Author: olga $
@@ -50,27 +50,22 @@ public class BasicTupleEditor extends AbstractEditor implements
      * Edited attribute tuple.
      */
     protected AttrTuple tuple;
-
     /**
      * View to utilize when accessing members.
      */
     protected AttrViewSetting viewSetting;
-
     /**
      * Table model, defines which columns to show, edit, their headers etc.
      */
     protected TupleTableModel tableModel;
-
     /**
      * The handler selection editor for the current tuple's attribute manager.
      */
     protected HandlerSelectionEditor handlerSelectionEditor;
-
     /**
      * Table widget.
      */
     protected JTable tableView;
-
     /**
      * Scroll pane containing the table widget.
      */
@@ -86,7 +81,8 @@ public class BasicTupleEditor extends AbstractEditor implements
     }
 
     /**
-     * This decides about the table properties: columns to display, expandable or not etc.
+     * This decides about the table properties: columns to display, expandable
+     * or not etc.
      *
      * @see TupleTableModel
      */
@@ -109,8 +105,8 @@ public class BasicTupleEditor extends AbstractEditor implements
     }
 
     /**
-     * Every tuple editor class has its own version of this method. Is called automatically by the parent
-     * (AbstractEditor) constructor.
+     * Every tuple editor class has its own version of this method. Is called
+     * automatically by the parent (AbstractEditor) constructor.
      */
     protected void genericCustomizeMainLayout() {
         this.mainPanel = new JPanel(new BorderLayout());
@@ -123,7 +119,6 @@ public class BasicTupleEditor extends AbstractEditor implements
     protected void createTableView() {
         // Generic; override, please, to define your own table column layout.
         this.tableModel = createTableModel();
-
         this.tableView = new JTable(this.tableModel);
         this.tableView.setRowHeight(this.tableView.getRowHeight() + 2);
         String[] names = new String[this.tableModel.getColumnCount()];
@@ -183,7 +178,8 @@ public class BasicTupleEditor extends AbstractEditor implements
     }
 
     /**
-     * If the edited tuple is an AttrInstance, its currently selected member is returned.
+     * If the edited tuple is an AttrInstance, its currently selected member is
+     * returned.
      */
     public AttrInstanceMember getSelectedMember() {
         if (this.tuple == null || !(this.tuple instanceof AttrInstance)) {
@@ -258,8 +254,8 @@ public class BasicTupleEditor extends AbstractEditor implements
     public AttrViewSetting getViewSetting() {
         return this.viewSetting;
     } // getViewSetting()
-
     // AttrViewObserver interface
+
     /**
      * React to attribute changes.
      */
@@ -298,7 +294,6 @@ public class BasicTupleEditor extends AbstractEditor implements
     public void paintValue(Graphics gfx, Rectangle box) {
         getComponent().paintAll(gfx);
     }
-
 }
 /*
  * $Log: BasicTupleEditor.java,v $

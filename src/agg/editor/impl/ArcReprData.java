@@ -1,22 +1,23 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.editor.impl;
-
 //import java.util.Enumeration;
+
 import java.util.Vector;
 import java.util.Hashtable;
 import java.awt.Point;
 import javax.swing.undo.*;
-
 import agg.util.Pair;
 import agg.xt_basis.Arc;
 //import agg.xt_basis.Node;
@@ -28,32 +29,20 @@ import agg.attribute.impl.ValueMember;
 import java.util.List;
 
 public class ArcReprData implements StateEditable {
-
 //	protected String graphName; // for test only!!
+
     protected int typeHashCode;
-
     protected boolean elemOfTG;
-
     protected TypeReprData typeRepresentation;
-
     protected Hashtable<String, Pair<String, String>> attributes = new Hashtable<String, Pair<String, String>>();
-
     protected Point textOffset = new Point(0, 0);
-
     protected boolean hasAnchor;
-
     protected Point location;
-
     protected int loopW, loopH;
-
     protected String arcHC, fromHC, toHC; // hash code of arc, source and target node
-
     protected int key = this.hashCode();
-
     protected int arcHashCode;
-
     protected boolean frozen, frozenAsDefault;
-
     protected boolean restoreDone;
 
     public void storeState(Hashtable<Object, Object> state) {
@@ -64,10 +53,8 @@ public class ArcReprData implements StateEditable {
         ArcReprData data = (ArcReprData) state.get(Integer.valueOf(this.key));
         state.remove(Integer.valueOf(this.key));
         this.restoreDone = false;
-
         if (data != null) {
 //			this.graphName = data.graphName;
-
             this.typeHashCode = data.typeHashCode;
             this.typeRepresentation = data.typeRepresentation;
             this.elemOfTG = data.elemOfTG;
@@ -82,7 +69,6 @@ public class ArcReprData implements StateEditable {
             this.toHC = data.toHC;
             this.frozen = data.frozen;
             this.frozenAsDefault = data.frozenAsDefault;
-
             this.restoreDone = true;
         }
     }
@@ -95,25 +81,21 @@ public class ArcReprData implements StateEditable {
         if (a.getBasisArc() == null) {
             return;
         }
-
 //		this.graphName = a.getContext().getName();
         this.key = this.hashCode();
         this.arcHashCode = a.hashCode();
         this.typeHashCode = a.getType().hashCode();
         this.elemOfTG = a.isElementOfTypeGraph();
-
         if (a.isElementOfTypeGraph()) {
             this.typeRepresentation = new TypeReprData(a);
         } else {
             this.typeRepresentation = new TypeReprData(a.getType());
         }
-
         this.arcHC = a.getContextUsage();
         if (a.getContextUsage().indexOf(String.valueOf(a.hashCode())) == -1) {
             this.arcHC = String.valueOf(a.hashCode()) + ":"
                     + a.getContextUsage();
         }
-
         this.fromHC = String.valueOf(a.getSource().hashCode());
         if (a.getContext() != null && a.getContext().isTargetObjOfGraphEmbedding(a.getSource())) {
             EdGraphObject kernObj = a.getContext().getSourceObjOfGraphEmbedding(a.getSource());
@@ -121,7 +103,6 @@ public class ArcReprData implements StateEditable {
                 this.fromHC = String.valueOf(kernObj.hashCode());
             }
         }
-
         this.toHC = String.valueOf(a.getTarget().hashCode());
         if (a.getContext() != null && a.getContext().isTargetObjOfGraphEmbedding(a.getTarget())) {
             EdGraphObject kernObj = a.getContext().getSourceObjOfGraphEmbedding(a.getTarget());
@@ -129,7 +110,6 @@ public class ArcReprData implements StateEditable {
                 this.toHC = String.valueOf(kernObj.hashCode());
             }
         }
-
         this.attributes = new Hashtable<String, Pair<String, String>>();
         if (a.getBasisObject().getAttribute() != null) {
             ValueTuple vt = (ValueTuple) a.getBasisObject().getAttribute();
@@ -144,21 +124,17 @@ public class ArcReprData implements StateEditable {
                 }
             }
         }
-
         this.hasAnchor = a.hasAnchor();
         if (a.hasAnchor()) {
             this.location = new Point(a.getAnchor());
         } else {
             this.location = new Point(a.getX(), a.getY());
         }
-
         this.textOffset = new Point(a.getTextOffset().x, a.getTextOffset().y);
-
         if (!a.isLine()) {
             this.loopW = a.getWidthOfLoop();
             this.loopH = a.getHeightOfLoop();
         }
-
         this.frozen = a.getLArc().isFrozen();
         this.frozenAsDefault = a.getLArc().isFrozenByDefault();
     }
@@ -171,15 +147,11 @@ public class ArcReprData implements StateEditable {
         if (this.elemOfTG != a.isElementOfTypeGraph()) {
             return;
         }
-
         this.typeRepresentation.restoreTypeFromTypeRepr(a.getType());
-
         a.addContextUsage(this.arcHC);
-
         if (a.isElementOfTypeGraph()) {
             restoreMultiplicity(a, this.typeRepresentation);
         }
-
         if (!this.attributes.isEmpty()) {
             if (a.getBasisObject().getAttribute() != null) {
                 Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
@@ -187,7 +159,6 @@ public class ArcReprData implements StateEditable {
                 restoreAttributes(attrs, a);
             }
         }
-
         a.setX(this.location.x);
         a.setY(this.location.y);
         if (this.hasAnchor) {
@@ -195,14 +166,11 @@ public class ArcReprData implements StateEditable {
         } else {
             a.setAnchor(null);
         }
-
         a.setTextOffset(this.textOffset.x, this.textOffset.y);
-
         if (!a.isLine()) {
             a.setWidth(this.loopW);
             a.setHeight(this.loopH);
         }
-
         a.getLArc().setFrozen(this.frozen);
         a.getLArc().setFrozenByDefault(this.frozenAsDefault);
     }
@@ -215,7 +183,7 @@ public class ArcReprData implements StateEditable {
                     || (ti.getContextUsage().indexOf(
                             String.valueOf(this.typeRepresentation
                                     .getTypeHashCode())) >= 0)) {
-                return ti; 
+                return ti;
             }
         }
         return null;
@@ -228,13 +196,11 @@ public class ArcReprData implements StateEditable {
             if (t.hashCode() == typeHC) {
                 return t;
             }
-
             if (t.getContextUsage().indexOf(
                     String.valueOf(this.typeRepresentation
                             .getTypeHashCode())) >= 0) {
                 return t;
             }
-
         }
         return null;
     }
@@ -258,7 +224,6 @@ public class ArcReprData implements StateEditable {
         }
 //		System.out.println("ArcReprData.createArcFromArcRepr::  from: "+from
 //				 +"  to: "+to);
-
         if (from == null || to == null) {
             for (int i = 0; i < restoredNodes.size(); i++) {
                 EdNode n = restoredNodes.get(i);
@@ -286,7 +251,6 @@ public class ArcReprData implements StateEditable {
             }
 //			System.out.println("ArcReprData.createArcFromArcRepr::  from: "+from
 //					 +"  to: "+to);
-
             if (from == null || to == null) {
                 return null;
             }
@@ -295,39 +259,29 @@ public class ArcReprData implements StateEditable {
         try {
             Arc basis = g.getBasisGraph().createArc(type.getBasisType(),
                     from.getBasisNode(), to.getBasisNode());
-
             a = g.addArc(basis, type);
             if (a == null) {
                 return null;
             }
-
             a.addContextUsage(this.arcHC);
-
             if (a.isElementOfTypeGraph()) {
                 restoreMultiplicity(a, this.typeRepresentation);
             }
-
             refreshAttributes(a);
-
             a.setX(this.location.x);
             a.setY(this.location.y);
-
             if (this.hasAnchor) {
                 a.setAnchor(new Point(this.location.x, this.location.y));
             }
-
             a.setTextOffset(this.textOffset.x, this.textOffset.y);
-
             if (!a.isLine()) {
                 a.setWidth(this.loopW);
                 a.setHeight(this.loopH);
             }
-
             a.getLArc().setFrozen(this.frozen);
             a.getLArc().setFrozenByDefault(this.frozenAsDefault);
         } catch (TypeException ex) {
         }
-
         return a;
     }
 
@@ -336,7 +290,6 @@ public class ArcReprData implements StateEditable {
             if (a.getBasisObject().getAttribute() == null) {
                 a.getBasisObject().createAttributeInstance();
             }
-
             Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
             attrs.putAll(this.attributes);
             restoreAttributes(attrs, a);
@@ -394,7 +347,6 @@ public class ArcReprData implements StateEditable {
             }
         }
     }
-
 //	public void showData() {
 //		System.out.println("Graph:  "+this.graphName+"   arc:  "+this.typeRepresentation.name);
 //	}

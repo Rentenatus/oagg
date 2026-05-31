@@ -1,19 +1,18 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import agg.attribute.impl.AttrSession;
 import agg.attribute.impl.VerboseControl;
 import java.util.Iterator;
@@ -25,9 +24,7 @@ import java.util.Iterator;
 public class OpMemberNode extends MemberNode {
 
     static final long serialVersionUID = 1L;
-
     protected Method method = null;
-
     protected Object receivingObj, returnObj;
 
     OpMemberNode(String id) {
@@ -45,12 +42,10 @@ public class OpMemberNode extends MemberNode {
     protected String getMethodName() {
         Class<?> c = getNodeClass();
         String name = ((ASTMemberName) jjtGetChild(0)).name;
-
         if (c == null) {
             return "\"" + name + "\"";
         }
         return "[" + this.method.toString() + "]";
-
     }
 
     /*
@@ -123,7 +118,6 @@ public class OpMemberNode extends MemberNode {
         int nChildren = jjtGetNumChildren();
         Node param;
         Class<?> paramTypes[] = new Class<?>[nChildren - 1];
-
         for (int i = 1; i < nChildren; i++) {
             param = jjtGetChild(i);
             param.checkContext();
@@ -133,7 +127,6 @@ public class OpMemberNode extends MemberNode {
             paramTypes = null;
         }
         this.method = getMethod(recClass, methodName, paramTypes);
-
         /* Error, if method not found: */
         if (this.method == null) {
             String paramText;
@@ -149,7 +142,6 @@ public class OpMemberNode extends MemberNode {
             } else {
                 paramText = "with an empty parameter list";
             }
-
             throw new ASTMemberException("No public method " + getMethodName()
                     + "\n  " + paramText + "\n  in class "
                     + recClass.toString() + " .");
@@ -157,14 +149,11 @@ public class OpMemberNode extends MemberNode {
     }
 
     public void invoke(SimpleNode recipient) {
-
         if (this.method == null) {
             checkContext(recipient);
         }
-
         int nChildren = jjtGetNumChildren();
         Object params[] = new Object[nChildren - 1];
-
         for (int i = 1; i < nChildren; i++) {
             jjtGetChild(i).interpret();
             params[i - 1] = stack.get(top--);
@@ -175,7 +164,6 @@ public class OpMemberNode extends MemberNode {
         this.receivingObj = stack.get(top);;
         try {
             this.returnObj = this.method.invoke(this.receivingObj, params);
-
 //			System.out.println("receivingObj=" + receivingObj );
 //			System.out.println("returnObj=" + returnObj );
             AttrSession.logPrintln(VerboseControl.logJexParser,
@@ -195,7 +183,6 @@ public class OpMemberNode extends MemberNode {
                         + getMethodName() + "  "
                         + Jex.addMessage((Exception) ex3.getTargetException()));
             }
-
             throw new ASTMemberException("Error while invoking method "
                     + getMethodName() + Jex.addMessage(ex3));
         } catch (NullPointerException ex4) {
@@ -210,7 +197,6 @@ public class OpMemberNode extends MemberNode {
     }
 
     public void interpret(SimpleNode recipient) {
-
         invoke(recipient);
 //		stack[++top] = returnObj;
         stack.add(++top, this.returnObj);

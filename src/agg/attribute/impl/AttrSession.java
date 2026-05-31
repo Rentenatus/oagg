@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
@@ -14,7 +15,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
@@ -33,14 +33,11 @@ public class AttrSession extends VerboseControl {
      * Operating system name.
      */
     protected static String osName = System.getProperty("os.name");
-
     /**
      * System architecture.
      */
     protected static String osArch = System.getProperty("os.arch");
-
     static boolean wasSystemAnalysed = false;
-
     static boolean isWin32 = false;
 
     /**
@@ -64,7 +61,6 @@ public class AttrSession extends VerboseControl {
         // isWin32 = true;
         return isWin32;
     }
-
     /*
 	 * GUI or stdout - log view.
      */
@@ -74,19 +70,17 @@ public class AttrSession extends VerboseControl {
      * Stdout indentation count.
      */
     protected static byte stdoutIndentCount = 0;
-
     /**
      * Flag indicating if caret at the beginning of stdout line.
      */
     protected static boolean stdoutBeginOfLine = true;
-
     /**
      * Redirection stream to use instead of System.out
      */
     protected static ByteArrayOutputStream redirectStream;
-
     /**
-     * Temporary storage of the "System.out" stream, for the time of redirection.
+     * Temporary storage of the "System.out" stream, for the time of
+     * redirection.
      */
     protected static PrintStream stdout;
 
@@ -121,7 +115,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * Prints the specified message to the log view if the boolean value is true.
+     * Prints the specified message to the log view if the boolean value is
+     * true.
      */
     public static void logPrintln(boolean logTopic, String msg) {
         if (logTopic) {
@@ -130,7 +125,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * Prints the specified message to the error view if the boolean value is true.
+     * Prints the specified message to the error view if the boolean value is
+     * true.
      */
     public static void errPrintln(boolean logTopic, String msg) {
         if (logTopic) {
@@ -193,7 +189,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * Prints a line with the specified message to stdout if the boolean value is true.
+     * Prints a line with the specified message to stdout if the boolean value
+     * is true.
      */
     public static void stdoutPrintln(boolean debugTopic, String msg) {
         if (debugTopic) {
@@ -203,7 +200,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * Prints the specified message to stdout if the boolean value is true; indentation is incremented.
+     * Prints the specified message to stdout if the boolean value is true;
+     * indentation is incremented.
      */
     public static void stdoutPrintOnEnter(boolean debugTopic, String msg) {
         if (debugTopic) {
@@ -213,7 +211,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * Prints the specified message to stdout if the boolean value is true; indentation is decremented.
+     * Prints the specified message to stdout if the boolean value is true;
+     * indentation is decremented.
      */
     public static void stdoutPrintOnExit(boolean debugTopic, String msg) {
         if (debugTopic) {
@@ -223,7 +222,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * Prints the specified message indented to stdout if the boolean value is true.
+     * Prints the specified message indented to stdout if the boolean value is
+     * true.
      */
     public static void stdoutPrintIndented(boolean debugTopic, String msg) {
         if (debugTopic) {
@@ -254,7 +254,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * Ending redirection of standard output and flushing the data to the logging window.
+     * Ending redirection of standard output and flushing the data to the
+     * logging window.
      */
     protected static void releaseStdOutput() {
         System.setOut(stdout);
@@ -262,7 +263,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * prints detailed information about an AttrInstance. Additionally with a short message.
+     * prints detailed information about an AttrInstance. Additionally with a
+     * short message.
      */
     public static void logAttrInstance(AttrInstance instance, String msg) {
         logPrintln("Beginning --> " + msg);
@@ -279,8 +281,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * prints detailed information about an AttrInstance. Additionally with a short message. If the boolean value is
-     * true.
+     * prints detailed information about an AttrInstance. Additionally with a
+     * short message. If the boolean value is true.
      */
     public static void logAttrInstance(boolean topic, AttrInstance instance,
             String msg) {
@@ -290,7 +292,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * prints detailed information about an AttrContext. Additionally with a short message.
+     * prints detailed information about an AttrContext. Additionally with a
+     * short message.
      */
     public static void logAttrContext(AttrContext context, String msg) {
         logPrintln("Beginning --> " + msg);
@@ -317,8 +320,8 @@ public class AttrSession extends VerboseControl {
     }
 
     /**
-     * prints detailed information about an AttrContext. Additionally with a short message. If the boolean value is
-     * true.
+     * prints detailed information about an AttrContext. Additionally with a
+     * short message. If the boolean value is true.
      */
     public static void logAttrContext(boolean topic, AttrContext context,
             String msg) {

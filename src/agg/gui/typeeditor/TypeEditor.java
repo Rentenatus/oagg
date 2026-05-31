@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -23,7 +25,6 @@ import javax.swing.SwingConstants;
 import javax.swing.JOptionPane;
 import javax.swing.JComponent;
 import javax.swing.undo.*;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
@@ -53,14 +54,11 @@ public class TypeEditor implements TypeEventListener, StateEditable {
     public TypeEditor(JFrame aggappl, GraGraEditor gragraEditor) {
         this.applFrame = aggappl;
         this.gragraEditor = gragraEditor;
-
         this.typePalette = new TypePalette(this);
-
         this.nodeTypePropertyEditor = new NodeTypePropertyEditor(this.applFrame, this,
                 this.typePalette);
         this.arcTypePropertyEditor = new ArcTypePropertyEditor(this.applFrame, this,
                 this.typePalette);
-
         this.typeEventListeners = new Vector<TypeEventListener>();
     }
 
@@ -80,7 +78,6 @@ public class TypeEditor implements TypeEventListener, StateEditable {
     public void storeState(Hashtable<Object, Object> state) {
         if (this.undoObj.first != null && this.undoObj.second != null) {
 //			System.out.println("TypeEditor.storeState: "+this.undoObj.first);
-
 //			String op = this.undoObj.first;
 //			if (op.equals(EditUndoManager.COMMON_DELETE_CREATE)) {
 //				Vector<?> vec = this.undoObj.second;
@@ -167,25 +164,21 @@ public class TypeEditor implements TypeEventListener, StateEditable {
     }
 
     /**
-     * Sets a gragra specified by the EdGraGra gra. Creates the elements of the NodeTypeComboBox and ArcTypeComboBox
-     * using the typeset of the gragra.
+     * Sets a gragra specified by the EdGraGra gra. Creates the elements of the
+     * NodeTypeComboBox and ArcTypeComboBox using the typeset of the gragra.
      */
     public void setGraGra(EdGraGra gra) {
         this.gragra = gra;
-
         this.typePalette.clear();
         this.nodeTypePropertyEditor.setNewTypeDefaultProperty();
         this.arcTypePropertyEditor.setNewTypeDefaultProperty();
-
         if (this.gragra == null) {
 //			this.typePalette.
             fireTypeEvent(new TypeEvent(this, new JLabel(""), 0, TypeEvent.SELECTED_NODE_TYPE));
             fireTypeEvent(new TypeEvent(this, new JLabel(""), 1, TypeEvent.SELECTED_ARC_TYPE));
             return;
         }
-
         this.gragra.getTypeSet().addTypeEventListener(this);
-
         initializeTypes();
     }
 
@@ -201,7 +194,6 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         if (this.gragra != null) {
             return this.gragra.getTypeSet();
         }
-
         return null;
     }
 
@@ -209,7 +201,6 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         if (this.gragra != null) {
             return this.gragra.getTypeSet().getNodeTypes();
         }
-
         return null;
     }
 
@@ -217,7 +208,6 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         if (this.gragra != null) {
             return this.gragra.getTypeSet().getArcTypes();
         }
-
         return null;
     }
 
@@ -233,9 +223,7 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         if (index >= 0) {
             this.gragra.setSelectedNodeType(this.gragra.getNodeTypes()
                     .elementAt(index));
-
             fireTypeEvent(new TypeEvent(this, this.typePalette.getSelectedNodeTypeLabel(), 0, TypeEvent.SELECTED));
-
             return this.gragra.getSelectedNodeType();
         }
         this.gragra.setSelectedNodeType(null);
@@ -246,7 +234,6 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         if (index >= 0) {
             this.gragra.setSelectedArcType(this.gragra.getArcTypes().elementAt(
                     index));
-
             fireTypeEvent(new TypeEvent(this, this.typePalette.getSelectedArcTypeLabel(), 1, TypeEvent.SELECTED));
             return this.gragra.getSelectedArcType();
         }
@@ -272,15 +259,12 @@ public class TypeEditor implements TypeEventListener, StateEditable {
             this.gragra.getTypeSet().addNodeType(et);
             this.gragra.setChanged(true);
             int index = this.gragra.getTypeSet().getNodeTypes().indexOf(et);
-
             Icon typeIcon = NodeTypePropertyEditor.getNodeTypeIcon(
                     et.getShape(), et.getColor(), et.hasFilledShape());
             JLabel l = makeTypeLabel(et.getName(), typeIcon, et.getColor());
             this.typePalette.addNodeType(l, index);
-
             fireTypeEvent(new TypeEvent(this.nodeTypePropertyEditor, et, index,
                     TypeEvent.MODIFIED_CREATED));
-
             this.typePalette.setSelectedNodeTypeIndex(index);
             this.selectNodeTypeAtIndex(index);
         }
@@ -289,24 +273,18 @@ public class TypeEditor implements TypeEventListener, StateEditable {
 
     public EdType addNodeType(String tname, Color tcolor, int tshape, boolean filledshape,
             String tresourcespath, String timage, String tcomment, boolean tanimated) {
-
         EdType et = this.gragra.getTypeSet().createNodeType(tname, tshape, tcolor, filledshape, timage);
         if (et != null) {
             this.gragra.setChanged(true);
-
             et.setAnimated(tanimated);
             et.getBasisType().setTextualComment(tcomment);
-
             int index = this.gragra.getTypeSet().getNodeTypes().indexOf(et);
-
             Icon typeIcon = NodeTypePropertyEditor.getNodeTypeIcon(tshape,
                     tcolor, filledshape);
             JLabel l = this.makeTypeLabel(tname, typeIcon, tcolor);
             this.typePalette.addNodeType(l, index);
-
             this.typePalette.setSelectedNodeTypeIndex(index);
             this.selectNodeTypeAtIndex(index);
-
             this.nodeTypePropertyEditor
                     .undoManagerAddEdit(EditUndoManager.CREATE_DELETE);
             this.nodeTypePropertyEditor.undoManagerEndEdit(et);
@@ -322,15 +300,12 @@ public class TypeEditor implements TypeEventListener, StateEditable {
             this.gragra.getTypeSet().addArcType(et);
             this.gragra.setChanged(true);
             int index = this.gragra.getTypeSet().getArcTypes().indexOf(et);
-
             Icon typeIcon = this.arcTypePropertyEditor.getArcTypeIcon(et.shape,
                     et.color, et.filled);
             JLabel l = makeTypeLabel(et.getName(), typeIcon, et.getColor());
             this.typePalette.addArcType(l, index);
-
             fireTypeEvent(new TypeEvent(this.arcTypePropertyEditor, et, index,
                     TypeEvent.MODIFIED_CREATED));
-
             this.typePalette.setSelectedArcTypeIndex(index);
             this.selectArcTypeAtIndex(index);
         }
@@ -344,22 +319,18 @@ public class TypeEditor implements TypeEventListener, StateEditable {
             this.gragra.setChanged(true);
             et.getBasisType().setTextualComment(tcomment);
             int index = this.gragra.getTypeSet().getArcTypes().indexOf(et);
-
             Icon typeIcon = this.arcTypePropertyEditor
                     .getArcTypeIcon(tshape, tcolor, filledshape);
             JLabel l = makeTypeLabel(tname, typeIcon, tcolor);
             this.typePalette.addArcType(l, index);
-
             this.typePalette.setSelectedArcTypeIndex(index);
             this.selectArcTypeAtIndex(index);
-
             this.arcTypePropertyEditor
                     .undoManagerAddEdit(EditUndoManager.CREATE_DELETE);
             this.arcTypePropertyEditor.undoManagerEndEdit(et);
             this.gragraEditor.updateUndoButton();
             fireTypeEvent(new TypeEvent(this.arcTypePropertyEditor, et, index,
                     TypeEvent.MODIFIED_CREATED));
-
         }
         return et;
     }
@@ -371,7 +342,6 @@ public class TypeEditor implements TypeEventListener, StateEditable {
             String tresourcespath, String timage,
             String tcomment,
             boolean tanimated) {
-
         if (!this.gragra.getTypeSet().isNewType(this.gragra.getTypeSet().getNodeTypes(),
                 tname, tshape, tcolor, tfilledshape)) {
             EdType et = getSelectedNodeType();
@@ -382,21 +352,16 @@ public class TypeEditor implements TypeEventListener, StateEditable {
                 return true;
             }
         }
-
         EdType et = getSelectedNodeType();
         int index = this.typePalette.getSelectedNodeTypeIndex();
         this.nodeTypePropertyEditor.undoManagerAddEdit(EditUndoManager.CHANGE);
         this.gragraEditor.updateUndoButton();
-
         if (this.gragra.getTypeSet().redefineType(
                 et, tname, tshape, tcolor, tfilledshape, timage, tcomment)) {
-
             et.setAnimated(tanimated);
-
             JLabel tlabel = makeNodeTypeLabel(et);
             this.typePalette.changeNodeType(tlabel, index);
             this.nodeTypePropertyEditor.undoManagerEndEdit(et);
-
             fireTypeEvent(new TypeEvent(this.nodeTypePropertyEditor, et, index,
                     TypeEvent.MODIFIED_CHANGED));
             return true;
@@ -413,15 +378,12 @@ public class TypeEditor implements TypeEventListener, StateEditable {
                 tname, tshape, tcolor, tfilledshape)) {
             return false;
         }
-
         int index = this.typePalette.getSelectedArcTypeIndex();
         EdType et = getSelectedArcType();
         this.arcTypePropertyEditor.undoManagerAddEdit(EditUndoManager.CHANGE);
         this.gragraEditor.updateUndoButton();
-
         if (this.gragra.getTypeSet().redefineType(
                 et, tname, tshape, tcolor, tfilledshape, "", tcomment)) {
-
             JLabel tlabel = makeArcTypeLabel(et);
             this.typePalette.changeArcType(tlabel, index);
             this.arcTypePropertyEditor.undoManagerEndEdit(et);
@@ -439,31 +401,25 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         int index = this.gragra.getTypeSet().getNodeTypes().indexOf(et);
         if (deleteType(et, index, this.nodeTypePropertyEditor, undoable)) {
             this.typePalette.deleteNodeTypeAt(index);
-
             int size = this.gragra.getTypeSet().getNodeTypes().size();
             if (size > 0) {
                 if (index >= size) {
                     index = index - 1;
                 }
-
                 EdType type = selectNodeTypeAtIndex(index);
                 this.typePalette.setSelectedNodeTypeIndex(index);
                 this.nodeTypePropertyEditor.setSelectedTypeProperty(type);
-
                 fireTypeEvent(new TypeEvent(this, this.typePalette.getSelectedNodeTypeLabel(), 0, TypeEvent.SELECTED_NODE_TYPE));
             } else {
                 this.typePalette.setSelectedNodeTypeIndex(-1);
                 selectNodeTypeAtIndex(-1);
                 this.nodeTypePropertyEditor.setNewTypeDefaultProperty();
-
                 fireTypeEvent(new TypeEvent(this, new JLabel(""), 0, TypeEvent.SELECTED_NODE_TYPE));
             }
-
             if (undoable) {
                 this.nodeTypePropertyEditor.undoManagerEndEdit(et);
             }
             this.gragraEditor.updateUndoButton();
-
             et.dispose();
             return true;
         }
@@ -475,29 +431,23 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         EdType et = this.getSelectedNodeType();
         if (deleteType(et, index, this.nodeTypePropertyEditor, undoable)) {
             this.typePalette.deleteSelectedNodeType();
-
             int size = this.gragra.getTypeSet().getNodeTypes().size();
             if (size > 0) {
                 if (index >= size) {
                     index = index - 1;
                 }
-
                 EdType type = selectNodeTypeAtIndex(index);
                 this.typePalette.setSelectedNodeTypeIndex(index);
                 this.nodeTypePropertyEditor.setSelectedTypeProperty(type);
-
                 fireTypeEvent(new TypeEvent(this, this.typePalette.getSelectedNodeTypeLabel(), 0, TypeEvent.SELECTED_NODE_TYPE));
             } else {
                 this.typePalette.setSelectedNodeTypeIndex(-1);
                 selectNodeTypeAtIndex(-1);
                 this.nodeTypePropertyEditor.setNewTypeDefaultProperty();
-
                 fireTypeEvent(new TypeEvent(this, new JLabel(""), 0, TypeEvent.SELECTED_NODE_TYPE));
             }
-
             this.nodeTypePropertyEditor.undoManagerEndEdit(et);
             this.gragraEditor.updateUndoButton();
-
             et.dispose();
             return true;
         }
@@ -508,31 +458,25 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         int index = this.gragra.getTypeSet().getArcTypes().indexOf(et);
         if (deleteType(et, index, this.arcTypePropertyEditor, undoable)) {
             this.typePalette.deleteArcTypeAt(index);
-
             int size = this.gragra.getTypeSet().getArcTypes().size();
             if (size > 0) {
                 if (index >= size) {
                     index = index - 1;
                 }
-
                 EdType type = selectArcTypeAtIndex(index);
                 this.typePalette.setSelectedArcTypeIndex(index);
                 this.arcTypePropertyEditor.setSelectedTypeProperty(type);
-
                 fireTypeEvent(new TypeEvent(this, this.typePalette.getSelectedArcTypeLabel(), 1, TypeEvent.SELECTED_ARC_TYPE));
             } else {
                 this.typePalette.setSelectedArcTypeIndex(-1);
                 selectArcTypeAtIndex(-1);
                 this.arcTypePropertyEditor.setNewTypeDefaultProperty();
-
                 fireTypeEvent(new TypeEvent(this, new JLabel(""), 1, TypeEvent.SELECTED_ARC_TYPE));
             }
-
             if (undoable) {
                 this.arcTypePropertyEditor.undoManagerEndEdit(et);
             }
             this.gragraEditor.updateUndoButton();
-
             et.dispose();
             return true;
         }
@@ -544,28 +488,23 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         EdType et = this.getSelectedArcType();
         if (deleteType(et, index, this.arcTypePropertyEditor, undoable)) {
             this.typePalette.deleteSelectedEdgeType();
-
             int size = this.gragra.getTypeSet().getArcTypes().size();
             if (size > 0) {
                 if (index >= size) {
                     index = index - 1;
                 }
-
                 EdType type = selectArcTypeAtIndex(index);
                 this.typePalette.setSelectedArcTypeIndex(index);
                 this.arcTypePropertyEditor.setSelectedTypeProperty(type);
-
                 fireTypeEvent(new TypeEvent(this, this.typePalette.getSelectedArcTypeLabel(), 1, TypeEvent.SELECTED_ARC_TYPE));
             } else {
                 this.typePalette.setSelectedArcTypeIndex(-1);
                 selectArcTypeAtIndex(-1);
                 this.arcTypePropertyEditor.setNewTypeDefaultProperty();
-
                 fireTypeEvent(new TypeEvent(this, new JLabel(""), 1, TypeEvent.SELECTED_ARC_TYPE));
             }
             this.arcTypePropertyEditor.undoManagerEndEdit(et);
             this.gragraEditor.updateUndoButton();
-
             et.dispose();
             return true;
         }
@@ -635,9 +574,7 @@ public class TypeEditor implements TypeEventListener, StateEditable {
 
     protected boolean deleteType(EdType et, int index, JComponent source,
             boolean undoable) {
-
         final Hashtable<EdGraph, Vector<EdGraphObject>> graph2typeObservers = getTypeContext(et, true);
-
         EdTypeSet typeSet = this.gragra.getTypeSet();
         int answer = JOptionPane.NO_OPTION;
         boolean used = false;
@@ -661,7 +598,6 @@ public class TypeEditor implements TypeEventListener, StateEditable {
                         "Delete Type",
                         JOptionPane.DEFAULT_OPTION,
                         JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-
                 if (answer == JOptionPane.YES_OPTION) {
                     String failStr = this.gragra.kernelRuleContainsObjsOfType(et);
                     if (failStr != null) {
@@ -692,14 +628,12 @@ public class TypeEditor implements TypeEventListener, StateEditable {
                                     JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
-
                 if (undoable) {
                     // store all objects of type to delete to be able to undo
                     // deleted type with its objects
                     undoManagerAddDeleteEdit(graph2typeObservers,
                             EditUndoManager.COMMON_DELETE_CREATE);
                 }
-
                 List<String> failed = this.gragra.deleteGraphObjectsOfType(et, true, false);
                 showDeleteMessageDialog(failed);
                 if (failed != null && !failed.isEmpty()) {
@@ -728,13 +662,10 @@ public class TypeEditor implements TypeEventListener, StateEditable {
                                 .undoManagerAddEdit(EditUndoManager.DELETE_CREATE);
                     }
                 }
-
                 this.gragra.setChanged(true);
                 fireTypeEvent(new TypeEvent(source, et, index,
                         TypeEvent.MODIFIED_DELETED));
-
                 typeSet.removeType(et);
-
             } catch (TypeException e) {
                 JOptionPane.showMessageDialog(this.applFrame, e.getMessage(),
                         "Type Graph Error", JOptionPane.ERROR_MESSAGE);
@@ -775,7 +706,6 @@ public class TypeEditor implements TypeEventListener, StateEditable {
                     et.getBasisType().getTextualComment(),
                     et.isAnimated());
         }
-
         /* fill arcTypeBox */
         Vector<JLabel> arcTypeList = new Vector<JLabel>(this.gragra.getArcTypes()
                 .size(), 5);
@@ -791,18 +721,15 @@ public class TypeEditor implements TypeEventListener, StateEditable {
             this.arcTypePropertyEditor.setSelectedTypeProperty(et.getName(),
                     et.color, et.shape, et.filled, et.getBasisType().getTextualComment());
         }
-
         // initialize this.typePalette
         this.typePalette.setTypes(nodeTypeList, arcTypeList);
         this.typePalette.setSelectedNodeTypeIndex(nodeTypeList.size() - 1);
         this.typePalette.setSelectedArcTypeIndex(arcTypeList.size() - 1);
-
         if (nodeTypeList.isEmpty()) {
             fireTypeEvent(new TypeEvent(this, new JLabel(""), 0, TypeEvent.SELECTED_NODE_TYPE));
         } else {
             fireTypeEvent(new TypeEvent(this, this.typePalette.getSelectedNodeTypeLabel(), 0, TypeEvent.SELECTED_NODE_TYPE));
         }
-
         if (arcTypeList.isEmpty()) {
             fireTypeEvent(new TypeEvent(this, new JLabel(""), 1, TypeEvent.SELECTED_ARC_TYPE));
         } else {
@@ -873,27 +800,17 @@ public class TypeEditor implements TypeEventListener, StateEditable {
             if (e.getMsg() == TypeEvent.CHANGED
                     || e.getMsg() == TypeEvent.REFRESH) {
                 // initializeTypes();
-
                 refreshTypes();
             }
         }
     }
-
     private final JFrame applFrame;
-
     private final GraGraEditor gragraEditor;
-
     private EdGraGra gragra;
-
     private final Vector<TypeEventListener> typeEventListeners;
-
     private final TypePalette typePalette;
-
     private final NodeTypePropertyEditor nodeTypePropertyEditor;
-
     private final ArcTypePropertyEditor arcTypePropertyEditor;
-
     private EditUndoManager undoManager;
-
     private Pair<String, Vector<?>> undoObj;
 }

@@ -1,28 +1,28 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
  */
 package agg.xt_basis;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
 import agg.cons.Evaluable;
 import agg.cons.Formula;
 import agg.util.XMLHelper;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author olga
@@ -31,21 +31,15 @@ import agg.util.XMLHelper;
 public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
 
     NestedApplCond itsParent;
-
     String varTag = "";
-
 //	private boolean valid;	
 //	private int old_tick;
 //	private boolean old_val;
     private boolean evaluable = true;
-
     final List<NestedApplCond> itsACs = new ArrayList<NestedApplCond>(1);
-
     String formulaStr = "true";
     Formula itsFormula = new Formula(true);
-
     OrdinaryMorphism relatedMorph;
-
     public boolean forall, exist;
 
     public NestedApplCond(final Graph orig, final Graph img, final AttrContext ac) {
@@ -83,8 +77,8 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     /**
-     * Checks dangling edges of this and its nested application conditions. Returns true if no dangling edge exists,
-     * otherwise false.
+     * Checks dangling edges of this and its nested application conditions.
+     * Returns true if no dangling edge exists, otherwise false.
      */
     public boolean isValid() {
         if (this.isEnabled()) {
@@ -107,19 +101,18 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
 //					this.setErrorMsg(this.getName()+":  "+ac.getName()+"  -  General AC failed (dangling edge)");
                     return false;
                 }
-
             }
         }
         return true;
     }
 
     /**
-     * Destroys validation results of this general application condition. The validation results correspond to its rule
-     * and the current match. They are temporary and should be destroyed after the current match is checked.
+     * Destroys validation results of this general application condition. The
+     * validation results correspond to its rule and the current match. They are
+     * temporary and should be destroyed after the current match is checked.
      */
     public void disposeResults() {
         this.relatedMorph = null;
-
         for (int i = 0; i < this.itsACs.size(); i++) {
             this.itsACs.get(i).disposeResults();
         }
@@ -130,11 +123,13 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     /**
-     * Creates and adds a new (nested) application condition. Note, because a new morphism is empty and the this.target
-     * graph is not, it is not a morphism in terms of theory, which demands an application condition to be a total
-     * morphism.
+     * Creates and adds a new (nested) application condition. Note, because a
+     * new morphism is empty and the this.target graph is not, it is not a
+     * morphism in terms of theory, which demands an application condition to be
+     * a total morphism.
      *
-     * @return an empty morphism <code>ac</code> with <code>ac.getOriginal() == this.getTarget()</code>.
+     * @return an empty morphism <code>ac</code> with
+     * <code>ac.getOriginal() == this.getTarget()</code>.
      */
     public NestedApplCond createNestedAC() {
         final NestedApplCond ac = new NestedApplCond(
@@ -156,7 +151,6 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
             cond.setParent(this);
             return true;
         }
-
         return false;
     }
 
@@ -172,7 +166,6 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
             ac.setParent(this);
             return true;
         }
-
         return false;
     }
 
@@ -207,18 +200,15 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
         if (indx >= 0 && indx < this.itsACs.size()) {
             return this.itsACs.get(indx);
         }
-
         return null;
     }
 
     public boolean setDefaultFormulaTrue() {
         final List<Evaluable> vars = new ArrayList<Evaluable>(this.itsACs.size());
-
         if (this.itsACs.size() == 0) {
             this.formulaStr = "true";
             return true;
         }
-
         String tmp = "";
         int indx = -1;
         for (int i = 0; i < this.itsACs.size(); i++) {
@@ -238,7 +228,6 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
             this.formulaStr = "true";
             return true;
         }
-
         if (this.itsFormula.setFormula(vars, tmp)) {
             this.formulaStr = this.itsFormula.getAsString(vars);
 //			System.out.println("NestedApplCond: "+this.getName()+"  default formula: "+this.formulaStr);
@@ -249,12 +238,10 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
 
     public boolean setDefaultFormulaFalse() {
         final List<Evaluable> vars = new ArrayList<Evaluable>(this.itsACs.size());
-
         if (this.itsACs.size() == 0) {
             this.formulaStr = "true";
             return true;
         }
-
         String tmp = "";
         int indx = -1;
         for (int i = 0; i < this.itsACs.size(); i++) {
@@ -276,7 +263,6 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
         } else {
             tmp = "!(".concat(tmp).concat(")");
         }
-
         if (this.itsFormula.setFormula(vars, tmp)) {
             this.formulaStr = this.itsFormula.getAsString(vars);
 //			System.out.println("NestedApplCond: "+this.getName()+"  default formula: "+this.formulaStr);
@@ -303,8 +289,9 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     /**
-     * Set a boolean formula represented by the specified string <code>formStr</code> above the nested application
-     * conditions of the <code>list</code>.
+     * Set a boolean formula represented by the specified string
+     * <code>formStr</code> above the nested application conditions of the
+     * <code>list</code>.
      *
      * @return	<code>true</code> if successful, otherwise - <code>false</code>
      */
@@ -315,7 +302,6 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
         } else if (formStr.equals("false")) {
             return this.setDefaultFormulaFalse();
         }
-
         int n = 0;
         final List<Evaluable> vars = new ArrayList<Evaluable>(n);
         for (int i = 0; i < list.size(); i++) {
@@ -325,12 +311,10 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
                 n++;
             }
         }
-
         if (n == 0) {
             this.formulaStr = "true";
             return true;
         }
-
         if (this.itsFormula.setFormula(vars, formStr)) {
             this.formulaStr = this.itsFormula.getAsString(vars);
             this.setTextualComment("Formula: ".concat(this.formulaStr));
@@ -370,12 +354,10 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
         } else if (this.relatedMorph == null || this.relatedMorph.getTarget() != g) {
             return false;
         }
-
         PACStarMorphism comorph = MatchHelper.createNestedACstar(this, this.relatedMorph);
         boolean result
                 = (MatchHelper.checkGACStar(comorph, this, this.relatedMorph, false) != null);
         this.disposeResults();
-
         return result;
     }
 
@@ -390,7 +372,6 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
 
     public boolean eval(Object o, int tick) {
         return evaluate((Graph) o);
-
 //		if (tick != -1 && tick == old_tick) {
 //			return old_val;
 //		}
@@ -493,13 +474,11 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
                     NestedApplCond ac = this.itsACs.get(i);
                     ac.setRelatedMorphism(this.itsCoMorph);
                 }
-
                 if (this.formulaStr.equals("true")) {
                     this.setDefaultFormulaTrue();
                 } else if (this.formulaStr.equals("false")) {
                     this.setDefaultFormulaFalse();
                 }
-
                 return this.itsFormula.eval(g);
             }
             return false;
@@ -584,24 +563,18 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
                     this.formulaStr = "true";
                 }
                 this.setTextualComment("Formula: ".concat(this.formulaStr));
-
                 boolean acEnabled = true;
                 Object acattr_enabled = h.readAttr("enabled");
                 if ((acattr_enabled != null)
                         && ((String) acattr_enabled).equals("false")) {
                     acEnabled = false;
                 }
-
                 NestedApplCond ac = createNestedAC();
                 ac.getTarget().setHelpInfo(this.getName());
-
                 ac.getTarget().xyAttr = this.getTarget().xyAttr;
-
                 h.getObject("", ac.getTarget(), true);
                 ac.readMorphism(h);
-
                 ac.readNestedApplConds(h);
-
                 h.close();
                 ac.setEnabled(acEnabled);
                 ac.getTarget().setHelpInfo("");
@@ -614,7 +587,6 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
                 h.close();
             }
             h.close();
-
             this.setFormula(this.formulaStr);
         }
     }
@@ -634,22 +606,17 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
                 OrdinaryMorphism m = nested.nextElement();
                 m.getTarget().setKind(GraphKind.AC);
                 h.openSubTag("NestedAC");
-
                 if (!"".equals(this.formulaStr)) {
                     h.addAttr("formula", this.formulaStr);
                 }
                 if (!m.isEnabled()) {
                     h.addAttr("enabled", "false");
                 }
-
                 h.addObject("", m.getTarget(), true);
                 m.writeMorphism(h);
-
                 ((NestedApplCond) m).writeNestedApplConds(h);
-
                 h.close();
             }
-
             // Attr context conditions
             if (num > 0) {
                 h.openSubTag("AttrCondition");
@@ -667,9 +634,4 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
         // TODO Auto-generated method stub
         return false;
     }
-
 }
-
-
-
-

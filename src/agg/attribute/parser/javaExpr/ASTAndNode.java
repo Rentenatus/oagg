@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -30,7 +30,6 @@ public class ASTAndNode extends BOOLxBOOLtoBOOLnode {
     public void interpret() {
         // System.out.println("ASTAndNode.interpret() .......... ");
         Object result;
-
         // jjtGetChild(0).interpret();
         try {
             // System.out.println("ASTAndNode.interpret() try jjtGetChild(0):
@@ -44,18 +43,16 @@ public class ASTAndNode extends BOOLxBOOLtoBOOLnode {
                 throw (RuntimeException) e;
             }
         }
-
         // System.out.println("ASTAndNode.interpret() stack[top] booleanValue():
         // "+((Boolean)stack[top]).booleanValue());
 //		if (!((Boolean) stack[top]).booleanValue())
         if (!((Boolean) stack.get(top)).booleanValue()) {
-            result = new Boolean(false);
+            result = Boolean.FALSE;
 //			stack[top] = result;
             stack.set(top, result);
             // System.out.println("ASTAndNode.interpret() result: "+result);
             return;
         }
-
         // jjtGetChild(1).interpret();
         try {
             // System.out.println("ASTAndNode.interpret() try jjtGetChild(1):
@@ -71,7 +68,6 @@ public class ASTAndNode extends BOOLxBOOLtoBOOLnode {
                 throw (RuntimeException) e;
             }
         }
-
         // System.out.println("ASTAndNode.interpret() stack[top]: "+top+"
         // "+stack[top]);
         // System.out.println("ASTAndNode.interpret() stack[top-1]: "+(top-1)+"
@@ -79,16 +75,16 @@ public class ASTAndNode extends BOOLxBOOLtoBOOLnode {
         // System.out.println("ASTAndNode.interpret() stack[top+1]: "+(top+1)+"
         // "+stack[top+1]);
         if (stack.get(top + 1) instanceof Boolean) {
-            result = new Boolean(((Boolean) stack.get(top)).booleanValue()
+            result = Boolean.valueOf(((Boolean) stack.get(top)).booleanValue()
                     && ((Boolean) stack.get(top + 1)).booleanValue());
         } else if ((top > 0) && (stack.get(top - 1) instanceof Boolean)) {
-            result = new Boolean(((Boolean) stack.get(top)).booleanValue()
+            result = Boolean.valueOf(((Boolean) stack.get(top)).booleanValue()
                     && ((Boolean) stack.get(top - 1)).booleanValue());
         } else {
-            result = new Boolean(false); // ((Boolean)stack[top]).booleanValue());
+            result = Boolean.FALSE; // ((Boolean)stack[top]).booleanValue());
         }
         /*
-		 * result = new Boolean(((Boolean)stack[top]).booleanValue() &&
+		 * result = Boolean.valueOf(((Boolean)stack[top]).booleanValue() &&
 		 * ((Boolean)stack[top - 1]).booleanValue()); //((Boolean)stack[top +
 		 * 1]).booleanValue());
          */
@@ -108,7 +104,6 @@ public class ASTAndNode extends BOOLxBOOLtoBOOLnode {
         Node right = jjtGetChild(1);
         return left.getString() + "&&" + right.getString();
     }
-
 }
 /*
  * $Log: ASTAndNode.java,v $

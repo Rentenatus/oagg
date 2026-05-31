@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -16,7 +16,6 @@ package agg.gui.trafo;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Vector;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdRule;
 import agg.gui.editor.GraGraEditor;
@@ -54,19 +53,15 @@ public class GraGraTransform {
     public GraGraTransform(GraGraEditor anEditor) {
         this.editor = anEditor;
         this.threadpriority = 7;
-
         /* create gratra options GUI */
         this.generalOptionGUI = new GraTraMatchOptionGUI(this);
         this.optionGUI = new GraTraOptionGUI(this.editor.getParentFrame(), this);
-
         /* set strategy to default strategy */
         this.strategy = this.generalOptionGUI.getMorphCompletionStrategy();
-
         /* create a new step by step (debugger) transformation object */
         this.debugger = new TransformDebug(this);
         this.debugger.setCompletionStrategy(this.strategy);
         this.editor.addEditEventListener(this.debugger);
-
         this.transformListeners = new Vector<>();
     }
 
@@ -83,7 +78,6 @@ public class GraGraTransform {
 //			return this.editor.getGraGra().getRules();
             return this.editor.getGraGra().getEnabledRules();
         }
-
         return new Vector<>(0);
     }
 
@@ -118,7 +112,6 @@ public class GraGraTransform {
     public void setRuleSequences(
             final List<EdRule> rules,
             final List<Pair<List<Pair<String, String>>, String>> sequences) {
-
         this.optionGUI.setRulesOfRuleSequenceGUI(rules);
         this.optionGUI.setRuleSequences(sequences);
         this.optionGUI.enableRuleSequenceGUI(this.optionGUI.ruleSequenceEnabled());
@@ -142,7 +135,6 @@ public class GraGraTransform {
         if (this.optionGUI.ruleSequenceEnabled()) {
             return this.optionGUI.getRuleSequences();
         }
-
         return null;
     }
 
@@ -150,7 +142,6 @@ public class GraGraTransform {
         if (this.optionGUI.ruleSequenceEnabled()) {
             return this.optionGUI.getRuleSequencesAsText();
         }
-
         return null;
     }
 
@@ -333,15 +324,12 @@ public class GraGraTransform {
         if (!this.strategy.isRandomisedDomain()) {
             gratraOptions.addOption(GraTraOptions.DETERMINED_CSP_DOMAIN);
         }
-
         if (this.generalOptionGUI.consistencyEnabled()) {
             gratraOptions.addOption(GraTraOptions.CONSISTENT_ONLY);
         }
-
         if (this.generalOptionGUI.consistencyCheckAfterGraphTrafoEnabled()) {
             gratraOptions.addOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO);
         }
-
         if (this.optionGUI.priorityEnabled()) {
             gratraOptions.addOption(GraTraOptions.PRIORITY);
         } else if (this.optionGUI.layeredEnabled()) {
@@ -352,7 +340,6 @@ public class GraGraTransform {
                 gratraOptions.addOption(GraTraOptions.EACH_RULE_TO_APPLY);
             }
         }
-
         if (this.optionGUI.stopLayerAndWaitEnabled()) {
             gratraOptions.addOption(GraTraOptions.STOP_LAYER_AND_WAIT);
         }
@@ -368,7 +355,6 @@ public class GraGraTransform {
         if (this.optionGUI.breakAllLayerEnabled()) {
             gratraOptions.addOption(GraTraOptions.BREAK_ALL_LAYER);
         }
-
         if (this.generalOptionGUI.checkRuleApplicabilityEnabled()) {
             gratraOptions.addOption(GraTraOptions.CHECK_RULE_APPLICABILITY);
         }
@@ -381,7 +367,6 @@ public class GraGraTransform {
         if (this.generalOptionGUI.waitAfterStepEnabled()) {
             gratraOptions.addOption(GraTraOptions.WAIT_AFTER_STEP);
         }
-
         return gratraOptions;
     }
 
@@ -389,7 +374,6 @@ public class GraGraTransform {
         if (this.editor.getGraGra() == null) {
             return;
         }
-
         if (this.layeredTransform != null && this.layeredTransform.isAlive()) {
             if (opt.equals(GraTraOptions.LOOP_OVER_LAYER) && !b) {
                 ((LayeredGraTraImpl) this.layeredTransform.getGraTra()).setLayeredLoop(false);
@@ -504,29 +488,24 @@ public class GraGraTransform {
     public void startTransformByRuleSequence(
             final EdGraGra gragra,
             final RuleSequence ruleSequence) {
-
         this.editor.removeEditEventListener(this.debugger);
         this.editor.addEditEventListener(this.ruleSequenceTransform);
         this.editor.setInterpreting(false);
         this.editor.setLayering(false);
         this.editor.setTransformRuleSequences(true);
-
         if (gragra.getBasisGraGra().trafoByApplicableRuleSequence()) {
             gragra.getBasisGraGra().addGraTraOption(GraTraOptions.WAIT_AFTER_STEP);
             gragra.getBasisGraGra().addGraTraOption(GraTraOptions.SELECT_NEW_AFTER_STEP);
         }
-
         this.ruleSequenceTransform.setGraGra(gragra, ruleSequence);
         this.ruleSequenceTransform.setCompletionStrategy(this.strategy);
         this.ruleSequenceTransform.setPriority(this.threadpriority);
         this.ruleSequenceTransform
                 .setShowGraphAfterStep(showGraphAfterStepEnabled());
-
         ((RuleSequencesGraTraImpl) this.ruleSequenceTransform.getGraTra())
                 .setGraTraOptions(getGraTraOptions());
         fireTransform(new TransformEvent(this.ruleSequenceTransform,
                 TransformEvent.START));
-
         this.ruleSequenceTransform.start();
     }
 
@@ -558,7 +537,6 @@ public class GraGraTransform {
                 .setGraTraOptions(getGraTraOptions());
         fireTransform(new TransformEvent(this.interpreterTransform,
                 TransformEvent.START));
-
         this.interpreterTransform.start();
     }
 
@@ -587,7 +565,6 @@ public class GraGraTransform {
                 .setGraTraOptions(getGraTraOptions());
         fireTransform(new TransformEvent(this.rulePriorityTransform,
                 TransformEvent.START));
-
         this.rulePriorityTransform.start();
     }
 
@@ -607,12 +584,10 @@ public class GraGraTransform {
         this.editor.setInterpreting(false);
         this.editor.setLayering(true);
         this.editor.setTransformRuleSequences(false);
-
         this.layeredTransform.setGraGra(gragra);
         this.layeredTransform.setCompletionStrategy(this.strategy);
         this.layeredTransform.setPriority(this.threadpriority);
         this.layeredTransform.setShowGraphAfterStep(showGraphAfterStepEnabled());
-
         ((LayeredGraTraImpl) this.layeredTransform.getGraTra())
                 .setStopLayerAndWait(stopLayerAndWaitEnabled());
         ((LayeredGraTraImpl) this.layeredTransform.getGraTra())
@@ -623,9 +598,7 @@ public class GraGraTransform {
                 .setBreakLayer(breakLayerEnabled());
         ((LayeredGraTraImpl) this.layeredTransform.getGraTra())
                 .setBreakAllLayer(breakAllLayerEnabled());
-
         fireTransform(new TransformEvent(this.layeredTransform, TransformEvent.START));
-
         this.layeredTransform.start();
     }
 
@@ -709,27 +682,15 @@ public class GraGraTransform {
             this.transformListeners.get(i).transformEventOccurred(e);
         }
     }
-
     private final GraTraOptionGUI optionGUI;
-
     private final GraTraMatchOptionGUI generalOptionGUI;
-
     private MorphCompletionStrategy strategy;
-
     private final TransformDebug debugger;
-
     private TransformInterpret interpreterTransform;
-
     private TransformInterpret rulePriorityTransform;
-
     private TransformLayered layeredTransform;
-
     private TransformRuleSequences ruleSequenceTransform;
-
     private final List<TransformEventListener> transformListeners;
-
     private GraGraEditor editor;
-
     private int threadpriority;
-
 }

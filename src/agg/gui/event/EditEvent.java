@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.event;
 
@@ -22,35 +23,20 @@ import java.util.EventObject;
 public class EditEvent extends EventObject {
 
     public static final int EDIT_PROCEDURE = -1;
-
     public static final int INPUT_PARAMETER = -2;
-
     public static final int INPUT_PARAMETER_OK = -3;
-
     public static final int EDIT_FONT_STYLE = -4;
-
     public static final int EDIT_FONT_SIZE = -5;
-
     public static final int EDIT_SCALE = -6;
-
     public static final int NO_EDIT_PROCEDURE = -7;
-
     public static final int ATTR_CONDITION_CHANGED = -8;
-
     public static final int DATA_LOADED = -9;
-
     public static final int MENU_KEY = -10;
-
     public static final int TRANSFER_SHORTKEY = -11;
-
     public static final int RESET_GRAPH = -12;
-
     public static final int SET_TYPE_GRAPH_ENABLED = -13;
-
     public static final int DELETE_RULE_REQUEST = -14;
-
     public static final int SHOW_RULE_SEQUENCE = -15;
-
     public static final int HIDE_RULE_SEQUENCE = -16;
 
     public EditEvent(Object source, int key) {
@@ -162,19 +148,11 @@ public class EditEvent extends EventObject {
     public double getDoubleValue() {
         return this.doubleValue;
     }
-
     private int msgkey;
-
     private String msg;
-
     private String userMsg;
-
     private Object object;
-
     private String modeStr;
-
     private int intValue;
-
     private double doubleValue;
-
 }

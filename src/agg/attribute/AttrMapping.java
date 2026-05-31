@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
@@ -21,22 +22,18 @@ package agg.attribute;
 public interface AttrMapping extends java.io.Serializable {
 
     static final long serialVersionUID = 4086026124433522160L;
-
     // Constants for mapping modes.
     /**
-     * Constant for the "plain" mapping mode. In Graph Transformation this stands for a mapping as in the rule
-     * morphisms.
+     * Constant for the "plain" mapping mode. In Graph Transformation this
+     * stands for a mapping as in the rule morphisms.
      */
     static public final int PLAIN_MAP = 0;
-
     /**
-     * Constant for the "match" mapping mode. In Graph Transformation this stands for a mapping as in match
-     * constructions.
+     * Constant for the "match" mapping mode. In Graph Transformation this
+     * stands for a mapping as in match constructions.
      */
     static public final int MATCH_MAP = 1;
-
     static public final int GRAPH_MAP = 2;
-
     static public final int OBJECT_FLOW_MAP = 3;
 
     /**
@@ -47,14 +44,13 @@ public interface AttrMapping extends java.io.Serializable {
     public boolean next();
 
     /**
-     * Discard mapping; Removes variable assignments made by this mapping from its context and dissolves the connection
-     * between the attribute instances.
+     * Discard mapping; Removes variable assignments made by this mapping from
+     * its context and dissolves the connection between the attribute instances.
      */
     public void remove();
 
     public void removeNow();
 }
-
 /*
  * $Log: AttrMapping.java,v $
  * Revision 1.5  2010/03/31 21:06:47  olga

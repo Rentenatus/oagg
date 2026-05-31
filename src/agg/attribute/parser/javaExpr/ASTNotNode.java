@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
-
 
 /* JJT: 0.2.2 */
 /**
@@ -30,13 +29,13 @@ public class ASTNotNode extends BOOLtoBOOLnode {
 
     public void interpret() {
         jjtGetChild(0).interpret();
-//		stack[top] = new Boolean(!((Boolean) stack[top]).booleanValue());
+//		stack[top] = Boolean.valueOf(!((Boolean) stack[top]).booleanValue());
 //		if (String.valueOf(stack.get(top)).equals("1"))
-//			stack.set(top, new Boolean(!true));	
+//			stack.set(top, Boolean.valueOf(!true));	
 //		else if (String.valueOf(stack.get(top)).equals("0"))
-//			stack.set(top, new Boolean(!false));	
+//			stack.set(top, Boolean.valueOf(!false));	
 //		else	
-        stack.set(top, new Boolean(!((Boolean) stack.get(top)).booleanValue()));
+        stack.set(top, Boolean.valueOf(!((Boolean) stack.get(top)).booleanValue()));
     }
 
     public String getString() {

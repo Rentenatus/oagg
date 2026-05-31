@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui;
 
@@ -14,17 +15,15 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import agg.attribute.impl.VerboseControl;
 
 /**
- * This class provides a window which switches some debug output on and off. At this time only attribute information are
- * provided.
+ * This class provides a window which switches some debug output on and off. At
+ * this time only attribute information are provided.
  *
  * @author $Author: olga $
  * @version $Id: DebugFrame.java,v 1.3 2007/09/10 13:05:24 olga Exp $
@@ -37,57 +36,46 @@ public class DebugFrame extends JFrame implements ActionListener {
     // aus der AGG-GUI genommen werden kann.
     // Siehe agg.attribute.impl.VerboseControl
     private static String FileIO = "File I/O";
-
     /**
      * Each creation of any subclass of AttrObject
      */
     private static String Creation = "Creation";
-
     /**
      * Context of AttrInstance (impl by ValueTuple)
      */
     private static String ContextOfInstances = "Context of Instances";
-
     /**
      * Mapping in an AttrContext (impl by ContextView / ContextCore )
      */
     private static String Mapping = "Mapping";
-
     /**
      * Handling of AttrContext (impl by ContextView / ContextCore )
      */
     private static String Context = "Context";
-
     /**
      * Context (rule) conditions AttrCond (impl by CondTuple)
      */
     private static String Cond = "Condition";
-
     /**
      * Context (rule) variables AttrVar (impl by VarTuple)
      */
     private static String Var = "Variable";
-
     /**
      * Setting of variables.
      */
     private static String SetValue = "set Value";
-
     /**
      * Removing of variables
      */
     private static String RemoveValue = "remove Value";
-
     /**
      * Events
      */
     private static String Event = "Events";
-
     /**
      * Syntax trees of Java expressions.
      */
     private static String ParseTree = "Parse Tree";
-
     /**
      * Traces method calls
      */
@@ -98,7 +86,6 @@ public class DebugFrame extends JFrame implements ActionListener {
         setSize(200, 300);
         setLocation(200, 200);
         getContentPane().setLayout(new BorderLayout());
-
         JPanel p = new JPanel(new GridLayout(0, 1), true);
         p.setSize(200, 300);
         getContentPane().add(p);
@@ -191,7 +178,6 @@ public class DebugFrame extends JFrame implements ActionListener {
                     .isSelected();
         }
     }
-
 }
 // ======================================================================
 // $Log: DebugFrame.java,v $
@@ -221,3 +207,4 @@ public class DebugFrame extends JFrame implements ActionListener {
 // Revision 1.1 1999/12/06 08:11:58 shultzke
 // A little frame provides some switches to turn debugging stuff on and off.
 //
+

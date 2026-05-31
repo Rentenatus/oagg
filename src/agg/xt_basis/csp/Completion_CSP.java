@@ -3,11 +3,12 @@ package agg.xt_basis.csp;
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 import java.util.BitSet;
 import java.util.Collection;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.Dictionary;
-
 import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.VarMember;
@@ -48,7 +48,8 @@ import agg.xt_basis.PACStarMorphism;
 import agg.xt_basis.Type;
 
 /**
- * An implementation of morphism completion as a Constraint Satisfaction Problem (CSP).
+ * An implementation of morphism completion as a Constraint Satisfaction Problem
+ * (CSP).
  */
 public class Completion_CSP extends MorphCompletionStrategy {
 
@@ -59,17 +60,11 @@ public class Completion_CSP extends MorphCompletionStrategy {
         itsSupportedProperties.set(CompletionPropertyBits.DANGLING);
         itsSupportedProperties.set(CompletionPropertyBits.IDENTIFICATION);
     }
-
     protected ALR_CSP itsCSP;
-
     protected Morphism itsMorph;
-
     protected Dictionary<Object, Variable> relatedVarMap;
-
     final protected HashMap<String, String> inputParameterMap = new HashMap<String, String>(1);
-
     final protected List<VarMember> disabledInputParameter = new ArrayList<VarMember>(2);
-
     protected String errorMsg;
 
     public Completion_CSP() {
@@ -104,42 +99,39 @@ public class Completion_CSP extends MorphCompletionStrategy {
     }
 
     /**
-     * Initialize the CSP by the specified morphism. The CSP variables are created for each node and edge of the source
-     * graph of the given morphism. Initialize the CSP variables (partially) according mappings of the given morphism.
+     * Initialize the CSP by the specified morphism. The CSP variables are
+     * created for each node and edge of the source graph of the given morphism.
+     * Initialize the CSP variables (partially) according mappings of the given
+     * morphism.
      */
     public void initialize(OrdinaryMorphism morph)
             throws BadMappingException {
         this.itsMorph = morph;
-
         AttrContext aContext = initializeAttrContext(morph);
-
         // create CSP
         this.itsCSP = new ALR_CSP(
                 morph.getOriginal(),
                 aContext,
                 this.createSolutionStrategy(getProperties().get(CompletionPropertyBits.INJECTIVE)),
                 this.randomDomain);
-
         if (morph.getImage().getTypeObjectsMap().isEmpty()) {
             morph.getImage().fillTypeObjectsMap();
         }
-
         this.itsCSP.setRequester(morph);
         this.itsCSP.setDomain(morph.getImage());
-
         this.inputParameterMap.clear();
         this.disabledInputParameter.clear();
-
         this.itsCSP.getSolutionSolver().enableParallelSearch(this.parallel);
         this.itsCSP.getSolutionSolver().setStartParallelSearchByFirst(this.startParallelMatchByFirstCSPVar);
-
         // initialize CSP variables (partially) according mappings of the morphism 
         setPartialMorphism(morph);
     }
 
     /**
-     * Initialize the CSP by the specified morphism. The CSP variables are created for nodes and edge of the specified
-     * sets of nodes and edges, only. Initialize the CSP variables (partially) according mappings of the given morphism.
+     * Initialize the CSP by the specified morphism. The CSP variables are
+     * created for nodes and edge of the specified sets of nodes and edges,
+     * only. Initialize the CSP variables (partially) according mappings of the
+     * given morphism.
      */
     public void initialize(final OrdinaryMorphism morph,
             Collection<Node> nodes,
@@ -147,7 +139,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
             throws BadMappingException {
         this.itsMorph = morph;
         AttrContext aContext = initializeAttrContext(morph);
-
         // create CSP
         if (nodes != null && edges != null) {
 //			 new : only injective mapping allowed
@@ -159,27 +150,21 @@ public class Completion_CSP extends MorphCompletionStrategy {
                     this.createSolutionStrategy(getProperties().get(CompletionPropertyBits.INJECTIVE)),
                     this.randomDomain);
         }
-
         if (morph.getImage().getTypeObjectsMap().isEmpty()) {
             morph.getImage().fillTypeObjectsMap();
         }
-
         this.itsCSP.setRequester(morph);
         this.itsCSP.setDomain(morph.getImage());
-
         this.inputParameterMap.clear();
         this.disabledInputParameter.clear();
-
         this.itsCSP.getSolutionSolver().enableParallelSearch(this.parallel);
         this.itsCSP.getSolutionSolver().setStartParallelSearchByFirst(this.startParallelMatchByFirstCSPVar);
-
         // represent the mappings of a partial morphism in the CSP:
         setPartialMorphism(morph);
     }
 
     protected AttrContext initializeAttrContext(OrdinaryMorphism morph) {
         if (morph instanceof Match) {
-
             ContextView c = (ContextView) morph.getAttrManager().newContext(
                     ((ContextView) morph.getAttrContext()).getAllowedMapping(),
                     ((Match) morph).getRule().getAttrContext());
@@ -192,18 +177,14 @@ public class Completion_CSP extends MorphCompletionStrategy {
 			
 		} else if (morph instanceof NACStarMorphism) {
             ((NACStarMorphism) morph).setPartialMorphismCompletion(true);
-
             return morph.getAttrManager().newContext(
                     agg.attribute.AttrMapping.MATCH_MAP,
                     ((NACStarMorphism) morph).getRelatedMatchContext());
-
         } else if (morph instanceof PACStarMorphism) {
             ((PACStarMorphism) morph).setPartialMorphismCompletion(true);
-
             return morph.getAttrManager().newContext(
                     agg.attribute.AttrMapping.MATCH_MAP,
                     ((PACStarMorphism) morph).getRelatedMorphContext());
-
         } else {
             return morph.getAttrManager().newContext(
                     agg.attribute.AttrMapping.PLAIN_MAP);
@@ -211,12 +192,12 @@ public class Completion_CSP extends MorphCompletionStrategy {
     }
 
     /**
-     * If an image of the source node or edge exists, set it to be instance of the appropriate CSP variable.
+     * If an image of the source node or edge exists, set it to be instance of
+     * the appropriate CSP variable.
      */
     public void setPartialMorphism(final OrdinaryMorphism morph) {
         if (this.itsMorph != null) {
             this.itsCSP.enableAllVariables();
-
             final Iterator<Node> anEnum = morph.getOriginal().getNodesSet().iterator();
             while (anEnum.hasNext()) {
                 final Node anObj = anEnum.next();
@@ -275,7 +256,8 @@ public class Completion_CSP extends MorphCompletionStrategy {
 	}
      */
     /**
-     * Template method to enable creation of CSPs with varying solution strategies by subclasses.
+     * Template method to enable creation of CSPs with varying solution
+     * strategies by subclasses.
      */
     protected SolutionStrategy createSolutionStrategy(boolean injective) {
         return new agg.util.csp.Solution_Backjump(injective);
@@ -342,7 +324,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
         if (this.relatedVarMap != null) {
             return true;
         }
-
         return false;
     }
 
@@ -350,7 +331,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
         if (this.itsCSP != null) {
             return this.itsCSP.getInstanceVarMap();
         }
-
         return null;
     }
 
@@ -387,7 +367,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
     public void resetVariableDomain(boolean initInstanceByNull) {
         if (this.itsCSP != null) {
             this.itsCSP.resetVariableDomain(initInstanceByNull);
-
             this.inputParameterMap.clear();
             this.disabledInputParameter.clear();
         }
@@ -412,7 +391,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
                 return false;
             }
         }
-
         return doNext((OrdinaryMorphism) this.itsMorph);
     }
 
@@ -427,7 +405,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
                 return false;
             }
         }
-
         return doNext((OrdinaryMorphism) this.itsMorph);
     }
 
@@ -435,14 +412,12 @@ public class Completion_CSP extends MorphCompletionStrategy {
         this.itsCSP.setRelatedInstanceVarMap(this.relatedVarMap);
         boolean flag = false;
         this.errorMsg = "";
-
         if (morph.getAttrContext() != null) {
             ((VarTuple) morph.getAttrContext().getVariables())
                     .unsetNotInputVariables();
 //			((VarTuple) morph.getAttrContext().getVariables()).showVariables();	
             storeValueOfInputParameter(morph);
         }
-
         while (this.itsCSP.nextSolution()) {
             flag = true;
             this.errorMsg = "";
@@ -493,13 +468,11 @@ public class Completion_CSP extends MorphCompletionStrategy {
                     flag = false;
                 }
             }
-
             if (flag) {
                 morph.clearErrorMsg();
                 restoreValueOfInputParameter(morph);
                 break;
             }
-
             // flag == FALSE, then set error msg, refresh attr context and search again
             morph.setErrorMsg(this.errorMsg);
             restoreValueOfInputParameter(morph);
@@ -508,7 +481,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
                 ((VarTuple) morph.getAttrContext().getVariables()).unsetNotInputVariables();
             }
         }
-
         return flag;
     }
 
@@ -610,7 +582,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
                 }
             }
         }
-
         if (!this.disabledInputParameter.isEmpty()) {
             if (morph instanceof NACStarMorphism) {
                 final OrdinaryMorphism relatedMatch = ((NACStarMorphism) morph).getRelatedMatch();
@@ -626,7 +597,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
                         }
                     }
                 }
-
             } else if (morph instanceof PACStarMorphism) {
                 final OrdinaryMorphism relatedMatch = ((PACStarMorphism) morph).getRelatedMorph();
                 final VarTuple varsOfMatch = (VarTuple) relatedMatch.getAttrContext().getVariables();
@@ -651,9 +621,7 @@ public class Completion_CSP extends MorphCompletionStrategy {
         final VarTuple variables = (VarTuple) morph.getAttrContext().getVariables();
         for (int i = 0; i < variables.getSize(); i++) {
             final VarMember var = variables.getVarMemberAt(i);
-
             final List<Pair<GraphObject, String>> v = new ArrayList<Pair<GraphObject, String>>();
-
             final Iterator<Node> iter = morph.getOriginal().getNodesSet().iterator();
             while (iter.hasNext()) {
                 GraphObject orig = iter.next();
@@ -689,7 +657,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
                     }
                 }
             }
-
             if (v.size() > 1) {
                 final Pair<GraphObject, String> p = v.get(0);
                 final GraphObject img = morph.getImage(p.first);
@@ -731,7 +698,6 @@ public class Completion_CSP extends MorphCompletionStrategy {
                 }
             }
         }
-
         return true;
     }
 
@@ -747,10 +713,8 @@ public class Completion_CSP extends MorphCompletionStrategy {
                     && !cond.isTrue()) {
                 this.errorMsg = "Attribute condition  [ " + cond.getExprAsText()
                         + " ]  failed.";
-
                 ((VarTuple) morph.getAttrContext().getVariables()).unsetVariables();
                 morph.removeAllMappings();
-
                 return false;
             }
         }
@@ -758,8 +722,9 @@ public class Completion_CSP extends MorphCompletionStrategy {
     }
 
     /**
-     * An additional object name constraint will be added for the CSP variable of the given GraphObject anObj. This
-     * constraint requires equality of the object names.<br>
+     * An additional object name constraint will be added for the CSP variable
+     * of the given GraphObject anObj. This constraint requires equality of the
+     * object names.<br>
      */
     public void addObjectNameConstraint(GraphObject anObj) {
         if (this.itsCSP != null) {
@@ -768,16 +733,12 @@ public class Completion_CSP extends MorphCompletionStrategy {
     }
 
     /**
-     * Removes the object name constraint for the CSP variable of the given GraphObject anObj.
+     * Removes the object name constraint for the CSP variable of the given
+     * GraphObject anObj.
      */
     public void removeObjectNameConstraint(GraphObject anObj) {
         if (this.itsCSP != null) {
             this.itsCSP.removeObjectNameConstraint(anObj);
         }
     }
-
 }
-
-
-
-

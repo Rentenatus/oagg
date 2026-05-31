@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -24,7 +24,6 @@ import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -36,7 +35,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
-
 import agg.ruleappl.ApplRuleSequence;
 import agg.ruleappl.ApplicabilityConstants;
 import agg.ruleappl.RuleSequence;
@@ -52,7 +50,6 @@ public class ApplicabilityWithoutGraphResultTable {
     static final Color GREEN = new Color(155, 255, 105);
     static final Color ORANGE = new Color(255, 255, 100);
     static final Color BLUE = new Color(155, 205, 255);
-
     protected ApplRuleSequence ars;
     protected RuleSequence ruleSequence;
     protected final Hashtable<RuleSequence, Pair<JDialog, JDialog>> sequence2table = new Hashtable<RuleSequence, Pair<JDialog, JDialog>>();
@@ -105,34 +102,25 @@ public class ApplicabilityWithoutGraphResultTable {
     public void showApplicabilityResult(
             final Point location,
             final int indx) {
-
         this.ruleSequence = this.ars.getRuleSequence(indx);
-
         if (this.sequence2table.get(this.ruleSequence) == null
                 || this.sequence2table.get(this.ruleSequence).first == null) {
-
             final Pair<Boolean, String> result = this.ruleSequence.getApplicabilityResult();
-
             if (result == null) {
                 JOptionPane.showMessageDialog(null, "This sequence isn't checked.");
                 return;
             }
-
             this.resultTable = this.createResultTable(this.ruleSequence.getRuleNames());
             createResultTableFrame(this.resultTable);
             this.setTitleOfTableFrame(this.tableFrame);
-
             if (this.sequence2table.get(this.ruleSequence) == null) {
                 this.sequence2table.put(this.ruleSequence, new Pair<JDialog, JDialog>(this.tableFrame, null));
             } else {
                 this.sequence2table.get(this.ruleSequence).first = this.tableFrame;
             }
-
             makeResultTableEntries(this.ruleSequence, result.first.booleanValue(), result.second);
-
             this.tableFrame.setLocation(location.x, location.y);
             this.tableFrame.setVisible(true);
-
         } else {
             Pair<JDialog, JDialog> p = this.sequence2table.get(this.ruleSequence);
             this.tableFrame = p.first;
@@ -149,34 +137,25 @@ public class ApplicabilityWithoutGraphResultTable {
     public void showNonApplicabilityResult(
             final Point location,
             int indx) {
-
         this.ruleSequence = this.ars.getRuleSequence(indx);
-
         if (this.sequence2table.get(this.ruleSequence) == null
                 || this.sequence2table.get(this.ruleSequence).second == null) {
-
             this.resultTable2 = this.createResultTable2(this.ruleSequence.getRuleNames());
             createResultTableFrame2(this.resultTable2);
             this.setTitleOfTableFrame(this.tableFrame2);
-
             if (this.sequence2table.get(this.ruleSequence) == null) {
                 this.sequence2table.put(this.ruleSequence, new Pair<JDialog, JDialog>(null, this.tableFrame2));
             } else {
                 this.sequence2table.get(this.ruleSequence).second = this.tableFrame2;
             }
-
             Pair<Boolean, String> result = this.ars.getNonApplicabilityResult(indx);
-
             if (result == null) {
                 JOptionPane.showMessageDialog(null, "This sequence isn't checked.");
                 return;
             }
-
             makeResultTable2Entries(this.ruleSequence, result.first.booleanValue(), result.second);
-
             this.tableFrame2.setLocation(location.x, location.y);
             this.tableFrame2.setVisible(true);
-
         } else {
             Pair<JDialog, JDialog> p = this.sequence2table.get(this.ruleSequence);
             this.tableFrame2 = p.second;
@@ -192,16 +171,13 @@ public class ApplicabilityWithoutGraphResultTable {
 
     private void createResultTableFrame(JTable table) {
         this.scrollpaneTable = new JScrollPane(table);
-
         // create a dialog to show the result table
         this.tableFrame = new JDialog();
         this.tableFrame.setTitle(" Applicability of Rule Sequence ");
-
         this.tableFrame.setModal(false);
         this.tableFrame.getContentPane().setLayout(new BorderLayout());
         this.tableFrame.getContentPane().add(this.scrollpaneTable,
                 BorderLayout.CENTER);
-
         JButton closeButton = makeCloseButton(this.tableFrame);
         closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -209,7 +185,6 @@ public class ApplicabilityWithoutGraphResultTable {
             }
         });
         this.close2table.put(closeButton, this.tableFrame);
-
         int fheight = 100;
         if (table.getRowCount() > 0) {
             fheight = table.getCellRect(0, 0, true).height
@@ -221,16 +196,13 @@ public class ApplicabilityWithoutGraphResultTable {
 
     private void createResultTableFrame2(JTable table) {
         this.scrollpaneTable2 = new JScrollPane(table);
-
         // create a dialog to show the result table
         this.tableFrame2 = new JDialog();
         this.tableFrame2.setTitle(" Non-Applicability of Rule Sequence ");
-
         this.tableFrame2.setModal(false);
         this.tableFrame2.getContentPane().setLayout(new BorderLayout());
         this.tableFrame2.getContentPane().add(this.scrollpaneTable2,
                 BorderLayout.CENTER);
-
         JButton closeButton = makeCloseButton(this.tableFrame2);
         closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -238,7 +210,6 @@ public class ApplicabilityWithoutGraphResultTable {
             }
         });
         this.close2table.put(closeButton, this.tableFrame2);
-
         int fheight = 100;
         if (table.getRowCount() > 0) {
             fheight = table.getCellRect(0, 0, true).height
@@ -308,9 +279,7 @@ public class ApplicabilityWithoutGraphResultTable {
             final RuleSequence rseq,
             final boolean result,
             final String condition) {
-
         List<String> ruleNames = rseq.getRuleNames();
-
 //		System.out.println("\n "+ruleNames);
 //		System.out.println(result+"    "+condition);
         for (int row = 0; row < ruleNames.size(); row++) {
@@ -331,7 +300,6 @@ public class ApplicabilityWithoutGraphResultTable {
             }
         }
     }
-
 
     /*
 	private void setTable2ItemValue(
@@ -361,7 +329,6 @@ public class ApplicabilityWithoutGraphResultTable {
             final RuleSequence rseq,
             final boolean result,
             final String condition) {
-
         List<String> ruleNames = rseq.getRuleNames();
         for (int row = 0; row < ruleNames.size(); row++) {
             for (int col = 1; col < this.resultTable2.getColumnCount(); col++) {
@@ -388,7 +355,6 @@ public class ApplicabilityWithoutGraphResultTable {
                             this.resultTable2.getModel().setValueAt(l, row, col);
                         }
                     }
-
                 } else {
                     if (row == 0 && col == 1) {
                         setInitializationError(rseq, row, ruleNames.get(row));
@@ -399,7 +365,6 @@ public class ApplicabilityWithoutGraphResultTable {
                         this.resultTable2.getModel().setValueAt(l, row, col);
                     }
                 }
-
             }
         }
     }
@@ -457,7 +422,6 @@ public class ApplicabilityWithoutGraphResultTable {
             "(4a) pure enabling predecessor",
             "(4b) direct enabling predecessor(s)",
             "(4c) not needed"}, 7) {
-
             public int getColumnCount() {
                 return 7;
             }
@@ -473,7 +437,6 @@ public class ApplicabilityWithoutGraphResultTable {
                 return null;
             }
         };
-
         JTable table = new JTable(dataModel);
         table.getSelectionModel().setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION);
@@ -481,12 +444,10 @@ public class ApplicabilityWithoutGraphResultTable {
             table.setDefaultRenderer(table.getColumnClass(i),
                     new MyTableCellRenderer());
         }
-
         for (int row = 0; row < sequence.size(); row++) {
             String ruleName = sequence.get(row);
             JLabel rulel = new JLabel(ruleName);
             table.getModel().setValueAt(rulel, row, 0);
-
             for (int col = 1; col < 7; col++) {
                 JLabel l = new JLabel("");
                 table.getModel().setValueAt(l, row, col);
@@ -501,7 +462,6 @@ public class ApplicabilityWithoutGraphResultTable {
             "Rule / Criteria",
             "(1) initialization error",
             "(2) no enabling predecessor"}, 3) {
-
             public int getColumnCount() {
                 return 3;
             }
@@ -517,7 +477,6 @@ public class ApplicabilityWithoutGraphResultTable {
                 return null;
             }
         };
-
         JTable table = new JTable(dataModel);
         table.getSelectionModel().setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION);
@@ -525,12 +484,10 @@ public class ApplicabilityWithoutGraphResultTable {
             table.setDefaultRenderer(table.getColumnClass(i),
                     new MyTableCellRenderer());
         }
-
         for (int row = 0; row < sequence.size(); row++) {
             String ruleName = sequence.get(row);
             JLabel rulel = new JLabel(ruleName);
             table.getModel().setValueAt(rulel, row, 0);
-
             for (int col = 1; col < 3; col++) {
                 JLabel l = new JLabel("");
                 table.getModel().setValueAt(l, row, col);
@@ -550,7 +507,6 @@ public class ApplicabilityWithoutGraphResultTable {
                 Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
             setOpaque(true);
-
             if (value instanceof JLabel) {
                 JLabel l = (JLabel) value;
                 if (column > 0) {
@@ -560,7 +516,6 @@ public class ApplicabilityWithoutGraphResultTable {
                     return this;
                 }
                 return new JLabel(l.getText());
-
             } else if (value instanceof String) {
                 return new JLabel((String) value);
             } else {
@@ -568,5 +523,4 @@ public class ApplicabilityWithoutGraphResultTable {
             }
         }
     }
-
 }

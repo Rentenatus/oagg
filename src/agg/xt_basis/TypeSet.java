@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -31,8 +31,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -52,87 +50,70 @@ public class TypeSet {
      * Value for unknown level of type graph check
      */
     public static final int UNDEFINED = -1;
-
     /**
      * Level of type graph check to disable type graph
      */
     public static final int DISABLED = 0;
-
     /**
      * Level of type graph check to enable inheritance relation only
      */
     public static final int ENABLED_INHERITANCE = 5;
-
     /**
      * Level of type graph check to enable type graph and no multiplicity
      */
     public static final int ENABLED = 10;
-
     /**
      * Level of type graph check to enable type graph and max multiplicity
      */
     public static final int ENABLED_MAX = 20;
-
     /**
      * Level of type graph check to enable type graph and max and min
      * multiplicity
      */
     public static final int ENABLED_MAX_MIN = 30;
-
     /**
      * Level of type graph check to enable type graph and min multiplicity
      */
     public static final int ENABLED_MIN = 40;
-
     /**
      * returned instead of a list of {@link TypeError}s, if there were none.
      */
     private static final Collection<TypeError> SUCCESS = new ArrayList<>(0);
-
     /**
      * the types of the edges and nodes will be hold in this list
      */
     private final ArraySeason<Type> types = new ArraySeason<Type>();
-
     private boolean directed = true;
     private boolean parallel = true;
     private boolean emptyAttr = true;
-
     /**
      * dummy type for inheritance arcs, which are always without attributes
      */
     private final Type inheritanceType = new ArcTypeImpl();
-
     /**
      * inheritance edges within the type graph
      */
     private final ArraySeason<Arc> inheritanceArcs = new ArraySeason<Arc>();
-
     /**
      * the graph describing combinations of node and edge types
      */
     private TypeGraph typeGraph;
-
     /**
      * manager for attributes
      */
     private final AttrManager attrManager = AttrTupleManager.getDefaultManager();
-
     /**
      * is true, if a type graph exists and it was successfully checked Only if
      * true, a TypeSet is able to check the types of graphs.
      */
     private boolean typeGraphIsProved = false;
-
     /**
      * holds the level of type graph check Possible values: null null null null
-     * null null null null null null null null null null null null     {@link #DISABLED}, {@link #ENABLED},
+     * null null null null null null null null null null null null null null     {@link #DISABLED}, {@link #ENABLED},
 	 * {@link #ENABLED_MAX}, {@link #ENABLED_MAX_MIN}
      */
     private int typeGraphLevel = DISABLED;
-
     private boolean newTypeGraphObjectImported;
-
     protected String info = "";
 
     /**
@@ -151,7 +132,6 @@ public class TypeSet {
         if (this.typeGraph != null) {
             this.typeGraph.dispose();
         }
-
         for (int j = 0; j < this.types.size(); j++) {
             Type type = this.types.get(j);
             if (type.isArcType()) {
@@ -181,11 +161,7 @@ public class TypeSet {
                 j--;
             }
         }
-
         this.typeGraph = null;
-    }
-
-    public void finalize() {
     }
 
     /**
@@ -247,15 +223,15 @@ public class TypeSet {
 
     public boolean isEmpty() {
         return (this.types.size() == 0) ? true : false;
-    } 
+    }
 
     /**
-     * Iterate through all the valid types that may be given to a
-     * GraphObject elements are of type <code>Type</code>.
+     * Iterate through all the valid types that may be given to a GraphObject
+     * elements are of type <code>Type</code>.
      *
      * @return IteratorWalker, a simple shared iterator for this types. This
      * simple iterator can not be used parallel.
-     * @see agg.xt_basis.Type 
+     * @see agg.xt_basis.Type
      */
     public final IteratorWalker<Type> getTypeWalker() {
         return this.types.softWalker();
@@ -408,9 +384,7 @@ public class TypeSet {
         if (this.typeGraph == null) {
             return null;
         }
-
         return this.typeGraph.getTypeGraphArc(t, source, target);
-
 //		Iterator<Arc> arcs = this.typeGraph.getArcsSet().iterator();
 //		while (arcs.hasNext()) {
 //			Arc a = arcs.next();
@@ -519,7 +493,6 @@ public class TypeSet {
             Type t = otherTypes.next();
             Type similar = getTypeByNameAndAdditionalRepr(t.getStringRepr(), t
                     .getAdditionalRepr());
-
             if (similar == null) {
                 Type type = adoptType(t);
                 for (int i = 0; i < t.getParents().size(); i++) {
@@ -535,7 +508,6 @@ public class TypeSet {
                         v.add(new Pair<Type, Type>(similar, parType));
                     }
                 }
-
                 if (all) {
                     if (similar instanceof NodeTypeImpl) {
                         ((NodeTypeImpl) similar).adaptTypeAttribute(t);
@@ -545,7 +517,6 @@ public class TypeSet {
                 }
             }
         }
-
         for (int i = 0; i < v.size(); i++) {
             Pair<Type, Type> pair = v.get(i);
             Type type = pair.first;
@@ -557,7 +528,6 @@ public class TypeSet {
                 addInheritanceRelation(type, itsParent);
             }
         }
-
         while (otherTypes.hasNext()) {
             Type t = otherTypes.next();
             Type similar = getTypeByNameAndAdditionalRepr(t.getStringRepr(), t
@@ -579,7 +549,6 @@ public class TypeSet {
                 || typesToAdapt.isEmpty()) {
             return;
         }
-
         Iterator<Node> e = this.typeGraph.getNodesSet().iterator();
         while (e.hasNext()) {
             Node n = e.next();
@@ -703,7 +672,6 @@ public class TypeSet {
                 || !this.typeGraph.getNodesSet().iterator().hasNext()) {
             return;
         }
-
         // check clans
         Iterator<Node> e = this.typeGraph.getNodesSet().iterator();
         while (e.hasNext()) {
@@ -711,7 +679,6 @@ public class TypeSet {
             Type t = n.getType();
             List<Type> clan = t.getClan();
             List<Node> clanNodes = new ArrayList<Node>(5);
-
             // check double attrs of the clan types
             for (int i = 0; i < clan.size(); i++) {
                 Type ct = clan.get(i);
@@ -813,7 +780,6 @@ public class TypeSet {
                     Type tarT = (Type) srcTtarT.second;
                     Node src = this.typeGraph.getTypeSet().getTypeGraphNode(srcT);
                     Node tar = this.typeGraph.getTypeSet().getTypeGraphNode(tarT);
-
                     try {
                         this.typeGraph.createArc(arcT, src, tar);
                         TypeGraphArc subt = arcT.getTypeGraphArc(src.getType(), tar.getType());
@@ -844,21 +810,18 @@ public class TypeSet {
         final Map<Type, List<Type>> oldInheritance = new HashMap<>(5, 5);
         final List<Type> differentMultiplicity = new ArrayList<>(5);
         final List<Type> typesToAdd = new ArrayList<>(5);
-
         boolean conflicting = !compareTypes(tGraph.getTypeSet(),
                 differentAttribute, differentInheritance,
                 differentMultiplicity, typesToAdd);
         if (conflicting && this.typeGraphLevel != DISABLED) {
             return false;
         }
-
         boolean result = true;
         boolean all = true;
         if (this.typeGraph != null) {
             if (!rewrite) {
                 if (!conflicting) {
                     adaptTypes(tGraph.getTypeSet(), !all);
-
                     if (this.typeGraph.addCopyOfGraph(tGraph)) {
                         refreshInheritanceArcs();
                     } else {
@@ -885,16 +848,13 @@ public class TypeSet {
                         }
                     }
                 }
-
                 // add new graph objects of the new types
                 if (this.typeGraph.addCopyOfGraph(tGraph)) {
                     adaptTypeInheritance(tGraph, differentInheritance,
                             oldInheritance);
                     adaptTypeMultiplicity(tGraph, differentMultiplicity);
                     adaptClans();
-
                     adaptTypeAttribute(differentAttribute);
-
                 } else {
                     result = false;
                     System.out
@@ -924,7 +884,6 @@ public class TypeSet {
                 }
             }
         }
-
         return result;
     }
 
@@ -939,13 +898,11 @@ public class TypeSet {
         }
         this.typeGraph.setName("TypeGraph");
         this.typeGraph.setKind(GraphKind.TG);
-
         agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager
                 .getDefaultManager().newContext(
                         agg.attribute.AttrMapping.GRAPH_MAP);
         this.typeGraph.setAttrContext(agg.attribute.impl.AttrTupleManager
                 .getDefaultManager().newRightContext(aGraphContext));
-
         this.typeGraphIsProved = false;
         this.checkTypeGraph();
         return this.typeGraph;
@@ -972,9 +929,7 @@ public class TypeSet {
         } else if (!this.typeGraph.isEmpty()) {
             return this.typeGraph;
         }
-
         this.typeGraphLevel = TypeSet.DISABLED;
-
         // first, create type graph nodes of existing and
         // already used node types
         if (nodes != null && nodes.isEmpty()) {
@@ -998,7 +953,6 @@ public class TypeSet {
         }
         // generate node type inheritance relations
         refreshInheritance();
-
         // now, create type graph edges of existing and
         // already used edge types
         if (edges != null && !edges.isEmpty()) {
@@ -1016,13 +970,10 @@ public class TypeSet {
                         }
                     }
                 }
-
             }
         }
-
         // refresh node type clans
         adaptClans();
-
         return this.typeGraph;
     }
 
@@ -1043,9 +994,7 @@ public class TypeSet {
         if (this.typeGraph == null) {
             this.typeGraph = (TypeGraph) createTypeGraph();
         }
-
         this.typeGraphLevel = TypeSet.DISABLED;
-
         // first, create type graph nodes of existing and
         // already used node types without an object in the type graph
         if (nodes != null) {
@@ -1074,7 +1023,6 @@ public class TypeSet {
         }
         // generate node type inheritance relations
         refreshInheritance();
-
         // now, create type graph edges of existing and
         // already used edge types
         if (edges != null) {
@@ -1098,10 +1046,8 @@ public class TypeSet {
                 }
             }
         }
-
         // refresh node type clans
         adaptClans();
-
         return this.typeGraph;
     }
 
@@ -1116,7 +1062,6 @@ public class TypeSet {
                 Node n = e.next();
                 removeAllInheritanceRelations(n.getType());
             }
-
             this.inheritanceArcs.clear();
             this.typeGraph.clear();
         }
@@ -1174,7 +1119,6 @@ public class TypeSet {
 //		 System.out.println("TypeSet.adoptType: "+t.getName());
         Type type = null;
         boolean failed = false;
-
         DeclTuple otherTuple = (DeclTuple) t.getAttrType();
         // create a new type
         if (otherTuple != null) {
@@ -1183,7 +1127,6 @@ public class TypeSet {
             } else if (t.isArcType()) {
                 type = new ArcTypeImpl(this.attrManager.newType());
             }
-
             if (type != null) {
                 // create attribute members
                 DeclTuple declTuple = (DeclTuple) type.getAttrType();
@@ -1207,15 +1150,12 @@ public class TypeSet {
         } else if (t.isArcType()) {
             type = new ArcTypeImpl();
         }
-
         if (type != null && !failed) {
             type.setAbstract(t.isAbstract());
             type.setStringRepr(t.getStringRepr());
             type.setAdditionalRepr(t.getAdditionalRepr());
-
             this.types.add(type);
         }
-
         return type;
     }
 
@@ -1273,15 +1213,12 @@ public class TypeSet {
 //						type, this.getTypeGraph()));
 //			} 
 //		}
-
         List<Type> clan = getClan(type);
         for (int i = 0; i < clan.size(); i++) {
             Type t = clan.get(i);
             removeInheritanceRelation(t, type);
         }
-
         this.types.remove(type);
-
         type.dispose();
     }
 
@@ -1372,10 +1309,8 @@ public class TypeSet {
         }
         // link the objects in the type graph to the types
         // here will be all errors found
-
         // first disable all type graph objects of types
         this.types.forEach(ti -> ti.disableTypeGraphObject());
-
         // now propagate all graph objects from type graph
         // to its this.types
         Iterator<GraphObject> en = this.typeGraph.iteratorOfElems();
@@ -1438,7 +1373,6 @@ public class TypeSet {
         if (errors.isEmpty()) {
             this.typeGraphIsProved = true;
         }
-
         return errors;
     }
 
@@ -1512,7 +1446,6 @@ public class TypeSet {
         if (this.typeGraph == null || parent == null) {
             return null;
         }
-
         // don't allow reflexive inheritance relation
         if (child == parent) {
             TypeError error = new TypeError(TypeError.PARENT_NOT_ALLOWED,
@@ -1540,7 +1473,6 @@ public class TypeSet {
         }
         // double names of attr members are not allowed
         removeDoubleAttributes(child, parent);
-
         return null;
     }
 
@@ -1548,7 +1480,6 @@ public class TypeSet {
         if (child.getAttrType() == null || parent.getAttrType() == null) {
             return;
         }
-
         DeclTuple myDecl = (DeclTuple) child.getAttrType();
         DeclTuple otherDecl = (DeclTuple) parent.getAttrType();
         for (int i = 0; i < otherDecl.getNumberOfEntries(); i++) {
@@ -1565,7 +1496,6 @@ public class TypeSet {
         if (a.getType() == this.inheritanceType && this.inheritanceArcs.contains(a)) {
             return true;
         }
-
         return false;
     }
 
@@ -1578,9 +1508,7 @@ public class TypeSet {
         if (this.typeGraph == null) {
             return null;
         }
-
         child.addParent(parent);
-
         Node childNode = null;
         Node parentNode = null;
         // choose the proper type graph nodes representing the correct type
@@ -1602,27 +1530,20 @@ public class TypeSet {
 //			if (this.typeGraph.indexOf(parentNode) > this.typeGraph.indexOf(childNode)) {
 //				this.typeGraph.moveTo(parentNode, this.typeGraph.indexOf(childNode));
 //			}
-
             inheritArc = new Arc(null, this.inheritanceType, childNode,
                     parentNode, this.typeGraph);
             inheritArc.setInheritance(true);
-
             // add inherited edge to its type when it is not already done
             List<Arc> inheritedArcs = this.getInheritedArcs(parent);
             for (int i = 0; i < inheritedArcs.size(); i++) {
                 GraphObject a = inheritedArcs.get(i);
                 a.getType().addTypeGraphObject(a);
             }
-
             childNode.propagateAttrValueFromParentNode();
-
             this.inheritanceArcs.add(inheritArc);
-
             refreshInheritanceClan(child, parent, true);
             checkOtherDirectParents(child, parent);
-
             this.typeGraph.extendTypeObjectsMap(child);
-
             this.typeGraph.propagateChange(new agg.util.Change(agg.util.Change.OBJECT_CREATED, inheritArc));
         }
         return inheritArc;
@@ -1674,7 +1595,6 @@ public class TypeSet {
         if (this.typeGraph == null || parent == null || child == parent) {
             return false;
         }
-
         // remove the inheritance arc representing the old child->parent
         // relation
         if (child.getParents().contains(parent)) {
@@ -1698,16 +1618,12 @@ public class TypeSet {
                         }
                     }
                 }
-
                 this.inheritanceArcs.remove(inheritArc);
                 child.removeParent(parent);
                 refreshInheritanceClan(child, parent, false);
-
                 this.typeGraph.propagateChange(new agg.util.Change(agg.util.Change.OBJECT_DESTROYED, inheritArc));
                 inheritArc.dispose();
-
                 return true;
-
             }
             // a parent exists, but any inheritance arc does not exist,
             // do remove this parent from the parent list. 
@@ -1725,11 +1641,9 @@ public class TypeSet {
         if (this.typeGraph == null) {
             return;
         }
-
         final List<Arc> oldInheritanceArcs = new ArrayList<Arc>(this.inheritanceArcs.size());
         oldInheritanceArcs.addAll(this.inheritanceArcs);
         this.inheritanceArcs.clear();
-
         Iterator<Node> en = this.typeGraph.getNodesSet().iterator();
         while (en.hasNext()) {
             Node currentNode = en.next();
@@ -1808,9 +1722,7 @@ public class TypeSet {
             final Type aTypeOfClan,
             final Type arcType,
             final Type sourceNodeType) {
-
         if (this.typeGraph != null) {
-
             String keystr = sourceNodeType.convertToKey()
                     + arcType.convertToKey()
                     + aTypeOfClan.convertToKey();
@@ -1828,9 +1740,7 @@ public class TypeSet {
             final Type aTypeOfClan,
             final Type arcType,
             final Type targetNodeType) {
-
         if (this.typeGraph != null) {
-
             String keystr = aTypeOfClan.convertToKey()
                     + arcType.convertToKey()
                     + targetNodeType.convertToKey();
@@ -1889,7 +1799,6 @@ public class TypeSet {
             if (this.typeGraphLevel == DISABLED) {
                 return null;
             }
-
             if ((tgo instanceof Arc) && this.inheritanceArcs.contains(tgo)) {
             } else {// send error
                 TypeError error = new TypeError(
@@ -1913,7 +1822,6 @@ public class TypeSet {
             if (this.typeGraphLevel == DISABLED) {
                 return null;
             }
-
             if ((tgo instanceof Arc) && this.inheritanceArcs.contains(tgo)) {
             } else {// send error
                 TypeError error = new TypeError(
@@ -1952,29 +1860,24 @@ public class TypeSet {
         List<TypeError> errors = new ArrayList<TypeError>();
         // the given graph has another TypeSet
         checkTypeSet(graph, errors);
-
         if ((this.typeGraph == null) || (this.typeGraphLevel <= TypeSet.ENABLED)) { // == DISABLED)) {
             // no type graph is defined/used
             // or the type graph is not proofed
             return errors;
         }
-
         if (graph.isEmpty() && this.typeGraphLevel <= TypeSet.ENABLED_MAX) {
             return errors;
         }
-
         // check with type graph
         // disable min check, if not host graph
         int actTypeGraphLevel = this.typeGraphLevel;
         if (!graph.isCompleteGraph() && this.typeGraphLevel >= ENABLED_MAX_MIN) {
             actTypeGraphLevel = ENABLED_MAX;
         }
-
         // now checks the nodes
 //		checkNodes(graph, actTypeGraphLevel, errors);
         // now checks nodes about max/min multiplicity of type graph nodes
         this.checkNodesOverTypeGraph(graph, actTypeGraphLevel, errors);
-
         // checks arcs about max/min multiplicity of type graph edges
         this.checkArcsOverTypeGraph(graph, actTypeGraphLevel, errors);
         return errors;
@@ -2028,19 +1931,16 @@ public class TypeSet {
             final Graph g,
             final Type nodeType,
             final int currentTypeGraphLevel) {
-
         if (currentTypeGraphLevel >= ENABLED_MAX) {
             List<Type> parents = nodeType.getAllParents();
             for (int i = 0; i < parents.size(); i++) {
                 Type t = parents.get(i);
                 int count = 0;
                 int maxValue = t.getSourceMax();
-
                 HashSet<GraphObject> set = g.getTypeObjectsMap().get(nodeType.convertToKey());
                 if (set != null && !set.isEmpty()) {
                     count = g.getTypeObjectsMap().get(nodeType.convertToKey()).size();
                 }
-
                 if ((maxValue > 0) && (count + 1 > maxValue)) {
                     TypeError actError = new TypeError(TypeError.TO_MUCH_NODES,
                             "Too many nodes of type \"" + t.getName()
@@ -2073,12 +1973,10 @@ public class TypeSet {
      */
     public List<String> nodeTypeRequiresArcType(final Type nodeType,
             final int currentTypeGraphLevel) {
-
         if (this.typeGraph == null
                 || currentTypeGraphLevel != ENABLED_MAX_MIN) {
             return null;
         }
-
         List<String> arcTypes = new ArrayList<String>();
         final List<Type> parents = nodeType.getAllParents();
         if (parents.size() > 0) {
@@ -2122,12 +2020,10 @@ public class TypeSet {
             final Type arcType,
             final Type srcNodeType,
             final int currentTypeGraphLevel) {
-
         if (this.typeGraph == null
                 || currentTypeGraphLevel != ENABLED_MAX_MIN) {
             return null;
         }
-
         List<String> arcTypes = new ArrayList<String>();
         final List<Type> parents = nodeType.getAllParents();
         if (parents.size() > 0) {
@@ -2165,12 +2061,10 @@ public class TypeSet {
 
     public List<String> nodeRequiresArc(final Node node) {
         List<String> arcTypes = null;
-
         final List<Type> parents = node.getType().getAllParents();
         if (parents.size() > 0) {
             List<Arc> outcoms = new ArrayList<Arc>(node.getOutgoingArcsSet());
             List<Arc> incoms = new ArrayList<Arc>(node.getIncomingArcsSet());
-
             for (int i = 0; i < parents.size(); i++) {
                 List<Node> list = this.typeGraph.getNodes(parents.get(i));
                 Node n = list != null ? list.get(0) : null;
@@ -2236,7 +2130,6 @@ public class TypeSet {
             final Node source,
             final Node target,
             final int currentTypeGraphLevel) {
-
         return checkTypeInTypeGraph(g, edgeType, source, target,
                 currentTypeGraphLevel);
     }
@@ -2254,7 +2147,6 @@ public class TypeSet {
             final Arc typearc,
             final Graph graph,
             final int currentTypeGraphLevel) {
-
         final Iterator<GraphObject> list = graph.getElementsOfType(
                 typearc.getType(),
                 typearc.getSourceType(),
@@ -2283,13 +2175,11 @@ public class TypeSet {
             final Type nodeType,
             final Graph graph,
             final int currentTypeGraphLevel) {
-
         TypeError actError = null;
         if (currentTypeGraphLevel > ENABLED) {
             HashSet<GraphObject> set = graph.getTypeObjectsMap().get(nodeType.convertToKey());
             if (set != null && !set.isEmpty()) {
                 int nc = graph.getTypeObjectsMap().get(nodeType.convertToKey()).size();
-
                 int maxValue = nodeType.getSourceMax();
                 if ((maxValue != UNDEFINED) && (nc > maxValue)) {
                     actError = new TypeError(TypeError.TO_MUCH_NODES,
@@ -2299,7 +2189,6 @@ public class TypeSet {
                             + graph.getName() + "\" ).", graph);
                     return actError;
                 }
-
                 if (currentTypeGraphLevel == ENABLED_MAX_MIN
                         && graph.isCompleteGraph()) {
                     int minValue = nodeType.getSourceMin();
@@ -2320,7 +2209,6 @@ public class TypeSet {
 			int nc = 0;
 			int minValue = t.getSourceMin();
 			int maxValue = t.getSourceMax();
-
 			List<Type> clan = getClan(t);
 			for (Iterator<Type> it = clan.iterator(); it.hasNext();) {
 				Type clanMember = it.next();
@@ -2375,12 +2263,10 @@ public class TypeSet {
                 int count = 0;
                 int minValue = t.getSourceMin();
                 int maxValue = t.getSourceMax();
-
                 HashSet<GraphObject> set = n.getContext().getTypeObjectsMap().get(t.convertToKey());
                 if (set != null && !set.isEmpty()) {
                     count = n.getContext().getTypeObjectsMap().get(t.convertToKey()).size();
                 }
-
 //				List<Type> clan = getClan(t);
 //				for (Iterator<Type> it = clan.iterator(); it.hasNext();) {
 //					Type member = it.next();
@@ -2418,7 +2304,6 @@ public class TypeSet {
         }
         return null;
     }
-
     // now checks the nodes about min/max multiplicity of the type graph nodes
 /*
 	private List<TypeError> checkTypeGraph(final Graph graph,
@@ -2452,7 +2337,6 @@ public class TypeSet {
             final Graph graph,
             final int actTypeGraphLevel,
             final List<TypeError> errors) {
-
         boolean localresult = true;
         Iterator<Node> nodesTG = this.typeGraph.getNodesSet().iterator();
         while (nodesTG.hasNext() && localresult) {
@@ -2469,7 +2353,6 @@ public class TypeSet {
                 errors.add(err);
             }
         }
-
         return errors;
     }
 
@@ -2513,14 +2396,12 @@ public class TypeSet {
             final Graph graph,
             final int actTypeGraphLevel,
             List<TypeError> errors) {
-
         TypeError actError = null;
         final Iterator<Arc> en = graph.getArcsSet().iterator();
         Arc actArc;
         while (en.hasNext()) {
             actArc = en.next();
             actError = this.checkTypeInTypeGraph(actArc, actTypeGraphLevel);
-
             if (actError != null) {
                 actError.setContainingGraph(graph);
                 errors.add(actError);
@@ -2557,11 +2438,9 @@ public class TypeSet {
                 && (!graph.isCompleteGraph())) {
             actTypeGraphLevel = ENABLED_MAX;
         }
-
         // now checks the nodes
 //		checkNodes(graph, actTypeGraphLevel, errors);
         this.checkNodesOverTypeGraph(graph, actTypeGraphLevel, errors);
-
         // checks all arcs in the graph
         this.checkArcsOverTypeGraph(graph, actTypeGraphLevel, errors);
         return errors;
@@ -2572,7 +2451,6 @@ public class TypeSet {
                 || (typeGraphCheckLevel <= TypeSet.ENABLED)) {
             return null;
         }
-
         int actTypeGraphLevel = ENABLED_MAX;
         final List<Type> checkedTypes = new ArrayList<Type>();
         Node n;
@@ -2583,7 +2461,6 @@ public class TypeSet {
             n = en.next();
             if (!checkedTypes.contains(n.getType())) {
                 checkedTypes.add(n.getType());
-
                 if (!n.getType().hasTypeGraphNode()) {
                     actError = new TypeError(TypeError.NO_SUCH_TYPE,
                             "No type node with name \""
@@ -2592,7 +2469,6 @@ public class TypeSet {
                             graph);
                     return actError;
                 }
-
                 actError = this.checkNodeTypeMultiplicity(n.getType(), graph, actTypeGraphLevel);
                 if (actError != null) {
                     return actError;
@@ -2600,7 +2476,6 @@ public class TypeSet {
             }
         }
         checkedTypes.clear();
-
         // checks all arcs in the graph
         final Iterator<Arc> en1 = graph.getArcsSet().iterator();
         Arc a;
@@ -2616,20 +2491,17 @@ public class TypeSet {
                         graph);
                 return actError;
             }
-
             actError = a.getType().checkSourceMax(graph, (Node) a.getSource(), (Node) a.getTarget());
             if (actError != null) {
                 actError.setContainingGraph(graph);
                 return actError;
             }
-
             actError = a.getType().checkTargetMax(graph, (Node) a.getSource(), (Node) a.getTarget());
             if (actError != null) {
                 actError.setContainingGraph(graph);
                 return actError;
             }
         }
-
         return null;
     }
 
@@ -2652,12 +2524,10 @@ public class TypeSet {
     public Collection<TypeError> checkType(final Rule rule) {
         // count the type mismatches
         List<TypeError> errors = new ArrayList<TypeError>();
-
         // check LHS
         errors.addAll(checkType(rule.getOriginal()));
         // check RHS
         errors.addAll(checkType(rule.getImage()));
-
         // check all NACs
         final List<OrdinaryMorphism> nacs = rule.getNACsList();
         for (int l = 0; l < nacs.size(); l++) {
@@ -2667,7 +2537,6 @@ public class TypeSet {
             // check image
             errors.addAll(checkType(nac.getImage()));
         }
-
 //		 check all PACs
         final List<OrdinaryMorphism> pacs = rule.getPACsList();
         for (int l = 0; l < pacs.size(); l++) {
@@ -2677,7 +2546,6 @@ public class TypeSet {
             // check image
             errors.addAll(checkType(pac.getImage()));
         }
-
         return errors;
     }
 
@@ -2759,7 +2627,6 @@ public class TypeSet {
         if (this.typeGraphLevel <= DISABLED) {
             return null;
         }
-
         if (isComplete && this.typeGraphLevel >= ENABLED_MAX) {
             return checkTypeInTypeGraph(arc, this.typeGraphLevel);
         } else if (!isComplete && this.typeGraphLevel >= ENABLED_MAX) {
@@ -2790,15 +2657,12 @@ public class TypeSet {
         if (this.typeGraphLevel == DISABLED) {
             return null;
         }
-
         if (this.typeGraphLevel >= ENABLED_MAX) {
             if (isComplete) {
                 return checkTypeInTypeGraph(node, this.typeGraphLevel);
             }
-
             return checkTypeInTypeGraph(node, ENABLED_MAX);
         }
-
         return null;
     }
 
@@ -2866,7 +2730,6 @@ public class TypeSet {
         // if the type graph is not proofed, check it
         if (level != DISABLED
                 && (!this.typeGraphIsProved || this.typeGraphLevel == DISABLED)) {
-
             Collection<TypeError> errors = this.checkTypeGraph();
             if (!errors.isEmpty()) {
                 return errors;
@@ -2991,7 +2854,6 @@ public class TypeSet {
         if (String.valueOf(ts.hashCode()).equals(this.info)) {
             return true;
         }
-
         return compareTypes(ts, new ArrayList<Type>(), new ArrayList<Type>(),
                 new ArrayList<Type>(), new ArrayList<Type>());
     }
@@ -3025,7 +2887,6 @@ public class TypeSet {
             final List<Type> differentInheritance,
             final List<Type> differentMultiplicity,
             final List<Type> typesToAdd) {
-
         if (ts == this
                 || String.valueOf(ts.hashCode()).equals(this.info)) {
             return true;
@@ -3036,7 +2897,6 @@ public class TypeSet {
         differentMultiplicity.clear();
         typesToAdd.clear();
         final boolean[] conflict = {false};
-
         List<Type> another = new ArrayList<Type>(ts.getTypeList());
         // compare types
         this.types.forEach(t -> {
@@ -3052,11 +2912,9 @@ public class TypeSet {
                             }
                             conflict[0] = true;
                         }
-
                         // check node type graph object
                         if (t.getTypeGraphNodeObject() != null
                                 && t1.getTypeGraphNodeObject() != null) {
-
                             // check inheritance
                             if (!t1.getParents().isEmpty()) {
                                 if (!t.getParents().isEmpty()) {
@@ -3087,7 +2945,6 @@ public class TypeSet {
                                     differentMultiplicity.add(t1);
                                 }
                             }
-
                         } else if (t.hasTypeGraphArc()
                                 && t1.hasTypeGraphArc()) {
                             // check arc embedding into the type graph
@@ -3162,7 +3019,6 @@ public class TypeSet {
         if (this.types.size() < ts.getTypesCount()) {
             return false;
         }
-
         final int count[] = {0};
         this.types.forEach(ti -> {
             for (int j = 0; j < ts.getTypeList().size(); j++) {
@@ -3176,14 +3032,12 @@ public class TypeSet {
         if (count[0] != ts.getTypeList().size()) {
             return false;
         }
-
         // compare type graph
         if (this.typeGraph != null
                 && ts.getTypeGraph() != null
                 && !this.typeGraph.contains(ts.getTypeGraph())) {
             return false;
         }
-
         return true;
     }
 
@@ -3253,9 +3107,7 @@ public class TypeSet {
             error = node.getType().checkIfRemovableFromTarget(node, arc,
                     deleteSrc, deleteTar,
                     this.typeGraphLevel);
-
         }
-
         return error;
     }
 
@@ -3300,7 +3152,6 @@ public class TypeSet {
                 || (this.typeGraphLevel == ENABLED)) {
             return null;
         }
-
         return type.checkIfEdgeCreatable(src, tar,
                 this.typeGraphLevel);
     }
@@ -3364,7 +3215,6 @@ public class TypeSet {
         if (this.typeGraph == null) {
             return;
         }
-
         this.refreshInheritance();
         /*		
 		List<Arc> checkedArcs = new ArrayList<Arc>();
@@ -3419,11 +3269,8 @@ public class TypeSet {
      * Trims the capacity of used vectors to be the vector's current size.
      */
     public void trimToSize() {
-
     }
-
 }
-
 // $Log: TypeSet.java,v $
 // Revision 1.87  2010/12/02 19:37:59  olga
 // import type graph - bug fixed
@@ -3513,7 +3360,7 @@ public class TypeSet {
 // Inheritance events added
 //
 // Revision 1.60  2008/08/21 13:08:13  jurack
-// Benachrichtigung an Observer, wenn Inheritance hinzugefÃ¯Â¿Â½gt wird
+// Benachrichtigung an Observer, wenn Inheritance hinzugefÃƒÂ¯Ã‚Â¿Ã‚Â½gt wird
 //
 // Revision 1.59 2008/07/09 13:34:26 olga
 // Applicability of RS - bug fixed
@@ -3876,7 +3723,4 @@ public class TypeSet {
 // Revision 1.1 1998/05/27 17:29:02 mich
 // Initial revision
 //
-
-
-
 

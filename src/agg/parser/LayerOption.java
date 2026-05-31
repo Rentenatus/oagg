@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
@@ -22,27 +23,24 @@ import java.util.Vector;
 public class LayerOption {
 
     /**
-     * Layer for rules, creation, deletion and negative application condition, Rule must delete
+     * Layer for rules, creation, deletion and negative application condition,
+     * Rule must delete
      */
     public static final int RCDN_LAYER = 0;
-
     /**
      * Layer for rules, creation and deletio, Rule must delete
      */
     public static final int RCD_LAYER = 1;
-
     /**
-     * Layer for rules, creation, deletion and negative application condition and Rule must not delete
+     * Layer for rules, creation, deletion and negative application condition
+     * and Rule must not delete
      */
     public static final int WEAK_RCDN_LAYER = 2;
-
     /**
      * Layer for rules, creation and deletion and Rule must not delete
      */
     public static final int WEAK_RCD_LAYER = 3;
-
     private int layer;
-
     private Vector<OptionEventListener> listener;
 
     /**
@@ -121,7 +119,6 @@ public class LayerOption {
             this.listener.elementAt(i).optionEventOccurred(event);
         }
     }
-
 }
 /*
  * $Log: LayerOption.java,v $

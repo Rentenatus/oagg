@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview.nodedata;
 
@@ -26,7 +27,6 @@ import javax.swing.JEditorPane;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.PlainDocument;
 import javax.swing.text.BadLocationException;
-
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.OrdinaryMorphism;
@@ -36,17 +36,12 @@ import agg.cons.Formula;
 public class GraGraTextualComment extends JDialog implements ActionListener {
 
     private Object src;
-
     private DefaultEditorKit kit;
-
     private PlainDocument document;
-
     // private HTMLEditorKit htmlkit;
     // private HTMLDocument htmldocument;
     private JEditorPane editor;
-
     private JButton closeButton;
-
     private JButton cancelButton;
 
     public GraGraTextualComment(JFrame parent, int locationX, int locationY,
@@ -59,25 +54,19 @@ public class GraGraTextualComment extends JDialog implements ActionListener {
                 close();
             }
         });
-
         this.src = source;
-
         this.editor = new JEditorPane();
-
         this.kit = (DefaultEditorKit) JEditorPane
                 .createEditorKitForContentType("text/plain");
         this.document = (PlainDocument) this.kit.createDefaultDocument();
-
         // htmlkit = new HTMLEditorKit();
         // htmlkit.setAutoFormSubmission(true);
         // htmldocument = (HTMLDocument) htmlkit.createDefaultDocument();
         // htmlkit.install(this.editor);
         // this.editor.setEditorKit(htmlkit);
         setTextToEdit(this.src);
-
         JScrollPane scrollpane = new JScrollPane(this.editor);
         scrollpane.setPreferredSize(new Dimension(300, 100));
-
         JPanel panel = new JPanel(new BorderLayout());
         JPanel buttonPanel = new JPanel(new GridLayout(0, 2, 5, 5));
         this.closeButton = new JButton();
@@ -85,20 +74,16 @@ public class GraGraTextualComment extends JDialog implements ActionListener {
         this.closeButton.setText("Save and Close");
         this.closeButton.setToolTipText("Save text and close dialog.");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.setToolTipText("Cancel text changes and close dialog.");
         this.cancelButton.addActionListener(this);
-
         buttonPanel.add(this.closeButton);
         buttonPanel.add(this.cancelButton);
-
         panel.add(scrollpane, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
         panel.revalidate();
-
         setContentPane(panel);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLocation(locationX, locationY);

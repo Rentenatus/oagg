@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.impl.javaExpr;
 
 import java.io.IOException;
 import java.util.Vector;
-
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerExpr;
@@ -28,7 +28,6 @@ import agg.attribute.parser.javaExpr.SimpleNode;
 public class JexHandler implements AttrHandler {
 
     static final long serialVersionUID = 9042008410571344426L;
-
     protected ClassResolver classResolver;
 
     // transient protected ConfigEditor configEditor = null;
@@ -37,8 +36,9 @@ public class JexHandler implements AttrHandler {
     }
 
     /**
-     * Getting the name of this handler as known by the attribute manager. Used to obtain the instance of this handler
-     * from the manager using its getHandler() method.
+     * Getting the name of this handler as known by the attribute manager. Used
+     * to obtain the instance of this handler from the manager using its
+     * getHandler() method.
      */
     static public String getLabelName() {
         return "Java Expr";
@@ -58,7 +58,6 @@ public class JexHandler implements AttrHandler {
     public HandlerType newHandlerType(String typeString)
             throws AttrHandlerException {
         Class<?> clazz;
-
         try {
             clazz = this.classResolver.forName(typeString);
         } catch (ClassResolverException ex) {
@@ -74,7 +73,6 @@ public class JexHandler implements AttrHandler {
             throws AttrHandlerException {
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"JexHandler:\n->newHandlerExpr");
-
         SimpleNode.setClassResolver(this.classResolver);
         try {
             return new JexExpr(exprString, false, (JexType) type);
@@ -130,7 +128,6 @@ public class JexHandler implements AttrHandler {
          */
     }
 }
-
 /*
  * $Log: JexHandler.java,v $
  * Revision 1.6  2010/09/23 08:13:35  olga

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -16,7 +17,6 @@ package agg.gui.popupmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
@@ -24,7 +24,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdRule;
 import agg.gui.AGGAppl;
@@ -43,10 +42,8 @@ import agg.xt_basis.Rule;
 public class RuleSequencePopupMenu extends JPopupMenu {
 
     public RuleSequencePopupMenu(GraGraTreeView tree) {
-
         super("RuleSequence");
         this.treeView = tree;
-
         this.mi = add(new JMenuItem("Show / Edit"));
         this.mi.setActionCommand("editRuleSequence");
         this.mi.addActionListener(new ActionListener() {
@@ -88,9 +85,7 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         addSeparator();
-
         this.miConcurDisJointRule = new JMenuItem("Make Concurrent Rule by disjoint Union");
 //		this.add(this.miConcurDisJointRule);
         this.miConcurDisJointRule.setActionCommand("disjointConcurRuleOfSeq");
@@ -99,7 +94,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 makeDisjointConcurRuleOfSeq();
             }
         });
-
         this.miConcurJointRule = new JMenuItem("Make (max) Concurrent Rule jointly by Dependency");
         this.add(this.miConcurJointRule);
         this.miConcurJointRule.setActionCommand("jointConcurRuleOfSeq");
@@ -109,7 +103,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 makeMaxJointlyConcurRuleOfSeq();
             }
         });
-
         this.miAllConcurJointRule = new JMenuItem("Make Concurrent Rule(s) jointly by Dependency");
         this.add(this.miAllConcurJointRule);
         this.miAllConcurJointRule.setActionCommand("jointAllConcurRuleOfSeq");
@@ -119,7 +112,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 makeJointlyConcurRuleOfSeq();
             }
         });
-
         this.miConcurRuleByObjFlow = add(new JMenuItem("Make Concurrent Rule jointly by Object Flow"));
         this.miConcurRuleByObjFlow.setActionCommand("concurRuleOfSeqByOF");
         this.miConcurRuleByObjFlow.addActionListener(new ActionListener() {
@@ -127,7 +119,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 makeConcurRuleOfSeqByOF();
             }
         });
-
         this.miParallelRule = new JMenuItem("Make Parallel Rule by disjoint Union");
         this.add(this.miParallelRule);
         this.miParallelRule.setActionCommand("makeParallelRule");
@@ -136,9 +127,7 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 makeParallelRuleOfSeq();
             }
         });
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Delete"));
         this.mi.setActionCommand("deleteRuleSequence");
 //		this.mi.addActionListener(this.treeView);
@@ -151,9 +140,7 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         addSeparator();
-
         this.miRuleSeqValidated = add(new JCheckBoxMenuItem("Graph Transformation by validated Rule Sequence"));
 //		group.add(miRuleSeq);
         this.miRuleSeqValidated.setActionCommand("validatedRuleSequence");
@@ -171,7 +158,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                     } else if (((JCheckBoxMenuItem) e.getSource()).isSelected()) {
                         if (RuleSequencePopupMenu.this.ruleSeq.isChecked()) {
                             RuleSequencePopupMenu.this.miRuleSeqObjFlow.setSelected(false);
-
                             RuleSequencePopupMenu.this.ruleSeq.getGraGra().setTrafoByApplicableRuleSequence(true);
                             if (RuleSequencePopupMenu.this.ruleSeq.getGraph() != null) {
                                 ((JCheckBoxMenuItem) e.getSource()).setText(
@@ -189,7 +175,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miRuleSeqObjFlow = new JCheckBoxMenuItem("Graph Transformation by defined Object Flow");
         add(this.miRuleSeqObjFlow);
 //		group.add(miRuleSeqObjFlow);
@@ -215,7 +200,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 }
             }
         });
-
     }
 
     public boolean invoked(int x, int y) {
@@ -236,12 +220,9 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                     this.miParallelRule.setEnabled(!this.ruleSeq.isEmpty());
                     this.miRuleSeqValidated.setEnabled(!this.ruleSeq.isEmpty());
                     this.miRuleSeqObjFlow.setEnabled(!this.ruleSeq.isEmpty());
-
                     ((JCheckBoxMenuItem) this.miRuleSeqValidated).setText("Graph Transformation by validated Rule Sequence");
                     ((JCheckBoxMenuItem) this.miRuleSeqValidated).setSelected(this.ruleSeq.isTrafoByARS());
-
                     ((JCheckBoxMenuItem) this.miRuleSeqObjFlow).setSelected(this.ruleSeq.isTrafoByObjFlow());
-
                     return true;
                 }
             }
@@ -276,7 +257,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                     public void run() {
                         EdRule concurrentRule = graData.getGraGra()
                                 .makeConcurrentRuleOfRuleSeq(data.getRuleSequence(), false, true);
-
                         if (concurrentRule != null) {
                             treeView.putRuleIntoTree(concurrentRule,
                                     (DefaultMutableTreeNode) node.getParent(),
@@ -334,7 +314,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 d.setVisible(true);
                 while (thread.isAlive()) {
                 }
-
                 if (concurrentRules != null && !concurrentRules.isEmpty()) {
                     for (int i = 0; i < concurrentRules.size(); i++) {
                         EdRule concurrentRule = concurrentRules.get(i);
@@ -382,7 +361,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                     public void run() {
                         concurrentRules = graData.getGraGra()
                                 .makeConcurrentRuleOfRuleSeqForward(data.getRuleSequence(), true, true);
-
                         d.setVisible(false);
                     }
                 };
@@ -390,7 +368,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 d.setVisible(true);
                 while (thread.isAlive()) {
                 }
-
                 if (concurrentRules != null && !concurrentRules.isEmpty()) {
                     for (int i = 0; i < concurrentRules.size(); i++) {
                         EdRule concurrentRule = concurrentRules.get(i);
@@ -420,7 +397,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
             final int indxOfLastRule = ((DefaultMutableTreeNode) node.getParent())
                     .getIndex(this.treeView.getTreeNodeOfRule(
                             graData.getGraGra().getRules().lastElement()));
-
             if (warningOK()) {
                 if (data.getRuleSequence().getRules().size() == 1) {
                     JOptionPane.showMessageDialog(treeView.getFrame(),
@@ -431,14 +407,12 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                     return;
                 }
                 if (data.getRuleSequence().isObjFlowDefined()) {
-
                     JOptionPane pane = new JOptionPane(
                             "Generating concurrent rule ... \n Please wait ... ",
                             JOptionPane.WARNING_MESSAGE);
                     final JDialog d = pane.createDialog("Generating ...");
                     Thread thread = new Thread() {
                         public void run() {
-
                             EdRule concurrentRule = graData.getGraGra()
                                     .makeConcurrentRuleOfRuleSeq(data.getRuleSequence(), true, true);
                             if (concurrentRule != null) {
@@ -453,7 +427,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                                         "Concurrent Rule Failed",
                                         JOptionPane.ERROR_MESSAGE);
                             }
-
                             d.setVisible(false);
                         }
                     };
@@ -483,7 +456,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
         Rule failedRule = BaseFactory.theFactory().checkApplCondsOfRules(data.getRuleSequence().getRules());
         if (failedRule != null) {
             JOptionPane.showMessageDialog(this.treeView.getFrame(),
@@ -493,7 +465,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
         if (data.getRuleSequence().containsRuleLoop()) {
             JOptionPane.showMessageDialog(this.treeView.getFrame(),
                     "Please note:\n"
@@ -515,7 +486,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                 int indxOfLastRule = ((DefaultMutableTreeNode) node.getParent())
                         .getIndex(this.treeView.getTreeNodeOfRule(
                                 graData.getGraGra().getRules().lastElement()));
-
                 if (data.getRuleSequence().containsRuleScheme()) {
                     JOptionPane.showMessageDialog(this.treeView.getFrame(),
                             "Currently selected rule sequence contains at least one Rule Scheme.\n"
@@ -525,7 +495,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 Rule failedRule = BaseFactory.theFactory().checkApplCondsOfRules(data.getRuleSequence().getRules());
                 if (failedRule != null) {
                     JOptionPane.showMessageDialog(this.treeView.getFrame(),
@@ -535,7 +504,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 if (data.getRuleSequence().containsRuleLoop()) {
                     JOptionPane.showMessageDialog(this.treeView.getFrame(),
                             "Please note:\n"
@@ -543,7 +511,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                             "Parallel Rule",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
-
                 makeParallelRuleOfRules(graData.getGraGra(),
                         data.getRuleSequence().getRules(),
                         graNode,
@@ -557,7 +524,6 @@ public class RuleSequencePopupMenu extends JPopupMenu {
             final List<Rule> rules,
             final DefaultMutableTreeNode node,
             int indxOfLastRule) {
-
         EdRule parallelRule = gra.makeParallelRuleOfRules(rules, true);
         if (parallelRule != null) {
             if (parallelRule.getBasisRule().isApplicable()) {
@@ -587,21 +553,17 @@ public class RuleSequencePopupMenu extends JPopupMenu {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-
     JMenuItem mi;
-
     JMenuItem miRuleSeqValidated,
             miConcurDisJointRule,
             miConcurJointRule, miAllConcurJointRule,
             miConcurRuleByObjFlow,
             miEvalRuleSeq, miRuleSeqObjFlow, miParallelRule;
-
     GraGraTreeView treeView;
     TreePath path;
     DefaultMutableTreeNode node;
     RuleSequenceTreeNodeData data;
     int locationRow;
-
     RuleSequence ruleSeq;
     List<EdRule> concurrentRules;
 }

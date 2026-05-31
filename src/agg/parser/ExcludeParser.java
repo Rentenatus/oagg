@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -18,7 +20,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Stack;
 import java.util.Vector;
-
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.Graph;
@@ -32,12 +33,14 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.TypeException;
 import agg.util.Pair;
 import java.util.List;
-
 //****************************************************************************+
+
 /**
- * This class provides a parser which needs critical pairs. The criticl pair must be <code>ExcludePair</code>. So
- * objects has to be instaciated with <code>ExcludePairContainer</code>. To be independent of a grammar it is necessary
- * to instanciate a object with a host graph and stop graph seperately.
+ * This class provides a parser which needs critical pairs. The criticl pair
+ * must be <code>ExcludePair</code>. So objects has to be instaciated with
+ * <code>ExcludePairContainer</code>. To be independent of a grammar it is
+ * necessary to instanciate a object with a host graph and stop graph
+ * seperately.
  *
  * @author $Author: olga $
  * @version $Id: ExcludeParser.java,v 1.17 2010/08/18 09:26:52 olga Exp $
@@ -48,13 +51,12 @@ public class ExcludeParser extends AbstractParser implements Runnable {
      * Main part of a backtracking algorithm
      */
     protected Stack<Object> stack;
-
     protected boolean stop;
-
     protected boolean correct;
 
     /**
-     * Creates a new parser. This parser uses critical pair analysis for optimized parsing.
+     * Creates a new parser. This parser uses critical pair analysis for
+     * optimized parsing.
      *
      * @param grammar The graph grammar.
      * @param hostGraph The host graph.
@@ -80,7 +82,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
         this.correct = true;
         fireParserEvent(new ParserMessageEvent(this,
                 "Starting exclude parser ..."));
-
         Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
         try {
             fireParserEvent(new ParserMessageEvent(this,
@@ -94,7 +95,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                     + iae.getMessage()));
             return false;
         }
-
         Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
         try {
             fireParserEvent(new ParserMessageEvent(this,
@@ -107,14 +107,12 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                     + iae.getMessage()));
             return false;
         }
-
         Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight
                 = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
         Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight
                 = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
         makeLightContainer(exclude, excludeLight);
         makeLightContainer(conflictFree, conflictFreeLight);
-
         /*
 		 * makeLightContainer kann nur die Elemente filtern, in denen alle teile
 		 * false liefern. Mischformen fallen durch
@@ -131,12 +129,9 @@ public class ExcludeParser extends AbstractParser implements Runnable {
 		 * immer wieder angesetzt wird
          */
         RuleInstances eri = new RuleInstances();
-
         fireParserEvent(new ParserMessageEvent(this, "Parser initialized"));
-
         while (!this.stop && !this.graph.isIsomorphicTo(this.stopGraph) && this.correct) {
             boolean ruleApplied = false;
-
             /* zuerst sollen alle konfliktfreien Regeln probiert werden. */
             for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
                     .hasMoreElements()
@@ -149,7 +144,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         getHostGraph());
                 m.setCompletionStrategy((MorphCompletionStrategy) this.grammar
                         .getMorphismCompletionStrategy().clone(), true);
-
                 while (!ruleApplied && m.nextCompletion()) {
                     if (m.isValid()) {
                         if (applyRule(m)) {
@@ -164,7 +158,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                 m.dispose();
             } // end for(Enumeration keys = conflictFreeLight.keys();
             /* Die konfliktfreien Regeln sind abgearbeitet */
-
  /* Die Excluderegeln muessen ueberprueft werden */
             if (!ruleApplied && !this.stop) {
                 /*
@@ -187,7 +180,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                             getHostGraph());
                     m.setCompletionStrategy((MorphCompletionStrategy) this.grammar
                             .getMorphismCompletionStrategy().clone(), true);
-
                     boolean validMatch = false;
                     while (!ruleApplied && m.nextCompletion()) {
                         if (m.isValid()) {
@@ -217,7 +209,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         BaseFactory.theFactory().destroyMatch(m);
                     }
                 } // end for(Enumeration keys = excludeLight.keys();
-
                 /*
 				 * wenn keine Regel angewendet wurde, dann kann nur noch eine
 				 * kritische Regel angewendet werden.
@@ -230,7 +221,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         /*
 						 * ERI muss nicht kopiert werden, da nur an
 						 * Entscheidungsstellen der Match/die Matches gemerkt werden
-						 * mssen, die uns m�licherweise auf einen Holzweg fhren. Der
+						 * mssen, die uns mÃ¯Â¿Â½licherweise auf einen Holzweg fhren. Der
 						 * Match in ERI ist eine Stufe tiefer (also nach
 						 * Regelanwendung, denn wir loeschen) nicht mehr verfgbar.
 						 * Dadurch kann ein neues ERI erzeugt werden. Auf dem Stack
@@ -250,7 +241,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         Match n = tmpMorph.makeMatch(savedMatch.getRule());
                         n.setCompletionStrategy((MorphCompletionStrategy) this.grammar
                                 .getMorphismCompletionStrategy().clone(), true);
-
                         boolean notFound = false;
                         while (!n.isValid() && !notFound) {
                             if (!n.nextCompletion()) {
@@ -284,7 +274,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             } // end if(!ruleApplied
         } // end while(!graph.isIsomorphicWith(stopGraph) && correct
         /* Fertig mit den Excluderegeln */
-
         while (!this.stack.empty()) {
             try {
                 fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
@@ -295,7 +284,6 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             } catch (EmptyStackException ioe) {
             }
         }
-
         fireParserEvent(new ParserMessageEvent(this,
                 "Stopping parser. Result is " + this.correct + "."));
         return this.correct;
@@ -304,14 +292,10 @@ public class ExcludeParser extends AbstractParser implements Runnable {
     /**
      * Clears some internal stuff.
      */
-    protected void finalize() {
-        getHostGraph().dispose();
-    }
-
     /* MUSs in ExcludePairContainer gehoert */
     /**
-     * A container stores all pairs with the information if two rules critic or not. This method filters all pairs that
-     * are not critic.
+     * A container stores all pairs with the information if two rules critic or
+     * not. This method filters all pairs that are not critic.
      *
      * @param in The complete container.
      * @param out The new filtered container.
@@ -364,14 +348,16 @@ public class ExcludeParser extends AbstractParser implements Runnable {
 
     /* finds all inclusions from the value of the exclude hashtable */
     /**
-     * Returns all inclusion of the overlapping of a given rule into the host graph.
+     * Returns all inclusion of the overlapping of a given rule into the host
+     * graph.
      *
      * @param r1 The rule
      * @param kind The critical pair algorithm.
-     * @return A set of morphisms from the overlapping graph into the host graph.
+     * @return A set of morphisms from the overlapping graph into the host
+     * graph.
      */
     protected List<Pair<OrdinaryMorphism, OrdinaryMorphism>> findInclusions(Rule r1, int kind) {
-        List<Pair<OrdinaryMorphism, OrdinaryMorphism>> resultVector = new Vector< >();
+        List<Pair<OrdinaryMorphism, OrdinaryMorphism>> resultVector = new Vector<>();
         List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticVector = null;
         try {
             criticVector = this.pairContainer.getCriticalSet(kind, r1);
@@ -430,7 +416,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             while (inclusion.nextCompletion() && !graphOk) {
                 if (inclusion.isTotal() && inclusion.isInjective()) {
                     graphOk = true;
-                    resultVector.add (morphisms);
+                    resultVector.add(morphisms);
                     // resultVector.addElement(result);
                 }
             }
@@ -443,7 +429,8 @@ public class ExcludeParser extends AbstractParser implements Runnable {
      * Checks if a current match is critic.
      *
      * @param m The match.
-     * @param inclusions The set of inclusions from overlapping graphs into the host graph.
+     * @param inclusions The set of inclusions from overlapping graphs into the
+     * host graph.
      * @return true if with this one rule exclude another rule.
      */
     protected boolean isMatchCritic(Match m, List<Pair<OrdinaryMorphism, OrdinaryMorphism>> inclusions) {
@@ -470,7 +457,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             // System.out.println(i+": composed match: "+composed);
             while (composed.nextCompletion() && !critic) {
                 /* agg.util.Debug.printlnMorph(composed,"composed"); */
-                List<GraphObject> leftNodes = new Vector< >();
+                List<GraphObject> leftNodes = new Vector<>();
                 for (Iterator<GraphObject> en = m.getDomain(); en.hasNext();) {
                     GraphObject grob = en.next();
                     if (grob.isNode()) {
@@ -512,8 +499,8 @@ public class ExcludeParser extends AbstractParser implements Runnable {
     }
 
     /**
-     * Usually this method is invoked by the start method from the class <CODE>Thread</CODE>. This method starts the
-     * parse method.
+     * Usually this method is invoked by the start method from the class
+     * <CODE>Thread</CODE>. This method starts the parse method.
      */
     public void run() {
         fireParserEvent(new ParserMessageEvent(this,
@@ -539,9 +526,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
     public boolean wasStopped() {
         return this.stop;
     }
-
 }
-
 // End of ExcludeParser.java
 /*
  * $Log: ExcludeParser.java,v $

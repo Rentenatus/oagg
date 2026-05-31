@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.editor;
 
@@ -15,12 +16,10 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 //import java.awt.Graphics;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-
 //import agg.gui.GraphEditor;
 //import agg.gui.RuleEditor;
 import agg.editor.impl.EdArc;
@@ -39,23 +38,17 @@ import agg.xt_basis.Node;
 public class GraphPanel extends JPanel {
 
     private Object itsParent; // RuleEditor or GraphEditor
-
     protected GraphCanvas canvas;
-
     protected EdGraph eGraph;
-
     protected JScrollPane jsp;
-
     protected Cursor lastEditCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-
     private boolean mappedObjDeleted = false;
-
     private boolean attrEditorOn = false;
-
     private String name = "";
 
     /**
-     * Create a panel for drawing. The panel contains a view port, vertical and horizontal scroll bars.
+     * Create a panel for drawing. The panel contains a view port, vertical and
+     * horizontal scroll bars.
      */
     public GraphPanel(Object parent) {
         this();
@@ -63,14 +56,13 @@ public class GraphPanel extends JPanel {
     }
 
     /**
-     * Create a panel for drawing. The panel contains a view port, vertical and horizontal scroll bars.
+     * Create a panel for drawing. The panel contains a view port, vertical and
+     * horizontal scroll bars.
      */
     public GraphPanel() {
         super(new BorderLayout(), true); // DoubleBuffered
-
         this.setBackground(Color.WHITE);
         this.setForeground(Color.WHITE);
-
         this.canvas = new GraphCanvas();
         try {
             this.jsp = new JScrollPane(this.canvas,
@@ -85,7 +77,6 @@ public class GraphPanel extends JPanel {
             this.jsp.getHorizontalScrollBar().getModel().setValueIsAdjusting(true);
             this.jsp.getVerticalScrollBar().getModel().setValueIsAdjusting(true);
             add(this.jsp, BorderLayout.CENTER);
-
             this.canvas.setViewport(this);
         } catch (IllegalArgumentException ex) {
         }
@@ -233,7 +224,6 @@ public class GraphPanel extends JPanel {
     public void setEditMode(int m) {
         this.canvas.setEditMode(m);
     }
-
     private Cursor editCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
     public void setEditCursor(Cursor cur) {
@@ -243,7 +233,6 @@ public class GraphPanel extends JPanel {
     public Cursor getEditCursor() {
         return this.editCursor;
     }
-
     private int lastEditMode = EditorConstants.DRAW;
 
     public void setLastEditMode(int m) {
@@ -254,7 +243,6 @@ public class GraphPanel extends JPanel {
         if (this.lastEditMode == EditorConstants.ARC) {
             return EditorConstants.DRAW;
         }
-
         return this.lastEditMode;
     }
 
@@ -287,32 +275,32 @@ public class GraphPanel extends JPanel {
     }
 
     /**
-     * Deletes an arc layout for the used object specified by the Arc bArc. The used object will be deleted, too.
-     * Undo-Redo is not supported.
+     * Deletes an arc layout for the used object specified by the Arc bArc. The
+     * used object will be deleted, too. Undo-Redo is not supported.
      */
     public void delArc(Arc bArc) {
         this.canvas.delArc(bArc);
     }
 
     /**
-     * Deletes a node layout for the used object specified by the Node bNode. The used object will be deleted, too.
-     * Undo-Redo is not supported.
+     * Deletes a node layout for the used object specified by the Node bNode.
+     * The used object will be deleted, too. Undo-Redo is not supported.
      */
     public void delNode(Node bNode) {
         this.canvas.delNode(bNode);
     }
 
     /**
-     * Deletes a node layout specified by the EdNode eNode. The used object will be deleted, too. Undo-Redo is not
-     * supported.
+     * Deletes a node layout specified by the EdNode eNode. The used object will
+     * be deleted, too. Undo-Redo is not supported.
      */
     public void delSelectedNode(EdNode eNode) {
         this.canvas.delSelectedNode(eNode);
     }
 
     /**
-     * Deletes an arc layout specified by the EdArc eArc. The used object will be deleted too. Undo-Redo is not
-     * supported.
+     * Deletes an arc layout specified by the EdArc eArc. The used object will
+     * be deleted too. Undo-Redo is not supported.
      */
     public void delSelectedArc(EdArc eArc) {
         this.canvas.delSelectedArc(eArc);
@@ -341,14 +329,16 @@ public class GraphPanel extends JPanel {
     }
 
     /**
-     * Deletes an object on the position specified by the int x, int y Undo-Redo is not supported.
+     * Deletes an object on the position specified by the int x, int y Undo-Redo
+     * is not supported.
      */
     public boolean deleteObj(int x, int y) {
         return this.canvas.deleteObj(x, y);
     }
 
     /**
-     * Deletes an layout object specified by the EdGraphObject ego Undo-Redo is supported.
+     * Deletes an layout object specified by the EdGraphObject ego Undo-Redo is
+     * supported.
      */
     // called from EditPopupMenu
     public void deleteObj(EdGraphObject ego) {
@@ -417,5 +407,4 @@ public class GraphPanel extends JPanel {
             updateGraphics();
         }
     }
-
 }

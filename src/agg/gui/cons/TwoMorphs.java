@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -22,13 +24,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
-
 import agg.cons.AtomApplCond;
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdRule;
@@ -46,19 +46,12 @@ import agg.xt_basis.OrdinaryMorphism;
 public class TwoMorphs extends JPanel {
 
     private GraphPanel graphs[];
-
     private JLabel titles[];
-
     private JPanel panels[];
-
     private EdGraGra layout;
-
     private EdRule ruleLayout;
-
     private OrdinaryMorphism morph1, morph2;
-
     private JSplitPane split, main;
-
     final protected MouseListener ml;
     final protected JPopupMenu graphMenu = new JPopupMenu("Graph");
     final protected JMenuItem miLayoutGraph = new JMenuItem("Layout Graph");
@@ -68,11 +61,9 @@ public class TwoMorphs extends JPanel {
 
     public TwoMorphs() {
         super(new BorderLayout());
-
         this.graphs = new GraphPanel[3];
         this.titles = new JLabel[3];
         this.panels = new JPanel[3];
-
         for (int i = 0; i < 3; i++) {
             this.graphs[i] = new GraphPanel();
             this.titles[i] = new JLabel();
@@ -84,18 +75,13 @@ public class TwoMorphs extends JPanel {
         }
         this.split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.panels[0],
                 this.panels[1]);
-
         this.split.setOneTouchExpandable(true);
         this.split.setContinuousLayout(true);
         this.main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.split, this.panels[2]);
-
         this.main.setOneTouchExpandable(true);
         this.main.setContinuousLayout(true);
-
         add(this.main, BorderLayout.CENTER);
-
         makeGraphMenu();
-
         this.ml = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (e.isPopupTrigger()) {
@@ -125,7 +111,6 @@ public class TwoMorphs extends JPanel {
                 }
             }
         };
-
         this.graphs[0].getCanvas().addMouseListener(this.ml);
         this.graphs[1].getCanvas().addMouseListener(this.ml);
         this.graphs[2].getCanvas().addMouseListener(this.ml);
@@ -142,7 +127,6 @@ public class TwoMorphs extends JPanel {
                 }
             }
         });
-
         this.graphMenu.add(this.miGraphExportJPG);
         this.miGraphExportJPG.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -152,7 +136,6 @@ public class TwoMorphs extends JPanel {
                 }
             }
         });
-
         this.graphMenu.pack();
         this.graphMenu.setBorderPainted(true);
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
@@ -284,7 +267,6 @@ public class TwoMorphs extends JPanel {
                 i = j;
             }
         }
-
         Iterator<GraphObject> graphObjects = m.getCodomain();
         graphObjects = m.getCodomain();
         while (graphObjects.hasNext()) {
@@ -354,15 +336,11 @@ public class TwoMorphs extends JPanel {
         if (this.main.getDividerLocation() == 0) {
             this.main.setDividerLocation(this.getSize().width / 3 - 20);
         }
-
         EdGraph g0 = setGraph(this.morph1.getOriginal(), 0);
         copyLayout(this.ruleLayout.getRight(), g0);
-
         EdGraph g1 = setGraph(this.morph1.getImage(), 1);
         copyLayout(this.ruleLayout.getRight(), g1);
-
         EdGraph g2 = setGraph(this.morph2.getImage(), 2);
-
         for (int i = 0; i < this.layout.getAtomics().size(); i++) {
             EdAtomic atom = this.layout.getAtomics().get(i);
             EdAtomic atomConcl = atom.getConclusions().get(0);
@@ -372,7 +350,6 @@ public class TwoMorphs extends JPanel {
             copyLayout(concl, g2);
         }
         copyLayout(g1, g2);
-
         HashMap<GraphObject, Integer> h = new HashMap<GraphObject, Integer>();
         addMarks(h, this.morph1);
         addMarks(h, this.morph2);
@@ -385,5 +362,4 @@ public class TwoMorphs extends JPanel {
         this.graphs[1].updateGraphics();
         this.graphs[2].updateGraphics();
     }
-
 }

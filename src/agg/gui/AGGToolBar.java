@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui;
 
@@ -18,7 +19,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
-
 import agg.gui.icons.*;
 
 /**
@@ -209,7 +209,6 @@ public class AGGToolBar extends JToolBar {
                 final JButton b = createButton(icon, name, command, l, enabled);
                 icon.setEnabled(enabled);
                 return b;
-
             } else if (iconName.equals("DeleteConclusionIcon")) {
                 final DeleteConclusionIcon icon = new DeleteConclusionIcon(
                         Color.blue);
@@ -294,5 +293,5 @@ public class AGGToolBar extends JToolBar {
         }
         return null;
     }
-
 } // AGGToolBar
+

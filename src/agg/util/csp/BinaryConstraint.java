@@ -1,11 +1,12 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: BinaryConstraint.java,v 1.7 2010/08/23 07:35:26 olga Exp $
 // $Log: BinaryConstraint.java,v $
@@ -76,14 +77,13 @@ package agg.util.csp;
 public abstract class BinaryConstraint {
 
     protected Variable itsVar1;
-
     protected Variable itsVar2;
-
     protected int itsWeight;
 
     /**
-     * Construct myself to be a binary constraint between variables <code>v1</code> and <code>v2</code>, with the
-     * specified <code>weight</code>.
+     * Construct myself to be a binary constraint between variables
+     * <code>v1</code> and <code>v2</code>, with the specified
+     * <code>weight</code>.
      */
     public BinaryConstraint(Variable v1, Variable v2, int weight) {
         this.itsVar1 = v1;
@@ -96,8 +96,9 @@ public abstract class BinaryConstraint {
     }
 
     /**
-     * Construct myself to be a &quot;unary&quot; constraint on <code>v</code>. Actually, this is a BinaryConstraint
-     * with both its variables being <code>v</code>.
+     * Construct myself to be a &quot;unary&quot; constraint on <code>v</code>.
+     * Actually, this is a BinaryConstraint with both its variables being
+     * <code>v</code>.
      */
     public BinaryConstraint(Variable v, int weight) {
         this.itsVar1 = v;
@@ -108,7 +109,6 @@ public abstract class BinaryConstraint {
     }
 
     public abstract void clear();
-
     // pablo -->
     /**
      * Determines whether this constraint is active or not.
@@ -128,8 +128,8 @@ public abstract class BinaryConstraint {
     public void deactivate() {
         this.active = false;
     }
-    // pablo >
 
+    // pablo >
     /**
      * Return <code>true</code> iff all variables involved are instantiated.
      */
@@ -138,7 +138,6 @@ public abstract class BinaryConstraint {
         {
             return false;
         }
-
         return ((this.itsVar1.getInstance() != null) && (this.itsVar2.getInstance() != null));
     }
 
@@ -150,9 +149,11 @@ public abstract class BinaryConstraint {
     public abstract boolean execute();
 
     /**
-     * When <code>execute()</code> failed, this returns the variable that is supposed to have caused the failure.
+     * When <code>execute()</code> failed, this returns the variable that is
+     * supposed to have caused the failure.
      *
-     * @param rvar the variable (of the two involved) that has been instantiated most recently.
+     * @param rvar the variable (of the two involved) that has been instantiated
+     * most recently.
      */
     public Variable getCause(Variable rvar) {
         return (rvar.equals(this.itsVar1)) ? this.itsVar2 : this.itsVar1;
@@ -173,7 +174,8 @@ public abstract class BinaryConstraint {
     }
 
     /**
-     * Return my weight. The higher the value, the higher the significance of the constraint.
+     * Return my weight. The higher the value, the higher the significance of
+     * the constraint.
      */
     public int getWeight() {
         return this.itsWeight;

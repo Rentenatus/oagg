@@ -2,28 +2,28 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.cpa;
 
 import java.awt.Dimension;
 import java.util.Vector;
-
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeSelectionModel;
-
 import agg.gui.parser.event.ParserGUIEvent;
 import agg.gui.parser.event.ParserGUIListener;
 import agg.xt_basis.GraGra;
 
 /**
- * This class provides a tree that displays all rules from a selected graph grammar.
+ * This class provides a tree that displays all rules from a selected graph
+ * grammar.
  *
  * @version $Id: RuleTree.java,v 1.2 2010/09/23 08:18:50 olga Exp $
  * @author $Author: olga $
@@ -31,14 +31,12 @@ import agg.xt_basis.GraGra;
 public class RuleTree implements TreeSelectionListener {
 
     JTree treeView;
-
     Vector<ParserGUIListener> listeners;
-
     boolean showAtomics, withNACs;
 
     /**
-     * Creates a new tree with the selected graph grammar. The graph grammar provides the set of rules which are
-     * displayed.
+     * Creates a new tree with the selected graph grammar. The graph grammar
+     * provides the set of rules which are displayed.
      *
      * @param grammar The selected grammar.
      */
@@ -47,8 +45,8 @@ public class RuleTree implements TreeSelectionListener {
     }
 
     /**
-     * Creates a new tree with the selected graph grammar. The graph grammar provides the set of rules which are
-     * displayed.
+     * Creates a new tree with the selected graph grammar. The graph grammar
+     * provides the set of rules which are displayed.
      *
      * @param grammar The selected grammar.
      */
@@ -119,7 +117,6 @@ public class RuleTree implements TreeSelectionListener {
     public void valueChanged(TreeSelectionEvent e) {
         RuleModel.TreeData node = (RuleModel.TreeData) getTree()
                 .getLastSelectedPathComponent();
-
         if (node == null) {
             return;
         }

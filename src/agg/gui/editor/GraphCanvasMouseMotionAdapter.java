@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,9 +17,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.Vector;
-
 import javax.swing.SwingUtilities;
-
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraphObject;
 import agg.editor.impl.EdNode;
@@ -50,18 +50,15 @@ public class GraphCanvasMouseMotionAdapter implements MouseMotionListener {
             this.canvas.setPickedPoint(e.getX(), e.getY());
             return;
         }
-
         final EdGraphObject go = this.canvas.getPickedObject(e.getX(), e.getY(),
                 this.canvas.getGraphics().getFontMetrics());
         if (go != null) {
             this.canvas.setToolTipText(null);
-
             if (go.isArc() && go.isVisible() && this.canvas.isEdgeAnchorVisible()
                     && !((EdArc) go).getBasisArc().isInheritance()) {
                 this.canvas.repaint();
                 go.getArc().showMoveAnchor(this.canvas.getGraphics());
             }
-
             if (this.canvas.getGraph().isTypeGraph()) {
                 final String comment = go.getType().getBasisType().getTextualComment();
                 if (!comment.equals("")) {
@@ -81,7 +78,6 @@ public class GraphCanvasMouseMotionAdapter implements MouseMotionListener {
                 || this.canvas.getGraph() == null) {
             return;
         }
-
         if (this.canvas.isLeftAndRightPressed()) {
             if (this.canvas.getPickedObject() != null) {
                 this.canvas.draggingOfObject(e);
@@ -90,7 +86,6 @@ public class GraphCanvasMouseMotionAdapter implements MouseMotionListener {
             }
             return;
         }
-
         if (this.canvas.isScrolling()) {
             this.canvas.setScrollingByDragging(true);
             final Point p = this.canvas.getPickedPoint();
@@ -98,25 +93,21 @@ public class GraphCanvasMouseMotionAdapter implements MouseMotionListener {
             this.canvas.setPickedPoint(e.getX(), e.getY());
             return;
         }
-
         if (SwingUtilities.isLeftMouseButton(e)) {
             if (this.canvas.getEditMode() == EditorConstants.DRAW) {
                 if (this.canvas.canCreateNode()) {
                     // reset this.canvas.canCreateNode to be false
                     this.canvas.canCreateNodeOfType(null, null, null);
                 }
-
                 if (this.canvas.getGraph().isEditable()) {
                     if (this.canvas.isSelectBoxOpen()) {
                         this.canvas.resizeSelectBox(e.getX(), e.getY());
                     }
-
                     AGGAppl.getInstance().getGraGraEditor().resetSelectEditMode();
                 }
             } else if (this.canvas.getEditMode() == EditorConstants.ARC
                     && this.canvas.isMagicEdgeSupportEnabled()
                     && (e.getX() > 0) && (e.getY() > 0)) {
-
                 final Point p = this.canvas.getPickedPoint();
                 final Point dist = new Point(Math.abs(e.getX() - p.x), Math.abs(e.getY() - p.y));
                 if (!this.canvas.isMagicArc() && (dist.x > 2 || dist.y > 2)) {
@@ -141,7 +132,6 @@ public class GraphCanvasMouseMotionAdapter implements MouseMotionListener {
 
     private String getAttrText(final EdGraphObject go) {
         String attrText = "";
-
         final List<List<String>> attrs = go.getAttributes();
         for (int i = 0; i < attrs.size(); i++) {
             List<String> attr = attrs.get(i);
@@ -155,12 +145,10 @@ public class GraphCanvasMouseMotionAdapter implements MouseMotionListener {
                 attrText = attrText.concat("<br>");
             }
         }
-
         if (!"".equals(attrText)) {
             attrText = "<html><body>".concat(attrText);
             attrText = attrText.concat("</body></html>");
         }
         return attrText;
     }
-
 }

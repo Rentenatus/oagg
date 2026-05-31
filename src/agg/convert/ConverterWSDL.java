@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.convert;
 
 import java.io.IOException;
-
 import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.TypeException;
@@ -55,7 +55,6 @@ public class ConverterWSDL {
         // create a new gragra with empty TypeGraph and a host graph
         gragra = new GraGra(true);
         gragra.getTypeSet().createTypeGraph();
-
         wsdl2agg = new WSDL2ggx(gragra);
         xmlH.getTopObject(wsdl2agg);
         return wsdl2agg.isSuccessful();
@@ -66,5 +65,4 @@ public class ConverterWSDL {
 //		String arg = filePath;
         new ConverterWSDL(arg);
     }
-
 }

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -17,10 +18,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraphObject;
 import agg.editor.impl.EdNode;
@@ -82,13 +81,11 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                     this.canvas.repaint();
                 }
             }
-
         } else if (SwingUtilities.isMiddleMouseButton(e)) {
             if (e.getClickCount() == 1
                     && this.canvas.getEditMode() == EditorConstants.SELECT) {
                 this.canvas.makeSelectionAt(e.getX(), e.getY());
             }
-
         } else if (e.isPopupTrigger()
                 || SwingUtilities.isRightMouseButton(e)
                 || this.canvas.getEditMode() == EditorConstants.MOVE
@@ -108,22 +105,18 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
         if (this.canvas.isScrolling()) {
             this.canvas.endScrolling();
         }
-
         int x = e.getX();
         int y = e.getY();
         this.canvas.setChanged(false);
-
         if (e.isPopupTrigger()
                 || SwingUtilities.isRightMouseButton(e)) {
             this.canvas.setRightPressed(true);
-
             if (this.canvas.isLeftPressed() || this.canvas.isMagicArc()) {
                 this.canvas.update(this.canvas.getGraphics());
                 this.canvas.removeMagicArc();
 //				if (this.canvas.isMagicArc())
 //					this.canvas.setEditMode(EditorConstants.DRAW);
             }
-
             if (this.canvas.getPickedObject() != null
                     && this.canvas.getPickedObject().isWeakselected()) {
                 this.canvas.getPickedObject().setWeakselected(false);
@@ -140,7 +133,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                     this.canvas.update(this.canvas.getGraphics());
                 }
             }
-
             if (this.canvas.getEditMode() == EditorConstants.ARC) {
                 this.canvas.setAnchorPoint(null);
                 this.canvas.setEditMode(EditorConstants.DRAW);
@@ -164,31 +156,25 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
             }
         } else if (SwingUtilities.isLeftMouseButton(e)) {
 //			System.out.println(">>> GraphCanvas.mousePressed::  isLeftMouseButton  "+editable);
-
             this.canvas.setLeftPressed(true);
-
             switch (this.canvas.getEditMode()) {
                 case EditorConstants.HELP:
                     break;
-
                 case EditorConstants.DRAW:
                     if (!this.canvas.getGraph().isEditable()) {
                         return;
                     }
-
                     if (this.canvas.getGraph().getGraGra() == null
                             || this.canvas.getGraph().getGraGra().getSelectedNodeType() == null) {
                         this.canvas.cannotCreateErrorMessage(" Create node ", " a node",
                                 "There isn't any node type selected.");
                         return;
                     }
-
                     if (this.canvas.isRightPressed()) {
                         this.canvas.setPickedObject(this.canvas.getPickedObject(x, y,
                                 this.canvas.getGraphics().getFontMetrics()));
                         return;
                     }
-
                     this.canvas.setPickedPoint(x, y);
                     if (this.canvas.getSourceObject() != null) {
                         this.canvas.getSourceObject().setWeakselected(false);
@@ -198,14 +184,11 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                         if (this.canvas.getPickedArc(x, y) != null) {
                             return;
                         }
-
                         // check whether to create a new node is possible
                         Type t = this.canvas.getGraph().getTypeSet().getSelectedNodeType().getBasisType();
                         this.canvas.canCreateNodeOfType(t, null, null);
-
                         // and to create a selection box is possible						
                         this.canvas.startSelectBox(x, y);
-
                     } else {
                         this.canvas.setEditMode(EditorConstants.ARC);
 //					this.canvas.getSourceObject().setWeakselected(true);
@@ -265,7 +248,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                                 this.canvas.getSourceObject().setWeakselected(false);
                                 this.canvas.update(this.canvas.getGraphics());
                             }
-
                             this.canvas.setSourceObject(null);
                             this.canvas.setTargetObject(null);
                             this.canvas.setAnchorPoint(null);
@@ -307,7 +289,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                     if (!this.canvas.getGraph().isEditable()) {
                         return;
                     }
-
                     // tar is a parent, src is a child
                     this.canvas.setTargetObject(this.canvas.getPickedObject(x, y, this.canvas.getGraphics().getFontMetrics()));
                     if (this.canvas.getTargetObject() == null) {
@@ -322,7 +303,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                                             this.canvas.getTargetObject().getBasisObject().getType());
                             if (error == null) {
                                 this.canvas.getGraph().addChangedParentToUndo(this.canvas.getSourceObject());
-
                                 Arc inheritArc = this.canvas.getGraph().getBasisGraph().getTypeSet()
                                         .addValidInheritanceRelation(
                                                 this.canvas.getSourceObject().getBasisObject().getType(),
@@ -330,9 +310,7 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                                 //						EdArc edinheritArc = 
                                 this.canvas.getGraph().newInheritanceArc(
                                         inheritArc, this.canvas.getGraph().getArcs());
-
                                 this.canvas.getGraph().undoManagerEndEdit();
-
                                 this.canvas.getGraph().update();
                                 this.canvas.repaint();
                             } else {
@@ -373,7 +351,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                         ((GraphEditor) this.canvas.getViewport().getParentEditor()).getGraGraEditor().setMsg("");
                     }
                     break;
-
                 case EditorConstants.COPY:
                     this.canvas.setPickedPoint(x, y);
                     break;
@@ -381,7 +358,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                     if (!this.canvas.getGraph().isEditable()) {
                         return;
                     }
-
                     this.canvas.setMsg("");
                     this.canvas.getGraph().eraseSelected(this.canvas.getGraphics(), true);
                     this.canvas.copySelected(x, y);
@@ -504,7 +480,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                 || this.canvas.getGraph() == null) {
             return;
         }
-
         if (this.canvas.isLeftAndRightPressed()
                 && this.canvas.getPickedObject() != null) {
             if (this.canvas.isDragged()) {
@@ -514,12 +489,10 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
             this.canvas.repaint();
             return;
         }
-
         if (this.canvas.isScrollingByDragging()) {
             this.canvas.endScrolling();
             return;
         }
-
         if (SwingUtilities.isLeftMouseButton(e)) {
             if (this.canvas.getEditMode() == EditorConstants.DRAW) {
                 if (this.canvas.canCreateNode()) {
@@ -559,7 +532,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
                 this.canvas.repaint();
             }
         }
-
         if (this.canvas.getEditMode() == EditorConstants.ARC) {
             if (SwingUtilities.isLeftMouseButton(e)) {
                 if (this.canvas.isMagicEdgeSupportEnabled()
@@ -577,7 +549,6 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
             }
             return;
         }
-
         if (SwingUtilities.isMiddleMouseButton(e)
                 || this.canvas.getEditMode() == EditorConstants.MOVE
                 || this.canvas.getEditMode() == EditorConstants.SELECT) {
@@ -602,5 +573,4 @@ public class GraphCanvasMouseAdapter extends MouseAdapter {
             }
         }
     }
-
 }

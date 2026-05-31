@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.editor.impl;
 
@@ -20,36 +21,23 @@ import agg.attribute.impl.DeclMember;
 public class TypeReprData {
 
     String name;
-
     String shape;
-
     String imageFileName;
-
     String red, green, blue;
-
     boolean filled;
-
     Vector<Vector<String>> attributes; // declaration: (name, type, hashCode)
-
     Vector<String> parents; // names of direct parents only
-
     Vector<String> children; // names of its own children only
-
     int srcMinMultiplicity, srcMaxMultiplicity, tarMinMultiplicity,
             tarMaxMultiplicity;
-
     int typeHC;
-
     boolean isAbstract;
-
     String contextUsage;
-
     String textualComment;
 
     public TypeReprData(EdType t) {
         this.parents = new Vector<String>(5, 5);
         this.children = new Vector<String>(5, 5);
-
         this.name = t.getName();
         this.shape = String.valueOf(t.getShape());
         this.filled = t.hasFilledShape();
@@ -57,7 +45,6 @@ public class TypeReprData {
         this.red = (Integer.valueOf(t.getColor().getRed())).toString();
         this.green = (Integer.valueOf(t.getColor().getGreen())).toString();
         this.blue = (Integer.valueOf(t.getColor().getBlue())).toString();
-
         this.attributes = new Vector<Vector<String>>();
         DeclTuple dt = (DeclTuple) t.getBasisType().getAttrType();
         if (dt != null) {
@@ -72,20 +59,16 @@ public class TypeReprData {
                 }
             }
         }
-
         for (int i = 0; i < t.getBasisType().getParents().size(); i++) {
             this.parents.add(t.getBasisType().getParents().get(i).getName());
         }
         for (int i = 0; i < t.getBasisType().getChildren().size(); i++) {
             this.children.add(t.getBasisType().getChildren().get(i).getName());
         }
-
         this.typeHC = t.hashCode();
-
         this.contextUsage = ":" + String.valueOf(t.hashCode()) + ":"
                 + t.getContextUsage() + ":";
         this.contextUsage = this.contextUsage.replaceAll("::", ":");
-
         this.isAbstract = t.getBasisType().isAbstract();
         this.textualComment = t.getBasisType().getTextualComment();
     }
@@ -117,10 +100,8 @@ public class TypeReprData {
         t.setShape((Integer.valueOf(this.shape)).intValue());
         t.setFilledShape(this.filled);
         t.setImageFileName(this.imageFileName);
-
         Type btype = t.getBasisType();
         restoreAttributes(btype);
-
         t.setContextUsage(this.contextUsage);
         t.getBasisType().setAbstract(this.isAbstract);
         t.getBasisType().setTextualComment(this.textualComment);
@@ -129,7 +110,6 @@ public class TypeReprData {
     public EdType createTypeFromTypeRepr() {
         EdType t = new EdType(this.name, (Integer.valueOf(this.shape)).intValue(), getColor(), this.filled,
                 this.imageFileName);
-
         // basis type is still NULL!
         t.setContextUsage(this.contextUsage);
         return t;
@@ -139,7 +119,6 @@ public class TypeReprData {
         EdType t = new EdType(this.name, (Integer.valueOf(this.shape)).intValue(), getColor(), this.filled,
                 this.imageFileName, basis);
         restoreAttributes(basis);
-
         t.setContextUsage(this.contextUsage);
         t.getBasisType().setAbstract(this.isAbstract);
         t.getBasisType().setTextualComment(this.textualComment);
@@ -176,7 +155,6 @@ public class TypeReprData {
         if (btype != null) {
             Vector<Vector<String>> attrs = new Vector<Vector<String>>();
             attrs.addAll(this.attributes);
-
             if (attrs.isEmpty()) {
                 // delete its attr. decl. members
                 if (btype.getAttrType() != null) {
@@ -198,7 +176,6 @@ public class TypeReprData {
                         Vector<String> v = attrs.get(i);
                         String n = v.get(0);
                         String tn = v.get(1);
-
                         dt
                                 .addMember(
                                         agg.attribute.facade.impl.DefaultInformationFacade
@@ -211,7 +188,6 @@ public class TypeReprData {
                         String hashCode = v.get(2);
                         hc2dmvec.put(hashCode, v);
                     }
-
                     for (int i = 0; i < dt.getNumberOfEntries(); i++) {
                         DeclMember dm = (DeclMember) dt.getMemberAt(i);
                         if (dm.getHoldingTuple() == dt) {
@@ -282,5 +258,4 @@ public class TypeReprData {
             }
         }
     }
-
 }

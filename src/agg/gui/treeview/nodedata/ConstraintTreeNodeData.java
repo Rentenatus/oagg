@@ -2,37 +2,36 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: ConstraintTreeNodeData.java,v 1.3 2010/08/24 21:35:50 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Vector;
-
 import agg.editor.impl.EdConstraint;
 
 /**
- * The ConstraintTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The ConstraintTreeNodeData implements an user object of a tree node in the
+ * GraGraTreeModel.
  *
  * @author $Author: olga $
- * @version $Id: ConstraintTreeNodeData.java,v 1.3 2010/08/24 21:35:50 olga Exp $
+ * @version $Id: ConstraintTreeNodeData.java,v 1.3 2010/08/24 21:35:50 olga Exp
+ * $
  */
 public class ConstraintTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private Object data;
-
     private EdConstraint eConstraint;
-
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */
@@ -99,7 +98,6 @@ public class ConstraintTreeNodeData extends GraGraTreeNodeDataAdapter {
         }
         String newString = str.replaceAll(" ", "");
         this.string = newString;
-
         String s = newString;
         String sD = "";
         if (!this.eConstraint.getBasisConstraint().isEnabled()) {
@@ -181,7 +179,6 @@ public class ConstraintTreeNodeData extends GraGraTreeNodeDataAdapter {
     public DefaultMutableTreeNode getTreeNode() {
         return this.treeNode;
     }
-
 
     /* (non-Javadoc)
 	 * @see agg.gui.treeview.GraGraTreeNodeData#isConstraint()

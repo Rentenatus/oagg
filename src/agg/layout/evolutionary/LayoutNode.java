@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -14,49 +15,35 @@
 package agg.layout.evolutionary;
 
 import java.awt.Point;
-
 import agg.editor.impl.EdNode;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 
 /**
- * This class contains information about a node, such as actual position, age, repulsive force and some more, that are
- * used by Springembedder Layout.
+ * This class contains information about a node, such as actual position, age,
+ * repulsive force and some more, that are used by Springembedder Layout.
  */
 public class LayoutNode implements XMLObject {
 
     private EdNode enode;
-
     private Point akt;
-
     private Point opt;
-
     private Point sim;
-
     private Point kom;
-
     private int age;
-
     private int realage;
-
     private int force;
-
     private int zone;
-
     private int distx;
-
     private int disty;
-
     private int dist;
-
     private boolean overlap;
-
     private boolean frozen;
-
     private boolean frozenAsDefault;
 
     /**
-     * Initialize the layout information of the specified EdNode by default values.
+     * Initialize the layout information of the specified EdNode by default
+     * values.
      */
     public LayoutNode(EdNode e) {
         this.enode = e;
@@ -82,7 +69,8 @@ public class LayoutNode implements XMLObject {
     }
 
     /**
-     * Initialize the layout information of the specified EdArc by specified parameters.
+     * Initialize the layout information of the specified EdArc by specified
+     * parameters.
      *
      * @param e the node which will get this layout
      * @param x X of the node aktual position
@@ -267,7 +255,6 @@ public class LayoutNode implements XMLObject {
             h.close();
             h.close();
         }
-
     }
 
     public void XreadObject(XMLHelper h) {
@@ -345,11 +332,9 @@ public class LayoutNode implements XMLObject {
             } else {
                 this.kom.y = Integer.parseInt(s);
             }
-
             this.frozen = (this.age == 0) ? true : false;
             h.close();
         }
         h.close();
     }
-
 }

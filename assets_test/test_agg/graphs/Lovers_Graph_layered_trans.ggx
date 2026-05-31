@@ -114,9 +114,9 @@
                     </Value>
                 </Attribute>
             </Node>
-            <Edge ID="I37" source="I32" target="I22" type="I6"/>
+            <Edge ID="I37" source="I22" target="I32" type="I6"/>
             <Edge ID="I38" source="I27" target="I32" type="I6"/>
-            <Edge ID="I39" source="I22" target="I32" type="I6"/>
+            <Edge ID="I39" source="I32" target="I22" type="I6"/>
         </Graph>
         <Constraints>
             <Graphconstraint_Atomic ID="I40" name="opposed">
@@ -269,8 +269,8 @@
             <MatchOf Rule="I70">
                 <Match ID="I99">
                     <Morphism name="MatchOf_SetRelation">
-                        <Mapping image="I22" orig="I73"/>
-                        <Mapping image="I32" orig="I76"/>
+                        <Mapping image="I32" orig="I73"/>
+                        <Mapping image="I22" orig="I76"/>
                     </Morphism>
                 </Match>
             </MatchOf>

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,7 +17,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
@@ -36,27 +37,22 @@ public class LayerFunction implements XMLObject {
      * The graph grammar.
      */
     protected GraGra grammar;
-
     protected Hashtable<Rule, Integer> ruleLayer;
-
     protected Hashtable<Type, Integer> creationLayer;
-
     protected Hashtable<Type, Integer> deletionLayer;
-
     /**
      * The error message if this layer function is not valid.
      */
     protected String errMsg;
-
     /**
      * true if this layer function is valid.
      */
     protected boolean valid;
-
     protected String option;
 
     /**
-     * Creates a new layer function for a given graph grammar. Initially this layer function is invalid.
+     * Creates a new layer function for a given graph grammar. Initially this
+     * layer function is invalid.
      *
      * @param gragra The graph grammar.
      */
@@ -132,7 +128,6 @@ public class LayerFunction implements XMLObject {
 						+ " is not satisfied.";
 			}
 		}
-
 		HashSet deletionSet = new HashSet();
 		HashSet creationSet = new HashSet();
 		Enumeration<?> rules = getRuleLayer().keys();
@@ -217,7 +212,6 @@ public class LayerFunction implements XMLObject {
 			}
 			Report.println("creationSet reduziert auf " + creationSet,
 					Report.LAYER);
-
 			// cl > k 
 			for (Enumeration<?> en = creationSet.elements(); en.hasMoreElements()
 					&& result;) {
@@ -272,12 +266,10 @@ public class LayerFunction implements XMLObject {
             en.next();
             size++;
         }
-
         if (size != this.ruleLayer.size()) {
             initRuleLayer(this.grammar);
             return this.ruleLayer;
         }
-
         en = this.grammar.getListOfRules().iterator();
         while (en.hasNext()) {
             Object key = en.next();
@@ -286,7 +278,6 @@ public class LayerFunction implements XMLObject {
                 return this.ruleLayer;
             }
         }
-
         return this.ruleLayer;
     }
 
@@ -306,7 +297,6 @@ public class LayerFunction implements XMLObject {
             initCreationLayer(this.grammar);
             return this.creationLayer;
         }
-
         en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             Object key = en.next();
@@ -330,12 +320,10 @@ public class LayerFunction implements XMLObject {
             en.next();
             size++;
         }
-
         if (size != this.deletionLayer.size()) {
             initDeletionLayer(this.grammar);
             return this.deletionLayer;
         }
-
         en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             Object key = en.next();
@@ -368,7 +356,8 @@ public class LayerFunction implements XMLObject {
     }
 
     /**
-     * Inverts a layer function so that the layer is the key and the value is a set.
+     * Inverts a layer function so that the layer is the key and the value is a
+     * set.
      *
      * @param layer The layer function will be inverted.
      * @return The inverted layer function.
@@ -392,8 +381,9 @@ public class LayerFunction implements XMLObject {
     }
 
     /**
-     * Returns layer option. The layer option will be initialized during loading of critical pairs file. This option can
-     * be used in the method setLayer(String l) of the LayerOption class.
+     * Returns layer option. The layer option will be initialized during loading
+     * of critical pairs file. This option can be used in the method
+     * setLayer(String l) of the LayerOption class.
      */
     public String getOption() {
         return this.option;
@@ -432,7 +422,6 @@ public class LayerFunction implements XMLObject {
 		 * LayerFunction) h.addAttr("option","RCD_LAYER");
          */
         h.addObject("GraGra", this.grammar, false);
-
         /*
 		 * if(isValid()){ h.openSubTag("ruleLayer");
 		 * writeHashtableToXML(getRuleLayer(),h); h.close();
@@ -457,7 +446,6 @@ public class LayerFunction implements XMLObject {
             // "+this.grammar);
             // String v = h.readAttr("valid");
             // System.out.println("LayerFunction: valid gelesen");
-
             // option = h.readAttr("option");
             // System.out.println("LayerFunction: option gelesen: "+option);
             this.valid = true; // false;
@@ -465,7 +453,6 @@ public class LayerFunction implements XMLObject {
             initRuleLayer(this.grammar);
             initCreationLayer(this.grammar);
             initDeletionLayer(this.grammar);
-
             /*
 			 * if(v.equals("true")){ this.valid = true; if
 			 * (h.readSubTag("ruleLayer")) { if(ruleLayer == null) ruleLayer =

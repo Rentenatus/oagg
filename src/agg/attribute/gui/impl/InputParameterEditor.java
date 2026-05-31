@@ -2,19 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
 import javax.swing.JPanel;
-
 import agg.attribute.AttrManager;
 import agg.attribute.AttrTuple;
 import agg.attribute.AttrVariableTuple;
@@ -42,23 +41,19 @@ public class InputParameterEditor extends LightInstanceEditor {
      */
     protected TupleTableModel createTableModel() {
         int[] columns = {IS_INPUT_PARAMETER, TYPE, NAME, EXPR, CORRECTNESS};
-
         TupleTableModel tm = new TupleTableModel(this);
         tm.setColumnArray(columns);
         tm.setExtensible(false);
-
         tm.setColumnTitle(IS_INPUT_PARAMETER, " In ");
         tm.setColumnTitle(TYPE, "Type");
         tm.setColumnTitle(NAME, "Parameter Name");
         tm.setColumnTitle(EXPR, "Value");
         tm.setColumnTitle(CORRECTNESS, "OK");
-
         tm.setColumnEditable(IS_INPUT_PARAMETER, false);
         tm.setColumnEditable(TYPE, false);
         tm.setColumnEditable(NAME, false);
         tm.setColumnEditable(EXPR, true);
         tm.setColumnEditable(CORRECTNESS, false);
-
         return tm;
     }
 

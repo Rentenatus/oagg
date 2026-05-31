@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /* JJT: 0.2.2 */
 package agg.attribute.parser.javaExpr;
@@ -20,9 +20,7 @@ import java.lang.reflect.Array;
 public class ASTArrayAllocation extends SimpleNode {
 
     static final long serialVersionUID = 1L;
-
     Class<?> componentClass = null;
-
     int nDimensions = 0;
 
     ASTArrayAllocation(String id) {
@@ -44,11 +42,9 @@ public class ASTArrayAllocation extends SimpleNode {
         Object arrayInst;
         Class<?> resultClass;
         int dimArray[];
-
         componentNode.checkContext();
         this.componentClass = ((SimpleNode) componentNode).getNodeClass();
         this.nDimensions = nChildren - 1;
-
         for (int i = 1; i < nChildren; i++) {
             lengthNode = jjtGetChild(i);
             lengthNode.checkContext();
@@ -59,7 +55,6 @@ public class ASTArrayAllocation extends SimpleNode {
                 throw new ASTWrongTypeException(reqSig, foundSig);
             }
         }
-
         dimArray = new int[this.nDimensions];
         dimArray[0] = 1;
         for (int i = 1; i < this.nDimensions; i++) {
@@ -77,10 +72,8 @@ public class ASTArrayAllocation extends SimpleNode {
         boolean isLengthAllowed = true;
         int length;
         int lengthList[] = new int[nChildren - 1];
-
         componentNode.interpret();
         this.componentClass = (Class<?>) stack.get(top--);
-
         for (int i = 1; i < nChildren; i++) {
             lengthNode = jjtGetChild(i);
             lengthNode.interpret();
@@ -99,7 +92,6 @@ public class ASTArrayAllocation extends SimpleNode {
                             + "at least for the first dimension.");
                 }
                 isLengthAllowed = false;
-
             } else if (!isLengthAllowed) {
                 throw new RuntimeException(
                         "A positive array length value is illegal after a previous\n"

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: Arrow.java,v 1.8 2010/08/19 09:07:25 olga Exp $
 package agg.editor.impl;
@@ -23,23 +24,14 @@ import java.awt.Color;
 public class Arrow extends Line {
 
     private double angle;
-
     private Point top;
-
     private Point leftEnd;
-
     private Point rightEnd;
-
     private Polygon head;
-
     private int headLength = 12;
-
     private double headAngle = 0.45; // 0.5
-
     private double itsScale = 1.0;
-
     private int tarH;
-
     private int tarW;
 
     /**
@@ -72,18 +64,13 @@ public class Arrow extends Line {
     public Arrow(double scale, Point begin, Point end, int targetWidth,
             int targetHeight, int headSize) {
         super(begin.x, begin.y, end.x, end.y);
-
         this.tarW = targetWidth;
         this.tarH = targetHeight;
-
         if (headSize > 0) {
             this.headLength = headSize;
         }
-
         this.headLength = (int) ((this.headLength / this.itsScale) * scale);
-
         this.head = getHeadPolygon();
-
         this.itsScale = scale;
     }
 
@@ -162,7 +149,6 @@ public class Arrow extends Line {
         int d = (int) (Math.tan(this.angle) * halfW);
         int topX = this.x2 + halfW * factorX;
         int topY = this.y2 + d * factorY;
-
         int ext = 3;
         Rectangle tarRect = new Rectangle((this.x2 - halfW - ext),
                 (this.y2 - halfH - ext), this.tarW + ext * 2, this.tarH + ext * 2);
@@ -240,33 +226,25 @@ public class Arrow extends Line {
             this.angle = .0;
             this.top = new Point(0, 0);
         }
-
         // calc left end of head
         this.leftEnd = getLeftEndOfHead();
-
         // calc right end of head
         this.rightEnd = getRightEndOfHead();
-
         // System.out.println("this.top.x : "+this.top.x);
         // System.out.println("xLE : "+this.leftEnd.x+" xRE : "+this.rightEnd.x);
         if (this.top == null || this.leftEnd == null || this.rightEnd == null) {
             return null;
         }
-
         // do polygon
         int xArray[] = new int[3];
         xArray[0] = this.top.x;
         xArray[1] = this.leftEnd.x;
         xArray[2] = this.rightEnd.x;
-
         int yArray[] = new int[3];
         yArray[0] = this.top.y;
         yArray[1] = this.leftEnd.y;
         yArray[2] = this.rightEnd.y;
-
         Polygon polygon = new Polygon(xArray, yArray, 3);
-
         return polygon;
     }
-
 }

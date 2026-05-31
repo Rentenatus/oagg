@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.cons;
 
@@ -17,12 +18,10 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-
 import agg.cons.AtomApplCond;
 import agg.cons.AtomConstraint;
 import agg.cons.EvalSet;
@@ -38,19 +37,12 @@ import java.util.List;
 public class RuleConstraint {
 
     private JButton but_back, but_forw;
-
     private JLabel label;
-
     private JPanel mainPane;
-
     private GraphEditor graphs[];
-
     private EdGraGra layout;
-
     private Rule rule;
-
     private int atom_index;
-
     private int shown_cond;
 
     public RuleConstraint(EdGraGra eGra) {
@@ -81,7 +73,6 @@ public class RuleConstraint {
         main.setContinuousLayout(true);
         main.setTopComponent(split);
         main.setBottomComponent(smallsplit[2]);
-
         this.but_back = new JButton("<");
         this.but_back.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -99,7 +90,6 @@ public class RuleConstraint {
         butpan.add(this.but_back);
         butpan.add(this.but_forw);
         butpan.add(this.label);
-
         this.mainPane = new JPanel(new BorderLayout());
         this.mainPane.add(butpan, BorderLayout.NORTH);
         this.mainPane.add(main, BorderLayout.CENTER);

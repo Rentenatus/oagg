@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
@@ -14,24 +15,22 @@ import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
-
 import agg.attribute.AttrManager;
 import agg.attribute.handler.AttrHandler;
-
 //import javax.swing.table.*;
 //import java.awt.*;
+
 /**
  * The default editor for selecting an attribute handler.
  *
- * @version $Id: HandlerSelectionEditor.java,v 1.1 2005/08/25 11:56:59 enrico Exp $
+ * @version $Id: HandlerSelectionEditor.java,v 1.1 2005/08/25 11:56:59 enrico
+ * Exp $
  * @author $Author: olga $
  */
 public class HandlerSelectionEditor extends DefaultCellEditor {
 
     static final long serialVersionUID = -4218688348462932834L;
-
     protected static HandlerSelectionEditor myOnlyInstance;
-
     protected HandlerListModel listModel;
 
     protected HandlerSelectionEditor(JComboBox<?> cb) {
@@ -57,7 +56,6 @@ public class HandlerSelectionEditor extends DefaultCellEditor {
 class HandlerListModel extends AbstractListModel implements ComboBoxModel {
 
     protected AttrHandler handlers[];
-
     protected int selIndx = -1; // 0;
 
     public void setHandlers(AttrHandler h[]) {
@@ -69,7 +67,6 @@ class HandlerListModel extends AbstractListModel implements ComboBoxModel {
         if (this.handlers != null) {
             return this.handlers.length;
         }
-
         return 0;
     }
 
@@ -81,7 +78,6 @@ class HandlerListModel extends AbstractListModel implements ComboBoxModel {
         if (this.selIndx == -1) {
             return null;
         }
-
         return this.handlers[this.selIndx].getName();
     }
 

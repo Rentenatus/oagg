@@ -1,18 +1,19 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis;
 
 import java.io.File;
-
 import agg.util.XMLHelper;
 import agg.convert.ConverterXML;
 
@@ -21,21 +22,16 @@ public class AGGBasicAppl implements GraTraEventListener {
     private static GraGra gragra;
     private static Graph impGraph;
     private static GraTra gratra;
-
     static int iterationsMax;
     private int msgGraTra;
-
     private static boolean layered = false;
     private static boolean ruleSequence = false;
     private static boolean priority = false;
-
     private static boolean didTransformation = false;
-
     private static String fileName;
     private static String impFileName;
     private static String outputFileName;
     private static String error;
-
     private static boolean writeLogFile = false;
 
     public AGGBasicAppl() {
@@ -47,12 +43,10 @@ public class AGGBasicAppl implements GraTraEventListener {
 
     public AGGBasicAppl(String filename, int nn) {
         iterationsMax = nn;
-
         fileName = filename;
         System.out.println("File name: " + fileName + ((iterationsMax > 0) ? "   iterations: " + iterationsMax : ""));
         /* load gragra */
         gragra = load(fileName);
-
         // or so:
         // gragra = BaseFactory.theFactory().createGraGra();
         // gragra.load(fileName);
@@ -67,19 +61,14 @@ public class AGGBasicAppl implements GraTraEventListener {
         gragra.getLevelOfTypeGraphCheck();
         /* do transform */
         transform(gragra, this);
-
         if (didTransformation) {
             /* save gragra */
             String out = "_out.ggx";
-
             save(gragra, out);
-
             // or so:
             // gragra.save(out);
             System.out.println("Output file:  " + outputFileName);
-
             if (writeLogFile) {
-
                 if (gratra instanceof DefaultGraTraImpl) {
                     System.out.println("Transformation protocol: "
                             + ((DefaultGraTraImpl) gratra)
@@ -102,7 +91,6 @@ public class AGGBasicAppl implements GraTraEventListener {
             System.out.println("Grammar:  " + gragra.getName()
                     + "   could not perform any transformations!");
         }
-
         gratra.dispose();
         BaseFactory.theFactory().destroyGraGra(gragra);
         gragra = null;
@@ -161,9 +149,7 @@ public class AGGBasicAppl implements GraTraEventListener {
                 * f.getParent()+File.separator+out; else out =
                 * "."+File.separator+out; }
                  */
-
                 save(gragra, out);
-
                 // or so:
                 // gragra.save(out);
                 System.out.println("Output file:  " + outputFileName);
@@ -184,7 +170,6 @@ public class AGGBasicAppl implements GraTraEventListener {
                             + ((RuleSequencesGraTraImpl) gratra)
                                     .getProtocolName());
                 }
-
             } else {
                 System.out.println("Grammar:  " + gragra.getName()
                         + "   could not perform any transformations!");
@@ -199,9 +184,7 @@ public class AGGBasicAppl implements GraTraEventListener {
     }
 
     public static void main(String[] args) {
-
         final String ver = agg.xt_basis.Version.getID();
-
         System.out.println(
                 ">>> This AGG version 2.1 \n"
                 + "    is made available under the terms of the Eclipse Public License v1.0 \n"
@@ -210,12 +193,10 @@ public class AGGBasicAppl implements GraTraEventListener {
         System.out.println(">>> ");
         System.out.println(">>> Java Version " + System.getProperty("java.version"));
         System.out.println(">>> AGG Version " + ver + " runs under JVM 1.8.0_60 and higher.");
-
         if (args.length == 0) {
             warning();
             return;
         }
-
         if (args.length == 1) {
             if ((args[0]).compareToIgnoreCase("-logfile") != 0) {
                 new AGGBasicAppl(args[0]);
@@ -250,7 +231,6 @@ public class AGGBasicAppl implements GraTraEventListener {
                 warning();
             }
         }
-
     }
 
     static void warning() {
@@ -271,7 +251,6 @@ public class AGGBasicAppl implements GraTraEventListener {
                 .println("  import	\tfull file name of an OMONDO XMI file '.ecore' in XML format \n\t\tthat contains the graph to import.");
         System.out.println("");
     }
-
     static XMLHelper h;
 
     public static GraGra load(String fName) {
@@ -281,15 +260,13 @@ public class AGGBasicAppl implements GraTraEventListener {
             /*
 			 * if(XMLHelper.hasGermanSpecialCh(fileName)){
 			 * System.out.println("\nRead file name exception occurred! "
-			 * +"\nMaybe the German umlaut like Ã¤, Ã¶, Ã¼ or ÃŸ were used. "
+			 * +"\nMaybe the German umlaut like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼ or ÃƒÅ¸ were used. "
 			 * +"\nPlease replace it by ae, oe, ue or ss " +"\nand try again.");
 			 * return null; }
              */
             if (h.read_from_xml(fName)) {
-
                 // create a gragra
                 GraGra gra = BaseFactory.theFactory().createGraGra(false);
-
                 h.getTopObject(gra);
                 gra.setFileName(fName);
                 // System.out.println("BF.getGraGras():: count:
@@ -342,7 +319,6 @@ public class AGGBasicAppl implements GraTraEventListener {
         File source = null;
         File layout = null;
         error = "";
-
         File f = new File(fn);
         if (f.exists()) {
             if (f.isFile()) {
@@ -356,11 +332,10 @@ public class AGGBasicAppl implements GraTraEventListener {
         }
         // System.out.println("dir: "+fd);
         // System.out.println("file: "+fn);
-
         /*
 		 * if(XMLHelper.hasGermanSpecialCh(fn)){ System.out.println("File name:
 		 * "+fn); System.out.println("\nRead file name exception occurred! "
-		 * +"\nMaybe the German umlaut like Ã¤, Ã¶, Ã¼ or ÃŸ were used. " +"\nPlease
+		 * +"\nMaybe the German umlaut like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼ or ÃƒÅ¸ were used. " +"\nPlease
 		 * replace it by ae, oe, ue or ss " +"\nand try again."); return null; }
          */
         ConverterXML converter = new ConverterXML();
@@ -382,7 +357,6 @@ public class AGGBasicAppl implements GraTraEventListener {
             error = "Import is failed! File   < agglayout.dtd >  is not found.";
             return null;
         }
-
         String in = fn;
         String out = fnOut;
         GraGra impGra = null;
@@ -393,7 +367,6 @@ public class AGGBasicAppl implements GraTraEventListener {
                     impGra = (GraGra) h.getTopObject(
                             BaseFactory.theFactory().createGraGra());
                 }
-
                 if (impGra != null) {
                     return impGra.getGraph();
                 }
@@ -413,7 +386,6 @@ public class AGGBasicAppl implements GraTraEventListener {
         File layout = null;
         File omondo = null;
         error = "";
-
         File f = new File(fn);
         if (f.exists()) {
             if (f.isFile()) {
@@ -427,16 +399,13 @@ public class AGGBasicAppl implements GraTraEventListener {
         }
         // System.out.println("dir: "+fd);
         // System.out.println("file: "+fn);
-
         ConverterXML converter = new ConverterXML();
-
         fnOut = fn.substring(0, fn.length() - 6) + "_ecore.ggx";
         source = converter.copyFile(fd, "gxl2ggx.xsl");
         gxldtd = converter.copyFile(fd, "gxl.dtd");
         gtsdtd = converter.copyFile(fd, "gts.dtd");
         layout = converter.copyFile(fd, "agglayout.dtd");
         omondo = converter.copyFile(fd, "omondoxmi2gxl.xsl");
-
         if (source == null) {
             error = "Import failed! File   < gxl2ggx.xsl >  is not found.";
             return null;
@@ -453,7 +422,6 @@ public class AGGBasicAppl implements GraTraEventListener {
             error = "Import failed! File   < omondoxmi2gxl.xsl >  is not found.";
             return null;
         }
-
         String in = fn;
         String out = fnOut;
         GraGra impGra = null;
@@ -465,7 +433,6 @@ public class AGGBasicAppl implements GraTraEventListener {
                     impGra = (GraGra) h.getTopObject(
                             BaseFactory.theFactory().createGraGra());
                 }
-
                 if (impGra != null) {
                     return impGra.getGraph();
                 }
@@ -485,7 +452,6 @@ public class AGGBasicAppl implements GraTraEventListener {
 		 * gto.add("injective"); gto.add("dangling");
 		 * gragra.setGraTraOptions(gto);
          */
-
         // create trafo
         // System.out.println(gragra.getGraTraOptions().toString());
         if (grammar.getGraTraOptions().contains("priority")) {
@@ -505,16 +471,13 @@ public class AGGBasicAppl implements GraTraEventListener {
             ((DefaultGraTraImpl) gratra).setMaxOfCounter(iterationsMax);
             System.out.println("Transformation  non-deterministically ...");
         }
-
         gratra.addGraTraListener(l);
         gratra.setGraGra(grammar);
         gratra.setHostGraph(grammar.getGraph());
         gratra.enableWriteLogFile(writeLogFile);
-
         MorphCompletionStrategy strategy = CompletionStrategySelector
                 .getDefault();
         // strategy = new Completion_NAC(new Completion_InjCSP());
-
         if (grammar.getGraTraOptions().isEmpty()) {
             grammar.setGraTraOptions(strategy);
             gratra.setCompletionStrategy(strategy);
@@ -526,9 +489,7 @@ public class AGGBasicAppl implements GraTraEventListener {
             System.out.println("Options:  " + grammar.getGraTraOptions());
             System.out.println();
         }
-
         grammar.destroyAllMatches();
-
         if (priority) {
             ((PriorityGraTraImpl) gratra).transform();
         } else if (layered) {
@@ -570,7 +531,6 @@ public class AGGBasicAppl implements GraTraEventListener {
         // System.out.println("AGGBasicAppl.graTraEventOccurred
         // "+event.getMessage());
 //		Match match = event.getMatch();
-
 //		String ruleName = "Rule";
 //		if (match != null)
 //			ruleName = match.getRule().getName();
@@ -593,6 +553,4 @@ public class AGGBasicAppl implements GraTraEventListener {
 		 * //System.out.println("Rule : "+ ruleName+" ==> CANNOT_TRANSFORM"); }
          */
     }
-
 }
-

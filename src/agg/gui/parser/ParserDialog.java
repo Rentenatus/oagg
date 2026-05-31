@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -39,7 +41,6 @@ import javax.swing.JSeparator;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.saveload.GraGraLoad;
 import agg.gui.treeview.GraGraTreeView;
@@ -54,7 +55,8 @@ import agg.xt_basis.GraGra;
 import java.util.List;
 
 /**
- * This dialog guides the user thru all setting which must be done before the parser can start.
+ * This dialog guides the user thru all setting which must be done before the
+ * parser can start.
  *
  * @version $Id: ParserDialog.java,v 1.11 2010/09/23 08:20:54 olga Exp $
  * @author $Author: olga $
@@ -67,78 +69,63 @@ public class ParserDialog extends JDialog implements ActionListener,
      * the tree view from the main AGG gui
      */
     GraGraTreeView treeView;
-
     /**
      * the gragra with layout for the host graph
      */
     EdGraGra hostGraph;
-
     /**
      * the gragra with layout for the stop graph
      */
     EdGraGra stopGraph;
-
     /**
      * the gragra with layout for the critical pairs
      */
     EdGraGra criticalPairGraGra;
-
     /**
      * the pairs its self
      */
     PairContainer criticalPairs;
-
     /**
      * the gui the dialog is child from
      */
     Frame parent;
-
     /**
      * this list holds all gragra names
      */
     @SuppressWarnings("rawtypes")
     JList gragraNames;
-
     private List<String> gragraNamesVector;
-
     /**
      * this JScrollPane is needed to scroll the gragra names
      */
     JScrollPane scrollPane;
-
     /**
      * click this button to get a load dialog
      */
     JButton loadButton;
-
     /**
      * this button cancels this dialog
      */
     JButton cancel;
-
     /**
      * click this button to go to the next step
      */
     JButton nextButton;
-
     /**
      * only a little panel where the state of the dialog is highlighted
      */
     StepPanel stepPanel;
-
     /**
      * shows if all question are answers
      */
     boolean readyToParse;
-
     ParserOption pOption;
-
     CriticalPairOption cpOption;
-
     LayerOption lOption;
 
     /**
-     * This panel shows at which step the process halts. There are three steps:<br>
+     * This panel shows at which step the process halts. There are three
+     * steps:<br>
      * 1) set the host graph<br>
      * 2) set the stop graph<br>
      * 3) set the critical pairs<br>
@@ -153,28 +140,23 @@ public class ParserDialog extends JDialog implements ActionListener,
          * step 1
          */
         public final static int STEP_HOST_GRAPH = 1;
-
         /**
          * step 2
          */
         public final static int STEP_STOP_GRAPH = 3;
-
         /**
          * step 3
          */
         public final static int STEP_CRITICAL_PAIRS = 7;
-
         /**
          * the finish
          */
         public final static int STEP_FINISH = 15;
-
         /**
          * this text is shown at the different steps
          */
         String[] steps = {"Select Host Graph", "Select Stop Graph",
             "Select Critical Pairs"};
-
         /**
          * holds the step which is enabled
          */
@@ -188,7 +170,8 @@ public class ParserDialog extends JDialog implements ActionListener,
         }
 
         /**
-         * this paints the different steps on the panel. Only the color is set for the steps
+         * this paints the different steps on the panel. Only the color is set
+         * for the steps
          */
         private void paintSteps(Graphics2D g2d, int startX, int startY,
                 int stepNumber) {
@@ -309,17 +292,20 @@ public class ParserDialog extends JDialog implements ActionListener,
             }
             // System.out.println("ENDE");
         }
-
     }
 
     /**
-     * The created dialog guides the user thru all the needed settings for the parser.
+     * The created dialog guides the user thru all the needed settings for the
+     * parser.
      *
      * @param parent The parent frame of this window.
      * @param treeView The tree provides all current GraGras.
-     * @param pOption The option of the parser is necessary for the correct creation and load of the parser.
-     * @param cpOption The critical pair option is needed for the correct pairs (s.a.).
-     * @param lOption If there are layer the option is needed to choose the right one.
+     * @param pOption The option of the parser is necessary for the correct
+     * creation and load of the parser.
+     * @param cpOption The critical pair option is needed for the correct pairs
+     * (s.a.).
+     * @param lOption If there are layer the option is needed to choose the
+     * right one.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public ParserDialog(Frame parent, GraGraTreeView treeView,
@@ -339,20 +325,16 @@ public class ParserDialog extends JDialog implements ActionListener,
         this.frame = parent;
         setLocation(200, 200);
         setSize(new Dimension(450, 300));
-
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
         GridBagConstraints constraint = new GridBagConstraints();
         // Container c = getContentPane();
         JPanel c = new JPanel();
         c.setLayout(new GridBagLayout());
         c.setBackground(Color.lightGray);
         c.setSize(new Dimension(450, 300));
-
         JPanel warningPanel = new JPanel(new GridLayout(0, 1));
         warningPanel.setBackground(Color.lightGray);
         warningPanel.setPreferredSize(new Dimension(300, 60));
-
         JLabel leer = new JLabel("  ");
         warningPanel.add(leer);
         JLabel warning = new JLabel("Parsing rules and stop graph have ");
@@ -363,7 +345,6 @@ public class ParserDialog extends JDialog implements ActionListener,
         warning.setForeground(Color.red);
         warning.setFont(new Font("Times New Roman", Font.BOLD, 14));
         warningPanel.add(warning);
-
         constraint.fill = GridBagConstraints.NONE;
         constraint.anchor = GridBagConstraints.CENTER;
         constraint.weighty = 0.0;
@@ -373,11 +354,9 @@ public class ParserDialog extends JDialog implements ActionListener,
         constraint.weighty = 0.0;
         constraint.weightx = 1.0;
         c.add(warningPanel, constraint);
-
         this.stepPanel = new StepPanel();
         this.stepPanel.setStep(StepPanel.STEP_HOST_GRAPH);
         this.stepPanel.setPreferredSize(new Dimension(170, 90));
-
         constraint.fill = GridBagConstraints.NONE;
         constraint.anchor = GridBagConstraints.EAST;
         constraint.weighty = 0.0;
@@ -386,7 +365,6 @@ public class ParserDialog extends JDialog implements ActionListener,
         constraint.gridheight = 1;
         constraint.insets = new Insets(10, 10, 0, 0);
         c.add(this.stepPanel, constraint);
-
         JPanel listPanel = new JPanel();
         listPanel.setPreferredSize(new Dimension(150, 150));
         listPanel.setBackground(Color.lightGray);
@@ -399,20 +377,17 @@ public class ParserDialog extends JDialog implements ActionListener,
         constraint.gridheight = 1;
         constraint.insets = new Insets(0, 0, 0, 0);
         c.add(listPanel, constraint);
-
         JPanel spaceDummy = new JPanel();
         spaceDummy.setBackground(Color.lightGray);
         spaceDummy.setSize(100, 1);
         constraint.weighty = 1.0;
         constraint.weightx = 1.0;
         c.add(spaceDummy, constraint);
-
         JSeparator js = new JSeparator();
         constraint.weighty = 0.0;
         constraint.weightx = 1.0;
         constraint.insets = new Insets(0, 0, 5, 0);
         c.add(js, constraint);
-
         JPanel buttonPanel = new JPanel();
         buttonPanel.setPreferredSize(new Dimension(350, 30)); // 200,30));
         buttonPanel.setBackground(Color.lightGray);
@@ -421,18 +396,15 @@ public class ParserDialog extends JDialog implements ActionListener,
         constraint.weighty = 0.0;
         constraint.weightx = 0.0;
         c.add(buttonPanel, constraint);
-
         /* gragra namen liste */
         this.gragraNamesVector = treeView.getGraGraNames();
         this.gragraNames = new JList(new Vector(this.gragraNamesVector)); // treeView.getGraGraNames());
         this.gragraNames.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.gragraNames.addListSelectionListener(this);
-
         this.scrollPane = new JScrollPane(this.gragraNames,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.scrollPane.setPreferredSize(new Dimension(150, 150));
-
         constraint.fill = GridBagConstraints.NONE;
         constraint.anchor = GridBagConstraints.CENTER;
         constraint.weighty = 0.0;
@@ -445,22 +417,18 @@ public class ParserDialog extends JDialog implements ActionListener,
         // topic.setFont(new Font("Times New Roman", Font.PLAIN, 14));
         topic.setFont(new Font("Times New Roman", Font.BOLD, 14));
         listPanel.add(topic, constraint);
-
         constraint.fill = GridBagConstraints.BOTH;
         constraint.weighty = 1.0;
         constraint.weightx = 1.0;
         listPanel.add(this.scrollPane, constraint);
-
         this.loadButton = new JButton("Load...");
         this.loadButton.addActionListener(this);
-
         constraint.fill = GridBagConstraints.NONE;
         constraint.weighty = 0.0;
         constraint.weightx = 0.0;
         constraint.anchor = GridBagConstraints.CENTER;
         constraint.gridwidth = GridBagConstraints.REMAINDER;
         listPanel.add(this.loadButton, constraint);
-
         constraint.insets = new Insets(0, 0, 0, 0);
         constraint.fill = GridBagConstraints.BOTH;
         constraint.weighty = 0.0;
@@ -468,14 +436,12 @@ public class ParserDialog extends JDialog implements ActionListener,
         constraint.gridwidth = GridBagConstraints.REMAINDER;
         constraint.gridheight = 1;// GridBagConstraints.RELATIVE;
         /* gragra namen liste */
-
  /* next und cancel button */
         this.nextButton = new JButton();
         this.nextButton.setText("Next");
         this.nextButton.addActionListener(this);
         this.cancel = new JButton("Cancel");
         this.cancel.addActionListener(this);
-
         JPanel dragPanel = new JPanel();
         dragPanel.setBackground(Color.lightGray);
         dragPanel.setPreferredSize(new Dimension(100, 1));
@@ -485,28 +451,24 @@ public class ParserDialog extends JDialog implements ActionListener,
         constraint.gridwidth = 1;
         constraint.gridheight = 1;
         buttonPanel.add(dragPanel, constraint);
-
         constraint.fill = GridBagConstraints.NONE;
         constraint.weighty = 0.0;
         constraint.weightx = 0.0;
         constraint.gridwidth = 1;
         constraint.gridheight = 1;
         buttonPanel.add(this.nextButton, constraint);
-
         JPanel spaceDummy2 = new JPanel();
         spaceDummy2.setBackground(Color.lightGray);
         spaceDummy2.setPreferredSize(new Dimension(50, 1));
         constraint.weighty = 1.0;
         constraint.weightx = 0.0;
         buttonPanel.add(spaceDummy2, constraint);
-
         constraint.weighty = 0.0;
         constraint.weightx = 0.0;
         constraint.gridwidth = 1;
         constraint.gridheight = 1;
         // constraint.gridwidth = GridBagConstraints.REMAINDER;
         buttonPanel.add(this.cancel, constraint);
-
         JPanel spaceDummy3 = new JPanel();
         spaceDummy3.setBackground(Color.lightGray);
         spaceDummy3.setPreferredSize(new Dimension(20, 1));
@@ -515,19 +477,14 @@ public class ParserDialog extends JDialog implements ActionListener,
         constraint.gridwidth = GridBagConstraints.REMAINDER;
         buttonPanel.add(spaceDummy3, constraint);
         /* ENDE next und cancel button */
-
         c.revalidate();
-
         JScrollPane scroll = new JScrollPane(c);
         scroll.setPreferredSize(new Dimension(450, 300));
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(scroll, BorderLayout.CENTER);
         validate();
-
         pack();
     }
-
     private Frame frame;
 
     public void showDialog() {
@@ -697,7 +654,6 @@ public class ParserDialog extends JDialog implements ActionListener,
             if (gragraLoad.getGraGra() != null) {
 //				dirName = gragraLoad.getDirName();
 //				fileName = gragraLoad.getFileName();
-
                 loadedGraGra = gragraLoad.getGraGra();
                 BaseFactory.theFactory().notify(loadedGraGra.getBasisGraGra());
                 // System.out.println(loadedGraGra);
@@ -739,20 +695,16 @@ public class ParserDialog extends JDialog implements ActionListener,
         if (o == null) {
             return;
         }
-
         String fileName = pairIOgui.getFileName();
-
         if (!(o instanceof LayeredPairContainer)) {
             this.cpOption.enableLayered(false);
         }
-
         // add loaded name to list of gragra names
         String str = excludePairContainer.getGrammar().getName() + "("
                 + fileName + ")";
         this.gragraNamesVector.add(str);
         this.gragraNames.setListData(new Vector(this.gragraNamesVector));
         this.gragraNames.setSelectedIndex(this.gragraNamesVector.size() - 1);
-
         // set critical pairs
         this.criticalPairs = excludePairContainer;
     }
@@ -839,8 +791,9 @@ public class ParserDialog extends JDialog implements ActionListener,
     }
 
     /**
-     * return the information for the parser: here the gragra of the critical pairs. This method returns ony a gragra if
-     * the user selects one in the list.
+     * return the information for the parser: here the gragra of the critical
+     * pairs. This method returns ony a gragra if the user selects one in the
+     * list.
      *
      * @return The gragra from the list.
      */
@@ -849,15 +802,14 @@ public class ParserDialog extends JDialog implements ActionListener,
     }
 
     /**
-     * return the information for the parser: here the critical pairs This method returns only the critical pairs if
-     * they are loaded.
+     * return the information for the parser: here the critical pairs This
+     * method returns only the critical pairs if they are loaded.
      *
      * @return The loaded critical pairs.
      */
     public PairContainer getCriticalPairs() {
         return this.criticalPairs;
     }
-
     /*
 	 * this method starts only the dialog
 	 * 
@@ -875,20 +827,24 @@ public class ParserDialog extends JDialog implements ActionListener,
  *
  * Revision 1.10 2010/04/13 15:06:09 olga dialog layout improved
  *
- * Revision 1.9 2008/10/29 09:04:12 olga new sub packages of the package agg.gui: typeeditor, editor, trafo, cpa,
- * options, treeview, popupmenu, saveload
+ * Revision 1.9 2008/10/29 09:04:12 olga new sub packages of the package
+ * agg.gui: typeeditor, editor, trafo, cpa, options, treeview, popupmenu,
+ * saveload
  *
  * Revision 1.8 2007/11/05 09:18:21 olga code tuning
  *
- * Revision 1.7 2007/09/10 13:05:45 olga In this update: - package xerces2.5.0 is not used anymore; - class
- * com.objectspace.jgl.Pair is replaced by the agg own generic class agg.util.Pair; - bugs fixed in: usage of PACs in
- * rules; match completion; usage of static method calls in attr. conditions - graph editing: added some new features
- * Revision 1.6 2007/06/13 08:33:07 olga Update: V161
+ * Revision 1.7 2007/09/10 13:05:45 olga In this update: - package xerces2.5.0
+ * is not used anymore; - class com.objectspace.jgl.Pair is replaced by the agg
+ * own generic class agg.util.Pair; - bugs fixed in: usage of PACs in rules;
+ * match completion; usage of static method calls in attr. conditions - graph
+ * editing: added some new features Revision 1.6 2007/06/13 08:33:07 olga
+ * Update: V161
  *
  * Revision 1.5 2006/12/13 13:33:04 enrico reimplemented code
  *
- * Revision 1.4 2006/04/10 09:19:30 olga Import Type Graph, Import Graph - tuning. Attr. member type check: if class
- * does not exist. Graph constraints for a layer of layered grammar.
+ * Revision 1.4 2006/04/10 09:19:30 olga Import Type Graph, Import Graph -
+ * tuning. Attr. member type check: if class does not exist. Graph constraints
+ * for a layer of layered grammar.
  *
  * Revision 1.3 2006/03/01 09:55:47 olga - new CPA algorithm, new CPA GUI
  *
@@ -896,15 +852,20 @@ public class ParserDialog extends JDialog implements ActionListener,
  *
  * Revision 1.1 2005/08/25 11:56:55 enrico *** empty log message ***
  *
- * Revision 1.3 2005/07/11 09:30:20 olga This is test version AGG V1.2.8alfa . What is new: - saving rule option
- * <disabled> - setting trigger rule for layer - display attr. conditions in gragra tree view - CPA algorithm
- * <dependencies> - creating and display CPA graph with conflicts and/or dependencies based on (.cpx) file
+ * Revision 1.3 2005/07/11 09:30:20 olga This is test version AGG V1.2.8alfa .
+ * What is new: - saving rule option
+ * <disabled> - setting trigger rule for layer - display attr. conditions in
+ * gragra tree view - CPA algorithm
+ * <dependencies> - creating and display CPA graph with conflicts and/or
+ * dependencies based on (.cpx) file
  *
- * Revision 1.2 2005/06/20 13:37:04 olga Up to now the version 1.2.8 will be prepared.
+ * Revision 1.2 2005/06/20 13:37:04 olga Up to now the version 1.2.8 will be
+ * prepared.
  *
  * Revision 1.1 2005/05/30 12:58:03 olga Version with Eclipse
  *
- * Revision 1.4 2004/06/28 08:09:55 olga Folgefehler Besetigung nach der Anpassung der Attributekomponente fuer CPs
+ * Revision 1.4 2004/06/28 08:09:55 olga Folgefehler Besetigung nach der
+ * Anpassung der Attributekomponente fuer CPs
  *
  * Revision 1.3 2004/01/22 17:50:52 olga tests
  *
@@ -914,7 +875,8 @@ public class ParserDialog extends JDialog implements ActionListener,
  *
  * Revision 1.8 2001/07/19 15:19:05 olga Arbeit an GUI
  *
- * Revision 1.7 2001/07/09 13:12:44 olga Aenderungen an GUI. Version heisst ab jetzt 1.1
+ * Revision 1.7 2001/07/09 13:12:44 olga Aenderungen an GUI. Version heisst ab
+ * jetzt 1.1
  *
  * Revision 1.6 2001/07/04 10:40:05 olga Kleine GUI Aenderungen
  *
@@ -922,18 +884,20 @@ public class ParserDialog extends JDialog implements ActionListener,
  *
  * Revision 1.4 2001/04/11 14:57:00 olga Arbeit an der GUI.
  *
- * Revision 1.3 2001/03/08 13:46:09 olga Wenn keine kritische Paaren geladen wurden, dann wird die Stop GraGra als
- * kritische GraGra gesetzt.
+ * Revision 1.3 2001/03/08 13:46:09 olga Wenn keine kritische Paaren geladen
+ * wurden, dann wird die Stop GraGra als kritische GraGra gesetzt.
  *
- * Revision 1.2 2001/03/08 11:02:47 olga Parser Anbindung gemacht. Stand nach AGG GUI Reimplementierung. Stand nach der
- * AGG GUI Reimplementierung.Das ist Stand nach der AGG GUI Reimplementierung und Parser Anbindung.
+ * Revision 1.2 2001/03/08 11:02:47 olga Parser Anbindung gemacht. Stand nach
+ * AGG GUI Reimplementierung. Stand nach der AGG GUI Reimplementierung.Das ist
+ * Stand nach der AGG GUI Reimplementierung und Parser Anbindung.
  *
  * Revision 1.1.2.8 2001/01/28 13:14:46 shultzke API fertig
  *
- * Revision 1.1.2.7 2001/01/11 14:11:06 shultzke Laden und speicher in Parser eingearbeitet
+ * Revision 1.1.2.7 2001/01/11 14:11:06 shultzke Laden und speicher in Parser
+ * eingearbeitet
  *
- * Revision 1.1.2.6 2001/01/03 09:44:55 shultzke TODO's bis auf laden und speichern erledigt. Wann meldet sich endlich
- * Michael?
+ * Revision 1.1.2.6 2001/01/03 09:44:55 shultzke TODO's bis auf laden und
+ * speichern erledigt. Wann meldet sich endlich Michael?
  *
  * Revision 1.1.2.5 2000/11/08 14:58:02 shultzke parser erste stufe fertig
  *

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -13,14 +15,12 @@
 package agg.gui.treeview;
 
 import java.util.Vector;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdNAC;
 import agg.editor.impl.EdNestedApplCond;
@@ -30,9 +30,10 @@ import agg.editor.impl.EdRuleScheme;
 import agg.gui.treeview.nodedata.GraGraTreeNodeData;
 
 /**
- * The class GraGraTreeModel extends JTreeModel to define valueForPathChanged. This method is called as a result of the
- * user editing a value in the tree. If you allow editing in your tree, are using TreeNodes and the user object of the
- * TreeNodes is of the class GraGraTreeNodeData.
+ * The class GraGraTreeModel extends JTreeModel to define valueForPathChanged.
+ * This method is called as a result of the user editing a value in the tree. If
+ * you allow editing in your tree, are using TreeNodes and the user object of
+ * the TreeNodes is of the class GraGraTreeNodeData.
  *
  * @author $Author: olga $
  * @version $Id: GraGraTreeModel.java,v 1.9 2010/08/25 00:34:40 olga Exp $
@@ -41,7 +42,8 @@ import agg.gui.treeview.nodedata.GraGraTreeNodeData;
 public class GraGraTreeModel extends DefaultTreeModel {
 
     /**
-     * Creates a new instance of GraGraTreeModel with root specified by the TreeNode newRoot.
+     * Creates a new instance of GraGraTreeModel with root specified by the
+     * TreeNode newRoot.
      */
     public GraGraTreeModel(TreeNode newRoot) {
         super(newRoot);
@@ -53,7 +55,8 @@ public class GraGraTreeModel extends DefaultTreeModel {
     }
 
     /**
-     * Calls the super class method setString() if the path item would be changed.
+     * Calls the super class method setString() if the path item would be
+     * changed.
      */
     public void valueForPathChanged(TreePath path, Object newValue) {
         /* Update the user object. */
@@ -102,14 +105,12 @@ public class GraGraTreeModel extends DefaultTreeModel {
                 }
                 return true;
             }
-
             EdGraGra egra = getGraGra(aNode);
             if (!isValid(getGraGraChildrenNames(egra), name, sd.toString())) {
                 warning(this.applFrame, name);
                 return false;
             }
             return true;
-
         } else if (sd.isNAC()) {
             EdRule erule = getRule(aNode);
             if (!isValid(getRuleChildrenNames(erule), name, sd.toString())) {
@@ -149,7 +150,6 @@ public class GraGraTreeModel extends DefaultTreeModel {
         if (!(searchedObj instanceof EdRule)) {
             return null;
         }
-
         for (int j = 0; j < gragraNode.getChildCount(); j++) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) gragraNode
                     .getChildAt(j); // graph|rule
@@ -161,7 +161,6 @@ public class GraGraTreeModel extends DefaultTreeModel {
 //					&& sd.getGraph().equals(searchedObj)) {
 //				return node;
 //			} else 
-
             if (sd.isRule()) {
                 if (sd.isRuleScheme() || sd.isKernelRule()
                         || sd.isMultiRule() || sd.isAmalgamatedRule()) {
@@ -171,7 +170,6 @@ public class GraGraTreeModel extends DefaultTreeModel {
                     return node;
                 }
             }
-
 //			else if (sd.isAtomic() && (searchedObj instanceof EdAtomic)
 //					&& sd.getAtomic().equals(searchedObj)) {
 //				return node;
@@ -190,7 +188,6 @@ public class GraGraTreeModel extends DefaultTreeModel {
         testold = testold.substring(ind + 1);
         ind = testnew.lastIndexOf(']');
         testnew = testnew.substring(ind + 1);
-
         for (int i = 0; i < names.size(); i++) {
             if (!names.elementAt(i).equals(testold)) {
                 if (names.elementAt(i).equals(testnew)) {
@@ -482,12 +479,10 @@ public class GraGraTreeModel extends DefaultTreeModel {
             childrenNames.add(eGra.getGraphs().get(i)
                     .getBasisGraph().getName());
         }
-
         for (int i = 0; i < eGra.getRules().size(); i++) {
             if (eGra.getRules().elementAt(i) != null) {
                 EdRule er = eGra.getRules().elementAt(i);
                 childrenNames.add(er.getBasisRule().getName());
-
                 for (int j = 0; j < er.getNACs().size(); j++) {
                     EdNAC enac = er.getNACs().get(j);
                     childrenNames.add(enac.getBasisGraph()
@@ -504,7 +499,6 @@ public class GraGraTreeModel extends DefaultTreeModel {
                             .getName());
                 }
             }
-
         }
         return childrenNames;
     }
@@ -584,7 +578,6 @@ public class GraGraTreeModel extends DefaultTreeModel {
         if (data.isGraGra()) {
             return data.getGraGra();
         }
-
         return null;
     }
 
@@ -595,7 +588,6 @@ public class GraGraTreeModel extends DefaultTreeModel {
         if (data.isRule()) {
             return data.getRule();
         }
-
         return null;
     }
 
@@ -606,7 +598,6 @@ public class GraGraTreeModel extends DefaultTreeModel {
         if (data.isRuleScheme()) {
             return data.getRuleScheme();
         }
-
         return null;
     }
 
@@ -617,10 +608,7 @@ public class GraGraTreeModel extends DefaultTreeModel {
         if (data.isNestedAC()) {
             return data.getNestedAC();
         }
-
         return null;
     }
-
     private JFrame applFrame;
-
 }

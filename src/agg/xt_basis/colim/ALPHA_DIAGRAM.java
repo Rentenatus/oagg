@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.colim;
 //-------------------------------------------------------------------
@@ -239,8 +240,8 @@ public class ALPHA_DIAGRAM implements COLIM_DEFS {
         }
         return new String(Result);
     }
-
 //---------------- private implementation features  ---------------
+
     private void compute_colimit() {
         INT_VECTOR colimit_items = f_diagram.get_colimit_indices();
         f_colimit_refs = new COLIM_VECTOR(colimit_items.size());
@@ -325,7 +326,6 @@ public class ALPHA_DIAGRAM implements COLIM_DEFS {
             }
         }
     }
-
     private SET_DIAGRAM f_diagram;
     private COLIM_VECTOR f_coprod_refs;
     private COLIM_VECTOR f_coprod_attrs;

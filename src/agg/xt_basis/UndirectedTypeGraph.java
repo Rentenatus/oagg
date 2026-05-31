@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -17,7 +19,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
-
 import agg.attribute.impl.ValueTuple;
 import agg.util.Change;
 
@@ -33,7 +34,8 @@ public class UndirectedTypeGraph extends TypeGraph {
     }
 
     /**
-     * Adds the specified edge to my edges.The type of the specified edge has to be in my type set.<br>
+     * Adds the specified edge to my edges.The type of the specified edge has to
+     * be in my type set.<br>
      * The edge must be an instance of <code>UndirectedArc</code>.
      *
      * @param anArc
@@ -58,8 +60,9 @@ public class UndirectedTypeGraph extends TypeGraph {
     }
 
     /**
-     * Creates a new UndirectedArc as a copy of the <code>orig</code>. Only its type and attributes are copied, the
-     * structural context (source, target) - is not. The specified source <code>src</code> and target <code>tar</code>
+     * Creates a new UndirectedArc as a copy of the <code>orig</code>. Only its
+     * type and attributes are copied, the structural context (source, target) -
+     * is not. The specified source <code>src</code> and target <code>tar</code>
      * objects must be a part of this graph, but this is not checked here.
      */
     public Arc copyArc(final Arc orig, final Node src, final Node tar) throws TypeException {
@@ -68,7 +71,6 @@ public class UndirectedTypeGraph extends TypeGraph {
             arc = (UndirectedArc) this.createArc(orig.getType(), src, tar);
             if (arc != null) {
                 arc.setObjectName(orig.getObjectName());
-
                 if (orig.getAttribute() != null) {
                     arc.createAttributeInstance();
                     ((ValueTuple) arc.getAttribute()).copyEntries(orig
@@ -87,13 +89,13 @@ public class UndirectedTypeGraph extends TypeGraph {
                         + "   " + ex.getLocalizedMessage());
             }
             throw new TypeException(ex.getLocalizedMessage());
-
         }
         return arc;
     }
 
     /**
-     * Create a new Arc with given Type, source and target objects. Source and target object must be part of this graph.
+     * Create a new Arc with given Type, source and target objects. Source and
+     * target object must be part of this graph.
      */
     protected Arc newArc(final Type t, final Node src, final Node tar) throws TypeException {
         final UndirectedArc anArc = new UndirectedArc(t, src, tar, this);
@@ -102,7 +104,6 @@ public class UndirectedTypeGraph extends TypeGraph {
             anArc.dispose();
             throw new TypeException(typeError);
         }
-
         this.attributed = this.attributed || anArc.getAttribute() != null;
         this.itsArcs.add(anArc);
         addArcToTypeObjectsMap(anArc);
@@ -122,8 +123,9 @@ public class UndirectedTypeGraph extends TypeGraph {
     }
 
     /**
-     * Returns the type graph edge of the specified type <code>t</code>, with a source node of the specified type
-     * <code>source</code> and a target node of the specified type <code>target</code>, otherwise returns
+     * Returns the type graph edge of the specified type <code>t</code>, with a
+     * source node of the specified type <code>source</code> and a target node
+     * of the specified type <code>target</code>, otherwise returns
      * <code>null</code>.
      */
     public Arc getTypeGraphArc(final Type t, final Type source, final Type target) {
@@ -142,6 +144,4 @@ public class UndirectedTypeGraph extends TypeGraph {
         }
         return null;
     }
-
 }
-

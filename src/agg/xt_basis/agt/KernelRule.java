@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.agt;
 
@@ -16,8 +17,9 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.TypeSet;
 
 /**
- * Kernel rule is the subrule of an interaction rule scheme and models a common subaction of two or more actions
- * (extending rules) and used to synchronize application of multi rules in parallel.
+ * Kernel rule is the subrule of an interaction rule scheme and models a common
+ * subaction of two or more actions (extending rules) and used to synchronize
+ * application of multi rules in parallel.
  *
  * @author olga
  *
@@ -62,7 +64,6 @@ public class KernelRule extends Rule {
         if (this.itsRuleScheme != null) {
             return this.itsRuleScheme.getName().concat(".").concat(this.itsName);
         }
-
         return this.itsName;
     }
 
@@ -77,10 +78,8 @@ public class KernelRule extends Rule {
     public void setChanged(boolean b) {
         this.changed = b;
     }
-
     /*
 	public final void update(Observable o, Object arg) { 
-
 	}
      */
 }

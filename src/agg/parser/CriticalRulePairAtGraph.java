@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -16,7 +18,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
 import agg.attribute.AttrType;
 import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.ValueTuple;
@@ -36,10 +37,13 @@ import agg.xt_basis.TypeException;
 import java.util.Iterator;
 
 /**
- * This class computes critical matches of two rules at a concrete graph. The two rules and a concret host graph graph
- * are specified by the class constructor. In case of rule application conflicts a vector with pairs of tables with
- * critical matches will be computed. The first table contains the match mappings from the LHS of the first rule into
- * the graph and the second table contains the mappings from the LHS of the second rule into the same graph.
+ * This class computes critical matches of two rules at a concrete graph. The
+ * two rules and a concret host graph graph are specified by the class
+ * constructor. In case of rule application conflicts a vector with pairs of
+ * tables with critical matches will be computed. The first table contains the
+ * match mappings from the LHS of the first rule into the graph and the second
+ * table contains the mappings from the LHS of the second rule into the same
+ * graph.
  *
  * @author olga
  *
@@ -47,13 +51,9 @@ import java.util.Iterator;
 public class CriticalRulePairAtGraph extends ExcludePair {
 
     private Rule rule1, rule2;
-
     private Graph graph;
-
     final private List<Hashtable<GraphObject, GraphObject>> r1Matches = new Vector<>();
-
     final private List<Hashtable<GraphObject, GraphObject>> r2Matches = new Vector<>();
-
     private Hashtable<List<GraphObject>, Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> jointlyMatches;
 
     public CriticalRulePairAtGraph(
@@ -63,7 +63,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
         this.rule1 = r1;
         this.rule2 = r2;
         this.graph = g;
-
 //		if (!this.rule1.isReadyToTransform())
 //			System.out.println(this.rule1.getName()+"  is not ready to transform!");
 //		if (!this.rule2.isReadyToTransform())
@@ -71,21 +70,22 @@ public class CriticalRulePairAtGraph extends ExcludePair {
     }
 
     /**
-     * Computes critical matches of two rules at a concrete graph. Two rules and a concret host graph graph are
-     * specified by the class constructor. In case of rule application conflicts returns a vector with pairs of tables
-     * with critical matches. The first table contains the match mappings from the LHS of the first rule into the graph
-     * and the second table contains the mappings from the LHS of the second rule into the same graph. Returns null, if
-     * the specified two rules can be applied at the host graph without any conflicts.
+     * Computes critical matches of two rules at a concrete graph. Two rules and
+     * a concret host graph graph are specified by the class constructor. In
+     * case of rule application conflicts returns a vector with pairs of tables
+     * with critical matches. The first table contains the match mappings from
+     * the LHS of the first rule into the graph and the second table contains
+     * the mappings from the LHS of the second rule into the same graph. Returns
+     * null, if the specified two rules can be applied at the host graph without
+     * any conflicts.
      *
      * @return a vector with pairs of tables or null
      */
     public List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> isCriticalAtGraph() {
-
         if (this.essential) {
             // disable Type Multiplicity, Graph Constraints and NACs checking
             this.disableConstraints();
         }
-
         // check global NACs of r2 before all other checks
         // if LHS of r1 satisfy a global NAC of r2,
         // where the NAC contains nodes with attrs are not set,
@@ -96,23 +96,19 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                     + " ]  non-critical.");
             return null;
         }
-
         // Prepare and perform rule analysis
         // fill typesTG_L2 with types used in LHS of r2
         fillTypeSubset(this.rule2.getLeft(), this.typesTG_L2);
-
         // fill typesTG_PAC2 with types from typesTG_L2 
         // and types used in PACs of r2
         if (this.withPACs) {
             getTypeSubsetLeft_PACs(this.rule2, this.typesTG_L2, this.typesTG_PAC2);
         }
-
         // fill typesTG_NAC2 with types from typesTG_L2 
         // and types used in NACs of r2
         if (this.withNACs) {
             getTypeSubsetLeft_NACs(this.rule2, this.typesTG_L2, this.typesTG_NAC2);
         }
-
         // compute left context, boundary, preserved and delete of r1
         if (this.withPACs) {
             computeLeftC_B_K(this.rule1, this.contextC1_L1, this.boundB1_L1, this.preservedK1_L1,
@@ -121,7 +117,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             computeLeftC_B_K(this.rule1, this.contextC1_L1, this.boundB1_L1, this.preservedK1_L1,
                     this.delete, this.typesTG_L2);
         }
-
         // compute right context, preserved and produce of r1
         if (this.withNACs) {
             computeRightC_B_K(this.rule1, this.contextC1_R1, this.boundB1_R1, this.preservedK1_R1,
@@ -130,41 +125,31 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             computeRightC_B_K(this.rule1, this.contextC1_R1, this.boundB1_R1, this.preservedK1_R1,
                     this.produce, this.typesTG_L2);
         }
-
         findValidMatches(this.rule1, this.graph, this.r1Matches);
         findValidMatches(this.rule2, this.graph, this.r2Matches);
-
         boolean canOverlapLHS1withLHS2 = canMatchConstantAttributeLHS1intoLHS2(this.rule1, this.rule2);
-
         final List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> resultOverlappings = new Vector<>();
-
         // check delete-use conflicts
         List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> deleteUseOverlappings = null;
         if (!this.contextC1_L1.isEmpty() && canOverlapLHS1withLHS2 && !this.stop) {
-
             deleteUseOverlappings = getDeleteUseConflictsAtGraph(this.rule1, this.rule2);
-
             if (deleteUseOverlappings != null) {
                 for (int i = 0; i < deleteUseOverlappings.size(); i++) {
                     resultOverlappings.add(deleteUseOverlappings.get(i));
                 }
             }
         }
-
         // check produce-forbid conflicts
         List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> produceForbidOverlappings = null;
         if (this.withNACs && (this.complete || resultOverlappings.isEmpty())
                 && !this.contextC1_R1.isEmpty() && !this.stop) {
-
             produceForbidOverlappings = getProduceForbidConflictsAtGraph(this.rule1, this.rule2);
-
             if (produceForbidOverlappings != null) {
                 for (int i = 0; i < produceForbidOverlappings.size(); i++) {
                     resultOverlappings.add(produceForbidOverlappings.get(i));
                 }
             }
         }
-
         // check attribute conflicts
         List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> changeAttributeOverlappings = null;
         if ((this.complete || resultOverlappings.isEmpty())
@@ -179,16 +164,12 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                     this.preservedK1_L1, changedAttrsL1, this.typesTG_NAC2);
             ruleChangesAttributes(this.preservedChanged, this.rule1, this.rule2, this.contextC1_L1, this.boundB1_L1,
                     this.preservedK1_L1, changedAttrsL1, this.typesTG_PAC2);
-
             final List<GraphObject> preservedL2_K2 = new Vector<>(5);
             final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2 = new Hashtable<>();
             ruleChangesAttributes(this.rule2, preservedL2_K2, changedAttrsL2);
-
             if (ruleRestrictsAttributes(true, this.rule2, changedAttrsL2, changedAttrsL1)) {
-
                 changeAttributeOverlappings = getChangeAttributeConflictsAtGraph(
                         this.rule1, this.rule2, changedAttrsL1, changedAttrsL2);
-
                 if (changeAttributeOverlappings != null) {
                     for (int i = 0; i < changeAttributeOverlappings.size(); i++) {
                         resultOverlappings.add(changeAttributeOverlappings.get(i));
@@ -196,12 +177,10 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                 }
             }
         }
-
         if (this.essential) {
             // enable Type Multiplicity, Graph Constraints and NACs checking
             this.enableConstraints();
         }
-
         return resultOverlappings;
     }
 
@@ -210,23 +189,19 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             final Graph g,
             final List<Hashtable<GraphObject, GraphObject>> ruleMatches) {
 //		System.out.println("### findValidMatches: "+r.getName());
-
         Match m = BaseFactory.theFactory().createMatch(r, g);
         m.setCompletionStrategy(super.strategy, true);
-
 //		super.strategy.showProperties();		
 //		((VarTuple)m.getAttrContext().getVariables()).showVariables();
 //		((CondTuple)m.getAttrContext().getConditions()).showConditions();
         while (m.nextCompletion()) {
             if (m.isValid()) {
                 Hashtable<GraphObject, GraphObject> mTable = new Hashtable<GraphObject, GraphObject>();
-
                 Iterator<GraphObject> dom = m.getDomain();
                 while (dom.hasNext()) {
                     GraphObject o = dom.next();
                     mTable.put(o, m.getImage(o));
                 }
-
                 ruleMatches.add(mTable);
             } else {
 //				System.out.println("### match failed: "+m.getErrorMsg());
@@ -242,34 +217,27 @@ public class CriticalRulePairAtGraph extends ExcludePair {
     private Hashtable<List<GraphObject>, Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> getJointlyMatches(
             final List<Hashtable<GraphObject, GraphObject>> ruleMatches1,
             final List<Hashtable<GraphObject, GraphObject>> ruleMatches2) {
-
         Hashtable<List<GraphObject>, Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> result = new Hashtable<>();
-
         for (int i = 0; i < ruleMatches1.size(); i++) {
             Hashtable<GraphObject, GraphObject> m1 = ruleMatches1.get(i);
-
             for (int j = 0; j < ruleMatches2.size(); j++) {
                 Hashtable<GraphObject, GraphObject> m2 = ruleMatches2.get(j);
                 List<GraphObject> jointlyObjs = new Vector<>();
-
                 Enumeration<GraphObject> keys1 = m1.keys();
                 while (keys1.hasMoreElements()) {
                     GraphObject o1 = keys1.nextElement();
                     GraphObject i1 = m1.get(o1);
-
                     Collection<GraphObject> values2 = m2.values();
                     if (values2.contains(i1)) {
                         jointlyObjs.add(i1);
                     }
                 }
-
                 if (!jointlyObjs.isEmpty()) {
                     Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>> p = new Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>(m1, m2);
                     result.put(jointlyObjs, p);
                 }
             }
         }
-
         return result;
     }
 
@@ -299,7 +267,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             final OrdinaryMorphism morph,
             final OrdinaryMorphism isoG,
             final Hashtable<GraphObject, GraphObject> map) {
-
         Enumeration<GraphObject> keys = map.keys();
         while (keys.hasMoreElements()) {
             GraphObject o = keys.nextElement();
@@ -330,29 +297,21 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             final Rule r2) {
 //		System.out.println("CriticalRulePairAtGraph.getDeleteUseConflictsAtGraph...("+r1.getName()+", "+r2.getName()+")");
 //		System.out.println("### to delete: "+super.delete);
-
         this.jointlyMatches = getJointlyMatches(this.r1Matches, this.r2Matches);
 //		System.out.println("### jointlyMatches: "+jointlyMatches.size());
-
         if (!this.jointlyMatches.isEmpty()) {
             List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> result = new Vector<>();
-
             Enumeration<List<GraphObject>> jointly = this.jointlyMatches.keys();
             while (jointly.hasMoreElements()) {
                 List<GraphObject> jointlyObjs = jointly.nextElement();
-
                 Hashtable<GraphObject, GraphObject> m1 = this.jointlyMatches.get(jointlyObjs).first;
-
                 Hashtable<GraphObject, GraphObject> m2 = this.jointlyMatches.get(jointlyObjs).second;
-
                 for (int i = 0; i < jointlyObjs.size(); i++) {
                     GraphObject o = jointlyObjs.get(i);
                     GraphObject go = getOriginalOfImage(o, m1);
-
                     if (super.delete.contains(go)) {
                         o.setCritical(true);
 //						System.out.println("### Critical: "+o);
-
                         Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>> p = new Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>(
                                 m1, m2);
                         result.add(p);
@@ -384,16 +343,13 @@ public class CriticalRulePairAtGraph extends ExcludePair {
     private List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> getProduceForbidConflictsAtGraph(
             final Rule r1,
             final Rule r2) {
-
         List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> result = new Vector<>();
-
         for (int i = 0; i < this.r1Matches.size(); i++) {
             OrdinaryMorphism isoG = this.graph.isomorphicCopy();
             if (isoG == null) {
                 result = null;
                 return null;
             }
-
             Hashtable<GraphObject, GraphObject> m1Map = this.r1Matches.get(i);
             Match m1 = BaseFactory.theFactory().createMatch(r1, isoG.getTarget());
             if (setMapping(m1, isoG, m1Map)) {
@@ -406,7 +362,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                     m1 = null;
                     continue;
                 }
-
                 for (int j = 0; j < this.r2Matches.size(); j++) {
                     Hashtable<GraphObject, GraphObject> m2Map = this.r2Matches.get(j);
                     Match m2 = BaseFactory.theFactory().createMatch(r2, isoG.getTarget());
@@ -474,40 +429,30 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             //			final Match m1test, 
             final OrdinaryMorphism com1test,
             final Match m2) {
-
         if (this.jointlyMatches == null) {
             this.jointlyMatches = getJointlyMatches(this.r1Matches, this.r2Matches);
         }
-
         if (!this.jointlyMatches.isEmpty()) {
 //			System.out.println("### getChangeUseAttributeConflictAtGraph...");
-
             Enumeration<List<GraphObject>> jointly = this.jointlyMatches.keys();
             while (jointly.hasMoreElements()) {
                 List<GraphObject> jointlyObjs = jointly.nextElement();
-
                 Hashtable<GraphObject, GraphObject> m1Map = this.jointlyMatches.get(jointlyObjs).first;
-
                 if (m1Map != m1map) {
                     continue;
                 }
-
                 Hashtable<GraphObject, GraphObject> m2Map = this.jointlyMatches.get(jointlyObjs).second;
-
                 boolean critical = false;
                 for (int i = 0; i < jointlyObjs.size(); i++) {
                     GraphObject o = jointlyObjs.get(i);
                     GraphObject go1 = getOriginalOfImage(o, m1Map);
-
                     if (super.preservedChanged.contains(go1)) {
 //						 check attrs
                         GraphObject go2 = getOriginalOfImage(o, m2Map);
                         GraphObject img2 = m2.getImage(go2);
-
                         GraphObject img1changed = com1test.getImage(r1.getImage(go1));
 //						System.out.println("###  img2: "+img2);
 //						System.out.println("###  img1changed: " +img1changed);
-
                         if (!checkChangeUseAttribute(img2, img1changed, changedAttrsL1)) {
                             o.setCritical(true);
 //							System.out.println("### Critical host graph obj: \n"+o);
@@ -539,7 +484,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             //			final Match m1test, 
             final OrdinaryMorphism com1test,
             final Match m2) {
-
 //		System.out.println("### getChangeForbidAttributeConflictAtGraph... "+r1.getName()+" && "+r2.getName());
         // now check change-forbid attribute after apply r1
         final List<OrdinaryMorphism> nacs2 = r2.getNACsList();
@@ -561,14 +505,12 @@ public class CriticalRulePairAtGraph extends ExcludePair {
 //							final GraphObject prepreimg1 = preimgL1.nextElement();
                             // check attrs
                             final GraphObject nac2go = nac2Star.getInverseImage(o).next();
-
                             if (checkChangeForbidAttribute(nac2go, o, changedAttrsL1)) {
                                 o.setCritical(true);
                                 critical = true;
                             }
                         }
                     }
-
                 }
                 if (critical) {
 //					System.out.println("### Critical NAC: "+nac2.getName());
@@ -589,18 +531,15 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             final Rule r2,
             final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1,
             final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2) {
-
 //		System.out.println("### getChangeAttributeConflictsAtGraph... ("+r1.getName()+", "+r2.getName()+")");
 //		System.out.println("### to change: "+super.preservedChanged);
         List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> result = new Vector<>();
-
         for (int i = 0; i < this.r1Matches.size(); i++) {
             OrdinaryMorphism isoG = this.graph.isomorphicCopy();
             if (isoG == null) {
                 result = null;
                 return null;
             }
-
             Hashtable<GraphObject, GraphObject> m1Map = this.r1Matches.get(i);
             Match m1 = BaseFactory.theFactory().createMatch(r1, isoG.getTarget());
             if (setMapping(m1, isoG, m1Map)) {
@@ -613,7 +552,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                     m1 = null;
                     continue;
                 }
-
                 for (int j = 0; j < this.r2Matches.size(); j++) {
                     Hashtable<GraphObject, GraphObject> m2Map = this.r2Matches.get(j);
                     Match m2 = BaseFactory.theFactory().createMatch(r2, isoG.getTarget());
@@ -630,7 +568,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                             if (p != null) {
                                 result.add(p);
                             }
-
 //							check change-forbid attribute after apply r1
                             p = this.getChangeForbidAttributeConflictAtGraph(
                                     r1, r2,
@@ -647,7 +584,7 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                 }
             }
         }
-        if (!result.isEmpty()) { 
+        if (!result.isEmpty()) {
             return result;
         }
         result = null;
@@ -658,24 +595,19 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             final GraphObject other,
             final GraphObject changed,
             final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrs) {
-
         ValueTuple otherAttr = (ValueTuple) other.getAttribute();
         if (otherAttr == null) {
             return true;
         }
-
         List<Pair<ValueMember, ValueMember>> vec = changedAttrs.get(changed.getType().getAttrType());
         if (vec == null) {
             return true;
         }
-
         for (int i = 0; i < vec.size(); i++) {
             Pair<ValueMember, ValueMember> p = vec.get(i);
             ValueMember vmLeft = p.first;
 //			ValueMember vmRight = p.second;
-
             ValueMember vmChanged = ((ValueTuple) changed.getAttribute()).getValueMemberAt(vmLeft.getName());
-
             ValueMember vmOther = otherAttr.getValueMemberAt(vmLeft.getName());
             if (vmOther.isSet()) {
                 if (vmOther.getExpr().isVariable()) {
@@ -691,7 +623,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                 }
             }
         }
-
         return true;
     }
 
@@ -699,24 +630,19 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             final GraphObject other,
             final GraphObject changed,
             final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrs) {
-
         ValueTuple otherAttr = (ValueTuple) other.getAttribute();
         if (otherAttr == null) {
             return true;
         }
-
         List<Pair<ValueMember, ValueMember>> vec = changedAttrs.get(changed.getType().getAttrType());
         if (vec == null) {
             return true;
         }
-
         for (int i = 0; i < vec.size(); i++) {
             Pair<ValueMember, ValueMember> p = vec.get(i);
             ValueMember vmLeft = p.first;
 //			ValueMember vmRight = p.second;
-
             ValueMember vmChanged = ((ValueTuple) changed.getAttribute()).getValueMemberAt(vmLeft.getName());
-
             ValueMember vmOther = otherAttr.getValueMemberAt(vmLeft.getName());
             if (vmOther.isSet()) {
                 if (vmOther.getExpr().isVariable()) {
@@ -732,7 +658,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
                 }
             }
         }
-
         return true;
     }
 
@@ -742,7 +667,6 @@ public class CriticalRulePairAtGraph extends ExcludePair {
         if (var.isSet()) {
             return var.getExprAsText();
         }
-
         return null;
     }
 }

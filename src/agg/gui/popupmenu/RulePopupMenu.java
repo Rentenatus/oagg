@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: RulePopupMenu.java,v 1.18 2010/09/19 16:25:01 olga Exp $
 package agg.gui.popupmenu;
@@ -16,14 +17,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdNestedApplCond;
 import agg.editor.impl.EdRule;
 import agg.editor.impl.EdRuleScheme;
@@ -42,17 +41,14 @@ public class RulePopupMenu extends JPopupMenu {
     public RulePopupMenu(GraGraTreeView tree) {
         super("Rule");
         this.treeView = tree;
-
         this.miAC = new JMenuItem("New GAC (General Application Condition)");
         this.add(miAC);
         this.miAC.setActionCommand("newNestedAC");
         this.miAC.addActionListener(this.treeView.getActionAdapter());
-
         this.miAC1 = new JMenuItem("Make GAC due to RHS");
         this.add(miAC1);
         this.miAC1.setActionCommand("makeGACFromRHS");
         this.miAC1.addActionListener(this.treeView.getActionAdapter());
-
         this.miFormula = new JMenuItem("Set Formula above GACs");
         this.add(miFormula);
         this.miFormula.setActionCommand("setFormulaAboveACs");
@@ -61,52 +57,40 @@ public class RulePopupMenu extends JPopupMenu {
                 setFormula();
             }
         });
-
         addSeparator();
-
         this.miNAC = add(new JMenuItem(
                 "New NAC                                 Shift+Alt+N"));
         this.miNAC.setActionCommand("newNAC");
         this.miNAC.addActionListener(this.treeView.getActionAdapter());
         // miNAC.setMnemonic('N');
-
         this.miNAC1 = add(new JMenuItem(
                 "Make NAC due to RHS               "));
         this.miNAC1.setActionCommand("makeNACFromRHS");
         this.miNAC1.addActionListener(this.treeView.getActionAdapter());
-
         addSeparator();
-
         this.miPAC = add(new JMenuItem("New PAC                                 "));// Shift+Alt+A
         this.miPAC.setActionCommand("newPAC");
         this.miPAC.addActionListener(this.treeView.getActionAdapter());
         // miPAC.setMnemonic('P');
         addSeparator();
-
         this.miPostAC = add(new JMenuItem("Create Post Conditions"));
         this.miPostAC.setActionCommand("convertAtomicsOfRule");
         this.miPostAC.addActionListener(this.treeView.getActionAdapter());
-
         this.miPostACdel = add(new JMenuItem("Delete Post Conditions"));
         this.miPostACdel.setActionCommand("deleteRuleConstraints");
         this.miPostACdel.addActionListener(this.treeView.getActionAdapter());
-
         addSeparator();
-
         this.miLayer = add(new JMenuItem(
                 "Set Layer                                 Shift+Alt+L"));
         this.miLayer.setActionCommand("setRuleLayer");
         this.miLayer.addActionListener(this.treeView.getActionAdapter());
         // miLayer.setMnemonic('L');
-
         this.miPriority = add(new JMenuItem(
                 "Set Priority                              Shift+Alt+P"));
         this.miPriority.setActionCommand("setRulePriority");
         this.miPriority.addActionListener(this.treeView.getActionAdapter());
         // miPriority.setMnemonic('P');
-
         addSeparator();
-
         this.miAttrContext = add(new JMenuItem("Attribute Context"));
         this.miAttrContext.setActionCommand("attrContext");
         this.miAttrContext.addActionListener(new ActionListener() {
@@ -114,7 +98,6 @@ public class RulePopupMenu extends JPopupMenu {
                 ((AGGAppl) treeView.getFrame()).getGraGraEditor().loadRuleAttrContextInEditor(rule);
             }
         });
-
         this.miSignature = add(new JMenuItem("Signature"));
         this.miSignature.setActionCommand("ruleSignature");
         this.miSignature.setToolTipText(RuleSignatureDialog.getToolTipText());
@@ -124,9 +107,7 @@ public class RulePopupMenu extends JPopupMenu {
                 (new RuleSignatureDialog(treeView.getFrame(), new Point(200, 200), rule)).setVisible(true);
             }
         });
-
         addSeparator();
-
         this.miParallelApply = new JCheckBoxMenuItem("Parallel Matching");
         this.miParallelApply.setActionCommand("allowParallelApply");
         this.miParallelApply.addActionListener(new ActionListener() {
@@ -139,21 +120,16 @@ public class RulePopupMenu extends JPopupMenu {
             }
         });
         add(this.miParallelApply);
-
         addSeparator();
-
         this.miMove = add(new JMenuItem("Move"));
         this.miMove.setActionCommand("moveRule");
         this.miMove.addActionListener(this.treeView.getActionAdapter());
         // miMove.setMnemonic('M');
-
         addSeparator();
-
         this.miCopy = add(new JMenuItem(
                 "Copy                                       Shift+Alt+D"));
         this.miCopy.setActionCommand("copyRule");
         this.miCopy.addActionListener(this.treeView.getActionAdapter());
-
         this.miInverse = add(new JMenuItem("Make Inverse Rule"));
         this.miInverse.setActionCommand("reverseRule");
         this.miInverse.addActionListener(new ActionListener() {
@@ -161,7 +137,6 @@ public class RulePopupMenu extends JPopupMenu {
                 reverseRule();
             }
         });
-
         this.miMinimal = add(new JMenuItem("Make Minimal Rule"));
         this.miMinimal.setActionCommand("minimalRule");
         this.miMinimal.addActionListener(new ActionListener() {
@@ -169,7 +144,6 @@ public class RulePopupMenu extends JPopupMenu {
                 minimalRule();
             }
         });
-
         this.miMakeRS = add(new JMenuItem("Make Rule Scheme"));
         this.miMakeRS.setActionCommand("makeRuleScheme");
 //		this.miMakeRS.addActionListener(this.treeView);
@@ -178,27 +152,21 @@ public class RulePopupMenu extends JPopupMenu {
                 makeRuleScheme();
             }
         });
-
 //		miConcurrent = add(new JMenuItem("Make Disjoint Concurrent Rule With Next Rule"));
 //		miConcurrent.setActionCommand("concurrentRule");
 //		miConcurrent.addActionListener(treeView);
         addSeparator();
-
         this.miDelete = add(new JMenuItem(
                 "Delete                                              Delete"));
         this.miDelete.setActionCommand("deleteRule");
         this.miDelete.addActionListener(this.treeView.getActionAdapter());
         // miDelete.setMnemonic('D');
-
         addSeparator();
-
         this.miDisabled = new JCheckBoxMenuItem("disabled");
         this.miDisabled.setActionCommand("disableRule");
         this.miDisabled.addActionListener(this.treeView.getActionAdapter());
         add(this.miDisabled);
-
         addSeparator();
-
         this.miAnimated = new JCheckBoxMenuItem("animated");
         this.miAnimated.setActionCommand("animatedRule");
 //		this.miAnimated.addActionListener(treeView);
@@ -208,9 +176,7 @@ public class RulePopupMenu extends JPopupMenu {
             }
         });
         add(this.miAnimated);
-
         addSeparator();
-
         this.miWait = new JCheckBoxMenuItem("Wait Before Applying Rule");
         this.miWait.setActionCommand("waitBeforeApplyRule");
 //		this.miWait.addActionListener(treeView);
@@ -220,15 +186,12 @@ public class RulePopupMenu extends JPopupMenu {
             }
         });
         add(this.miWait);
-
         addSeparator();
-
         this.miComment = add(new JMenuItem("Textual Comments"));
         // miComment = new JMenuItem("Textual Comments");
         this.miComment.setActionCommand("commentRule");
         this.miComment.addActionListener(this.treeView.getActionAdapter());
         // miComment.setMnemonic('T');
-
         pack();
         setBorderPainted(true);
     }
@@ -237,7 +200,6 @@ public class RulePopupMenu extends JPopupMenu {
         if (this.treeView == null) {
             return false;
         }
-
         if (this.treeView.getTree().getRowForLocation(x, y) != -1) {
             int pl = this.treeView.getTree().getPathForLocation(x, y).getPath().length;
             if (pl == 3) {
@@ -250,19 +212,15 @@ public class RulePopupMenu extends JPopupMenu {
                     GrammarTreeNode.expand(this.treeView, this.node, this.path);
                     this.posX = x;
                     this.posY = y;
-
                     setAllEnabled(true);
                     this.miDisabled.setSelected(!this.rule.getBasisRule().isEnabled());
                     this.miParallelApply.setSelected(this.rule.getBasisRule().isParallelApplyEnabled());
-
                     this.miAnimated.setEnabled(this.rule.getTypeSet().getTypeGraph() != null
                             && !this.rule.getTypeSet().getTypeGraph().getArcs().isEmpty());
                     if (this.miAnimated.isEnabled()) {
                         this.miAnimated.setSelected(this.rule.isAnimated());
                     }
-
                     this.miWait.setSelected(this.rule.getBasisRule().isWaitBeforeApplyEnabled());
-
                     return true;
                 }
             }
@@ -300,16 +258,12 @@ public class RulePopupMenu extends JPopupMenu {
                 " An empty graph is the case where all nodes are connected by AND.",
                 true);
         d.setExportJPEG(this.treeView.getGraphicsExportJPEG());
-
         String oldformula = this.rule.getBasisRule().getFormulaStr();
-
 //		List<String> allVars = this.rule.getBasisRule().getNameOfEnabledACs();
         List<EdNestedApplCond> allNestedACs = this.rule.getEnabledACs();
         List<NestedApplCond> list = makeFrom(allNestedACs);
-
         d.setVarsAsObjs(allNestedACs, oldformula);
         d.setLocation(this.posX + 20, this.posY + 20);
-
         while (true) {
             d.setVisible(true);
             if (!d.isCanceled()) {
@@ -358,7 +312,6 @@ public class RulePopupMenu extends JPopupMenu {
                         .getUserObject()).isApplFormula()) {
                     this.treeView.getTreeModel().removeNodeFromParent((DefaultMutableTreeNode) child);
                 }
-
                 // add formula tree node into rule subtree
                 if (!"true".equals(f)) {
                     final ApplFormulaTreeNodeData conddata = new ApplFormulaTreeNodeData(f, true, this.rule);
@@ -383,7 +336,6 @@ public class RulePopupMenu extends JPopupMenu {
                     "", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
         GraGraTreeNodeData data = (GraGraTreeNodeData) node.getUserObject();
         TreePath graPath = this.path.getParentPath();
@@ -396,7 +348,6 @@ public class RulePopupMenu extends JPopupMenu {
             treeView.putRuleIntoTree(inverseRule,
                     (DefaultMutableTreeNode) node.getParent(),
                     ((DefaultMutableTreeNode) node.getParent()).getIndex(node) + 1);
-
             if (!inverseRule.getBasisRule().getErrorMsg().equals("")) {
                 String warnMsg = inverseRule.getBasisRule().getErrorMsg().replaceAll(";", "<br>");
                 warnMsg = warnMsg.replaceAll("\n", "<br>");
@@ -437,7 +388,6 @@ public class RulePopupMenu extends JPopupMenu {
                     "", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
         GraGraTreeNodeData data = (GraGraTreeNodeData) node.getUserObject();
         TreePath graPath = this.path.getParentPath();
@@ -450,7 +400,6 @@ public class RulePopupMenu extends JPopupMenu {
             treeView.putRuleIntoTree(minRule,
                     (DefaultMutableTreeNode) node.getParent(),
                     ((DefaultMutableTreeNode) node.getParent()).getIndex(node) + 1);
-
             if (minRule.getBasisRule().getErrorMsg().indexOf("identical") >= 0) {
                 String warnMsg = minRule.getBasisRule().getErrorMsg();
                 JOptionPane.showMessageDialog(treeView.getFrame(),
@@ -483,7 +432,6 @@ public class RulePopupMenu extends JPopupMenu {
                     "", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
         GraGraTreeNodeData data = (GraGraTreeNodeData) node.getUserObject();
         TreePath graPath = this.path.getParentPath();
@@ -496,7 +444,6 @@ public class RulePopupMenu extends JPopupMenu {
             treeView.putRuleSchemeIntoTree(rs,
                     (DefaultMutableTreeNode) node.getParent(),
                     ((DefaultMutableTreeNode) node.getParent()).getIndex(node) + 1);
-
             JOptionPane.showMessageDialog(treeView.getFrame(),
                     "<html><body>"
                     + "The new rule scheme:  "
@@ -512,20 +459,15 @@ public class RulePopupMenu extends JPopupMenu {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-
     GraGraTreeView treeView;
     TreePath path;
     DefaultMutableTreeNode node;
     GraGraTreeNodeData data;
     EdRule rule;
-
     int posX, posY;
-
     private JMenuItem miDelete, miDisabled, miAC, miAC1, miFormula, miNAC, miNAC1, miPAC,
             miParallelApply, miAnimated, miPostAC, miPostACdel,
             miLayer, miPriority, miCopy, miInverse, miMinimal, miMakeRS, //miConcurrent, 
             miMove, miWait, miComment, miAttrContext, miSignature;
-
     boolean enableNestedAC;
-
 }

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
@@ -14,16 +15,17 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.HandlerExpr;
 import agg.util.Disposable;
 
 /**
- * Contains declarations and values of context variables; Note that this class does NOT implement the AttrContext
- * interface; The actual implementation for it is the wrapper class ContextView, which allows to restrict access to a
- * context while sharing actual state (variables, conditions, mappings). An example are the different access rights of
- * the left and the right rule side in graph transformation.
+ * Contains declarations and values of context variables; Note that this class
+ * does NOT implement the AttrContext interface; The actual implementation for
+ * it is the wrapper class ContextView, which allows to restrict access to a
+ * context while sharing actual state (variables, conditions, mappings). An
+ * example are the different access rights of the left and the right rule side
+ * in graph transformation.
  *
  * @see ContextView
  * @author $Author: olga $
@@ -33,53 +35,46 @@ public class ContextCore extends ManagedObject implements Serializable,
         Disposable {
 
     static final long serialVersionUID = 4267479295340570839L;
-
     /**
      * Kind of mapping in this context, PLAIN_MAP or MATCH_MAP.
      */
     protected int mapStyle;
-
     /**
      * Parent context of this context, chain of inheritance.
      */
     protected ContextCore parent = null;
-
     /**
-     * Table of mappings. (Hashtable of Vectors of TupleMapping, key is the target object)
+     * Table of mappings. (Hashtable of Vectors of TupleMapping, key is the
+     * target object)
      */
     protected Hashtable<ValueTuple, Vector<TupleMapping>> mappings = new Hashtable<ValueTuple, Vector<TupleMapping>>();
-
     /**
      * Conditions of this context.
      */
     protected CondTuple conditions;
-
     /**
      * Variables and parameters of this context.
      */
     protected VarTuple variables;
-
     /**
      * Flag; when set, mapping removals are deferred.
      */
     transient protected boolean isFrozen = false;
-
     /**
      * Container with deferred mapping removals.
      */
     transient protected Vector<TupleMapping> delayedMappingRemovals = null;
-
     transient private String errorMsg;
-
     transient private boolean variableContext = false;
     transient private boolean ignoreConstContext = false;
-
 //	/** Zaehlt die Objekte */
     // transient private static int COUNTER = 0;
+
     /**
      * Creating a new root context.
      *
-     * @param mapStyle The kind of mapping that is done within this context; it is one of:
+     * @param mapStyle The kind of mapping that is done within this context; it
+     * is one of:
      * <dl>
      * <dt> -
      * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule mapping
@@ -94,7 +89,8 @@ public class ContextCore extends ManagedObject implements Serializable,
     /**
      * Creating a new child context.
      *
-     * @param mapStyle The kind of mapping that is allowed within this context; it is one of:
+     * @param mapStyle The kind of mapping that is allowed within this context;
+     * it is one of:
      * <dl>
      * <dt> -
      * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transformation: rule mapping
@@ -116,7 +112,6 @@ public class ContextCore extends ManagedObject implements Serializable,
             parentVars = parent.getVariables();
             parentCond = parent.getConditions();
         }
-
         this.variables = new VarTuple(manager, new ContextView(manager, this),
                 parentVars);
         this.conditions = new CondTuple(manager, new ContextView(manager, this),
@@ -125,7 +120,8 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     /**
-     * Creates a new VarTuple instance and rewrites the already existing VarTuple instance.
+     * Creates a new VarTuple instance and rewrites the already existing
+     * VarTuple instance.
      */
     public void resetVariableTuple() {
         VarTuple parentVars = this.parent != null ? this.parent.getVariables() : null;
@@ -133,7 +129,8 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     /**
-     * Creates a new CondTuple instance and rewrites the already existing CondTuple instance.
+     * Creates a new CondTuple instance and rewrites the already existing
+     * CondTuple instance.
      */
     public void resetConditionTuple() {
         CondTuple parentCond = this.parent != null ? this.parent.getConditions() : null;
@@ -144,10 +141,8 @@ public class ContextCore extends ManagedObject implements Serializable,
         this.mapStyle = context.mapStyle;
         this.errorMsg = "";
         this.variableContext = context.isVariableContext();
-
         this.variables = new VarTuple(this.manager, new ContextView(this.manager, this), null);
         this.variables.makeCopyOf(context.getVariables());
-
         this.conditions = new CondTuple(this.manager, new ContextView(this.manager, this), null);
         this.conditions.makeCopyOf(context.getConditions());
     }
@@ -167,14 +162,6 @@ public class ContextCore extends ManagedObject implements Serializable,
             this.variables.dispose();
             this.variables = null;
         }
-    }
-
-    protected final void finalize() {
-        if (this.delayedMappingRemovals != null || this.manager != null || this.parent != null
-                || this.conditions != null || this.variables != null) {
-            dispose();
-        }
-        // COUNTER--;
     }
 
     public String getErrorMsg() {
@@ -201,7 +188,8 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     /**
-     * Switching on of the freeze mode; mapping removals are deferred until 'defreeze()' is called.
+     * Switching on of the freeze mode; mapping removals are deferred until
+     * 'defreeze()' is called.
      */
     public void freeze() {
         if (this.delayedMappingRemovals == null) {
@@ -219,10 +207,12 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     /**
-     * A variable context mins that mainly variables will be used as values of the graph objects of a graph, so if a
-     * rule / match attribute context has an attribute condition, it cannot be evaluated and will get TRUE as result.
-     * This feature is mainly used for critical pair analysis, where the attribute conditions will be handled
-     * especially. Do not use this setting for common transformation.
+     * A variable context mins that mainly variables will be used as values of
+     * the graph objects of a graph, so if a rule / match attribute context has
+     * an attribute condition, it cannot be evaluated and will get TRUE as
+     * result. This feature is mainly used for critical pair analysis, where the
+     * attribute conditions will be handled especially. Do not use this setting
+     * for common transformation.
      */
     public void setVariableContext(boolean b) {
         this.variableContext = b;
@@ -288,7 +278,8 @@ public class ContextCore extends ManagedObject implements Serializable,
     /**
      * Removing a mapping.
      *
-     * @return 'true' if the mapping was contained in this context at all, 'false' otherwise.
+     * @return 'true' if the mapping was contained in this context at all,
+     * 'false' otherwise.
      */
     public boolean removeMapping(TupleMapping mapping) {
         ValueTuple target = mapping.getTarget();
@@ -301,7 +292,6 @@ public class ContextCore extends ManagedObject implements Serializable,
                 return false;
             }
             this.delayedMappingRemovals.addElement(mapping);
-
         } else {
             mapping.removeNow();
         }
@@ -336,7 +326,8 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     /**
-     * Tests if a variable has already been declared in this context or in any of its parents;
+     * Tests if a variable has already been declared in this context or in any
+     * of its parents;
      *
      * @param name The name of the variable
      * @return 'true' if "name" is declared, 'false' otherwise
@@ -346,8 +337,8 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     /**
-     * Adding a new declaration; "name" is a key and must not have been previously used for a declaration in this
-     * context or any of its parents.
+     * Adding a new declaration; "name" is a key and must not have been
+     * previously used for a declaration in this context or any of its parents.
      *
      * @param name The name of the variable to declare
      * @param type The type of the variable
@@ -366,8 +357,8 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     /**
-     * Removing a declaration from this context; Parent contextes are NOT considered; Does nothing if the variable
-     * "name" is not declared;
+     * Removing a declaration from this context; Parent contextes are NOT
+     * considered; Does nothing if the variable "name" is not declared;
      *
      * @param name The name of the variable to remove
      */
@@ -388,8 +379,9 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     /**
-     * Checking if a variable can be set to a given value without violating the application conditions. Note: if the
-     * conditions are violated already, this method returns 'true' for any 'value', unless 'value' contradicts a
+     * Checking if a variable can be set to a given value without violating the
+     * application conditions. Note: if the conditions are violated already,
+     * this method returns 'true' for any 'value', unless 'value' contradicts a
      * previously set non-null value for the variable.
      */
     public boolean canSetValue(String name, ValueMember value) {
@@ -430,29 +422,28 @@ public class ContextCore extends ManagedObject implements Serializable,
      *
      * @param name Name of the variable to assign to
      * @param value Value to assign
-     * @exception NoSuchVariableException If the name is not declared in this context.
+     * @exception NoSuchVariableException If the name is not declared in this
+     * context.
      */
     public void setValue(String name, ValueMember value)
             throws NoSuchVariableException {
-
         VarMember vm = getVariables().getVarMemberAt(name);
         if (vm == null) {
             throw new NoSuchVariableException(name);
         }
-
         HandlerExpr he = value.getExpr();
         vm.unifyWith(he);
         if (value.getExprAsText().equals("null")) {
             vm.setExprAsText("null");
         }
-
     }
 
     /**
      * Removing a variable
      *
      * @param name Name of the variable to remove
-     * @exception NoSuchVariableException If the name is not declared in this context.
+     * @exception NoSuchVariableException If the name is not declared in this
+     * context.
      */
     public void removeValue(String name) throws NoSuchVariableException {
         if (isDeclared(name)) {
@@ -465,7 +456,8 @@ public class ContextCore extends ManagedObject implements Serializable,
      * Getting the value of a variable.
      *
      * @param name Name of the variable to get the value from
-     * @exception NoSuchVariableException If the name is not declared in this context.
+     * @exception NoSuchVariableException If the name is not declared in this
+     * context.
      */
     public ValueMember getValue(String name) {
         ValueMember value;
@@ -475,7 +467,6 @@ public class ContextCore extends ManagedObject implements Serializable,
         }
         return value;
     }
-
 }
 /*
  * $Log: ContextCore.java,v $

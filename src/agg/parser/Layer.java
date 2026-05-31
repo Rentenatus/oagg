@@ -2,16 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
 /**
- * This class provides basic access to layered objects. These layer are implemented in several classes.
+ * This class provides basic access to layered objects. These layer are
+ * implemented in several classes.
  *
  * @deprecated
  * @author $Author: olga $
@@ -32,7 +34,6 @@ public interface Layer {
      * @return A specific layer function.
      */
     public LayerFunction getLayer();
-
 }
 /*
  * $Log: Layer.java,v $

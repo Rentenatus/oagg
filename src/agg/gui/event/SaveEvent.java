@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.event;
 
 import java.awt.Component;
 import java.util.EventObject;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.saveload.GraGraSave;
 
@@ -26,17 +26,11 @@ import agg.gui.saveload.GraGraSave;
 public class SaveEvent extends EventObject {
 
     public static final int SAVE = 0;
-
     public static final int PROGRESS_BEGIN = 1;
-
     public static final int PROGRESS_FINISHED = 2;
-
     public static final int EMPTY_ERROR = 3;
-
     public static final int IO_ERROR = 4;
-
     public static final int CLOSE_ERROR = 5;
-
     public static final int SAVED = 6;
 
     public SaveEvent(Object source, int key, String fileName) {
@@ -99,17 +93,10 @@ public class SaveEvent extends EventObject {
     public EdGraGra getGraGra() {
         return this.gragra;
     }
-
     private int msgkey;
-
     private String msg;
-
     private String msg1;
-
     private String name;
-
     private EdGraGra gragra;
-
     private Component component;
-
 }

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -52,24 +54,15 @@ import java.util.List;
 public class AtomApplCond implements Evaluable {
 
     private int old_tick;
-
     private boolean old_val;
-
     private AtomConstraint itsAtomConstraint;
-
 //	private MorphCompletionStrategy strategy;
-
     /* The precondition. */
     private OrdinaryMorphism cond; // R--cond-->S
-
     private OrdinaryMorphism po_t; // S--po_t-->T
-
     private OrdinaryMorphism po_q; // C--po_q-->T
-
     private Vector<AtomApplCond> equivalents;
-
     private int n; // premise match counter
-
     private final BaseFactory bf = BaseFactory.theFactory();
 
     public AtomApplCond() {
@@ -176,7 +169,6 @@ public class AtomApplCond implements Evaluable {
                 || (this.po_t.getImage() != this.po_q.getImage())) {
             return false;
         }
-
         return true;
     }
 
@@ -206,25 +198,20 @@ public class AtomApplCond implements Evaluable {
         // get co-match morphism
         final OrdinaryMorphism co_match = (OrdinaryMorphism) pair.first;
 //		showMorphismData(co_match);
-
         // get match morphism
         final Match orig_match = (Match) (OrdinaryMorphism) pair.second;
-
         if ((co_match == null)
                 || (orig_match == null)
                 || !getBase().equals(co_match.getOriginal())) { // RHS of rule
             return false;
         }
-
         // original match completion strategy
 //		strategy = orig_match.getCompletionStrategy();
         final Graph H = co_match.getImage();
         final Graph S = getPre();
-
         // extend attr context of the current match by variables of graph S
         AttrContext ac = orig_match.getAttrContext();
         declareVariables(ac, S);
-
         /*
 		 * co_match: R->H satisfies this condition, if for each p: S->H, with m =
 		 * p o cond where S is getPre() and p injective and total, there is a f:
@@ -238,11 +225,9 @@ public class AtomApplCond implements Evaluable {
         OrdinaryMorphism p_morph = this.bf.createMorphism(S, H, true);
         // Graph S can contain expressions, do unset it
         p_morph.unsetOriginalAttrsIfExpression();
-
         OrdinaryMorphism p = this.bf.createMatchfromMorph(p_morph, ac);
         // NOTE: make own completion strategy of p
         final Completion_CSP strategy1 = new Completion_InjCSP();
-
 //		if (strategy.getProperties().get(CompletionPropertyBits.INJECTIVE)) {
 //			if (strategy.getProperties().get(CompletionPropertyBits.DANGLING))
 //				strategy1.getProperties().set(CompletionPropertyBits.DANGLING);
@@ -254,12 +239,10 @@ public class AtomApplCond implements Evaluable {
 //				strategy1.getProperties().set(CompletionPropertyBits.IDENTIFICATION);
 //		}
         p.setCompletionStrategy(strategy1, true);
-
         declareConditions(p.getAttrContext(),
                 getT().getAttrContext().getConditions());
         p.removeUnusedVariableOfAttrContext();
         p.disableUnusedAttrCondition();
-
         // test output to see value of variables and mappings
 //		((VarTuple)p.getAttrContext().getVariables()).showVariables();		
 //		showMorphismData(p);
@@ -267,13 +250,11 @@ public class AtomApplCond implements Evaluable {
         boolean premiseOK = false;
         boolean conclusionOK = false;
         boolean found = false;
-
         this.n = 0;
         while (!found && p.nextCompletionWithConstantsChecking()) {
 //			System.out.println("****  p.nextCompletionWithConstantsChecking");
             check = this.cond.compose(p);
             premiseOK = check.isIsomorphicTo(co_match);
-
             // test output to see value of variables and mappings	
 //			((VarTuple)p.getAttrContext().getVariables()).showVariables();
 //			this.showMorphismData(p);
@@ -281,11 +262,9 @@ public class AtomApplCond implements Evaluable {
             if (!premiseOK) {
                 continue;
             }
-
             // check conditions of atomic graph constraint
             renameVariableInCondition(p);
             premiseOK = checkAttrCondition(p);
-
             if (premiseOK) {
 //				System.out.println("****  premiseOK");
                 this.n++;
@@ -304,20 +283,17 @@ public class AtomApplCond implements Evaluable {
                         f = null;
                     }
                 }
-
                 if (f != null) {
                     // note: make own completion strategy of fmatch
                     // Note: strategy2 should be non-injective !!
                     final Completion_CSP strategy2 = new Completion_CSP(true);
 //					final Completion_CSP strategy2 = new Completion_CSP();
 //					strategy2.getProperties().clear(CompletionPropertyBits.INJECTIVE);
-
 //					if (strategy.getProperties().get(CompletionPropertyBits.DANGLING)) 
 //						strategy2.getProperties().set(CompletionPropertyBits.DANGLING);
 //					if (strategy.getProperties().get(CompletionPropertyBits.IDENTIFICATION))	
 //						strategy2.getProperties().set(CompletionPropertyBits.IDENTIFICATION);						
 //					strategy2.showProperties();
-
                     /* Now look if the attributes match. */
                     if (fmatch == null) {
                         fmatch = this.bf.createMorphfromMorph(f,
@@ -332,13 +308,11 @@ public class AtomApplCond implements Evaluable {
                             fmatch = null;
                         }
                     }
-
                     if (fmatch != null) {
                         ac = fmatch.getAttrContext();
                         // test output to see value of variables and mappings	
 //						((VarTuple)fmatch.getAttrContext().getVariables()).showVariables();
 //						this.showMorphismData(p);
-
                         /*
 						 * And now try different completions of fmatch for the
 						 * rest of requirements (the combinations with po_t and
@@ -347,7 +321,6 @@ public class AtomApplCond implements Evaluable {
                          */
                         if (!fmatch.isTotal()) {
                             // f = T --> H : not total, try  nextCompletion
-
                             while (fmatch.nextCompletionWithConstantsChecking()) {
                                 // f o t : Injective ? f o q : Injective ?
 //								System.out.println("p:: "+p.getSource().hashCode()+"   "+p.getTarget().hashCode());
@@ -356,84 +329,68 @@ public class AtomApplCond implements Evaluable {
                                     continue;
                                 }
 //								showMorphismData(fmatch);
-
                                 // handle attribute context of fmatch
                                 renameVariableInCondition(fmatch);
-
                                 final Vector<String> helpVars = new Vector<String>();
                                 final Vector<String> testVars = new Vector<String>();
-
                                 // set value of variable of po_t 
                                 // by value inside of graph H 
                                 setValueToVariable(fmatch, getT().getImage(),
                                         helpVars, testVars);
-
                                 // add condition of po_t to fmatch
                                 declareConditions(fmatch.getAttrContext(),
                                         getT().getAttrContext().getConditions());
                                 markUsedVariables(fmatch);
                                 markAttrConditions(fmatch.getAttrContext());
-
                                 // test output to see value of variables and mappings	
 //								((VarTuple)fmatch.getAttrContext().getVariables()).showVariables();
 //								this.showMorphismData(p);
                                 // check condition of fmatch
                                 conclusionOK = checkAttrCondition(fmatch);
-
                                 // do unset variable of po_t and help value
                                 unsetVariable((VarTuple) fmatch.getAttrContext().getVariables(),
                                         helpVars, testVars);
-
                                 found = conclusionOK;
 //								System.out.println("conclusionOK: "+conclusionOK);
                                 if (found) {
 //									System.out.println(fmatch.getDomainObjects());
 //									System.out.println(fmatch.getSource());
-
                                     break;
                                 }
                             } // while(fmatch.nextCompletion())	
-
                         } else {
                             // fmatch already total
-
                             // f o t : Injective && f o q : Injective ?								
                             conclusionOK = checkConclusionMatchStructure(fmatch);
                             conclusionOK = fmatch.checkConstants();
                             if (conclusionOK) {
 //								showMorphismData(fmatch);
-
                                 // set value of variable of po_t 
                                 // by value inside of graph H 
                                 final Vector<String> helpVars = new Vector<String>();
                                 final Vector<String> testVars = new Vector<String>();
                                 setValueToVariable(fmatch, getT().getImage(),
                                         helpVars, testVars);
-
                                 // add conditions of po_t to fmatch
                                 declareConditions(
                                         fmatch.getAttrContext(),
                                         getT().getAttrContext().getConditions());
                                 markUsedVariables(fmatch);
                                 markAttrConditions(fmatch.getAttrContext());
-
                                 // test output to see value of variables and mappings	
 //								((VarTuple)fmatch.getAttrContext().getVariables()).showVariables();
 //								this.showMorphismData(p);
                                 // check condition of fmatch
                                 conclusionOK = checkAttrCondition(fmatch);
 //								System.out.println(this.getClass().getName()+" >>>2)  fmatch:  "+conclusionOK);
-
                                 unsetVariable((VarTuple) fmatch.getAttrContext().getVariables(),
                                         helpVars, testVars);
-
                                 found = conclusionOK;
 //								System.out.println("(total) conclusionOK: "+conclusionOK);
                             }
                         }
                         f.clear();
                         fmatch.clear();
-
                         if (!found) {
                             // test this.equivalents
                             for (int l = 0; l < this.equivalents.size() && !found; l++) {
@@ -445,24 +402,19 @@ public class AtomApplCond implements Evaluable {
                                 }
                             }
                         }
-
                     }
                 }
             } // if(premiseOK)
         } // while(p.nextComletion
-
         p.enableUnusedAttrCondition();
-
         if (this.n == 0) {
             found = true;
         }
-
         this.bf.destroyMorphism(p);
         this.bf.destroyMorphism(p_morph);
         this.bf.destroyMorphism(f);
         this.bf.destroyMorphism(fmatch);
         this.bf.destroyMorphism(check);
-
         return found;
     }
 
@@ -499,7 +451,6 @@ public class AtomApplCond implements Evaluable {
                 if (this.po_q.hasInverseImage(inv1)) {
                     inv_q1 = this.po_q.firstOfInverseImage(inv1);
                 }
-
                 // ab hier kann kritisch werden!						
                 if (inv_q1 != null) {
                     while (oInverses.hasNext()) {
@@ -521,9 +472,7 @@ public class AtomApplCond implements Evaluable {
 //				?????
 //				return false;
             }
-
         }
-
         // f o t : Injective ?
         final OrdinaryMorphism check1 = this.po_t.compose(conclMatch);
         boolean conclusionOK = check1.isInjective();
@@ -531,7 +480,6 @@ public class AtomApplCond implements Evaluable {
             // f o q : Injective ?
             final OrdinaryMorphism check2 = this.po_q.compose(conclMatch);
             conclusionOK = check2.isInjective();
-
             this.bf.destroyMorphism(check1);
             this.bf.destroyMorphism(check2);
         }
@@ -564,7 +512,6 @@ public class AtomApplCond implements Evaluable {
     private Vector<AtomApplCond> createEquivalents() {
 //		System.out.println(this.getClass().getName()+".createEquivalents()...");
         final Vector<AtomApplCond> v = new Vector<AtomApplCond>(0);
-
         final Iterator<GraphObject> eq = this.po_q.getCodomain();
         while (eq.hasNext()) {
             final GraphObject objTq = eq.next();
@@ -572,13 +519,11 @@ public class AtomApplCond implements Evaluable {
                 // objTq is from C without P
                 if (this.po_q.hasInverseImage(objTq)) {
 //					GraphObject objC = this.po_q.firstOfInverseImage(objTq) ;
-
                     final Iterator<GraphObject> et = this.po_t.getCodomain();
                     while (et.hasNext()) {
                         final GraphObject objTt = et.next();
                         if (!this.po_q.hasInverseImage(objTt)) {
                             // objTt is from S without P, also from R
-
                             boolean canGlue = false;
                             if (objTq.isNode()
                                     && objTt.isNode()
@@ -592,7 +537,6 @@ public class AtomApplCond implements Evaluable {
                                 canGlue = canGlueArcs((Arc) objTt, (Arc) objTq);
 //								System.out.println("glue arcs: "+	objTt+"   "+objTq+"   "+canGlue);
                             }
-
                             if (canGlue) {
                                 boolean shouldDestroy = false;
                                 OrdinaryMorphism isoT = this.po_t.getTarget().isomorphicCopy();
@@ -608,7 +552,6 @@ public class AtomApplCond implements Evaluable {
                                     } catch (BadMappingException ex) {
                                         System.out.println(ex.getLocalizedMessage());
                                     }
-
                                     OrdinaryMorphism equivalentQ = this.bf.createMorphism(
                                             this.po_q.getSource(),
                                             isoT.getTarget(), true);
@@ -618,14 +561,12 @@ public class AtomApplCond implements Evaluable {
                                     } catch (BadMappingException ex) {
                                         System.out.println(ex.getLocalizedMessage());
                                     }
-
                                     if (equivalentT.isTotal()
                                             && equivalentQ.isTotal()) {
                                         // find objects to glue
                                         final GraphObject glue = isoT.getImage(objTq);
                                         final GraphObject keep = isoT.getImage(objTt);
                                         final GraphObject obj_glue = equivalentQ.firstOfInverseImage(glue);
-
                                         boolean mappingOK = true;
                                         if (glue.getAttribute() == null
                                                 && keep.getAttribute() == null) {
@@ -646,7 +587,6 @@ public class AtomApplCond implements Evaluable {
                                                 mappingOK = false;
                                             }
                                         }
-
                                         if (mappingOK) {
                                             try {
                                                 if (obj_glue.isNode()) {
@@ -665,7 +605,6 @@ public class AtomApplCond implements Evaluable {
                                                 mappingOK = false;
                                             }
                                         }
-
                                         boolean allTotal = true;
                                         if (mappingOK) {
                                             if (!equivalentT.isTotal()) {
@@ -675,13 +614,11 @@ public class AtomApplCond implements Evaluable {
                                                 allTotal = allTotal && equivalentQ.nextCompletion();
                                             }
                                         }
-
                                         try {
                                             isoT.addMapping(objTt, keep);
                                         } catch (BadMappingException e) {
                                             mappingOK = false;
                                         }
-
                                         if (mappingOK) {
                                             if (!isoT.isTotal()) {
                                                 allTotal = allTotal && isoT.nextCompletion();
@@ -697,21 +634,17 @@ public class AtomApplCond implements Evaluable {
                                             declareConditions(equivalentQ.getAttrContext(),
                                                     this.po_q.getAttrContext()
                                                             .getConditions());
-
                                             v.add(new AtomApplCond(this.itsAtomConstraint,
                                                     this.cond,
                                                     equivalentT,
                                                     equivalentQ));
 //											break;
-
                                         } else {
                                             shouldDestroy = true;
                                         }
-
                                     } else {
                                         shouldDestroy = true;
                                     }
-
                                     if (shouldDestroy) {
                                         this.bf.destroyMorphism(equivalentQ);
                                         equivalentQ = null;
@@ -761,7 +694,6 @@ public class AtomApplCond implements Evaluable {
     private void resetAttrsAfterGlue(
             final GraphObject keep,
             final GraphObject obj_glue) {
-
         if (keep.isNode()) {
             resetAttribute(
                     (ValueTuple) obj_glue.getAttribute(),
@@ -783,7 +715,6 @@ public class AtomApplCond implements Evaluable {
             final OrdinaryMorphism tarMorph,
             final OrdinaryMorphism srcMorph1,
             final OrdinaryMorphism srcMorph2) throws BadMappingException {
-
         // set available mappings from po_t
         final Iterator<Node> tDomNodes = srcMorph1.getSource().getNodesSet().iterator();
         while (tDomNodes.hasNext()) {
@@ -834,10 +765,8 @@ public class AtomApplCond implements Evaluable {
     private void renameVariableInCondition(final OrdinaryMorphism morph) {
         final Graph C = this.po_q.getSource();
 //		Graph T = this.po_q.getTarget();
-
         final CondTuple conds = (CondTuple) morph.getAttrContext().getConditions();
         final Vector<String> condVars = conds.getAllVariables();
-
         for (int j = 0; j < condVars.size(); j++) {
             doRenameVarInCond(conds, C.getNodesSet().iterator());
             doRenameVarInCond(conds, C.getArcsSet().iterator());
@@ -847,13 +776,11 @@ public class AtomApplCond implements Evaluable {
     private void doRenameVarInCond(
             final CondTuple conds,
             final Iterator<?> elems) {
-
         while (elems.hasNext()) {
             final GraphObject goC = (GraphObject) elems.next();
             if (goC.getAttribute() == null) {
                 continue;
             }
-
             final ValueTuple valueC = (ValueTuple) goC.getAttribute();
             for (int i = 0; i < valueC.getSize(); i++) {
                 final ValueMember valC = valueC.getValueMemberAt(i);
@@ -901,7 +828,6 @@ public class AtomApplCond implements Evaluable {
             final String from,
             final String to,
             final VarTuple vars) {
-
         for (int j = 0; j < node.jjtGetNumChildren(); j++) {
             SimpleNode snode = (SimpleNode) node.jjtGetChild(j);
             if (snode instanceof ASTPrimaryExpression) {
@@ -911,10 +837,8 @@ public class AtomApplCond implements Evaluable {
                         findPrimaryAndReplace(n1, from, to, vars);
                     }
                 }
-
                 if (snode.getString().equals(from)) {
                     SymbolTable symbs = SimpleNode.getSymbolTable();
-
                     boolean to_found = false;
                     ContextView context = (ContextView) symbs;
                     VarTuple vt = (VarTuple) context.getVariables();
@@ -958,24 +882,23 @@ public class AtomApplCond implements Evaluable {
     }
 
     /**
-     * Not declared variables of the Graph g will be declared in attribute context of the OrdinaryMorphism fmatch and
-     * restored into Vector helpVars. The variables of the source graph of the OrdinaryMorphism fmatch those are not in
-     * helpVars will be stored into Vector testVars. The attribute values of the image graph of the fmatch will be
-     * adopted by the help variables.
+     * Not declared variables of the Graph g will be declared in attribute
+     * context of the OrdinaryMorphism fmatch and restored into Vector helpVars.
+     * The variables of the source graph of the OrdinaryMorphism fmatch those
+     * are not in helpVars will be stored into Vector testVars. The attribute
+     * values of the image graph of the fmatch will be adopted by the help
+     * variables.
      */
     private void setValueToVariable(final OrdinaryMorphism fmatch, final Graph g,
             final Vector<String> helpVars, final Vector<String> testVars) {
-
         // jetzt werden Variablen aus po_t durch Values aus H belegt
         final AttrContext ac = fmatch.getAttrContext();
         final Vector<String> v = declareVariables(ac, g);
-
         while (v.elements().hasMoreElements()) {
             final String vn = v.elements().nextElement();
             helpVars.add(vn);
             v.remove(vn);
         }
-
         doSetValueToVar(ac, fmatch, helpVars, testVars,
                 fmatch.getSource().getNodesSet().iterator());
         doSetValueToVar(ac, fmatch, helpVars, testVars,
@@ -988,7 +911,6 @@ public class AtomApplCond implements Evaluable {
             final Vector<String> helpVars,
             final Vector<String> testVars,
             final Iterator<?> elems) {
-
         while (elems.hasNext()) {
             final GraphObject go = (GraphObject) elems.next();
             if (go.getAttribute() == null) {
@@ -1011,7 +933,6 @@ public class AtomApplCond implements Evaluable {
                                 vm.setExprAsText(value);
                                 testVars.addElement(varname);
                             }
-
                             for (int j = 0; j < helpVars.size(); j++) {
                                 final String vn = helpVars.get(j);
                                 if (varname.equals(vn)) {
@@ -1030,8 +951,9 @@ public class AtomApplCond implements Evaluable {
     }
 
     /**
-     * Unset variable of VarTuple varTuple, if it was used as a test or a help variable. Vector testVars contains the
-     * names of test variables. Vector helpVars contains the names of help variables.
+     * Unset variable of VarTuple varTuple, if it was used as a test or a help
+     * variable. Vector testVars contains the names of test variables. Vector
+     * helpVars contains the names of help variables.
      */
     private void unsetVariable(final VarTuple varTuple, final Vector<String> helpVars,
             final Vector<String> testVars) {
@@ -1051,15 +973,14 @@ public class AtomApplCond implements Evaluable {
     }
 
     /**
-     * Declare variables of the graph g in attribute context ac, if there are not already declared. Returns vector with
-     * names of the new declared variables.
+     * Declare variables of the graph g in attribute context ac, if there are
+     * not already declared. Returns vector with names of the new declared
+     * variables.
      */
     private Vector<String> declareVariables(final AttrContext ac, final Graph g) {
         final Vector<String> results = new Vector<String>();
-
         doDeclareVars(ac, g.getNodesSet().iterator(), results);
         doDeclareVars(ac, g.getArcsSet().iterator(), results);
-
         return results;
     }
 
@@ -1067,7 +988,6 @@ public class AtomApplCond implements Evaluable {
             final AttrContext ac,
             final Iterator<?> elems,
             final Vector<String> results) {
-
         final ContextView cv = (ContextView) ac;
         while (elems.hasNext()) {
             final GraphObject go = (GraphObject) elems.next();
@@ -1090,7 +1010,8 @@ public class AtomApplCond implements Evaluable {
     }
 
     /**
-     * Add attribute condition member from AttrConditionTuple conds to AttrContext ac, if it is not already in ac.
+     * Add attribute condition member from AttrConditionTuple conds to
+     * AttrContext ac, if it is not already in ac.
      */
     private void declareConditions(final AttrContext ac, final AttrConditionTuple conds) {
         final AttrConditionTuple condTuple = ac.getConditions();
@@ -1114,7 +1035,6 @@ public class AtomApplCond implements Evaluable {
     private void markAttrConditions(final AttrContext attrContext) {
         final VarTuple avt = (VarTuple) attrContext.getVariables();
         final CondTuple act = (CondTuple) attrContext.getConditions();
-
         for (int k = 0; k < act.getSize(); k++) {
             final CondMember cm = act.getCondMemberAt(k);
             cm.setMark(CondMember.LHS);
@@ -1152,7 +1072,6 @@ public class AtomApplCond implements Evaluable {
                 }
             }
         }
-
         for (Iterator<Arc> e2 = m.getTarget().getArcsSet().iterator(); e2.hasNext();) {
             final GraphObject o = e2.next();
             if (o.getAttribute() == null) {
@@ -1169,7 +1088,6 @@ public class AtomApplCond implements Evaluable {
                 }
             }
         }
-
         for (Iterator<Node> e1 = m.getSource().getNodesSet().iterator(); e1.hasNext();) {
             final GraphObject o = e1.next();
             if (o.getAttribute() == null) {
@@ -1215,7 +1133,6 @@ public class AtomApplCond implements Evaluable {
     public String getName() {
         return "Unnamed";
     }
-
     /*	
 	private void showMorphismData(final OrdinaryMorphism m) {
 		System.out.println("Morphism data:  source graph, target graph, mappings::");

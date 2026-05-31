@@ -1,19 +1,18 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
-import java.util.List;
+import agg.attribute.AttrInstance;
 import java.util.ArrayList;
 import java.util.List;
-
-import agg.attribute.AttrInstance;
 
 @SuppressWarnings("serial")
 public class UndirectedArc extends Arc {
@@ -25,7 +24,6 @@ public class UndirectedArc extends Arc {
             final GraphObject src,
             final GraphObject tar,
             final Graph context) {
-
         super(attr, type, src, tar, context);
         this.directed = false;
     }
@@ -34,7 +32,6 @@ public class UndirectedArc extends Arc {
             final GraphObject src,
             final GraphObject tar,
             final Graph context) {
-
         super(type, src, tar, context);
         this.directed = false;
     }
@@ -43,7 +40,6 @@ public class UndirectedArc extends Arc {
             final GraphObject src,
             final GraphObject tar,
             final Graph context) {
-
         super(orig.getType(), src, tar, context);
         this.directed = false;
     }
@@ -62,7 +58,6 @@ public class UndirectedArc extends Arc {
     public void dispose() {
         ((Node) this.itsTarget).removeOut(this);
         ((Node) this.itsSource).removeOut(this);
-
         super.dispose();
     }
 
@@ -81,8 +76,9 @@ public class UndirectedArc extends Arc {
     }
 
     /**
-     * Converts my type to the inverse type key string that can be used for search operations:      <code> ((Arc) this).getTarget().getType().convertToKey()
-	 * + ((Arc) this).getType().convertToKey()
+     * Converts my type to the inverse type key string that can be used for
+     * search operations:      <code> ((Arc) this).getTarget().getType().convertToKey()
+     * + ((Arc) this).getType().convertToKey()
      * + ((Arc) this).getSource().getType().convertToKey()
      * </code>
      */
@@ -97,10 +93,8 @@ public class UndirectedArc extends Arc {
 
     public List<String> convertToInverseKeyParentExtended() {
         final List<String> list = new ArrayList<String>();
-
         List<Type> mySrcParents = this.getSource().getType().getAllParents();
         List<Type> myTarParents = this.getTarget().getType().getAllParents();
-
         for (int i = 0; i < mySrcParents.size(); ++i) {
             for (int j = 0; j < myTarParents.size(); ++j) {
                 String keystr = myTarParents.get(i).convertToKey()
@@ -189,11 +183,9 @@ public class UndirectedArc extends Arc {
         ((Node) this.itsSource).removeOut(this);
         this.itsSource = n;
         n.addOut(this);
-
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
-
         this.keyStr2 = this.itsTarget.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsSource.getType().convertToKey());
@@ -203,11 +195,9 @@ public class UndirectedArc extends Arc {
         ((Node) this.itsTarget).removeIn(this);
         this.itsTarget = n;
         n.addOut(this);
-
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
-
         this.keyStr2 = this.itsTarget.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsSource.getType().convertToKey());
@@ -234,7 +224,4 @@ public class UndirectedArc extends Arc {
         }
         return result;
     }
-
 }
-
-

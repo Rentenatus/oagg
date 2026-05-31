@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.util;
 
@@ -21,13 +22,9 @@ import java.util.EventObject;
 public class RowDragEvent extends EventObject {
 
     static final long serialVersionUID = 5394805885112306429L;
-
     public static final int STARTED = 0;
-
     public static final int STOPPED = 0;
-
     public static final int MOVED = 0;
-
     int src, tar, eventID;
 
     public RowDragEvent(TableRowDragger dr, int id, int s, int t) {
@@ -49,7 +46,6 @@ public class RowDragEvent extends EventObject {
         return this.tar;
     }
 }
-
 /*
  * $Log: RowDragEvent.java,v $
  * Revision 1.3  2010/09/23 08:15:16  olga

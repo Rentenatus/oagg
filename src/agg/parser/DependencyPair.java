@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -17,7 +19,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import agg.attribute.AttrType;
 import agg.attribute.impl.CondMember;
 import agg.attribute.impl.CondTuple;
@@ -42,10 +43,11 @@ import agg.xt_basis.TypeError;
 import agg.xt_basis.TypeException;
 import agg.xt_basis.TypeSet;
 import agg.util.Pair;
-
 // ****************************************************************************+
+
 /**
- * This class implements an algorithm to decide whether two rules are dependent: the first rule enables the second.
+ * This class implements an algorithm to decide whether two rules are dependent:
+ * the first rule enables the second.
  *
  * @author $Author: olga $
  */
@@ -59,26 +61,18 @@ public class DependencyPair extends ExcludePair {
 	 * if it doesn't exist, we have switch dependency of (r1, r2).
      */
     protected boolean switchDependency;
-
     protected boolean makeConcurrentRules;
-
     protected boolean completeConcurrency = true;
-
     protected boolean maxOverlapping;
-
     protected List<ConcurrentRule> concurrentRules;
-
     // isoRight: R -> Rcopy  of Rule r1
     protected OrdinaryMorphism isoRight1;
-
 //	 isoLeft: L -> Lcopy  of Rule r1
     protected OrdinaryMorphism isoLeft1;
-
     // key: NAC, value: Pair
     // Pair.first: L -> Lcopy+NAC, 
     // Pair.second: NAC -> Lcopy+NAC
     protected Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftNAC2extLeft;
-
     // key: PAC, value: Pair
     // Pair.first: L -> Lcopy+PAC, 
     // Pair.second: PAC -> Lcopy+PAC
@@ -113,10 +107,11 @@ public class DependencyPair extends ExcludePair {
     }
 
     /**
-     * Makes abstract inverse rule r_1 : r.RHS -> r.LHS. That means: - copy r.RHS to be LHS of the result rule, - copy
-     * t.LHS to be RHS of the result rule, - convert rule morphism, - convert NACs and PACs, - replace attr. expression
-     * of RHS by variable, - convert attr. conditions. Note: the specified rule r has to be injective, otherwise returns
-     * null.
+     * Makes abstract inverse rule r_1 : r.RHS -> r.LHS. That means: - copy
+     * r.RHS to be LHS of the result rule, - copy t.LHS to be RHS of the result
+     * rule, - convert rule morphism, - convert NACs and PACs, - replace attr.
+     * expression of RHS by variable, - convert attr. conditions. Note: the
+     * specified rule r has to be injective, otherwise returns null.
      */
     protected Rule makeInverseRule(final Rule r) {
         InverseRuleConstructData inverseConstruct = r.getInverseConstructData();
@@ -206,18 +201,15 @@ public class DependencyPair extends ExcludePair {
     private OrdinaryMorphism convertNACLeft2Right(
             final Rule r,
             final OrdinaryMorphism nac) {
-
         // isoLHS: L -> Lcopy
         OrdinaryMorphism isoLHS = r.getLeft().isomorphicCopy();
         if (isoLHS == null) {
             return null;
         }
-
         // extLHSbyNAC: NAC -> Lcopy+NAC
         OrdinaryMorphism extLHSbyNAC = extendLeftGraphByNAC(isoLHS, nac, false);
         // extLHSbyNAC.getSource() == nac.getTarget()
         applyAttrContextOfAC(extLHSbyNAC, nac);
-
         Graph extLeftGraph = extLHSbyNAC.getTarget();
         Match m = (BaseFactory.theFactory()).createMatch(r, extLeftGraph, true, "1");
         // extLeftGraph is the graph m.getTarget() 
@@ -254,19 +246,16 @@ public class DependencyPair extends ExcludePair {
                 }
             }
         }
-
         if (!m.isTotal() || !m.isDanglingSatisfied()) {
             m.dispose();
             extLHSbyNAC.dispose();
             isoLHS.dispose(false, true);
             return null;
         }
-
         // make pushout (r, m) to extend (L+NAC) by new objects 
         // and so to get (R+NAC)
         try {
             OrdinaryMorphism nacR = (OrdinaryMorphism) TestStep.execute(m, true, this.equalVariableNameOfAttrMapping);
-
             // now remove objects belonging to R only
             // first remove arcs
             Iterator<Arc> rhsArcs = r.getTarget().getArcsSet().iterator();
@@ -308,7 +297,6 @@ public class DependencyPair extends ExcludePair {
                     }
                 }
             }
-
             // replace attr value of the converted NAC
             lhsNodes = r.getLeft().getNodesSet().iterator();
             while (lhsNodes.hasNext()) {
@@ -330,16 +318,13 @@ public class DependencyPair extends ExcludePair {
                     replaceAttrValueFromTo(nacArc, convertedArc);
                 }
             }
-
             // we have a new right NAC
             nacR.setName(nac.getName());
             // save help info
             if (this.leftNAC2extLeft != null) {
                 this.leftNAC2extLeft.put(nac, new Pair<OrdinaryMorphism, OrdinaryMorphism>(isoLHS, extLHSbyNAC));
             }
-
             return nacR;
-
         } catch (TypeException tex) {
             m.dispose();
             extLHSbyNAC.dispose();
@@ -351,7 +336,6 @@ public class DependencyPair extends ExcludePair {
     private void applyAttrContextOfAC(
             final OrdinaryMorphism extLHSbyCond,
             final OrdinaryMorphism cond) {
-
         doApplyAttrContextOfNAC_PAC(extLHSbyCond, cond.getTarget().getNodesSet().iterator());
         doApplyAttrContextOfNAC_PAC(extLHSbyCond, cond.getTarget().getArcsSet().iterator());
     }
@@ -359,14 +343,12 @@ public class DependencyPair extends ExcludePair {
     private void doApplyAttrContextOfNAC_PAC(
             final OrdinaryMorphism extLHSbyCond,
             final Iterator<?> objs) {
-
         while (objs.hasNext()) {
             final GraphObject src = (GraphObject) objs.next();
             final GraphObject img = extLHSbyCond.getImage(src);
             if (src.getAttribute() == null || img == null) {
                 continue;
             }
-
             final ValueTuple srcvt = (ValueTuple) src.getAttribute();
             final ValueTuple imgvt = (ValueTuple) img.getAttribute();
             for (int i = 0; i < srcvt.getNumberOfEntries(); i++) {
@@ -388,7 +370,6 @@ public class DependencyPair extends ExcludePair {
             final Rule r,
             final Rule inverseRule,
             final OrdinaryMorphism isoRHS) {
-
         final List<OrdinaryMorphism> pacs = r.getPACsList();
         for (int i = 0; i < pacs.size(); i++) {
             final OrdinaryMorphism pacL = pacs.get(i);
@@ -428,18 +409,15 @@ public class DependencyPair extends ExcludePair {
     private OrdinaryMorphism convertPACLeft2Right(
             final Rule r,
             final OrdinaryMorphism pac) {
-
         // isoLHS: L -> Lcopy
         OrdinaryMorphism isoLHS = r.getLeft().isomorphicCopy();
         if (isoLHS == null) {
             return null;
         }
-
         // extLHSbyPAC: NAC -> Lcopy+PAC
         OrdinaryMorphism extLHSbyPAC = extendLeftGraphByPAC(isoLHS, pac, false).second;
         // extLHSbyPAC.getSource() == pac.getTarget()
         applyAttrContextOfAC(extLHSbyPAC, pac);
-
         Graph extLeftGraph = extLHSbyPAC.getTarget();
         Match m = (BaseFactory.theFactory()).createMatch(r, extLeftGraph, true, "1");
         // extLeftGraph is the graph m.getTarget() 
@@ -476,17 +454,14 @@ public class DependencyPair extends ExcludePair {
                 }
             }
         }
-
         if (!m.isTotal() || !m.isDanglingSatisfied()) {
             m.dispose();
             extLHSbyPAC.dispose();
             isoLHS.dispose(false, true);
             return null;
         }
-
         try {
             OrdinaryMorphism pacR = (OrdinaryMorphism) TestStep.execute(m, true, this.equalVariableNameOfAttrMapping);
-
             Iterator<Arc> rhsArcs = r.getTarget().getArcsSet().iterator();
             while (rhsArcs.hasNext()) {
                 Arc a = rhsArcs.next();
@@ -506,7 +481,6 @@ public class DependencyPair extends ExcludePair {
                     }
                 }
             }
-
             Iterator<Node> rhsNodes = r.getTarget().getNodesSet().iterator();
             while (rhsNodes.hasNext()) {
                 Node n = rhsNodes.next();
@@ -526,7 +500,6 @@ public class DependencyPair extends ExcludePair {
                     }
                 }
             }
-
             // replace attr value of the converted NAC
             lhsNodes = r.getLeft().getNodesSet().iterator();
             while (lhsNodes.hasNext()) {
@@ -548,13 +521,11 @@ public class DependencyPair extends ExcludePair {
                     replaceAttrValueFromTo(pacArc, convertedArc);
                 }
             }
-
             pacR.setName(pac.getName());
             if (this.leftPAC2extLeft != null) {
                 this.leftPAC2extLeft.put(pac, new Pair<OrdinaryMorphism, OrdinaryMorphism>(isoLHS, extLHSbyPAC));
             }
             return pacR;
-
         } catch (TypeException tex) {
             m.dispose();
             extLHSbyPAC.dispose();
@@ -568,7 +539,6 @@ public class DependencyPair extends ExcludePair {
         if (conds.isEmpty()) {
             return;
         }
-
         CondTuple condsOfInverseR = (CondTuple) inverseR.getAttrContext().getConditions();
         for (int i = 0; i < conds.getNumberOfEntries(); i++) {
             CondMember cond = conds.getCondMemberAt(i);
@@ -669,22 +639,17 @@ public class DependencyPair extends ExcludePair {
 //		System.out.println("#### r1 (second)      : "+r1.getLeft().hashCode()+"  "+r1.getRight().hashCode());
 //		System.out.println("#### orig r2 (first)  : "+orig_r2.getLeft().hashCode()+"  "+orig_r2.getRight().hashCode());
 //		System.out.println("#### inverse r2       : "+inv_r2.getLeft().hashCode()+"  "+inv_r2.getRight().hashCode());
-
         for (int i = 0; i < overlaps.size(); i++) {
             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pi = overlaps.get(i);
-
 //			m1: LHS_R2 -> G
 //			OrdinaryMorphism m1 = pi.first.first;
 //			m2: RHS_R1 -> G
             OrdinaryMorphism m2 = pi.first.second;
-
             // rename the overlap graph 
             String nb = "( " + (count + 1 + i) + " ) ";
-
             if (m2.getTarget().getName().indexOf("delete-") >= 0) {
 //				m2.getTarget().setName(nb+"deliver-delete-dependency");
                 m2.getTarget().setName(nb + CriticalPairData.PRODUCE_DELETE_D_TXT);
-
                 // handle PACs
 //				final List<OrdinaryMorphism> pacs = orig_r2.getPACsList();
 //				for (int j=0; j<pacs.size(); j++) 
@@ -692,13 +657,11 @@ public class DependencyPair extends ExcludePair {
 //					final OrdinaryMorphism pac = pacs.get(j);				
 //					OrdinaryMorphism isoLHS = this.leftPAC2extLeft.get(pac).first;
 //					OrdinaryMorphism extLHS = this.leftPAC2extLeft.get(pac).second;
-
                     if (pi.second != null) {
                         // pi.second.first: LHS_invR2 -> LHS_invR2copy+PAC
                         if (pi.second.first.getSource() == inv_r2.getLeft()) {
                             OrdinaryMorphism isoRHSnew = BaseFactory.theFactory().createMorphism(
                                     this.isoRight1.getSource(), pi.second.first.getTarget());
-
                             Iterator<GraphObject> objs = this.isoRight1.getDomain();
                             while (objs.hasNext()) {
                                 GraphObject obj = objs.next();
@@ -720,23 +683,18 @@ public class DependencyPair extends ExcludePair {
             } else if (m2.getTarget().getName().indexOf("-forbid") >= 0) {
 //				m2.getTarget().setName(nb+"forbid-produce-dependency");
                 m2.getTarget().setName(nb + CriticalPairData.FORBID_PRODUCE_D_TXT);
-
 //				handle NACs				
                 final List<OrdinaryMorphism> nacs = orig_r2.getNACsList();
                 for (int j = 0; j < nacs.size(); j++) {
                     final OrdinaryMorphism nac = nacs.get(j);
-
 //					OrdinaryMorphism isoLHS = this.leftNAC2extLeft.get(nac).first;
                     OrdinaryMorphism extLHS = (this.leftNAC2extLeft != null
                             && this.leftNAC2extLeft.get(nac) != null)
                             ? this.leftNAC2extLeft.get(nac).second : null;
-
                     if (extLHS != null
                             && extLHS.getTarget() == pi.second.second.getSource()) {
-
                         final OrdinaryMorphism isoRHSnew = BaseFactory.theFactory().createMorphism(
                                 this.isoRight1.getSource(), pi.second.first.getTarget());
-
                         Iterator<GraphObject> objs = this.isoRight1.getDomain();
                         while (objs.hasNext()) {
                             final GraphObject obj = objs.next();
@@ -751,10 +709,8 @@ public class DependencyPair extends ExcludePair {
                             }
                         }
                         pi.second.first = isoRHSnew;
-
                         final OrdinaryMorphism isoNACnew = BaseFactory.theFactory().createMorphism(
                                 extLHS.getSource(), pi.second.second.getTarget());
-
                         objs = extLHS.getDomain();
                         while (objs.hasNext()) {
                             final GraphObject obj = objs.next();
@@ -774,7 +730,6 @@ public class DependencyPair extends ExcludePair {
             } else if (m2.getTarget().getName().indexOf("change-") >= 0) {
 //				m2.getTarget().setName(nb+"change-change-dependency");
                 m2.getTarget().setName(nb + CriticalPairData.PRODUCE_CHANGE_D_TXT);
-
                 // handle PACs
 //				final List<OrdinaryMorphism> pacs = orig_r2.getPACsList();
 //				for (int j=0; j<pacs.size(); j++) 
@@ -782,13 +737,10 @@ public class DependencyPair extends ExcludePair {
 //					final OrdinaryMorphism pac = pacs.get(j);				
 //					final OrdinaryMorphism isoLHS = this.leftPAC2extLeft.get(pac).first;
 //					final OrdinaryMorphism extLHS = this.leftPAC2extLeft.get(pac).second;
-
                     if (pi.second != null) {
                         if (pi.second.first.getSource() == inv_r2.getLeft()) {
-
                             OrdinaryMorphism isoRHSnew = BaseFactory.theFactory().createMorphism(
                                     this.isoRight1.getSource(), pi.second.first.getTarget());
-
                             Iterator<GraphObject> objs = this.isoRight1.getDomain();
                             while (objs.hasNext()) {
                                 GraphObject obj = objs.next();
@@ -812,26 +764,26 @@ public class DependencyPair extends ExcludePair {
 
     // ****************************************************************************+
     /**
-     * computes critical pairs of the specified kind. Returns null if the specified rule pair is not critical, otherwise
-     * an object which can explain in which way this pair is critical. One possible object can be a <code>List</code>
-     * of overlapping graphs. If a kind is requested which cannot be computed an <code>InvalidAlgorithmException</code>
-     * is thrown.
+     * computes critical pairs of the specified kind. Returns null if the
+     * specified rule pair is not critical, otherwise an object which can
+     * explain in which way this pair is critical. One possible object can be a
+     * <code>List</code> of overlapping graphs. If a kind is requested which
+     * cannot be computed an <code>InvalidAlgorithmException</code> is thrown.
      *
      * @param kind specifies the kind of critical pair CriticalPair.
      * @param r1 defines the first part which can be critical
      * @param r2 the second part which can be critical
-     * @throws InvalidAlgorithmException Thrown if a illegal algorithm is selected.
+     * @throws InvalidAlgorithmException Thrown if a illegal algorithm is
+     * selected.
      * @return The object which is critic of the two rules
      */
     public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             isCritical(int kind, Rule r1, Rule r2)
             throws InvalidAlgorithmException {
-
         this.r1hasEnabledNACs = r1.hasEnabledNACs();
         this.r1hasEnabledPACs = r1.hasEnabledPACs();
         this.r2hasEnabledNACs = r2.hasEnabledNACs();
         this.r2hasEnabledPACs = r2.hasEnabledPACs();
-
 //		if (r1.hasEnabledACs(false) || r2.hasEnabledACs(false)) {
 //			System.out.println("( "+r1.getName()+"  ,  "+r2.getName()+" )"+"  CPA for rules with GACs is not jet supported.");
 //			throw new InvalidAlgorithmException("CPA for rules with GACs is not jet supported.", 
@@ -846,7 +798,6 @@ public class DependencyPair extends ExcludePair {
                 throw new InvalidAlgorithmException("No such algorithm", kind);
             }
         }
-
         this.ownStrategy = false;
         if (this.strategy == null) {
             this.strategy = (MorphCompletionStrategy) CompletionStrategySelector
@@ -854,7 +805,6 @@ public class DependencyPair extends ExcludePair {
             // this.strategy.showProperties();
             this.ownStrategy = true;
         }
-
         Rule inverseR1 = makeInverseRule(r1);
         if (inverseR1 == null) {
             System.out.println("DependencyPair:  CANNOT make inverse rule! "
@@ -863,7 +813,6 @@ public class DependencyPair extends ExcludePair {
             this.computable = false;
             return null;
         }
-
         this.dependencyCond1 = false; // : L2-->D1  NOT EXIST.
         this.dependencyCond2 = false; // : R1-->D2  NOT EXIST.
         this.checkSwitchDependency = false;
@@ -878,7 +827,6 @@ public class DependencyPair extends ExcludePair {
                 resetAbstractRHS(result);
                 count = result.size();
             }
-
             if (this.switchDependency) {
                 this.checkSwitchDependency = true;
                 this.makeConcurrentRules = false;
@@ -898,9 +846,7 @@ public class DependencyPair extends ExcludePair {
                 }
                 this.checkSwitchDependency = false;
             }
-
             return result;
-
         } else if (kind == CONFLICTFREE) {
             return isExclude(inverseR1, r2);
         } else {
@@ -913,14 +859,12 @@ public class DependencyPair extends ExcludePair {
         if (!this.makeConcurrentRules) {
             return super.isExclude(r1, r2);
         }
-
         // in case of building concurrent rule do this
         // set Type Multiplicity check to be TypeSet.ENABLED_MAX
         this.levelOfTypeGraphCheck = this.grammar.getTypeSet().getLevelOfTypeGraphCheck();
         if (this.levelOfTypeGraphCheck > TypeSet.ENABLED_MAX) {
             this.grammar.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
         }
-
         // check global NACs of r2 before all other checks;
         // if LHS of r1 satisfy a global NAC of r2
         // which disregards all node attributes and does not contain any edges,
@@ -933,16 +877,11 @@ public class DependencyPair extends ExcludePair {
                     + " ]  non-critical.");
             return null;
         }
-
         System.gc();
         freeM = Runtime.getRuntime().freeMemory();
-
         prepareCriticalPairContextData(r1, r2);
-
         boolean canLHS1OverlapLHS2 = canMatchConstantAttributeLHS1intoLHS2(r1, r2);
-
-        final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> resultOverlappings = new Vector< >();
-
+        final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> resultOverlappings = new Vector<>();
         // check delete-use conflicts
         if (//!this.stop && 
                 !this.contextC1_L1.isEmpty() && canLHS1OverlapLHS2) {
@@ -952,13 +891,12 @@ public class DependencyPair extends ExcludePair {
                 deleteUseOverlappings.clear();
             }
         }
-
         // check change-use attribute conflicts
         if (resultOverlappings.isEmpty()) {
             this.preservedChanged.clear();
             this.contextC1_L1.clear();
             this.boundB1_L1.clear();
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1 = new Hashtable< >();
+            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1 = new Hashtable<>();
             // fill preservedChanged vector		
 //			if (this.withNACs) {
 //				ruleChangesAttributes(this.preservedChanged, r1, r2, this.contextC1_L1, this.boundB1_L1,
@@ -988,7 +926,6 @@ public class DependencyPair extends ExcludePair {
                 }
             }
         }
-
         // set index of the overlapping graphs		
         for (int i = 0; i < resultOverlappings.size(); i++) {
             Pair<OrdinaryMorphism, OrdinaryMorphism> morphisms = resultOverlappings.get(i).first;
@@ -1011,10 +948,8 @@ public class DependencyPair extends ExcludePair {
         unsetAllTransientAttrValuesOfRule(r1);
         unsetAllTransientAttrValuesOfRule(r2);
         this.grammar.getTypeSet().setLevelOfTypeGraph(this.levelOfTypeGraphCheck);
- 
 
         usedM = freeM - Runtime.getRuntime().freeMemory();
-
         if (resultOverlappings.isEmpty()) {
             System.out.println("*** ExcludePair.isExclude::  [ "
                     + r1.getName() + ", " + r2.getName()
@@ -1029,8 +964,9 @@ public class DependencyPair extends ExcludePair {
     }
 
     /**
-     * Extends the specified abstract inverse rule <code>inverseR1</code> of the rule <code>r1</code> by converting of
-     * PACs and NACs of the rule <code>r1</code>.
+     * Extends the specified abstract inverse rule <code>inverseR1</code> of the
+     * rule <code>r1</code> by converting of PACs and NACs of the rule
+     * <code>r1</code>.
      *
      * @param r1 original rule
      * @param inverseR1 its abstract inverse rule
@@ -1042,14 +978,12 @@ public class DependencyPair extends ExcludePair {
             final Rule inverseR,
             final OrdinaryMorphism isoRHS) {
 //		System.out.println("inverse Rule : "+inverseR1.getName()+"  mappings: "+inverseR1.getSize());
-
 //		this.leftNAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> ();
 //		this.leftPAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> ();
 //		extend inverse r1 by converting of PACs from LHS to RHS
         if (!this.convertPACsLeft2Right(r, inverseR, isoRHS)) {
             return false;
         }
-
 //		extend inverse r by converting of NACs from LHS to RHS
         this.convertNACsLeft2Right(r, inverseR, isoRHS);
 //		extend inverse r by converting of attr conditions
@@ -1058,7 +992,6 @@ public class DependencyPair extends ExcludePair {
 //		((CondTuple)inverseR1.getAttrContext().getConditions()).showConditions();		
 //		System.out.println("inverse Rule : "+inverseR1.getName()+"  mappings: "+inverseR1.getSize());
 //		((VarTuple) inverseR1.getAttrContext().getVariables()).showVariables();
-
         return true;
     }
 
@@ -1095,7 +1028,6 @@ public class DependencyPair extends ExcludePair {
             } else if (m2.getSource() == this.isoLeft1.getTarget()) {
                 comp2 = this.isoLeft1.compose(m2);
             }
-
             if (comp2 != null) {
                 if (comp2.getSize() == m2.getSize()) {
                     comp2.setName(m2.getName());
@@ -1112,7 +1044,6 @@ public class DependencyPair extends ExcludePair {
             final Rule rule2,
             final Pair<OrdinaryMorphism, OrdinaryMorphism> criticalPair) {
 //		System.out.println("DependencyPair.makeConcurrentRule  of "+originalRule1.getName()+" & "+rule2.getName());
-
         ConcurrentRule cr = new ConcurrentRule(originalRule1, inverseRule1, rule2,
                 this.isoLeft1, this.isoRight1, criticalPair.first, criticalPair.second);
         return cr;
@@ -1123,10 +1054,8 @@ public class DependencyPair extends ExcludePair {
             final Rule inverseRule1,
             final Rule rule2,
             final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps) {
-
 //		System.out.println("DependencyPair.makeConcurrentRules  of "+originalRule1.getName()+" & "+rule2.getName());
-        final List<ConcurrentRule> list = new Vector< >();
-
+        final List<ConcurrentRule> list = new Vector<>();
         if (this.completeConcurrency || overlaps.size() >= 1) { //overlaps.size() == 1) {
             for (int i = overlaps.size() - 1; i >= 0; i--) {
 //			for (int i=0; i<overlaps.size(); i++) {
@@ -1136,7 +1065,6 @@ public class DependencyPair extends ExcludePair {
                 if (pair.second != null) {
                     continue;
                 }
-
                 Pair<OrdinaryMorphism, OrdinaryMorphism> criticalPair = pair.first;
                 ConcurrentRule conrule = makeConcurrentRule(originalRule1, inverseRule1, rule2, criticalPair);
                 if (conrule.getRule() != null) {
@@ -1154,7 +1082,6 @@ public class DependencyPair extends ExcludePair {
                 }
             }
         }
-
         for (int i = 0; i < list.size(); i++) {
             list.get(i).getRule().removeUnusedVariableOfAttrContext();
         }
@@ -1164,9 +1091,7 @@ public class DependencyPair extends ExcludePair {
     private List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getMaxCriticalPair(
                     List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps) {
-
-        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> result = new Vector< >();
-
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> result = new Vector<>();
         int max = 0;
         for (int i = 0; i < overlaps.size(); i++) {
             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pair = overlaps.get(i);
@@ -1175,7 +1100,6 @@ public class DependencyPair extends ExcludePair {
             if (pair.second != null) {
                 continue;
             }
-
             Pair<OrdinaryMorphism, OrdinaryMorphism> criticalPair = pair.first;
             final OrdinaryMorphism m1 = criticalPair.first;
             final OrdinaryMorphism m2 = criticalPair.second;
@@ -1202,7 +1126,6 @@ public class DependencyPair extends ExcludePair {
                 result.add(pair);
             }
         }
-
         return result;
     }
 
@@ -1210,10 +1133,8 @@ public class DependencyPair extends ExcludePair {
             getDeleteUseConflicts1(
                     final Rule r1,
                     final Rule r2) {
-
         System.out.println("    DependencyPair.getDeleteUseConflicts::  [ "
                 + r1.getName() + ", " + r2.getName() + " ] ...");
-
         // check constant attribute of deleted objects of r1
         // against constant attribute of LHS of r2
         // The objects of appropriate type from LHS of r2 
@@ -1221,15 +1142,11 @@ public class DependencyPair extends ExcludePair {
         if (!needMoreCheckDueToDelConstAttr(r1, r2)) {
             return null;
         }
-
         this.cpdKind = CriticalPairData.DELETE_USE_CONFLICT;
-
-        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps = new Vector< >();
-
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps = new Vector<>();
         final Graph g = r1.getLeft();
         int maxSize = r2.getLeft().getSize();
         Iterator<OrdinaryMorphism> pacs2 = r2.getEnabledPACs();
-
         boolean lhs_done = false;
         boolean perform = true;
         while (perform && !this.stop) {
@@ -1237,7 +1154,6 @@ public class DependencyPair extends ExcludePair {
             // test PACs
             OrdinaryMorphism L2isoL2ExtendedByPAC = null;
             Pair<OrdinaryMorphism, OrdinaryMorphism> lhs_pac_pair = null;
-
             OrdinaryMorphism pac = null;
             if (this.withPACs && pacs2.hasNext()) {
                 pac = pacs2.next();
@@ -1245,7 +1161,6 @@ public class DependencyPair extends ExcludePair {
                     continue;
                 }
             }
-
             if (pac != null) {
                 boolean pacCritical = ExcludePairHelper.isCriticalPAC(pac, this.delete);
                 if (pacCritical) {
@@ -1260,20 +1175,16 @@ public class DependencyPair extends ExcludePair {
                     }
                 }
             }
-
             List<List<GraphObject>> inclusions = null;
             List<List<GraphObject>> contextCombis = null;
             this.inclAsGraph = false;
-
             int size = this.contextC1_L1.size();
             if (size > maxSize) {
                 size = maxSize;
             }
-
             contextCombis = ExcludePairHelper.getInclusions(g, size, this.contextC1_L1, true);
             // each inclusion should contain at least one object to delete
             checkInclusions(contextCombis, this.delete);
-
             if (contextCombis.size() == 0) {
                 // continue with next PAC
                 if (pacs2.hasNext()) {
@@ -1282,7 +1193,6 @@ public class DependencyPair extends ExcludePair {
                     break;
                 }
             }
-
             if (namedObjectOnly) {
                 this.checkInclusionsDuetoNamedObject(contextCombis);
                 if (contextCombis.size() == 0) {
@@ -1294,18 +1204,14 @@ public class DependencyPair extends ExcludePair {
                     }
                 }
             }
-
             size = this.preservedK1_L1.size();
             if (size > maxSize) {
                 size = maxSize;
             }
-
             List<List<GraphObject>> preservedCombis = ExcludePairHelper.getPlainCombinedInclusions(
-                    new Vector< >(this.preservedK1_L1), size, g);
-
+                    new Vector<>(this.preservedK1_L1), size, g);
             int ncp = 0; // the number of (contextCombis X preservedCombis)
             int nm = contextCombis.size() - 1;	// the last index of contextCombis
-
             // start a loop beginning by the last vector 
             // to combine this vector of context with all preservedCombis
             int run = 0;
@@ -1315,7 +1221,6 @@ public class DependencyPair extends ExcludePair {
                         // combine one inclusion of contextCombis with all inclusions of preservedCombis
                         inclusions = ExcludePairHelper.combineFirstWithSecondAboveThird(
                                 maxSize, contextCombis.get(nm), preservedCombis, this.boundB1_L1);
-
                         contextCombis.remove(nm); 	// remove last element 
                         nm = contextCombis.size() - 1;	// the last index of contextCombis
                     }
@@ -1324,24 +1229,19 @@ public class DependencyPair extends ExcludePair {
                     inclusions = contextCombis;
                     nm = -1; // break of the while-loop
                 }
-
                 this.inclCount = inclusions.size();
                 run++;
                 System.out.println("(run: " + run + ") to check inclusions: " + this.inclCount + "   already checked: " + ncp);
-
                 int n100 = 0, nn2 = 0;	// counter of 100
                 int i = inclusions.size() - 1;
                 // work from end to begin of the list,  make and check inclusion morphisms
                 while (i >= 0 && !this.stop) {
                     List<GraphObject> inclSet = inclusions.get(i);
                     i--;
-
                     n100++; // counter of 100
-
                     // make overlapping
                     OrdinaryMorphism inclMorphism = null;
                     List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> localOverlaps = null;
-
                     // with LHS of the second rule
                     if (L2isoL2ExtendedByPAC == null) {
                         // with LHS of the second rule
@@ -1355,7 +1255,6 @@ public class DependencyPair extends ExcludePair {
                             localOverlaps = getOverlappingsVectorDeleteUse(r1, r2, inclMorphism);
                             setGraphNameOfDeleteUseConflict(r1, r2, localOverlaps);
                             overlaps.addAll(localOverlaps);
-
                             localOverlaps.clear();
                             localOverlaps = null;
                             inclMorphism.dispose(true, false);
@@ -1370,7 +1269,6 @@ public class DependencyPair extends ExcludePair {
                         if ((inclMorphism != null)
                                 && (lhs_pac_pair.first.getTarget().getNodesCount() >= inclMorphism.getSource().getNodesCount())
                                 && (lhs_pac_pair.first.getTarget().getArcsCount() >= inclMorphism.getSource().getArcsCount())) {
-
                             localOverlaps = getOverlappingsVectorDeleteUse(r1, r2, lhs_pac_pair, inclMorphism);
                             setGraphNameOfDeleteUseConflict(r1, r2, localOverlaps, pacName);
                             for (int x = 0; x < localOverlaps.size(); x++) {
@@ -1383,7 +1281,6 @@ public class DependencyPair extends ExcludePair {
                     }
                     this.inclProgress++;
 //					unsetAllTransientAttrValuesOfRule(r2);
-
                     if (localOverlaps != null) {
                         for (int x = 0; x < localOverlaps.size(); x++) {
                             if (this.maxBoundOfCriticKind == 0
@@ -1391,15 +1288,12 @@ public class DependencyPair extends ExcludePair {
                                 overlaps.add(localOverlaps.get(x));
                             }
                         }
-
                         localOverlaps.clear();
                         localOverlaps = null;
                     }
-
                     if (!this.complete && !overlaps.isEmpty()) {
                         break;
                     }
-
                     if (this.maxBoundOfCriticKind > 0
                             && overlaps.size() >= this.maxBoundOfCriticKind) {
                         break;
@@ -1407,10 +1301,9 @@ public class DependencyPair extends ExcludePair {
                     if (n100 == 100) {
                         nn2++;
                         System.out.println("checked  inclusions: " + n100 * nn2 + "     to check: " + (i + 1));
-                        n100 = 0; 
+                        n100 = 0;
                     }
                 } // while (i>=0 && !this.stop)	over inclusions
-
                 if (stop) {
                     // set this.duIndx 
 //					if (pacName.isEmpty())
@@ -1421,23 +1314,19 @@ public class DependencyPair extends ExcludePair {
                 }
                 // set the number of all valid inclusions
                 ncp = ncp + this.inclCount;
-
                 if (!this.complete && !overlaps.isEmpty()) {
                     break;
                 }
-
                 if (this.maxBoundOfCriticKind > 0
                         && overlaps.size() >= this.maxBoundOfCriticKind) {
                     break;
                 }
             } // while(nm >= 0 && !this.stop)  over contextCombis
-
             inclusions = null;
             contextCombis = null;
             preservedCombis = null;
             perform = (this.withPACs && pacs2.hasNext()) || !lhs_done;
         } // while(perform && !this.stop)
-
         if (this.withPACs) {
             pacs2 = r2.getEnabledPACs();
             while (pacs2.hasNext()) {
@@ -1446,17 +1335,14 @@ public class DependencyPair extends ExcludePair {
             }
         }
         overlaps = this.getMaxCriticalPair(overlaps);
-
         //test overlap graphs and reduce isomorphic
         if (/*!r1.getTypeSet().isArcDirected() && */overlaps.size() > 0) {
             reduceCriticalPairs(overlaps);
-        } 
+        }
         this.cpdKind = -1;
-
         System.out.println("    DependencyPair.getDeleteUseConflicts::  [ "
                 + r1.getName() + ", " + r2.getName() + " ]  " + overlaps.size()
                 + " critical overlapping(s)");
-
         return overlaps;
     }
 
@@ -1464,10 +1350,8 @@ public class DependencyPair extends ExcludePair {
             getDeleteUseConflicts_CR(
                     final Rule r1,
                     final Rule r2) {
-
         System.out.println("    ExcludePair.getDeleteUseConflicts::  [ "
                 + r1.getName() + ", " + r2.getName() + " ] ...");
-
         // check constant attribute of deleted objects of r1
         // against constant attribute of LHS of r2
         // The objects of appropriate type from LHS of r2 
@@ -1475,15 +1359,11 @@ public class DependencyPair extends ExcludePair {
         if (!needMoreCheckDueToDelConstAttr(r1, r2)) {
             return null;
         }
-
         this.cpdKind = CriticalPairData.DELETE_USE_CONFLICT;
-
-        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps = new Vector< >();
-
+        List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps = new Vector<>();
         final Graph g = r1.getLeft();
         int maxSize = r2.getLeft().getSize();
         Iterator<OrdinaryMorphism> pacs2 = r2.getEnabledPACs();
-
         boolean lhs_done = false;
         boolean perform = true;
         while (perform && !this.stop) {
@@ -1491,7 +1371,6 @@ public class DependencyPair extends ExcludePair {
             // test PACs
             OrdinaryMorphism L2isoL2ExtendedByPAC = null;
             Pair<OrdinaryMorphism, OrdinaryMorphism> lhs_pac_pair = null;
-
             OrdinaryMorphism pac = null;
             if (this.withPACs && pacs2.hasNext()) {
                 pac = pacs2.next();
@@ -1499,22 +1378,18 @@ public class DependencyPair extends ExcludePair {
                     continue;
                 }
             }
-
             List<List<GraphObject>> inclusions = null;
             this.inclAsGraph = false;
-
             int size = this.contextC1_L1.size();
             if (size > maxSize) {
                 size = maxSize;
             }
-
             List<List<GraphObject>> contextCombis = ExcludePairHelper.getInclusions(g, size, this.contextC1_L1, true);
             // each inclusion should contain at least one object to delete
             checkInclusions(contextCombis, this.delete);
             if (contextCombis.size() == 0) {
                 break;
             }
-
             if (pac != null) {
                 boolean pacCritical = ExcludePairHelper.isCriticalPAC(pac, this.delete);
                 if (pacCritical) {
@@ -1529,32 +1404,25 @@ public class DependencyPair extends ExcludePair {
                     }
                 }
             }
-
             if (namedObjectOnly) {
                 this.checkInclusionsDuetoNamedObject(contextCombis);
             }
-
             size = this.preservedK1_L1.size();
             if (size > maxSize) {
                 size = maxSize;
             }
-
             List<List<GraphObject>> preservedCombis = ExcludePairHelper.getPlainCombinedInclusions(
-                    new Vector< >(this.preservedK1_L1), size, g);
-
+                    new Vector<>(this.preservedK1_L1), size, g);
             inclusions = ExcludePairHelper.combineInclusions(maxSize, contextCombis,
                     preservedCombis, this.boundB1_L1);
-
             System.out.println("to check inclusions: " + inclusions.size());
             int i = inclusions.size() - 1;
             while (i >= 0 && !this.stop) {
                 List<GraphObject> inclSet = inclusions.get(i);
                 i--;
-
                 // make overlapping
                 OrdinaryMorphism inclMorphism = null;
                 List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> localOverlaps = null;
-
                 // with LHS of the second rule
                 if (L2isoL2ExtendedByPAC == null) {
                     // with LHS of the second rule
@@ -1568,7 +1436,6 @@ public class DependencyPair extends ExcludePair {
                         localOverlaps = getOverlappingsVectorDeleteUse(r1, r2, inclMorphism);
                         setGraphNameOfDeleteUseConflict(r1, r2, localOverlaps);
                         overlaps.addAll(localOverlaps);
-
                         localOverlaps.clear();
                         localOverlaps = null;
                         inclMorphism.dispose(true, false);
@@ -1589,7 +1456,6 @@ public class DependencyPair extends ExcludePair {
                             unsetAllTransientAttrValuesOfOverlapGrah(localOverlaps.get(x).first.first.getTarget());
                         }
                         overlaps.addAll(localOverlaps);
-
                         localOverlaps.clear();
                         localOverlaps = null;
                         inclMorphism.dispose(true, false);
@@ -1597,19 +1463,16 @@ public class DependencyPair extends ExcludePair {
                     }
                     lhs_done = true;
                 }
-
                 //			unsetAllTransientAttrValuesOfRule(r2);
                 if (!this.complete && !overlaps.isEmpty()) {
                     break;
                 }
             }
-
             inclusions = null;
             contextCombis = null;
             preservedCombis = null;
             perform = (this.withPACs && pacs2.hasNext()) || !lhs_done;
         } // while(perform && !this.stop)
-
         if (this.withPACs) {
             pacs2 = r2.getEnabledPACs();
             while (pacs2.hasNext()) {
@@ -1618,18 +1481,15 @@ public class DependencyPair extends ExcludePair {
             }
         }
         overlaps = this.getMaxCriticalPair(overlaps);
-
         //test overlap graphs and reduce isomorphic
         if (/*!r1.getTypeSet().isArcDirected() && */overlaps.size() > 0) {
             reduceCriticalPairs(overlaps);
         }
- 
-        this.cpdKind = -1;
 
+        this.cpdKind = -1;
         System.out.println("    DependencyPair.getDeleteUseConflicts::  [ "
                 + r1.getName() + ", " + r2.getName() + " ]  " + overlaps.size()
                 + " critical overlapping(s)");
-
         return overlaps;
     }
 
@@ -1644,7 +1504,6 @@ public class DependencyPair extends ExcludePair {
             final List<GraphObject> preserved,
             final List<GraphObject> toDelete,
             final List<Pair<Type, Pair<Type, Type>>> neededTypes) {
-
         // first handle nodes
         Iterator<?> e = r.getLeft().getNodesSet().iterator();
         while (e.hasNext()) {
@@ -1674,7 +1533,6 @@ public class DependencyPair extends ExcludePair {
                     if (!context.contains(((Arc) o).getTarget())) {
                         context.add(((Arc) o).getTarget());
                     }
-
                     context.add(o);
                     toDelete.add(o);
                     // remove preserved src, tar of delete edge from preserved container
@@ -1691,14 +1549,13 @@ public class DependencyPair extends ExcludePair {
     List<OrdinaryMorphism> getPotentialCriticalNACsOfR2(
             final Rule r,
             final List<GraphObject> toproduce) {
-        List<OrdinaryMorphism> result = new Vector< >();
+        List<OrdinaryMorphism> result = new Vector<>();
         final List<OrdinaryMorphism> nacs = r.getNACsList();
         for (int l = 0; l < nacs.size(); l++) {
             final OrdinaryMorphism nac = nacs.get(l);
             if (!nac.isEnabled()) {
                 continue;
             }
-
             Hashtable<Type, List<GraphObject>> type2gosNAC2 = new Hashtable<>();
             boolean nacMaybeCritical = false;
             boolean nacAttrConst = false;
@@ -1751,12 +1608,11 @@ public class DependencyPair extends ExcludePair {
                     }
                 }
             }
-
             if (nacMaybeCritical) {
 //				System.out.println("DependencyPair.getPotentialCriticalNACsOfR2:  nac: "+nac.getName());
                 result.add(nac);
             }
-        } 
+        }
         return result;
     }
 
@@ -1769,11 +1625,9 @@ public class DependencyPair extends ExcludePair {
             boolean firstRule,
             final OrdinaryMorphism overlap1,
             final OrdinaryMorphism overlap2) {
-
         Rule r = firstRule ? r1 : r2;
         boolean result = true;
         m.getTarget().setCompleteGraph(false);
-
         if (!m.isTotal()) {
             result = false;
         } else if (!m.isValid(true)) {
@@ -1832,7 +1686,6 @@ public class DependencyPair extends ExcludePair {
                 }
             }
         }
-
         return result;
     }
 

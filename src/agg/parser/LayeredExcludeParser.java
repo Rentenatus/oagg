@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -28,12 +30,14 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-
 //****************************************************************************+
+
 /**
- * This class provides a parser which needs critical pairs. The critical pair must be <code>LayeredExcludePair</code>.
- * So objects has to be instantiated with <code>LayeredExcludePairContainer</code>. To be independent of a grammar it is
- * necessary to instantiate a object with a host graph and stop graph separately.
+ * This class provides a parser which needs critical pairs. The critical pair
+ * must be <code>LayeredExcludePair</code>. So objects has to be instantiated
+ * with <code>LayeredExcludePairContainer</code>. To be independent of a grammar
+ * it is necessary to instantiate a object with a host graph and stop graph
+ * separately.
  *
  * @author $Author: olga $
  * @version $Id: LayeredExcludeParser.java,v 1.17 2010/12/16 17:32:32 olga Exp $
@@ -47,8 +51,9 @@ public class LayeredExcludeParser extends ExcludeParser {
     protected RuleLayer layer;
 
     /**
-     * Creates a new parser. This parser uses critical pair analysis for optimized parsing. Additionally layered graph
-     * grammars provides more efficiency.
+     * Creates a new parser. This parser uses critical pair analysis for
+     * optimized parsing. Additionally layered graph grammars provides more
+     * efficiency.
      *
      * @param grammar The graph grammar.
      * @param hostGraph The host graph.
@@ -65,8 +70,9 @@ public class LayeredExcludeParser extends ExcludeParser {
     }
 
     /**
-     * Creates a new parser. This parser uses critical pair analysis for optimized parsing. Additionally layered graph
-     * grammars provides more efficiency.
+     * Creates a new parser. This parser uses critical pair analysis for
+     * optimized parsing. Additionally layered graph grammars provides more
+     * efficiency.
      *
      * @param grammar The graph grammar.
      * @param hostGraph The host graph.
@@ -90,16 +96,13 @@ public class LayeredExcludeParser extends ExcludeParser {
         System.out.println("### Starting layered exclude parser with CPA...");
         fireParserEvent(new ParserMessageEvent(this,
                 "Starting layered exclude parser ..."));
-
         Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer(); // layer.getRuleLayer());
         SortedSeasonSet<Integer> ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
         for (Enumeration<Integer> en = invertedRuleLayer.keys(); en.hasMoreElements();) {
             ruleLayer.add(en.nextElement());
         }
-
         Integer currentLayer = this.layer.getStartLayer();
         int i = 0;
-
         /*
 		 * haelt alle Matche, die kritisch sind, damit nicht an einer Stelle
 		 * immer wieder angesetzt wird
@@ -109,7 +112,6 @@ public class LayeredExcludeParser extends ExcludeParser {
         if (this.stop) {
             return false;
         }
-
         try {
             conflictFree = this.pairContainer
                     .getContainer(CriticalPair.CONFLICTFREE);
@@ -122,7 +124,6 @@ public class LayeredExcludeParser extends ExcludeParser {
         if (this.stop) {
             return false;
         }
-
         try {
             exclude = this.pairContainer.getContainer(CriticalPair.EXCLUDE);
         } catch (InvalidAlgorithmException iae) {
@@ -130,11 +131,9 @@ public class LayeredExcludeParser extends ExcludeParser {
                     + iae.getMessage()));
             return false;
         }
-
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = new Hashtable< >();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = new Hashtable<>();
         makeLightContainer(exclude, excludeLight);
-
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = new Hashtable< >();
+        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = new Hashtable<>();
         makeLightContainer(conflictFree, conflictFreeLight);
         /*
 		 * makeLightContainer kann nur die Elemente filtern, in denen alle teile
@@ -162,7 +161,6 @@ public class LayeredExcludeParser extends ExcludeParser {
             if (l == null) {
                 continue;
             }
-
             HashSet lRules = invertedRuleLayer.get(l);
             /* fuer alle regeln eines Layeres */
             for (Iterator<?> en2 = lRules.iterator(); en2.hasNext() && !this.stop;) {
@@ -173,7 +171,7 @@ public class LayeredExcludeParser extends ExcludeParser {
                     /* neue Hashtable aufbauen */
                     Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredConflictFreeLight.get(l);
                     if (hashtable == null) {
-                        hashtable = new Hashtable< >();
+                        hashtable = new Hashtable<>();
                         layeredConflictFreeLight.put(l, hashtable);
                     }
                     hashtable.put(r, value);
@@ -185,7 +183,7 @@ public class LayeredExcludeParser extends ExcludeParser {
                         /* neue Hashtable aufbauen */
                         Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredExcludeLight.get(l);
                         if (hashtable == null) {
-                            hashtable = new Hashtable< >();
+                            hashtable = new Hashtable<>();
                             layeredExcludeLight.put(l, hashtable);
                         }
                         hashtable.put(r, value);
@@ -193,7 +191,6 @@ public class LayeredExcludeParser extends ExcludeParser {
                 }
             }
         }// for(Enumeration en =
-
         fireParserEvent(new ParserMessageEvent(this, "Parser initialized"));
         // info only
 //		int count = 0;
@@ -217,7 +214,6 @@ public class LayeredExcludeParser extends ExcludeParser {
                         }
                     }
                 }
-
                 if (!ruleApplied && !this.stop) {
                     Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lExclude = layeredExcludeLight
                             .get(currentLayer);
@@ -236,7 +232,6 @@ public class LayeredExcludeParser extends ExcludeParser {
                                     (MorphCompletionStrategy) this.grammar
                                             .getMorphismCompletionStrategy()
                                             .clone(), true);
-
                             boolean validMatch = false;
                             while (!ruleApplied && m.nextCompletion() && !this.stop) {
                                 if (m.isValid()) {
@@ -271,7 +266,6 @@ public class LayeredExcludeParser extends ExcludeParser {
                             }
                         }// while(keys.hasMoreElements()&& !ruleApplied)
                     }// if(lExclude != null)
-
                     /*
 					 * wenn keine Regel angewendet wurde, dann kann nur noch
 					 * eine kritische Regel angewendet werden.
@@ -287,7 +281,7 @@ public class LayeredExcludeParser extends ExcludeParser {
                             /*
 							 * ERI muss nicht kopiert werden, da nur an
 							 * Entscheidungsstellen der Match/die Matches gemerkt
-							 * werden mssen, die uns m�licherweise auf einen Holzweg
+							 * werden mssen, die uns mÃ¯Â¿Â½licherweise auf einen Holzweg
 							 * fhren. Der Match in ERI ist eine Stufe tiefer (also
 							 * nach Regelanwendung, denn wir l&ouml;schen) nicht
 							 * mehr verfgbar. Dadurch kann ein neues ERI erzeugt
@@ -309,7 +303,6 @@ public class LayeredExcludeParser extends ExcludeParser {
                                     (MorphCompletionStrategy) this.grammar
                                             .getMorphismCompletionStrategy()
                                             .clone(), true);
-
                             boolean notFound = false;
                             while (!n.isValid() && !notFound) {
                                 if (!n.nextCompletion()) {
@@ -328,7 +321,6 @@ public class LayeredExcludeParser extends ExcludeParser {
                             }
                         }
                     }// if(!ruleApplied && savedMatch != null)
-
                     if (!ruleApplied) {
                         /* naechster Layer soll verwendet werden. */
                         i++;
@@ -371,15 +363,12 @@ public class LayeredExcludeParser extends ExcludeParser {
             } catch (EmptyStackException ioe) {
             }
         }
-
         fireParserEvent(new ParserMessageEvent(this,
                 "Stopping parser. Result is " + result + "."));
         this.correct = result;
         return result;
     }
-
 }
-
 
 /*
  * $Log: LayeredExcludeParser.java,v $

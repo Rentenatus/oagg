@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -31,14 +31,11 @@ import java.util.List;
 public class NodeTypeImpl implements Type {
 
     String comment = "";
-
     boolean isAbstract = false;
-
     /**
      * the name of the type
      */
     String itsStringRepr;
-
     /*
 	 * the parent of the type
      */
@@ -47,14 +44,11 @@ public class NodeTypeImpl implements Type {
      * the parents of the type
      */
     final List<Type> itsParents = new ArrayList<>(1);
-
     final List<Type> itsChildren = new ArrayList<>(1);
-
     /**
      * the attributes of the type
      */
     AttrType itsAttrType;
-
     /**
      * an additional String for special informations. It will be saved together
      * with {@link #itsStringRepr} as the name and can contain any information
@@ -62,27 +56,22 @@ public class NodeTypeImpl implements Type {
      * {@link agg.editor.EdType}.
      */
     String additionalRepr;
-
     String imageFileName = "";
-
     /**
      * this value will be true, if a graph object inside of a type graph was
      * defined.
      */
     boolean typeGraphObjectDefined;
-
     /**
      * holds additional info about a type graph node
      */
     TypeGraphNode typeGraphNode;
-
     String keyStr = null;
 
     protected NodeTypeImpl() {
         this.itsAttrType = null;
         this.itsStringRepr = "";
         this.additionalRepr = ":RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:";
-
         this.resetKey();
     }
 
@@ -96,7 +85,6 @@ public class NodeTypeImpl implements Type {
         this.itsAttrType = null;
         this.itsStringRepr = name;
         this.additionalRepr = ":RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:";
-
         this.resetKey();
     }
 
@@ -123,11 +111,9 @@ public class NodeTypeImpl implements Type {
 
     public void dispose() {
         this.itsAttrType = null;
-
         this.itsChildren.clear();
         this.itsParents.clear();
 //		this.itsParent = null;
-
         if (this.typeGraphNode != null) {
             this.typeGraphNode.dispose();
             this.typeGraphNode = null;
@@ -138,7 +124,6 @@ public class NodeTypeImpl implements Type {
     public void createAttributeType() {
         this.itsAttrType = agg.attribute.impl.AttrTupleManager.getDefaultManager()
                 .newType();
-
         for (int i = 0; i < this.getParents().size(); i++) {
             NodeTypeImpl t = (NodeTypeImpl) this.getParents().get(i);
             if (t.getAttrType() == null) {
@@ -395,11 +380,9 @@ public class NodeTypeImpl implements Type {
                     + "defined (is not null)";
             difference.add(diff);
         }
-
         if (difference.isEmpty()) {
             return false;
         }
-
         return true;
     }
 
@@ -480,7 +463,6 @@ public class NodeTypeImpl implements Type {
                 || this.isChildOf(t)) {
             return true;
         }
-
         return false;
     }
 
@@ -576,7 +558,6 @@ public class NodeTypeImpl implements Type {
         if (this.typeGraphNode == null) {
             return -1;
         }
-
         int count = -1;
         for (int i = 0; i < this.getChildren().size(); i++) {
             Type chi = this.getChildren().get(i);
@@ -673,7 +654,6 @@ public class NodeTypeImpl implements Type {
             removeParent(this.itsParents.get(this.itsParents.size() - 1));
             return;
         }
-
         addParent(t);
     }
 
@@ -693,7 +673,6 @@ public class NodeTypeImpl implements Type {
             }
             this.itsParents.add(t);
 //			this.itsParent = t;
-
             ((NodeTypeImpl) t).addChild(this);
             // showRelatives();
         }
@@ -725,7 +704,6 @@ public class NodeTypeImpl implements Type {
         if (this.itsAttrType == null || otherType.getAttrType() == null) {
             return v;
         }
-
         DeclTuple myDecl = (DeclTuple) this.itsAttrType;
         DeclTuple otherDecl = (DeclTuple) otherType.getAttrType();
         for (int i = 0; i < otherDecl.getNumberOfEntries(); i++) {
@@ -814,7 +792,6 @@ public class NodeTypeImpl implements Type {
         } else {
             this.additionalRepr = repr;
         }
-
         this.resetKey();
     }
 
@@ -828,7 +805,6 @@ public class NodeTypeImpl implements Type {
         if (idx >= 0) {
             // all parents write first
             h.addEnumeration("", this.itsParents.iterator(), true);
-
             if (this.imageFileName.length() > 0) {
                 // insert the image filename into string n to save the additional type representation
                 n = n.substring(0, idx).concat(this.imageFileName).concat(":").concat("[NODE]:");
@@ -837,15 +813,11 @@ public class NodeTypeImpl implements Type {
         } else {
             h.openNewElem("Type", this);
         }
-
         h.addAttr("name", n);
-
         if (!this.comment.equals("")) {
             h.addAttr("comment", this.comment);
         }
-
         h.addAttr("abstract", String.valueOf(this.isAbstract));
-
         // multiple inheritance -olga
         if (n.indexOf("[NODE]") >= 0) {
             for (int i = 0; i < this.itsParents.size(); i++) {
@@ -854,7 +826,6 @@ public class NodeTypeImpl implements Type {
                 h.close();
             }
         }
-
         if (this.itsAttrType != null && this.itsAttrType.getNumberOfEntries() > 0) {
             h.addObject("", this.itsAttrType, true);
         }
@@ -869,19 +840,16 @@ public class NodeTypeImpl implements Type {
             String n = h.readAttr("name");
 //			n = XMLHelper.checkNameDueToSpecialCharacters(n);
 //			System.out.println("TypeImpl.XreadObject: " +n);
-
             String str = h.readAttr("comment");
             if (!str.equals("")) {
                 this.comment = str.toString();
             }
-
             this.isAbstract = false;
             String abs = h.readAttr("abstract");
             if (!"".equals(abs)) {
                 this.isAbstract = Boolean.valueOf(abs).booleanValue();
             }
 //			System.out.println("TypeImpl.XreadObject:  isAbstract: " +isAbstract);
-
             int i = n.indexOf('%');
             // set type name
             if (i != -1) {
@@ -892,7 +860,6 @@ public class NodeTypeImpl implements Type {
                 String test = XMLHelper.checkNameDueToSpecialCharacters(n);
                 this.itsStringRepr = test;
             }
-
             AttrType tmpAttr = agg.attribute.impl.AttrTupleManager
                     .getDefaultManager().newType();
             h.enrichObject(tmpAttr);
@@ -901,11 +868,9 @@ public class NodeTypeImpl implements Type {
             } else {
                 this.itsAttrType = null;
             }
-
             if (i != -1) {
                 String a = n.substring(i + 1);
                 a = a.replaceAll("::", ":");
-
                 if (n.indexOf("[NODE]") != -1) {
                     // multiple inheritance - olga
                     Type p = (Type) h.getObjectRef("parent", null);
@@ -930,14 +895,11 @@ public class NodeTypeImpl implements Type {
                             h.close();
                         }
                     }
-
                     a = extractImageFileName(a);
                 }
-
                 n = n.substring(0, i);
                 setAdditionalRepr(a);
             }
-
             // NOTE:: multiplicity will be read in the TypeGraph
             // add parents of attributes
             if (this.itsAttrType != null && this.itsAttrType.getNumberOfEntries() != 0) {
@@ -1009,7 +971,6 @@ public class NodeTypeImpl implements Type {
         if (level == TypeSet.DISABLED) {
             return null;
         }
-
         if (node instanceof Node) {
             return check((Node) node, level);
         }
@@ -1088,16 +1049,13 @@ public class NodeTypeImpl implements Type {
         if (!node.getContext().isTypeGraph()) {
             return false;
         }
-
         if (node instanceof Node) {
             if (this.typeGraphNode == null) {
                 this.typeGraphNode = new TypeGraphNode();
             }
-
             // set type graph object of node type
             this.typeGraphNode.addTypeGraphObject((Node) node);
             this.typeGraphObjectDefined = true;
-
             return true;
         }
         return false;
@@ -1116,7 +1074,6 @@ public class NodeTypeImpl implements Type {
                 || !node.getContext().isTypeGraph()) {
             return true;
         }
-
         boolean allowedToRemove = false;
         if (node.getContext().getTypeSet().getLevelOfTypeGraphCheck()
                 <= TypeSet.ENABLED_INHERITANCE
@@ -1125,18 +1082,15 @@ public class NodeTypeImpl implements Type {
         } else {
             allowedToRemove = false;
         }
-
         if (allowedToRemove) {
             if (this.typeGraphNode == null) {
                 return true;
             }
-
             if (forceToRemove) {
                 this.typeGraphNode.forceRemoveTypeGraphObject();
             } else if (!this.typeGraphNode.removeTypeGraphObject()) {
                 return false;
             }
-
             this.typeGraphObjectDefined = false;
             return true;
         }
@@ -1189,7 +1143,6 @@ public class NodeTypeImpl implements Type {
         if (this.typeGraphNode != null) {
             return this.typeGraphNode.getSourceMin();
         }
-
         return -1;
     }
 
@@ -1200,7 +1153,6 @@ public class NodeTypeImpl implements Type {
         if (this.typeGraphNode != null) {
             return this.typeGraphNode.getSourceMax();
         }
-
         return -1;
     }
 
@@ -1232,7 +1184,6 @@ public class NodeTypeImpl implements Type {
                 && this.typeGraphNode.getNode() != null) {
             return true;
         }
-
         return false;
     }
 
@@ -1352,7 +1303,6 @@ public class NodeTypeImpl implements Type {
                 && this.typeGraphNode.getNode() != null) {
             result.addAll(this.typeGraphNode.getNode().getIncomingArcsSet());
         }
-
         return result;
     }
 
@@ -1391,7 +1341,6 @@ public class NodeTypeImpl implements Type {
                 || node.getContext() instanceof TypeGraph) {
             return null;
         }
-
         return checkMinMultiplicityOfNodeType(node);
     }
 
@@ -1402,7 +1351,6 @@ public class NodeTypeImpl implements Type {
         if (this.typeGraphNode == null) {
             return null;
         }
-
         int minValue = this.typeGraphNode.getSourceMin();
         if (minValue != UNDEFINED) {
             List<Node> list = node.getContext().getNodes(this);
@@ -1429,7 +1377,6 @@ public class NodeTypeImpl implements Type {
                 || g instanceof TypeGraph) {
             return null;
         }
-
         return checkMaxMultiplicityOfNodeType(g);
     }
 
@@ -1442,7 +1389,6 @@ public class NodeTypeImpl implements Type {
         if (this.typeGraphNode == null) {
             return null;
         }
-
         int maxValue = this.typeGraphNode.getSourceMax();
         if (maxValue != UNDEFINED) {
             List<Node> list = g.getNodes(this);
@@ -1469,7 +1415,6 @@ public class NodeTypeImpl implements Type {
                 && level == TypeSet.ENABLED_MAX_MIN) {
             return checkSourceMin(node, arc, false, false);
         }
-
         return null;
     }
 
@@ -1482,7 +1427,6 @@ public class NodeTypeImpl implements Type {
                 && level == TypeSet.ENABLED_MAX_MIN) {
             return checkSourceMin(node, arc, deleteSrc, deleteTar);
         }
-
         return null;
     }
 
@@ -1493,7 +1437,6 @@ public class NodeTypeImpl implements Type {
     private TypeError checkSourceMin(final GraphObject srcnode, final Arc arc,
             boolean deleteSrc, boolean deleteTar) {
 //		System.out.println("NodeTypeImpl.checkSourceMin(final GraphObject srcnode, final Arc arc)");
-
         int sourceMin = arc.getType().getSourceMin(this, arc.getTarget().getType());
         if (sourceMin != UNDEFINED) {
             int count = ((Node) arc.getTarget()).getNumberOfIncomingArcs(arc.getType(), srcnode.getType());
@@ -1524,7 +1467,6 @@ public class NodeTypeImpl implements Type {
                 && level == TypeSet.ENABLED_MAX_MIN) {
             return checkTargetMin(node, arc, false, false);
         }
-
         return null;
     }
 
@@ -1541,7 +1483,6 @@ public class NodeTypeImpl implements Type {
                 && level == TypeSet.ENABLED_MAX_MIN) {
             return checkTargetMin(node, arc, deleteSrc, deleteTar);
         }
-
         return null;
     }
 
@@ -1552,7 +1493,6 @@ public class NodeTypeImpl implements Type {
     private TypeError checkTargetMin(final GraphObject tarnode, final Arc arc,
             boolean deleteSrc, boolean deleteTar) {
 //		System.out.println("NodeTypeImpl.checkTargetMin(final GraphObject tarnode, final Arc arc)");
-
         int targetMin = arc.getType().getTargetMin(arc.getSource().getType(), this);
         if (targetMin != UNDEFINED) {
             int count = ((Node) arc.getSource()).getNumberOfOutgoingArcs(arc.getType(), tarnode.getType());
@@ -1772,5 +1712,4 @@ public class NodeTypeImpl implements Type {
     public boolean hasParent() {
         return !this.itsParents.isEmpty();
     }
-
 }

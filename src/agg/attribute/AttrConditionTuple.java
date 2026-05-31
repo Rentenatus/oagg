@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
@@ -23,7 +24,8 @@ public interface AttrConditionTuple extends AttrInstance {
     static final long serialVersionUID = 5350620835396803108L;
 
     /**
-     * Adding of a condition member, returning the member. For deletion, see agg.attribute.AttrConditionMember.
+     * Adding of a condition member, returning the member. For deletion, see
+     * agg.attribute.AttrConditionMember.
      */
     public AttrConditionMember addCondition(String expr);
 
@@ -38,7 +40,8 @@ public interface AttrConditionTuple extends AttrInstance {
     public boolean isTrue();
 
     /**
-     * Test, if the tuple contains members which can be evaluated and yield 'false'.
+     * Test, if the tuple contains members which can be evaluated and yield
+     * 'false'.
      */
     public boolean isFalse();
 
@@ -46,7 +49,6 @@ public interface AttrConditionTuple extends AttrInstance {
      * Getting all variable names of conditions.
      */
     public Vector<String> getAllVariables();
-
 }
 /*
  * $Log: AttrConditionTuple.java,v $

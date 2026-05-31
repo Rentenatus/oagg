@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -31,17 +31,14 @@ import java.util.List;
 public class ArcTypeImpl implements Type {
 
     String comment = "";
-
     /**
      * the name of the type
      */
     String itsStringRepr;
-
     /**
      * the attributes of the type
      */
     AttrType itsAttrType;
-
     /**
      * an additional String for special informations. It will be saved together
      * with {@link #itsStringRepr} as the name and can contain any information
@@ -49,9 +46,7 @@ public class ArcTypeImpl implements Type {
      * {@link agg.editor.EdType}.
      */
     String additionalRepr;
-
     String imageFileName = "";
-
     /**
      * a map to a list of types. This map will only created for edge types. If
      * there is an edge between sourceType and targetType
@@ -59,20 +54,17 @@ public class ArcTypeImpl implements Type {
      * true.
      */
     HashMap<Type, HashMap<Type, TypeGraphArc>> edgeTypeGraphObjects;
-
     /**
      * this value will be true, if a graph object inside of a type graph was
      * defined.
      */
     boolean typeGraphObjectDefined;
-
     String keyStr = null;
 
     protected ArcTypeImpl() {
         this.itsAttrType = null;
         this.itsStringRepr = "";
         this.additionalRepr = ":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:";
-
         this.resetKey();
     }
 
@@ -86,7 +78,6 @@ public class ArcTypeImpl implements Type {
         this.itsAttrType = null;
         this.itsStringRepr = name;
         this.additionalRepr = ":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:";
-
         this.resetKey();
     }
 
@@ -125,11 +116,7 @@ public class ArcTypeImpl implements Type {
             this.edgeTypeGraphObjects.clear();
             this.edgeTypeGraphObjects = null;
         }
-
         this.typeGraphObjectDefined = false;
-    }
-
-    public void finalize() {
     }
 
     public void createAttributeType() {
@@ -344,11 +331,9 @@ public class ArcTypeImpl implements Type {
                     + "defined (is not null)";
             difference.add(diff);
         }
-
         if (difference.isEmpty()) {
             return false;
         }
-
         return true;
     }
 
@@ -386,7 +371,6 @@ public class ArcTypeImpl implements Type {
         if (this.itsAttrType == null || otherType.getAttrType() == null) {
             return v;
         }
-
         DeclTuple myDecl = (DeclTuple) this.itsAttrType;
         DeclTuple otherDecl = (DeclTuple) otherType.getAttrType();
         for (int i = 0; i < otherDecl.getNumberOfEntries(); i++) {
@@ -427,7 +411,6 @@ public class ArcTypeImpl implements Type {
         } else {
             this.additionalRepr = repr;
         }
-
         this.resetKey();
     }
 
@@ -437,25 +420,19 @@ public class ArcTypeImpl implements Type {
         if ((getAdditionalRepr() != null) && (!getAdditionalRepr().equals(""))) {
             n += ("%" + getAdditionalRepr());
         }
-
         if (n.indexOf("[EDGE]") >= 0) {
             h.openNewElem("EdgeType", this);
         } else {
             h.openNewElem("Type", this);
         }
-
         h.addAttr("name", n);
-
         if (!this.comment.equals("")) {
             h.addAttr("comment", this.comment);
         }
-
         h.addAttr("abstract", String.valueOf(false));
-
         if (this.itsAttrType != null && this.itsAttrType.getNumberOfEntries() > 0) {
             h.addObject("", this.itsAttrType, true);
         }
-
         // multiplicity will be written in the Arc
         // object in the type graph
         h.close();
@@ -467,14 +444,11 @@ public class ArcTypeImpl implements Type {
             String n = h.readAttr("name");
 //			n = XMLHelper.checkNameDueToSpecialCharacters(n);
 //			System.out.println("TypeImpl.XreadObject: " +n);
-
             String str = h.readAttr("comment");
             if (!str.equals("")) {
                 this.comment = str.toString();
             }
-
             h.readAttr("abstract");
-
             int i = n.indexOf('%');
             // set type name
             if (i != -1) {
@@ -487,7 +461,6 @@ public class ArcTypeImpl implements Type {
                 this.itsStringRepr = test;
 //				itsStringRepr = n;				
             }
-
             AttrType tmpAttr = agg.attribute.impl.AttrTupleManager
                     .getDefaultManager().newType();
             h.enrichObject(tmpAttr);
@@ -496,14 +469,12 @@ public class ArcTypeImpl implements Type {
             } else {
                 this.itsAttrType = null;
             }
-
             if (i != -1) {
                 String a = n.substring(i + 1);
                 a = a.replaceAll("::", ":");
                 n = n.substring(0, i);
                 setAdditionalRepr(a);
             }
-
             // NOTE:: multiplicity will be read in the TypeGraph
             h.close();
         }
@@ -537,7 +508,6 @@ public class ArcTypeImpl implements Type {
         if (level == TypeSet.DISABLED) {
             return null;
         }
-
         if (nodeOrArc instanceof Arc) {
             return check((Arc) nodeOrArc, level);
         }
@@ -559,7 +529,6 @@ public class ArcTypeImpl implements Type {
                     return true;
                 }
             }
-
         }
         return false;
     }
@@ -597,13 +566,10 @@ public class ArcTypeImpl implements Type {
         // arc
         Type mySrcType = sourceType;
         Type myTarType = targetType;
-
         // find out all parents of source and target
         List<Type> mySrcParents = sourceType.getAllParents();
         List<Type> myTarParents = targetType.getAllParents();
-
         TypeGraphArc subType = null;
-
         // try to find any edge between any pair of src/tar parents
         if (this.edgeTypeGraphObjects != null) {
             for (int i = 0; i < mySrcParents.size(); ++i) {
@@ -612,7 +578,6 @@ public class ArcTypeImpl implements Type {
                 if (targets == null) {
                     continue;
                 }
-
                 for (int j = 0; j < myTarParents.size(); ++j) {
                     myTarType = myTarParents.get(j);
                     subType = targets.get(myTarType);
@@ -632,7 +597,6 @@ public class ArcTypeImpl implements Type {
                     if (targets == null) {
                         continue;
                     }
-
                     for (int j = 0; j < mySrcParents.size(); ++j) {
                         mySrcType = mySrcParents.get(j);
                         subType = targets.get(mySrcType);
@@ -662,16 +626,12 @@ public class ArcTypeImpl implements Type {
             // the source and target type of the current arc
             final Type sourceType = arc.getSource().getType();
             final Type targetType = arc.getTarget().getType();
-
             // find out all parents of source and target
             final List<Type> mySrcParents = sourceType.getAllParents();
             final List<Type> myTarParents = targetType.getAllParents();
-
             Type mySrcType = arc.getSource().getType();
             Type myTarType = arc.getTarget().getType();
-
             TypeGraphArc subType = null;
-
             // try to find any edge between any pair of src/tar parents
             for (int i = 0; i < mySrcParents.size(); ++i) {
                 mySrcType = mySrcParents.get(i);
@@ -679,7 +639,6 @@ public class ArcTypeImpl implements Type {
                 if (targets == null) {
                     continue;
                 }
-
                 for (int j = 0; j < myTarParents.size(); ++j) {
                     myTarType = myTarParents.get(j);
                     subType = targets.get(myTarType);
@@ -691,7 +650,6 @@ public class ArcTypeImpl implements Type {
                     break;
                 }
             }
-
             if (subType != null && subType.doesTypeGraphObjectExist()) {
                 if (level > TypeSet.ENABLED) {
                     int count = 0;
@@ -718,7 +676,6 @@ public class ArcTypeImpl implements Type {
                                     arc, this);
                         }
                     }
-
                     if (sourceMax != UNDEFINED) {
                         // if multipl. defined, check if arc is possible
                         count = ((Node) arc.getTarget()).getNumberOfIncomingArcsOfTypeFromSourceType(this, mySrcType);
@@ -737,7 +694,6 @@ public class ArcTypeImpl implements Type {
                                     arc, this);
                         }
                     }
-
                     if (level >= TypeSet.ENABLED_MAX_MIN) {
                         if (targetMin > 0) {
                             // if multipl. defined, check if arc is possible
@@ -759,7 +715,6 @@ public class ArcTypeImpl implements Type {
                                         + "\" ).", arc, this);
                             }
                         }
-
                         if (sourceMin > 0) {
                             // if multipl. defined, check if arc is possible
                             count = ((Node) arc.getTarget()).getNumberOfIncomingArcsOfTypeFromSourceType(this, mySrcType);
@@ -806,7 +761,6 @@ public class ArcTypeImpl implements Type {
                 || (level == TypeSet.ENABLED)) {
             return null;
         }
-
         TypeError typeError = checkSourceMax(g, src, tar);
         if (typeError == null) {
             typeError = checkTargetMax(g, src, tar);
@@ -823,16 +777,13 @@ public class ArcTypeImpl implements Type {
         if (g != null) {
             graphName = g.getName();
         }
-
         final Type sourceType = src.getType();
         final Type targetType = tar.getType();
-
         if (this.edgeTypeGraphObjects != null) {
             // check entry for source
             final HashMap<Type, TypeGraphArc> targets = this.edgeTypeGraphObjects.get(sourceType);
             if (targets != null) {
                 final TypeGraphArc subType = targets.get(targetType);
-
                 // search for the type graph object
                 if ((subType != null) && (subType.doesTypeGraphObjectExist())) {
                     int sourceMax = subType.getSourceMax();
@@ -870,16 +821,13 @@ public class ArcTypeImpl implements Type {
         if (g != null) {
             graphName = g.getName();
         }
-
         final Type sourceType = src.getType();
         final Type targetType = tar.getType();
-
         if (this.edgeTypeGraphObjects != null) {
             // check entry for source
             final HashMap<Type, TypeGraphArc> targets = this.edgeTypeGraphObjects.get(sourceType);
             if (targets != null) {
                 final TypeGraphArc subType = targets.get(targetType);
-
                 // search for the type graph object
                 if ((subType != null) && (subType.doesTypeGraphObjectExist())) {
                     int targetMax = subType.getTargetMax();
@@ -941,7 +889,6 @@ public class ArcTypeImpl implements Type {
                 || !arc.getContext().isTypeGraph()) {
             return true;
         }
-
         boolean allowedToRemove = false;
         if (arc.getContext().getTypeSet().getLevelOfTypeGraphCheck()
                 <= TypeSet.ENABLED_INHERITANCE) {
@@ -953,16 +900,13 @@ public class ArcTypeImpl implements Type {
                 allowedToRemove = false;
             }
         }
-
         if (allowedToRemove) {
             if (this.edgeTypeGraphObjects == null) {
                 return true;
             }
-
             // get source and target
             Type sourceType = ((Arc) arc).getSource().getType();
             Type targetType = ((Arc) arc).getTarget().getType();
-
             HashMap<Type, TypeGraphArc> targets = this.edgeTypeGraphObjects.get(sourceType);
             if (targets == null) {
                 return true;
@@ -971,7 +915,6 @@ public class ArcTypeImpl implements Type {
             if (subType == null) {
                 return true;
             }
-
             if (arc.getContext().getTypeSet().getLevelOfTypeGraphCheck() <= TypeSet.ENABLED_INHERITANCE) { //TypeSet.DISABLED) 
                 subType.forceRemoveTypeGraphObject();
             } else if (forceToRemove) {
@@ -979,15 +922,12 @@ public class ArcTypeImpl implements Type {
             } else if (!subType.removeTypeGraphObject()) {
                 return false;
             }
-
             // if the subtype doesn't contains a type graph object
             // or some using graph objects, we can destroy it
             targets.remove(targetType);
-
             // remove list, if it is empty
             if (targets.isEmpty()) {
                 this.edgeTypeGraphObjects.remove(sourceType);
-
                 // remove HashMap if it is empty
                 if (this.edgeTypeGraphObjects.isEmpty()) {
                     this.edgeTypeGraphObjects = null;
@@ -1105,20 +1045,16 @@ public class ArcTypeImpl implements Type {
         // arc
         Type mySrcType = sourceType;
         Type myTarType = targetType;
-
         // find out all parents of source and target
         List<Type> mySrcParents = sourceType.getAllParents();
         List<Type> myTarParents = targetType.getAllParents();
-
         HashMap<Type, TypeGraphArc> targets = null;
         TypeGraphArc subType = null;
-
         // create Map if not def.
         if (this.edgeTypeGraphObjects == null) {
             this.edgeTypeGraphObjects = new HashMap<Type, HashMap<Type, TypeGraphArc>>();
             this.typeGraphObjectDefined = true;
         }
-
         // create HashMap for this sourceType if not def.
         for (int i = 0; i < mySrcParents.size(); ++i) {
             mySrcType = mySrcParents.get(i);
@@ -1133,7 +1069,6 @@ public class ArcTypeImpl implements Type {
                 }
             }
         }
-
         targets = this.edgeTypeGraphObjects.get(sourceType);
         if (targets == null) {
             targets = new HashMap<Type, TypeGraphArc>();
@@ -1141,7 +1076,6 @@ public class ArcTypeImpl implements Type {
             subType = new TypeGraphArc();
             targets.put(targetType, subType);
         }
-
         if (subType == null) {
             subType = new TypeGraphArc();
             targets.put(targetType, subType);
@@ -1161,7 +1095,6 @@ public class ArcTypeImpl implements Type {
             if (!srct.compareTo(sourceType)) {
                 continue;
             }
-
             HashMap<Type, TypeGraphArc> targetsMap = this.edgeTypeGraphObjects
                     .get(srct);
             Iterator<Type> targetsIter = targetsMap.keySet().iterator();
@@ -1174,7 +1107,6 @@ public class ArcTypeImpl implements Type {
                 if (!tart.compareTo(targetType)) {
                     continue;
                 }
-
                 TypeGraphArc subType = targetsMap.get(tart);
                 // if(getName().equals("s:i")){
                 // System.out.println("type s:i TypeGraphArc: "+ subType);
@@ -1193,15 +1125,11 @@ public class ArcTypeImpl implements Type {
         if (this.edgeTypeGraphObjects == null) {
             return false;
         }
-
         Type mySrcType = sourceType;
         Type myTarType = targetType;
-
         List<Type> mySrcParents = sourceType.getAllParents();
         List<Type> myTarParents = targetType.getAllParents();
-
         TypeGraphArc subType = null;
-
         // try to find any edge between any pair of src/tar parents
         for (int i = 0; i < mySrcParents.size(); ++i) {
             mySrcType = mySrcParents.get(i);
@@ -1220,7 +1148,6 @@ public class ArcTypeImpl implements Type {
                 }
             }
         }
-
         return (subType != null);
     }
 
@@ -1324,11 +1251,9 @@ public class ArcTypeImpl implements Type {
                 Iterator<TypeGraphArc> subIter = actMap.values().iterator();
                 while (subIter.hasNext()) {
                     TypeGraphArc subType = subIter.next();
-
                     // remove the type graph object
                     subType.forceRemoveTypeGraphObject();
                 }
-
                 if (actMap.isEmpty()) {
                     // if there is no type graph arc with this source, we can
                     // remove the Hash Map
@@ -1362,7 +1287,6 @@ public class ArcTypeImpl implements Type {
                 && level == TypeSet.ENABLED_MAX_MIN) {
             return checkSourceMin(node, arc, false, false);
         }
-
         return null;
     }
 
@@ -1374,7 +1298,6 @@ public class ArcTypeImpl implements Type {
                 && level == TypeSet.ENABLED_MAX_MIN) {
             return checkSourceMin(node, arc, deleteSrc, deleteTar);
         }
-
         return null;
     }
 
@@ -1385,7 +1308,6 @@ public class ArcTypeImpl implements Type {
     private TypeError checkSourceMin(final GraphObject srcnode, final Arc arc,
             boolean deleteSrc, boolean deleteTar) {
 //		System.out.println("TypeImpl.checkSourceMin(final GraphObject srcnode, final Arc arc)");
-
         int sourceMin = arc.getType().getSourceMin(this, arc.getTarget().getType());
         if (sourceMin != UNDEFINED) {
             int count = ((Node) arc.getTarget()).getNumberOfIncomingArcs(arc.getType(), srcnode.getType());
@@ -1413,24 +1335,20 @@ public class ArcTypeImpl implements Type {
      */
     public TypeError checkIfRemovableFromTarget(final GraphObject node, final Arc arc,
             final int level) {
-
         if (arc.getContext().isCompleteGraph()
                 && level == TypeSet.ENABLED_MAX_MIN) {
             return checkTargetMin(node, arc, false, false);
         }
-
         return null;
     }
 
     public TypeError checkIfRemovableFromTarget(final GraphObject node, final Arc arc,
             boolean deleteSrc, boolean deleteTar,
             final int level) {
-
         if (arc.getContext().isCompleteGraph()
                 && level == TypeSet.ENABLED_MAX_MIN) {
             return checkTargetMin(node, arc, deleteSrc, deleteTar);
         }
-
         return null;
     }
 
@@ -1441,7 +1359,6 @@ public class ArcTypeImpl implements Type {
     private TypeError checkTargetMin(final GraphObject tarnode, final Arc arc,
             boolean deleteSrc, boolean deleteTar) {
 //		System.out.println("TypeImpl.checkTargetMin(final GraphObject tarnode, final Arc arc)");
-
         int targetMin = arc.getType().getTargetMin(arc.getSource().getType(), this);
         if (targetMin != UNDEFINED) {
             int count = ((Node) arc.getSource()).getNumberOfOutgoingArcs(arc.getType(), tarnode.getType());
@@ -1643,7 +1560,6 @@ public class ArcTypeImpl implements Type {
         return false;
     }
 
-
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getMaxMultiplicityOfAllChildren()
      */
@@ -1760,5 +1676,4 @@ public class ArcTypeImpl implements Type {
     public boolean isParentAttrTypeEmpty() {
         return true;
     }
-
 }

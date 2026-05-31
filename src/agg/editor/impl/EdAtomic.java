@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -14,7 +16,6 @@ package agg.editor.impl;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
-
 import agg.cons.AtomConstraint;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.Graph;
@@ -29,21 +30,22 @@ import java.util.Iterator;
 public class EdAtomic extends EdRule {
 
     protected OrdinaryMorphism morph;
-
     private Vector<EdAtomic> conclusions;
-
     protected boolean isParent;
-
     protected EdAtomic parent;
 
     /**
-     * Creates the parent object of a new atomic graph constraint with one conclusion. The parent is an empty morphism
-     * with premise as source and target and it is not visible and is not used for any edit and evaluation. The first
-     * conclusion morphism consists of premise and conclusion. It is available from the list of conclusions by
-     * <code>getConsclusions()</code> or by <code>getConsclusion(0)</code>. This constructor must be used only once. To
-     * add a new conclusion to this atomic constraint the methods <code>createNextConclusion(EdGraph)</code>,
+     * Creates the parent object of a new atomic graph constraint with one
+     * conclusion. The parent is an empty morphism with premise as source and
+     * target and it is not visible and is not used for any edit and evaluation.
+     * The first conclusion morphism consists of premise and conclusion. It is
+     * available from the list of conclusions by <code>getConsclusions()</code>
+     * or by <code>getConsclusion(0)</code>. This constructor must be used only
+     * once. To add a new conclusion to this atomic constraint the methods
+     * <code>createNextConclusion(EdGraph)</code>,
      * <code>createNextConclusion(String)</code>,
-     * <code>createNextConclusion(AtomConstraint,EdTypeSet,String,EdAtomic)</code> must be use.
+     * <code>createNextConclusion(AtomConstraint,EdTypeSet,String,EdAtomic)</code>
+     * must be use.
      *
      * @param a
      * @param typeset
@@ -51,18 +53,14 @@ public class EdAtomic extends EdRule {
      */
     public EdAtomic(AtomConstraint a, EdTypeSet typeset, String name) {
         super(true);
-
         this.itsACs = null;
         this.itsNACs = null;
         this.itsPACs = null;
-
         this.typeSet = typeset;
         this.conclusions = new Vector<EdAtomic>();
-
         if (a == a.getParent()) {
             this.parent = this;
             this.isParent = true;
-
             /* reset left and right graphs of my super class EdRule */
             this.eLeft = new EdGraph(a.getOriginal(), this.typeSet);
             this.eRight = this.eLeft;
@@ -73,7 +71,6 @@ public class EdAtomic extends EdRule {
                 a.setAtomicName(name);
             }
             this.morph = a;
-
             /* add conclusions */
             final Enumeration<AtomConstraint> e = a.getConclusions();
             while (e.hasMoreElements()) {
@@ -88,17 +85,13 @@ public class EdAtomic extends EdRule {
             final String name,
             final EdAtomic parent) {
         super(true);
-
         this.itsACs = null;
         this.itsNACs = null;
         this.itsPACs = null;
-
         this.typeSet = typeset;
         this.conclusions = new Vector<EdAtomic>(0);
-
         this.parent = parent;
         this.isParent = false;
-
         /* reset left and right graphs of my super class EdRule */
         this.eLeft = new EdGraph(a.getOriginal(), this.typeSet);
         this.eRight = new EdGraph(a.getImage(), this.typeSet);
@@ -118,11 +111,9 @@ public class EdAtomic extends EdRule {
             final EdTypeSet typeset,
             final EdAtomic parent) {
         super(true);
-
         this.itsACs = null;
         this.itsNACs = null;
         this.itsPACs = null;
-
         this.typeSet = typeset;
         /* reset left and right graphs of my super class EdRule */
         this.eLeft = orig;
@@ -130,9 +121,7 @@ public class EdAtomic extends EdRule {
         this.morph = a;
         this.morph.addObserver(this.eLeft);
         this.morph.addObserver(this.eRight);
-
         this.conclusions = new Vector<EdAtomic>(0);
-
         this.parent = parent;
         this.isParent = false;
     }
@@ -147,23 +136,16 @@ public class EdAtomic extends EdRule {
                 }
                 conclusion.getRight().dispose();
             }
-
             if (this.morph != null) {
                 this.morph.deleteObserver(this.eLeft);
                 this.morph.deleteObserver(this.eRight);
             }
-
             this.eLeft.dispose();
             this.eRight.dispose();
-
             this.eLeft = null;
             this.eRight = null;
             this.morph = null;
         }
-    }
-
-    public void finalize() {
-//		System.out.println("EdAtomic.finalize()  called  "+this.hashCode());
     }
 
     public void trimToSize() {
@@ -244,7 +226,6 @@ public class EdAtomic extends EdRule {
         if (this.morph != null) {
             return ((AtomConstraint) this.morph).getName();
         }
-
         return "";
     }
 
@@ -256,40 +237,31 @@ public class EdAtomic extends EdRule {
         if (this == this.parent) {
             final Graph g = BaseFactory.theFactory().createGraph(this.eLeft.getBasisGraph().getTypeSet());
             final EdGraph img = new EdGraph(g, this.eLeft.getTypeSet());
-
             final AtomConstraint a = this.parent.getBasisAtomic()
                     .createNextConclusion(img.getBasisGraph());
-
             final EdAtomic conclusion = new EdAtomic(this.eLeft, img, a,
                     this.eLeft.getTypeSet(),
                     this.parent);
             this.conclusions.addElement(conclusion);
-
             conclusion.getMorphism().setName(name);
             enrichConclusion(conclusion);
-
             return conclusion;
         }
-
         return null;
     }
 
     public EdAtomic createNextConclusion(final AtomConstraint a) {
         if (this == this.parent) {
             final EdGraph img = new EdGraph(a.getTarget(), this.eLeft.getTypeSet());
-
             final EdAtomic conclusion = new EdAtomic(this.eLeft,
                     img,
                     a,
                     this.eLeft.getTypeSet(),
                     this);
             this.conclusions.add(conclusion);
-
             enrichConclusion(conclusion);
-
             return conclusion;
         }
-
         return null;
     }
 
@@ -302,27 +274,24 @@ public class EdAtomic extends EdRule {
                     "",
                     this.parent);
             this.conclusions.addElement(conclusion);
-
             enrichConclusion(conclusion);
-
             return conclusion;
         }
-
         return null;
     }
 
     private void enrichConclusion(final EdAtomic conclusion) {
         conclusion.setUndoManager(this.undoManager);
         conclusion.setGraGra(this.getGraGra());
-
         if (this.getGraGra() != null) {
             this.getGraGra().setChanged(true);
         }
     }
 
     /**
-     * Adds given conclusion to this atomic constraint. This atomic constraint must be a parent atomic. The given
-     * conclusion must be type compatible with this atomic constraint.
+     * Adds given conclusion to this atomic constraint. This atomic constraint
+     * must be a parent atomic. The given conclusion must be type compatible
+     * with this atomic constraint.
      *
      * @param conclusion
      * @return
@@ -332,7 +301,6 @@ public class EdAtomic extends EdRule {
             conclusion.isParent = false;
             conclusion.parent = this.parent;
             this.conclusions.addElement(conclusion);
-
             enrichConclusion(conclusion);
         }
         return conclusion;
@@ -384,7 +352,6 @@ public class EdAtomic extends EdRule {
         if ((indx >= 0) && (indx < this.conclusions.size())) {
             return this.conclusions.elementAt(indx);
         }
-
         return null;
     }
 
@@ -393,7 +360,6 @@ public class EdAtomic extends EdRule {
         if (this.morph == null) {
             return conds;
         }
-
         CondTuple ct = (CondTuple) this.morph.getAttrContext().getConditions();
         for (int i = 0; i < ct.getSize(); i++) {
             conds.add(ct.getCondMemberAt(i).getExprAsText());
@@ -440,20 +406,17 @@ public class EdAtomic extends EdRule {
 
     public void XreadObject(XMLHelper h) {
         // System.out.println("EdAtomic.XreadObject... "+getName());
-
         h.enrichObject(this.eLeft);
         for (int i = 0; i < this.conclusions.size(); i++) {
             EdAtomic concl = this.conclusions.elementAt(i);
             h.enrichObject(concl.getRight());
         }
-
         updateRule();
     }
 
     public boolean deleteGraphObjectsOfType(
             final EdGraphObject tgo,
             boolean addToUndo) {
-
         List<EdGraphObject> list = this.eLeft.getGraphObjectsOfType(tgo);
         if (addToUndo) {
             for (int i = 0; i < list.size(); i++) {
@@ -466,7 +429,6 @@ public class EdAtomic extends EdRule {
                 }
             }
         }
-
         boolean allDone = true;
         if (!this.eLeft.deleteGraphObjectsOfTypeFromGraph(tgo, addToUndo)) {
             allDone = false;
@@ -474,14 +436,12 @@ public class EdAtomic extends EdRule {
         if (!this.eRight.deleteGraphObjectsOfTypeFromGraph(tgo, addToUndo)) {
             allDone = false;
         }
-
         return allDone;
     }
 
     public boolean deleteGraphObjectsOfType(
             final EdType t,
             boolean addToUndo) {
-
         List<EdGraphObject> list = this.eLeft.getGraphObjectsOfType(t);
         if (addToUndo) {
             for (int i = 0; i < list.size(); i++) {
@@ -493,7 +453,6 @@ public class EdAtomic extends EdRule {
                             this.getBasisRule().getImage(go.getBasisObject()));
                     if (rgo != null) {
                         //					this.propagateRemoveRuleMappingToMultiRule(go);
-
                         this.addDeletedMappingToUndo(go, rgo);
                         this.undoManagerEndEdit();
                     }
@@ -507,7 +466,6 @@ public class EdAtomic extends EdRule {
         if (!this.eRight.deleteGraphObjectsOfTypeFromGraph(t, addToUndo)) {
             allDone = false;
         }
-
         return allDone;
     }
 
@@ -820,5 +778,4 @@ public class EdAtomic extends EdRule {
      */
     public void removeNestedACMapping(EdGraphObject leftObj) {
     }
-
 }

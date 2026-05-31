@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -35,10 +37,9 @@ import java.util.List;
  */
 @SuppressWarnings("serial")
 public class Node extends GraphObject implements XMLObject {
-
 //	// test: node XY-position as attribute
-    public boolean xyAttr = false;
 
+    public boolean xyAttr = false;
 //	final protected List<Arc> itsOutgoingArcs = new ArrayList<Arc>();	
 //	final protected List<Arc> itsIncomingArcs = new ArrayList<Arc>();
     final protected LinkedHashSet<Arc> itsOutgoingArcs = new LinkedHashSet<>();
@@ -47,17 +48,13 @@ public class Node extends GraphObject implements XMLObject {
     protected Node(Type type, Graph context) {
         this.itsContext = context;
         this.itsType = type;
-
         this.itsContextUsage = hashCode();
-
         // test: XY Position as attributes
         addXYPosAttrs(this.itsContext != null && this.itsContext.xyAttr);
-
         if (!this.itsType.isAttrTypeEmpty() && this.itsAttr == null) {
             this.itsAttr = AttrTupleManager.getDefaultManager().newInstance(
                     this.itsType.getAttrType(), context.getAttrContext());
         }
-
         if (this.itsAttr != null) {
             this.itsAttr.addObserver(this);
         }
@@ -66,14 +63,10 @@ public class Node extends GraphObject implements XMLObject {
     public Node(AttrInstance attr, Type type, Graph context) {
         this.itsContext = context;
         this.itsType = type;
-
         this.itsContextUsage = hashCode();
-
         this.itsAttr = attr;
-
         // test: XY Position as attributes
         addXYPosAttrs(this.itsContext != null && this.itsContext.xyAttr);
-
         if (this.itsAttr != null) {
             this.itsAttr.addObserver(this);
         }
@@ -102,13 +95,11 @@ public class Node extends GraphObject implements XMLObject {
                         agg.attribute.facade.impl.DefaultInformationFacade.self().getJavaHandler(),
                         "int", "thisY");
             }
-
         }
     }
 
     protected Node(Node orig, Graph context) {
         this(orig.getType(), context);
-
         if (orig.getAttribute() != null) {
             if (this.itsAttr == null) {
                 this.createAttributeInstance();
@@ -124,13 +115,11 @@ public class Node extends GraphObject implements XMLObject {
     public void dispose() {
         this.itsOutgoingArcs.clear();
         this.itsIncomingArcs.clear();
-
         if (this.itsAttr != null) {
             this.itsAttr.removeObserver(this);
             ((ValueTuple) this.itsAttr).dispose();
             this.itsAttr = null;
         }
-
         this.itsType = null;
         this.itsContext = null;
         this.itsContextUsage = -1;
@@ -187,14 +176,16 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * @return a set of ordered incoming arcs. The order of arcs is the arc creation order.
+     * @return a set of ordered incoming arcs. The order of arcs is the arc
+     * creation order.
      */
     public final Iterator<Arc> getIncomingArcsIterator() {
         return this.itsIncomingArcs.iterator();
     }
 
     /**
-     * @return a set of incoming arcs. The order of arcs may differ from the arc creation order.
+     * @return a set of incoming arcs. The order of arcs may differ from the arc
+     * creation order.
      */
     public final HashSet<Arc> getIncomingArcsSet() {
         return this.itsIncomingArcs;
@@ -313,14 +304,16 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * @return a set of outgoing arcs. The order of arcs may differ from the arc creation order.
+     * @return a set of outgoing arcs. The order of arcs may differ from the arc
+     * creation order.
      */
     public final HashSet<Arc> getOutgoingArcsSet() {
         return this.itsOutgoingArcs;
     }
 
     /**
-     * @return a set of ordered outgoing arcs. The order of arcs may differ from the arc creation order.
+     * @return a set of ordered outgoing arcs. The order of arcs may differ from
+     * the arc creation order.
      */
     public final Iterator<Arc> getOutgoingArcsIterator() {
         return this.itsOutgoingArcs.iterator();
@@ -381,7 +374,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Checks whether this node is the source of an edge of the given type and the specified target node.
+     * Checks whether this node is the source of an edge of the given type and
+     * the specified target node.
      *
      * @param arct
      * @param tar
@@ -482,7 +476,6 @@ public class Node extends GraphObject implements XMLObject {
         if (!o.isNode()) {
             return false;
         }
-
         Node n = (Node) o;
 //		if (!this.getObjectName().equals(n.getObjectName())) {
 //			return false;
@@ -527,19 +520,15 @@ public class Node extends GraphObject implements XMLObject {
     @Override
     public void XwriteObject(XMLHelper h) {
         h.openNewElem("Node", this);
-
         if (!this.visible) {
             h.addAttr("visible", "false");
         }
-
         if (!this.getObjectName().equals("")) {
             h.addAttr("name", this.getObjectName());
         }
-
         // if(!itsContextUsage.equals("")) h.addAttr("context",
         // itsContextUsage);
         h.addObject("type", this.itsType, false);
-
         // System.out.println("Node.XwriteObject ...
         // "+itsAttr.toString());
         // h.addObject("", itsAttr, true);
@@ -550,7 +539,6 @@ public class Node extends GraphObject implements XMLObject {
             if (minmax != Type.UNDEFINED) {
                 h.addAttr("sourcemin", Integer.toString(minmax));
             }
-
             minmax = this.itsType.getSourceMax();
             if (minmax != Type.UNDEFINED) {
                 h.addAttr("sourcemax", Integer.toString(minmax));
@@ -574,16 +562,13 @@ public class Node extends GraphObject implements XMLObject {
             // System.out.println("Node.XreadObject: ");
             String str = h.readAttr("visible");
             this.visible = !str.equals("false");
-
             str = h.readAttr("name");
             this.setObjectName(str);
-
             if (this.itsType.getAttrType() != null
                     || this.itsType.hasInheritedAttribute()
                     || (this.itsContext != null && this.itsContext.xyAttr)) {
                 this.createAttributeInstance();
             }
-
             AttrInstance attri = this.itsAttr;
             if (attri != null) {
                 if (this.itsContext != null && this.itsContext.xyAttr) {
@@ -600,7 +585,6 @@ public class Node extends GraphObject implements XMLObject {
                                 "int", "thisY");
                     }
                 }
-
                 // if(Debug.HASHCODE){
                 // agg.attribute.AttrType attrType = itsType.getAttrType();
                 // if(!((agg.attribute.impl.DeclTuple)
@@ -618,7 +602,6 @@ public class Node extends GraphObject implements XMLObject {
                 h.enrichObject(attri);
             }
             h.close();
-
             // if this node uses variable
             // in its attribute so the variable will be marked
             if (this.itsContext != null && this.itsContext.getAttrContext() != null
@@ -648,7 +631,6 @@ public class Node extends GraphObject implements XMLObject {
                     }
                 }
             }
-
         }
     }
 
@@ -671,7 +653,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * @return true if don'typeStr exist any outgoing or incoming edges, otherwise false
+     * @return true if don'typeStr exist any outgoing or incoming edges,
+     * otherwise false
      */
     public final boolean isIsolated() {
         return this.itsOutgoingArcs.isEmpty()
@@ -690,22 +673,20 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Implements the AttrObserver. Propagates the change      <code>agg.util.Change.OBJECT_MODIFIED</code> and object Pair
-     * (this, ev) to its Graph if the attributes are changed.
+     * Implements the AttrObserver. Propagates the change
+     *      <code>agg.util.Change.OBJECT_MODIFIED</code> and object Pair (this,
+     * ev) to its Graph if the attributes are changed.
      */
     @Override
     public void attributeChanged(AttrEvent ev) {
         super.attributeChanged(ev);
         if (this.itsContext != null) {
-
             Pair<Object, AttrEvent> p = new Pair<>(this, ev);
-
             if (this.itsContext.isTypeGraph()) {
                 if (ev.getID() == AttrEvent.MEMBER_VALUE_MODIFIED) {
                     propagateAttrValueToChildNode();
                 }
             }
-
             this.itsContext.propagateChange(new Change(Change.OBJECT_MODIFIED, p));
         }
     }
@@ -738,7 +719,6 @@ public class Node extends GraphObject implements XMLObject {
                 ((ValueTuple) childNode.getAttribute()).setExprValueAt(vm.getExprAsText(), vm.getName());
             }
         }
-
     }
 
     /**
@@ -748,7 +728,6 @@ public class Node extends GraphObject implements XMLObject {
         if (!this.itsContext.isTypeGraph()) {
             return;
         }
-
         for (Type part : this.getType().getParents()) {
             List<Node> parnodes = this.itsContext.getNodesByParentType(part);
             if (parnodes != null) {
@@ -766,7 +745,6 @@ public class Node extends GraphObject implements XMLObject {
     private void setValueFromParentMember(Node parentNode) {
         if (parentNode.getAttribute() != null && this.itsAttr == null) {
             this.createAttributeInstance();
-
             for (int i = 0; i < ((ValueTuple) this.itsAttr).getNumberOfEntries(); i++) {
                 ValueMember vm = ((ValueTuple) this.itsAttr).getValueMemberAt(i);
                 ValueMember parvm = ((ValueTuple) parentNode.getAttribute()).getValueMemberAt(vm.getName());
@@ -776,7 +754,4 @@ public class Node extends GraphObject implements XMLObject {
             }
         }
     }
-
 }
-
-

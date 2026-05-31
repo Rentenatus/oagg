@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -17,7 +19,6 @@ import java.util.Enumeration;
 import java.util.Vector;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-
 import agg.gui.cpa.CriticalPairAnalysis;
 import agg.gui.event.EditEventListener;
 import agg.gui.event.EditEvent;
@@ -112,21 +113,13 @@ public class AGGAnalyzer implements EditEventListener {
             }
         }
     }
-
     private CriticalPairAnalysis criticalPairAnalysis;
-
     private ApplicabilityRuleSequence applRuleSequence;
-
     private AGGConstraints aggConstraints;
-
     private TerminationAnalysis termination;
-
     private final JMenu menu;
-
     private JMenuItem cpaOoptions;
-
     private final Vector<JMenu> menus;
-
 //	private final GraGraTreeView treeView;
     private final agg.gui.AGGAppl parent;
 }

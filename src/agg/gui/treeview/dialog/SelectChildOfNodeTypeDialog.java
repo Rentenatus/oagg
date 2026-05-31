@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -43,40 +45,27 @@ import javax.swing.tree.TreeSelectionModel;
 public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListener {
 
     final JTree typeTree;
-
     final DefaultTreeModel treeModel;
-
     final EdTypeSet typeSet;
-
     final EdType nodeType;
-
     final Hashtable<DefaultMutableTreeNode, EdType> treeNode2NodeType = new Hashtable<DefaultMutableTreeNode, EdType>();
-
     final JButton Ok, cancel;
-
     final JPanel dialogPanel;
-
     JFrame f;
 
     public SelectChildOfNodeTypeDialog(JFrame parent, EdTypeSet typeset, EdType nodetype) {
         super(parent, " Node type: <" + nodetype.getName() + "> ", true);
-
         this.typeSet = typeset;
         this.nodeType = nodetype;
         this.typeTree = new JTree();
-
         this.typeTree.setCellRenderer(new MyTreeCellRenderer());
-
         DefaultMutableTreeNode top = new DefaultMutableTreeNode(this.nodeType.getName(), true);
         this.treeNode2NodeType.put(top, this.nodeType);
         this.treeModel = new DefaultTreeModel(top);
         this.typeTree.setModel(this.treeModel);
         this.typeTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
         initTypeTree(top, this.nodeType);
-
         JLabel text = new JLabel("Please select a child type to be created.");
-
         this.Ok = new JButton("Ok");
         this.Ok.addActionListener(this);
         this.cancel = new JButton("Cancel");
@@ -87,19 +76,15 @@ public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListen
         JPanel below = new JPanel(new BorderLayout());
         below.add(text, BorderLayout.CENTER);
         below.add(buttons, BorderLayout.SOUTH);
-
         this.dialogPanel = new JPanel(new BorderLayout());
         this.dialogPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         this.dialogPanel.add(new JScrollPane(this.typeTree), BorderLayout.CENTER);
         this.dialogPanel.add(below, BorderLayout.SOUTH);
         this.dialogPanel.setPreferredSize(new Dimension(300, 200));
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(this.dialogPanel, BorderLayout.CENTER);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
         this.pack();
-
         this.setLocation(100, 100);
         this.setVisible(true);
     }
@@ -111,14 +96,11 @@ public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListen
             EdType edchildType = this.typeSet.getNodeType(childType);
 //			System.out.println(edchildType.getName());
             DefaultMutableTreeNode childnode = new DefaultMutableTreeNode(edchildType.getName(), true);
-
             this.treeNode2NodeType.put(childnode, edchildType);
-
             this.treeModel.insertNodeInto(childnode, treetypenode, i);
             if (!this.typeTree.isExpanded(this.typeTree.getPathForRow(0))) {
                 this.typeTree.expandPath(this.typeTree.getPathForRow(0));
             }
-
             initTypeTree(childnode, edchildType);
         }
     }
@@ -154,16 +136,13 @@ public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListen
                     leaf, row, hasFocus);
             /* Set the text. */
             setText(stringValue);
-
             EdType userObject = SelectChildOfNodeTypeDialog.this.treeNode2NodeType.get(value);
             if (userObject != null) {
                 setIconTextGap(5);
                 Icon icon = getNodeTypeIcon(userObject.getShape(), userObject.getColor());
                 setIcon(icon);
             }
-
             this.selected = sel;
-
             return this;
         }
 
@@ -171,7 +150,6 @@ public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListen
             Color bColor = Color.WHITE;
             Color fColor = Color.BLACK;
             Icon currentI = getIcon();
-
             if (this.selected) {
                 bColor = this.SelectedBackgroundColor;
             } else {
@@ -208,7 +186,5 @@ public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListen
             }
             return icon;
         }
-
     }
-
 }

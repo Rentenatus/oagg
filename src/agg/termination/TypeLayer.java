@@ -2,22 +2,23 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.termination;
 
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-
 import agg.xt_basis.Type;
 
 /**
- * Type layer is a set of type layer of a given layered graph grammar. The set is backed by a hash table.
+ * Type layer is a set of type layer of a given layered graph grammar. The set
+ * is backed by a hash table.
  *
  * @author $Author: olga $
  * @version $ID
@@ -25,7 +26,6 @@ import agg.xt_basis.Type;
 public class TypeLayer {
 
     private Hashtable<Type, Integer> typeLayer;
-
     private Hashtable<Type, Integer> types;
 
     /**
@@ -45,7 +45,6 @@ public class TypeLayer {
         this.typeLayer.put(type, Integer.valueOf(layer));
         // System.out.println("type layer: "+((Integer)
         // this.typeLayer.get(type)).toString());
-
     }
 
     private void initTypeLayer() {

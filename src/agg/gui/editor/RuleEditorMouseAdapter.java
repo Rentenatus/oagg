@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -16,9 +17,7 @@ package agg.gui.editor;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.SwingUtilities;
-
 import agg.editor.impl.EdAtomic;
 import agg.editor.impl.EdGraphObject;
 import agg.gui.AGGAppl;
@@ -71,15 +70,12 @@ public class RuleEditorMouseAdapter extends MouseAdapter {
                 || !this.editor.getRule().isEditable()) {
             return;
         }
-
         Object source = e.getSource();
         if (this.editor.setActivePanel(source) == null) {
             return;
         }
-
         int x = e.getX();
         int y = e.getY();
-
         if (e.isPopupTrigger() || SwingUtilities.isRightMouseButton(e)) {
             if ((this.editor.isEditPopupMenuShown()
                     && this.editor.getEditPopupMenu().isMapping())
@@ -99,7 +95,6 @@ public class RuleEditorMouseAdapter extends MouseAdapter {
             if (this.editor.getActivePanel().getCanvas().isRightPressed()) {
                 this.editor.allowToShowPopupMenu(false);
             }
-
             switch (this.editor.getLeftPanel().getEditMode()) {
                 case EditorConstants.MOVE:
                     EdGraphObject ego = this.editor.getActivePanel().getGraph().getPicked(x, y);
@@ -292,7 +287,6 @@ public class RuleEditorMouseAdapter extends MouseAdapter {
                     if (this.leftObj != null) {
                         this.leftObj.setWeakselected(false);
                     }
-
                     if (source == this.editor.getLeftPanel().getCanvas()) {
                         if (this.editor.isEditPopupMenuShown()
                                 && this.editor.getEditPopupMenu().isMapping()) {
@@ -340,7 +334,6 @@ public class RuleEditorMouseAdapter extends MouseAdapter {
                             && (source == this.editor.getGraphEditor().getGraphPanel().getCanvas())
                             && !this.editor.getGraphEditor().getGraph().isTypeGraph()
                             && (this.editor.getGraphEditor().getGraphPanel().getEditMode() == EditorConstants.MAP)) {
-
                         this.graphObj = this.editor.setHostGraphObject(this.editor.getGraphEditor().getGraph().getPicked(x, y));
                         this.editor.setMappingGraph(this.leftObj, this.graphObj);
                         this.graphObj = this.editor.setHostGraphObject(null);
@@ -427,12 +420,10 @@ public class RuleEditorMouseAdapter extends MouseAdapter {
 //			}
 //			return;
 //		}
-
         if (this.editor.getRule() == null
                 || !this.editor.getRule().isEditable()) {
             return;
         }
-
         if (SwingUtilities.isRightMouseButton(e) || e.isPopupTrigger()) {
             if ((this.editor.isEditPopupMenuShown()
                     && this.editor.getEditPopupMenu().isMapping())
@@ -447,16 +438,13 @@ public class RuleEditorMouseAdapter extends MouseAdapter {
                     this.editor.showPopupMenu(e);
                 }
             }
-
             this.editor.allowToShowPopupMenu(true);
             this.editor.getActivePanel().getCanvas().unsetLeftAndRightPressed();
             return;
         }
-
         if (!this.editor.getActivePanel().getCanvas().isRightPressed()) {
             this.editor.getActivePanel().getCanvas().setLeftPressed(false);
         }
-
         switch (this.editor.getActivePanel().getEditMode()) {
             case EditorConstants.ARC:
                 this.editor.setMsg("You have just picked the source of an edge. Click on a node to get the target.");
@@ -473,7 +461,6 @@ public class RuleEditorMouseAdapter extends MouseAdapter {
                 /*
 			if (this.editor.getActivePanel().getGraph().getMsg().length() != 0)
 				this.editor.setMsg(this.editor.getLeftPanel().getGraph().getMsg());
-
 			if (this.editor.getActivePanel().getLastEditMode() != EditorConstants.COPY) {
 				if (this.editor.getGraGraEditor() != null) {
 					this.editor.getGraGraEditor().setEditMode(this.editor.getGraGraEditor().getLastEditMode());
@@ -532,5 +519,4 @@ public class RuleEditorMouseAdapter extends MouseAdapter {
 
     public void mouseClicked(MouseEvent e) {
     }
-
 }

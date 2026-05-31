@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.colim;
 //-------------------------------------------------------------------
@@ -95,10 +96,8 @@ public class COLIM_GRAPH implements COLIM_DEFS {
         Result.append("\n");
         return new String(Result);
     }
-
     protected COLIM_VECTOR f_node;
     protected COLIM_VECTOR f_edge;
     protected INT_VECTOR f_source;
     protected INT_VECTOR f_target;
-
 }

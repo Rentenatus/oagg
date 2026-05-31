@@ -2,7 +2,7 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -35,7 +35,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
-
 import agg.xt_basis.GraTraOptions;
 import agg.editor.impl.EdRule;
 import agg.gui.event.TransformEvent;
@@ -49,20 +48,15 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
     @SuppressWarnings({"unchecked", "rawtypes"})
     public GraTraOptionGUI(final JFrame frame, GraGraTransform trans) {
         super();
-
         this.applFrame = frame;
-
         this.transform = trans;
-
         GridBagLayout gridbag = new GridBagLayout();
         setLayout(gridbag);
-
         // transformation kind
         JPanel transformKindPanel = new JPanel();
         transformKindPanel.setLayout(new GridLayout(0, 1));
         transformKindPanel.setBorder(new TitledBorder(
                 "  Graph transformation  "));
-
         ButtonGroup groupTrans = new ButtonGroup();
         // transformation non-deterministically : default
         this.nondeterministicallyRB = new JRadioButton(
@@ -78,7 +72,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                     if (GraTraOptionGUI.this.rsgui.isVisible()) {
                         GraTraOptionGUI.this.rsgui.setVisible(false);
                     }
-
                     GraTraOptionGUI.this.nondeterministically = true;
                     GraTraOptionGUI.this.rulePriority = false;
                     GraTraOptionGUI.this.layered = false;
@@ -106,7 +99,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                     if (GraTraOptionGUI.this.rsgui.isVisible()) {
                         GraTraOptionGUI.this.rsgui.setVisible(false);
                     }
-
                     GraTraOptionGUI.this.layered = true;
                     GraTraOptionGUI.this.rulePriority = false;
                     GraTraOptionGUI.this.nondeterministically = false;
@@ -122,7 +114,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                     GraTraOptionGUI.this.layers.setEnabled(false);
                 }
                 GraTraOptionGUI.this.transform.updateGraTraOption(GraTraOptions.LAYERED, GraTraOptionGUI.this.layered);
-
                 GraTraOptionGUI.this.showLayerCB.setEnabled(GraTraOptionGUI.this.layered);
                 GraTraOptionGUI.this.layeredLoopCB.setEnabled(GraTraOptionGUI.this.layered);
                 GraTraOptionGUI.this.stopLayerAndWaitCB.setEnabled(GraTraOptionGUI.this.layered);
@@ -143,7 +134,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                     if (GraTraOptionGUI.this.rsgui.isVisible()) {
                         GraTraOptionGUI.this.rsgui.setVisible(false);
                     }
-
                     GraTraOptionGUI.this.rulePriority = true;
                     GraTraOptionGUI.this.nondeterministically = false;
                     GraTraOptionGUI.this.layered = false;
@@ -184,7 +174,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
             }
         });
         transformKindPanel.add(new JLabel("   ----------------------------------"));
-
         // transformation thread priority
         JPanel priorityPanel = new JPanel();
         priorityPanel.add(new JLabel("Priority of transformation engine    "), BorderLayout.WEST);
@@ -202,12 +191,10 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
         });
         priorityPanel.add(this.priorities, BorderLayout.EAST);
         transformKindPanel.add(priorityPanel);
-
         // create panel for options of layered trafo
         JPanel layerPanel = new JPanel(new GridLayout(0, 1));
         layerPanel.setBorder(new TitledBorder(
                 "  Options for layered rule application  "));
-
         this.showLayerCB = new JCheckBox("show layer before transform", null, false);
         layerPanel.add(this.showLayerCB);
         this.showLayerCB.setEnabled(this.layered);
@@ -216,7 +203,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                 GraTraOptionGUI.this.showLayer = GraTraOptionGUI.this.showLayerCB.isSelected();
             }
         });
-
         final JPanel lp = new JPanel(new BorderLayout());
         this.layeredLoopCB = new JCheckBox("loop over layers        ", null, false);
         this.layeredLoopCB.setEnabled(this.layered);
@@ -238,7 +224,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
         lp.add(this.layeredLoopCB, BorderLayout.WEST);
         lp.add(this.resetGraphCB, BorderLayout.CENTER);
         layerPanel.add(lp);
-
         final JPanel p = new JPanel(new BorderLayout());
         this.stopLayerAndWaitCB = new JCheckBox("stop layer and wait    ", null,
                 false);
@@ -267,7 +252,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
         p.add(this.stopLayerAndWaitCB, BorderLayout.WEST);
         p.add(this.layers, BorderLayout.CENTER);
         layerPanel.add(p);
-
         JLabel label = new JLabel("   ----------------------------------");
         layerPanel.add(label);
         this.breakLayerLabel = new JLabel(
@@ -275,7 +259,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
         layerPanel.add(this.breakLayerLabel);
         this.breakLayerLabel.setEnabled(this.layered);
         ButtonGroup breakLayerGroup = new ButtonGroup();
-
         this.breakLayerRB = new JRadioButton("break transformation on current layer");
         breakLayerGroup.add(this.breakLayerRB);
         layerPanel.add(this.breakLayerRB);
@@ -292,7 +275,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                 }
             }
         });
-
         this.breakAllLayerRB = new JRadioButton("break layered transformation");
         breakLayerGroup.add(this.breakAllLayerRB);
         layerPanel.add(this.breakAllLayerRB);
@@ -311,13 +293,11 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                 }
             }
         });
-
         // transformation by rule sequence
         this.rsgui = new RuleSequenceDialog(this.applFrame, new Point(200, 100));
         JPanel ruleSequencePanel = new JPanel(new GridLayout(0, 1));
         ruleSequencePanel.setBorder(new TitledBorder(
                 "  Options for rule sequences  "));
-
         this.eachRuleToApplyCB = new JCheckBox("each rule applied at least ones", null, false);
         ruleSequencePanel.add(this.eachRuleToApplyCB);
         this.eachRuleToApplyCB.setEnabled(this.ruleSequence);
@@ -328,9 +308,7 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                 GraTraOptionGUI.this.transform.updateGraTraOption(GraTraOptions.EACH_RULE_TO_APPLY, GraTraOptionGUI.this.eachRuleToApply);
             }
         });
-
         JPanel transformPanel = new JPanel(new GridBagLayout());
-
         constrainBuild(transformPanel, transformKindPanel, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 5, 20, 5);
@@ -340,7 +318,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
         constrainBuild(transformPanel, ruleSequencePanel, 0, 2, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 5, 10, 5);
-
         constrainBuild(this, transformPanel, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 5, 50, 5);
@@ -448,7 +425,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
         if (optionNames.isEmpty()) {
             return;
         }
-
         // use rule priority
         if (optionNames.contains(GraTraOptions.PRIORITY)) {
             if (!this.priorityRB.isSelected()) {
@@ -475,7 +451,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
                 this.stopLayerAndWaitCB.setSelected(false);
                 this.stopLayerAndWait = false;
             }
-
             if (optionNames.contains(GraTraOptions.LOOP_OVER_LAYER)) {
                 this.layeredLoopCB.setSelected(true);
                 this.layeredLoop = true;
@@ -489,7 +464,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
             }
             this.nondeterministically = true;
         }
-
 //		if (optionNames.contains(GraTraOptions.STOP_LAYER_AND_WAIT)) {
 //			this.stopLayerAndWaitCB.setSelected(true);
 //			this.stopLayerAndWait = true;
@@ -512,7 +486,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
             this.resetGraphCB.setSelected(false);
             this.resetGraph = false;
         }
-
         if (optionNames.contains(GraTraOptions.BREAK_LAYER)) {
             this.breakLayerRB.setSelected(true);
             this.breakLayer = true;
@@ -527,7 +500,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
             this.breakAllLayerRB.setSelected(true);
             this.breakAllLayer = true;
         }
-
         if (optionNames.contains(GraTraOptions.EACH_RULE_TO_APPLY)) {
             this.eachRuleToApplyCB.setSelected(true);
             this.eachRuleToApply = true;
@@ -660,7 +632,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
             this.rsgui.enableGUI(true);
         }
         this.rsgui.toFront();
-
         this.transform.fireTransform(new TransformEvent(this,
                 TransformEvent.RULE_SEQUENCE_DEFINE));
     }
@@ -685,7 +656,6 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
         if (this.ruleSequence) {
             return this.rsgui.getRuleSequences();
         }
-
         return null;
     }
 
@@ -693,38 +663,26 @@ public class GraTraOptionGUI extends AbstractOptionGUI implements ActionListener
         if (this.ruleSequence) {
             return this.rsgui.getRuleSequencesText();
         }
-
         return null;
     }
 
     public void executeOnClose() {
     }
-
     protected JFrame applFrame;
-
     protected GraGraTransform transform;
-
     protected JCheckBox writeLogFileCB,
             showLayerCB, layeredLoopCB, resetGraphCB, stopLayerAndWaitCB,
             eachRuleToApplyCB;
-
     protected JRadioButton nondeterministicallyRB, priorityRB, ruleSequenceRB,
             layeredRB, breakLayerRB, breakAllLayerRB;
-
     @SuppressWarnings("rawtypes")
     protected JComboBox layers, priorities;
-
     protected RuleSequenceDialog rsgui;
-
     protected boolean writeLogFile, nondeterministically,
             layered, layeredLoop, resetGraph, showLayer, stopLayerAndWait,
             breakLayer, breakAllLayer,
             rulePriority, ruleSequence, eachRuleToApply;
-
     protected int layerToStop, transformThreadpriority;
-
     protected JLabel breakLayerLabel;
-
     private final String[] priorityList = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-
 }

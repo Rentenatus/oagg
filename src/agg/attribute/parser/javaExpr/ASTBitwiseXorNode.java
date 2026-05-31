@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
-
 
 /* JJT: 0.2.2 */
 /**
@@ -31,15 +30,14 @@ public class ASTBitwiseXorNode extends NUMxNUMtoNUMnode {
     public void interpret() {
         jjtGetChild(0).interpret();
         jjtGetChild(1).interpret();
-
 //		if (stack[top] instanceof Boolean)
-//			stack[--top] = new Boolean(((Boolean) stack[top]).booleanValue()
+//			stack[--top] = Boolean.valueOf(((Boolean) stack[top]).booleanValue()
 //					^ ((Boolean) stack[+1]).booleanValue());
 //		else if (stack[top] instanceof Integer)
 //			stack[--top] = new Integer(((Integer) stack[top]).intValue()
 //					^ ((Integer) stack[+1]).intValue());
         if (stack.get(top) instanceof Boolean) {
-            stack.set(--top, new Boolean(((Boolean) stack.get(top)).booleanValue()
+            stack.set(--top, Boolean.valueOf(((Boolean) stack.get(top)).booleanValue()
                     ^ ((Boolean) stack.get(+1)).booleanValue()));
         } else if (stack.get(top) instanceof Integer) {
             stack.set(--top, new Integer(((Integer) stack.get(top)).intValue()

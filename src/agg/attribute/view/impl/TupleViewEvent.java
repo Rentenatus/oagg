@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.view.impl;
 
@@ -22,7 +23,6 @@ import agg.attribute.view.AttrViewSetting;
 public class TupleViewEvent extends TupleEvent implements AttrViewEvent {
 
     static final long serialVersionUID = 2422750570570672804L;
-
     protected ViewSetting view;
 
     public TupleViewEvent(AttrTuple attr, int id, int index0, int index1,

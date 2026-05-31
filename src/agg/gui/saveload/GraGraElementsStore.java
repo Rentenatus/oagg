@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.saveload;
 
@@ -30,7 +31,6 @@ import javax.swing.JLabel;
 import javax.swing.JDialog;
 import javax.swing.Icon;
 import javax.swing.JButton;
-
 import agg.xt_basis.Graph;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
@@ -59,53 +59,36 @@ public class GraGraElementsStore implements MouseListener {
     // EdGraph for "TG", EdGraph for "GRAPH", EdRule for "RULE",
     // EdAtomic for "ATOMIC", EdConstraint for "FORMULA"
     protected final Hashtable<EdGraGra, Hashtable<String, Vector<Object>>> storeGraGra;
-
     // key: EdRuleScheme,
     // value: Vector with elements of EdRule 
     protected final Hashtable<EdRuleScheme, Vector<Object>> storeRuleScheme;
-
     // key: EdRule,
     // value: Vector with 3 Vectors:
     // (0): Vector with elements of EdNAC
     // (1): Vector with elements of EdPAC
     // (2): Vector with elements of EdNestedApplCond
     protected final Hashtable<EdRule, Vector<Vector<Object>>> storeRule;
-
     // key: EdNestedApplCond,
     // value: Vector with elements of EdNestedApplCond
     protected final Hashtable<EdNestedApplCond, Vector<Object>> storeNestedAC;
-
     // key: EdAtomic,
     // value: Vector with elements of EdAtomic
     protected final Hashtable<EdAtomic, Vector<Object>> storeAtomConstraint;
-
     protected JPanel palette;
-
     private JScrollPane scrollPane;
-
     protected final Vector<JPanel> paletteElems;
     private JPanel panel;
-
     private final Hashtable<Object, JPanel> obj2panel;
-
     private final Hashtable<JLabel, Object> buttons;
     private JLabel label;
-
     private Object current;
-
     private boolean currentValid = false;
-
     protected JDialog d;
-
     private static final Color SelectedBackgroundColor = new Color(153, 153, 255);
-
 //	private String dot = " . ";
     int x = -1, y = -1;
-
     int lWeidth;
-
     private JButton trash;
-
     private GraGraTreeView treeView;
 
     public GraGraElementsStore(GraGraTreeView tree) {
@@ -130,7 +113,6 @@ public class GraGraElementsStore implements MouseListener {
         if (this.paletteElems.isEmpty()) {
             return true;
         }
-
         return false;
     }
 
@@ -687,7 +669,6 @@ public class GraGraElementsStore implements MouseListener {
                 e = this.storeRule.keys();
             }
         }
-
         e = this.storeAtomConstraint.keys();
         while (e.hasMoreElements()) {
             EdAtomic c = (EdAtomic) e.nextElement();
@@ -707,7 +688,6 @@ public class GraGraElementsStore implements MouseListener {
                 e = this.storeAtomConstraint.keys();
             }
         }
-
         Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(gra);
         if (ht != null) {
             Vector<Object> v = ht.get("GRAPH");
@@ -816,7 +796,6 @@ public class GraGraElementsStore implements MouseListener {
         if (name.length() < 40) {
             return name.length() * 8 + 20;
         }
-
         return name.length() * 8;
     }
 
@@ -900,9 +879,7 @@ public class GraGraElementsStore implements MouseListener {
                 hght = 300;
             }
             this.scrollPane.setPreferredSize(new Dimension(wdth, hght));
-
             final JPanel buttonp = new JPanel();
-
             final JButton restore = new JButton("Restore");
             restore.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent a) {
@@ -943,15 +920,12 @@ public class GraGraElementsStore implements MouseListener {
                     exitForm();
                 }
             });
-
             buttonp.add(restore);
             buttonp.add(empty);
             buttonp.add(close);
-
             final JPanel p = new JPanel(new BorderLayout());
             p.add(this.scrollPane, BorderLayout.CENTER);
             p.add(buttonp, BorderLayout.SOUTH);
-
             this.d = new JDialog();
             // this.d.setModal(true);
             this.d.setModal(false);
@@ -1066,7 +1040,6 @@ public class GraGraElementsStore implements MouseListener {
         }
         return null;
     }
-
     /**
      * ******** basis *****************
      */

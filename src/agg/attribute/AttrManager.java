@@ -2,21 +2,22 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
 import java.io.Serializable;
-
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.view.AttrViewSetting;
 
 /**
- * Factory class interface for attribute-related objects; Provides creating services needed by graphical components.
+ * Factory class interface for attribute-related objects; Provides creating
+ * services needed by graphical components.
  *
  * @version $Id: AttrManager.java,v 1.4 2010/11/28 22:09:07 olga Exp $
  * @author $Author: olga $
@@ -30,7 +31,8 @@ public interface AttrManager extends Serializable {
     /**
      * Creating a new attribute context which is the root of a context tree;
      *
-     * @param mapStyle The kind of mapping that is done within this context; it is one of:
+     * @param mapStyle The kind of mapping that is done within this context; it
+     * is one of:
      * <dl>
      * <dt> -
      * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule mapping
@@ -44,11 +46,13 @@ public interface AttrManager extends Serializable {
     public AttrContext newContext(int mapStyle);
 
     /**
-     * Creating a new attribute context which extends an existing one. In Graph Transformation, the setting of variables
-     * by matching corresponding graphical objects requires such a construction. It allows for keeping more that one
-     * rule match at a given time;
+     * Creating a new attribute context which extends an existing one. In Graph
+     * Transformation, the setting of variables by matching corresponding
+     * graphical objects requires such a construction. It allows for keeping
+     * more that one rule match at a given time;
      *
-     * @param mapStyle The kind of mapping that is done within this context; it is one of:
+     * @param mapStyle The kind of mapping that is done within this context; it
+     * is one of:
      * <dl>
      * <dt> -
      * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule mapping
@@ -63,8 +67,9 @@ public interface AttrManager extends Serializable {
     public AttrContext newContext(int mapStyle, AttrContext parent);
 
     /**
-     * Creating a left rule side view for an existing rule context; Here, variables can be declared, but the assignment
-     * of complex expressions to single attribute values is forbidden.
+     * Creating a left rule side view for an existing rule context; Here,
+     * variables can be declared, but the assignment of complex expressions to
+     * single attribute values is forbidden.
      *
      * @param context The context to generate the view on
      * @return The new attribute context view
@@ -73,8 +78,9 @@ public interface AttrManager extends Serializable {
     public AttrContext newLeftContext(AttrContext context);
 
     /**
-     * Creating a right rule side view for an existing rule context, through which variables cannot be declared; complex
-     * expressions as attribute values are allowed, but only declared variables may be used.
+     * Creating a right rule side view for an existing rule context, through
+     * which variables cannot be declared; complex expressions as attribute
+     * values are allowed, but only declared variables may be used.
      *
      * @param context The context to generate the view on
      * @return The new attribute context view
@@ -108,8 +114,9 @@ public interface AttrManager extends Serializable {
     // ///////////////////
     // Instance:
     /**
-     * Creating a new attribute instance of the required type, without a context. Note that for such attributes,
-     * expressions must be constants. In Graph Transformation, it is used for creating a new attribute in the host
+     * Creating a new attribute instance of the required type, without a
+     * context. Note that for such attributes, expressions must be constants. In
+     * Graph Transformation, it is used for creating a new attribute in the host
      * graph.
      *
      * @param type The type to use
@@ -118,8 +125,9 @@ public interface AttrManager extends Serializable {
     public AttrInstance newInstance(AttrType type);
 
     /**
-     * Creating a new attribute instance of the required type and in the given context or a context view. In Graph
-     * Transformation, it is used for creating a new attribute in a rule.
+     * Creating a new attribute instance of the required type and in the given
+     * context or a context view. In Graph Transformation, it is used for
+     * creating a new attribute in a rule.
      *
      * @param type The type to use
      * @param context The context to use
@@ -130,9 +138,10 @@ public interface AttrManager extends Serializable {
     // ///////////////////
     // Pre-Match Check
     /**
-     * Checking if matching can be performed with respect to a given rule context. If the rule context in question is
-     * without inconsistencies, this method remains 'silent'. Otherwise, it throws an exception whose message text
-     * describes the reason.
+     * Checking if matching can be performed with respect to a given rule
+     * context. If the rule context in question is without inconsistencies, this
+     * method remains 'silent'. Otherwise, it throws an exception whose message
+     * text describes the reason.
      */
     public void checkIfReadyToMatch(AttrContext ruleContext)
             throws AttrException;
@@ -140,15 +149,18 @@ public interface AttrManager extends Serializable {
     // ///////////////////
     // Mapping:
     /**
-     * Mapping between two attribute instances; The mapping is done according to the context mapping property
-     * (match/plain) and is integrated into the context;
+     * Mapping between two attribute instances; The mapping is done according to
+     * the context mapping property (match/plain) and is integrated into the
+     * context;
      *
      * @param mappingContext The context to include the mapping in
      * @param source Mapping source attribute
      * @param target Mapping target attribute
-     * @return A handle to the mapping; it can be used to undo the mapping (remove()) or to proceed to the next possible
-     * one (next()). If the mapping style for mappingContext is "MATCH_MAP", a match is tried and necessary checks
-     * concerning non-injectiveness are performed. If this fails, "null" is returned.
+     * @return A handle to the mapping; it can be used to undo the mapping
+     * (remove()) or to proceed to the next possible one (next()). If the
+     * mapping style for mappingContext is "MATCH_MAP", a match is tried and
+     * necessary checks concerning non-injectiveness are performed. If this
+     * fails, "null" is returned.
      */
     public AttrMapping newMapping(AttrContext mappingContext,
             AttrInstance source, AttrInstance target) throws AttrException;
@@ -156,9 +168,10 @@ public interface AttrManager extends Serializable {
     // ///////////////////
     // Pre-Transformation Check
     /**
-     * Checking if a transformation can be performed with the attributes with respect to a given context. If the match
-     * context in question is complete and without inconsistencies, this method remains 'silent'. Otherwise, it throws
-     * an exception whose message text describes the reason.
+     * Checking if a transformation can be performed with the attributes with
+     * respect to a given context. If the match context in question is complete
+     * and without inconsistencies, this method remains 'silent'. Otherwise, it
+     * throws an exception whose message text describes the reason.
      */
     public void checkIfReadyToTransform(AttrContext matchContext)
             throws AttrException;
@@ -169,36 +182,37 @@ public interface AttrManager extends Serializable {
     // ///////////////////
     // View Context:
     /**
-     * Creating a new mediator instance for loose coupling of attribute objects with their visual representation.
+     * Creating a new mediator instance for loose coupling of attribute objects
+     * with their visual representation.
      */
     public AttrViewSetting newViewSetting();
 
     /**
-     * Obtaining the open view of the default view setting ('open' meaning: it considers permutations, but not hiding of
-     * members;).
+     * Obtaining the open view of the default view setting ('open' meaning: it
+     * considers permutations, but not hiding of members;).
      */
     public AttrViewSetting getDefaultOpenView();
 
     /**
-     * Obtaining the masked view of the default view setting ('masked' meaning: it considers permutations as well as
-     * hiding of members;).
+     * Obtaining the masked view of the default view setting ('masked' meaning:
+     * it considers permutations as well as hiding of members;).
      */
     public AttrViewSetting getDefaultMaskedView();
 
     /**
-     * Returns an error message if something gone wrong, otherwise - empty message.
+     * Returns an error message if something gone wrong, otherwise - empty
+     * message.
      */
     public String getErrorMsg();
 
     /**
-     * Returns a class name if the specified name is a class name, otherwise - null.
+     * Returns a class name if the specified name is a class name, otherwise -
+     * null.
      */
     public String isClassName(String name);
 
     public String getStaticMethodCall(String aValue);
-
 }
-
 /*
  * $Log: AttrManager.java,v $
  * Revision 1.4  2010/11/28 22:09:07  olga

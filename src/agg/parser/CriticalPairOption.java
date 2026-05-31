@@ -2,18 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
 import java.util.EventObject;
 import java.util.List;
 import java.util.Vector;
-
 import agg.util.Pair;
 
 /**
@@ -34,56 +34,35 @@ public class CriticalPairOption {
     public final static String ESSENTIAL = "essential";
     public final static String NAMED_OBJECT = "namedObject";
     public final static String MAX_BOUND_CRITIC_CAUSE = "maxBoundOfCriticCause";
-
     /**
      * The algorithm of the critical pairs.
      */
     public static final int EXCLUDEONLY = 0; // == CONFLICT
-
     /**
      * The additional algorithm of the critical pairs.
      */
     public static final int TRIGGER_DEPEND = 1;
-
     public static final int TRIGGER_SWITCH_DEPEND = 2;
-
     /**
      * @deprecated replaced by TRIGGER_DEPEND
      */
     public static final int DEPENDONLY = TRIGGER_DEPEND;
-
     private boolean switchDependency;
-
     private boolean priority;
-
     private boolean layered;
-
     private int layer;
-
     private int algorithm;
-
     private boolean complete;
-
     private boolean reduce;
-
     private boolean reduceSameMatch;
-
     private boolean withNACs, withPACs;
-
     private boolean consistent;
-
     private boolean strongAttrCheck;
-
     private boolean equalVariableNameOfAttrMapping;
-
     private boolean ignoreIdenticalRules;
-
     private boolean directStrctCnfl, directStrctCnflUpToIso;
-
     private boolean namedObject;
-
     protected int maxBoundOfCritKind = 0; // <=0 unbound
-
     private Vector<OptionEventListener> listener;
 
     /**
@@ -130,7 +109,6 @@ public class CriticalPairOption {
         } else {
             this.switchDependency = false;
         }
-
         fireOptionEvent(new EventObject(this));
     }
 

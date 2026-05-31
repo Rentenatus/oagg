@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
@@ -19,57 +20,46 @@ package agg.parser;
 public class Report {
 
     private static int tab = 0;
-
     /**
      * General switch for showing messages.
      */
     public static boolean ON = false;
-
     /**
      * Switch for method invokation.
      */
     public static boolean TRACE = false;
-
     /**
      * Switch for the computation of exclude rules.
      */
     public static boolean EXCLUDE = false;
-
     /**
      * Switch for attribute operations.
      */
     public static boolean ATTRIBUTES = false;
-
     /**
      * Switch for CP - attribute operations.
      */
     public static boolean ATTRIBUTES_CP = false;
-
     /**
      * Switch for CP - NACs operations.
      */
     public static boolean NAC_CP = false;
-
     /**
      * Switch for overlapping graphs.
      */
     public static boolean OVERLAPPING = false;
-
     /**
      * Switch for general container operation.
      */
     public static boolean CONTAINER = false;
-
     /**
      * Switch for parser messages.
      */
     public static boolean PARSER = false;
-
     /**
      * Switch for layer messages.
      */
     public static boolean LAYER = false;
-
     /**
      * Switch for load messages.
      */

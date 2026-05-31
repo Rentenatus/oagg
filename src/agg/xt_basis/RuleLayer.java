@@ -1,20 +1,19 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
- * reserved. This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0 which accompanies this
- * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
  * *****************************************************************************
  */
 package agg.xt_basis;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +26,6 @@ import java.util.List;
 public class RuleLayer {
 
     private Hashtable<Rule, Integer> ruleLayer;
-
 //	private Enumeration<Rule> rules;
     private List<Rule> rulesVec;
 

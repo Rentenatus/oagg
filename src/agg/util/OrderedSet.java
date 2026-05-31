@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -8,13 +8,11 @@
  */
 package agg.util;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.SortedSet;
-
 import agg.util.csp.BinaryPredicate;
 import agg.util.csp.Variable;
 
@@ -121,7 +119,6 @@ public class OrderedSet<E> implements SortedSet<E> {
         if (list.contains(e)) {
             return false;
         }
-
         // Find the correct insertion point
         for (int i = this.size() - 1; i >= 0; i--) {
             if (this.predicate.execute(e, list.get(i))) {
@@ -178,7 +175,6 @@ public class OrderedSet<E> implements SortedSet<E> {
         OrderedSet<E> set = new OrderedSet<>();
         int start = list.indexOf(fromElement);
         int end = list.indexOf(toElement);
-
         if (start >= 0 && end >= 0 && start <= end) {
             for (int i = start; i <= end; i++) {
                 set.add(list.get(i));
@@ -191,7 +187,6 @@ public class OrderedSet<E> implements SortedSet<E> {
     public SortedSet<E> headSet(E toElement) {
         OrderedSet<E> set = new OrderedSet<>(this.predicate);
         int end = list.indexOf(toElement);
-
         if (end >= 0) {
             for (int i = 0; i <= end; i++) {
                 set.add(list.get(i));
@@ -204,7 +199,6 @@ public class OrderedSet<E> implements SortedSet<E> {
     public SortedSet<E> tailSet(E fromElement) {
         OrderedSet<E> set = new OrderedSet<>();
         int start = list.indexOf(fromElement);
-
         if (start >= 0) {
             for (int i = start; i < this.size(); i++) {
                 set.add(list.get(i));
@@ -234,7 +228,6 @@ public class OrderedSet<E> implements SortedSet<E> {
     public E get(int i) {
         return list.get(i);
     }
-
     // ==================== Legacy Iterator Methods ====================
     // These methods maintain backward compatibility with the old stateful iterator approach.
     // They are deprecated in favor of using standard iterator() method.
@@ -361,9 +354,9 @@ public class OrderedSet<E> implements SortedSet<E> {
     }
 
     /**
-     * Creates a union of this set with the specified OrderedSet.
-     * Elements from both sets are combined, maintaining the ordering predicate.
-     * 
+     * Creates a union of this set with the specified OrderedSet. Elements from
+     * both sets are combined, maintaining the ordering predicate.
+     *
      * @param os the other OrderedSet to union with
      * @return a new OrderedSet containing all elements from both sets
      */

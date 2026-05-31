@@ -1,11 +1,12 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
@@ -17,32 +18,27 @@ package agg.xt_basis;
 public class TypeGraphArc {
 
     /**
-     * true, if this combination of source, traget and edge type is contained in the type graph
+     * true, if this combination of source, traget and edge type is contained in
+     * the type graph
      */
     private boolean typeGraphObjectDefined = false;
-
     /**
      * its edge object inside of a type graph
      */
     private Arc itsArc;
-
     private boolean visible = true;
-
     /**
      * minimum number of nodes arcs of this type starts from.
      */
     private short sourceMin = Type.UNDEFINED;
-
     /**
      * maximum number of nodes arcs of this type starts from.
      */
     private short sourceMax = Type.UNDEFINED;
-
     /**
      * minimum number of nodes arcs of this type goes to.
      */
     private short targetMin = Type.UNDEFINED;
-
     /**
      * maximum number of nodes arcs of this type goes to.
      */
@@ -119,9 +115,7 @@ public class TypeGraphArc {
     public int getTargetMax() {
         return this.targetMax;
     }
-
 }
-
 // $Log: TypeGraphArc.java,v $
 // Revision 1.14  2010/10/08 08:48:02  olga
 // tuning
@@ -224,3 +218,4 @@ public class TypeGraphArc {
 // Revision 1.1 2002/11/11 10:39:02 komm
 // multiplicity check added
 //
+

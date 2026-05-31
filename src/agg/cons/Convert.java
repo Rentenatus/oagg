@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,7 +17,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
-
 import agg.attribute.impl.TupleMapping;
 import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.ValueMember;
@@ -48,7 +49,6 @@ import agg.util.Pair;
 public class Convert {
 
     private Rule rule;
-
     private AtomConstraint atom;
     private String error = "";
     private boolean setEnabledTG = false;
@@ -64,7 +64,6 @@ public class Convert {
     class Link {
 
         private Link up;
-
         private GraphObject o;
 
         public Link() {
@@ -103,19 +102,23 @@ public class Convert {
     }
 
     /**
-     * Calculates the pushout of two morphisms. Calculates this diagram: P-----r----->G1 | | m | p2 | | v v
-     * G2---------->G3 p1 It returns the pair (p1,p2) of the two resulting morphisms. I.e. the firs in the pair is
-     * parallel to the first argument. Note, that the order of the two input morphisms only matters if the nodes are
-     * attributed. In this case the second morphism (m) is used for "setting" the free variables in r, and applying them
-     * is done by the first morphism r. This resembles the use in rules and matches, therefore the arguments are named
-     * such. Note further, that otherwise the properties of the morphisms don't matter in any way. The returned thing
-     * will be a pushout as much as possible (i.e. p2*r==p1*m in any case). m and r can be partial. They can be broken
-     * (in the sense of deleting nodes, while mapping edges), or they can identify nodes in one while not in the other.
+     * Calculates the pushout of two morphisms. Calculates this diagram:
+     * P-----r----->G1 | | m | p2 | | v v G2---------->G3 p1 It returns the pair
+     * (p1,p2) of the two resulting morphisms. I.e. the firs in the pair is
+     * parallel to the first argument. Note, that the order of the two input
+     * morphisms only matters if the nodes are attributed. In this case the
+     * second morphism (m) is used for "setting" the free variables in r, and
+     * applying them is done by the first morphism r. This resembles the use in
+     * rules and matches, therefore the arguments are named such. Note further,
+     * that otherwise the properties of the morphisms don't matter in any way.
+     * The returned thing will be a pushout as much as possible (i.e. p2*r==p1*m
+     * in any case). m and r can be partial. They can be broken (in the sense of
+     * deleting nodes, while mapping edges), or they can identify nodes in one
+     * while not in the other.
      */
     private Pair<OrdinaryMorphism, OrdinaryMorphism> pushout(
             final OrdinaryMorphism r,
             final OrdinaryMorphism m) {
-
         this.error = "";
         final BaseFactory bf = BaseFactory.theFactory();
         final Graph P = r.getOriginal();
@@ -124,18 +127,13 @@ public class Convert {
                     .println("Failed!  Convert.pushout() called with morphisms from different sources");
             return null;
         }
-
         final Graph G3 = bf.createGraph(r.getImage().getTypeSet());
         G3.setName(r.getName());
-
         final OrdinaryMorphism p1 = bf.createMorphism(m.getImage(), G3);
         p1.setName("p1_morphism");
-
         final OrdinaryMorphism p2 = bf.createMorphism(r.getImage(), G3);
         p2.setName("p2_morphism");
-
         final HashMap<Object, Link> hash = new HashMap<Object, Link>();
-
         Iterator<?> en = P.getNodesSet().iterator();
         while (en.hasNext()) {
             hash.put(en.next(), new Link());
@@ -144,7 +142,6 @@ public class Convert {
         while (en.hasNext()) {
             hash.put(en.next(), new Link());
         }
-
         en = r.getImage().getNodesSet().iterator();
         while (en.hasNext()) {
             hash.put(en.next(), new Link());
@@ -153,7 +150,6 @@ public class Convert {
         while (en.hasNext()) {
             hash.put(en.next(), new Link());
         }
-
         en = m.getImage().getNodesSet().iterator();
         while (en.hasNext()) {
             hash.put(en.next(), new Link());
@@ -162,7 +158,6 @@ public class Convert {
         while (en.hasNext()) {
             hash.put(en.next(), new Link());
         }
-
         /*
 		 * Now we link together all graph objects which somehow are mapped to
 		 * each other. This UNION/FIND structure enables us to quickly find
@@ -188,7 +183,6 @@ public class Convert {
                         .println("Argh!  Convert.pushout() FAILED! (m match is corrupt)");
                 return null;
             }
-
             Link l = hash.get(go);
             /*
 			 * We don't need to test for img being null here, because at that
@@ -232,7 +226,6 @@ public class Convert {
                         .println("Argh!  Convert.pushout() FAILED! (m match is corrupt)");
                 return null;
             }
-
             Link l = hash.get(go);
             /*
 			 * We don't need to test for img being null here, because at that
@@ -254,15 +247,12 @@ public class Convert {
 			 * this one by the other morphism.
              */
         }
-
         empty = empty.find();
-
         // before to compute PO, disable Multiplicity check for min and max, too
         int checkLevelTG = G3.getTypeSet().getLevelOfTypeGraphCheck();
         if (this.setEnabledTG) {
             G3.getTypeSet().setLevelOfTypeGraphCheck(TypeSet.ENABLED);
         }
-
         /* Now we can create the objects in G3. We first create the nodes. */
         for (int k = 0; k < 2; k++) {
             OrdinaryMorphism morph = (k == 0) ? p1 : p2;
@@ -271,7 +261,8 @@ public class Convert {
                 Node n = (Node) en.next();
                 Link l = (hash.get(n)).find();
                 if (l == empty) {
-                    continue; /* This is a to be deleted node. */
+                    continue;
+                    /* This is a to be deleted node. */
                 }
                 /*
 				 * Otherwise in l.get() there is the node in G3, which should
@@ -310,7 +301,6 @@ public class Convert {
                 }
             }
         }
-
         /* And now the arcs. */
         for (int k = 0; k < 2; k++) {
             OrdinaryMorphism morph = (k == 0) ? p1 : p2;
@@ -361,10 +351,8 @@ public class Convert {
                 }
             }
         }
-
         // enable Multiplicity check again
         G3.getTypeSet().setLevelOfTypeGraphCheck(checkLevelTG);
-
         return new Pair<OrdinaryMorphism, OrdinaryMorphism>(p1, p2);
     }
 
@@ -377,12 +365,9 @@ public class Convert {
         if (!this.atom.isValid()) {
             return ret;
         }
-
         this.atom.adoptEntriesWhereEmpty();
         renameVariables(this.rule, this.atom);
-
         final Graph R = this.rule.getRight();
-
         /* .first corresponds to this.getSource(); .second with R */
  /*
 		 * Wir brauchen auch disjunkte Vereinigung. Im Falle von attributierten
@@ -394,7 +379,6 @@ public class Convert {
         // Create S = R + P with disjunion
         Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> all_s = null;
         all_s = MatchHelper.getOverlappings(this.atom, R, leftgraph, disjunion);
-
         while (all_s.hasMoreElements()) {
             Pair<OrdinaryMorphism, OrdinaryMorphism> morphs = all_s.nextElement();
             OrdinaryMorphism p = morphs.first;
@@ -402,14 +386,12 @@ public class Convert {
             if (!p.isInjective()) {
                 continue;
             }
-
             Iterator<GraphObject> e = p.getDomain();
             while (e.hasNext()) {
                 GraphObject o = e.next();
                 if (o.getAttribute() == null) {
                     continue;
                 }
-
                 GraphObject img = p.getImage(o);
                 ValueTuple val = (ValueTuple) o.getAttribute();
                 ValueTuple valimg = (ValueTuple) img.getAttribute();
@@ -431,14 +413,12 @@ public class Convert {
                     }
                 }
             }
-
             e = s.getDomain();
             while (e.hasNext()) {
                 GraphObject o = e.next();
                 if (o.getAttribute() == null) {
                     continue;
                 }
-
                 GraphObject img = s.getImage(o);
                 ValueTuple val = (ValueTuple) o.getAttribute();
                 ValueTuple valimg = (ValueTuple) img.getAttribute();
@@ -459,14 +439,11 @@ public class Convert {
                     }
                 }
             }
-
             OrdinaryMorphism pmatch = BaseFactory.theFactory()
                     .createMorphfromMorph(p, this.atom.getAttrContext());
-
             if (pmatch == null) {
                 continue;
             }
-
             final Vector<Object> v = new Vector<Object>();
             EvalSet set = null;
             final Enumeration<AtomConstraint> conclusions = this.atom.getConclusions();
@@ -489,7 +466,6 @@ public class Convert {
                 ret.add(set);
             }
         }
-
         return ret;
     }
 
@@ -558,32 +534,26 @@ public class Convert {
                         to = vm2.getName() + mark;
                     }
                     vm2.getDeclaration().setName(to);
-
                     // rename variables in left/right graphs of morphs
                     setAttributeVariable(from, to, varsm2,
                             m2.getSource().getNodesSet().iterator());
                     setAttributeVariable(from, to, varsm2,
                             m2.getSource().getArcsSet().iterator());
-
                     setAttributeVariable(from, to, varsm2,
                             m2.getTarget().getNodesSet().iterator());
                     setAttributeVariable(from, to, varsm2,
                             m2.getTarget().getArcsSet().iterator());
-
                     CondTuple conds = (CondTuple) m2.getAttrContext()
                             .getConditions();
                     renameVariableInCondition(conds, from, to);
-
                     while (conclusions.hasMoreElements()) {
                         OrdinaryMorphism mc = conclusions.nextElement();
                         VarTuple varsmc = (VarTuple) mc.getAttrContext()
                                 .getVariables();
-
                         setAttributeVariable(from, to, varsmc,
                                 mc.getTarget().getNodesSet().iterator());
                         setAttributeVariable(from, to, varsmc,
                                 mc.getTarget().getArcsSet().iterator());
-
                         conds = (CondTuple) mc.getAttrContext().getConditions();
                         renameVariableInCondition(conds, from, to);
                     }
@@ -624,7 +594,6 @@ public class Convert {
             final String to,
             final VarTuple vars,
             final Iterator<?> elems) {
-
         while (elems.hasNext()) {
             GraphObject obj = (GraphObject) elems.next();
             ValueTuple fromObj = (ValueTuple) obj.getAttribute();
@@ -686,7 +655,6 @@ public class Convert {
                         findPrimaryAndReplace(n1, from, to, vars);
                     }
                 }
-
 //				String ident = ((ASTPrimaryExpression) n).getIdentifier();
                 // System.out.println("Identifier: "+ ident+" "+
                 // ((ASTPrimaryExpression) n).getString());
@@ -700,7 +668,6 @@ public class Convert {
                     // "+symbs.getType(from)+" expr= "+ symbs.getExpr(from));
                     // System.out.println("SymbolTable: "+to+" type=
                     // "+symbs.getType(to)+" expr= "+ symbs.getExpr(to));
-
                     boolean to_found = false;
                     ContextView context = (ContextView) symbs;
                     VarTuple vt = (VarTuple) context.getVariables();
@@ -768,5 +735,4 @@ public class Convert {
             }
         }
     }
-
 }

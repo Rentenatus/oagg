@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser;
 
@@ -17,47 +18,33 @@ import java.util.List;
 public class Scanner {
 
     public static final int EOF = -1;
-
     public static final int WORD = 0;
-
     public static final int WHITE = 1;
-
     public static final int KEY = 2;
-
     public static final int OTHER = 3;
-
     public static final int EXIST = 4;
-
     /**
      */
     protected Hashtable<String, Integer> fgKeys = new Hashtable<String, Integer>();
-
     /**
      */
     protected StringBuffer fBuffer = new StringBuffer();
-
     /**
      */
     protected String fDoc;
-
     /**
      */
     protected int fPos;
-
     /**
      */
     protected int fEnd;
-
     /**
      */
     protected int fStartToken;
-
     /**
      */
     protected boolean fEofSeen = false;
-
     private List<String> notValidName = new ArrayList<String>();
-
     /**
      */
     private String[] fgKeywords = {"abstract", "boolean", "break", "byte",
@@ -125,7 +112,7 @@ public class Scanner {
                 case '9':
                 case '!':
                 case '"':
-//			case '§':
+//			case 'Ã‚Â§':
                 case '$':
                 case '%':
                 case '&':
@@ -139,7 +126,7 @@ public class Scanner {
                 case '?':
                 case '\'':
                 case '`':
-//			case '´':
+//			case 'Ã‚Â´':
                 case '*':
                 case '+':
                 case '~':
@@ -151,21 +138,21 @@ public class Scanner {
                 case ':':
                 case '-':
                 case '^':
-//			case '°':
+//			case 'Ã‚Â°':
                 case '>':
                 case '<':
                 case '|':
                 case '=':
-//			case 'ä':
-//			case 'ö':
-//			case 'ü':
-//			case 'Ä':
-//			case 'Ö':
-//			case 'Ü':	
-//			case 'ß':
+//			case 'ÃƒÂ¤':
+//			case 'ÃƒÂ¶':
+//			case 'ÃƒÂ¼':
+//			case 'Ãƒâ€ž':
+//			case 'Ãƒâ€“':
+//			case 'ÃƒÅ“':	
+//			case 'ÃƒÅ¸':
                 case '_':
                 case '@':
-//			case '€':
+//			case 'Ã¢â€šÂ¬':
                     return OTHER;
                 default:
                     if (Character.isWhitespace((char) c)) {
@@ -242,17 +229,18 @@ public class Scanner {
     }
 
     /**
-     * check a word of failed a word is failed with it is a java keyword or no java correct name Method checkWord.
+     * check a word of failed a word is failed with it is a java keyword or no
+     * java correct name Method checkWord.
      *
      * @param text String
-     * @return String if the text is valid then return null otherwise will be return a name for execption
+     * @return String if the text is valid then return null otherwise will be
+     * return a name for execption
      */
     public String checkWord(String text) {
         int token;
         setRange(text);
         token = nextToken();
         boolean valid = false;
-
         while (token != Scanner.EOF) {
             switch (token) {
                 case Scanner.WHITE:
@@ -268,11 +256,9 @@ public class Scanner {
             }
             token = nextToken();
         }
-
         if (valid) {
             return null;
         }
         return "the value is not a valid name";
-
     }
 }

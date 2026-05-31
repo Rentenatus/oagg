@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.parser;
 
 import java.awt.Component;
-
 import agg.gui.AGGAppl;
 
 /**
@@ -23,7 +23,6 @@ import agg.gui.AGGAppl;
 public class GUIExchange {
 
     private AGGAppl parent;
-
     private boolean hasVal;
 
     /**
@@ -33,7 +32,6 @@ public class GUIExchange {
      */
     public GUIExchange(AGGAppl parent) {
         this.parent = parent;
-
         this.hasVal = false;
     }
 
@@ -44,7 +42,6 @@ public class GUIExchange {
      */
     public void changeWith(Component c) {
         this.parent.setMainContent(c);
-
         this.parent.repaint();
         this.parent.validate();
         this.hasVal = true;
@@ -55,7 +52,6 @@ public class GUIExchange {
      */
     public void restore() {
         AGGAppl.resetMainContent();
-
         this.parent.repaint();
         this.parent.validate();
         this.hasVal = false;

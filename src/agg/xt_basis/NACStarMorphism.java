@@ -1,59 +1,53 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis;
 
-import java.util.Hashtable;
-import java.util.ArrayList;
-import java.util.List;
-
 import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
-import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
+import agg.attribute.impl.VarTuple;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
- * This class is just a workaround for lacking AttrContext functionality. In class Completion_CSP, we need a purified
- * copy of a morphism's AttrContext. At the moment, we can only create a new one, imitating the way the morphism's
- * original AttrContext was created. Therefore, we need the parent context which was used for the context's creation;
- * this is what getRelatedMatchContext() provides for the special case of a nac-star morphism.
+ * This class is just a workaround for lacking AttrContext functionality. In
+ * class Completion_CSP, we need a purified copy of a morphism's AttrContext. At
+ * the moment, we can only create a new one, imitating the way the morphism's
+ * original AttrContext was created. Therefore, we need the parent context which
+ * was used for the context's creation; this is what getRelatedMatchContext()
+ * provides for the special case of a nac-star morphism.
  */
 public class NACStarMorphism extends OrdinaryMorphism {
 
     AttrContext itsRelatedMatchContext;
-
     OrdinaryMorphism itsRelatedMatch;
-
     OrdinaryMorphism itsNAC;
-
     final Hashtable<String, String> valMembeHashcode2Expr = new Hashtable<String, String>();
 
     public NACStarMorphism(final Graph orig, final Graph imag, final AttrContext ac) {
         super(orig, imag, ac);
-
         this.itsRelatedMatchContext = ac;
         this.typeObjectsMapChanged = true;
-
         propagateValueFromParentAsInputParameter((VarTuple) this.itsRelatedMatchContext.getVariables(), true);
     }
 
     public NACStarMorphism(final Graph orig, final Graph imag, final AttrContext ac,
             final OrdinaryMorphism relatedMatch) {
         super(orig, imag, ac);
-
         this.itsRelatedMatchContext = ac;
         this.itsRelatedMatch = relatedMatch;
         this.typeObjectsMapChanged = true;
-
         propagateValueFromParentAsInputParameter((VarTuple) this.itsRelatedMatchContext.getVariables(), true);
     }
 
@@ -92,20 +86,16 @@ public class NACStarMorphism extends OrdinaryMorphism {
     public boolean nextCompletion() {
         this.itsCompleter.setRelatedInstanceVarMap(
                 this.itsRelatedMatch.getCompletionStrategy().getInstanceVarMap());
-
         if (this.typeObjectsMapChanged) {
             this.itsCompleter.resetVariableDomain(true);
             this.itsCompleter.reinitializeSolver(false);
             this.typeObjectsMapChanged = false;
         }
-
         if (this.partialMorphCompletion) {
             this.itsCompleter.setPartialMorphism(this);
             this.partialMorphCompletion = false;
         }
-
         boolean result = super.nextCompletion();
-
         return result;
     }
 
@@ -137,19 +127,14 @@ public class NACStarMorphism extends OrdinaryMorphism {
 
     public void clear() {
         removeAttrMappings();
-
 //		 unset its own variables only	
         unsetVariablesOfNAC();
-
         this.itsDomObjects.clear();
         this.itsCodomObjects.clear();
-
         this.itsTouchedFlag = true;
         this.itsInteractiveFlag = true;
-
         clearErrorMsg();
 //		this.errors.clear();
-
         this.partialMorphCompletion = false;
     }
 
@@ -158,7 +143,6 @@ public class NACStarMorphism extends OrdinaryMorphism {
         this.itsRelatedMatchContext = ac;
 //		reinitVariables();  //test!!
         this.typeObjectsMapChanged = true;
-
         propagateValueFromParentAsInputParameter((VarTuple) this.itsRelatedMatchContext.getVariables(), true);
     }
 
@@ -196,7 +180,4 @@ public class NACStarMorphism extends OrdinaryMorphism {
             }
         }
     }
-
 }
-
-

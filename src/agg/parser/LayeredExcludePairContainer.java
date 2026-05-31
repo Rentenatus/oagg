@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,7 +17,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
@@ -28,22 +29,20 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 /**
- * This class provides a container for critical pairs. The critical pairs uses the exclude algorithm. Further on the
- * used graph grammar is layered.
+ * This class provides a container for critical pairs. The critical pairs uses
+ * the exclude algorithm. Further on the used graph grammar is layered.
  *
  * @author $Author: olga $
- * @version $Id: LayeredExcludePairContainer.java,v 1.7 2007/06/13 08:32:58 olga Exp $
+ * @version $Id: LayeredExcludePairContainer.java,v 1.7 2007/06/13 08:32:58 olga
+ * Exp $
  */
 public class LayeredExcludePairContainer extends ExcludePairContainer implements
         LayeredPairContainer {
 
     @SuppressWarnings("deprecation")
     private LayerFunction layerFunc; // not more needed
-
     private int layer = -1;
-
     protected LayeredExcludePair layeredPair;
-
     protected LayeredSimpleExcludePair layeredSimplePair;
 
     /**
@@ -59,8 +58,8 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
     }
 
     /**
-     * Creates a new container for critical pairs. An invalid layer function is used. It is necessary to set a valid
-     * layer function.
+     * Creates a new container for critical pairs. An invalid layer function is
+     * used. It is necessary to set a valid layer function.
      *
      * @param gragra The graph grammar.
      */
@@ -69,7 +68,8 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
     }
 
     /**
-     * Computes if the first rule exclude the second rule. The result is added to the container.
+     * Computes if the first rule exclude the second rule. The result is added
+     * to the container.
      *
      * @param r1 The first rule.
      * @param r2 The second rule.
@@ -90,7 +90,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
                     + ">  should not be computed."));
             return;
         }
-
         if (r1.getLayer() != r2.getLayer()) {// test rule layer
             this.getEntry(r1, r2).state = Entry.NOT_RELATED;
             addEntry(r1, r2, false, null);
@@ -99,33 +98,25 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
             firePairEvent(new CriticalPairEvent(this, r1, r2, ""));
             return;
         }
-
         if ((this.layer > -1) && (r1.getLayer() != this.layer)) {
             return;
         }
-
         if ((this.getEntry(r1, r2).state == Entry.SCHEDULED_FOR_COMPUTING)
                 || (this.getEntry(r1, r2).state == Entry.NOT_SET)) {
             getEntry(r1, r2).setState(Entry.COMPUTING_IS_RUNNING);
-
             firePairEvent(new CriticalPairEvent(this, r1, r2,
                     "Computing critical rule pair  [  " + r1.getName()
                     + "  ,  " + r2.getName() + "  ]"));
-
             if (!this.complete) {
                 this.layeredPair = null;
-
                 this.layeredSimplePair = new LayeredSimpleExcludePair();
                 this.excludePair = this.layeredSimplePair;
             } else {
                 this.layeredSimplePair = null;
-
                 this.layeredPair = new LayeredExcludePair();
                 this.excludePair = this.layeredPair;
             }
-
             setOptionsOfExcludePair();
-
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
             try {
                 if (this.layeredPair != null) {
@@ -136,7 +127,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
             } catch (InvalidAlgorithmException iae) {
                 // System.out.println(iae.getLocalizedMessage());
             }
-
             if (this.excludePair != null) {
                 this.excludePair.dispose();
             }
@@ -144,12 +134,9 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
             this.layeredPair = null;
             this.layeredSimplePair = null;
 //			System.gc();
-
             boolean critic = (overlapping != null);
-
             // new container
             addEntry(r1, r2, critic, overlapping);
-
             /*
 			 * Wenn overlapping Elemente enthaelt sind r1/r2 kritisch critic
 			 * wird daher true. Alle wichtigen Informationen werden eingetragen.
@@ -157,19 +144,16 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
 			 * Wenn excludeContainer nach r1/r2 gefragt wird, liefert die
 			 * Antwort auch false. overlapping kann daher null sein.
              */
-
  /*
 			 * Achtung, wenn r1 r2 nicht kritisch ist gibt es keine
 			 * Ueberlappungen
              */
             addQuadruple(this.excludeContainer, r1, r2, critic, overlapping);
-
             /*
 			 * conflictfree braucht keine ueberlappungsgraphen daher ist das
 			 * letzte Argument null
              */
             addQuadruple(this.conflictFreeContainer, r1, r2, !critic, null);
-
             if (overlapping != null) {
                 firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
                         + r1.getName() + ">  and  <" + r2.getName()
@@ -211,7 +195,8 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
     }
 
     /**
-     * Sets a layer to compute. If layer = -1 then all layers should be computed.
+     * Sets a layer to compute. If layer = -1 then all layers should be
+     * computed.
      *
      * @param layer
      */
@@ -231,13 +216,11 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
         h.addObject("GraGra", getGrammar(), true);
         h.openSubTag("conflictsContainer");
         h.addAttr("kind", "exclude");
-
         // Inhalt von excludeContainer schreiben (save)
         for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
-
             Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
             for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
@@ -255,7 +238,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
                         OrdinaryMorphism first = p2.first;
                         Graph overlapping = first.getImage();
                         h.addObject("", overlapping, true);
-
                         Iterator<?> e = overlapping.getNodesSet().iterator();
                         while (e.hasNext()) {
                             GraphObject o = (GraphObject) e.next();
@@ -274,15 +256,12 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
                                 h.close();
                             }
                         }
-
                         writeOverlapMorphisms(h, r1, r2, p2i);
-
                         h.close();
                     }
                 }
                 h.close();
             }
-
             h.close();
         }
         h.close();
@@ -301,7 +280,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
                 h.addAttr("bool", b.toString());
                 h.close();
             }
-
             h.close();
         }
         h.close();
@@ -323,19 +301,14 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
             List<String> tagnames = new Vector<>(1);
             List<String> tagnames2 = new Vector<>(1);
-
             this.grammar = BaseFactory.theFactory().createGraGra();
             h.getObject("", this.grammar, true);
-
             tagnames.add("excludeContainer");
             tagnames.add("conflictsContainer");
             tagnames.add("conflictContainer");
-
             tagnames2.add("dependencyContainer");
             tagnames2.add("dependenciesContainer");
-
             boolean switchDependency = false;
-
             if (h.readSubTag(tagnames)) {
                 String kind = h.readAttr("kind");
                 this.conflictKind = CriticalPair.CONFLICT;
@@ -346,7 +319,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
                     this.conflictKind = CriticalPair.TRIGGER_SWITCH_DEPENDENCY;
                 }
             }
-
             if (this.conflictKind == CriticalPair.CONFLICT
                     || this.conflictKind == CriticalPair.TRIGGER_DEPENDENCY
                     || this.conflictKind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
@@ -388,7 +360,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
                                 Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(
                                         h, r1, r2, g);
                                 allOverlappings.add(p);
-
                                 h.close();
                             }
                         }
@@ -425,7 +396,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
                             b = true;
                         }
                         addQuadruple(this.conflictFreeContainer, r1, r2, b, null);
-
                         if (!r1.isEnabled()) // test disabled rule
                         {
                             this.getEntry(r1, r2).state = Entry.DISABLED;
@@ -434,7 +404,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
                         {
                             this.getEntry(r1, r2).state = Entry.NOT_RELATED;
                         }
-
                         h.close();
                     }
                     h.close();
@@ -446,7 +415,6 @@ public class LayeredExcludePairContainer extends ExcludePairContainer implements
         }
         h.close();
     }
-
 }
 /*
  * $Log: LayeredExcludePairContainer.java,v $

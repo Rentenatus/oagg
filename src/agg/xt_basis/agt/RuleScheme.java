@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -39,9 +41,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class implements an interaction rule scheme which contains a kernel rule (subrule) and a set of multi rules
- * (extending rules). The kernel rule is a common subaction of multi rules and it is used for synchronization of
- * parallel application of multi rules. This kind of rule application is known as amalgamated graph transformation.
+ * This class implements an interaction rule scheme which contains a kernel rule
+ * (subrule) and a set of multi rules (extending rules). The kernel rule is a
+ * common subaction of multi rules and it is used for synchronization of
+ * parallel application of multi rules. This kind of rule application is known
+ * as amalgamated graph transformation.
  *
  * @author olga
  */
@@ -49,34 +53,23 @@ public class RuleScheme extends Rule //implements Observer
 {
 
     private String schemeName = "RuleScheme";
-
     private int itsIndex = -1;
-
     private boolean hasInputParameter;
-
     private boolean valid;
-
     private KernelRule kernelRule;
-
     private final List<Rule> multiRules = new ArrayList<Rule>();
-
     private AmalgamatedRule amalgamRule;
-
     private Hashtable<GraphObject, GraphObject> amalgamLHS2kernelLHS;
     private Hashtable<GraphObject, GraphObject> amalgamRHS2kernelRHS;
-
     private boolean parallelKernel;
-
     private boolean disjointMultis = true;
-
     private boolean checkDeleteUseConflict = true;
-
     private boolean atLeastOneMultiMatch;
-
     private boolean shiftDone;
 
     /**
-     * Create new rule scheme with an empty kernel rule and empty set of multi rules.
+     * Create new rule scheme with an empty kernel rule and empty set of multi
+     * rules.
      *
      * @param aSchemeName
      * @param types
@@ -84,31 +77,25 @@ public class RuleScheme extends Rule //implements Observer
     public RuleScheme(final String aSchemeName, TypeSet types) {
         super(types);
         super.trimToSize();
-
         this.itsName = aSchemeName;
         this.schemeName = aSchemeName;
-
         this.kernelRule = new KernelRule(types);
         this.kernelRule.setRuleScheme(this);
-
 //		this.kernelRule.getLeft().addObserver(this);
 //		this.kernelRule.getRight().addObserver(this);		
     }
 
     /**
-     * Create new rule scheme with the given kernel rule. The typeSet of this RuleScheme is the TypeSet of the
-     * KernelRule.
+     * Create new rule scheme with the given kernel rule. The typeSet of this
+     * RuleScheme is the TypeSet of the KernelRule.
      */
     public RuleScheme(final String aSchemeName, KernelRule kernel) {
         super(kernel.getTypeSet());
         super.trimToSize();
-
         this.itsName = aSchemeName;
         this.schemeName = aSchemeName;
-
         this.kernelRule = kernel;
         this.kernelRule.setRuleScheme(this);
-
 //		this.kernelRule.getLeft().addObserver(this);
 //		this.kernelRule.getRight().addObserver(this);		
     }
@@ -170,7 +157,6 @@ public class RuleScheme extends Rule //implements Observer
         }
         this.clearMatchesOfMultiRules();
         this.unsetAttrContextVars();
-
         // for super rule of this RuleScheme
         this.clear();
         ((VarTuple) this.getAttrContext().getVariables()).unsetVariables();//InputParameters();
@@ -297,7 +283,8 @@ public class RuleScheme extends Rule //implements Observer
      * Replicate remove rule mapping of the kernel rule.
      *
      * @param go	graph object of the kernel rule
-     * @param left true if graph object belongs to the LHS of the kernel rule, otherwise false
+     * @param left true if graph object belongs to the LHS of the kernel rule,
+     * otherwise false
      */
     public void propagateRemoveRuleMappingToMultiRule(
             final GraphObject go,
@@ -339,8 +326,9 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * The methods <code>storeIndexOfRuleList</code> and <code>getStoredIndexOfRuleList</code> used by GraGra class
-     * during save and load procedure of the XML object only.<br>
+     * The methods <code>storeIndexOfRuleList</code> and
+     * <code>getStoredIndexOfRuleList</code> used by GraGra class during save
+     * and load procedure of the XML object only.<br>
      * Stores the index of the current RuleScheme.
      */
     public void storeIndexOfRuleList(int i) {
@@ -348,10 +336,11 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * The methods <code>storeIndexOfRuleList</code> and <code>getStoredIndexOfRuleList</code> used by GraGra class
-     * during save and load procedure of the XML object only.<br>
-     * Returns loaded index of the current RuleScheme which is the index inside the rule list after the XML object
-     * loaded.<br>
+     * The methods <code>storeIndexOfRuleList</code> and
+     * <code>getStoredIndexOfRuleList</code> used by GraGra class during save
+     * and load procedure of the XML object only.<br>
+     * Returns loaded index of the current RuleScheme which is the index inside
+     * the rule list after the XML object loaded.<br>
      */
     public int getStoredIndexOfRuleList() {
         return this.itsIndex;
@@ -409,8 +398,8 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Requires that all matches of the multi rules are disjoint. If false, then the multi rules have to be conflict
-     * free.
+     * Requires that all matches of the multi rules are disjoint. If false, then
+     * the multi rules have to be conflict free.
      *
      * @param b	true if disjoint, otherwise false
      */
@@ -426,10 +415,11 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Allows to construct an amalgamated rule based on all possible disjoint matches of the kernel rule.
+     * Allows to construct an amalgamated rule based on all possible disjoint
+     * matches of the kernel rule.
      *
-     * @param b	true in case of all possible disjoint matches of the kernel rule, false in case of a single match of the
-     * kernel rule
+     * @param b	true in case of all possible disjoint matches of the kernel
+     * rule, false in case of a single match of the kernel rule
      */
     public void setParallelKernelMatch(boolean b) {
         this.parallelKernel = b;
@@ -466,7 +456,6 @@ public class RuleScheme extends Rule //implements Observer
         if (index >= 0 && index < this.multiRules.size()) {
             return (MultiRule) this.multiRules.get(index);
         }
-
         return null;
     }
 
@@ -524,11 +513,9 @@ public class RuleScheme extends Rule //implements Observer
 
     public Rule addMultiRule(final String name) {
         final MultiRule r = this.createMultiRule(name);
-
         this.kernelRule.getLeft().addObserver(r);
         this.kernelRule.getRight().addObserver(r);
         this.kernelRule.addObserver(r);
-
         return r;
     }
 
@@ -610,7 +597,8 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Checks the kernel rule and all enabled multi rules are ready to transform.
+     * Checks the kernel rule and all enabled multi rules are ready to
+     * transform.
      */
     public boolean isValid() {
         this.valid = this.isReadyToTransform();
@@ -627,7 +615,6 @@ public class RuleScheme extends Rule //implements Observer
                 return true;
             }
         }
-
         return false;
     }
 
@@ -647,19 +634,20 @@ public class RuleScheme extends Rule //implements Observer
                 return true;
             }
         }
-
         return false;
     }
 
     /**
-     * Returns true if the kernel rule or ones of multi rules does require an input parameter, otherwise false.
+     * Returns true if the kernel rule or ones of multi rules does require an
+     * input parameter, otherwise false.
      */
     public boolean hasInputParameter() {
         return this.hasInputParameter;
     }
 
     /**
-     * If possible, creates amalgamated rule and match of this rule scheme at the specified host graph.
+     * If possible, creates amalgamated rule and match of this rule scheme at
+     * the specified host graph.
      *
      * @param g	host graph
      * @return	amalgamated match, otherwise null
@@ -668,7 +656,6 @@ public class RuleScheme extends Rule //implements Observer
         if (this.hasInputParameter) {
             applyValueOfInputParameter();
         }
-
         this.amalgamRule = createAmalgamatedRule(g, s);
         if (this.amalgamRule != null) {
             this.amalgamRule.setWaitBeforeApplyEnabled(this.isWaitBeforeApplyEnabled());
@@ -685,12 +672,12 @@ public class RuleScheme extends Rule //implements Observer
             this.amalgamRule.setWaitBeforeApplyEnabled(this.isWaitBeforeApplyEnabled());
             return this.amalgamRule.getMatch();
         }
-
         return null;
     }
 
     /**
-     * Returns true, if its kernel rule or one of the multi rules contains enabled nested application conditions.
+     * Returns true, if its kernel rule or one of the multi rules contains
+     * enabled nested application conditions.
      */
     public boolean hasEnabledACs(boolean checkBefore) {
         if (checkBefore) {
@@ -709,7 +696,8 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Returns true if this rule scheme will create new graph elements, otherwise - false.
+     * Returns true if this rule scheme will create new graph elements,
+     * otherwise - false.
      */
     public boolean isCreating() {
         // LHS graph size > rule mapping size
@@ -721,7 +709,8 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Returns true if this rule scheme will delete some graph elements, otherwise - false.
+     * Returns true if this rule scheme will delete some graph elements,
+     * otherwise - false.
      */
     public boolean isDeleting() {
         // LHS graph size > rule mapping size
@@ -733,7 +722,8 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Returns true if this rule scheme will delete at least one node, otherwise - false.
+     * Returns true if this rule scheme will delete at least one node, otherwise
+     * - false.
      */
     public boolean isNodeDeleting() {
         this.isNodeDeleting = this.kernelRule.isNodeDeleting();
@@ -762,26 +752,23 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Checks whether its kernel rule is applicable at the specified graph by the specified matching strategy or not.
+     * Checks whether its kernel rule is applicable at the specified graph by
+     * the specified matching strategy or not.
      */
     public boolean isApplicable(
             final Graph g,
             final MorphCompletionStrategy strategy,
             final boolean doCheckIfReadyToTransform) {
-
         boolean result = this.enabled;
-
         if (result && doCheckIfReadyToTransform) {
             result = this.isReadyToTransform();
         }
-
         if (result) {
             result = false;
             Match m = BaseFactory.theFactory().createMatch(this.kernelRule, g);
             if (m != null) {
                 m.setCompletionStrategy(strategy, true);
                 m.enableInputParameter(false);
-
 //				((VarTuple) this.getAttrContext().getVariables()).showVariables();
 //				((VarTuple) m.getAttrContext().getVariables()).showVariables();
                 if (m.nextCompletion()) {
@@ -801,13 +788,11 @@ public class RuleScheme extends Rule //implements Observer
     public boolean isInputParameterSet(boolean left) {
         Rule r = this.kernelRule;
         this.addToAttrContext((VarTuple) r.getAttrContext().getVariables());
-
         if (r.getMatch() != null) {
             this.adaptAttrContextValues(r.getMatch().getAttrContext());
         } else {
             this.adaptAttrContextValues(r.getAttrContext());
         }
-
 //		((VarTuple) this.getAttrContext().getVariables()).showVariables();
         for (int i = 0; i < this.multiRules.size(); i++) {
             r = this.multiRules.get(i);
@@ -819,17 +804,15 @@ public class RuleScheme extends Rule //implements Observer
             }
         }
 //		((VarTuple) this.getAttrContext().getVariables()).showVariables();
-
         return isInputParameterSet(this.getAttrContext(), left);
     }
 
     /**
-     * If the kernel rule is using an input parameter and its value is already set do propagate this value to the
-     * attribute context of multi rules.
+     * If the kernel rule is using an input parameter and its value is already
+     * set do propagate this value to the attribute context of multi rules.
      */
     public void applyValueOfInputParameter() {
         final VarTuple vars = (VarTuple) this.getAttrContext().getVariables();
-
         for (int i = 0; i < vars.getNumberOfEntries(); i++) {
             final VarMember v = vars.getVarMemberAt(i);
             if (v.isInputParameter() && v.isSet()) {
@@ -841,7 +824,6 @@ public class RuleScheme extends Rule //implements Observer
 //					vm.setExprAsText(v.getExprAsText());
                     vm.setExpr(v.getExpr());
                 }
-
                 for (int j = 0; j < this.multiRules.size(); j++) {
                     vm = ((VarTuple) this.multiRules.get(j).getAttrContext().getVariables())
                             .getVarMemberAt(v.getName());
@@ -854,7 +836,6 @@ public class RuleScheme extends Rule //implements Observer
                 }
             }
         }
-
 //		System.out.println("applyValueOfInputParameter...  "+this.kernelRule.getName());
 //		((VarTuple) this.kernelRule.getAttrContext().getVariables()).showVariables();
 //		for (int j=0; j<this.multiRules.size(); j++) {
@@ -875,7 +856,6 @@ public class RuleScheme extends Rule //implements Observer
                 this.kernelRule.getPACsList())) {
             return true;
         }
-
         for (int i = 0; i < this.multiRules.size(); i++) {
             if (this.multiRules.get(i).getLeft().isUsingVariable(var)) {
                 return true;
@@ -889,7 +869,6 @@ public class RuleScheme extends Rule //implements Observer
                 return true;
             }
         }
-
         return false;
     }
 
@@ -897,7 +876,6 @@ public class RuleScheme extends Rule //implements Observer
             final VarMember var,
             final AttrConditionTuple act,
             final List<OrdinaryMorphism> nacs) {
-
         for (int l = 0; l < nacs.size(); l++) {
             final OrdinaryMorphism nac = nacs.get(l);
             if (nac.getTarget().isUsingVariable(var)) {
@@ -923,13 +901,11 @@ public class RuleScheme extends Rule //implements Observer
             final VarMember var,
             final AttrConditionTuple act,
             final List<OrdinaryMorphism> pacs) {
-
         for (int l = 0; l < pacs.size(); l++) {
             final OrdinaryMorphism pac = pacs.get(l);
             if (pac.getTarget().isUsingVariable(var)) {
                 return true;
             }
-
             List<String> pacVars = pac.getTarget().getVariableNamesOfAttributes();
             for (int j = 0; j < pacVars.size(); j++) {
                 String varName = pacVars.get(j);
@@ -980,25 +956,19 @@ public class RuleScheme extends Rule //implements Observer
      */
     protected MultiRule createEmptyMultiRule() {
         MultiRule mr = new MultiRule(this.kernelRule.getTypeSet());
-
         mr.setEmbeddingLeft(new OrdinaryMorphism(
                 this.kernelRule.getLeft(), mr.getLeft(),
                 agg.attribute.impl.AttrTupleManager
                         .getDefaultManager().newContext(AttrMapping.PLAIN_MAP)));
-
         mr.setEmbeddingRight(new OrdinaryMorphism(
                 this.kernelRule.getRight(), mr.getRight(),
                 agg.attribute.impl.AttrTupleManager
                         .getDefaultManager().newContext(AttrMapping.PLAIN_MAP)));
-
         mr.setRuleScheme(this);
-
         // test: use xy position as attributes
         mr.getLeft().xyAttr = this.kernelRule.getLeft().xyAttr;
         mr.getRight().xyAttr = this.kernelRule.getLeft().xyAttr;
-
         this.multiRules.add(mr);
-
         return mr;
     }
 
@@ -1035,25 +1005,18 @@ public class RuleScheme extends Rule //implements Observer
             multiRule.addToAttrContext(
                     (VarTuple) this.kernelRule.getAttrContext().getVariables());
         }
-
         multiRule.setRuleScheme(this);
         multiRule.setName(ruleName);
         multiRule.getLeft().setKind(GraphKind.LHS);
         multiRule.getRight().setKind(GraphKind.RHS);
-
         // test: use xy position as attributes
         multiRule.getLeft().xyAttr = this.kernelRule.getLeft().xyAttr;
         multiRule.getRight().xyAttr = this.kernelRule.getLeft().xyAttr;
-
         this.multiRules.add(multiRule);
-
         this.kernelRule.getLeft().addObserver(multiRule);
         this.kernelRule.getRight().addObserver(multiRule);
-
         this.kernelRule.addObserver(multiRule);
-
         this.kernelRule.setChanged(false);
-
         return multiRule;
     }
 
@@ -1074,9 +1037,11 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Propagate application conditions (NAC / PAC) of the kernel rule along embedding morphism of each multi rule (left
-     * embedding: kernel.LHS -> multi.LHS, right embedding: kernel.RHS -> multi.RHS). Propagated application conditions
-     * are added to the list of the own application conditions of each multi rule.
+     * Propagate application conditions (NAC / PAC) of the kernel rule along
+     * embedding morphism of each multi rule (left embedding: kernel.LHS ->
+     * multi.LHS, right embedding: kernel.RHS -> multi.RHS). Propagated
+     * application conditions are added to the list of the own application
+     * conditions of each multi rule.
      */
     public void propagateApplCondsOfKernelToMultiRules() {
         if (!this.shiftDone) {
@@ -1091,9 +1056,11 @@ public class RuleScheme extends Rule //implements Observer
     }
 
     /**
-     * Shift application conditions (NAC / PAC) of the kernel rule along embedding morphism of the given multi rule
-     * (left embedding: kernel.LHS -> multi.LHS, right embedding: kernel.RHS -> multi.RHS). Shifted application
-     * condition is added to the list of the own application conditions of the multi rule.
+     * Shift application conditions (NAC / PAC) of the kernel rule along
+     * embedding morphism of the given multi rule (left embedding: kernel.LHS ->
+     * multi.LHS, right embedding: kernel.RHS -> multi.RHS). Shifted application
+     * condition is added to the list of the own application conditions of the
+     * multi rule.
      */
     private boolean shiftApplCondsOfKernelToMultiRule(final MultiRule multiRule) {
         // shift PACS
@@ -1106,7 +1073,6 @@ public class RuleScheme extends Rule //implements Observer
                 if (shiftCond != null) {
                     shiftCond.setName(kernCond.getName().concat("(shifted)"));
                     shiftCond.setEnabled(kernCond.isEnabled());
-
                     multiRule.addShiftedKernelApplCond(shiftCond, true);
                     this.shiftDone = true;
                 }
@@ -1122,13 +1088,11 @@ public class RuleScheme extends Rule //implements Observer
                 if (shiftCond != null) {
                     shiftCond.setName(kernCond.getName().concat("(shifted)"));
                     shiftCond.setEnabled(kernCond.isEnabled());
-
                     multiRule.addShiftedKernelApplCond(shiftCond, false);
                     this.shiftDone = true;
                 }
             }
         }
-
         // shift NestedACs
         kernConds = this.kernelRule.getNestedACsList();
         for (int i = 0; i < kernConds.size(); i++) {
@@ -1142,7 +1106,6 @@ public class RuleScheme extends Rule //implements Observer
                     if (shiftCond != null) {
                         shiftCond.setName(kernCond.getName().concat("(shifted)"));
                         shiftCond.setEnabled(kernCond.isEnabled());
-
                         multiRule.addShiftedKernelNestedApplCond(shiftCond);
                         this.shiftDone = true;
                     }
@@ -1151,18 +1114,14 @@ public class RuleScheme extends Rule //implements Observer
                 break;
             }
         }
-
         addAttrCondsOfKernelToMultiRule(multiRule);
-
         return true;
     }
 
     public void removeShiftedApplConditionsFromMultiRules() {
         for (int i = 0; i < this.multiRules.size(); i++) {
             Rule mRule = this.multiRules.get(i);
-
             ((MultiRule) mRule).removeShiftedKernelApplConds();
-
             this.removeAttrCondsOfKernelFromMultiRule(mRule);
         }
         this.shiftDone = false;
@@ -1208,7 +1167,6 @@ public class RuleScheme extends Rule //implements Observer
 //	       		multiRule.mapKernel2MultiObject(embLeft.getInverseImage(obj).next(), obj);	         	         	
 //	       	}	        
 //	  	}    
-
         final OrdinaryMorphism embRight = multiRule.getEmbeddingRight();
         final Iterator<GraphObject> domRight = embRight.getDomain();
         while (domRight.hasNext()) {
@@ -1226,7 +1184,6 @@ public class RuleScheme extends Rule //implements Observer
 
     public void createAttrInstanceWhereNeeded() {
         this.kernelRule.createAttrInstanceWhereNeeded();
-
         for (int i = 0; i < this.multiRules.size(); i++) {
             this.multiRules.get(i).createAttrInstanceWhereNeeded();
         }
@@ -1234,15 +1191,14 @@ public class RuleScheme extends Rule //implements Observer
 
     public void createAttrInstanceOfTypeWhereNeeded(final Type t) {
         this.kernelRule.createAttrInstanceOfTypeWhereNeeded(t);
-
         for (int i = 0; i < this.multiRules.size(); i++) {
             this.multiRules.get(i).createAttrInstanceOfTypeWhereNeeded(t);
         }
     }
 
     /**
-     * Shift the specified application condition (NAC / PAC / General AC) along the specified embedding morphism.
-     * Required:<br>
+     * Shift the specified application condition (NAC / PAC / General AC) along
+     * the specified embedding morphism. Required:<br>
      * cond.getSource() == embedding.getSource()<br>
      * Result morphism:<br>
      * embedding.getTarget() -> copy of cond.getSource()
@@ -1254,17 +1210,14 @@ public class RuleScheme extends Rule //implements Observer
     private OrdinaryMorphism shiftApplCondAlongMorph(
             final OrdinaryMorphism cond,
             final OrdinaryMorphism morph) {
-
         if (cond.getSource() == morph.getSource()) {
             final OrdinaryMorphism condIso = cond.getTarget().isomorphicCopy();
             if (condIso == null) {
                 return null;
             }
-
             final OrdinaryMorphism shiftCond = (cond instanceof NestedApplCond)
                     ? BaseFactory.theFactory().createGeneralMorphism(morph.getTarget(), condIso.getTarget())
                     : BaseFactory.theFactory().createMorphism(morph.getTarget(), condIso.getTarget());
-
             final Iterator<GraphObject> condDom = cond.getDomain();
             while (condDom.hasNext()) {
                 GraphObject go = condDom.next();
@@ -1296,17 +1249,14 @@ public class RuleScheme extends Rule //implements Observer
             final NestedApplCond cond,
             final OrdinaryMorphism embedding,
             final AttrContext ac) {
-
         if (cond.getSource() == embedding.getSource()) {
             final OrdinaryMorphism condIso = cond.getTarget().isomorphicCopy();
             if (condIso == null) {
                 return null;
             }
-
             final NestedApplCond shiftCond = new NestedApplCond(
                     embedding.getTarget(), condIso.getTarget(), ac);
             if (this.propagateMapping(cond, shiftCond, embedding, condIso)) {
-
                 for (int i = 0; i < cond.getNestedACs().size(); i++) {
                     NestedApplCond nc = cond.getNestedACAt(i);
                     final NestedApplCond shiftnc = shiftNestedApplCondAlongEmbMorphism(
@@ -1319,10 +1269,8 @@ public class RuleScheme extends Rule //implements Observer
                         return null;
                     }
                 }
-
                 return shiftCond;
             }
-
             shiftCond.dispose();
             condIso.dispose();
         }
@@ -1334,7 +1282,6 @@ public class RuleScheme extends Rule //implements Observer
             final OrdinaryMorphism to,
             final OrdinaryMorphism above1,
             final OrdinaryMorphism above2) {
-
         final Iterator<GraphObject> condDom = from.getDomain();
         while (condDom.hasNext()) {
             GraphObject go = condDom.next();
@@ -1374,7 +1321,6 @@ public class RuleScheme extends Rule //implements Observer
         if (!this.enabled) {
             h.addAttr("enabled", "false");
         }
-
         h.addAttr("disjointMultis", String.valueOf(this.disjointMultis));
         h.addAttr("parallelKernel", String.valueOf(this.parallelKernel));
         h.addAttr("checkConflict", String.valueOf(this.checkDeleteUseConflict));
@@ -1384,28 +1330,22 @@ public class RuleScheme extends Rule //implements Observer
         h.openSubTag("Kernel");
         h.addObject("", this.kernelRule, true);
         h.close();
-
         for (int i = 0; i < this.multiRules.size(); i++) {
             h.openSubTag("Multi");
             final MultiRule r = (MultiRule) this.multiRules.get(i);
             h.addObject("", r, true);
-
             h.openSubTag("EmbeddingLeft");
             r.getEmbeddingLeft().writeMorphism(h);
             h.close();
-
             h.openSubTag("EmbeddingRight");
             r.getEmbeddingRight().writeMorphism(h);
             h.close();
-
             h.close();
         }
-
         if (this.amalgamRule != null) {
             h.openSubTag("Amalgamated");
             h.addObject("", this.amalgamRule, true);
             h.close();
-
 //			if (this.amalgamRule.getMatch() != null) {
 //				this.amalgamRule.getMatch().setName("MatchOf_" + this.amalgamRule.getName());
 //				h.openSubTag("MatchOf");
@@ -1414,21 +1354,17 @@ public class RuleScheme extends Rule //implements Observer
 //				h.close();
 //			}
         }
-
         // TaggedValue layer
         h.openSubTag("TaggedValue");
         h.addAttr("Tag", "layer");
         h.addAttr("TagValue", this.layer);
         h.close();
-
         // TaggedValue priority
         h.openSubTag("TaggedValue");
         h.addAttr("Tag", "priority");
         h.addAttr("TagValue", this.priority);
         h.close();
-
         h.close();
-
     }
 
     /**
@@ -1439,38 +1375,31 @@ public class RuleScheme extends Rule //implements Observer
     public void XreadObject(XMLHelper h) {
         if (h.isTag("RuleScheme", this)) {
             Object attr_str = "";
-
 //			setSchemeName(h.readAttr("name"));
             attr_str = h.readAttr("atLeastOneMultiMatch");
             if (!"".equals(attr_str)) {
                 this.atLeastOneMultiMatch = Boolean.valueOf((String) attr_str).booleanValue();
             }
-
             attr_str = h.readAttr("checkConflict");
             if (!"".equals(attr_str)) {
                 this.checkDeleteUseConflict = Boolean.valueOf((String) attr_str).booleanValue();
             }
-
             attr_str = h.readAttr("disjointMultis");
             if (!"".equals(attr_str)) {
                 this.disjointMultis = Boolean.valueOf((String) attr_str).booleanValue();
             }
-
             attr_str = h.readAttr("enabled");
             if (!"".equals(attr_str)) {
                 this.enabled = Boolean.valueOf((String) attr_str).booleanValue();
             }
-
             attr_str = h.readAttr("index");
             if (!"".equals(attr_str)) {
                 this.itsIndex = Integer.valueOf((String) attr_str).intValue();
             }
-
             attr_str = h.readAttr("name");
             if (!"".equals(attr_str)) {
                 setSchemeName((String) attr_str);
             }
-
             attr_str = h.readAttr("parallelKernel");
             if (!"".equals(attr_str)) {
                 this.parallelKernel = Boolean.valueOf((String) attr_str).booleanValue();
@@ -1483,35 +1412,27 @@ public class RuleScheme extends Rule //implements Observer
                 h.getObject("", this.kernelRule, true);
                 h.close();
             }
-
             while (h.readSubTag("Multi")) {
                 MultiRule mr = createEmptyMultiRule();
                 mr.getLeft().setKind(GraphKind.LHS);
                 mr.getRight().setKind(GraphKind.RHS);
                 mr.setRuleScheme(this);
-
                 h.getObject("", mr, true);
-
                 if (h.readSubTag("EmbeddingLeft")) {
                     mr.getEmbeddingLeft().readMorphism(h);
                     h.close();
                 }
-
                 if (h.readSubTag("EmbeddingRight")) {
                     mr.getEmbeddingRight().readMorphism(h);
                     h.close();
                 }
                 h.close();
-
                 mr.applyEmbeddedRuleMapping(this.kernelRule);
                 mapKernel2MultiObject(mr);
-
                 this.kernelRule.getLeft().addObserver(mr);
                 this.kernelRule.getRight().addObserver(mr);
             }
-
             this.kernelRule.setChanged(false);
-
 //			if (h.readSubTag("Amalgamated")) {
 //				this.amalgamRule = new AmalgamatedRule(this.getTypeSet());
 //				h.getObject("", amalgamRule, true);	      
@@ -1544,7 +1465,6 @@ public class RuleScheme extends Rule //implements Observer
                 }
                 h.close();
             }
-
             // read priority
             if (h.readSubTag("TaggedValue")) {
                 int v = 0;
@@ -1562,8 +1482,4 @@ public class RuleScheme extends Rule //implements Observer
             h.close();
         }
     }
-
 }
-
-
-

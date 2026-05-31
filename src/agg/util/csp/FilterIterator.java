@@ -1,11 +1,12 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: FilterIterator.java,v 1.4 2010/09/20 14:30:28 olga Exp $
 // $Log: FilterIterator.java,v $
@@ -48,13 +49,15 @@ import java.util.Enumeration;
 public class FilterIterator {
 
     /**
-     * Construct myself to be an iterator that combines filtering and conversion on the elements of an underlying
-     * iterator.
+     * Construct myself to be an iterator that combines filtering and conversion
+     * on the elements of an underlying iterator.
      *
      * @param base The underlying iterator.
-     * @param select A predicate that returns false for any object that the FilterIterator should skip.
-     * @param convert A function object that specifies the conversion to be done on each element of the iteration. This
-     * determines the type of the objects returned by <code>nextElement()</code>.
+     * @param select A predicate that returns false for any object that the
+     * FilterIterator should skip.
+     * @param convert A function object that specifies the conversion to be done
+     * on each element of the iteration. This determines the type of the objects
+     * returned by <code>nextElement()</code>.
      */
     public FilterIterator(Enumeration<?> base, UnaryPredicate select,
             UnaryFunction convert) {
@@ -65,12 +68,14 @@ public class FilterIterator {
     }
 
     /**
-     * Construct myself to be an iterator that performs a conversion on any element of the base iterator before it is
-     * passed along to the caller. Don't do any filtering.
+     * Construct myself to be an iterator that performs a conversion on any
+     * element of the base iterator before it is passed along to the caller.
+     * Don't do any filtering.
      *
      * @param base The underlying iterator.
-     * @param convert A function object that specifies the conversion to be done on each element of the iteration. This
-     * determines the type of the objects returned by <code>nextElement()</code>.
+     * @param convert A function object that specifies the conversion to be done
+     * on each element of the iteration. This determines the type of the objects
+     * returned by <code>nextElement()</code>.
      */
     public FilterIterator(Enumeration<?> base, UnaryFunction convert) {
         this.itsBase = base;
@@ -80,11 +85,13 @@ public class FilterIterator {
     }
 
     /**
-     * Construct myself to be an iterator that skips some elements of the base iterator according to a given predicate.
-     * Don't do any conversion on the iteration elements.
+     * Construct myself to be an iterator that skips some elements of the base
+     * iterator according to a given predicate. Don't do any conversion on the
+     * iteration elements.
      *
      * @param base The underlying iterator.
-     * @param select A predicate that returns false for any object that the FilterIterator should skip.
+     * @param select A predicate that returns false for any object that the
+     * FilterIterator should skip.
      */
     public FilterIterator(Enumeration<?> base, UnaryPredicate select) {
         this.itsBase = base;
@@ -110,25 +117,20 @@ public class FilterIterator {
                 return;
             }
         }
-
         this.itsNextElement = null;
     }
-
     // ---------- member variables -------------------------------
     private Enumeration<?> itsBase;
-
     private UnaryPredicate itsFilter;
-
     private UnaryFunction itsConverter;
-
     private Object itsNextElement;
-
     private Object itsReturnElement;
 }
 
 /**
- * Filter_Default is the default filter for FilterIterator. This filter is transparent, that means that no element of
- * the underlying iterator will be skipped by the FilterIterator.
+ * Filter_Default is the default filter for FilterIterator. This filter is
+ * transparent, that means that no element of the underlying iterator will be
+ * skipped by the FilterIterator.
  */
 class Filter_Default implements UnaryPredicate {
 
@@ -141,8 +143,8 @@ class Filter_Default implements UnaryPredicate {
 }
 
 /**
- * Convert_Default is the default converter for FilterIterator. No conversion is performed at all, objects are just
- * passed through.
+ * Convert_Default is the default converter for FilterIterator. No conversion is
+ * performed at all, objects are just passed through.
  */
 class Convert_Default implements UnaryFunction {
 

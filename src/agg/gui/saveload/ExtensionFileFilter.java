@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.saveload;
 
 import java.io.File;
 import java.util.Vector;
-
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -22,9 +22,7 @@ import javax.swing.filechooser.FileFilter;
 public abstract class ExtensionFileFilter extends FileFilter {
 
     protected Vector<String> extensions;
-
     protected String extension;
-
     protected String description;
 
     /**
@@ -47,7 +45,8 @@ public abstract class ExtensionFileFilter extends FileFilter {
     }
 
     /**
-     * Return true if this file should be shown in the directory pane, false if it shouldn't.
+     * Return true if this file should be shown in the directory pane, false if
+     * it shouldn't.
      *
      * @see javax.swing.filechooser.FileFilter#accept
      */

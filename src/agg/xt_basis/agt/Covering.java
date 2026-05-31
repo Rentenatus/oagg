@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -17,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrMapping;
 import agg.attribute.handler.AttrHandlerException;
@@ -60,7 +61,8 @@ import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.xt_basis.csp.Completion_CSP;
 
 /**
- * This class computes an amalgamated rule and amalgamated match based on an interaction rule scheme and a host graph.
+ * This class computes an amalgamated rule and amalgamated match based on an
+ * interaction rule scheme and a host graph.
  *
  * @author olga
  *
@@ -68,34 +70,27 @@ import agg.xt_basis.csp.Completion_CSP;
 public class Covering {
 
     final private BaseFactory bf = BaseFactory.theFactory();
-
     private GraGra gragra;
-
     /**
      * current rule scheme
      */
     private RuleScheme ruleScheme;
-
     /**
      * enabled multi rules
      */
     private List<Rule> multiRules;
-
     /**
      * current host graph
      */
     private Graph hostGraph;
-
     /**
-     * match completion strategy of the amalgamated match strategy: Completion_InjCSP
+     * match completion strategy of the amalgamated match strategy:
+     * Completion_InjCSP
      */
     final private MorphCompletionStrategy strategy = new Completion_InjCSP();
-
     final private List<AmalgamationDataOfSingleKernelMatch> amalgamationData;
-
     final private Hashtable<GraphObject, GraphObject> amalgamLHS2kernelLHS;
     final private Hashtable<GraphObject, GraphObject> amalgamRHS2kernelRHS;
-
     /**
      * left graph of the amalgamated rule (the graph of colim diagram)
      */
@@ -104,9 +99,7 @@ public class Covering {
      * right graph of the amalgamated rule (the graph of colim diagram)
      */
     private Graph rightColimGraph;
-
     final private List<List<GraphObject>> disjointObjects;
-
     /**
      * amalgamated rule
      */
@@ -115,7 +108,6 @@ public class Covering {
      * amalgamated match
      */
     protected Match amalgamatedMatch;
-
     /**
      * kernel rule
      */
@@ -124,16 +116,15 @@ public class Covering {
      * match of the kernel rule
      */
     private Match kernelMatch;
-
     private List<GraphObject> localDisjointObjs;
     private String errorMsg = "";
-
     private AmalgamationRuleData lastKernelData;
     private AmalgamationDataOfSingleKernelMatch lastDataOfSKM;
 
     /**
-     * Initialize a covering object with aim to compute an amalgamated rule with amalgamated match based on the given
-     * interaction rule scheme and host graph.
+     * Initialize a covering object with aim to compute an amalgamated rule with
+     * amalgamated match based on the given interaction rule scheme and host
+     * graph.
      */
     public Covering(final RuleScheme rs, final Graph hostGraph, final MorphCompletionStrategy s) {
         this.ruleScheme = rs;
@@ -152,17 +143,14 @@ public class Covering {
                     s.getProperties().get(CompletionPropertyBits.PAC));
             this.strategy.getProperties().set(CompletionPropertyBits.GAC,
                     s.getProperties().get(CompletionPropertyBits.GAC));
-
 //			this.strategy.showProperties();
             this.strategy.setRandomisedDomain(s.isRandomisedDomain());
-
 //			this.strategy.showProperties();
             // because the strategy of an amalgamated rule is always INJECTIVE,
             // the IDENTIFICATION condition is already satisfied
 //			this.strategy.getProperties().set(CompletionPropertyBits.IDENTIFICATION,
 //					s.getProperties().get(CompletionPropertyBits.IDENTIFICATION));		
         }
-
         this.amalgamationData = new ArrayList<AmalgamationDataOfSingleKernelMatch>();
         this.disjointObjects = new ArrayList<List<GraphObject>>();
         this.amalgamRHS2kernelRHS = new Hashtable<GraphObject, GraphObject>();
@@ -184,54 +172,42 @@ public class Covering {
     }
 
     /**
-     * Constructs amalgamated rule and match. <code>getErrorMessage()</code> returns a short hint of the error occurred.
+     * Constructs amalgamated rule and match. <code>getErrorMessage()</code>
+     * returns a short hint of the error occurred.
      *
      * @return true by success, otherwise false (see error message)
      */
     @SuppressWarnings("unused")
     public boolean amalgamate() {
         boolean result = false;
-
         this.multiRules = getEnabledMultiRules(this.ruleScheme.getMultiRules());
         boolean oneMultiRuleMatchExists = false;
-
         getKernelMatch();
-
         boolean hasKernelMatchCompletion = true;
         while (hasKernelMatchCompletion) {
-
             boolean kernelsteps = false;
             while ((!result || this.ruleScheme.parallelKernelMatch())
                     && hasKernelMatchCompletion) {
-
                 hasKernelMatchCompletion = this.kernelMatch.nextCompletionWithConstantsChecking();
                 if (hasKernelMatchCompletion) {
-
                     if (this.kernelMatch.isValid()) {
                         kernelsteps = true;
                         result = this.createAmalgamationData();
-
                         if (result) {
                             oneMultiRuleMatchExists = true;
-
                             if (!this.ruleScheme.parallelKernelMatch()) {
                                 break;
                             }
                             clearMultiRuleMatches();
-
                         } else {
                             clearMultiRuleMatches();
                         }
-
                     }
                 }
-
             }
-
             if (!result && this.ruleScheme.atLeastOneMultiMatchRequired()) {
                 continue;
             }
-
             if (!kernelsteps // because partial match can be already total
                     && this.kernelMatch.isTotal()
                     && this.kernelMatch.isAttrConditionSatisfied()
@@ -239,49 +215,36 @@ public class Covering {
                     && this.kernelMatch.arePACsSatisfied()
                     && this.kernelRule.evalFormula()
                     && this.kernelMatch.isValid()) {
-
                 result = this.createAmalgamationData();
-
                 if (!result && !this.ruleScheme.parallelKernelMatch()) {
                     clearMultiRuleMatches();
                 }
             }
-
             if (!result
                     && !this.ruleScheme.parallelKernelMatch()
                     && this.kernelMatch.isValid()
                     && this.lastDataOfSKM != null) {
                 // use last valid match
-
                 this.lastDataOfSKM.put(this.kernelRule, this.lastKernelData);
                 this.amalgamationData.add(this.lastDataOfSKM);
-
                 if (!this.multiRules.contains(this.kernelRule)) {
                     this.multiRules.add(this.kernelRule);
                 }
-
                 result = true;
             }
-
             if (result) {
-
                 createLkernLinst_RkernRinstMorphs(this.amalgamationData);
                 createInstanceRules(this.amalgamationData);
-
                 if (computeColimLeft()
                         && computeColimRight()
                         && constructAmalgamatedRule()) {
-
                     this.amalgamatedMatch = constructAmalgamatedMatch(this.amalgamatedRule);
                     if (this.amalgamatedMatch != null) {
-
                         //					((VarTuple)this.amalgamatedMatch.getAttrContext().getVariables()).showVariables();
                         this.amalgamatedRule.adaptAttrContextValues(this.amalgamatedMatch.getAttrContext());
                         //					((VarTuple)this.amalgamatedRule.getAttrContext().getVariables()).showVariables();
-
                         // match is valid by construction			                	 
                         this.ruleScheme.setAmalgamatedRule(this.amalgamatedRule);
-
                         result = true;
                     } else {
                         this.amalgamatedRule.dispose();
@@ -290,17 +253,14 @@ public class Covering {
                     }
                 }
             }
-
             if (result) {
                 break;
             }
             this.clear();
             clearMultiRuleMatches();
         }
-
         this.ruleScheme.clearMatches();
         this.clear();
-
         return result;
     }
 
@@ -310,23 +270,18 @@ public class Covering {
         if (kernelData == null) {
             return false;
         }
-
         AmalgamationDataOfSingleKernelMatch dataOfSKM = new AmalgamationDataOfSingleKernelMatch(kernelData);
         // store AmalgamationDataOfSingleKernelMatch to be used later, eventually
         this.lastKernelData = kernelData;
         this.lastDataOfSKM = dataOfSKM;
-
         this.localDisjointObjs = new ArrayList<GraphObject>();
-
         boolean atLeastOneRule = false; //this.multiRules.isEmpty(); 
         boolean matchValid = true;
-
         for (int i = 0; i < this.multiRules.size(); i++) {
             final Rule rule = this.multiRules.get(i);
             if (rule instanceof KernelRule) {
                 continue;
             }
-
             final Match multiMatch = getPartialMultiMatch((MultiRule) rule);
             if (multiMatch != null) {
                 matchValid = createInstMultiMatchesDuetoKernelMatch(
@@ -345,11 +300,9 @@ public class Covering {
         } else if (this.multiRules.isEmpty()) {
             result = true;
         }
-
         if (!result && !this.ruleScheme.parallelKernelMatch()) {
             clearMultiRuleMatches();
         }
-
         // put kernel data into amalgam data to be able 
         // to generate amalgamated rule based on kernel match only		
         if (this.multiRules.isEmpty()
@@ -362,11 +315,9 @@ public class Covering {
             }
             result = true;
         }
-
         if (!result || this.ruleScheme.parallelKernelMatch()) {
             clearMultiRuleMatches();
         }
-
         return result;
     }
 
@@ -418,22 +369,18 @@ public class Covering {
             final Match multiMatch,
             final MultiRule multiRule,
             final AmalgamationDataOfSingleKernelMatch dataOfSKM) {
-
         this.errorMsg = "";
         boolean valid = false;
         // try to make more
-
         while (multiMatch.nextCompletion()) {
             if (multiMatch.isValid()) {
                 valid = true;
 //				 ((VarTuple)multiMatch.getAttrContext().getVariables()).showVariables();
-
                 makeInstMultiMatchDuetoKernelMatch(multiMatch,
                         multiRule,
                         dataOfSKM);
             }
         }
-
         if (!valid // because partial match set before can be total
                 && multiMatch.isTotal()
                 && multiMatch.isAttrConditionSatisfied()
@@ -446,9 +393,7 @@ public class Covering {
                     dataOfSKM);
             valid = true;
         }
-
         multiMatch.clear();
-
         return valid;
     }
 
@@ -456,10 +401,8 @@ public class Covering {
             final Match multiMatch,
             final MultiRule multiRule,
             final AmalgamationDataOfSingleKernelMatch dataOfSKM) {
-
 //		 ((VarTuple)multiMatch.getAttrContext().getVariables()).showVariables();
         boolean nextComplMayExist = true;
-
         if (this.ruleScheme.disjointMultiMatches()) {
             if (!isDisjoint(multiMatch, multiRule)) {
                 nextComplMayExist = false;
@@ -469,10 +412,8 @@ public class Covering {
         } else if (!isDeleteUseConflictFree(multiMatch, multiRule, dataOfSKM)) {
             nextComplMayExist = false;
         }
-
         if (nextComplMayExist) {
             AmalgamationRuleData data = new AmalgamationRuleData(multiRule);
-
             data.isoCopyLeft = multiRule.getLeft().isomorphicCopy();
             data.isoCopyRight = multiRule.getRight().isomorphicCopy();
             nextComplMayExist = false;
@@ -495,8 +436,9 @@ public class Covering {
     }
 
     /**
-     * Checks whether the match of the given multi rule is disjoint due to already existing matches of other multi rules
-     * over the matches of the kernel rule.
+     * Checks whether the match of the given multi rule is disjoint due to
+     * already existing matches of other multi rules over the matches of the
+     * kernel rule.
      *
      * @param multiMatch
      * @param rule
@@ -520,8 +462,9 @@ public class Covering {
     }
 
     /**
-     * Checks whether the given match of the given multi rule is disjoint due to already existing matches of other multi
-     * rules over the single match of the kernel rule.
+     * Checks whether the given match of the given multi rule is disjoint due to
+     * already existing matches of other multi rules over the single match of
+     * the kernel rule.
      *
      * @param multiMatch
      * @param rule
@@ -558,8 +501,8 @@ public class Covering {
     }
 
     /**
-     * Checks whether the given multi rule and match is in delete-use conflict with other already existing matches of
-     * the multi rules.
+     * Checks whether the given multi rule and match is in delete-use conflict
+     * with other already existing matches of the multi rules.
      *
      * @param multiMatch	current match
      * @param rule	current multi rule
@@ -570,7 +513,6 @@ public class Covering {
             final Match multiMatch,
             final MultiRule rule,
             final AmalgamationDataOfSingleKernelMatch askMultiMatchData) {
-
         final List<GraphObject> owns = new ArrayList<GraphObject>();
         final Iterator<GraphObject> objs = multiMatch.getDomain();
         while (objs.hasNext()) {
@@ -579,9 +521,7 @@ public class Covering {
                 owns.add(multiMatch.getImage(obj));
             }
         }
-
         if (!owns.isEmpty()) {
-
             final Enumeration<Rule> keys = askMultiMatchData.getData().keys();
             while (keys.hasMoreElements()) {
                 final Rule r = keys.nextElement();
@@ -590,7 +530,6 @@ public class Covering {
                     final OrdinaryMorphism m = datas.get(i).instMatch;
                     final OrdinaryMorphism iso = datas.get(i).isoCopyLeft;
                     if (iso != null && iso.getSource() == r.getLeft()) {
-
                         for (int k = 0; k < owns.size(); k++) {
                             // object of host graph
                             final GraphObject obj = owns.get(k);
@@ -690,7 +629,6 @@ public class Covering {
             }
         } catch (Exception ex) {
         }
-
         return result;
     }
 
@@ -704,21 +642,18 @@ public class Covering {
                 }
             }
         }
-
         return false;
     }
 
     private AmalgamationRuleData createInstMatchDuetoKernelMatch(
             final Match match,
             final Rule rule) {
-
         AmalgamationRuleData data = new AmalgamationRuleData(rule);
         data.isoCopyLeft = rule.getLeft().isomorphicCopy();
         data.isoCopyRight = rule.getRight().isomorphicCopy();
         if (data.isoCopyLeft != null && data.isoCopyRight != null) {
 //		 ((VarTuple) LmultiLinst.getAttrContext().getVariables()).showVariables();			 
 //		 ((VarTuple) RmultiRinst.getAttrContext().getVariables()).showVariables();
-
             // create instance match of a plain match				 		
             data.instMatch = makeInstanceMatchOfRuleMatch(data.isoCopyLeft, match);
             if (data.instMatch == null) {
@@ -733,8 +668,9 @@ public class Covering {
     }
 
     /**
-     * For each multi rule of the amalgamation data creates morphisms of the lhs of the kernel rule into lhs of the
-     * instance of the multi rule inside the host graph. Creates similar morphisms for the rhs of the kernel rule and
+     * For each multi rule of the amalgamation data creates morphisms of the lhs
+     * of the kernel rule into lhs of the instance of the multi rule inside the
+     * host graph. Creates similar morphisms for the rhs of the kernel rule and
      * instance of the multi rule.
      *
      * @param amalgamData
@@ -743,31 +679,25 @@ public class Covering {
             final List<AmalgamationDataOfSingleKernelMatch> amalgamData
     ) {
 //		 System.out.println("### createLkernLinst_RkernRinstMorphs");
-
         for (int j = 0; j < this.amalgamationData.size(); j++) {
             final AmalgamationDataOfSingleKernelMatch dataOfSKM = this.amalgamationData.get(j);
             final AmalgamationRuleData kerneldata = dataOfSKM.getKernelData();
-
             for (int i = 0; i < this.multiRules.size(); i++) {
                 final Rule rule = this.multiRules.get(i);
                 if (dataOfSKM.isEmpty(rule)) {
                     continue;
                 }
-
                 Hashtable<Rule, List<AmalgamationRuleData>> amalgamationRuleData = dataOfSKM.getData();
-
                 final List<AmalgamationRuleData> datas = amalgamationRuleData.get(rule);
                 if (datas.isEmpty()) {
                     continue;
                 }
-
                 boolean failed = false;
                 for (int k = 0; k < datas.size() && !failed; k++) {
                     final AmalgamationRuleData data = datas.get(k);
                     if (data.isoCopyLeft == null || data.isoCopyRight == null) {
                         continue;
                     }
-
                     OrdinaryMorphism embLeft = null;
                     OrdinaryMorphism embRight = null;
                     if (rule instanceof MultiRule) {
@@ -777,7 +707,6 @@ public class Covering {
                         embLeft = data.isoCopyLeft;
                         embRight = data.isoCopyRight;
                     }
-
                     //add mappings to LkernLinst morphism	
                     if (rule instanceof MultiRule) {
                         data.LkernelLinst = this.bf.createMorphism(
@@ -787,7 +716,6 @@ public class Covering {
                     } else {
                         data.LkernelLinst = data.isoCopyLeft;
                     }
-
                     final Iterator<GraphObject> embLeftDomain = embLeft.getDomain();
                     while (embLeftDomain.hasNext()) {
                         GraphObject domElem = embLeftDomain.next();
@@ -796,7 +724,6 @@ public class Covering {
                         if (rule instanceof MultiRule) {
                             obj = kerneldata.isoCopyLeft.getImage(domElem);
                             img = data.isoCopyLeft.getImage(embLeft.getImage(domElem));
-
                             try {
                                 data.LkernelLinst.addMapping(obj, img);
                                 adoptEntriesWhereEmpty(data.LkernelLinst, obj, img, null);
@@ -806,7 +733,6 @@ public class Covering {
                             }
                         }
                     }
-
                     if (!failed) {
                         //add mappings to RkernRinst morphism 
                         if (rule instanceof MultiRule) {
@@ -817,7 +743,6 @@ public class Covering {
                         } else {
                             data.RkernelRinst = data.isoCopyRight;
                         }
-
                         final Iterator<GraphObject> embRightDomain = embRight.getDomain();
                         while (embRightDomain.hasNext()) {
                             GraphObject domElem = embRightDomain.next();
@@ -826,7 +751,6 @@ public class Covering {
                             if (rule instanceof MultiRule) {
                                 obj = kerneldata.isoCopyRight.getImage(domElem);
                                 img = data.isoCopyRight.getImage(embRight.getImage(domElem));
-
                                 try {
                                     data.RkernelRinst.addMapping(obj, img);
                                     adoptEntriesWhereEmpty(data.RkernelRinst, obj, img, null);
@@ -843,36 +767,30 @@ public class Covering {
     }
 
     /**
-     * For the multi rules and all its matches over a single kernel match create an instance morphism to be basis of an
-     * instance rule. Apply attribute context of the kernel rule to each instance morphism.
+     * For the multi rules and all its matches over a single kernel match create
+     * an instance morphism to be basis of an instance rule. Apply attribute
+     * context of the kernel rule to each instance morphism.
      */
     private void createInstanceRules(
             final List<AmalgamationDataOfSingleKernelMatch> amalgamData) {
 //		System.out.println("createInstanceRules...");
-
         for (int i = 0; i < this.multiRules.size(); i++) {
             final Rule rule = this.multiRules.get(i);
-
             final List<AmalgamationRuleData> datas = new ArrayList<AmalgamationRuleData>();
             for (int j = 0; j < amalgamData.size(); j++) {
                 if (amalgamData.get(j).getRuleData(rule) != null) {
                     datas.addAll(amalgamData.get(j).getRuleData(rule));
                 }
             }
-
             for (int k = 0; k < datas.size(); k++) {
                 final AmalgamationRuleData data = datas.get(k);
-
                 final OrdinaryMorphism instRuleMorph = this.makeInstanceMorphism(
                         data.isoCopyLeft.getTarget(),
                         data.isoCopyRight.getTarget());
-
                 instRuleMorph.addToAttrContextFromList(rule.getInputParametersLeft(), true);
                 instRuleMorph.addToAttrContextFromList(rule.getInputParametersRight(), true);
-
                 instRuleMorph.adaptAttrContextValues(rule.getAttrContext());
 //				((VarTuple) instRuleMorph.getAttrContext().getVariables()).showVariables();
-
                 // isomorphism data.isoCopyLeft: Lmulti -> Linst 
                 // isomorphism data.isoCopyRight: Rmulti -> Rinst						 				 
                 // set morphism mappings	
@@ -893,23 +811,17 @@ public class Covering {
                         }
                     }
                 }
-
                 if (mapOK) {
-
                     data.instRule = this.bf.constructRuleFromMorph(instRuleMorph);
                     data.instRule.setName(rule.getName() + k);
-
                     data.instRule.addToAttrContext((VarTuple) data.instMatch.getAttrContext().getVariables());
                     data.instRule.adaptAttrContextValues(data.instMatch.getAttrContext());
-
 //					((VarTuple)data.instMatch.getAttrContext().getVariables()).showVariables();
                     if (k > 0) {
                         renameVariables(this.kernelRule, data.instRule, k);
                     }
-
 //					((VarTuple)data.instRule.getAttrContext().getVariables()).showVariables();
                     this.tryToSetAttrValuesOfMorph(data.instRule);
-
                 }
             }
         }
@@ -921,20 +833,15 @@ public class Covering {
     private boolean computeColimLeft() {
         final AttrContext aRuleContext = agg.attribute.impl.AttrTupleManager.getDefaultManager().newContext(AttrMapping.PLAIN_MAP);
         final AttrContext aLeftContext = agg.attribute.impl.AttrTupleManager.getDefaultManager().newLeftContext(aRuleContext);
-
         this.leftColimGraph = BaseFactory.theFactory().createGraph(this.kernelRule.getTypeSet());
         this.leftColimGraph.setAttrContext(aLeftContext);
-
         final ColimDiagram colimL = new ColimDiagram(this.leftColimGraph);
         colimL.addNode(this.leftColimGraph);
 //		colimL.addNode(this.kernelRule.getLeft());
-
         for (int j = 0; j < this.amalgamationData.size(); j++) {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
-
             final AmalgamationRuleData kernelData = askMatchdata.getKernelData();
             colimL.addNode(kernelData.isoCopyLeft.getImage());
-
             Enumeration<Rule> keys = askMatchdata.getData().keys();
             while (keys.hasMoreElements()) {
                 final Rule rule = keys.nextElement();
@@ -944,35 +851,28 @@ public class Covering {
                     if (data.LkernelLinst == null) {
                         continue;
                     }
-
                     OrdinaryMorphism colimedge = data.LkernelLinst;
-
                     if (rule instanceof KernelRule) {
                         colimL.addNode(this.kernelRule.getLeft());
                         colimL.addEdge(kernelData.isoCopyLeft);
                     } else {
                         colimL.addNode(colimedge.getImage());
                     }
-
                     colimL.addEdge(colimedge);
-
                     data.leftRequestEdge = new OrdinaryMorphism(
                             colimedge.getImage(),
                             this.leftColimGraph,
                             AttrTupleManager.getDefaultManager().newContext(AttrMapping.PLAIN_MAP));
-
                     colimL.requestEdge(data.leftRequestEdge);
                 }
             }
         }
-
         try {
             colimL.computeColimit(true);
         } catch (TypeException ex) {
             this.errorMsg = "Construction of the LHS of the amalgamated rule failed.";
             return false;
         }
-
         return true;
     }
 
@@ -982,20 +882,15 @@ public class Covering {
     private boolean computeColimRight() {
         final AttrContext aRuleContext = agg.attribute.impl.AttrTupleManager.getDefaultManager().newContext(AttrMapping.PLAIN_MAP);
         final AttrContext aRightContext = agg.attribute.impl.AttrTupleManager.getDefaultManager().newRightContext(aRuleContext);
-
         this.rightColimGraph = BaseFactory.theFactory().createGraph(this.kernelRule.getTypeSet());
         this.rightColimGraph.setAttrContext(aRightContext);
-
         final ColimDiagram colimR = new ColimDiagram(this.rightColimGraph);
         colimR.addNode(this.rightColimGraph);
 //		colimR.addNode(this.kernelRule.getRight());		 
-
         for (int j = 0; j < this.amalgamationData.size(); j++) {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
-
             final AmalgamationRuleData kernelData = askMatchdata.getKernelData();
             colimR.addNode(kernelData.isoCopyRight.getImage());
-
             final Enumeration<Rule> keys = askMatchdata.getData().keys();
             while (keys.hasMoreElements()) {
                 final Rule rule = keys.nextElement();
@@ -1005,28 +900,22 @@ public class Covering {
                     if (data.RkernelRinst == null) {
                         continue;
                     }
-
                     OrdinaryMorphism colimedge = data.RkernelRinst;
-
                     if (rule instanceof KernelRule) {
                         colimR.addNode(this.kernelRule.getRight());
                         colimR.addEdge(kernelData.isoCopyRight);
                     } else {
                         colimR.addNode(colimedge.getImage());
                     }
-
                     colimR.addEdge(colimedge);
-
                     data.rightRequestEdge = new OrdinaryMorphism(
                             colimedge.getImage(),
                             this.rightColimGraph,
                             AttrTupleManager.getDefaultManager().newContext(AttrMapping.PLAIN_MAP));
-
                     colimR.requestEdge(data.rightRequestEdge);
                 }
             }
         }
-
         try {
             colimR.computeColimit(true);
         } catch (TypeException ex) {
@@ -1041,12 +930,9 @@ public class Covering {
      */
     private boolean constructAmalgamatedRule() {
         final OrdinaryMorphism amalgamMorph = this.makeInstanceMorphism(this.leftColimGraph, this.rightColimGraph);
-
         for (int j = 0; j < this.amalgamationData.size(); j++) {
             boolean stored = false;
-
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
-
             final Enumeration<Rule> keys = askMatchdata.getData().keys();
             while (keys.hasMoreElements()) {
                 final Rule rule = keys.nextElement();
@@ -1056,7 +942,6 @@ public class Covering {
                     if (data.leftRequestEdge == null) {
                         continue;
                     }
-
 //		    		 System.out.println("data.instRule... "+data.instRule.getName());
 //		    		 ((VarTuple) data.instRule.getAttrContext().getVariables()).showVariables();
                     // set morphism mappings	     										
@@ -1080,23 +965,19 @@ public class Covering {
                             }
                         }
                     }
-
                     if (!stored) {
                         storeMappingAmalgamObjToKernelObj(data);
                         stored = true;
                     }
-
                     setAttrContext(data.instRule, amalgamMorph);
 //		    		 ((VarTuple)amalgamMorph.getAttrContext().getVariables()).showVariables();
                 }
             }
         }
         setAttrContext(this.kernelRule, amalgamMorph);
-
 //	     ((VarTuple) amalgamMorph.getAttrContext().getVariables()).showVariables();
         this.amalgamatedRule = new AmalgamatedRule(amalgamMorph);
         this.amalgamatedRule.setName(this.ruleScheme.getName() + "-Amalgamation");
-
 //	     System.out.println("AmalgamatedRule: "+this.amalgamatedRule.getName());
 //	     ((VarTuple)this.amalgamatedRule.getAttrContext().getVariables()).showVariables();
 //	     takeNACsFromKernelRule();		             	 	 			
@@ -1189,22 +1070,18 @@ public class Covering {
     private Match constructAmalgamatedMatch(final Rule amalgamRule) {
         Match m = this.bf.createMatch(amalgamRule, this.hostGraph);
         amalgamRule.setMatch(m);
-
         boolean mapOK = true;
         for (int j = 0; mapOK && j < this.amalgamationData.size(); j++) {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
-
             final Enumeration<Rule> keys = askMatchdata.getData().keys();
             while (mapOK && keys.hasMoreElements()) {
                 final Rule rule = keys.nextElement();
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
-
                 for (int i = 0; i < datas.size() && mapOK; i++) {
                     final AmalgamationRuleData data = datas.get(i);
                     if (data.leftRequestEdge == null) {
                         continue;
                     }
-
                     Iterator<?> LkernObjs = data.LkernelLinst.getOriginal().getNodesSet().iterator();
                     while (LkernObjs.hasNext()) {
                         GraphObject obj = (GraphObject) LkernObjs.next();
@@ -1237,16 +1114,13 @@ public class Covering {
                             break;
                         }
                     }
-
                     if (!m.makeDiagram(data.leftRequestEdge, data.instMatch)) {
                         System.out.println("makeDiagram   FAILED!");
                         break;
                     }
-
                 }
             }
         }
-
         if (!mapOK || !m.isTotal()) {
             this.errorMsg = "Amalgamated match failed.\n" + m.getErrorMsg();
         } else if (this.ruleScheme.parallelKernelMatch()) {
@@ -1258,13 +1132,11 @@ public class Covering {
             m.setCompletionStrategy(this.strategy);
             m.getCompletionStrategy().getProperties()
                     .set(CompletionPropertyBits.INJECTIVE, this.ruleScheme.disjointMultiMatches());
-
             if (this.ruleScheme.disjointMultiMatches()) {
                 if (m.getCompletionStrategy().getProperties().get(CompletionPropertyBits.DANGLING)) {
                     if (m.isDanglingSatisfied()) {
                         return m;
                     }
-
                     this.errorMsg = "Amalgamated match failed.\n" + m.getErrorMsg();
                 } else {
                     return m;
@@ -1275,7 +1147,6 @@ public class Covering {
                         if (m.isDanglingSatisfied()) {
                             return m;
                         }
-
                         this.errorMsg = "Amalgamated match failed.\n" + m.getErrorMsg();
                     } else {
                         return m;
@@ -1285,7 +1156,6 @@ public class Covering {
                 }
             }
         }
-
         // match failed, return null
         amalgamRule.setMatch(null);
         m.dispose();
@@ -1296,11 +1166,9 @@ public class Covering {
     private boolean glueObjectsOfAmalgamatedRule(final Rule amalgamRule, final Match m) {
         int tgCheckLevel = m.getTarget().getTypeSet().getLevelOfTypeGraphCheck();
         m.getTarget().getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
-
         final Hashtable<GraphObject, GraphObject> l2r = new Hashtable<GraphObject, GraphObject>();
         final Hashtable<GraphObject, List<GraphObject>> keep2glue = new Hashtable<GraphObject, List<GraphObject>>();
         final List<GraphObject> toDelete = new ArrayList<GraphObject>();
-
         Iterator<GraphObject> matchCodom = m.getCodomain();
         while (matchCodom.hasNext()) {
             final GraphObject codomObj = matchCodom.next();
@@ -1426,7 +1294,6 @@ public class Covering {
                 }
             }
         }
-
         // remove rhs node/edge  because at least one of glued lhs nodes/edges does not have an rhs image   
         if (result) {
             for (int i = 0; i < toDelete.size(); i++) {
@@ -1443,7 +1310,6 @@ public class Covering {
                 }
             }
         }
-
         m.getTarget().getTypeSet().setLevelOfTypeGraph(tgCheckLevel);
         if (result) {
             if (amalgamRule.getTypeSet().checkType(amalgamRule.getLeft(), tgCheckLevel).isEmpty()
@@ -1454,14 +1320,12 @@ public class Covering {
                 result = false;
             }
         }
-
         return result;
     }
 
     private boolean glueObjects(
             final GraphObject keep,
             final List<GraphObject> list) throws TypeException {
-
         for (int i = 0; i < list.size(); i++) {
             GraphObject glue = list.get(i);
             if (keep != glue) {
@@ -1471,7 +1335,6 @@ public class Covering {
                     }
                     list.remove(glue);
                     i--;
-
                 } catch (TypeException ex) {
                     throw ex;
                 }
@@ -1483,7 +1346,6 @@ public class Covering {
     private void setAttrContext(
             final OrdinaryMorphism from,
             final OrdinaryMorphism to) {
-
         final VarTuple varsTo = (VarTuple) to.getAttrContext().getVariables();
         final VarTuple varsFrom = (VarTuple) from.getAttrContext().getVariables();
         for (int j = 0; j < varsFrom.getSize(); j++) {
@@ -1498,7 +1360,6 @@ public class Covering {
                 vmTo.setExprAsText(vmFrom.getExprAsText());
             }
         }
-
 //		 final CondTuple conds = (CondTuple) to.getAttrContext().getConditions();	   
 //		 final CondTuple condsFrom = (CondTuple) from.getAttrContext().getConditions();  	   
 //		 for(int j=0; j<condsFrom.getSize(); j++){	    
@@ -1518,7 +1379,6 @@ public class Covering {
         if (this.kernelMatch == null) {
             this.kernelMatch = this.bf.createMatch(this.kernelRule, this.hostGraph);
             this.kernelRule.setMatch(this.kernelMatch);
-
 //			 if (this.strategy.getProperties().get(CompletionPropertyBits.INJECTIVE)) 
 //				 this.kernelMatch.setCompletionStrategy(new Completion_NAC(new Completion_InjCSP())); 
 //			 else 
@@ -1529,13 +1389,11 @@ public class Covering {
 //				.set(CompletionPropertyBits.INJECTIVE, 
 //						this.strategy.getProperties().get(CompletionPropertyBits.INJECTIVE));			 
 //		 }
-
         if (this.strategy.getProperties().get(CompletionPropertyBits.INJECTIVE)) {
             this.kernelMatch.setCompletionStrategy(new Completion_NAC(new Completion_InjCSP()));
         } else {
             this.kernelMatch.setCompletionStrategy(new Completion_NAC(new Completion_CSP()));
         }
-
         this.kernelMatch.getCompletionStrategy().getProperties()
                 .set(CompletionPropertyBits.IDENTIFICATION,
                         this.strategy.getProperties().get(CompletionPropertyBits.IDENTIFICATION));
@@ -1556,7 +1414,6 @@ public class Covering {
                 .set(CompletionPropertyBits.DANGLING, false);
         this.kernelMatch.getCompletionStrategy().setRandomisedDomain(this.strategy.isRandomisedDomain());
 //		 this.kernelMatch.getCompletionStrategy().showProperties();
-
         this.kernelMatch.getCompletionStrategy().initialize(this.kernelMatch);
     }
 
@@ -1575,7 +1432,6 @@ public class Covering {
             } else {
                 multiMatch.setCompletionStrategy(new Completion_NAC(new Completion_CSP()));
             }
-
             multiMatch.getCompletionStrategy().getProperties()
                     .set(CompletionPropertyBits.IDENTIFICATION,
                             this.strategy.getProperties().get(CompletionPropertyBits.IDENTIFICATION));
@@ -1593,7 +1449,6 @@ public class Covering {
                     .set(CompletionPropertyBits.DANGLING, false);
             multiMatch.getCompletionStrategy().setRandomisedDomain(this.strategy.isRandomisedDomain());
 //			 multiMatch.getCompletionStrategy().showProperties();
-
             multiMatch.getCompletionStrategy().initialize(multiMatch);
         }
         return multiMatch;
@@ -1609,12 +1464,10 @@ public class Covering {
     private OrdinaryMorphism makeInstanceMatchOfRuleMatch(
             final OrdinaryMorphism LruleLinst,
             final Match ruleMatch) {
-
 //		 ((VarTuple)ruleMatch.getAttrContext().getVariables()).showVariables();
         OrdinaryMorphism instMatch = this.makeInstanceMorphism(LruleLinst.getTarget(),
                 ruleMatch.getTarget());
         instMatch.setName(ruleMatch.getName());
-
         final Iterator<GraphObject> e = ruleMatch.getDomain();
         while (e.hasNext()) {
             final GraphObject o = e.next();
@@ -1622,22 +1475,18 @@ public class Covering {
             final GraphObject img = ruleMatch.getImage(o);
             try {
                 instMatch.addMapping(oImg, img);
-
                 // set attr value from graph to LHS object 
 //				 adoptEntries(instMatch, img, oImg);
             } catch (BadMappingException ex) {
                 return null;
             }
         }
-
         instMatch.addToAttrContext((VarTuple) ruleMatch.getRule().getAttrContext().getVariables());
-
 //		 instMatch.addToAttrContextFromList(ruleMatch.getRule().getInputParametersLeft(), true);
 //		 instMatch.addToAttrContextFromList(ruleMatch.getRule().getInputParametersRight(), true);
 //		 instMatch.addToAttrContextFromList(ruleMatch.getRule().getNonInputParametersOfNewGraphObjects(), false);
         instMatch.adaptAttrContextValues(ruleMatch.getAttrContext());
 //		 ((VarTuple)instMatch.getAttrContext().getVariables()).showVariables();
-
         return instMatch;
     }
 
@@ -1701,7 +1550,6 @@ public class Covering {
             final OrdinaryMorphism morph,
             final GraphObject from,
             final GraphObject to) {
-
         if (from.getAttribute() != null
                 && to.getAttribute() != null) {
             ValueTuple valFrom = (ValueTuple) from.getAttribute();
@@ -1723,11 +1571,9 @@ public class Covering {
             final GraphObject from,
             final GraphObject to,
             final GraphObject origTo) {
-
         if (morph.getImage(from) != null
                 && from.getAttribute() != null
                 && to.getAttribute() != null) {
-
             final ValueTuple valuefrom = (ValueTuple) from.getAttribute();
             final ValueTuple value = (ValueTuple) to.getAttribute();
             for (int i = 0; i < value.getSize(); i++) {
@@ -1754,7 +1600,6 @@ public class Covering {
             final String to,
             final AttrContext ac,
             final Iterator<?> e) {
-
         final VarTuple vars = (VarTuple) ac.getVariables();
         while (e.hasNext()) {
             final GraphObject obj = (GraphObject) e.next();
@@ -1779,10 +1624,8 @@ public class Covering {
                     } else if (fromVM.getExpr().isComplex()) {
 //						 final VarMember toVM = vars.getVarMemberAt(to);
                         final JexExpr oldExpr = (JexExpr) fromVM.getExpr();
-
                         final List<String> variables = new ArrayList<String>();
                         oldExpr.getAllVariables(variables);
-
                         this.findPrimaryAndReplace(
                                 (SimpleNode) oldExpr.getAST(),
                                 from, to,
@@ -1797,11 +1640,9 @@ public class Covering {
     private void renameVariables(final Rule basicr,
             final OrdinaryMorphism LiRi,
             int index) {
-
 //		 System.out.println("Covering.renameVariables ... for  "+index);
         final String mark = String.valueOf(index);
         final VarTuple varsBasic = (VarTuple) basicr.getAttrContext().getVariables();
-
         final VarTuple varsLiRi = (VarTuple) LiRi.getAttrContext().getVariables();
         for (int i = 0; i < varsLiRi.getSize(); i++) {
             final VarMember vm = varsLiRi.getVarMemberAt(i);
@@ -1810,20 +1651,16 @@ public class Covering {
             if (vmKernel == null) {
                 final String from = vm.getName();
                 final String to = vm.getName() + mark;
-
                 vm.getDeclaration().setName(to);
-
                 // rename variables in left/right graphs of instance morphs
                 setAttributeVariable(from, to, LiRi.getAttrContext(),
                         LiRi.getSource().getNodesSet().iterator());
                 setAttributeVariable(from, to, LiRi.getAttrContext(),
                         LiRi.getSource().getArcsSet().iterator());
-
                 setAttributeVariable(from, to, LiRi.getAttrContext(),
                         LiRi.getTarget().getNodesSet().iterator());
                 setAttributeVariable(from, to, LiRi.getAttrContext(),
                         LiRi.getTarget().getArcsSet().iterator());
-
                 // rename variables in conditions		
                 final CondTuple conds = (CondTuple) LiRi.getAttrContext().getConditions();
                 for (int j = 0; j < conds.getSize(); j++) {
@@ -1834,7 +1671,6 @@ public class Covering {
                         final JexExpr oldExpr = (JexExpr) cm.getExpr();
                         final List<String> variables = new ArrayList<String>();
                         oldExpr.getAllVariables(variables);
-
                         this.findPrimaryAndReplace((SimpleNode) oldExpr.getAST(),
                                 from, to,
                                 LiRi.getAttrContext(),
@@ -1851,18 +1687,14 @@ public class Covering {
             final String to,
             final AttrContext ac,
             final VarTuple vars) {
-
 //		 System.out.println("Covering.findPrimaryAndChange:  in  "+node);
         final SymbolTable symbs = ac;
-
 //		 System.out.println(ac);
         for (int j = 0; j < node.jjtGetNumChildren(); j++) {
             final SimpleNode n = (SimpleNode) node.jjtGetChild(j);
-
 //			 System.out.println(j+"  Child of ast:  "+n+"  is  "+n.getString()+"   "+n.getIdentifier()); 
             if (n instanceof ASTPrimaryExpression
                     || n instanceof ASTId) {
-
 //				 String ident = "";
 //				 if (n instanceof ASTPrimaryExpression)
 //					 ident = ((ASTPrimaryExpression) n).getIdentifier();
@@ -1870,7 +1702,6 @@ public class Covering {
 //					 ident = ((ASTId) n).getIdentifier();
 //				 System.out.println("Identifier:  "+ ident+"   "+ n.getString());
                 if (n.getString().equals(from)) {
-
 //					 System.out.println("SymbolTable: "+from+"  type= "+symbs.getType(from)+"  expr= "+ symbs.getExpr(from));
 //					 System.out.println("SymbolTable: "+to+"  type= "+symbs.getType(to)+"  expr= "+ symbs.getExpr(to));
                     boolean to_found = false;
@@ -1902,7 +1733,6 @@ public class Covering {
                             if (vm.getName().equals(to)) {
                                 to_found = true;
 //								 System.out.println(to+"  exists in vars  "+vm.getName()+"   "+vm);  
-
                                 final HandlerType t = vm.getDeclaration().getType();
                                 try {
                                     final HandlerExpr expression = vm.getHandler().newHandlerExpr(t, to);
@@ -1926,8 +1756,4 @@ public class Covering {
             }
         }
     }
-
 }
-
-
-

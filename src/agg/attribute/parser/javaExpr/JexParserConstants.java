@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -18,55 +18,30 @@ package agg.attribute.parser.javaExpr;
 public interface JexParserConstants {
 
     static final long serialVersionUID = 1L;
-
     int EOF = 0;
-
     int INTEGER_LITERAL = 6;
-
     int DECIMAL_LITERAL = 7;
-
     int HEX_LITERAL = 8;
-
     int OCTAL_LITERAL = 9;
-
     int FLOATING_POINT_LITERAL = 10;
-
     int EXPONENT = 11;
-
     int CHARACTER_LITERAL = 12;
-
     int STRING_LITERAL = 13;
-
     int LPAREN = 14;
-
     int RPAREN = 15;
-
     int LBRACE = 16;
-
     int RBRACE = 17;
-
     int LBRACKET = 18;
-
     int RBRACKET = 19;
-
     int SEMICOLON = 20;
-
     int COMMA = 21;
-
     int DOT = 22;
-
     int DOLLAR = 23;
-
     int IDENTIFIER = 48;
-
     int LETTER = 49;
-
     int DIGIT = 50;
-
     int LONG_LITERAL = 51;
-
     int DEFAULT = 0;
-
     String[] tokenImage = {
         "<EOF>", // 0
         "\" \"", // 1
@@ -122,7 +97,6 @@ public interface JexParserConstants {
         "<LONG_LITERAL>", // 51
         "\"\\\"" // 52
     };
-
 }
 /*
  * $Log: JexParserConstants.java,v $

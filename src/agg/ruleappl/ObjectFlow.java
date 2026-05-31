@@ -1,33 +1,32 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
- */
-/**
- *
+ * </copyright>
+ * *****************************************************************************
  */
 package agg.ruleappl;
 
+import agg.xt_basis.Graph;
+import agg.xt_basis.GraphObject;
+import agg.xt_basis.Rule;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import agg.xt_basis.Graph;
-import agg.xt_basis.GraphObject;
-import agg.xt_basis.Rule;
-
 /**
- * Stores related objects of two rules: an output object which belongs to RHS of the first rule is related to an input
- * object which belongs to LHS of the second rule.
+ * Stores related objects of two rules: an output object which belongs to RHS of
+ * the first rule is related to an input object which belongs to LHS of the
+ * second rule.
  *
- * Having a co-match of the first rule and match of the second rule we can find an object of the host graph which
- * corresponds to the output of the first rule and input of the second rule :
+ * Having a co-match of the first rule and match of the second rule we can find
+ * an object of the host graph which corresponds to the output of the first rule
+ * and input of the second rule :
  *
  * graph_object = comatch.getImage(object_flow.getOutput(input)
  *
@@ -40,37 +39,34 @@ import agg.xt_basis.Rule;
 public class ObjectFlow {
 
     final Hashtable<Object, Object> outputInputMap;
-
     final Object srcOfOutput;  // Graph | Rule
     final Object srcOfInput;	// Rule
     int indxOfOutput = -1, indxOfInput = -1;
 
     /**
-     * @param sourceOfOutput	output object can be Graph or Rule which RHS contains output objects
-     * @param sourceOfInput	input object is a Rule which LHS contains input objects
+     * @param sourceOfOutput	output object can be Graph or Rule which RHS
+     * contains output objects
+     * @param sourceOfInput	input object is a Rule which LHS contains input
+     * objects
      * @param indxOfOutput index of the output object
      * @param indxOfInput index of the input object
      */
     public ObjectFlow(final Object sourceOfOutput, final Object sourceOfInput,
             int indxOfOutput, int indxOfInput) {
-
         this.srcOfOutput = sourceOfOutput;
         this.srcOfInput = sourceOfInput;
         this.indxOfOutput = indxOfOutput;
         this.indxOfInput = indxOfInput;
-
         this.outputInputMap = new Hashtable<Object, Object>();
     }
 
     public ObjectFlow(final Object sourceOfOutput, final Object sourceOfInput,
             int indxOfOutput, int indxOfInput,
             final Hashtable<Object, Object> outputInputMap) {
-
         this.srcOfOutput = sourceOfOutput;
         this.srcOfInput = sourceOfInput;
         this.indxOfOutput = indxOfOutput;
         this.indxOfInput = indxOfInput;
-
         this.outputInputMap = outputInputMap;
     }
 
@@ -133,7 +129,8 @@ public class ObjectFlow {
 
     /**
      *
-     * @return mappings where first object is an output and second object is an input of the object flow
+     * @return mappings where first object is an output and second object is an
+     * input of the object flow
      */
     public Hashtable<Object, Object> getMapping() {
         return this.outputInputMap;
@@ -144,7 +141,8 @@ public class ObjectFlow {
     }
 
     /**
-     * Returns an output (Graph)object for the specified input (Graph)object if it exists, otherwise null.
+     * Returns an output (Graph)object for the specified input (Graph)object if
+     * it exists, otherwise null.
      *
      * @param input	(Graph)object
      * @return	output (Graph)object
@@ -165,7 +163,6 @@ public class ObjectFlow {
     public Object getConnectedInput(
             final ObjectFlow otherObjFlow, // ObjectFlow before
             final Object myInputObj) {
-
         Object outObj = this.getOutput(myInputObj);
         if (this.srcOfOutput instanceof Rule
                 && outObj instanceof GraphObject) {
@@ -180,7 +177,6 @@ public class ObjectFlow {
     public Object getConnectedOutput(
             final ObjectFlow otherObjFlow, // ObjectFlow before
             final Object myInputObj) {
-
         Object outObj = this.getOutput(myInputObj);
         if (this.srcOfOutput instanceof Rule
                 && outObj instanceof GraphObject) {
@@ -214,7 +210,8 @@ public class ObjectFlow {
     }
 
     /**
-     * Returns an input (Graph)object for the specified output (Graph)object if exists, otherwise null.
+     * Returns an input (Graph)object for the specified output (Graph)object if
+     * exists, otherwise null.
      *
      * @param output	(Graph)object
      * @return	input	(Graph)object
@@ -223,7 +220,6 @@ public class ObjectFlow {
         if (output != null) {
             return this.outputInputMap.get(output);
         }
-
         return null;
     }
 
@@ -245,7 +241,6 @@ public class ObjectFlow {
         if (objFlow == null) {
             return false;
         }
-
         List<Object> keys1 = new Vector<Object>(this.outputInputMap.keySet());
         List<Object> keys2 = new Vector<Object>(objFlow.getMapping().keySet());
         if (keys1.size() == keys2.size()
@@ -259,8 +254,6 @@ public class ObjectFlow {
         } else {
             return false;
         }
-
         return true;
     }
-
 }

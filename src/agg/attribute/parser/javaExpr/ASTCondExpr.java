@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
-
 
 /* JJT: 0.2.2 */
 /**
@@ -39,14 +38,12 @@ public class ASTCondExpr extends SimpleNode {
 		 * System.out.println("expr2: "+expr2.toString());
          */
         condition.checkContext();
-
         if (((SimpleNode) condition).getNodeClass() != Boolean.TYPE) {
             throw new ASTWrongTypeException("[boolean ? TYPE_1 : TYPE_1]", "["
                     + ((SimpleNode) condition).getNodeClass().getName() + " ? ... : ...]");
         }
         expr1.checkContext();
         expr2.checkContext();
-
         if (((SimpleNode) expr1).getNodeClass() == ((SimpleNode) expr2).getNodeClass()) {
             setNodeClass(((SimpleNode) expr1).getNodeClass());
         } else {
@@ -59,7 +56,6 @@ public class ASTCondExpr extends SimpleNode {
 
     public void interpret() {
         jjtGetChild(0).interpret();
-
         if (((Boolean) stack.get(top--)).booleanValue()) {
             jjtGetChild(1).interpret();
         } else {

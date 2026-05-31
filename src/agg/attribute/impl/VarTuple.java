@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -14,7 +16,6 @@ package agg.attribute.impl;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
-
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrVariableTuple;
 import agg.attribute.handler.AttrHandler;
@@ -23,7 +24,8 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 
 /**
- * Adds the possibility of being shared. Needed as the container of variable values inside a context core.
+ * Adds the possibility of being shared. Needed as the container of variable
+ * values inside a context core.
  *
  * @author $Author: olga $
  * @version $Id: VarTuple.java,v 1.25 2010/11/28 22:11:36 olga Exp $
@@ -31,13 +33,12 @@ import org.w3c.dom.Element;
 public class VarTuple extends LoneTuple implements AttrVariableTuple {
 
     static final long serialVersionUID = 1133219076552845488L;
-
     /**
-     * A special value designating that the assignment was done in the parent context and this context's references
-     * don't count; such a value is permanent, it may not be changed by this value tuple.
+     * A special value designating that the assignment was done in the parent
+     * context and this context's references don't count; such a value is
+     * permanent, it may not be changed by this value tuple.
      */
     protected final int FIXED_VALUE = -1;
-
 //	private static transient int COUNTER = 0;
     private Vector<Integer> signaturOrder;
 
@@ -46,7 +47,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
         super(manager, context, parent);
         getContextView().setAllowVarDeclarations(true);
         getContextView().setAllowComplexExpr(true);
-
         if (this.parent != null) {
             if (this.getSize() == 0 && this.parent.getSize() > 0) {
                 for (int i = 0; i < this.parent.getSize(); i++) {
@@ -75,7 +75,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
             getContextView().setVariableContext(
                     parent.getContextView().isVariableContext());
         }
-
 //		COUNTER++;
         this.errorMsg = "";
     }
@@ -130,11 +129,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
         }
     }
 
-    protected void finalize() {
-        super.finalize();
-//		COUNTER--;
-    }
-
     public void makeCopyOf(final VarTuple tuple) {
         for (int i = 0; i < tuple.getSize(); i++) {
             final VarMember m = (VarMember) tuple.getMemberAt(i);
@@ -145,7 +139,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
             }
             this.declare(m.getHandler(), m.getDeclaration()
                     .getTypeName(), m.getName());
-
             final VarMember var = (VarMember) this.getMemberAt(i);
             if (m.isSet()) {
                 if (m.getExprAsText().indexOf("@") != -1) {
@@ -154,7 +147,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
                     var.setExprAsText(m.getExprAsText());
                 }
             }
-
             var.setInputParameter(m.isInputParameter());
             var.setMark(m.getMark());
             var.setTransient(m.isTransient());
@@ -172,7 +164,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
         if (decl != null) {
             return new VarMember(this, decl);
         }
-
         return null;
     }
 
@@ -200,7 +191,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
             if (vm.getDeclaration().getTypeName().equals(typestr)) {
                 return true;
             }
-
             return false;
         }
         return false;
@@ -250,7 +240,8 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
     }
 
     /**
-     * Checks if all input parameter are set. If there are no parameter this method returns true.
+     * Checks if all input parameter are set. If there are no parameter this
+     * method returns true.
      */
     public boolean areInputParametersSet() {
         int size = getSize();
@@ -286,7 +277,8 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
     }
 
     /**
-     * Checks if all output parameter are set. If there are no parameter this method return true.
+     * Checks if all output parameter are set. If there are no parameter this
+     * method return true.
      */
     public boolean areOutputParametersSet() {
         int size = getSize();
@@ -329,7 +321,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
     public boolean isDefinite() {
         for (int i = 0; i < getSize(); i++) {
             final VarMember m = getVarMemberAt(i);
-
             // nicht definierte Variablen werden geloescht
             if (!m.isDefinite()) {
                 final DeclTuple decl = ((ValueTuple) getParent()).getTupleType();
@@ -494,7 +485,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
                     && !"".equals(val.getDecl().getTypeName())
                     && !"".equals(val.getName())) {
                 h.openSubTag("Parameter");
-
                 if (val.isSet()) {
                     if (val.getExpr().isConstant()) {
                         h.addAttr("value", val.getExpr().getValue().toString());
@@ -554,7 +544,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
                     }
                     var.setInputParameter(isin);
                     var.setOutputParameter(isout);
-
                     String value = h.readAttr("value");
                     if ((value != null) && !value.equals("")) {
                         // System.out.println("VarTuple.Xread: value: "+value);
@@ -588,7 +577,6 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
             h.close();
         }
     }
-
 }
 /*
  * $Log: VarTuple.java,v $

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.cons;
 
@@ -16,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.io.Serializable;
-
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.NestedApplCond;
@@ -25,41 +25,23 @@ import agg.xt_basis.NestedApplCond;
 public class Formula implements Evaluable, XMLObject, Serializable {
 
     public static final int NOP = 0;
-
     public static final int TRUE = 1;
-
     public static final int FALSE = 2;
-
     public static final int NOT = 3;
-
     public static final int AND = 4;
-
     public static final int OR = 5;
-
     public static final int EXISTS = 6;
-
     public static final int FORALL = 7;
-
     public static final int UNDEF = -1;
-
     private Evaluable sub1, sub2;
-
     private int op;
-
     public String str = "";
-
     private int running_tick;
-
     private String name = "";
-
     private boolean evaluable = true;
-
     private boolean enabled = true;
-
     private String comment = "";
-
     private Vector<Integer> layer = new Vector<Integer>(5);
-
     private Vector<Integer> priority = new Vector<Integer>(5);
 
     private void init(int _op, Evaluable e1, Evaluable e2) {
@@ -169,7 +151,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
         if (names.size() != v.size()) {
             return getAsString(v);
         }
-
         final HashMap<Evaluable, String> map = new HashMap<Evaluable, String>();
         for (int i = 0; i < v.size(); i++) {
             map.put(v.get(i), names.get(i));
@@ -327,7 +308,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
             }
             tick = this.running_tick++;
         }
-
         switch (this.op) {
             case NOP:
                 if (this.sub1 != null) {
@@ -409,7 +389,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                     return result;
                 }
                 return false;
-
             case NOT:
                 if (this.sub1 != null) {
                     boolean result = !this.sub1.eval(o, tick, true);
@@ -417,7 +396,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                     return result;
                 }
                 return false;
-
             case AND:
                 if ((this.sub1 != null) && (this.sub2 != null)) {
                     boolean result = this.sub1.eval(o, tick, false)
@@ -427,7 +405,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                     return result;
                 }
                 return false;
-
             case OR:
                 if (this.sub1 != null) {
                     boolean result = this.sub1.eval(o, tick, false);
@@ -852,7 +829,8 @@ public class Formula implements Evaluable, XMLObject, Serializable {
     }
 
     /**
-     * Set the specified Vector l to its layer container. An element of this Vector is an Integer..
+     * Set the specified Vector l to its layer container. An element of this
+     * Vector is an Integer..
      */
     public void setLayer(Vector<Integer> l) {
         this.layer = l;
@@ -895,7 +873,8 @@ public class Formula implements Evaluable, XMLObject, Serializable {
     }
 
     /**
-     * Set the specified Vector p to its priority container. An element of this Vector is an Integer.
+     * Set the specified Vector p to its priority container. An element of this
+     * Vector is an Integer.
      */
     public void setPriority(Vector<Integer> p) {
         this.priority = p;
@@ -904,7 +883,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
     @SuppressWarnings("unused")
     public void XreadObject(XMLHelper h) {
         if (h.isTag("Formula", this)) {
-
             this.name = h.readAttr("name");
             String str = h.readAttr("comment");
             if (!str.equals("")) {
@@ -917,7 +895,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
             } else {
                 this.enabled = true;
             }
-
             if (this.layer == null) {
                 this.layer = new Vector<Integer>(5);
             } else {
@@ -936,7 +913,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                         l = l.substring(0, l.length() - 1);
                     }
                     String[] array = l.split(",");
-
                     for (int i = 0; i < array.length; i++) {
                         try {
                             this.layer.add(new Integer(array[i]));
@@ -946,7 +922,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                 }
                 h.close();
             }
-
             if (this.priority == null) {
                 this.priority = new Vector<Integer>(5);
             } else {
@@ -965,7 +940,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                         p = p.substring(0, p.length() - 1);
                     }
                     String[] array = p.split(",");
-
                     for (int i = 0; i < array.length; i++) {
                         try {
                             this.priority.add(new Integer(array[i]));
@@ -975,18 +949,15 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                 }
                 h.close();
             }
-
             h.close();
         }
     }
 
     public void XwriteObject(XMLHelper h) {
         h.openNewElem("Formula", this);
-
         h.addAttr("name", getName());
         h.addAttr("comment", this.comment);
         h.addAttr("enabled", String.valueOf(this.enabled));
-
         // write layer
         h.openSubTag("Layer");
         if (this.layer.size() == 0) {
@@ -999,7 +970,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
         }
         h.addAttr("Size", String.valueOf(this.layer.size()));
         h.close();
-
         // write priority
         h.openSubTag("Priority");
         if (this.priority.size() == 0) {
@@ -1012,7 +982,6 @@ public class Formula implements Evaluable, XMLObject, Serializable {
         }
         h.addAttr("Size", String.valueOf(this.priority.size()));
         h.close();
-
         h.close();
     }
 
@@ -1033,14 +1002,11 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                     if (this.sub1 instanceof NestedApplCond) {
                         ((NestedApplCond) this.sub1).forall = true;
                     }
-
                     boolean result = this.sub1.eval(o, tick);
                     setEvaluable(this.sub1);
-
                     if (this.sub1 instanceof NestedApplCond) {
                         ((NestedApplCond) this.sub1).forall = false;
                     }
-
                     return result;
                 }
                 return false;

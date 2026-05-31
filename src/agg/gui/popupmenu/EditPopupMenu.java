@@ -2,10 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * </copyright>
+ * *****************************************************************************
  */
 package agg.gui.popupmenu;
 
@@ -15,14 +17,12 @@ import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Point;
-
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JCheckBoxMenuItem;
-
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdAtomic;
 import agg.editor.impl.EdGraphObject;
@@ -54,15 +54,12 @@ public class EditPopupMenu extends JPopupMenu {
         super("Operations");
 //		setLabel("Operations");
         setBorderPainted(true);
-
         this.deleteMenu = createDeleteMenu();
         this.useDeleteMenu = false;
-
         this.mi = add(new JMenuItem("      Operations"));
 //		miOperations = this.mi;
         // this.mi.setEnabled(false);
         addSeparator();
-
         this.mi = add(new JMenuItem("Attributes ..."));
         // this.mi.setMnemonic('A');
         this.mi.addActionListener(new ActionListener() {
@@ -72,7 +69,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
                 EditPopupMenu.this.mapping = false;
                 // gp.getCanvas().saveScrollBarValue();
-
                 if (EditPopupMenu.this.ruleEditor == null) {
                     EditPopupMenu.this.editor.setAttrEditorOnTopForGraphObject(EditPopupMenu.this.ego);
                 } else {
@@ -81,7 +77,6 @@ public class EditPopupMenu extends JPopupMenu {
                 EditPopupMenu.this.ego.setWeakselected(true);
             }
         });
-
         this.miObjName = new JMenuItem("Object Name");
         add(this.miObjName);
         this.miObjName.addActionListener(new ActionListener() {
@@ -93,9 +88,7 @@ public class EditPopupMenu extends JPopupMenu {
                 setObjectName(EditPopupMenu.this.ego);
             }
         });
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Copy"));
         // this.mi.setMnemonic('C');
         this.mi.addActionListener(new ActionListener() {
@@ -128,7 +121,6 @@ public class EditPopupMenu extends JPopupMenu {
                 AGGAppl.getInstance().setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
             }
         });
-
         this.mi = add(new JMenuItem("Select"));
         // this.mi.setMnemonic('S');
         this.mi.addActionListener(new ActionListener() {
@@ -138,7 +130,6 @@ public class EditPopupMenu extends JPopupMenu {
                         || EditPopupMenu.this.ego == null) {
                     return;
                 }
-
                 EditPopupMenu.this.mapping = false;
                 ego = EditPopupMenu.this.gp.select(EditPopupMenu.this.xPos, EditPopupMenu.this.yPos);
                 if (ego.isNode()) {
@@ -147,7 +138,6 @@ public class EditPopupMenu extends JPopupMenu {
                 } else {
                     EditPopupMenu.this.gp.getGraph().drawArc(EditPopupMenu.this.gp.getCanvas().getGraphics(), (EdArc) ego);
                 }
-
                 if (editor != null && editor.getEditMode() != EditorConstants.SELECT) {
                     editor.forwardModeCommand(EditorConstants.getModeOfID(EditorConstants.SELECT));
                     editor.setEditMode(EditorConstants.SELECT);
@@ -156,7 +146,6 @@ public class EditPopupMenu extends JPopupMenu {
                 // gp.updateGraphics();
             }
         });
-
         this.mi = add(new JMenuItem("Select All"));
         // this.mi.setMnemonic('l');
         this.mi.addActionListener(new ActionListener() {
@@ -172,7 +161,6 @@ public class EditPopupMenu extends JPopupMenu {
             }
         });
         addSeparator();
-
         this.miDelete = createDeleteItem();
         this.deleteMenu = createDeleteMenu();
         add(this.miDelete);
@@ -180,7 +168,6 @@ public class EditPopupMenu extends JPopupMenu {
             add(this.deleteMenu);
         }
         addSeparator();
-
         this.miStraighten = add(new JMenuItem("Straighten"));
         // this.mi.setMnemonic('g');
         this.miStraighten.addActionListener(new ActionListener() {
@@ -188,37 +175,29 @@ public class EditPopupMenu extends JPopupMenu {
                 if (!canDo()) {
                     return;
                 }
-
                 EditPopupMenu.this.mapping = false;
-
 //				EditPopupMenu.this.gp.getGraph().addMovedToUndo(ego);
                 EditPopupMenu.this.gp.getGraph().straightArc(EditPopupMenu.this.ego);
 //				EditPopupMenu.this.gp.getGraph().undoManagerEndEdit();
 //				EditPopupMenu.this.gp.getCanvas().updateUndoButton();
-
                 EditPopupMenu.this.gp.updateGraphics();
             }
         });
-
         this.miVisibility = add(new JMenuItem("Hide Objects of Type"));
         this.miVisibility.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!canDo()) {
                     return;
                 }
-
                 EditPopupMenu.this.mapping = false;
-
                 if (((JMenuItem) e.getSource()).getText().indexOf("Hide") == 0) {
                     EditPopupMenu.this.gp.getGraph().setVisibilityOfGraphObjectsOfType(EditPopupMenu.this.ego, false);
                 } else if (((JMenuItem) e.getSource()).getText().indexOf("Show") == 0) {
                     EditPopupMenu.this.gp.getGraph().setVisibilityOfGraphObjectsOfType(EditPopupMenu.this.ego, true);
                 }
-
                 EditPopupMenu.this.gp.updateGraphics();
             }
         });
-
         this.layout = new JMenu("Graph Layout");
         // layout.setMnemonic('y');
         add(this.layout);
@@ -229,7 +208,6 @@ public class EditPopupMenu extends JPopupMenu {
                 if (!canDo()) {
                     return;
                 }
-
                 if (EditPopupMenu.this.ego instanceof EdNode) {
                     if (EditPopupMenu.this.ego.getBasisObject().getContext().isTypeGraph()) {
                         if (EditPopupMenu.this.layouter != null
@@ -251,9 +229,7 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         addSeparator();
-
         this.addIdentic = new JMenu("Add Identic To");
         add(this.addIdentic);
         this.mi = this.addIdentic.add(new JMenuItem("Rule RHS"));
@@ -263,7 +239,6 @@ public class EditPopupMenu extends JPopupMenu {
                 if (!canDo()) {
                     return;
                 }
-
                 if (EditPopupMenu.this.ruleEditor != null) {
                     if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
                         EdGraphObject img = null;
@@ -283,7 +258,6 @@ public class EditPopupMenu extends JPopupMenu {
                                             ((Arc) EditPopupMenu.this.ego.getBasisObject())
                                                     .getTarget());
                             Object[] options = {"Yes", "No"};
-
                             if (src == null && tar != null) {
                                 int answer = JOptionPane
                                         .showOptionDialog(
@@ -381,7 +355,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = this.addIdentic.add(new JMenuItem("NAC"));
         this.miAddIdenticToNAC = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -389,7 +362,6 @@ public class EditPopupMenu extends JPopupMenu {
                 if (!canDo()) {
                     return;
                 }
-
                 if (EditPopupMenu.this.ruleEditor != null) {
                     if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
                         if (EditPopupMenu.this.ruleEditor.getNAC() == null) {
@@ -423,7 +395,6 @@ public class EditPopupMenu extends JPopupMenu {
                                             ((Arc) EditPopupMenu.this.ego.getBasisObject())
                                                     .getTarget());
                             Object[] options = {"Yes", "No"};
-
                             if (src == null && tar != null) {
                                 int answer = JOptionPane
                                         .showOptionDialog(
@@ -537,7 +508,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = this.addIdentic.add(new JMenuItem("PAC"));
         this.miAddIdenticToPAC = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -545,7 +515,6 @@ public class EditPopupMenu extends JPopupMenu {
                 if (!canDo()) {
                     return;
                 }
-
                 if (EditPopupMenu.this.ruleEditor != null) {
                     if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
                         if (EditPopupMenu.this.ruleEditor.getPAC() == null) {
@@ -579,7 +548,6 @@ public class EditPopupMenu extends JPopupMenu {
                                             ((Arc) EditPopupMenu.this.ego.getBasisObject())
                                                     .getTarget());
                             Object[] options = {"Yes", "No"};
-
                             if (src == null && tar != null) {
                                 int answer = JOptionPane
                                         .showOptionDialog(
@@ -693,7 +661,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = this.addIdentic.add(new JMenuItem("General AC"));
         this.miAddIdenticToGAC = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -701,7 +668,6 @@ public class EditPopupMenu extends JPopupMenu {
                 if (!canDo()) {
                     return;
                 }
-
                 if (EditPopupMenu.this.ruleEditor != null) {
                     if (EditPopupMenu.this.gp == EditPopupMenu.this.ruleEditor.getLeftPanel()) {
                         if (EditPopupMenu.this.ruleEditor.getNestedAC() == null) {
@@ -735,7 +701,6 @@ public class EditPopupMenu extends JPopupMenu {
                                             ((Arc) EditPopupMenu.this.ego.getBasisObject())
                                                     .getTarget());
                             Object[] options = {"Yes", "No"};
-
                             if (src == null && tar != null) {
                                 int answer = JOptionPane
                                         .showOptionDialog(
@@ -849,7 +814,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = add(new JMenuItem("Map"));
         this.miMap = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -859,10 +823,8 @@ public class EditPopupMenu extends JPopupMenu {
                         || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
                     return;
                 }
-
                 EditPopupMenu.this.mapping = true;
                 setLastEditModeBeforMapping(EditPopupMenu.this.gp);
-
                 if (EditPopupMenu.this.editor != null) {
                     EditPopupMenu.this.editor.getGraphEditor().setEditMode(EditorConstants.MAP);
                     EditPopupMenu.this.editor.getRuleEditor().setEditMode(EditorConstants.MAP);
@@ -879,7 +841,6 @@ public class EditPopupMenu extends JPopupMenu {
                 EditPopupMenu.this.gp.updateGraphics();
             }
         });
-
         this.mi = add(new JMenuItem("Unmap"));
         this.miUnmap = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -889,14 +850,11 @@ public class EditPopupMenu extends JPopupMenu {
                         || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
                     return;
                 }
-
                 EditPopupMenu.this.mapping = false;
                 unmapGraphObject(false);
             }
         });
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Multiplicity"));
         this.miMultiplicity = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -908,7 +866,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = add(new JMenuItem("Set Parent"));
         this.miSetParent = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -917,7 +874,6 @@ public class EditPopupMenu extends JPopupMenu {
                         || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
                     return;
                 }
-
                 if (EditPopupMenu.this.ego instanceof EdNode) {
                     Node bNode = EditPopupMenu.this.ego.getNode().getBasisNode();
                     Graph bGraph = bNode.getContext();
@@ -934,7 +890,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.mi = add(new JMenuItem("Unset Parent"));
         this.miUnsetParent = this.mi;
         this.mi.addActionListener(new ActionListener() {
@@ -944,7 +899,6 @@ public class EditPopupMenu extends JPopupMenu {
                         || !EditPopupMenu.this.gp.getGraph().isEditable()) {
                     return;
                 }
-
                 if (EditPopupMenu.this.ego instanceof EdNode) {
                     Node bNode = EditPopupMenu.this.ego.getNode().getBasisNode();
                     Graph bGraph = bNode.getContext();
@@ -964,16 +918,12 @@ public class EditPopupMenu extends JPopupMenu {
                                     return;
                                 }
                             }
-
                             if (bNode.getType().getParents().size() == 1) {
                                 EditPopupMenu.this.graphEditor.getGraph().addChangedParentToUndo(
                                         EditPopupMenu.this.ego);
                                 EditPopupMenu.this.gp.getCanvas().updateUndoButton();
-
                                 EditPopupMenu.this.gp.getCanvas().performDeleteInheritanceRel((EdNode) EditPopupMenu.this.ego);
-
                                 EditPopupMenu.this.graphEditor.getGraph().undoManagerEndEdit();
-
                                 EditPopupMenu.this.graphEditor.getGraph().updateGraph();
                                 EditPopupMenu.this.graphEditor.getGraphPanel().updateGraphics();
                             } else {
@@ -986,7 +936,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miAbstract = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem("Abstract"));
         this.miAbstract.setSelected(false);
         this.miAbstract.addActionListener(new ActionListener() {
@@ -995,30 +944,24 @@ public class EditPopupMenu extends JPopupMenu {
                         || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
                     return;
                 }
-
                 if (EditPopupMenu.this.ego instanceof EdNode) {
                     EditPopupMenu.this.gp.getGraph().addChangedTypeToUndo(EditPopupMenu.this.ego);
                     EditPopupMenu.this.gp.getCanvas().updateUndoButton();
-
                     if (((JCheckBoxMenuItem) e.getSource()).isSelected()) {
                         EditPopupMenu.this.ego.getBasisObject().getType().setAbstract(true);
                     } else {
                         EditPopupMenu.this.ego.getBasisObject().getType().setAbstract(false);
                     }
-
                     if (EditPopupMenu.this.editor != null) {
                         EditPopupMenu.this.editor.updateGraphics();
                     } else {
                         EditPopupMenu.this.gp.updateGraphics();
                     }
-
                     EditPopupMenu.this.gp.getGraph().undoManagerEndEdit();
                 }
             }
         });
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Textual Comments"));
         this.miComment = this.mi;
         this.mi.setActionCommand("commentType");
@@ -1027,12 +970,10 @@ public class EditPopupMenu extends JPopupMenu {
                 if (EditPopupMenu.this.gp == null || EditPopupMenu.this.gp.getEditMode() == EditorConstants.VIEW) {
                     return;
                 }
-
                 if (EditPopupMenu.this.gp.getGraph().isTypeGraph()) {
                     String oldcomment = EditPopupMenu.this.ego.getType()
                             .getBasisType().getTextualComment();
                     EditPopupMenu.this.gp.getGraph().addChangedTypeToUndo(EditPopupMenu.this.ego);
-
                     Point p = EditPopupMenu.this.applFrame.getLocation();
                     GraGraTextualComment comments = new GraGraTextualComment(
                             EditPopupMenu.this.applFrame,
@@ -1043,7 +984,6 @@ public class EditPopupMenu extends JPopupMenu {
                     comments.setVisible(true);
                     String newcomment = EditPopupMenu.this.ego.getType()
                             .getBasisType().getTextualComment();
-
                     if (oldcomment.equals(newcomment)) {
                         EditPopupMenu.this.gp.getGraph().undoManagerLastEditDie();
                     } else {
@@ -1053,7 +993,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         });
-
 //		addSeparator();
 //		statistic = createGraphStatisticMenu();
 //		add(statistic);
@@ -1090,7 +1029,6 @@ public class EditPopupMenu extends JPopupMenu {
                 || (this.gp.getGraph() == null) || (this.ego == null)) {
             return false;
         }
-
         return true;
     }
 
@@ -1145,7 +1083,6 @@ public class EditPopupMenu extends JPopupMenu {
                 if (!canDo()) {
                     return;
                 }
-
                 EditPopupMenu.this.mapping = false;
                 if (!EditPopupMenu.this.ego.getMorphismMark().equals("")) {
                     EditPopupMenu.this.gp.setMappedObjDeleted(true);
@@ -1182,21 +1119,17 @@ public class EditPopupMenu extends JPopupMenu {
 //							"Delete Objects of Type", JOptionPane.WARNING_MESSAGE);
 //				}
 //				boolean addToUndo = (failStr == null);
-
                 boolean addToUndo = true;
                 if (ok == 0) {
                     List<String> failed = EditPopupMenu.this.gp.getGraph().getGraGra()
                             .deleteGraphObjectsOfType(EditPopupMenu.this.ego, false, addToUndo);
-
                     showMessageDialog(failed, EditPopupMenu.this.ego.isNode());
-
                     doUpdateAfterDelete();
                     EditPopupMenu.this.gp.getCanvas().updateUndoButton();
                     EditPopupMenu.this.gp.getGraph().getGraGra().update();
                     if (EditPopupMenu.this.editor != null) {
                         EditPopupMenu.this.editor.getRuleEditor().updateGraphics();
                     }
-
 //					System.out.println("undo stored::  "+EditPopupMenu.storeVec.size());
                 }
             }
@@ -1208,20 +1141,17 @@ public class EditPopupMenu extends JPopupMenu {
                     return;
                 }
                 EditPopupMenu.this.mapping = false;
-
                 if (!EditPopupMenu.this.gp.getGraph().getGraGra()
                         .deleteGraphObjectsOfTypeFromHostGraph(
                                 EditPopupMenu.this.ego, true)) {
                     JOptionPane.showMessageDialog(EditPopupMenu.this.applFrame,
                             "Cannot delete objects of this type from host graph.");
                 }
-
                 doUpdateAfterDelete();
                 EditPopupMenu.this.gp.getCanvas().updateUndoButton();
                 EditPopupMenu.this.gp.getGraph().getGraGra().getGraph().update();
             }
         });
-
         /*
 		 * jmi = m.add(new JMenuItem("Delete Objects of Rules"));
 		 * jmi.addActionListener(new ActionListener() {public void
@@ -1291,7 +1221,6 @@ public class EditPopupMenu extends JPopupMenu {
 
     public boolean invoked(GraphPanel p, int x, int y) {
         this.gp = p;
-
         if (this.gp.getGraph() != null) {
             if (this.gp.getCanvas().getPickedObject() != null
                     && this.gp.getCanvas().getPickedObject().isWeakselected()) {
@@ -1304,12 +1233,10 @@ public class EditPopupMenu extends JPopupMenu {
                     this.ego = this.gp.getGraph().getPickedTextOfArc(x, y,
                             this.gp.getCanvas().getGraphics().getFontMetrics());
                 }
-
                 if (this.ego != null && this.ego.isVisible()) {
                     //				if (gp.getGraph().isTargetObjOfGraphEmbedding(ego)) {
                     //					return false;
                     //				}
-
                     this.location = new Point(x, y);
                     if (this.ego.isArc()) {
                         Arc bArc = this.ego.getArc().getBasisArc();
@@ -1317,10 +1244,8 @@ public class EditPopupMenu extends JPopupMenu {
                             return false;
                         }
                     }
-
                     this.layout.setEnabled(false);
                     this.miComment.setEnabled(false);
-
                     if (this.ruleEditor != null) {
                         if (this.ruleEditor.getRule().getLeft() == this.gp.getGraph()) {
                             this.miAddIdenticToRule.setEnabled(true);
@@ -1345,7 +1270,6 @@ public class EditPopupMenu extends JPopupMenu {
                             this.miAddIdenticToGAC.setEnabled(false);
                         }
                     }
-
                     if (!this.ego.getContext().isTypeGraph()) {
                         this.miVisibility.setEnabled(false);
                         //					if (this.ego instanceof EdNode)
@@ -1371,7 +1295,6 @@ public class EditPopupMenu extends JPopupMenu {
                             }
                         }
                     }
-
                     if (this.ego.isNode()) {
                         this.miStraighten.setEnabled(false);
                         if (this.ego.isElementOfTypeGraph()) {
@@ -1393,7 +1316,6 @@ public class EditPopupMenu extends JPopupMenu {
                             } else {
                                 this.miUnsetParent.setEnabled(false);
                             }
-
                             this.layout.setEnabled(true);
                             if (this.layouter != null) {
                                 if (this.layouter.getLayoutPatternForType(this.ego
@@ -1408,7 +1330,6 @@ public class EditPopupMenu extends JPopupMenu {
                                     && this.graphEditor.getGraphPanel() == this.gp) {
                                 this.layout.setEnabled(true);
                             }
-
                             this.miFrozen.setSelected(((EdNode) this.ego).getLNode().isFrozen());
                             this.useDeleteMenu = false;
                             this.addIdentic.setEnabled(false);
@@ -1473,7 +1394,6 @@ public class EditPopupMenu extends JPopupMenu {
                 || gp.getEditMode() == EditorConstants.INTERACT_PAC
                 || gp.getEditMode() == EditorConstants.INTERACT_AC
                 || gp.getEditMode() == EditorConstants.INTERACT_MATCH) {
-
             gp.setLastEditMode(gp.getEditMode());
             gp.setLastEditCursor(gp.getEditCursor());
         }
@@ -1491,7 +1411,6 @@ public class EditPopupMenu extends JPopupMenu {
     void setMultiplicityOfType() {
         if (this.ego != null) {
             this.gp.getGraph().addChangedMultiplicityToUndo(this.ego);
-
             if (!this.ego.isNode()) {
                 this.multiplicity = new TypeCardinalityDialog(null, this.ego.getType()
                         .getBasisType(), ((EdArc) this.ego).getSource().getType()
@@ -1502,7 +1421,6 @@ public class EditPopupMenu extends JPopupMenu {
                         .getBasisType());
             }
             this.multiplicity.showGUI();
-
             if (this.editor != null) {
                 if (!this.multiplicity.isChanged()) {
                     this.gp.getGraph().undoManagerLastEditDie();
@@ -1511,7 +1429,6 @@ public class EditPopupMenu extends JPopupMenu {
                             .checkNodeTypeMultiplicity((EdNode) this.ego);
                     if (errors != null) {
                         errors = errors.replaceAll(",", ",\n");
-
                         JOptionPane.showMessageDialog(
                                 null,
                                 "<html><body>"
@@ -1529,7 +1446,6 @@ public class EditPopupMenu extends JPopupMenu {
                             .checkEdgeTypeMultiplicity((EdArc) this.ego);
                     if (errors != null) {
                         errors = errors.replaceAll(",", ",\n");
-
                         JOptionPane.showMessageDialog(
                                 null,
                                 "<html><body>"
@@ -1544,7 +1460,6 @@ public class EditPopupMenu extends JPopupMenu {
                     }
                 }
             }
-
             this.gp.getCanvas().updateUndoButton();
             this.gp.getGraph().undoManagerEndEdit();
         }
@@ -1556,10 +1471,8 @@ public class EditPopupMenu extends JPopupMenu {
                 && this.editor.getRuleEditor().getRule() != null) {
             EdRule rule = this.editor.getRuleEditor().getRule();
             boolean isLeftRuleObj = this.ego.getContext() == rule.getLeft();
-
             if (this.editor.getActivePanel() == this.editor.getRuleEditor().getLeftPanel()) {
                 unmapdone = this.leftPanelUnmap(this.editor.getRuleEditor(), rule, wantDeleteGraphObject);
-
                 if (unmapdone && isLeftRuleObj && rule.getMatch() != null) {
                     this.editor.getGraphEditor().updateGraphics();
                 }
@@ -1677,7 +1590,6 @@ public class EditPopupMenu extends JPopupMenu {
                 }
             }
         }
-
         if (rule.getMatch() != null && isLeftRuleObj) {
             if (rEditor.removeMatchMapping(this.ego, true)) {
                 unmapdone = true;
@@ -1686,7 +1598,6 @@ public class EditPopupMenu extends JPopupMenu {
                 rule.getMatch().getCompletionStrategy().removeFromObjectVarMap(this.ego.getBasisObject());
             }
         }
-
         return unmapdone;
     }
 
@@ -1736,7 +1647,6 @@ public class EditPopupMenu extends JPopupMenu {
         } else if (rEditor.removeNestedACMapping(this.ego, false)) {
             unmapdone = true;
         }
-
         if (unmapdone) {
             if (rEditor.getNestedAC() == null) {
                 rule.update();
@@ -1802,7 +1712,6 @@ public class EditPopupMenu extends JPopupMenu {
         this.gp.updateGraphics();
         String objname = JOptionPane.showInputDialog(this.applFrame,
                 " Please set the object name: ", go.getBasisObject().getObjectName());
-
         if (objname != null) {
             go.getBasisObject().setObjectName(objname);
 //			this.gp.updateGraphics();	
@@ -1810,46 +1719,29 @@ public class EditPopupMenu extends JPopupMenu {
         go.setWeakselected(false);
         this.gp.updateGraphics();
     }
-
     JFrame applFrame;
-
     private JMenuItem mi;
-
     final private JMenuItem //miOperations, 
             miDelete, miMap, miUnmap, miStraighten, miVisibility,
             miAddIdenticToRule,
             miAddIdenticToNAC, miAddIdenticToPAC, miAddIdenticToGAC,
             miMultiplicity, miSetParent, miUnsetParent, miComment, miObjName;
-
     private JMenu deleteMenu, addIdentic,
             //			statistic,
             layout;
-
     private JCheckBoxMenuItem miAbstract, miFrozen;
-
     boolean mapping = false;
-
     GraGraEditor editor;
-
     RuleEditor ruleEditor;
-
     GraphEditor graphEditor;
-
     GraphPanel gp;
-
     EdGraphObject ego;
-
     int xPos, yPos;
-
     private TypeCardinalityDialog multiplicity;
-
     private boolean useDeleteMenu = false;
-
     EvolutionaryGraphLayout layouter;
-
     Point location;
 }
-
 // $Log: EditPopupMenu.java,v $
 // Revision 1.26  2010/10/16 22:44:43  olga
 // improved undo for RuleScheme graph objects
@@ -2125,3 +2017,4 @@ public class EditPopupMenu extends JPopupMenu {
 // Revision 1.13 1999/12/22 12:36:52 shultzke
 // The user cannot edit the context of graphs. Only in rules it is possible.
 //
+

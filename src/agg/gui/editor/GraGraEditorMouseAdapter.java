@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -15,7 +16,6 @@ package agg.gui.editor;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.JButton;
 
 /**
@@ -40,11 +40,9 @@ public class GraGraEditorMouseAdapter extends MouseAdapter {
         if (this.editor.getGraGra() == null) {
             return;
         }
-
         if (e.getSource() instanceof GraphCanvas) {
             this.activePanel = this.editor.setActivePanel(((GraphCanvas) e.getSource()).getViewport());
         }
-
     }
 
     public void mouseReleased(MouseEvent e) {
@@ -76,7 +74,6 @@ public class GraGraEditorMouseAdapter extends MouseAdapter {
 //			if (this.activePanel.getEditMode() == EditorConstants.COPY_ARC) 
 //				this.activePanel.setEditMode(EditorConstants.DRAW);
         }
-
         if (this.editor.getUndoManager() != null && this.editor.getUndoManager().isEnabled()) {
             if (this.editor.getUndoManager().canUndo()) {
                 this.editor.getUndoButton().setEnabled(true);
@@ -123,5 +120,4 @@ public class GraGraEditorMouseAdapter extends MouseAdapter {
 
     public void mouseExited(MouseEvent e) {
     }
-
 }

@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.gui.impl;
 
 import java.awt.Component;
 import java.awt.Dimension;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JTextField;
 import javax.swing.event.CellEditorListener;
@@ -20,18 +20,16 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
- * @version $Id: DefaultHandlerEditorSupport.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
+ * @version $Id: DefaultHandlerEditorSupport.java,v 1.1 2005/08/25 11:56:58
+ * enrico Exp $
  * @author $Author: olga $
  */
 public abstract class DefaultHandlerEditorSupport extends AbstractHandlerEditor
         implements CellEditorListener {
 
     protected transient DefaultCellEditor cellEditor;
-
     protected transient DefaultTableCellRenderer cellRenderer;
-
     protected transient JTextField editorField;
-
     protected Object editedObject = null;
 
     public DefaultHandlerEditorSupport() {
@@ -59,9 +57,11 @@ public abstract class DefaultHandlerEditorSupport extends AbstractHandlerEditor
     }
 
     /**
-     * Returns a graphical component for displaying the specified type. The 'availableSpace' limit should be honoured,
-     * since this is a service for displaying the type in a table cell. However, the renderer can contain tools (e.g.
-     * buttons) for invoking its larger custom renderer. Either 'handler or 'typeToRender' cannot be null.
+     * Returns a graphical component for displaying the specified type. The
+     * 'availableSpace' limit should be honoured, since this is a service for
+     * displaying the type in a table cell. However, the renderer can contain
+     * tools (e.g. buttons) for invoking its larger custom renderer. Either
+     * 'handler or 'typeToRender' cannot be null.
      */
     public Component getRendererComponent(Object obj, Dimension availableSpace) {
         return this.cellRenderer.getTableCellRendererComponent(null, // JTable table,
@@ -73,9 +73,10 @@ public abstract class DefaultHandlerEditorSupport extends AbstractHandlerEditor
     }
 
     /**
-     * Returns a graphical component for editing the specified type. The 'availableSpace' is a recommendation when the
-     * editor wishes to be operatable in a compact table cell and needs not be taken into account. Either 'handler or
-     * 'typeToRender' cannot be null.
+     * Returns a graphical component for editing the specified type. The
+     * 'availableSpace' is a recommendation when the editor wishes to be
+     * operatable in a compact table cell and needs not be taken into account.
+     * Either 'handler or 'typeToRender' cannot be null.
      */
     public Component getEditorComponent(Object obj, Dimension availableSpace) {
         this.editedObject = obj;

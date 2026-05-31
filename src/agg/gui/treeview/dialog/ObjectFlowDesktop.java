@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -30,7 +31,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
@@ -51,7 +51,6 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import agg.attribute.AttrMapping;
 import agg.attribute.impl.ContextView;
 import agg.editor.impl.EdGraGra;
@@ -76,45 +75,26 @@ public class ObjectFlowDesktop extends JDialog
         implements InternalFrameListener, ListSelectionListener {
 
     protected final JFrame parentFrame;
-
     protected JDesktopPane desktop;
-
     protected JPanel panel;
-
 //	protected JScrollPane jsp;
     protected ImageIcon internalFrameIcon;
-
     protected int nextX, nextY;
-
     protected int myW, myH;
-
     protected JButton connect, disconnect, refresh, close;
-
     protected Hashtable<GraphMorphismEditor, JInternalFrame> internalFrames;
-
     protected Hashtable<ObjectFlow, GraphMorphismEditor> editors;
-
     protected Dimension internalFrameSize;
-
     protected EdGraGra gragra;
-
     protected final RuleSequence ruleSequence;
-
     protected ObjectFlow currentObjFlow;
-
     protected JInternalFrame currentFrame;
-
     protected final List<String> ruleNames = new Vector<String>();
-
     protected JTable ruleList1, ruleList2;
-
     protected boolean list2Clicked;
-
     protected JScrollPane scrollRuleList1, scrollRuleList2;
-
     protected Object rule1, rule2;
     protected int indx_rule1 = -1, indx_rule2 = -1;
-
     protected final String title = "Object Flow of Rule Sequence ";
 
     public ObjectFlowDesktop(
@@ -122,32 +102,24 @@ public class ObjectFlowDesktop extends JDialog
             final EdGraGra gragra,
             final RuleSequence ruleSeq,
             final Point location) {
-
         super(); //parent);
         setModal(false);
         setTitle(this.title);
         extendTitle(ruleSeq.getName());
-
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 setVisible(false);
             }
         });
-
         this.parentFrame = parent;
         this.gragra = gragra;
         this.ruleSequence = ruleSeq;
-
         Border border = new TitledBorder("");
-
         JPanel ruleP = makeRuleListPanel(border);
-
         if (this.gragra != null) {
             this.updateRuleList(this.ruleSequence.getRuleNames());
         }
-
         JPanel desktopP = makeDesktop(border);
-
         JPanel closeP = new JPanel(new GridLayout(0, 3));
         this.close = new JButton("Close");
         this.close.addActionListener(new ActionListener() {
@@ -158,7 +130,6 @@ public class ObjectFlowDesktop extends JDialog
         closeP.add(new JLabel("     "));
         closeP.add(close);
         closeP.add(new JLabel("     "));
-
 //		JPanel p = new JPanel(new BorderLayout());
 //		p.add(ruleP, BorderLayout.NORTH);
 //		p.add(desktopP, BorderLayout.CENTER);
@@ -166,14 +137,11 @@ public class ObjectFlowDesktop extends JDialog
         p.setDividerSize(10);
         p.setContinuousLayout(true);
         p.setOneTouchExpandable(true);
-
         JScrollPane scroll = new JScrollPane(p);
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(scroll);
         getContentPane().add(closeP, BorderLayout.SOUTH);
         validate();
-
         setLocation(location);
         pack();
     }
@@ -242,7 +210,6 @@ public class ObjectFlowDesktop extends JDialog
         if ((this.ruleList1.getRowCount() - startIndx) != (this.ruleSequence.getRuleNames().size())) {
             return false;
         }
-
         for (int i = startIndx; i < this.ruleList1.getRowCount(); i++) {
             if (!this.ruleList1.getValueAt(i, 0)
                     .equals(this.ruleSequence.getRuleNames().get(i - startIndx))) {
@@ -263,18 +230,14 @@ public class ObjectFlowDesktop extends JDialog
     private JPanel makeRuleListPanel(final Border border) {
         final JPanel p = new JPanel(new GridBagLayout());
         p.setBorder(border);
-
         this.ruleList1 = new JTable(0, 1);
         this.scrollRuleList1 = new JScrollPane(this.ruleList1);
         final JPanel p1 = this.makeRuleList("OUTPUT ( Graph | Rule RHS )", this.ruleList1, this.scrollRuleList1);
-
         this.ruleList2 = new JTable(0, 1);
         this.scrollRuleList2 = new JScrollPane(this.ruleList2);
         final JPanel p2 = this.makeRuleList("INPUT ( Rule LHS )", this.ruleList2, this.scrollRuleList2);
-
         final JPanel p3 = new JPanel(new GridLayout(0, 1));
         final JLabel text = new JLabel("  OUTPUT   >>   INPUT  ");
-
         this.connect = new JButton("Connect >>");
         this.connect.setEnabled(false);
         this.connect.addActionListener(new ActionListener() {
@@ -321,7 +284,6 @@ public class ObjectFlowDesktop extends JDialog
                 }
             }
         });
-
         this.disconnect = new JButton("Disconnect >>");
         this.disconnect.setEnabled(false);
         this.disconnect.addActionListener(new ActionListener() {
@@ -342,7 +304,6 @@ public class ObjectFlowDesktop extends JDialog
                             ObjectFlowDesktop.this.editors.get(objFlow).removeAllMappings();
                             ObjectFlowDesktop.this.editors.get(objFlow).updateGraphs();
                             ObjectFlowDesktop.this.editors.get(objFlow).updateGraphics();
-
                             try {
                                 if (!ObjectFlowDesktop.this.internalFrames.get(ObjectFlowDesktop.this.editors.get(objFlow)).isVisible()) {
                                     ObjectFlowDesktop.this.internalFrames.get(ObjectFlowDesktop.this.editors.get(objFlow)).setIcon(false);
@@ -360,7 +321,6 @@ public class ObjectFlowDesktop extends JDialog
                                 }
                             } catch (java.beans.PropertyVetoException pve) {
                             }
-
                             ObjectFlowDesktop.this.ruleSequence.getObjectFlow().remove(key);
                             ObjectFlowDesktop.this.currentObjFlow = null;
                             setCurrentObjectFlow();
@@ -379,7 +339,6 @@ public class ObjectFlowDesktop extends JDialog
                             ObjectFlowDesktop.this.editors.get(objFlow).removeAllMappings();
                             ObjectFlowDesktop.this.editors.get(objFlow).updateGraphs();
                             ObjectFlowDesktop.this.editors.get(objFlow).updateGraphics();
-
                             try {
                                 if (ObjectFlowDesktop.this.internalFrames.get(ObjectFlowDesktop.this.editors.get(objFlow)).isVisible()) {
                                     removeFrame(ObjectFlowDesktop.this.internalFrames.get(ObjectFlowDesktop.this.editors.get(objFlow)));
@@ -395,7 +354,6 @@ public class ObjectFlowDesktop extends JDialog
                                 }
                             } catch (java.beans.PropertyVetoException pve) {
                             }
-
                             ObjectFlowDesktop.this.ruleSequence.getObjectFlow().remove(key);
                             ObjectFlowDesktop.this.currentObjFlow = null;
                             setCurrentObjectFlow();
@@ -404,7 +362,6 @@ public class ObjectFlowDesktop extends JDialog
                 }
             }
         });
-
         this.refresh = new JButton("Refresh");
         this.refresh.setEnabled(true);
         this.refresh.addActionListener(new ActionListener() {
@@ -435,7 +392,6 @@ public class ObjectFlowDesktop extends JDialog
                 }
             }
         });
-
         p3.add(new JLabel("     "));
         p3.add(text);
         p3.add(this.connect);
@@ -443,7 +399,6 @@ public class ObjectFlowDesktop extends JDialog
         p3.add(this.disconnect);
         p3.add(new JLabel("     "));
         p3.add(this.refresh);
-
         constrainBuild(p, p1,
                 0, GridBagConstraints.RELATIVE,
                 1, 1,
@@ -451,7 +406,6 @@ public class ObjectFlowDesktop extends JDialog
                 GridBagConstraints.CENTER,
                 1.0, 1.0,
                 10, 5, 5, 5);
-
         constrainBuild(p, p3,
                 1, GridBagConstraints.RELATIVE,
                 1, 0,
@@ -459,7 +413,6 @@ public class ObjectFlowDesktop extends JDialog
                 GridBagConstraints.NORTH,
                 0.0, 0.0,
                 10, 5, 5, 5);
-
         constrainBuild(p, p2,
                 2, GridBagConstraints.RELATIVE,
                 1, 1,
@@ -467,7 +420,6 @@ public class ObjectFlowDesktop extends JDialog
                 GridBagConstraints.CENTER,
                 1.0, 1.0,
                 10, 5, 5, 5);
-
         return p;
     }
 
@@ -479,7 +431,6 @@ public class ObjectFlowDesktop extends JDialog
         EdGraph right = ((EdRule) this.rule2).getLeft();
         EdGraph left = null;
         String titleStr = "";
-
         if (objFlow.isGraphExtended()) {
             left = (EdGraph) this.rule1;
             titleStr = "(Host graph: " + left.getName() + ")"
@@ -491,7 +442,6 @@ public class ObjectFlowDesktop extends JDialog
                     + "    OUTPUT      >>      INPUT    "
                     + "(LHS of rule: " + ((EdRule) this.rule2).getName() + ")";
         }
-
         final GraphMorphismEditor gme = addGraphMorphismEditor(objFlow, left, right, text);
         if (gme != null) {
             gme.setTitle(titleStr);
@@ -502,31 +452,26 @@ public class ObjectFlowDesktop extends JDialog
     private JPanel makeDesktop(final Border border) {
         panel = new JPanel(new BorderLayout());
         panel.setBorder(border);
-
         final JLabel l = new JLabel("   ");
-
         this.desktop = new JDesktopPane();
         this.desktop.setBackground(l.getBackground());
         this.myW = 500;
         this.myH = 500;
         this.desktop.setPreferredSize(new Dimension(this.myW, this.myH));
-
         this.editors = new Hashtable<ObjectFlow, GraphMorphismEditor>();
-
         this.internalFrames = new Hashtable<GraphMorphismEditor, JInternalFrame>();
         this.internalFrameIcon = null; //IconResource.getIconFromURL(IconResource.getURLOverlapGraph());
         this.internalFrameSize = new Dimension(500, 200);
         this.nextX = 0;
         this.nextY = 0;
-
         panel.add(l, BorderLayout.NORTH);
         panel.add(this.desktop, BorderLayout.CENTER);
-
         return panel;
     }
 
     /**
-     * Returns the component to display the desktop. This component can be set in a frame, panel or something like that.
+     * Returns the component to display the desktop. This component can be set
+     * in a frame, panel or something like that.
      *
      * @return The desktop component
      */
@@ -547,46 +492,37 @@ public class ObjectFlowDesktop extends JDialog
             final String titleStr,
             final JTable ruleList,
             final JScrollPane scrollRuleList) {
-
         final JLabel l = new JLabel(titleStr);
         scrollRuleList.setPreferredSize(new Dimension(200, 150));
-
         final JPanel p = new JPanel(new BorderLayout());
         p.add(l, BorderLayout.NORTH);
         p.add(scrollRuleList, BorderLayout.CENTER);
-
         return p;
     }
 
     public void updateRuleList(final List<String> rulenames) {
         this.ruleNames.clear();
-
         if (this.ruleSequence.doesCheckAtGraph()
                 && this.ruleSequence.getGraph() != null) {
             this.ruleNames.add(this.ruleSequence.getGraph().getName());
         }
-
         this.ruleNames.addAll(rulenames);
-
         if (this.ruleList1 != null) {
             this.scrollRuleList1.getViewport().remove(this.ruleList1);
         }
         this.ruleList1 = new JTable(this.ruleNames.size(), 1);
         this.scrollRuleList1.getViewport().setView(this.ruleList1);
         this.ruleList1.getSelectionModel().addListSelectionListener(this);
-
         if (this.ruleList2 != null) {
             this.scrollRuleList2.getViewport().remove(this.ruleList2);
         }
         this.ruleList2 = new JTable(this.ruleNames.size(), 1);
         this.scrollRuleList2.getViewport().setView(this.ruleList2);
         this.ruleList2.getSelectionModel().addListSelectionListener(this);
-
         for (int i = 0; i < this.ruleNames.size(); i++) {
             this.ruleList1.getModel().setValueAt(String.valueOf(i).concat(" ").concat(this.ruleNames.get(i)), i, 0);
             ((DefaultCellEditor) this.ruleList1.getCellEditor(i, 0))
                     .getComponent().setEnabled(false);
-
             this.ruleList2.getModel().setValueAt(String.valueOf(i).concat(" ").concat(this.ruleNames.get(i)), i, 0);
             ((DefaultCellEditor) this.ruleList2.getCellEditor(i, 0))
                     .getComponent().setEnabled(false);
@@ -598,26 +534,20 @@ public class ObjectFlowDesktop extends JDialog
             final EdGraph leftGraph,
             final EdGraph rightGraph,
             String aTitle) {
-
         OrdinaryMorphism isoLeft = leftGraph.getBasisGraph().isomorphicCopy();
         OrdinaryMorphism isoRight = rightGraph.getBasisGraph().isomorphicCopy();
         if (isoLeft == null || isoRight == null) {
             return null;
         }
-
         final GraphMorphismEditor gmEditor = new GraphMorphismEditor(this.parentFrame);
-
         EdGraph left = new EdGraph(isoLeft.getTarget());
         left.updateLayoutByIsoMorphism(isoLeft, leftGraph);
-
         EdGraph right = new EdGraph(isoRight.getTarget());
         right.updateLayoutByIsoMorphism(isoRight, rightGraph);
-
         OrdinaryMorphism morph = BaseFactory.theFactory().createMorphism(
                 left.getBasisGraph(),
                 right.getBasisGraph());
         ((ContextView) morph.getAttrContext()).changeAllowedMapping(AttrMapping.OBJECT_FLOW_MAP); //MATCH_MAP);
-
         if (!objFlow.getMapping().isEmpty()) {
             List<Object> list = new Vector<Object>();
             Enumeration<Object> keys = objFlow.getMapping().keys();
@@ -656,21 +586,17 @@ public class ObjectFlowDesktop extends JDialog
                 }
             }
         }
-
         gmEditor.setLeftGraph(left);
         gmEditor.setRightGraph(right);
         gmEditor.setMorphism(morph);
         gmEditor.setIsoMorphismLeft(isoLeft);
         gmEditor.setIsoMorphismRight(isoRight);
         gmEditor.setObjectFlow(objFlow);
-
         if (!objFlow.isEmpty()) {
             gmEditor.updateGraphs();
         }
-
 //		gmEditor.setEditMode(EditorConstants.VIEW);
         gmEditor.setEditMode(EditorConstants.MAP);
-
 //		gmEditor.getLeftPanel().getCanvas().addMouseListener(ml);
 //		gmEditor.getRightPanel().getCanvas().addMouseListener(ml);
         String ofIndx = "(" + String.valueOf(objFlow.getIndexOfOutput()) + "-"
@@ -678,25 +604,19 @@ public class ObjectFlowDesktop extends JDialog
         final JInternalFrame f = new JInternalFrame(ofIndx + aTitle, true,
                 true, true, true);
         this.internalFrames.put(gmEditor, f);
-
         f.addInternalFrameListener(this);
         f.setSize(this.internalFrameSize);
 //		f.setFrameIcon(internalFrameIcon);
-
         f.getContentPane().add(gmEditor);
-
         getDesktop().add(f, 0);
-
         try {
             f.setSelected(true);
             f.setVisible(true);
         } catch (java.beans.PropertyVetoException pve) {
         }
-
         f.setLocation(this.nextX, this.nextY);
 //		nextX = nextX + 20;
 //		nextY = nextY + 20;
-
         return gmEditor;
     }
 
@@ -704,7 +624,6 @@ public class ObjectFlowDesktop extends JDialog
         if (this.currentFrame != null
                 && this.currentFrame.isEnabled()
                 && this.currentFrame.isSelected()) {
-
             Enumeration<GraphMorphismEditor> keys = this.internalFrames.keys();
             while (keys.hasMoreElements()) {
                 GraphMorphismEditor gme = keys.nextElement();
@@ -717,11 +636,9 @@ public class ObjectFlowDesktop extends JDialog
                         this.indx_rule1 = -1;
                         this.ruleList1.clearSelection();
                         this.rule1 = null;
-
                         this.indx_rule2 = -1;
                         this.ruleList2.clearSelection();
                         this.rule2 = null;
-
                     }
                 }
             }
@@ -733,7 +650,6 @@ public class ObjectFlowDesktop extends JDialog
      */
     public void removeAllFrames() {
         this.internalFrames.clear();
-
         for (int i = this.desktop.getAllFrames().length - 1; i >= 0; i--) {
             JInternalFrame f = this.desktop.getAllFrames()[i];
             f.setVisible(false);
@@ -743,14 +659,12 @@ public class ObjectFlowDesktop extends JDialog
                 this.desktop.remove(f);
             }
         }
-
         this.ruleList1.clearSelection();
         this.ruleList2.clearSelection();
         this.rule1 = null;
         this.rule2 = null;
         this.indx_rule1 = -1;
         this.indx_rule2 = -1;
-
         this.nextX = 0;
         this.nextY = 0;
     }
@@ -765,7 +679,6 @@ public class ObjectFlowDesktop extends JDialog
         } else {
             this.desktop.remove(f);
         }
-
         this.ruleList1.clearSelection();
         this.ruleList2.clearSelection();
         this.rule1 = null;
@@ -872,7 +785,6 @@ public class ObjectFlowDesktop extends JDialog
         container.add(component);
     }
 
-
     /* (non-Javadoc)
 	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
      */
@@ -883,7 +795,6 @@ public class ObjectFlowDesktop extends JDialog
             } catch (Exception ex) {
             }
         }
-
         // row of ruleList clicked
         int indx = ((DefaultListSelectionModel) e.getSource())
                 .getLeadSelectionIndex();
@@ -915,7 +826,6 @@ public class ObjectFlowDesktop extends JDialog
                     this.list2Clicked = true;
                     this.indx_rule2 = indx;
                     this.rule2 = this.gragra.getRule(this.ruleNames.get(indx));
-
                     if (tryToShowOF()) {
                         this.connect.setEnabled(false);
                         this.disconnect.setEnabled(true);
@@ -969,5 +879,4 @@ public class ObjectFlowDesktop extends JDialog
         }
         return false;
     }
-
 }

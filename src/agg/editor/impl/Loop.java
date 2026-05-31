@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: Loop.java,v 1.8 2010/09/23 08:15:51 olga Exp $
 package agg.editor.impl;
@@ -16,7 +17,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-
 import agg.gui.editor.EditorConstants;
 
 /**
@@ -25,37 +25,21 @@ import agg.gui.editor.EditorConstants;
 public class Loop {
 
     public int x, y; // upper left corner ( not center!)
-
     public int w, h;
-
     public Point anchor; // current anchor
-
     public Point anch0; // CENTER
-
     public Point anch1; // UPPER_LEFT
-
     public Point anch2; // UPPER_RIGHT
-
     public Point anch3; // BOTTOM_RIGHT
-
     public Point anch4; // BOTTOM_LEFT
-
     public int anchorID; // current anchor ID
-
     public static final int CENTER = 0;
-
     public static final int UPPER_LEFT = 1;
-
     public static final int UPPER_RIGHT = 2;
-
     public static final int BOTTOM_RIGHT = 3;
-
     public static final int BOTTOM_LEFT = 4;
-
     public static final int DEFAULT_SIZE = 20; //14;
-
     private Color col = new Color(0, 0, 0);
-
     private int min = 14;
 
     /**
@@ -76,7 +60,8 @@ public class Loop {
     }
 
     /**
-     * Sets the loop to a loop with upper left corner (x,y), width w and height h
+     * Sets the loop to a loop with upper left corner (x,y), width w and height
+     * h
      */
     public void setLoop(int x, int y, int w, int h) {
         this.x = x;
@@ -127,7 +112,6 @@ public class Loop {
         if ((this.anchor.x == this.anch1.x) && (this.anchor.y == this.anch1.y)) {
             return true;
         }
-
         return false;
     }
 
@@ -138,7 +122,6 @@ public class Loop {
         if ((this.anchor.x == this.anch2.x) && (this.anchor.y == this.anch2.y)) {
             return true;
         }
-
         return false;
     }
 
@@ -149,7 +132,6 @@ public class Loop {
         if ((this.anchor.x == this.anch3.x) && (this.anchor.y == this.anch3.y)) {
             return true;
         }
-
         return false;
     }
 
@@ -160,7 +142,6 @@ public class Loop {
         if ((this.anchor.x == this.anch4.x) && (this.anchor.y == this.anch4.y)) {
             return true;
         }
-
         return false;
     }
 
@@ -243,7 +224,6 @@ public class Loop {
         new DrawLine(g, this.anch2.x + 2, this.anch2.y - 2, this.anch3.x + 2, this.anch3.y + 2);
         new DrawLine(g, this.anch3.x + 2, this.anch3.y + 2, this.anch4.x - 2, this.anch4.y + 2);
         new DrawLine(g, this.anch4.x - 2, this.anch4.y + 2, this.anch1.x - 2, this.anch1.y - 2);
-
         // +1
 //		new DrawLine(g, this.anch1.x+1, this.anch1.y+1, this.anch2.x-1, this.anch2.y+1);
 //		new DrawLine(g, this.anch2.x-1, this.anch2.y+1, this.anch3.x-1, this.anch3.y-1);
@@ -259,8 +239,9 @@ public class Loop {
     /**
      * Draws a move anchor of this loop.
      *
-     * @param anchorKey can be: Loop.UPPER_LEFT / Loop.UPPER_RIGHT / Loop.BOTTOM_RIGHT / Loop.BOTTOM_LEFT / Loop.CENTER.
-     * Only Loop.UPPER_LEFT is implemented.
+     * @param anchorKey can be: Loop.UPPER_LEFT / Loop.UPPER_RIGHT /
+     * Loop.BOTTOM_RIGHT / Loop.BOTTOM_LEFT / Loop.CENTER. Only Loop.UPPER_LEFT
+     * is implemented.
      */
     public void drawMoveAnchor(Graphics grs, int anchorKey) {
         Graphics2D g = (Graphics2D) grs;
@@ -272,7 +253,6 @@ public class Loop {
                     Line.MOVE_ANCHOR_SIZE,
                     Line.MOVE_ANCHOR_SIZE));
         }
-
         /*
 		 * else if (anchorKey == Loop.UPPER_RIGHT) g.fill(new Rectangle(this.anch2.x -
 		 * 4, this.anch2.y - 4, MOVE_ANCHOR_SIZE, MOVE_ANCHOR_SIZE)); else if
@@ -285,8 +265,8 @@ public class Loop {
     }
 
     /**
-     * Moves the loop with source and target specified by the argument Rectangle r around x, y specified by the
-     * arguments int dx, int dy
+     * Moves the loop with source and target specified by the argument Rectangle
+     * r around x, y specified by the arguments int dx, int dy
      */
     public void move(Rectangle r, int anchor_id, int dx, int dy) {
         // System.out.println("Loop.move : "+dx+","+dy);
@@ -302,7 +282,6 @@ public class Loop {
         } else if (anchor_id == BOTTOM_LEFT) {
             this.anchor = this.anch4;
         }
-
         if (anchor_id == CENTER) {
             moveMe(r, dx, dy);
         } else {
@@ -317,11 +296,11 @@ public class Loop {
             this.y = this.y + dy;
         }
     }
-
 //	private void moveMe(int dx, int dy) {
 //		this.x = this.x + dx;
 //		this.y = this.y + dy;
 //	}
+
     private void resizeMe(Rectangle r, int dx, int dy) {
         // System.out.println(">>> Loop.resizeMe : "+this.anchorID+" :
         // ("+dx+","+dy+")" );
@@ -410,7 +389,6 @@ public class Loop {
                         && minWidth(wl) && minHeight(hl)) {
                     return true;
                 }
-
                 return false;
             }
             wl = this.w - dx;
@@ -420,7 +398,6 @@ public class Loop {
                     && minWidth(wl) && minHeight(hl)) {
                 return true;
             }
-
             return false;
         } else if (this.anchorID == UPPER_RIGHT) {
             a2.x = a2.x + dx;
@@ -434,7 +411,6 @@ public class Loop {
                         && minWidth(wl) && minHeight(hl)) {
                     return true;
                 }
-
                 return false;
             }
             wl = this.w + dx;
@@ -444,7 +420,6 @@ public class Loop {
                     && minWidth(wl) && minHeight(hl)) {
                 return true;
             }
-
             return false;
         } else if (this.anchorID == BOTTOM_RIGHT) {
             a3.x = a3.x + dx;
@@ -459,7 +434,6 @@ public class Loop {
                     && minWidth(wl) && minHeight(hl)) {
                 return true;
             }
-
             return false;
         } else if (this.anchorID == BOTTOM_LEFT) {
             a4.x = a4.x + dx;
@@ -473,7 +447,6 @@ public class Loop {
                         && minWidth(wl) && minHeight(hl)) {
                     return true;
                 }
-
                 return false;
             }
             wl = this.w - dx;
@@ -483,7 +456,6 @@ public class Loop {
                     && minWidth(wl) && minHeight(hl)) {
                 return true;
             }
-
             return false;
         } else {
             return false;
@@ -499,15 +471,15 @@ public class Loop {
     }
 
     /**
-     * Checks whether the loop ( as a rectangle) specified by the arguments Point a1, Point a2, Point a3, Point a4 is
-     * outside of the source specified by the argument Rectangle r
+     * Checks whether the loop ( as a rectangle) specified by the arguments
+     * Point a1, Point a2, Point a3, Point a4 is outside of the source specified
+     * by the argument Rectangle r
      */
     public boolean outside(Rectangle r, Point a1, Point a2, Point a3, Point a4) {
         if (!r.contains(a1.x, a1.y) || !r.contains(a2.x, a2.y)
                 || !r.contains(a3.x, a3.y) || !r.contains(a4.x, a4.y)) {
             return true;
         }
-
         return false;
     }
 
@@ -516,7 +488,6 @@ public class Loop {
         Point a2 = new Point(this.anch2.x, this.anch2.y);
         Point a3 = new Point(this.anch3.x, this.anch3.y);
         Point a4 = new Point(this.anch4.x, this.anch4.y);
-
         a1.x = a1.x + dx;
         a1.y = a1.y + dy;
         a2.x = a2.x + dx;
@@ -525,11 +496,9 @@ public class Loop {
         a3.y = a3.y + dy;
         a4.x = a4.x + dx;
         a4.y = a4.y + dy;
-
         if (inside(r, a1, a2, a3, a4) && outside(r, a1, a2, a3, a4)) {
             return true;
         }
-
         return false;
     }
 
@@ -540,7 +509,6 @@ public class Loop {
 		Rectangle r3 = new Rectangle(this.anch3.x - 4, this.anch3.y - 4, 8, 8);
 		Rectangle r4 = new Rectangle(this.anch4.x - 4, this.anch4.y - 4, 8, 8);
 		Rectangle r0 = new Rectangle(x, y, this.w, this.h);
-
 		if (r1.contains(p.x, p.y)) {
 			this.anchor = this.anch1;
 			this.anchorID = UPPER_LEFT;
@@ -567,7 +535,6 @@ public class Loop {
         if (wl >= this.min) {
             return true;
         }
-
         return false;
     }
 
@@ -575,8 +542,6 @@ public class Loop {
         if (hl >= this.min) {
             return true;
         }
-
         return false;
     }
-
 }

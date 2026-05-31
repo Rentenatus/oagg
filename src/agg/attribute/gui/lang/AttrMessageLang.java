@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.lang;
 
@@ -19,9 +20,7 @@ import agg.attribute.impl.AttrMsgCode;
 public class AttrMessageLang implements AttrMsgCode {
 
     static protected boolean inited = false;
-
     static protected String msgTexts[] = new String[20];
-
     static protected String invalidErr;
 
     static protected void initIfNeeded() {
@@ -37,7 +36,6 @@ public class AttrMessageLang implements AttrMsgCode {
         msgTexts[NO_SUCH_TYPE] = "Type not found.";
         msgTexts[NAME_DUPLICATION] = "This name is already declared.";
         msgTexts[BAD_EXPR_TYPE] = "Wrong expression type.";
-
         msgTexts[EXPR_REQUIRED] = "A non-empty value is required in this context.";
         msgTexts[EXPR_MUST_BE_CONST] = "A constant value is required in this context.";
         msgTexts[EXPR_MUST_BE_CONST_OR_VAR] = "A variable or a constant value is required in this context.";

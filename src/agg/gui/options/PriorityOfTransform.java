@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: PriorityOfTransform.java,v 1.2 2010/09/23 08:20:39 olga Exp $
 package agg.gui.options;
@@ -15,16 +16,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
-
 import agg.gui.trafo.GraGraTransform;
 
 @SuppressWarnings("serial")
 public class PriorityOfTransform extends JMenu {
 
     private JCheckBoxMenuItem mi;
-
     private int prior;
-
     private GraGraTransform transform;
 
     public PriorityOfTransform(GraGraTransform trans) {
@@ -34,7 +32,6 @@ public class PriorityOfTransform extends JMenu {
 
     public PriorityOfTransform() {
         super("Priority");
-
         this.mi = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem("1"));
         this.mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

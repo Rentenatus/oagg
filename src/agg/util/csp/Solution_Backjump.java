@@ -1,11 +1,12 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: Solution_Backjump.java,v 1.38 2010/09/23 08:26:52 olga Exp $
 // $Log: Solution_Backjump.java,v $
@@ -228,7 +229,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.csp.Query_Type;
 
@@ -238,73 +238,50 @@ import agg.xt_basis.csp.Query_Type;
 public class Solution_Backjump implements SolutionStrategy {
 
     private CSP itsCSP;
-
     private boolean itsInjectiveFlag;
-
     private boolean parallel;
-
     private boolean startParallelbyFirst;
-
     final private Vector<Query> itsQueries = new Vector<Query>();
-
     final private Dictionary<Variable, Integer> itsVarIndexMap = new Hashtable<Variable, Integer>();
-
     final private Dictionary<Object, Variable> itsInstanceVarMap = new Hashtable<Object, Variable>();
-
     // the map of other solution solver
     private Dictionary<Object, Variable> otherInstanceVarMap;
-
 //	final private BinaryPredicate itsVariableOrder = new SimpleVariableOrder();
     final private SearchStrategy itsSearcher = new Search_BreadthFirst();
-
     /**
-     * Elements are of type
-     * <code>Variable</code>.
+     * Elements are of type <code>Variable</code>.
      */
     final private HashSet<Variable> itsBackjumpTargets = new HashSet<Variable>();
-
     /**
-     * Value is either <code>NEXT</code> or <code>BACK</code> according to the recent traversal direction of the search
-     * tree.
+     * Value is either <code>NEXT</code> or <code>BACK</code> according to the
+     * recent traversal direction of the search tree.
      */
     private int itsDirection;
-
     /**
      * Index into <code>itsVariables</code>.
      */
     private int itsCurrentIndex;
-
     /**
-     * Index into <code>itsVariables</code>. Variables below this index are considered to be preinstantiated and will
-     * not be touched by the solution algorithm.
+     * Index into <code>itsVariables</code>. Variables below this index are
+     * considered to be preinstantiated and will not be touched by the solution
+     * algorithm.
      */
     private Variable itsCurrentVar;
 //	private Variable itsStartVar;
-
     private Query itsCurrentQuery;
-
     private int itsState;
-
 //	private int itsInstantiationCounter;
 //	private int itsBackstepCounter;
     @SuppressWarnings("unused")
     private int allInstances = 0;
-
     private boolean solutionFound;
-
     // constants for csp solution state machine:
     private final static int START = 1;
-
     private final static int NEXT = 2;
-
     private final static int INSTANTIATE = 3;
-
     private final static int BACK = 4;
-
     private final static int SUCCESS = 5;
-
     private final static int NO_MORE_SOLUTIONS = 6;
-
     private final static int BACKJUMP = 7;
 
     public Solution_Backjump(boolean injective) {
@@ -331,21 +308,20 @@ public class Solution_Backjump implements SolutionStrategy {
     }
 
     /**
-     * Compute the search plan (variable order) and do some other initialization stuff.
+     * Compute the search plan (variable order) and do some other initialization
+     * stuff.
      *
-     * @return <code>false</code> iff some preinstantiated variables are violating some constraint.
+     * @return <code>false</code> iff some preinstantiated variables are
+     * violating some constraint.
      */
     private synchronized final boolean initialize(CSP csp) {
         this.itsCSP = csp;
         clear();
-
         this.itsQueries.addAll(this.itsSearcher.execute(this.itsCSP));
         this.itsQueries.trimToSize();
-
         for (int i = 0; i < this.itsQueries.size(); i++) {
             this.itsVarIndexMap.put(this.itsQueries.elementAt(i).getTarget(), Integer.valueOf(i));
         }
-
         final Enumeration<Variable> anEnum = this.itsCSP.getVariables();
         while (anEnum.hasMoreElements()) {
             final Variable aVar = anEnum.nextElement();
@@ -366,11 +342,9 @@ public class Solution_Backjump implements SolutionStrategy {
             this.itsQueries.addAll(this.itsSearcher.execute(this.itsCSP));
             this.itsQueries.trimToSize();
         }
-
         ((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
         ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
         this.itsBackjumpTargets.clear();
-
         for (int i = 0; i < this.itsQueries.size(); i++) {
             Query q = this.itsQueries.elementAt(i);
             this.itsVarIndexMap.put(q.getTarget(), Integer.valueOf(i));
@@ -378,7 +352,6 @@ public class Solution_Backjump implements SolutionStrategy {
                 ((Query_Type) q).resetObjects();
             }
         }
-
         if (this.itsCSP != null) {
             final Enumeration<Variable> anEnum = this.itsCSP.getVariables();
             while (anEnum.hasMoreElements()) {
@@ -409,11 +382,9 @@ public class Solution_Backjump implements SolutionStrategy {
                 break;
             }
         }
-
         if (!queryExists) {
             if (var.getTypeQuery() != null) {
                 this.itsQueries.add(0, var.getTypeQuery());
-
                 for (int i = 0; i < this.itsQueries.size(); i++) {
                     final Variable v = this.itsQueries.elementAt(i).getTarget();
                     this.itsVarIndexMap.put(v, Integer.valueOf(i));
@@ -455,23 +426,19 @@ public class Solution_Backjump implements SolutionStrategy {
      */
     public synchronized final boolean next(CSP csp) {
 //		long t = System.nanoTime();
-
         this.solutionFound = false;
-
         if (!csp.equals(this.itsCSP)) {
             if (!initialize(csp)) {
                 return false;
             }
             this.itsState = START;
         }
-
         if (this.itsState == SUCCESS) {
             this.itsState = BACK;
             // we want to continue where we left off, instead of actually
             // making a back step:
             this.itsCurrentIndex++;
         }
-
 //		showQueries(itsQueries);
         while (true) {
             switch (this.itsState) {
@@ -481,7 +448,6 @@ public class Solution_Backjump implements SolutionStrategy {
                     this.itsCurrentIndex = -1;
                     this.itsState = NEXT;
                     break;
-
                 case NEXT:
                     if (this.itsCurrentIndex >= this.itsQueries.size() - 1) {
                         this.itsState = SUCCESS;
@@ -491,9 +457,7 @@ public class Solution_Backjump implements SolutionStrategy {
                         if (this.itsCurrentQuery.isApplicable()
                                 && !this.itsCurrentQuery.isDomainEmpty()) {
                             this.itsCurrentVar.setDomainEnum(this.itsCurrentQuery.execute());
-
                             addToBackjumpTargets(this.itsCurrentQuery.getSources());
-
                             this.itsState = INSTANTIATE;
                         } else {
                             this.itsState = NO_MORE_SOLUTIONS;
@@ -501,7 +465,6 @@ public class Solution_Backjump implements SolutionStrategy {
                     }
                     this.itsDirection = NEXT;
                     break;
-
                 case INSTANTIATE:
                     if (this.itsDirection == NEXT) {
                         // we will use backjumping if instantiation fails
@@ -512,13 +475,10 @@ public class Solution_Backjump implements SolutionStrategy {
                         // variable previously
                         this.itsState = BACK;
                     }
-
                     // deactivate correspondent constraint before checking // pablo
                     this.itsCurrentQuery.deactivateCorrespondent();
-
                     while (this.itsCurrentVar.hasNext()) {
                         Object obj = this.itsCurrentVar.getNext();
-
                         // Node/Edge with graph context == null was destroyed,
                         // but it remains in domain of CSP variable during parallel matching,
                         // so it must be exclude as instance of a CSP variable 	
@@ -526,11 +486,9 @@ public class Solution_Backjump implements SolutionStrategy {
                                 ((GraphObject) obj).getContext() == null) {
                             continue;
                         }
-
 //					itsInstantiationCounter++;					
                         this.itsCurrentVar.setInstance(obj);
                         this.allInstances++;
-
                         Variable aConflictVar = checkInjection(this.itsCurrentVar);
                         if (aConflictVar != null) {
                             this.itsCurrentVar.setInstance(null);
@@ -545,25 +503,20 @@ public class Solution_Backjump implements SolutionStrategy {
 //						allInstances--;
 //						continue;
 //					}
-
                         Enumeration<Variable> allConflictVars = this.itsCurrentVar.checkConstraints();
                         if (!allConflictVars.hasMoreElements()) {
                             this.itsState = NEXT;
                             addInjection(this.itsCurrentVar);
                             break;
                         }
-
                         if (this.itsState == BACKJUMP) {
                             Variable conflictVar1 = getFirstOf(allConflictVars);
                             this.itsBackjumpTargets.add(conflictVar1);
                         }
                     }
-
                     // re-activate correspondent constraint after checking // pablo
                     this.itsCurrentQuery.activateCorrespondent();
-
                     break;
-
                 case BACK:
 //				System.out.println("BACK");
 //				itsBackstepCounter++;
@@ -585,7 +538,6 @@ public class Solution_Backjump implements SolutionStrategy {
                         this.allInstances--;
                         this.itsCurrentVar = this.itsQueries.get(--this.itsCurrentIndex).getTarget();
                         removeInjection(this.itsCurrentVar);
-
                         this.itsState = INSTANTIATE;
                         this.itsDirection = BACK;
                     } else {
@@ -593,13 +545,11 @@ public class Solution_Backjump implements SolutionStrategy {
                         this.itsDirection = BACK;
                     }
                     break;
-
                 case BACKJUMP:
 //				System.out.println("BACKJUMP");
 //				itsBackstepCounter++;
 //				int aStepCounter = 0;
                     this.itsState = NO_MORE_SOLUTIONS;
-
                     while (this.itsCurrentIndex > 0) {
 //					aStepCounter++;
                         removeInjection(this.itsCurrentVar);
@@ -609,7 +559,6 @@ public class Solution_Backjump implements SolutionStrategy {
                                 .getTarget();
                         removeInjection(this.itsCurrentVar);
                         this.itsState = INSTANTIATE;
-
                         if (this.itsBackjumpTargets.contains(this.itsCurrentVar)) {
                             this.itsBackjumpTargets.remove(this.itsCurrentVar);
                             break;
@@ -617,22 +566,17 @@ public class Solution_Backjump implements SolutionStrategy {
                     }
                     this.itsDirection = BACK;
                     break;
-
                 case SUCCESS:
 //				System.out.println("SUCCESS");
                     if (this.parallel && this.startParallelbyFirst) {
                         removeUsedObjectFromDomain();
                     }
-
                     this.solutionFound = true;
 //				System.out.println("solution found in : "+(System.nanoTime()-t)+" nano");
-
                     return true;
-
                 case NO_MORE_SOLUTIONS:
 //				System.out.println("NO_MO_SOLUTIONS");
                     return false;
-
                 default:
                     System.out.println("Should have never come here " + this.itsState);
             }
@@ -646,7 +590,6 @@ public class Solution_Backjump implements SolutionStrategy {
                 ((Query_Type) q).removeObject((GraphObject) q.getTarget().getInstance());
             }
         }
-
         ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
         this.itsBackjumpTargets.clear();
     }
@@ -669,7 +612,6 @@ public class Solution_Backjump implements SolutionStrategy {
         int aFirstIndex = this.itsQueries.size();
         Variable aCurrentVar;
         int aCurrentIndex;
-
         while (vars.hasMoreElements()) {
             aCurrentVar = vars.nextElement();
             if (this.itsVarIndexMap.get(aCurrentVar) != null) {
@@ -717,7 +659,6 @@ public class Solution_Backjump implements SolutionStrategy {
                     return other;
                 }
             }
-
             if (this.itsInjectiveFlag) {
                 return this.itsInstanceVarMap.get(var.getInstance());
             }
@@ -740,7 +681,6 @@ public class Solution_Backjump implements SolutionStrategy {
             this.itsBackjumpTargets.add((Variable) en.get(i));
         }
     }
-
 
     /* (non-Javadoc)
 	 * @see agg.util.csp.SolutionStrategy#parallelSearch()

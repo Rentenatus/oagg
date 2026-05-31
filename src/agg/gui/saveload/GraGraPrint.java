@@ -1,53 +1,17 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.gui.saveload;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-//import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
-//import java.awt.PrintJob;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-//import java.awt.Toolkit;
-//import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-//import java.util.Properties;
-import java.util.Vector;
-
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
 
 import agg.editor.impl.Arrow;
 import agg.editor.impl.EdGraGra;
@@ -58,10 +22,42 @@ import agg.gui.editor.EditorConstants;
 import agg.gui.editor.GraphCanvas;
 import agg.gui.event.EditEvent;
 import agg.gui.event.EditEventListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.print.Book;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.util.List;
+import java.util.Vector;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 
 /**
- * The GraGraPrint prints a gragra. A print dialog allows to choose what do you want to print.
+ * The GraGraPrint prints a gragra. A print dialog allows to choose what do you
+ * want to print.
  *
  * @deprecated
  * @author $Author: olga $
@@ -71,7 +67,8 @@ import java.util.List;
 class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
 
     /**
-     * Creates a new instance of the GraGraPrint with a print dialog. The gragra object is not defined.
+     * Creates a new instance of the GraGraPrint with a print dialog. The gragra
+     * object is not defined.
      */
     public GraGraPrint(JFrame applFrame) {
         this(applFrame, null);
@@ -94,10 +91,8 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         this.gragraOptionalChecks = new Vector<JCheckBox>(); // Elem is JCheckBox
         this.optionalChecks = new Vector<Vector<JCheckBox>>(); // Elem is Vector of
         // JCheckBox
-
         /* create a preview frame */
         this.previewFrame = new JFrame("Preview");
-
         /* add this to preview frame */
         this.setSize(150, 150);
         this.setPreferredSize(new Dimension(150, 150));
@@ -106,7 +101,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         jsp.setViewportView(this);
         this.previewFrame.getContentPane().add(BorderLayout.CENTER, jsp);
-
         /* add button panel to preview frame */
         JPanel buttonPanel = new JPanel();
         this.previewPrint = new JButton("Print");
@@ -116,32 +110,25 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         this.previewPrint.addActionListener(this);
         this.previewCancel.addActionListener(this);
         this.previewFrame.getContentPane().add(BorderLayout.SOUTH, buttonPanel);
-
         this.previewFrame.setSize(150, 150);
         this.previewFrame.setLocation(10, 10);
         this.previewFrame.pack();
-
         /* create a print dialog */
         this.dialog = new JDialog(new JFrame(), "Print", true);
-
         /* create main panel of the print dialog */
         JPanel mainPanel = new JPanel(new GridBagLayout(), true);
         mainPanel.setPreferredSize(new Dimension(300, 300));
         this.dialog.getContentPane().add(mainPanel);
-
         /* create gragra panel for the print dialog */
         this.gragraPanel = new JPanel(new BorderLayout());
         this.gragraPanel.add(createGraGraCheckBox(gra), BorderLayout.CENTER);
-
         /* create scale panel for the print dialog */
         JPanel scalePanel = new JPanel(new BorderLayout());
         scalePanel.add(createScaleBox(), BorderLayout.CENTER);
-
         /* create confirm panel for the print dialog */
         JPanel confirmPanel = new JPanel(new BorderLayout());
         confirmPanel.add(createConfirmButtons(), BorderLayout.CENTER);
         this.print.addActionListener(this);
-
         /* fill the main panel of the print dialog */
         constrainBuild(mainPanel, this.gragraPanel, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 0.0, 0.0,
@@ -152,7 +139,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         constrainBuild(mainPanel, confirmPanel, 0, 2, 2, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 0.0, 0.0,
                 5, 5, 5, 5);
-
         this.dialog.pack();
         this.dialog.setLocation(50, 50);
         /*
@@ -163,7 +149,8 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
     }
 
     /**
-     * Calls the print() Methode of my printJob if the <Print> button of my previewer was pressed.
+     * Calls the print() Methode of my printJob if the <Print> button of my
+     * previewer was pressed.
      */
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JButton) {
@@ -176,17 +163,13 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 if (printJob != null) {
                     printJob.setJobName("GraGra");
                     // printJob.setPrintable(this);
-
                     /* Create a page format */
                     this.pageFormat = printJob.defaultPage();
                     this.pageFormat.setOrientation(PageFormat.PORTRAIT);
-
                     /* Set up a book */
                     Book book = new Book();
-
                     /* Pass the book to the PrinterJob */
                     printJob.setPageable(book);
-
                     // PageFormat pf =
                     // printJob.pageDialog(printJob.defaultPage());
                     if (printJob.printDialog()) {
@@ -269,7 +252,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2D.setPaint(Color.white);
         g2D.drawRect(0, 0, getWidth(), getHeight());
-
         // g2D.this.scale(this.scale, this.scale);
         // paintImages(g2D);
         printImages(g2D);
@@ -303,7 +285,8 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
     }
 
     /**
-     * Returns true if the print dialog would be cancelled or nothing would be chosen for printing.
+     * Returns true if the print dialog would be cancelled or nothing would be
+     * chosen for printing.
      */
     public boolean isEmpty() {
         if (this.cancelled) {
@@ -365,7 +348,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
 		Vector<Image> images = getAllImages();
 		if (images.isEmpty())
 			return;
-
 		int x = 72;
 		int y = 72;
 		for (int i = 0; i < images.size(); i++) {
@@ -373,7 +355,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
 			grs.drawImage(image, x, y, null);
 			y = y + image.getHeight(null) + offset;
 		}
-
 		int sizeX = this.W + 72;
 		int sizeY = y + 10;
 		this.setSize(sizeX, sizeY);
@@ -398,7 +379,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         if (pages.isEmpty()) {
             return;
         }
-
         int x = 0;
         int y = 0;
         for (int j = 0; j < pages.size(); j++) {
@@ -411,7 +391,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                     grs.drawImage(image, x, y, null);
                     y = y + image.getHeight(null);
                 }
-
                 // markiere Seitenende
                 y = y + (int) this.pageFormat.getImageableY();
                 grs.setPaint(Color.black);
@@ -430,12 +409,10 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         if (images.isEmpty()) {
             return pgs;
         }
-
 //		int sizeX = 0;
 //		int sizeY = 0;
 //		int x = (int) pf.getImageableX();
         int y = (int) pf.getImageableY();
-
         Vector<Image> page = new Vector<Image>();
         for (int i = 0; i < images.size(); i++) {
             Image image = images.elementAt(i);
@@ -474,12 +451,10 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         if (gra == null) {
             return p;
         }
-
         info = new JLabel("GraGra:  " + gra.getName());
         int y = 0;
         constrainBuild(p, info, 0, y, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
-
         this.all = new JCheckBox("All");
         this.all.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -497,15 +472,12 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 }
             }
         });
-
         y++;
         constrainBuild(p, this.all, 0, y, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
-
         JLabel opt = new JLabel("optional");
         constrainBuild(p, opt, 1, y, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
-
         for (int i = 0; i < gra.getRules().size(); i++) {
             final EdRule r = gra.getRules().elementAt(i);
             final int indx = i;
@@ -530,7 +502,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                         }
                     }
                 });
-
                 this.gragraRuleChecks.add(cb);
                 y++;
                 constrainBuild(p, cb, 0, y, 1, 1, GridBagConstraints.BOTH,
@@ -538,7 +509,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 cb = new JCheckBox();
                 cb.setEnabled(false);
                 this.gragraOptionalChecks.addElement(cb);
-
                 final Vector<JCheckBox> checks = new Vector<JCheckBox>();
                 this.optionalChecks.add(checks);
                 cb.addActionListener(new ActionListener() {
@@ -549,10 +519,8 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                         }
                     }
                 });
-
                 constrainBuild(p, cb, 1, y, 1, 1, GridBagConstraints.BOTH,
                         GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
-
                 info = new JLabel("");
                 this.gragraRuleInfos.addElement(info);
                 y++;
@@ -560,7 +528,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                         GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
             }
         }
-
         this.g = new JCheckBox(this.gragra.getGraph().getBasisGraph().getName());
         this.g.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -580,7 +547,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         y++;
         constrainBuild(p, this.g, 0, y, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
-
         return p;
     }
 
@@ -588,7 +554,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         final JDialog dial = new JDialog(new JFrame(), "optional", true);
         JPanel p = new JPanel(new GridBagLayout());
         dial.getContentPane().add(p);
-
         int y = 0;
         JCheckBox cb = new JCheckBox("LHS");
         constrainBuild(p, cb, 0, y, 1, 1, GridBagConstraints.BOTH,
@@ -599,13 +564,11 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         constrainBuild(p, cb, 0, y, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
         v.addElement(cb);
-
         if (r.getNACs().size() != 0) {
             y++;
             JLabel l = new JLabel("NAC:");
             constrainBuild(p, l, 0, y, 1, 1, GridBagConstraints.BOTH,
                     GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
-
             for (int i = 0; i < r.getNACs().size(); i++) {
                 EdNAC nac = r.getNACs().get(i);
                 y++;
@@ -615,11 +578,9 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                         GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
             }
         }
-
         y++;
         JButton ok = new JButton("OK");
         ok.setBorderPainted(true);
-
         final Vector<JCheckBox> checks = v;
         final int indx = n;
         ok.addActionListener(new ActionListener() {
@@ -637,10 +598,8 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 dial.setVisible(false);
             }
         });
-
         constrainBuild(p, ok, 0, y, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 5);
-
         dial.pack();
         dial.setLocation(this.dialog.getX() + 100, this.dialog.getY() + 50);
         dial.setVisible(true);
@@ -685,7 +644,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         });
         constrainBuild(p, this.preview, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 10, 5, 5);
-
         // Print button
         this.print = new JButton("Print");
         this.print.setEnabled(false);
@@ -696,7 +654,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         });
         constrainBuild(p, this.print, 1, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 10, 5, 5);
-
         // Cancel button
         JButton b = new JButton("Cancel");
         b.addActionListener(new ActionListener() {
@@ -707,7 +664,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         });
         constrainBuild(p, b, 2, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 0.0, 0.0, 5, 5, 5, 10);
-
         return p;
     }
 
@@ -756,7 +712,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         }
         graphDim.width = graphDim.width;// + offset;
         graphDim.height = graphDim.height;// + offset;
-
         Dimension d = new Dimension(graphDim.width, 2 * offset
                 + graphDim.height);
         if (imageDim != null) {
@@ -767,28 +722,23 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 d.height = imageDim.height;
             }
         }
-
         int w = d.width;
         int h = d.height;
         Image image = createImage(w, h);
         if (image == null) {
             return null;
         }
-
         Graphics2D grs = (Graphics2D) image.getGraphics();
         grs.setPaint(Color.white);
         grs.fill(new Rectangle(0, 0, w, h));
-
         GraphCanvas canvas = new GraphCanvas();
         canvas.setSize(d);
         canvas.setGraph(graph);
-
         Image im = createImage(graphDim.width, graphDim.height);
         canvas.setScale(this.scale);
         canvas.setFontStyle(this.fontStyle);
         canvas.setFontSize(this.fontSize);
         canvas.paint(im.getGraphics());
-
         grs.setPaint(Color.black);
         grs
                 .drawString(graph.getBasisGraph().getName(), offset, offset
@@ -827,7 +777,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 }
             }
         }
-
         iw = iw + offset; // groesste breite
         ih = 2 * offset + ih + offset; // groesste hoehe
         List<Image> images = new Vector<Image>();
@@ -836,10 +785,8 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             Image image = getImage(eg, new Dimension(iw, ih));
             images.add(image);
         }
-
         // space between single images
         Dimension space = new Dimension(offset, ih);
-
         int w = 0;
         int h = 0;
         int n = 0;
@@ -861,7 +808,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             }
         }
         int nn = Math.round(((float) images.size()) / ((float) n));
-
         if (nn > 0) {
             h = nn * ih + 2 * offset;
             while (h > this.H) {
@@ -923,20 +869,20 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             for (int i = 0; i < v.size(); i++) {
                 JCheckBox cb = v.elementAt(i);
                 if (cb.isSelected()) {
-                    Boolean b = new Boolean(true);
+                    Boolean b = Boolean.TRUE;
                     this.optional.addElement(b);
                 } else {
-                    Boolean b = new Boolean(false);
+                    Boolean b = Boolean.FALSE;
                     this.optional.addElement(b);
                 }
             }
         } else {
-            Boolean b = new Boolean(true);
+            Boolean b = Boolean.TRUE;
             this.optional.addElement(b); // LHS
-            b = new Boolean(true);
+            b = Boolean.TRUE;
             this.optional.addElement(b); // RHS
             for (int i = 0; i < r.getNACs().size(); i++) { // NACs
-                b = new Boolean(true);
+                b = Boolean.TRUE;
                 this.optional.addElement(b);
             }
         }
@@ -956,10 +902,8 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         } else {
             h = rightDim.height;
         }
-
         w = w + offset; // groesste Breite von beiden Rule Seiten
         h = 2 * offset + h + offset; // groesste Hoehe von beiden Rule Seiten
-
         int lw = 0;
         int lh = 0;
         Image leftImage = null;
@@ -970,7 +914,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 lh = h;
             }
         }
-
         int rw = 0;
         int rh = 0;
         Image rightImage = null;
@@ -981,7 +924,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 rh = h;
             }
         }
-
         Image ruleArrow = null;
         boolean horizontal = true;
         Dimension arrowDim = new Dimension(0, 0);
@@ -996,7 +938,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                 ruleArrow = getRuleArrow(arrowDim, horizontal);
             }
         }
-
         int ruleW = 0;
         int ruleH = 0;
         Image ruleImage = null;
@@ -1050,7 +991,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             grs.fillRect(0, 0, ruleW, ruleH);
             grs.drawImage(rightImage, x, y, null);
         } // rule image ready
-
         List<Image> images = new Vector<Image>();
         int bigImageW = 0;
         int bigImageH = 0;
@@ -1060,10 +1000,8 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         }
         Image bigImage = null;
         Image nacImage = null;
-
         List<EdNAC> nacs = r.getNACs();
         nacImage = getImage(nacs); // NACs image ready
-
         if (nacImage != null) {
             if (ruleImage != null) {
                 // System.out.println("Rule + NACs ( this.W x this.H) : "+ruleW+" x
@@ -1084,7 +1022,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
                     grs.drawImage(ruleImage, x, y, null);
                     grs.drawRect(1, 2 * offset, ruleW + offset - 2, ruleH
                             + offset / 2);
-
                     images.add(bigImage);
                     // System.out.println("Rule ohne NACs auf eine Seite ( this.W x
                     // this.H) : "+bigImageW+" x "+bigImageH);
@@ -1103,7 +1040,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         } // if (nacImage != null)
         // System.out.println("Rule + NACs ( this.W x this.H) : "+bigImageW+" x
         // "+bigImageH);
-
         if (images.isEmpty()) {
             // rule und NACs passen auf eine Seite
             bigImageW = bigImageW + offset;
@@ -1126,7 +1062,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             }
             grs.drawRect(1, 2 * offset, bigImageW - 2, bigImageH - 2 * offset
                     - 1);
-
             images.add(bigImage);
             // System.out.println("Rule + NACs auf eine Seite ( this.W x this.H) :
             // "+bigImageW+" x "+bigImageH);
@@ -1146,7 +1081,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
             grs.drawImage(nacImage, x, y, null);
             grs.drawRect(1, 2 * offset, nacImage.getWidth(null) + offset - 2,
                     nacImage.getHeight(null) - 1);
-
             images.add(bigImage);
             // System.out.println("NACs auf eine Seite( this.W x this.H) : "+bigImageW+" x
             // "+bigImageH);
@@ -1155,7 +1089,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         // END");
         return images;
     }
-
 //	private PrintJob getPrintJob() {
 //		if (this.applFrame == null)
 //			return null;
@@ -1166,62 +1099,34 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
 //		return pj;
 //	}
     EdGraGra gragra;
-
     JPanel gragraPanel;
-
     JFrame applFrame;
-
     JDialog dialog;
-
     JButton preview;
-
     JButton print;
-
     JFrame previewFrame;
-
     JButton previewPrint;
-
     JButton previewCancel;
-
     JCheckBox all;
-
     JCheckBox g;
-
     Vector<JCheckBox> gragraRuleChecks; // Elem is JCheckBox
-
     Vector<JLabel> gragraRuleInfos; // Elem is String
-
     Vector<JCheckBox> gragraOptionalChecks; // Elem is JCheckBox
-
     Vector<Vector<JCheckBox>> optionalChecks; // Elem is Vector of JCheckBox
-
     JDialog ruleCheck; // optional dialog
-
     Vector<Boolean> optional; // Elem is Boolean
-
     boolean cancelled = false;
-
     int W = 468; // Page size
-
     int H = 648; // Page size
-
     final static int offset = 10; // space between single images
-
     Dimension pageable = new Dimension(612, 792);
-
     Dimension imageable = new Dimension(468, 648);
-
     double scale = 1.0;
-
     PageFormat pageFormat;
-
     Font font = new Font(EditorConstants.FONT_NAME, EditorConstants.FONT_STYLE,
             EditorConstants.FONT_SIZE);
-
     String fontName = EditorConstants.FONT_NAME;
-
     int fontStyle = EditorConstants.FONT_STYLE;
-
     int fontSize = EditorConstants.FONT_SIZE;
 
     // local class
@@ -1261,9 +1166,6 @@ class GraGraPrint extends JPanel implements ActionListener, EditEventListener {
         public void setPageImages(Vector<Image> imgs) {
             this.myPageImages = imgs;
         }
-
         private Vector<Image> myPageImages;
-
     } // class PaintContent
-
 }

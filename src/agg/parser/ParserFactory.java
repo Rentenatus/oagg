@@ -2,22 +2,24 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.RuleLayer;
-
 // ---------------------------------------------------------------------------+
+
 /**
- * This factory produces different objects. With the help of some option objects the specific object is creates. E.g. if
- * a parser is desired the option distinguish which parser is created.
+ * This factory produces different objects. With the help of some option objects
+ * the specific object is creates. E.g. if a parser is desired the option
+ * distinguish which parser is created.
  *
  * @author $Author: olga $ Parser Group
  * @version $Id: ParserFactory.java,v 1.20 2010/11/16 23:33:08 olga Exp $
@@ -28,10 +30,12 @@ public class ParserFactory {
     }
 
     /**
-     * Here is a new parser created. The correct parser is chosen by the option. So the option must not be
-     * <code>null</code>. Anyway only the critical pairs can be <code>null</code> if they are not needed for the
-     * configured parser. This can happen e.g. for parser without optimization.
-     * <b>If one of the parameters is <code>null</code> <code>null</code> is returned.</b>
+     * Here is a new parser created. The correct parser is chosen by the option.
+     * So the option must not be <code>null</code>. Anyway only the critical
+     * pairs can be <code>null</code> if they are not needed for the configured
+     * parser. This can happen e.g. for parser without optimization.
+     * <b>If one of the parameters is <code>null</code> <code>null</code> is
+     * returned.</b>
      *
      * @param grammar The graph grammar with all the rules.
      * @param hostGraph The host graph to work on.
@@ -90,10 +94,12 @@ public class ParserFactory {
     }
 
     /**
-     * Here is a new parser created. The correct parser is chosen by the option. So the option must not be
-     * <code>null</code>. Anyway only the critical pairs can be <code>null</code> if they are not needed for the
-     * configured parser. This can happen e.g. for parser without optimization.
-     * <b>If one of the parameters is <code>null</code> <code>null</code> is returned.</b>
+     * Here is a new parser created. The correct parser is chosen by the option.
+     * So the option must not be <code>null</code>. Anyway only the critical
+     * pairs can be <code>null</code> if they are not needed for the configured
+     * parser. This can happen e.g. for parser without optimization.
+     * <b>If one of the parameters is <code>null</code> <code>null</code> is
+     * returned.</b>
      *
      * @param grammar The graph grammar with all the rules.
      * @param hostGraph The host graph to work on.
@@ -111,7 +117,6 @@ public class ParserFactory {
                 || stopGraph == null) {
             return null;
         }
-
         Parser p = null;
         switch (option.getSelectedParser()) {
             case ParserOption.SIMPLEPARSER:
@@ -152,14 +157,16 @@ public class ParserFactory {
     }
 
     /**
-     * Creates a empty container for critical pairs. This container has to be filled.
+     * Creates a empty container for critical pairs. This container has to be
+     * filled.
      *
-     * @param grammar The graph grammar to generate the pairs for. This must not be <code>null</code> or
-     * <code>null</code> is returned.
-     * @param layerFunc The layer function. This can only be <code>null</code> if the critical pairs do not need them.
-     * (<code>null</code> can be returned.)
-     * @param option The option to configure the critical pairs. This must not be <code>null</code> or <code>null</code>
-     * is returned.
+     * @param grammar The graph grammar to generate the pairs for. This must not
+     * be <code>null</code> or <code>null</code> is returned.
+     * @param layerFunc The layer function. This can only be <code>null</code>
+     * if the critical pairs do not need them. (<code>null</code> can be
+     * returned.)
+     * @param option The option to configure the critical pairs. This must not
+     * be <code>null</code> or <code>null</code> is returned.
      * @return A empty container.
      * @deprecated
      */
@@ -214,7 +221,6 @@ public class ParserFactory {
                     } else {
                         pc = new DependencyPairContainer(grammar);
                     }
-
                     ((DependencyPairContainer) pc).enableSwitchDependency(
                             option.switchDependencyEnabled());
                     ((DependencyPairContainer) pc).enableComplete(
@@ -244,12 +250,13 @@ public class ParserFactory {
     }
 
     /**
-     * Creates a empty container for critical pairs. This container has to be filled.
+     * Creates a empty container for critical pairs. This container has to be
+     * filled.
      *
-     * @param grammar The graph grammar to generate the pairs for. This must not be <code>null</code> or
-     * <code>null</code> is returned.
-     * @param option The option to configure the critical pairs. This must not be <code>null</code> or <code>null</code>
-     * is returned.
+     * @param grammar The graph grammar to generate the pairs for. This must not
+     * be <code>null</code> or <code>null</code> is returned.
+     * @param option The option to configure the critical pairs. This must not
+     * be <code>null</code> or <code>null</code> is returned.
      * @return A empty container.
      */
     @SuppressWarnings("deprecation")
@@ -297,7 +304,6 @@ public class ParserFactory {
                 case CriticalPairOption.TRIGGER_DEPEND:
                 case CriticalPairOption.TRIGGER_SWITCH_DEPEND:
                     // System.out.println("DependencyPairContainer will be used");
-
                     if (option.layeredEnabled()) {
                         pc = new LayeredDependencyPairContainer(grammar);
                         ((LayeredExcludePairContainer) pc).setLayer(
@@ -305,7 +311,6 @@ public class ParserFactory {
                     } else {
                         pc = new DependencyPairContainer(grammar);
                     }
-
                     ((DependencyPairContainer) pc).enableSwitchDependency(
                             option.switchDependencyEnabled());
                     ((DependencyPairContainer) pc).enableComplete(
@@ -359,7 +364,6 @@ public class ParserFactory {
                     } else {
                         pc = new DependencyPairContainer(grammar);
                     }
-
                     if (algorithm == CriticalPairOption.TRIGGER_SWITCH_DEPEND) {
                         ((DependencyPairContainer) pc).enableSwitchDependency(
                                 true);
@@ -373,7 +377,8 @@ public class ParserFactory {
     }
 
     /**
-     * Generates critical pairs. These pairs are generated parallel. Use these generated pairs for the parser.
+     * Generates critical pairs. These pairs are generated parallel. Use these
+     * generated pairs for the parser.
      *
      * @param pc The pair container to be filled.
      */
@@ -388,13 +393,15 @@ public class ParserFactory {
     }
 
     /**
-     * Creates and generates critical pairs. These pairs are generated parallel. Use these generated pairs for the
-     * parser.
+     * Creates and generates critical pairs. These pairs are generated parallel.
+     * Use these generated pairs for the parser.
      *
-     * @param grammar The graph grammar to generate the pairs for. This must not be <CODE>null</CODE> or
-     * <CODE>null</CODE> is returned.
-     * @param layer The layer function. This can only be <CODE>null</CODE> if the critical pairs do not need them.
-     * @param option The option to configure the critical pairs. This must not be <CODE>null</CODE>.
+     * @param grammar The graph grammar to generate the pairs for. This must not
+     * be <CODE>null</CODE> or <CODE>null</CODE> is returned.
+     * @param layer The layer function. This can only be <CODE>null</CODE> if
+     * the critical pairs do not need them.
+     * @param option The option to configure the critical pairs. This must not
+     * be <CODE>null</CODE>.
      * @return The genrated pairs in a container.
      * @deprecated
      */
@@ -408,10 +415,10 @@ public class ParserFactory {
     /**
      * Creates a new layer function with a invalid layer.
      *
-     * @param grammar The graph grammar to generate the layer function for. This must not be <code>null</code> or
-     * <code>null</code> is returned.
-     * @param option The option to configure the layer function. This must not be <code>null</code> or <code>null</code>
-     * is returned.
+     * @param grammar The graph grammar to generate the layer function for. This
+     * must not be <code>null</code> or <code>null</code> is returned.
+     * @param option The option to configure the layer function. This must not
+     * be <code>null</code> or <code>null</code> is returned.
      * @return The new layer function.
      * @deprecated
      */
@@ -446,7 +453,6 @@ public class ParserFactory {
         return lf;
     }
 }
-
 /*
  * End of ParserFactory.java
  * -----------------------------------------------------------------------------

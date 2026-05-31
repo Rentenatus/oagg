@@ -1,9 +1,9 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
- * reserved. This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0 which accompanies this
- * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License
@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
-
 import agg.attribute.AttrException;
 import agg.attribute.AttrVariableTuple;
 import agg.attribute.impl.VarMember;
@@ -36,41 +35,23 @@ import agg.xt_basis.csp.CompletionPropertyBits;
 public abstract class GraTra {
 
     protected String name;
-
     protected GraGra grammar;
-
     protected Graph hostgraph;
-
     protected Rule currentRule;
-
     protected List<Rule> currentRuleSet = new ArrayList<Rule>();
-
     protected Match currentMatch;
-
     protected boolean colimitBasedPushout;
-
     protected boolean updateTypeObjectsMapAfterStep = true;
-
     protected MorphCompletionStrategy strategy;
-
     final protected List<GraTraEventListener> graTraListeners = new ArrayList<GraTraEventListener>();
-
     protected boolean stopping = false;
-
     protected boolean stoppingRule = false;
-
     protected boolean pauseRule = false;
-
     protected boolean waitAfterStep = false;
-
     protected boolean consistentGraph = true;
-
     protected boolean writeLogFile = false;
-
     protected GraTraOptions options;
-
     protected String errorMsg = "";
-
     protected boolean wait;
 
     public void dispose() {
@@ -191,7 +172,6 @@ public abstract class GraTra {
         setCompletionStrategy(this.options.getCompletionStrategy());
     }
 
-    
     public void setGraTraOptions(List<String> newOptions) {
         GraTraOptions nOptions = new GraTraOptions();
         for (int i = 0; i < newOptions.size(); i++) {
@@ -255,11 +235,9 @@ public abstract class GraTra {
             this.errorMsg = "";
             Morphism co_match = null;
             this.consistentGraph = true;
-
             if (this.options == null) {
                 this.options = getGraTraOptions();
             }
-
             if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
                 try {
 //				fireGraTra(new GraTraEvent(this, GraTraEvent.MATCH_VALID, m));
@@ -275,7 +253,6 @@ public abstract class GraTra {
                 try {
                     // break after inconsistent step
 //				fireGraTra(new GraTraEvent(this, GraTraEvent.MATCH_VALID, m));
-
                     co_match = StaticStep.execute(m);
 //				co_match = StaticStep.executeColimBased(m);
                     if ((co_match != null)
@@ -340,7 +317,6 @@ public abstract class GraTra {
                     this.errorMsg = "Graph inconsistency after transformation.";
                 }
             }
-
             if (co_match != null) {
                 // hostgraph = co.getImage();
                 fireGraTra(new GraTraEvent(this, GraTraEvent.STEP_COMPLETED, m)); //, co));			
@@ -361,12 +337,10 @@ public abstract class GraTra {
     public boolean apply(Rule r) {
         synchronized (r) { // this
 //			System.gc();
-
 //		long time0 = System.currentTimeMillis();
             this.stoppingRule = false;
             boolean result = false;
             boolean valid = false;
-
             this.currentMatch = r.getMatch();
             if (this.currentMatch == null) {
                 this.currentMatch = this.grammar.createMatch(r);
@@ -376,29 +350,23 @@ public abstract class GraTra {
             } else if (this.updateTypeObjectsMapAfterStep) {
                 this.currentMatch.setTypeObjectsMapChanged(true);
             }
-
             boolean parallelApply = true;
             boolean is_applied = false;
 //		int matchCompletions = 0;
-
 //		time0 = System.currentTimeMillis();
             while (parallelApply) {
-
                 if (!isInputParameterSet(r.getLeft(), true, this.currentMatch)) {
                     fireGraTra(
                             new GraTraEvent(this, GraTraEvent.INPUT_PARAMETER_NOT_SET, this.currentMatch));
                 }
-
                 if (this.stopping || this.stoppingRule) {
 //				this.destroyMatch(currentMatch);
                     this.currentMatch.clear();
                     return false;
                 }
-
                 if (this.pauseRule) {
                     return false;
                 }
-
                 valid = false;
                 while (!valid) {
                     if (this.currentMatch.nextCompletion()) {
@@ -423,16 +391,13 @@ public abstract class GraTra {
                         break;
                     }
                 }
-
                 if (valid) {
                     fireGraTra(new GraTraEvent(this, GraTraEvent.MATCH_VALID,
                             this.currentMatch));
-
                     if (!isInputParameterSet(r.getRight(), false, this.currentMatch)) {
                         fireGraTra(new GraTraEvent(this,
                                 GraTraEvent.INPUT_PARAMETER_NOT_SET, this.currentMatch));
                     }
-
 //				if(stopping || stoppingRule) {
 //					if (currentMatch != null) {
 //						currentMatch.clear(); 
@@ -454,12 +419,10 @@ public abstract class GraTra {
                         // destroyMatch(currentMatch);					
                         return false;
                     }
-
                     Morphism coMatch = apply(this.currentMatch);
                     if (coMatch != null) {
                         this.errorMsg = "";
                         is_applied = true;
-
                         this.currentMatch.clear();
 //					destroyMatch(this.currentMatch);
                         coMatch = null;
@@ -470,7 +433,6 @@ public abstract class GraTra {
                                 this.currentMatch, this.errorMsg));
                         this.currentMatch.clear();
 //					destroyMatch(currentMatch);
-
                         result = false;
                     }
                 } else {
@@ -478,10 +440,8 @@ public abstract class GraTra {
                             this.currentMatch, this.currentMatch.getErrorMsg()));
                     this.currentMatch.clear();
 //				 destroyMatch(currentMatch);
-
                     result = false;
                 }
-
                 //
                 if (r.isParallelApplyEnabled()) {
                     if (!valid) {
@@ -492,14 +452,12 @@ public abstract class GraTra {
                     if (is_applied) {
                         result = true;
                     }
-
                 } else {
                     parallelApply = false;
                     break;
                 }
                 //   	      
             }
-
             return result;
         }
     }
@@ -590,7 +548,6 @@ public abstract class GraTra {
     protected void setRuleSet() {
         if (this.grammar != null) {
             this.currentRuleSet.addAll(this.grammar.getListOfRules());
-
 //			Iterator<Rule> rules = grammar.getListOfRules().iterator();
 //			while ((rules.hasNext())) {
 //				Rule r = rules.next();
@@ -603,12 +560,10 @@ public abstract class GraTra {
             final Graph g,
             boolean left,
             final Match match) {
-
         if (match == null
                 || match.getAttrContext().getVariables().getNumberOfEntries() == 0) {
             return true;
         }
-
 //		boolean set = true;
         final AttrConditionTuple act = match.getAttrContext().getConditions();
         final AttrVariableTuple avt = match.getAttrContext().getVariables();
@@ -620,10 +575,8 @@ public abstract class GraTra {
                     // GraTraEvent(this,GraTraEvent.PARAMETER_NOT_SET,match));
                     return false;
                 }
-
                 if (left) {
                     if (v.getMark() == VarMember.RHS) {
-
                     } else if (v.getMark() == VarMember.LHS) {
                         return false;
                     } else {
@@ -647,7 +600,6 @@ public abstract class GraTra {
                 if (this.grammar.checkGraphConsistency(g, constraints)) {
                     return true;
                 }
-
                 return false;
             }
             return false;
@@ -661,7 +613,6 @@ public abstract class GraTra {
                 if (this.grammar.checkGraphConsistency(g, constraints)) {
                     return true;
                 }
-
                 return false;
             }
             return false;
@@ -757,7 +708,6 @@ public abstract class GraTra {
         if (copy == null) {
             return false;
         }
-
         copy.getImage().setCompleteGraph(true);
         OrdinaryMorphism com = m.compose(copy);
         Match m2 = bf.makeMatch(m.getRule(), com);
@@ -846,7 +796,6 @@ public abstract class GraTra {
         if (this.grammar == null) {
             return true;
         }
-
         List<Formula> constraints = null;
         if (this.grammar.isLayered()) {
             constraints = this.grammar.getConstraintsForLayer(-1);
@@ -855,7 +804,6 @@ public abstract class GraTra {
         } else {
             constraints = this.grammar.getGlobalConstraints();
         }
-
         if (this.grammar.checkGraphConsistency(this.grammar.getGraph(), constraints)) {
             return true;
         }
@@ -868,12 +816,10 @@ public abstract class GraTra {
         if (this.grammar == null) {
             return true;
         }
-
         List<Formula> constraints = this.grammar.getConstraintsForLayer(layer);
         if (this.grammar.checkGraphConsistency(this.grammar.getGraph(), constraints)) {
             return true;
         }
-
         String msgstr = " Layer: " + layer + "  Constraint:" + this.grammar.getConsistencyErrorMsg() + "- failed.";
         fireGraTra(new GraTraEvent(this, GraTraEvent.INCONSISTENT, msgstr));
         return false;
@@ -883,12 +829,10 @@ public abstract class GraTra {
         if (this.grammar == null) {
             return true;
         }
-
         List<Formula> constraints = this.grammar.getConstraintsForPriority(priority);
         if (this.grammar.checkGraphConsistency(this.grammar.getGraph(), constraints)) {
             return true;
         }
-
         String msgstr = " Priority: " + priority + "  Constraint:" + this.grammar.getConsistencyErrorMsg() + "- failed.";
         fireGraTra(new GraTraEvent(this, GraTraEvent.INCONSISTENT, msgstr));
         return false;
@@ -905,39 +849,30 @@ public abstract class GraTra {
      */
     public boolean apply(final RuleScheme rs) {
         synchronized (this) {
-
             // long time0 = System.currentTimeMillis();
             this.stoppingRule = false;
-
             boolean result = false;
-
             this.currentMatch = rs.getMatch();
             if (this.currentMatch == null) {
                 if (!rs.isInputParameterSet(true)) {
                     fireGraTra(new GraTraEvent(this, GraTraEvent.INPUT_PARAMETER_NOT_SET, rs));
                 }
-
                 this.currentMatch = rs.getMatch(this.hostgraph, this.strategy);
             }
-
             if (this.currentMatch == null) {
                 fireGraTra(new GraTraEvent(this, GraTraEvent.MATCH_FAILED,
                         "Amalgamated match failed.\n" + rs.getErrorMsg()));
                 return false;
             }
-
             fireGraTra(new GraTraEvent(this, GraTraEvent.MATCH_VALID,
                     this.currentMatch));
-
             if (this.stopping || this.stoppingRule) {
                 rs.disposeAmalgamatedRule();
                 return false;
             }
-
             if (this.pauseRule) {
                 return false;
             }
-
             try { // check attr context: variables only
                 boolean checkVarsOnly = true;
                 this.currentMatch.getAttrContext().getVariables()
@@ -950,7 +885,6 @@ public abstract class GraTra {
                 rs.disposeAmalgamatedRule();
                 return false;
             }
-
             Morphism coMatch = apply(this.currentMatch);
             if (coMatch != null) {
                 this.errorMsg = "";
@@ -963,7 +897,6 @@ public abstract class GraTra {
                 rs.disposeAmalgamatedRule();
                 result = false;
             }
-
             return result;
         }
     }
@@ -971,8 +904,6 @@ public abstract class GraTra {
     protected boolean isInputParameterSet(
             final RuleScheme rs,
             boolean left) {
-
         return rs.isInputParameterSet(left);
     }
-
 }

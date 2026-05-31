@@ -2,21 +2,24 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
 import java.io.Serializable;
 
 /**
- * Mediator interface for distribution purposes. Provides services for creating and maintaining of
- * interface/local-relations between attribute tuples and contexts.
+ * Mediator interface for distribution purposes. Provides services for creating
+ * and maintaining of interface/local-relations between attribute tuples and
+ * contexts.
  *
- * @version $Id: AttrDistributionBroker.java,v 1.1 2005/08/25 11:56:55 enrico Exp $
+ * @version $Id: AttrDistributionBroker.java,v 1.1 2005/08/25 11:56:55 enrico
+ * Exp $
  * @author $Author: olga $
  */
 public interface AttrDistributionBroker extends Serializable {
@@ -56,7 +59,6 @@ public interface AttrDistributionBroker extends Serializable {
     public void disconnect(AttrContext interfaceContext,
             AttrContext localContext);
 }
-
 /*
  * $Log: AttrDistributionBroker.java,v $
  * Revision 1.2  2007/09/10 13:05:31  olga

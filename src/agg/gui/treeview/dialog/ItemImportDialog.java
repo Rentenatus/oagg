@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -38,34 +40,23 @@ import javax.swing.border.TitledBorder;
 public class ItemImportDialog extends JDialog implements ActionListener {
 
     private final JPanel contentPane;
-
     private final JPanel panel;
-
     private final JPanel itemPanel;
-
     private final JPanel buttonPanel;
-
     private final JScrollPane scrollPane;
-
     private final List<String> itemNames;
-
     private final List<String> result;
-
     private final List<JCheckBox> checkBox;
-
     private final JButton allItemsButton;
-
     private final JButton closeButton;
-
     private final JButton cancelButton;
-
 //	private boolean isCancelled;
+
     public ItemImportDialog(JFrame parent, String title,
             List<String> itemNames) {
         super(parent, true);
         this.itemNames = itemNames;
         this.result = new Vector<String>();
-
         setTitle(title);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
@@ -78,15 +69,11 @@ public class ItemImportDialog extends JDialog implements ActionListener {
         } else {
             setLocation(300, 100);
         }
-
         this.checkBox = new Vector<JCheckBox>();
-
         this.contentPane = new JPanel(new BorderLayout());
         this.contentPane.setBackground(Color.lightGray);
-
         this.panel = new JPanel(new BorderLayout());
         this.panel.setBorder(new TitledBorder(" Please select items "));
-
         this.itemPanel = new JPanel(new GridLayout(itemNames.size(), 1));
         for (int i = 0; i < itemNames.size(); i++) {
             String name = itemNames.get(i);
@@ -95,7 +82,6 @@ public class ItemImportDialog extends JDialog implements ActionListener {
             this.checkBox.add(cb);
             this.itemPanel.add(cb);
         }
-
         this.scrollPane = new JScrollPane(this.itemPanel);
         this.scrollPane.setPreferredSize(new Dimension(100, 150));
         this.allItemsButton = new JButton();
@@ -104,30 +90,25 @@ public class ItemImportDialog extends JDialog implements ActionListener {
         this.allItemsButton.addActionListener(this);
         this.panel.add(this.scrollPane, BorderLayout.CENTER);
         this.panel.add(this.allItemsButton, BorderLayout.SOUTH);
-
         this.buttonPanel = new JPanel(new GridBagLayout());
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Import");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
 //		isCancelled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.addActionListener(this);
-
         constrainBuild(this.buttonPanel, this.closeButton, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 10, 10, 5);
         constrainBuild(this.buttonPanel, this.cancelButton, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 5, 10, 10);
-
         this.contentPane.add(this.panel, BorderLayout.CENTER);
         this.contentPane.add(this.buttonPanel, BorderLayout.SOUTH);
         this.contentPane.revalidate();
-
         setContentPane(this.contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();

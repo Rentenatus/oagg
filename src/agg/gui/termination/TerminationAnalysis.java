@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.termination;
 
@@ -14,11 +15,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.AGGAppl;
 import agg.gui.event.TreeViewEvent;
@@ -78,7 +77,6 @@ public class TerminationAnalysis implements TreeViewEventListener {
                     ((TerminationLGTSTypedByTypeGraph) this.terminationLGTS).dispose();
                     this.terminationLGTS = new TerminationLGTS();
                 }
-
                 this.terminationLGTS.setGrammar(this.gragra.getBasisGraGra());
             }
         }
@@ -92,9 +90,7 @@ public class TerminationAnalysis implements TreeViewEventListener {
             if (e.getData().isGraGra()) {
                 boolean shouldResetGUI = this.terminationLGTS.getGrammar()
                         != e.getData().getGraGra().getBasisGraGra();
-
                 setGraGra(e.getData().getGraGra());
-
                 if (shouldResetGUI && this.terminationLGTSGUI != null) {
                     this.terminationLGTSGUI.reinit(this.terminationLGTS);
                 }
@@ -118,7 +114,6 @@ public class TerminationAnalysis implements TreeViewEventListener {
                             } else if (answ == JOptionPane.NO_OPTION
                                     || answ == JOptionPane.CANCEL_OPTION) {
                             }
-
                         } else {
                             this.terminationLGTS.resetGrammar();
                             this.terminationLGTSGUI.reinit();
@@ -145,7 +140,6 @@ public class TerminationAnalysis implements TreeViewEventListener {
                             } else if (answ == JOptionPane.NO_OPTION
                                     || answ == JOptionPane.CANCEL_OPTION) {
                             }
-
                         } else {
                             this.terminationLGTS.resetGrammar();
                             this.terminationLGTSGUI.reinit();
@@ -209,23 +203,13 @@ public class TerminationAnalysis implements TreeViewEventListener {
         });
         this.menus.addElement(this.terminationMenu);
     }
-
     protected TerminationDialog terminationLGTSGUI;
-
     protected TerminationLGTSInterface terminationLGTS;
-
     protected agg.gui.AGGAppl parent;
-
     protected EdGraGra gragra;
-
     protected GraGraTreeView treeView;
-
     private JMenu terminationMenu;
-
     private JMenuItem mi_terminationLGTS;
-
     private Vector<JMenu> menus;
-
     protected boolean isLGTSVisible;
-
 }

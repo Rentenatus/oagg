@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
 import java.io.Serializable;
-
 import agg.util.XMLObject;
 
 /**
@@ -30,7 +30,8 @@ public interface AttrMember extends Serializable, XMLObject {
     public boolean isValid();
 
     /**
-     * Returns a text describing the errors in this member, or null if the member is correct.
+     * Returns a text describing the errors in this member, or null if the
+     * member is correct.
      */
     public String getValidityReport();
 
@@ -48,9 +49,7 @@ public interface AttrMember extends Serializable, XMLObject {
      * Returns the member index within the containing tuple.
      */
     public int getIndexInTuple();
-
 }
-
 /*
  * $Log: AttrMember.java,v $
  * Revision 1.2  2007/09/10 13:05:31  olga

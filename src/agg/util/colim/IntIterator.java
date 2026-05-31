@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.util.colim;
 
@@ -25,20 +26,21 @@ public final class IntIterator implements BidirectionalIterator {
     }
 
     /**
-     * Return an iterator positioned immediately after the last element of a particular array.
+     * Return an iterator positioned immediately after the last element of a
+     * particular array.
      *
      * @param array The array whose last element I will be positioned after.
      */
     public static IntIterator end(int[] array) {
         return new IntIterator(array, array.length);
     }
-
     int buffer[];
     Container original;
     int index;
 
     /**
-     * Construct myself to be an iterator with no associated data structure or position.
+     * Construct myself to be an iterator with no associated data structure or
+     * position.
      */
     public IntIterator() {
         this(new IntArray(), 0);
@@ -56,14 +58,16 @@ public final class IntIterator implements BidirectionalIterator {
     }
 
     /**
-     * Construct myself to be positioned at a particular index of a specific array of ints.
+     * Construct myself to be positioned at a particular index of a specific
+     * array of ints.
      */
     public IntIterator(int[] vector, int index) {
         this(new IntArray(vector), index);
     }
 
     /**
-     * Construct myself to be positioned at a particular index of a specific IntArray.
+     * Construct myself to be positioned at a particular index of a specific
+     * IntArray.
      */
     public IntIterator(IntArray vector, int index) {
         buffer = vector.array;
@@ -72,7 +76,8 @@ public final class IntIterator implements BidirectionalIterator {
     }
 
     /**
-     * Construct myself to be positioned at a particular index of a specific IntBuffer.
+     * Construct myself to be positioned at a particular index of a specific
+     * IntBuffer.
      *
      * @param vector My associated IntBuffer.
      * @param index My associated index.
@@ -91,7 +96,8 @@ public final class IntIterator implements BidirectionalIterator {
     }
 
     /**
-     * Return true if a specified object is the same kind of iterator as me and is positioned at the same element.
+     * Return true if a specified object is the same kind of iterator as me and
+     * is positioned at the same element.
      *
      * @param object Any object.
      */
@@ -164,7 +170,8 @@ public final class IntIterator implements BidirectionalIterator {
     /**
      * Return the next element in my input stream.
      *
-     * @exception java.util.NoSuchElementException If I'm positioned at an invalid index.
+     * @exception java.util.NoSuchElementException If I'm positioned at an
+     * invalid index.
      */
     public Object nextElement() {
         try {
@@ -179,7 +186,8 @@ public final class IntIterator implements BidirectionalIterator {
     /**
      * Return the object at my current position.
      *
-     * @exception java.lang.ArrayIndexOutOfBoundsException If I'm positioned at an invalid index.
+     * @exception java.lang.ArrayIndexOutOfBoundsException If I'm positioned at
+     * an invalid index.
      */
     public Object get() {
         return get(0);
@@ -193,7 +201,8 @@ public final class IntIterator implements BidirectionalIterator {
      * Return the object that is a specified distance from my current position.
      *
      * @param offset The offset from my current position.
-     * @exception java.lang.ArrayIndexOutOfBoundsException If the adjusted index is invalid.
+     * @exception java.lang.ArrayIndexOutOfBoundsException If the adjusted index
+     * is invalid.
      */
     public Object get(int offset) {
         return new Integer(buffer[index + offset]);
@@ -207,7 +216,8 @@ public final class IntIterator implements BidirectionalIterator {
      * Set the object at my current position to a specified value.
      *
      * @param object The object to be written at my current position.
-     * @exception java.lang.ArrayIndexOutOfBoundsException If I'm positioned at an invalid index.
+     * @exception java.lang.ArrayIndexOutOfBoundsException If I'm positioned at
+     * an invalid index.
      */
     public void put(Object object) {
         put(0, object);
@@ -222,7 +232,8 @@ public final class IntIterator implements BidirectionalIterator {
      *
      * @param offset The offset from my current position.
      * @param object The object to write.
-     * @exception java.lang.ArrayIndexOutOfBoundsException If the adjusted index is invalid.
+     * @exception java.lang.ArrayIndexOutOfBoundsException If the adjusted index
+     * is invalid.
      */
     public void put(int offset, Object object) {
         put(offset, IntBuffer.asInt(object));
@@ -233,7 +244,8 @@ public final class IntIterator implements BidirectionalIterator {
     }
 
     /**
-     * Return the distance from myself to another iterator. I should be before the specified iterator.
+     * Return the distance from myself to another iterator. I should be before
+     * the specified iterator.
      *
      * @param iterator The iterator to compare myself against.
      * @exception IllegalArgumentException If the iterators are incompatible.
@@ -260,10 +272,10 @@ public final class IntIterator implements BidirectionalIterator {
     }
 
     /**
-     * Return true if both <CODE>iterator</CODE> and myself can be used as a range.
+     * Return true if both <CODE>iterator</CODE> and myself can be used as a
+     * range.
      */
     public boolean isCompatibleWith(InputIterator iterator) {
         return iterator instanceof IntIterator && buffer == ((IntIterator) iterator).buffer;
     }
-
 }

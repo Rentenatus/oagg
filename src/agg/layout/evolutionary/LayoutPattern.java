@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.layout.evolutionary;
 
@@ -15,34 +16,34 @@ import agg.util.XMLHelper;
 import agg.util.XMLObject;
 
 /**
- * This class contains information about a layout pattern of a type. This implementation considers layout patterns of
- * the edge types only. The data of a layout pattern are: name, type of a pattern such as <code>edge</code>,
- * <code>node</code> or <code>edge_length</code>, edge type which is effected by this layout pattern. Currently, only
- * <code>edge</code> and <code>edge_length</code> layout patterns are implemented. The <code>edge</code> layout patterns
- * is specified by offset type which can be <code>x</code> or <code>y</code>, offset value of x-offset: if xOffset==1
- * then target of edge is right of source, if xOffset==-1 then target of edge is left of source, if xOffset==0 then
- * target of edge is equal to source, offset value of y-offset: if yOffset==1 then target of edge is under source, if
- * yOffset==-1 then target of edge is above source, if yOffset==0 then target of edge is equal to source, The
- * <code>edge_length</code> layout patterns is specified by length size.
+ * This class contains information about a layout pattern of a type. This
+ * implementation considers layout patterns of the edge types only. The data of
+ * a layout pattern are: name, type of a pattern such as <code>edge</code>,
+ * <code>node</code> or <code>edge_length</code>, edge type which is effected by
+ * this layout pattern. Currently, only <code>edge</code> and
+ * <code>edge_length</code> layout patterns are implemented. The
+ * <code>edge</code> layout patterns is specified by offset type which can be
+ * <code>x</code> or <code>y</code>, offset value of x-offset: if xOffset==1
+ * then target of edge is right of source, if xOffset==-1 then target of edge is
+ * left of source, if xOffset==0 then target of edge is equal to source, offset
+ * value of y-offset: if yOffset==1 then target of edge is under source, if
+ * yOffset==-1 then target of edge is above source, if yOffset==0 then target of
+ * edge is equal to source, The <code>edge_length</code> layout patterns is
+ * specified by length size.
  */
 public class LayoutPattern implements XMLObject {
 
     String name;
-
     String patternType; // "edge" or "node"
-
     Type type;
-
     int edgeLength;
-
     char offsetType; // x|y
-
     int xOffset, yOffset;
-
     boolean freezing;
 
     /**
-     * Initialize layout pattern of the specified edge type. The dada of this layout pattern are undefined.
+     * Initialize layout pattern of the specified edge type. The dada of this
+     * layout pattern are undefined.
      */
     public LayoutPattern(Type t) {
         this.type = t;

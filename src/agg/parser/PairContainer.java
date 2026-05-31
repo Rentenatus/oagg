@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -21,11 +23,12 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import java.util.Hashtable;
 import java.util.List;
-
 //****************************************************************************+
+
 /**
- * A container for critical pairs This interface represents the abstract class of a stategy. All classes which
- * implements this interface are concrete strategies and can be used to confige the parser. This interface supports
+ * A container for critical pairs This interface represents the abstract class
+ * of a stategy. All classes which implements this interface are concrete
+ * strategies and can be used to confige the parser. This interface supports
  * access to critical pairs.
  *
  * @author $Author: olga $
@@ -35,12 +38,14 @@ public interface PairContainer extends XMLObject {
 
     // ****************************************************************************+
     /**
-     * Computes the critical part of two rules. This can be a <code>List</code> of overlaping graphs.
+     * Computes the critical part of two rules. This can be a <code>List</code>
+     * of overlaping graphs.
      *
      * @param r1 The first part of a critical pair
      * @param r2 The second part of a critical pair
      * @param kind The kind of critical pair
-     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
+     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which
+     * is not provided.
      * @return The critic object of two rules.
      */
     public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
@@ -52,8 +57,9 @@ public interface PairContainer extends XMLObject {
             throws InvalidAlgorithmException;
 
     /**
-     * Returned <code>CriticalPairData<\code> object which allows an access to the computed critical pairs of the
-     * specified rules in a more readable way.
+     * Returned <code>CriticalPairData<\code> object which allows an access to
+     * the computed critical pairs of the specified rules in a more readable
+     * way.
      *
      * @see <code>CriticalPairData<\code>
      *
@@ -62,8 +68,9 @@ public interface PairContainer extends XMLObject {
     public CriticalPairData getCriticalPairData(Rule r1, Rule r2);
 
     /**
-     * Returns a list of <code>CriticalPairData</code> which allows an access to the computed critical pairs of the
-     * specified kind of conflict in a more readable way.
+     * Returns a list of <code>CriticalPairData</code> which allows an access to
+     * the computed critical pairs of the specified kind of conflict in a more
+     * readable way.
      *
      * @see <code>CriticalPairData</code>
      *
@@ -72,7 +79,8 @@ public interface PairContainer extends XMLObject {
     public List<CriticalPairData> getCriticalPairDataOfKind(String kind);
 
     /**
-     * @deprecated replaced by <code>getCriticalPair(Rule r1, Rule r2, int kind)</code>
+     * @deprecated replaced by
+     * <code>getCriticalPair(Rule r1, Rule r2, int kind)</code>
      */
     public Object getCritical(Rule r1, Rule r2, int kind)
             throws InvalidAlgorithmException;
@@ -87,10 +95,12 @@ public interface PairContainer extends XMLObject {
 
     // ****************************************************************************+
     /**
-     * This container is a <code>Hashtable</code> with a rule as key. The value will be a set of rules.
+     * This container is a <code>Hashtable</code> with a rule as key. The value
+     * will be a set of rules.
      *
      * @param kind The kind of algorithm
-     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
+     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which
+     * is not provided.
      * @return The hashtable with critical pairs.
      */
     public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
@@ -102,7 +112,8 @@ public interface PairContainer extends XMLObject {
      *
      * @param kind The kind of critical pair
      * @param rule The rule which is the first part of a critical pair
-     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which is not provided.
+     * @throws InvalidAlgorithmException Thrown if a algorithm is desired which
+     * is not provided.
      * @return All rules that are critic with the parameter.
      */
     public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
@@ -123,13 +134,14 @@ public interface PairContainer extends XMLObject {
     public GraGra getGrammar();
 
     /**
-     * Set rule list to be analyzed. The rule matrix contains the same rule set in horizontal and vertical direction.
+     * Set rule list to be analyzed. The rule matrix contains the same rule set
+     * in horizontal and vertical direction.
      */
     public void setRules(List<Rule> ruleList);
 
     /**
-     * Set rule lists to be analyzed. The rule matrix contains the first list in horizontal and the second list in
-     * vertical direction.
+     * Set rule lists to be analyzed. The rule matrix contains the first list in
+     * horizontal and the second list in vertical direction.
      */
     public void setRules(final List<Rule> ruleList, final List<Rule> ruleList2);
 
@@ -144,9 +156,11 @@ public interface PairContainer extends XMLObject {
     public List<Rule> getRules2();
 
     /**
-     * This method has an effect if the rule matrix contains the same rule set in horizontal and vertical direction.
+     * This method has an effect if the rule matrix contains the same rule set
+     * in horizontal and vertical direction.
      * <br>
-     * If the parameter is <code>true</code> then only the right top triangle of the rule matrix will be computed.
+     * If the parameter is <code>true</code> then only the right top triangle of
+     * the rule matrix will be computed.
      */
     public void setComputeAsymmetrical(boolean b);
 
@@ -158,7 +172,8 @@ public interface PairContainer extends XMLObject {
 
     // ****************************************************************************+
     /**
-     * Initials all containers. So there are at least empty objects as containers.
+     * Initials all containers. So there are at least empty objects as
+     * containers.
      */
     public void initAllContainer();
 
@@ -183,7 +198,8 @@ public interface PairContainer extends XMLObject {
     public LayerFunction getLayer();
 
     /**
-     * Returns <code>true</code> if the process of computing critical pairs is running.
+     * Returns <code>true</code> if the process of computing critical pairs is
+     * running.
      */
     public boolean isAlive();
 
@@ -193,12 +209,14 @@ public interface PairContainer extends XMLObject {
     public void stop();
 
     /**
-     * If the parameter is <code>true</code> initiates the stop of the process of computing critical pairs.
+     * If the parameter is <code>true</code> initiates the stop of the process
+     * of computing critical pairs.
      */
     public void setStop(boolean b);
 
     /**
-     * Returns <code>true</code> if the process of computing critical pairs was stopped (not finished).
+     * Returns <code>true</code> if the process of computing critical pairs was
+     * stopped (not finished).
      */
     public boolean wasStopped();
 
@@ -208,21 +226,22 @@ public interface PairContainer extends XMLObject {
     public boolean isEmpty();
 
     /**
-     * Set and use (if the first parameter is <code>true</code>) the given host graph in the process of computing
-     * critical situations of the rule pairs.
+     * Set and use (if the first parameter is <code>true</code>) the given host
+     * graph in the process of computing critical situations of the rule pairs.
      */
     public void enableUseHostGraph(boolean enable, Graph g);
 
     /**
-     * Returns <code>true</code>) if a host graph is used in the process of computing critical situations of the rule
-     * pairs.
+     * Returns <code>true</code>) if a host graph is used in the process of
+     * computing critical situations of the rule pairs.
      */
     public boolean useHostGraphEnabled();
 
     /**
-     * Returns <code>true</code> if all conflicts of all rule pairs of the container are computed.<br>
-     * Note: In case of a host graph is used to determine critical situations - this method returns <code>false</code>
-     * only.
+     * Returns <code>true</code> if all conflicts of all rule pairs of the
+     * container are computed.<br>
+     * Note: In case of a host graph is used to determine critical situations -
+     * this method returns <code>false</code> only.
      */
     public boolean isComputed();
 
@@ -232,12 +251,11 @@ public interface PairContainer extends XMLObject {
     public ExcludePair getActiveExcludePair();
 
     /**
-     * Reset the options of the pair container according to the given CriticalPairOption <code>op</code>.
+     * Reset the options of the pair container according to the given
+     * CriticalPairOption <code>op</code>.
      */
     public void refreshOptions(final CriticalPairOption op);
-
 }
-
 // End of PairContainer.java
 /*
  * $Log: PairContainer.java,v $

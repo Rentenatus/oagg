@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import java.util.HashMap;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrException;
 import agg.attribute.AttrInstance;
@@ -24,7 +24,8 @@ import agg.attribute.view.AttrViewSetting;
 import agg.attribute.view.impl.OpenViewSetting;
 
 /**
- * Attribute Tuple Manager - Factory of attribute management; Provides creating services needed by graphical components.
+ * Attribute Tuple Manager - Factory of attribute management; Provides creating
+ * services needed by graphical components.
  *
  * @author $Author: olga $
  * @version $Id: AttrTupleManager.java,v 1.21 2010/11/28 22:11:36 olga Exp $
@@ -34,23 +35,14 @@ public class AttrTupleManager extends AttrObject implements
         agg.attribute.AttrManager {
 
     public HashMap<String, Boolean> classNameLookupMap;
-
     protected AttrHandler handlers[] = AvailableHandlers.newInstances();
-
     protected AttrViewSetting defaultOpenView;
-
     protected AttrViewSetting defaultMaskedView;
-
     protected AttrViewSetting fixedViewSetting;
-
     protected ContextView defaultContext;
-
     protected boolean isCorrectInputEnforced = false;
-
     private String errorMsg = "";
-
     private boolean variableContext = false;
-
     protected static AttrTupleManager myDefaultInstance = new AttrTupleManager();
 
     /**
@@ -66,14 +58,10 @@ public class AttrTupleManager extends AttrObject implements
     public AttrTupleManager() {
         new AttrSession();
         setDebug(true);
-
         this.classNameLookupMap = new HashMap<String, Boolean>();
-
         this.defaultOpenView = new OpenViewSetting(this);
         this.defaultMaskedView = this.defaultOpenView.getMaskedView();
-
         this.fixedViewSetting = new OpenViewSetting(this);
-
         this.defaultContext = makeDefaultContext();
     }
 
@@ -97,12 +85,14 @@ public class AttrTupleManager extends AttrObject implements
     }
 
     /**
-     * Creating a new attribute context which extends an existing one. In Graph Transformation, the setting of variables
-     * by matching corresponding graphical objects requires such a construction. It allows for keeping more that one
-     * rule match at a given time;
+     * Creating a new attribute context which extends an existing one. In Graph
+     * Transformation, the setting of variables by matching corresponding
+     * graphical objects requires such a construction. It allows for keeping
+     * more that one rule match at a given time;
      *
-     * @param mapStyle The kind of mapping that is allowed within this context; it is one of: - AttrMapping.PLAIN_MAP:
-     * In Graph Transformation: rule mapping - AttrMapping.MATCH_MAP: In Graph Transformation: matching
+     * @param mapStyle The kind of mapping that is allowed within this context;
+     * it is one of: - AttrMapping.PLAIN_MAP: In Graph Transformation: rule
+     * mapping - AttrMapping.MATCH_MAP: In Graph Transformation: matching
      * @param parent The context to extend
      * @return The new attribute context child
      * @see AttrContext
@@ -122,9 +112,10 @@ public class AttrTupleManager extends AttrObject implements
 	}
      */
     /**
-     * Creating a full view on an existing attribute context; Through a "full view" on a context, variables can be
-     * declared and values can be assigned to them by the editor of attribute instances. In Graph Transformation, it is
-     * used for the left-hand-side of a rule.
+     * Creating a full view on an existing attribute context; Through a "full
+     * view" on a context, variables can be declared and values can be assigned
+     * to them by the editor of attribute instances. In Graph Transformation, it
+     * is used for the left-hand-side of a rule.
      *
      * @param context The context to generate the view on
      * @return The new attribute context view
@@ -137,8 +128,9 @@ public class AttrTupleManager extends AttrObject implements
     }
 
     /**
-     * Creating a view on an existing attribute context, through which variables can not be declared; they only can be
-     * assigned values; In Graph Transformation, it is used for the right-hand-side of a rule.
+     * Creating a view on an existing attribute context, through which variables
+     * can not be declared; they only can be assigned values; In Graph
+     * Transformation, it is used for the right-hand-side of a rule.
      *
      * @param context The context to generate the view on
      * @return The new attribute context view
@@ -151,10 +143,12 @@ public class AttrTupleManager extends AttrObject implements
     }
 
     /**
-     * A variable context means that mainly variables will be used as values of the graph objects of a graph, so if a
-     * rule / match attribute context has an attribute condition, then often it cannot be evaluated and will get
+     * A variable context means that mainly variables will be used as values of
+     * the graph objects of a graph, so if a rule / match attribute context has
+     * an attribute condition, then often it cannot be evaluated and will get
      * <code>TRUE</code> as result.<br>
-     * This feature is mainly used during critical pair analysis to evaluate attribute conditions.<br>
+     * This feature is mainly used during critical pair analysis to evaluate
+     * attribute conditions.<br>
      * Do not use this setting for common transformation.
      */
     public void setVariableContext(boolean b) {
@@ -194,9 +188,10 @@ public class AttrTupleManager extends AttrObject implements
     // ///////////////////
     // Instance:
     /**
-     * Creating a new attribute instance of the required type, without a context. Note that for such attributes,
-     * expressions cannot contain variables. In Graph Transformation, it is used for creating a new attribute in the
-     * host graph.
+     * Creating a new attribute instance of the required type, without a
+     * context. Note that for such attributes, expressions cannot contain
+     * variables. In Graph Transformation, it is used for creating a new
+     * attribute in the host graph.
      *
      * @param type The type to use
      * @return The new attribute instance
@@ -206,8 +201,9 @@ public class AttrTupleManager extends AttrObject implements
     }
 
     /**
-     * Creating a new attribute instance of the required type and in the given context or a context view. In Graph
-     * Transformation, it is used for creating a new attribute in a rule.
+     * Creating a new attribute instance of the required type and in the given
+     * context or a context view. In Graph Transformation, it is used for
+     * creating a new attribute in a rule.
      *
      * @param type The type to use
      * @param context The context to use
@@ -217,17 +213,16 @@ public class AttrTupleManager extends AttrObject implements
         if (type == null) {
             return null;
         }
-
         if (context == null) {
             return new ValueTuple(this, (DeclTuple) type, this.defaultContext);
 //			return new ValueTuple(this, (DeclTuple) type, makeDefaultContext());
         }
-
         return new ValueTuple(this, (DeclTuple) type, (ContextView) context);
     }
 
     /**
-     * Returns an error message if something gone wrong, otherwise - empty message.
+     * Returns an error message if something gone wrong, otherwise - empty
+     * message.
      */
     public String getErrorMsg() {
         return this.errorMsg;
@@ -240,9 +235,10 @@ public class AttrTupleManager extends AttrObject implements
     // ///////////////////
     // Pre-Match Check
     /**
-     * Checking if matching can be performed with respect to a given rule context. If the rule context in question is
-     * without inconsistencies, this method remains 'silent'. Otherwise, it throws an exception whose message text
-     * describes the reason.
+     * Checking if matching can be performed with respect to a given rule
+     * context. If the rule context in question is without inconsistencies, this
+     * method remains 'silent'. Otherwise, it throws an exception whose message
+     * text describes the reason.
      */
     public void checkIfReadyToMatch(AttrContext ruleContext)
             throws AttrException {
@@ -283,14 +279,15 @@ public class AttrTupleManager extends AttrObject implements
     // ///////////////////
     // Mapping:
     /**
-     * Mapping between two attribute instances; The mapping is done according to the context mapping property
-     * (total/partial) and is integrated into the context;
+     * Mapping between two attribute instances; The mapping is done according to
+     * the context mapping property (total/partial) and is integrated into the
+     * context;
      *
      * @param mappingContext The context to include the mapping in
      * @param source Mapping source attribute
      * @param target Mapping target attribute
-     * @return A handle to the mapping; it can be used to undo the mapping (remove()) or to proceed to the next possible
-     * one (next())
+     * @return A handle to the mapping; it can be used to undo the mapping
+     * (remove()) or to proceed to the next possible one (next())
      * @see agg.attribute.AttrMapping#remove()
      * @see agg.attribute.AttrMapping#next()
      */
@@ -321,18 +318,18 @@ public class AttrTupleManager extends AttrObject implements
     // ///////////////////
     // Transformation Check
     /**
-     * Checking if an attributed graph transformation can be performed with respect to a given context: variables and
-     * attribute conditions. If the given match context is complete and without inconsistencies, this method remains
-     * 'silent'. Otherwise, it throws an exception whose message text describes the reason.
+     * Checking if an attributed graph transformation can be performed with
+     * respect to a given context: variables and attribute conditions. If the
+     * given match context is complete and without inconsistencies, this method
+     * remains 'silent'. Otherwise, it throws an exception whose message text
+     * describes the reason.
      */
     public void checkIfReadyToTransform(AttrContext matchContext)
             throws AttrException {
-
         if (matchContext == null) {
             this.errorMsg = "Null context supplied.";
             throw new AttrException(this.errorMsg);
         }
-
         this.errorMsg = "";
         VarTuple vars = (VarTuple) matchContext.getVariables();
         for (int k = 0; k < vars.getSize(); k++) {
@@ -361,10 +358,12 @@ public class AttrTupleManager extends AttrObject implements
     }
 
     /**
-     * Checking if an attributed graph transformation can be performed with respect to a given context: if
-     * checkVariablesOnly is TRUE then only do check variables, otherwise - variables and attribute conditions. If the
-     * given match context is complete and without inconsistencies, this method remains 'silent'. Otherwise, it throws
-     * an exception whose message text describes the reason.
+     * Checking if an attributed graph transformation can be performed with
+     * respect to a given context: if checkVariablesOnly is TRUE then only do
+     * check variables, otherwise - variables and attribute conditions. If the
+     * given match context is complete and without inconsistencies, this method
+     * remains 'silent'. Otherwise, it throws an exception whose message text
+     * describes the reason.
      */
     public void checkIfReadyToTransform(AttrContext matchContext,
             boolean checkVariablesOnly) throws AttrException {
@@ -380,7 +379,6 @@ public class AttrTupleManager extends AttrObject implements
                 this.errorMsg = "Null context supplied.";
                 throw new AttrException(this.errorMsg);
             }
-
             VarTuple vars = (VarTuple) matchContext.getVariables();
             for (int k = 0; k < vars.getSize(); k++) {
                 VarMember vm = vars.getVarMemberAt(k);
@@ -401,7 +399,8 @@ public class AttrTupleManager extends AttrObject implements
     // ///////////////////
     // View Context:
     /**
-     * Creating a new view instance for loose coupling of attribute objects with their visual representation.
+     * Creating a new view instance for loose coupling of attribute objects with
+     * their visual representation.
      */
     public AttrViewSetting newViewSetting() {
         return new OpenViewSetting(this);
@@ -440,7 +439,8 @@ public class AttrTupleManager extends AttrObject implements
     }
 
     /**
-     * Returns the class name if the specified name is a class name, otherwise - null.
+     * Returns the class name if the specified name is a class name, otherwise -
+     * null.
      */
     public String isClassName(String name) {
         // System.out.println("AttrTupleManager.isClassName:: "+name);
@@ -509,7 +509,6 @@ public class AttrTupleManager extends AttrObject implements
                         .getClassResolver().getPackages();
                 for (int pi = 0; pi < packs.size(); pi++) {
                     String pack = packs.get(pi);
-
                     String tst = aValue;
                     String pname = null;
                     String tmp = "";
@@ -542,7 +541,6 @@ public class AttrTupleManager extends AttrObject implements
         return aValue;
     }
 }
-
 /*
  * $Log: AttrTupleManager.java,v $
  * Revision 1.21  2010/11/28 22:11:36  olga

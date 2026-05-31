@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.csp;
 
@@ -15,8 +16,9 @@ import agg.util.csp.Variable;
 import agg.xt_basis.GraphObject;
 
 /**
- * Please note: This class is only for internal use of the critical pair analysis for grammars with node type
- * inheritance. Do not use it for any kind of implementations.
+ * Please note: This class is only for internal use of the critical pair
+ * analysis for grammars with node type inheritance. Do not use it for any kind
+ * of implementations.
  */
 public class Constraint_InheritType extends BinaryConstraint {
 
@@ -33,9 +35,10 @@ public class Constraint_InheritType extends BinaryConstraint {
     }
 
     /**
-     * Return true iff the current instance of <code>obj</code> is type compatible with the GraphObject that has been
-     * passed to my constructor. In this case, "type" means an element of the cartesian product of <code>Type</code> x
-     * {Node,Arc}.
+     * Return true iff the current instance of <code>obj</code> is type
+     * compatible with the GraphObject that has been passed to my constructor.
+     * In this case, "type" means an element of the cartesian product of
+     * <code>Type</code> x {Node,Arc}.
      * <p>
      * Pre: (1) obj.getInstance() instanceof GraphObject.
      */

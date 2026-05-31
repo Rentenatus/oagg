@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.popupmenu;
 
@@ -14,13 +15,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdNestedApplCond;
 import agg.editor.impl.EdRule;
 import agg.gui.treeview.GraGraTreeView;
@@ -35,7 +34,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
     public ApplFormulaPopupMenu(GraGraTreeView tree) {
         super("Formula above GACs");
         this.treeView = tree;
-
         JMenuItem mi = add(new JMenuItem("Refresh"));
         mi.setActionCommand("refreshApplFormula");
         mi.addActionListener(new ActionListener() {
@@ -43,7 +41,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
                 refreshFormula();
             }
         });
-
         mi = new JMenuItem("Edit");
         this.add(mi);
         mi.setActionCommand("editApplFormula");
@@ -53,7 +50,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
                 editFormula();
             }
         });
-
 //		addSeparator();
 //		mi = new JMenuItem("Delete           Delete");
 //		add(disable);		
@@ -83,7 +79,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
     public boolean invoked(int x, int y) {
         this.rule = null;
         this.cond = null;
-
         if (this.treeView == null) {
             return false;
         }
@@ -92,7 +87,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
             this.path = this.treeView.getTree().getPathForLocation(x, y);
             this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
             this.data = (GraGraTreeNodeData) this.node.getUserObject();
-
             if (this.data != null && this.data.isApplFormula()) {
                 this.formula = this.data;
                 this.parNode = (DefaultMutableTreeNode) this.node.getParent();
@@ -102,10 +96,8 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
                 } else if (this.parData.isNestedAC()) {
                     this.cond = this.parData.getNestedAC();
                 }
-
                 this.posX = x;
                 this.posY = x;
-
                 return true;
             }
         }
@@ -114,7 +106,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
 
     void refreshFormula() {
         this.data.update();
-
         if (this.rule != null) {
             if (!this.rule.getBasisRule().getFormula().isValid()) {
                 this.treeView.getTreeModel().removeNodeFromParent(this.data.getTreeNode());
@@ -152,7 +143,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
                 " An empty graph is the case where all nodes are connected by AND.",
                 true);
         d.setExportJPEG(this.treeView.getGraphicsExportJPEG());
-
         String oldformula = ((NestedApplCond) this.cond.getMorphism()).getFormulaText();
 //		List<String> allVars = ((NestedApplCond)this.cond.getMorphism()).getNameOfEnabledACs();
         List<EdNestedApplCond> allNestedACs = this.cond.getEnabledACs();
@@ -196,7 +186,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
                 " An empty graph is the case where all nodes are connected by AND.",
                 true);
         d.setExportJPEG(this.treeView.getGraphicsExportJPEG());
-
         String oldformula = this.rule.getBasisRule().getFormulaStr();
 //		List<String> allVars = this.rule.getBasisRule().getNameOfEnabledACs();
         List<EdNestedApplCond> allNestedACs = this.rule.getEnabledACs();
@@ -238,7 +227,6 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
             final List<EdNestedApplCond> allVarsObj) {
         if (f.length() > 0) {
             this.treeView.getTreeModel().removeNodeFromParent(this.node);
-
             // add formula tree node into nestedAC subtree
             if (!"true".equals(f)) {
                 ApplFormulaTreeNodeData conddata = null;
@@ -267,14 +255,12 @@ public class ApplFormulaPopupMenu extends JPopupMenu {
         }
         return result;
     }
-
     GraGraTreeView treeView;
     TreePath path;
     DefaultMutableTreeNode node, parNode;
     GraGraTreeNodeData data, parData, formula;
     EdNestedApplCond cond;
     EdRule rule;
-
     int row, posX, posY;
 //	private JMenuItem disable;
 }

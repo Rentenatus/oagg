@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.cpa;
 
@@ -15,7 +16,6 @@ import java.awt.event.ActionListener;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.util.EventObject;
-
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -24,7 +24,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JLabel;
 //import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.gui.options.CriticalPairOptionGUI;
@@ -76,7 +75,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
         this.pairsIOGUI = pairsIOGUI;
         this.cpOptionGUI = cpOptionGUI;
         this.needToLoad = true;
-
         createCriticalPairAnalysis(cpOption, lOption, pOption, option);
     }
 
@@ -91,7 +89,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
         this.excludePC = conflictContainer;
         this.dependPC = dependContainer;
         this.needToLoad = false;
-
         createCriticalPairAnalysis(cpOption, lOption, pOption, option);
     }
 
@@ -106,9 +103,7 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
         this.lOption = loption;
         this.pOption = poption;
         this.option = pguioption;
-
         this.cpOption.addOptionListener(this);
-
         this.frame = new JFrame("Critical Pair Analysis");
         JMenuBar menuBar = new JMenuBar();
         this.label = new JLabel("          ");
@@ -116,7 +111,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
         createAnalysisMenu("Critical Pair Analysis / Show");
         menuBar.add(this.menu);
         this.frame.setJMenuBar(menuBar);
-
         createCriticalPairAnalysisGUI();
         if (!this.needToLoad || loadCriticalPairs()) {
             // System.out.println(this.excludePC);
@@ -158,19 +152,16 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
 			 * emptyCP.setEnabled(true); 
 			 * emptyCPaddActionListener(); 
              */
-
             this.stopCP.setEnabled(false);
             stopCPaddActionListener();
             this.showCP.setEnabled(true);
             showCPaddActionListener();
             this.saveCP.setEnabled(true);
             saveCPaddActionListener();
-
             this.ready = true;
         } else {
             this.ready = false;
         }
-
         this.frame.getContentPane().setSize(600, 500);
         this.frame.pack();
         this.frame.getRootPane().revalidate();
@@ -231,7 +222,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
     private void createAnalysisMenu(String menutitle) {
         this.menu = new JMenu(menutitle);
         // this.menu.setEnabled(false);
-
 //		startCP = new JMenuItem("Generate"); startCP.setEnabled(false);
 //		this.menu.add(startCP);
 //		reduceCP = new JMenuItem("Reduce"); reduceCP.setEnabled(false);
@@ -244,11 +234,9 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
         this.stopCP = new JMenuItem("Stop");
         this.stopCP.setEnabled(false);
         this.menu.add(this.stopCP);
-
         this.saveCP = new JMenuItem("Save");
         this.saveCP.setEnabled(false);
         this.menu.add(this.saveCP);
-
         this.showCP = new JMenu("Show");
         this.showCP.setEnabled(false);
         this.showConflictCP = this.showCP.add(new JMenuItem("Conflicts"));
@@ -259,12 +247,10 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
 
     private void createCriticalPairAnalysisGUI() {
         this.pairsGUI = new CriticalPairAnalysisGUI(this.parent, this.option);
-
         ((JSplitPane) this.pairsGUI.getContainer()).setPreferredSize(new Dimension(
                 550, 450));
         this.frame.getContentPane()
                 .add(this.pairsGUI.getContainer(), BorderLayout.CENTER);
-
         if (this.needToLoad) {
             this.emptyGraGra = BaseFactory.theFactory().createGraGra();
             this.cpOption.enableLayered(true);
@@ -280,18 +266,14 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
         if (this.pairsIOGUI == null) {
             this.pairsIOGUI = new PairIOGUI(this.parent);
         }
-
         Object o = this.pairsIOGUI.load(true);
         if (o == null) {
             this.cpOption.enableLayered(false);
             return false;
         }
-
         if (this.pairsIOGUI.isCombined()) {
 //			ConflictsDependenciesContainer cdc = (ConflictsDependenciesContainer) o;
-
             ConflictsDependenciesContainerSaveLoad cdc = (ConflictsDependenciesContainerSaveLoad) o;
-
             if (this.cpaGraph != null) {
                 if (this.conflictDependGraph != null) {
                     if (this.excludePC != null) {
@@ -307,14 +289,11 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                                     this.conflictDependGraph);
                 }
             }
-
             this.cpOption.setOptionsFromList(cdc.getLoadedCPAOptions());
-
             this.pairsGUI.reinitGraphDesktop();
             this.excludePC = null;
             this.dependPC = null;
             this.pairsGUI.getGraphDesktop().getDesktop().repaint();
-
             if (cdc.isLayered()) {
                 if (cdc.getLayeredExcludePairContainer() != null) {
                     this.excludePC = cdc.getLayeredExcludePairContainer();
@@ -362,7 +341,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                     resetCP_GUI(this.pairsGraGra, this.dependPC, true);
                 }
             }
-
             this.cpaGraph = cdc.getCPAGraph();
             // System.out.println(this.cpaGraph);
             if (this.cpaGraph != null) {
@@ -380,19 +358,14 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                 this.pairsGUI.getGraphDesktop().addActionListenerToCPAGraphMenu(
                         this.conflictDependGraph);
                 this.conflictDependGraph.setGraphDesktop(this.pairsGUI.getGraphDesktop());
-
                 this.pairsGUI.getGraphDesktop().addGraph(this.cpaGraph, 400, 300);
-
                 try {
                     this.pairsGUI.getGraphDesktop().getInternalCPAGraphFrame().setIcon(false);
                 } catch (java.beans.PropertyVetoException pve) {
                 }
-
                 this.pairsGUI.getGraphDesktop().refresh();
             }
-
             this.cpOptionGUI.update();
-
             this.extendTitle(this.pairsIOGUI.getFileName() + " : " + this.pairsGraGra.getName());
             this.loaded = true;
         }
@@ -403,7 +376,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
         if ((gragra == null) || gragra.getRules().isEmpty()) {
             return;
         }
-
         if (pc != null) {
             if (newpc) {
                 if (this.pairsGUI.getGraGra() != gragra) {
@@ -429,7 +401,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                 this.cpOption.equalVariableNameOfAttrMappingEnabled());
         pc.enableNamedObjectOnly(this.cpOption.namedObjectEnabled());
         pc.enableMaxBoundOfCriticKind(this.cpOption.getMaxBoundOfCriticKind());
-
         if (!(pc instanceof DependencyPairContainer)) {
             pc.enableDirectlyStrictConfluent(this.cpOption.directlyStrictConflEnabled());
             pc.enableDirectlyStrictConfluentUpToIso(
@@ -462,16 +433,13 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
 //		System.out.println("CriticalPairAnalysisSeparated.parserEventOccured: "+e.getMessage());
         if ((e.getMessage().indexOf("Critical") != -1)
                 && (e.getMessage().indexOf("finished") != -1)) {
-
             updateCPAgraph();
-
             this.stopCP.setEnabled(false);
 //			startCP.setEnabled(true);
 //			emptyCP.setEnabled(true);
 //			reduceCP.setEnabled(true);
 //			consistCP.setEnabled(true);
             this.saveCP.setEnabled(true);
-
         } else if (e.getMessage().indexOf("rule pair") != -1) {
             // one rule pair computing
             if (e.getMessage().indexOf("done") == -1) {
@@ -489,7 +457,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                 this.saveCP.setEnabled(true);
                 this.showCP.setEnabled(true);
             }
-
         } else if (e.getMessage().indexOf("done") != -1) {
 //			startCP.setEnabled(true);
 //			reduceCP.setEnabled(true);
@@ -529,10 +496,8 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
     /* Implements agg.parser.OptionEventListener */
     public void optionEventOccurred(EventObject e) {
         if (e.getSource() instanceof CriticalPairOption) {
-
             if (this.excludePC != null) {
                 setCPoptions((ExcludePairContainer) this.excludePC);
-
                 if (this.excludePC instanceof LayeredExcludePairContainer) {
                     ((LayeredExcludePairContainer) this.excludePC)
                             .setLayer(this.cpOption.getLayer());
@@ -541,9 +506,7 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
             if (this.dependPC != null) {
                 ((DependencyPairContainer) this.dependPC).
                         enableSwitchDependency(this.cpOption.switchDependencyEnabled());
-
                 setCPoptions((ExcludePairContainer) this.dependPC);
-
                 if (this.dependPC instanceof LayeredDependencyPairContainer) {
                     ((LayeredDependencyPairContainer) this.dependPC)
                             .setLayer(this.cpOption.getLayer());
@@ -568,7 +531,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
 				if ((pairsGraGra == null)
 						|| (pairsGraGra.getBasisGraGra() == null))
 					return;
-
 				PairContainer oldPC = this.pairsGUI.getCriticalPairs();
 				// System.out.println(oldPC);
 				if (oldPC instanceof ExcludePairContainer) {
@@ -619,11 +581,9 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
 //				CriticalPairAnalysisSeparated.this.emptyCP.setEnabled(true);
 //				CriticalPairAnalysisSeparated.this.reduceCP.setEnabled(true);
 //				CriticalPairAnalysisSeparated.this.consistCP.setEnabled(true);
-
                 CriticalPairAnalysisSeparated.this.stopCP.setEnabled(false);
                 CriticalPairAnalysisSeparated.this.saveCP.setEnabled(true);
                 CriticalPairAnalysisSeparated.this.showCP.setEnabled(true);
-
                 CriticalPairAnalysisSeparated.this.label.setText("Generating critical pairs is stopped. Please wait.");
             }
         });
@@ -641,7 +601,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
 			}
 		});
 	}
-
 	private void consistCPaddActionListener() {
 		consistCP.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -667,7 +626,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
 			}
 		});
 	}
-
 	
 	private void emptyCPaddActionListener() {
 		emptyCP.addActionListener(new ActionListener() {
@@ -692,7 +650,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
     private void saveCPaddActionListener() {
         this.saveCP.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 if (CriticalPairAnalysisSeparated.this.pairsGUI.isGenerating()
                         || CriticalPairAnalysisSeparated.this.pairsGUI.isOnePairThreadAlive()) {
                     return;
@@ -700,12 +657,10 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                 if (CriticalPairAnalysisSeparated.this.pairsIOGUI == null) {
                     CriticalPairAnalysisSeparated.this.pairsIOGUI = new agg.gui.parser.PairIOGUI(CriticalPairAnalysisSeparated.this.parent);
                 }
-
 //				ConflictsDependenciesContainer cdPC = new ConflictsDependenciesContainer(
 //						this.excludePC, dependPC, cpaGraph);
                 ConflictsDependenciesContainerSaveLoad cdPC = new ConflictsDependenciesContainerSaveLoad(
                         CriticalPairAnalysisSeparated.this.excludePC, CriticalPairAnalysisSeparated.this.dependPC, CriticalPairAnalysisSeparated.this.cpaGraph, CriticalPairAnalysisSeparated.this.pairsGraGra);
-
                 CriticalPairAnalysisSeparated.this.pairsIOGUI.setCriticalPairContainer(cdPC);
                 CriticalPairAnalysisSeparated.this.pairsIOGUI.save();
             }
@@ -730,7 +685,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                 this.conflictDependGraph.setConflictPairContainer(pc);
             }
             return pc;
-
         } else if (kindOfAlgorithm == CriticalPairOption.TRIGGER_DEPEND
                 || kindOfAlgorithm == CriticalPairOption.TRIGGER_SWITCH_DEPEND) {
             if (this.dependPC != null) {
@@ -747,7 +701,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                 this.conflictDependGraph.setDependencyPairContainer(pc);
             }
             return pc;
-
         } else {
             return null;
         }
@@ -759,13 +712,11 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                 showPairContainer(CriticalPair.CONFLICT);
             }
         });
-
         this.showDependencyCP.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showPairContainer(CriticalPair.TRIGGER_DEPENDENCY);
             }
         });
-
         showCPAGraphCPaddActionListener();
     }
 
@@ -812,7 +763,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                                 .removeActionListenerFromCPAGraphMenu(
                                         CriticalPairAnalysisSeparated.this.conflictDependGraph);
                     }
-
                     CriticalPairAnalysisSeparated.this.conflictDependGraph = new ConflictsDependenciesGraph(
                             (ExcludePairContainer) CriticalPairAnalysisSeparated.this.excludePC,
                             (ExcludePairContainer) CriticalPairAnalysisSeparated.this.dependPC,
@@ -829,12 +779,10 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                             CriticalPairAnalysisSeparated.this.conflictDependGraph);
                     CriticalPairAnalysisSeparated.this.conflictDependGraph.setGraphDesktop(CriticalPairAnalysisSeparated.this.pairsGUI
                             .getGraphDesktop());
-
                     CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().removeAllGraphFrames();
                     CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().removeRuleFrames();
                     CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().removeCPAGraphFrame();
                     CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().getDesktop().repaint();
-
 //					if (CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().getInternalLayoutGraph(
 //							CriticalPairAnalysisSeparated.this.cpaGraph.getBasisGraph()) == CriticalPairAnalysisSeparated.this.cpaGraph) {
                     try {
@@ -875,7 +823,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                                 null, (ExcludePairContainer) CriticalPairAnalysisSeparated.this.dependPC);
                         CriticalPairAnalysisSeparated.this.cpaGraph = CriticalPairAnalysisSeparated.this.conflictDependGraph.getGraph();
                     }
-
                     if (CriticalPairAnalysisSeparated.this.cpaGraph != null) {
                         if (CriticalPairAnalysisSeparated.this.excludePC != null) {
                             CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().getConflictPairPanel()
@@ -890,7 +837,6 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
                                         CriticalPairAnalysisSeparated.this.conflictDependGraph);
                         CriticalPairAnalysisSeparated.this.conflictDependGraph.setGraphDesktop(CriticalPairAnalysisSeparated.this.pairsGUI
                                 .getGraphDesktop());
-
                         CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().removeAllGraphFrames();
                         CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().removeRuleFrames();
                         CriticalPairAnalysisSeparated.this.pairsGUI.getGraphDesktop().getDesktop().repaint();
@@ -937,54 +883,30 @@ public class CriticalPairAnalysisSeparated implements ParserEventListener,
         }
         return false;
     }
-
     protected ParserGUIOption option;
-
     protected ParserOptionGUI pOptionGUI;
-
     protected ParserOption pOption;
-
     protected LayerOption lOption;
-
     protected CriticalPairOptionGUI cpOptionGUI;
-
     protected CriticalPairOption cpOption;
-
     protected CriticalPairAnalysisGUI pairsGUI;
-
     protected PairIOGUI pairsIOGUI;
-
     protected PairContainer excludePC, dependPC;
-
     protected ConflictsDependenciesGraph conflictDependGraph;
-
     protected EdGraph cpaGraph;
-
     protected EdGraGra pairsGraGra;
-
     protected GraGra emptyGraGra;
-
     protected RuleLayer rlayer;
-
     protected JMenu menu, showCP;
-
     protected JMenuItem startCP, stopCP, reduceCP, consistCP, emptyCP, saveCP,
             showConflictCP, showDependencyCP, cpaCombiGraphCP;
-
 //	protected Vector pmlistener;
     protected JFrame parent;
-
     protected JFrame frame;
-
     protected JLabel label;
-
     protected int x, y;
-
     protected boolean ready;
-
     protected boolean needToLoad;
-
     protected boolean loaded;
-
     protected GraphicsExportJPEG exportJPEG;
 }

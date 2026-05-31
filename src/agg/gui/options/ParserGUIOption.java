@@ -2,23 +2,24 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.options;
 
 import java.awt.Dimension;
 import java.util.Vector;
-
 import agg.gui.parser.event.GUIOptionEvent;
 import agg.gui.parser.event.GUIOptionListener;
 
 /**
- * This class provides different settings for the display of the parser. Although the class name seems belonging to
- * parser this class stores some settings for the critical pair display, too.
+ * This class provides different settings for the display of the parser.
+ * Although the class name seems belonging to parser this class stores some
+ * settings for the critical pair display, too.
  *
  * @version $Id: ParserGUIOption.java,v 1.3 2010/09/23 08:20:39 olga Exp $
  * @author $Author: olga $
@@ -29,37 +30,28 @@ public class ParserGUIOption {
      * The value if the parsing process is invisible.
      */
     public static final int PARSINGINVISIBLE = 0;
-
     /**
      * The value if the parsing process shows the host graph.
      */
     public static final int SHOWHOSTGRAPH = 1;
-
     /**
      * The value if the parsing process shows the stop graph.
      */
     public static final int SHOWSTOPGRAPH = 2;
-
     /**
      * The number of critical pairs shown at the same time.
      */
     public static final int SHOWNOPAIRS = 0;
-
     /**
-     * The maximum number of critical pairs makes no diffrent if there is one or two more.
+     * The maximum number of critical pairs makes no diffrent if there is one or
+     * two more.
      */
     public static final int SHOWALLPAIRS = Integer.MAX_VALUE;
-
     private int delay;
-
     private int parserDisplay;
-
     private int numberOfCriticalPair;
-
     private Dimension criticalPairWindowSize;
-
     private int criticalStyle = 0;
-
     private Vector<GUIOptionListener> listener;
 
     /**
@@ -84,7 +76,8 @@ public class ParserGUIOption {
     }
 
     /**
-     * If a option listener doesn't want to receive any news. The option listener must be removed.
+     * If a option listener doesn't want to receive any news. The option
+     * listener must be removed.
      *
      * @param ol The option listener to remove.
      */
@@ -99,8 +92,8 @@ public class ParserGUIOption {
     }
 
     /**
-     * This method tells the user which graph should be displayed. There are three posibilities: invisible only host
-     * graph host and stop graph
+     * This method tells the user which graph should be displayed. There are
+     * three posibilities: invisible only host graph host and stop graph
      *
      * @return The value of the display.
      */
@@ -109,7 +102,8 @@ public class ParserGUIOption {
     }
 
     /**
-     * This method sets a the desired display. Choose one of the posible option: invisible host graph stop + host graph
+     * This method sets a the desired display. Choose one of the posible option:
+     * invisible host graph stop + host graph
      *
      * @param option The option
      */
@@ -119,7 +113,8 @@ public class ParserGUIOption {
     }
 
     /**
-     * Tells how much overlapping graph at the critical pair analysis are displayed at the same time.
+     * Tells how much overlapping graph at the critical pair analysis are
+     * displayed at the same time.
      *
      * @return Number of overlapping graphs.
      */
@@ -128,7 +123,8 @@ public class ParserGUIOption {
     }
 
     /**
-     * Sets the number of overlapping graphs which are displayed at the same time.
+     * Sets the number of overlapping graphs which are displayed at the same
+     * time.
      *
      * @param option The number of overlapping graphs.
      */
@@ -139,7 +135,8 @@ public class ParserGUIOption {
     }
 
     /**
-     * Get the size of the window of the overlapping graph of the critical pair analysis.
+     * Get the size of the window of the overlapping graph of the critical pair
+     * analysis.
      *
      * @return The size of the window.
      */
@@ -169,23 +166,26 @@ public class ParserGUIOption {
     }
 
     /**
-     * States how to draw critical objects of CPA critical overlapping graphs: <code>EdGraphObject.CRITICAL_GREEN</code>
-     * or <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
+     * States how to draw critical objects of CPA critical overlapping graphs:
+     * <code>EdGraphObject.CRITICAL_GREEN</code> or
+     * <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
      */
     public void setDrawingStyleOfCriticalObjects(int criticalStyle) {
         this.criticalStyle = criticalStyle;
     }
 
     /**
-     * Returns style (0 or 1) how to draw critical objects of CPA critical overlapping graphs:
-     * <code>EdGraphObject.CRITICAL_GREEN</code> = 0, <code>EdGraphObject.CRITICAL_BLACK_BOLD</code> = 1.
+     * Returns style (0 or 1) how to draw critical objects of CPA critical
+     * overlapping graphs: <code>EdGraphObject.CRITICAL_GREEN</code> = 0,
+     * <code>EdGraphObject.CRITICAL_BLACK_BOLD</code> = 1.
      */
     public int getDrawingStyleOfCriticalObjects() {
         return this.criticalStyle;
     }
 
     /**
-     * Set the delay time of the graph parsing. It is used to improve the perfomance of the transformed graph.
+     * Set the delay time of the graph parsing. It is used to improve the
+     * perfomance of the transformed graph.
      */
     public void setDelayAfterApplyRule(int miliseconds) {
         this.delay = miliseconds;

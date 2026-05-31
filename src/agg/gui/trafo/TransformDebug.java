@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -14,7 +16,6 @@ package agg.gui.trafo;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JOptionPane;
-
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrException;
@@ -52,7 +53,8 @@ import agg.xt_basis.csp.Completion_PartialInjCSP;
 import agg.util.Pair;
 
 /**
- * The class TransformDebug implements so called step-by-step graph transformation.
+ * The class TransformDebug implements so called step-by-step graph
+ * transformation.
  *
  * @author $Author: olga $
  * @version $Id: TransformDebug.java,v 1.33 2010/12/01 20:27:48 olga Exp $
@@ -134,19 +136,16 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         this.ac = null;
         this.avt = null;
         this.act = null;
-
         if (this.rule == null) {
             this.gratra.setGraGra(null);
             return;
         }
-
         if ((this.gratra.getGraGra() == null)
                 || (this.gratra.getGraGra() != this.rule.getGraGra().getBasisGraGra())) {
             this.rule.getGraGra().getBasisGraGra().setGraTraOptions(this.strategy);
             this.gratra.setGraGra(this.rule.getGraGra().getBasisGraGra());
         }
         this.gratra.setHostGraph(this.rule.getGraGra().getBasisGraGra().getGraph());
-
         this.completeInputParameterNotSet = true;
         this.stepInputParameterNotSet = true;
     }
@@ -176,7 +175,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         } else {
             m = r.getBasisRule().getMatch();
         }
-
         return m;
     }
 
@@ -190,36 +188,28 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
             this.lastErrorMsg.second = this.rule.getName();
         }
         this.lastErrorMsg.first = "";
-
         if (!checkIfReadyForTransform()) {
             return;
         }
-
 //		gragraTransform.fireTransform(new TransformEvent(this,
 //				TransformEvent.MATCH_DEF));
         this.match = getMatch(this.rule);
-
         if (this.match == null) {
             newMatch();
         } else {
             clearMatch();
             setMatch();
-
 //			gragraTransform.fireTransform(new TransformEvent(this,
 //					TransformEvent.CLEAR_MATCH));
             resetTargetGraphOfMatchIfNeeded();
             this.match.setTypeObjectsMapChanged(true);
             this.match.setPartialMorphismCompletion(false);
-
         }
-
         this.gragraTransform.fireTransform(new TransformEvent(this,
                 TransformEvent.CLEAR_MATCH));
-
         this.gragraTransform.fireTransform(new TransformEvent(this,
                 TransformEvent.MATCH_DEF));
     }
-
     int count = -1;
 
     /**
@@ -232,14 +222,11 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
             this.lastErrorMsg.first = "";
             this.lastErrorMsg.second = this.rule.getName();
         }
-
         if (!checkIfReadyForTransform()) {
             return;
         }
-
         this.gragraTransform.fireTransform(new TransformEvent(this,
                 TransformEvent.NEXT));
-
 //		System.gc();
 //		long t0 = java.lang.Runtime.getRuntime().freeMemory();
 //		System.out.println("Free memory:  "+t0);
@@ -247,9 +234,7 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         if (this.match == null) {
             this.completeInputParameterNotSet = true;
             this.stepInputParameterNotSet = true;
-
             newMatch();
-
             // test parallel rule
 //			if (this.rule.getBasisRule() instanceof ParallelRule) {
 //				this.completeInputParameterNotSet = false;
@@ -273,7 +258,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                 }
             }
 //			partialMatchCompletion = match.hasPartialMorphismCompletion();
-
             if (!this.match.isTotal()) {
                 this.matchIsValid = false;
                 if (areAllInputParameterSet(this.rule.getLeft(), true)) {
@@ -320,7 +304,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
 //		t1 = java.lang.Runtime.getRuntime().freeMemory();
 //		System.out.println("after GC: Free memory:  "+t1);
 //		System.out.println("Used memory:  "+(t0-t1));
-
         if (this.matchIsValid) {
             this.rule.update();
             this.lastValidMatch = this.match;
@@ -349,11 +332,9 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
             this.lastErrorMsg.first = "";
             this.lastErrorMsg.second = this.rule.getName();
         }
-
         this.gragraTransform.fireTransform(new TransformEvent(this,
                 TransformEvent.STEP));
         this.gratra.setGraTraOptions(this.gragraTransform.getGraTraOptions());
-
         if (this.rule.getBasisRule().getRuleScheme() != null) {
             this.rule.getBasisRule().getRuleScheme().clearMatchesOfMultiRules();
             this.completeInputParameterNotSet = false;
@@ -372,15 +353,11 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
             }
             return;
         }
-
         this.match = getMatch(this.rule);
-
         if (this.match == null) {
             this.completeInputParameterNotSet = false;
             this.stepInputParameterNotSet = true;
-
             newMatch();
-
             if (this.match != null && this.match.canComplete()) {
                 if (areAllInputParameterSet(this.rule.getLeft(), true)) {
                     this.stepInputParameterNotSet = false;
@@ -392,7 +369,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         } else {
             setMatch();
             resetTargetGraphOfMatchIfNeeded();
-
             if (this.match.hasPartialMorphismCompletion()) {
 //				partialMatchCompletion = true;
             } else {
@@ -402,7 +378,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                     this.match.getCompletionStrategy().resetSolver(true);
                 }
             }
-
             if (!this.match.isTotal()) {
                 this.matchIsValid = false;
                 if (areAllInputParameterSet(this.rule.getLeft(), true)) {
@@ -418,7 +393,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                         String msg = (this.lastErrorMsg.first.length() > 0)
                                 ? this.lastErrorMsg.first
                                 : "The rule  \"" + this.rule.getName() + "\"  doesn't match.";
-
                         destroyMatch();
                         this.gragraTransform.fireTransform(new TransformEvent(this,
                                 TransformEvent.CANNOT_TRANSFORM, msg));
@@ -435,7 +409,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                 this.completeInputParameterNotSet = false;
                 if (areAllInputParameterSet(this.rule.getRight(), false)) {
                     this.stepInputParameterNotSet = false;
-
                     if (!this.match.areNACsSatisfied()) {
                         this.lastErrorMsg.first = this.match.getErrorMsg();
                         totalOK = false;
@@ -449,17 +422,14 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                         this.lastErrorMsg.first = this.match.getErrorMsg();
                         totalOK = false;
                     }
-
                     if (totalOK && this.match.isValid()) {
                         this.matchIsValid = true;
                     }
-
                 } else {
                     return;
                 }
             }
         }
-
         if (this.matchIsValid) {
             this.completeInputParameterNotSet = false;
             if ( //				((rule instanceof EdRuleScheme) 
@@ -470,11 +440,9 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                 if (isReadyToTransform()) {
                     this.rule.addDeletedMatchMappingToUndo();
                     this.rule.undoManagerEndEdit();
-
                     // send event for animation
                     this.gragraTransform.fireTransform(new TransformEvent(this,
                             TransformEvent.MATCH_VALID, this.match, ""));
-
 //					count++;
 //					if (count == -1) {
 //						// test minimal rule of trafo span
@@ -489,7 +457,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
 //						merge(mod1, mod2);
 //					} 
                     this.gratra.apply(this.match);
-
                 } else {
                     destroyMatch();
                 }
@@ -507,14 +474,11 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
     // This method is used by editEventOccurred(EditEvent) only.
     private boolean stepByMatch() {
         if (isReadyToTransform()) {
-
             this.rule.addDeletedMatchMappingToUndo();
             this.rule.undoManagerEndEdit();
-
             // send event for animation
             this.gragraTransform.fireTransform(new TransformEvent(this,
                     TransformEvent.MATCH_VALID, this.match, ""));
-
             this.gratra.apply(this.match);
             return true;
         }
@@ -587,38 +551,30 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
             }
         } else if (this.msgGraTra == GraTraEvent.MATCH_VALID) {
             this.rule.getGraGra().getGraph().unsetNodeNumberChanged();
-
             if (this.gragraTransform.selectMatchObjectsEnabled()) {
                 this.rule.getGraGra().getGraph().updateAlongMorph(e.getMatch());
             }
-
         } else if (this.msgGraTra == GraTraEvent.STEP_COMPLETED) {
             if (this.match == null) {
                 this.match = e.getMatch();
             }
-
             this.rule.getGraGra().getGraph().setXYofNewNode(this.rule, this.match, this.match.getCoMorphism());
-
             if (this.rule.isAnimated()) {
                 this.gragraTransform.fireTransform(new TransformEvent(this,
                         TransformEvent.ANIMATED_NODE, this.match));
             } else {
                 this.gragraTransform.getEditor().doStandardLayoutProc();
             }
-
             if (this.gragraTransform.selectNewAfterStepEnabled()) {
                 this.rule.getGraGra().getGraph().updateAlongMorph(this.match.getCoMorphism(), this.rule.getBasisRule());
             }
-
             if (!this.rule.getBasisRule().isParallelApplyEnabled()) {
                 destroyMatch();
             } else {
                 clearMatch();
             }
-
             this.gragraTransform.fireTransform(new TransformEvent(this,
                     TransformEvent.STEP_COMPLETED));
-
         } else if (this.msgGraTra == GraTraEvent.CANNOT_TRANSFORM) {
             String msg = (this.match != null
                     && !"".equals(this.match.getErrorMsg()))
@@ -631,13 +587,11 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
             this.rule.getGraGra().getGraph().update();
             this.gragraTransform.fireTransform(new TransformEvent(this,
                     TransformEvent.CANNOT_TRANSFORM, msg));
-
         } else if (this.msgGraTra == GraTraEvent.INCONSISTENT) {
             String msg = "";
             if (this.rule != null && this.rule.getBasisRule() != null) {
                 msg = "Inconsistency of the host graph after the rule < "
                         + this.rule.getBasisRule().getName() + ">  !";
-
                 this.gragraTransform.fireTransform(new TransformEvent(this,
                         TransformEvent.INCONSISTENT, msg));
                 if (!this.rule.getBasisRule().isParallelApplyEnabled()) {
@@ -652,7 +606,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                 this.gragraTransform.fireTransform(new TransformEvent(this,
                         TransformEvent.INCONSISTENT, msg));
             }
-
         } else if (this.msgGraTra == GraTraEvent.MATCH_FAILED) {
             System.out.println("TransformDebug.graTraEventOccurred : " + e.getMessage());
         }
@@ -704,7 +657,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                         }
                     }
                 }
-
                 if (this.matchIsValid && !this.stepInputParameterNotSet) {
                     if (!stepByMatch() && this.match != null) {
                         String msg = this.match.getErrorMsg();
@@ -733,11 +685,9 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         } else {
             this.match = this.rule.getGraGra().getBasisGraGra().createMatch(this.rule.getBasisRule());
         }
-
         if (this.match != null) {
             this.match.addObserver(this.rule.getLeft());
             this.match.addObserver(this.rule.getGraGra().getGraph());
-
             if (this.rule.getBasisRule() instanceof ParallelRule) {
                 if (this.gragraTransform.getGraTraOptions().hasOption(GraTraOptions.NACS)
                         || this.gragraTransform.getGraTraOptions().hasOption(GraTraOptions.PACS)
@@ -753,21 +703,17 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                         (MorphCompletionStrategy) this.strategy.clone(),
                         true);
             }
-
             if (this.rule.getBasisRule() instanceof KernelRule
                     || this.rule.getBasisRule() instanceof MultiRule) {
                 this.match.getCompletionStrategy().getProperties()
                         .set(CompletionPropertyBits.DANGLING, false);
             }
-
             // strategy.showProperties();
             this.ac = this.match.getAttrContext();
             this.avt = this.ac.getVariables();
             this.act = this.ac.getConditions();
-
             this.lastErrorMsg.first = "";
             this.lastErrorMsg.second = "";
-
             this.matchIsValid = false;
             this.lastValidMatch = null;
 //			this.partialMatchCompletion = false;
@@ -780,31 +726,26 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         } else {
             this.match.getCompletionStrategy().removeProperty(GraTraOptions.NACS);
         }
-
         if (this.gragraTransform.getGraTraOptions().hasOption(GraTraOptions.PACS)) {
             this.match.getCompletionStrategy().setProperty(GraTraOptions.PACS);
         } else {
             this.match.getCompletionStrategy().removeProperty(GraTraOptions.PACS);
         }
-
         if (this.gragraTransform.getGraTraOptions().hasOption(GraTraOptions.GACS)) {
             this.match.getCompletionStrategy().setProperty(GraTraOptions.GACS);
         } else {
             this.match.getCompletionStrategy().removeProperty(GraTraOptions.GACS);
         }
-
         if (this.gragraTransform.getGraTraOptions().hasOption(GraTraOptions.INJECTIVE)) {
             this.match.getCompletionStrategy().setProperty(GraTraOptions.INJECTIVE);
         } else {
             this.match.getCompletionStrategy().removeProperty(GraTraOptions.INJECTIVE);
         }
-
         if (this.gragraTransform.getGraTraOptions().hasOption(GraTraOptions.DANGLING)) {
             this.match.getCompletionStrategy().setProperty(GraTraOptions.DANGLING);
         } else {
             this.match.getCompletionStrategy().removeProperty(GraTraOptions.DANGLING);
         }
-
         if (this.gragraTransform.getGraTraOptions().hasOption(GraTraOptions.IDENTIFICATION)) {
             this.match.getCompletionStrategy().setProperty(GraTraOptions.IDENTIFICATION);
         } else {
@@ -818,7 +759,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
             this.ac = this.match.getAttrContext();
             this.avt = this.ac.getVariables();
             this.act = this.ac.getConditions();
-
             this.matchIsValid = false;
             this.lastValidMatch = null;
 //			this.partialMatchCompletion = false;
@@ -829,7 +769,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         if (this.match == null) {
             return false;
         }
-
         this.rule.addCreatedMatchMappingToUndo();
         boolean completionDone = false;
         while (this.match.nextCompletion()) {
@@ -845,7 +784,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         if (!completionDone) {
             this.lastErrorMsg.first = this.match.getErrorMsg();
         }
-
         this.match.clear();
         this.rule.undoManagerLastEditDie();
         return false;
@@ -863,20 +801,16 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
     public void destroyMatch() {
 //		long t0 = java.lang.Runtime.getRuntime().freeMemory();
 //		System.out.println("destroyMatch   Free memory:  "+t0);
-
         if (this.match == null || this.match.getRule() == null) {
             return;
         }
-
         if (this.rule.getBasisRule().getRuleScheme() == null) {
             // plain rule
             this.rule.getGraGra().getBasisGraGra().destroyMatch(this.match);
         }
 //		else if (this.rule.getBasisRule().getRuleScheme() != null) 
 //			this.rule.getBasisRule().getRuleScheme().disposeMatch();			
-
         this.rule.update();
-
         this.match = null;
         this.ac = null;
         this.act = null;
@@ -885,7 +819,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         this.matchIsValid = false;
         this.completeInputParameterNotSet = true;
         this.stepInputParameterNotSet = true;
-
 //		System.gc();
 //		long t1 = java.lang.Runtime.getRuntime().freeMemory();
 //		System.out.println("after GC:  destroyMatch   Free memory:  "+t1);
@@ -902,10 +835,8 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         this.lastValidMatch = null;
         this.matchIsValid = false;
 //		this.partialMatchCompletion = false;
-
         this.completeInputParameterNotSet = true;
         this.stepInputParameterNotSet = true;
-
 //		System.gc();
 //		long t1 = java.lang.Runtime.getRuntime().freeMemory();
 //		System.out.println("clearMatch   Free memory:  "+t1);
@@ -917,7 +848,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                 && !rs.isInputParameterSet(left)) {
             int answer = parameterWarning(rs.getName());
             if (answer == JOptionPane.YES_OPTION) {
-
                 this.gragraTransform.fireTransform(new TransformEvent(this,
                         TransformEvent.INPUT_PARAMETER_NOT_SET,
                         rs));
@@ -939,16 +869,13 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         if (this.match == null) {
             return true;
         }
-
         this.ac = this.match.getAttrContext();
         this.avt = this.ac.getVariables();
-
         if ((this.avt == null)
                 || (this.avt.getNumberOfEntries() == 0)
                 || this.avt.areInputParametersSet()) {
             return true;
         }
-
         this.act = this.ac.getConditions();
         for (int i = 0; i < this.avt.getNumberOfEntries(); i++) {
             VarMember v = this.avt.getVarMemberAt(i);
@@ -1014,7 +941,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -1127,7 +1053,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
             Pair<OrdinaryMorphism, OrdinaryMorphism> po = StaticStep.executeColim(r, m, false, false);
             this.rule.getGraGra().addGraph(new EdGraph(po.first.getTarget()));
 //			this.rule.getGraGra().save();
-
             Rule minr = BaseFactory.theFactory().makeMinimalRule(po.first);
             if (minr != null) {
                 EdRule minRule = new EdRule(minr);
@@ -1141,7 +1066,6 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         } catch (TypeException ex) {
         }
     }
-
     Pair<OrdinaryMorphism, OrdinaryMorphism> mod1, mod2;
 
     @SuppressWarnings("unused")
@@ -1179,36 +1103,21 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
         this.mod1 = null;
         this.mod2 = null;
     }
-
     private final GraGraTransform gragraTransform;
-
     EdRule rule;
-
     Match match;
-
 //	private boolean partialMatchCompletion;
     private Match lastValidMatch;
-
     private final Pair<String, String> lastErrorMsg = new Pair<String, String>("", "");
-
     private MorphCompletionStrategy strategy;
-
     private boolean matchIsValid;
-
     private final GraTra gratra;
-
     private int msgGraTra;
-
 //	private boolean stepCompleted;
     private boolean stepInputParameterNotSet;
-
     private boolean completeInputParameterNotSet;
-
     private AttrContext ac;
-
     private AttrVariableTuple avt;
-
     private AttrConditionTuple act;
-
 //	private boolean inheritanceWarningSent;
 }

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -16,7 +17,6 @@ package agg.gui.treeview.path;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdRule;
 import agg.editor.impl.EdRuleScheme;
 import agg.gui.event.TreeViewEvent;
@@ -34,7 +34,6 @@ public class RuleSchemeTreeNode extends DefaultMutableTreeNode {
     }
 
     public RuleSchemeTreeNode(final EdRuleScheme rs) {
-
     }
 
     public TreePath deleteMultiRule(
@@ -42,7 +41,6 @@ public class RuleSchemeTreeNode extends DefaultMutableTreeNode {
             final DefaultMutableTreeNode delNode,
             final TreePath selPath,
             boolean withWarning) {
-
         final GraGraTreeNodeData data = (GraGraTreeNodeData) delNode.getUserObject();
         final TreePath ruleschemePath = selPath.getParentPath();
         if (ruleschemePath != null) {
@@ -94,7 +92,6 @@ public class RuleSchemeTreeNode extends DefaultMutableTreeNode {
             final DefaultMutableTreeNode delNode,
             final TreePath selPath,
             boolean withWarning) {
-
         final TreePath ruleschemePath = selPath.getParentPath();
         if (ruleschemePath != null) {
             final DefaultMutableTreeNode ruleschemeNode = (DefaultMutableTreeNode) ruleschemePath
@@ -103,11 +100,9 @@ public class RuleSchemeTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeNodeData ruleschemeData = (GraGraTreeNodeData) ruleschemeNode.getUserObject();
             treeView.fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.DELETED, selPath));
             treeView.getTreeModel().removeNodeFromParent(delNode);
-
             if (ruleschemeData.getRuleScheme() != null) {
                 ruleschemeData.getRuleScheme().removeAmalgamatedRule();
             }
-
             treeView.setEditPath(rsRow);
             treeView.setFlagForNew();
             treeView.fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.SELECTED, treeView.getEditorPath()));

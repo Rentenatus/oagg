@@ -2,24 +2,23 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: PACPopupMenu.java,v 1.5 2010/09/23 08:21:33 olga Exp $
 package agg.gui.popupmenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdNestedApplCond;
 import agg.editor.impl.EdPAC;
 import agg.gui.treeview.GraGraTreeView;
@@ -41,7 +40,6 @@ public class PACPopupMenu extends JPopupMenu {
 		 * mi = (JMenuItem) add(new JMenuItem("Hide"));
 		 * mi.setActionCommand("hidePAC"); mi.addActionListener(treeView);
          */
-
         JMenuItem mi = add(new JMenuItem("Copy           "));
         mi.setActionCommand("copyPAC");
 //		mi.addActionListener(this.treeView.getActionAdapter());
@@ -50,7 +48,6 @@ public class PACPopupMenu extends JPopupMenu {
                 copy();
             }
         });
-
         mi = add(new JMenuItem("Convert to GAC"));
         mi.setActionCommand("copyToGAC");
 //		mi.addActionListener(this.treeView.getActionAdapter());
@@ -59,27 +56,21 @@ public class PACPopupMenu extends JPopupMenu {
                 convertToGAC();
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Delete           Delete"));
         mi.setActionCommand("deletePAC");
         mi.addActionListener(this.treeView.getActionAdapter());
         // mi.setMnemonic('D');
-
         this.disable = new JCheckBoxMenuItem("disabled");
         this.disable.setActionCommand("disablePAC");
         this.disable.addActionListener(this.treeView.getActionAdapter());
         add(this.disable);
-
         addSeparator();
-
         mi = add(new JMenuItem("Textual Comments"));
         // mi = new JMenuItem("Textual Comments");
         mi.setActionCommand("commentPAC");
         mi.addActionListener(this.treeView.getActionAdapter());
         // mi.setMnemonic('T');
-
         pack();
         setBorderPainted(true);
     }
@@ -112,7 +103,6 @@ public class PACPopupMenu extends JPopupMenu {
             final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
 //			GraGraTreeNodeData data = (GraGraTreeNodeData) node.getUserObject();
 //			TreePath rulePath = this.path.getParentPath();
-
             OrdinaryMorphism iso = pac.getMorphism().getTarget().isoCopy();
             OrdinaryMorphism ac = new OrdinaryMorphism(
                     pac.getMorphism().getSource(),
@@ -122,7 +112,6 @@ public class PACPopupMenu extends JPopupMenu {
                 ac.setName(pac.getName() + "_clone");
                 ac.getImage().setAttrContext(ac.getAttrContext());
                 ac.getImage().setKind(GraphKind.PAC);
-
                 EdPAC cp = pac.getRule().createPAC(ac);
                 pac.getRule().getPACs().remove(cp);
                 cp.setLayoutByIndex(pac, true);
@@ -130,7 +119,6 @@ public class PACPopupMenu extends JPopupMenu {
                 if (indx >= 0) {
                     pac.getRule().getBasisRule().addPAC(indx, ac);
                     pac.getRule().getPACs().add(indx, cp);
-
                     treeView.putPACIntoTree(cp, (DefaultMutableTreeNode) node.getParent(),
                             ((DefaultMutableTreeNode) node.getParent()).getIndex(node) + 1);
                 }
@@ -143,7 +131,6 @@ public class PACPopupMenu extends JPopupMenu {
             final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
 //			GraGraTreeNodeData data = (GraGraTreeNodeData) node.getUserObject();
 //			TreePath rulePath = this.path.getParentPath();
-
             OrdinaryMorphism iso = pac.getMorphism().getTarget().isoCopy();
             NestedApplCond ac = new NestedApplCond(
                     pac.getMorphism().getSource(),
@@ -153,11 +140,9 @@ public class PACPopupMenu extends JPopupMenu {
                 ac.setName(pac.getName());
                 ac.getImage().setAttrContext(ac.getAttrContext());
                 ac.getImage().setKind(GraphKind.AC);
-
                 pac.getRule().getBasisRule().addNestedAC(ac);
                 EdNestedApplCond cn = (EdNestedApplCond) pac.getRule().createNestedAC(ac);
                 cn.setLayoutByIndex(pac, true);
-
                 if (pac.getRule().getBasisRule().getNestedACsList().size() == 1) {
                     treeView.putNestedACIntoTree(cn, (DefaultMutableTreeNode) node.getParent(), 0);
                 } else {
@@ -169,7 +154,6 @@ public class PACPopupMenu extends JPopupMenu {
             }
         }
     }
-
     GraGraTreeView treeView;
     TreePath path;
     EdPAC pac;

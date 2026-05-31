@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.options;
 
@@ -14,19 +15,18 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
-
 import agg.gui.parser.event.OptionEvent;
 import agg.gui.parser.event.OptionListener;
 
 /**
- * This is an abstract option display, which provides necessary feature for the main AGG option window. Such a option
- * display will be added to a tab of the main AGG option window.
+ * This is an abstract option display, which provides necessary feature for the
+ * main AGG option window. Such a option display will be added to a tab of the
+ * main AGG option window.
  *
  * @version $Id: AbstractOptionGUI.java,v 1.2 2010/08/18 09:25:57 olga Exp $
  * @author $Author: olga $
@@ -55,7 +55,8 @@ public abstract class AbstractOptionGUI extends JPanel {
     }
 
     /**
-     * just remove the listener. From now on the listener will be silent in the future.
+     * just remove the listener. From now on the listener will be silent in the
+     * future.
      */
     public void removeOptionListener(OptionListener ol) {
         this.listener.remove(ol);
@@ -80,12 +81,14 @@ public abstract class AbstractOptionGUI extends JPanel {
     }
 
     /**
-     * Returns the text for the tab title. This method must be overridden by any subclass.
+     * Returns the text for the tab title. This method must be overridden by any
+     * subclass.
      */
     public abstract String getTabTitle();
 
     /**
-     * Returns the text for the tab tip. This method must be overridden by any subclass.
+     * Returns the text for the tab tip. This method must be overridden by any
+     * subclass.
      */
     public abstract String getTabTip();
 
@@ -100,7 +103,8 @@ public abstract class AbstractOptionGUI extends JPanel {
     public abstract void executeOnClose();
 
     /**
-     * Creates a standard panel with a etched border. The title is shown at the top left of the panel.
+     * Creates a standard panel with a etched border. The title is shown at the
+     * top left of the panel.
      *
      * @param title Enter a title for this panel.
      */
@@ -113,7 +117,8 @@ public abstract class AbstractOptionGUI extends JPanel {
     }
 
     /**
-     * Creates a standard panel with an "etched" look border. The constraint belongs to title.
+     * Creates a standard panel with an "etched" look border. The constraint
+     * belongs to title.
      *
      * @param title Enter a title for this panel.
      */
@@ -132,7 +137,6 @@ public abstract class AbstractOptionGUI extends JPanel {
         }
         return optionPanel;
     }
-
 }
 /*
  * $Log: AbstractOptionGUI.java,v $

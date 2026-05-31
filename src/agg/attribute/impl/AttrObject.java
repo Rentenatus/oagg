@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
@@ -14,7 +15,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * Provides some convenience operations for its subclasses. Very useful for debugging.
+ * Provides some convenience operations for its subclasses. Very useful for
+ * debugging.
  *
  * @version $Id: AttrObject.java,v 1.4 2007/11/01 09:58:13 olga Exp $
  * @author $Author: olga $
@@ -22,15 +24,13 @@ import java.util.Observer;
 public abstract class AttrObject extends Object implements Observer {
 
     protected static Class<?> classHandlerExpr;
-
     protected static Class<?> classObject;
-
     protected static Class<?> classString;
-
     protected static boolean initialized = false;
 
     /**
-     * A message is printed in the logging window whenever an instance of it is created.
+     * A message is printed in the logging window whenever an instance of it is
+     * created.
      */
     public AttrObject() {
         super();
@@ -53,8 +53,9 @@ public abstract class AttrObject extends Object implements Observer {
     }
 
     /**
-     * Even if a class has defined its own 'toString()' method, we want to see the long name and the funny code (virtual
-     * address) that makes it unique and traceable.
+     * Even if a class has defined its own 'toString()' method, we want to see
+     * the long name and the funny code (virtual address) that makes it unique
+     * and traceable.
      *
      * @return A string of the form "java.lang.reflect.Method: 7643ef8a"
      */
@@ -70,8 +71,8 @@ public abstract class AttrObject extends Object implements Observer {
     }
 
     /**
-     * Default (empty) implementation of the only Observer interface method. Subclasses that want to become observers
-     * have to override this.
+     * Default (empty) implementation of the only Observer interface method.
+     * Subclasses that want to become observers have to override this.
      */
     public void update(Observable o, Object arg) {
         throw new RuntimeException("Observer Interface not implemented for "
@@ -79,7 +80,8 @@ public abstract class AttrObject extends Object implements Observer {
     }
 
     /**
-     * Combines the default instance representation with a specific one, if given.
+     * Combines the default instance representation with a specific one, if
+     * given.
      */
     protected String getInstRepr() {
         String stdRepr = defaultToString();
@@ -162,7 +164,8 @@ public abstract class AttrObject extends Object implements Observer {
     }
 
     /**
-     * Print information about entering the method 'name' with the arguments 'args' if 'debugTopic' == 'true'.
+     * Print information about entering the method 'name' with the arguments
+     * 'args' if 'debugTopic' == 'true'.
      */
     protected void logEnteredMethod(boolean debugTopic, String name,
             Object[] args) {
@@ -186,7 +189,8 @@ public abstract class AttrObject extends Object implements Observer {
     }
 
     /**
-     * Print to stdout when entered a method, useful when synchronizing with other components.
+     * Print to stdout when entered a method, useful when synchronizing with
+     * other components.
      */
     protected void stdoutPrintOnEnter(boolean debugTopic, String msg) {
         AttrSession
@@ -194,14 +198,13 @@ public abstract class AttrObject extends Object implements Observer {
     }
 
     /**
-     * Print to stdout when leaving a method, useful when synchronizing with other components.
+     * Print to stdout when leaving a method, useful when synchronizing with
+     * other components.
      */
     protected void stdoutPrintOnExit(boolean debugTopic, String msg) {
         AttrSession.stdoutPrintOnExit(debugTopic, getInstRepr() + ":\t " + msg);
     }
-
 }
-
 /*
  * $Log: AttrObject.java,v $
  * Revision 1.4  2007/11/01 09:58:13  olga

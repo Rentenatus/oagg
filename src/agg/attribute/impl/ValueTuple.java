@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -13,7 +15,6 @@ package agg.attribute.impl;
 
 import java.util.Enumeration;
 import java.util.Vector;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrMember;
@@ -26,8 +27,9 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 
 /**
- * Implementation of the interface agg.attribute.AttrInstance; Encapsulates a tuple of attributes, so that a graphical
- * object needs to talk to this one object only;
+ * Implementation of the interface agg.attribute.AttrInstance; Encapsulates a
+ * tuple of attributes, so that a graphical object needs to talk to this one
+ * object only;
  *
  * @version $Id: ValueTuple.java,v 1.41 2010/11/17 14:05:53 olga Exp $
  * @author $Author: olga $
@@ -40,17 +42,14 @@ public class ValueTuple extends TupleObject implements AttrInstance,
      *
      */
     private static final long serialVersionUID = -8398830346220181522L;
-
     /**
      * Type reference.
      */
     protected DeclTuple type;
-
     /**
      * Context in which this instance is placed.
      */
     protected ContextView context = null;
-
     /**
      * GUI editor for this instance.
      */
@@ -86,11 +85,9 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         super(manager, null);
         resetContextView(context);
         setType(type);
-
         if (getContextView() == null) {
             warn("Context = null", new RuntimeException());
         }
-
         this.errorMsg = "";
     }
 
@@ -162,7 +159,8 @@ public class ValueTuple extends TupleObject implements AttrInstance,
     }
 
     /**
-     * Causes the value container (Vector) size to match the type container size.
+     * Causes the value container (Vector) size to match the type container
+     * size.
      */
     protected void adaptToType() {
         for (int i = 0; i < getTupleType().getSize(); i++) {
@@ -260,8 +258,8 @@ public class ValueTuple extends TupleObject implements AttrInstance,
     // Implementation of the AttrInstance interface.
     //
     /**
-     * Convenience method for internal operations; works much like the generic getMemberAt( int index ), but returns the
-     * appropriate member type.
+     * Convenience method for internal operations; works much like the generic
+     * getMemberAt( int index ), but returns the appropriate member type.
      *
      * @see agg.attribute.impl.TupleObject#getMemberAt( int )
      */
@@ -270,8 +268,8 @@ public class ValueTuple extends TupleObject implements AttrInstance,
     }
 
     /**
-     * Convenience method for internal operations; works much like the generic getMemberAt( String name ), but returns
-     * the appropriate member type.
+     * Convenience method for internal operations; works much like the generic
+     * getMemberAt( String name ), but returns the appropriate member type.
      *
      * @see agg.attribute.impl.TupleObject#getMemberAt( String )
      */
@@ -286,12 +284,12 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         if (getMemberAt(entryIndex) != null) {
             return getMemberAt(entryIndex).toString();
         }
-
         return "";
     }
 
     /**
-     * Copying the contents of an attribute instance into another; The reference to the attribute type is shared.
+     * Copying the contents of an attribute instance into another; The reference
+     * to the attribute type is shared.
      */
     public void copy(AttrInstance source) {
         // System.out.println("ValueTuple.copy BEGIN");
@@ -304,7 +302,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         }
         this.manager = from.manager;
         // assignParent( from.getParent());
-
         // // multiple inheritance - olga
         // for(int i=0; i<from.getParents().size(); i++){
         // addParent( from.getParents().get(i) );
@@ -317,7 +314,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
             if (val != null) {
                 val.copy(valfrom);
                 // System.out.println(getValueMemberAt( i ));
-
                 if (valfrom instanceof VarMember) {
                     ((VarMember) val).setMark(((VarMember) valfrom).getMark());
                 } else if (valfrom instanceof CondMember) {
@@ -357,7 +353,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
             // type.\n" );
             return;
         }
-
         int length = Math.min(srcType.getSize(), dstType.getSize());
         for (int i = 0; i < length; i++) {
             ValueMember val = getValueMemberAt(i);
@@ -381,7 +376,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
             // type.\n" );
             return;
         }
-
         for (int i = 0; i < dstType.getSize(); i++) {
             ValueMember val = getValueMemberAt(i);
             if (val != null) {
@@ -410,7 +404,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
                 && !dstType.isSubclassOf(srcType)) {
             throw new RuntimeException("The specified source has a wrong type.\n");
         }
-
         int length = Math.min(srcType.getSize(), dstType.getSize());
         for (int i = 0; i < length; i++) {
             ValueMember dst = getValueMemberAt(i);
@@ -418,17 +411,15 @@ public class ValueTuple extends TupleObject implements AttrInstance,
             if (src == null) {
                 continue;
             }
-
             if (dst.isEmpty() && !src.isEmpty()) {
                 dst.copy(src);
             }
-
         }
     }
 
     /**
-     * Unset the value of the own attribute members (not of attribute members of its parents). The value of its
-     * attribute member is null after this.
+     * Unset the value of the own attribute members (not of attribute members of
+     * its parents). The value of its attribute member is null after this.
      */
     public void unsetValue() {
         for (int i = 0; i < getSize(); i++) {
@@ -452,8 +443,9 @@ public class ValueTuple extends TupleObject implements AttrInstance,
     }
 
     /**
-     * Unset the value which is an expression of the own attribute members (not of attribute members of its parents).
-     * The value of its attribute member is null after this.
+     * Unset the value which is an expression of the own attribute members (not
+     * of attribute members of its parents). The value of its attribute member
+     * is null after this.
      */
     public void unsetValueAsExpr() {
         for (int i = 0; i < getSize(); i++) {
@@ -478,7 +470,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
 //						AttrInstance g) {
 //		apply(rightSide, attrcontext);
 //	}
-
     /*
 	 * This method works like apply( AttrInstance, AttrContext, AttrInstance)
 	 * additionally, allows using variables
@@ -502,16 +493,16 @@ public class ValueTuple extends TupleObject implements AttrInstance,
 //		apply(rightSide, attrcontext, allowVariableWithoutValue, similarVariableName);
 //	}
     /**
-     * Applying a rule; the substitutions occur "in-place" (in the recipient); In Graph Transformation, this method is
-     * applied to attributes of host graph objects, "rightSide" being an attribute of the right side of the rule and
-     * "context" being the "match"-context built up by subsequently matching the attributes of corresponding graphical
-     * objects.
+     * Applying a rule; the substitutions occur "in-place" (in the recipient);
+     * In Graph Transformation, this method is applied to attributes of host
+     * graph objects, "rightSide" being an attribute of the right side of the
+     * rule and "context" being the "match"-context built up by subsequently
+     * matching the attributes of corresponding graphical objects.
      */
     public void apply(AttrInstance rightSide, AttrContext attrcontext) {
         ValueMember left, right;
         AttrContext matchContext = attrcontext;
         ValueTuple rightTuple = (ValueTuple) rightSide;
-
         if (matchContext == null) {
             matchContext = rightTuple.getContext();
         }
@@ -526,8 +517,8 @@ public class ValueTuple extends TupleObject implements AttrInstance,
     }
 
     /**
-     * This method works like apply( AttrInstance,context ) additionally, allow using variables without value in the
-     * value of attribute members
+     * This method works like apply( AttrInstance,context ) additionally, allow
+     * using variables without value in the value of attribute members
      */
     public void apply(AttrInstance rightSide, AttrContext attrcontext,
             boolean allowVariableWithoutValue) {
@@ -535,19 +526,18 @@ public class ValueTuple extends TupleObject implements AttrInstance,
     }
 
     /**
-     * This method works like apply( AttrInstance,context ) additionally, allow using variables without value in the
-     * value of attribute members. If equalVariableName is TRUE, then the name of the variable from rightSide must be
-     * equal to the name of the current variable. The equalVariableName option is only used when
-     * allowVariableWithoutValue is TRUE.
+     * This method works like apply( AttrInstance,context ) additionally, allow
+     * using variables without value in the value of attribute members. If
+     * equalVariableName is TRUE, then the name of the variable from rightSide
+     * must be equal to the name of the current variable. The equalVariableName
+     * option is only used when allowVariableWithoutValue is TRUE.
      */
     public void apply(AttrInstance rightSide, AttrContext attrcontext,
             boolean allowVariableWithoutValue, boolean equalVariableName) {
-
         if (!allowVariableWithoutValue) {
             apply(rightSide, attrcontext);
             return;
         }
-
         AttrContext matchContext = attrcontext;
         ValueTuple rightTuple = (ValueTuple) rightSide;
         if (matchContext == null) {
@@ -568,7 +558,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         int nFree = 0;
         String varName;
         Vector<String> names = new Vector<String>(10, 10);
-
         for (int i = 0; i < getSize(); i++) {
             val = getValueMemberAt(i);
             if ((val != null) && (val.getExpr() != null) && val.getExpr().isVariable()
@@ -665,7 +654,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         Vector<String> matches = new Vector<String>();
         String match = null;
         String assignedVariables[];
-
         if (!canMatchTo(target, attrcontext)) {
             this.errorMsg = this.errorMsg + "\nAttribute don't match.";
             throw new AttrImplException(ATTR_DONT_MATCH);
@@ -696,7 +684,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         Vector<String> matches = new Vector<String>();
         String match = null;
         String assignedVariables[];
-
         if (!canMatchChild2Parent(target, attrcontext)) {
             this.errorMsg = this.errorMsg + "\nAttribute don't match.";
             throw new AttrImplException(ATTR_DONT_MATCH);
@@ -776,7 +763,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         if (getValueMemberAt(name) != null) {
             return !getValueMemberAt(name).isEmpty();
         }
-
         return false;
     }
 
@@ -787,7 +773,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         if (getValueMemberAt(index) != null) {
             return !getValueMemberAt(index).isEmpty();
         }
-
         return false;
     }
 
@@ -798,7 +783,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         if (getValueMemberAt(name) != null) {
             return getValueMemberAt(name).getExprAsObject();
         }
-
         return null;
     }
 
@@ -836,7 +820,8 @@ public class ValueTuple extends TupleObject implements AttrInstance,
     }
 
     /**
-     * Setting an expression as an entry without immediate evaluation. Syntax and type checking are performed.
+     * Setting an expression as an entry without immediate evaluation. Syntax
+     * and type checking are performed.
      *
      * @param expr textual expression representation;
      * @param name specifies the entry to change;
@@ -952,7 +937,6 @@ public class ValueTuple extends TupleObject implements AttrInstance,
         }
         System.out.println("================================");
     }
-
 }
 /*
  * $Log: ValueTuple.java,v $

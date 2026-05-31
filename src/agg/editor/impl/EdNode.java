@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -27,7 +29,6 @@ import java.util.Vector;
 import java.util.Hashtable;
 import javax.swing.ImageIcon;
 import javax.swing.undo.*;
-
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrInstance;
 import agg.attribute.impl.AttrTupleManager;
@@ -61,34 +62,27 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         XMLObject, StateEditable {
 
     private Node bNode;
-
     private LayoutNode lNode;
-
     private int nodeid;
-
     private List<Integer> cluster, oldcluster;
-
     private Color ownColor = null;
 
     /**
-     * Creates a node layout specified by the EdType eType for an used object specified by the Node bNode.
+     * Creates a node layout specified by the EdType eType for an used object
+     * specified by the Node bNode.
      */
     public EdNode(Node bNode, EdType eType) {
         super(eType);
         this.bNode = bNode;
-
         if (this.bNode != null) {
             this.contextUsage = String.valueOf(this.hashCode());
-
             // this as AttrViewObserver register
             if (this.bNode.getAttribute() != null) {
                 addToAttributeViewObserver();
             }
         }
-
         this.lNode = new LayoutNode(this);
         this.nodeid = -1;
-
         this.x = 100;
         this.y = 100;
         this.w = 20;
@@ -96,8 +90,9 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Creates a node layout specified by the EdType eType for an used object of the class agg.xt_basis.Node that would
-     * be created from the graph specified by the Graph bGraph
+     * Creates a node layout specified by the EdType eType for an used object of
+     * the class agg.xt_basis.Node that would be created from the graph
+     * specified by the Graph bGraph
      */
     public EdNode(Graph bGraph, EdType eType) throws TypeException {
         this((bGraph != null) ? bGraph.createNode(eType.bType) : null, eType);
@@ -120,10 +115,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         this.bNode = null;
         this.myGraphPanel = null;
 //		System.out.println("EdNode.dispose:: DONE  "+this);
-    }
-
-    public void finalize() {
-//		System.out.println("EdNode.finalize()  called  "+this);
     }
 
     public void storeState(Hashtable<Object, Object> state) {
@@ -154,7 +145,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         if (data == null) {
             data = (NodeReprData) state.get(Integer.valueOf(this.hashCode()));
         }
-
         if (data != null) {
             data.restoreNodeFromNodeRepr(this);
             this.attrChanged = false;
@@ -261,8 +251,9 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * States how to draw critical objects of CPA critical overlapping graphs: <code>EdGraphObject.CRITICAL_GREEN</code>
-     * or <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
+     * States how to draw critical objects of CPA critical overlapping graphs:
+     * <code>EdGraphObject.CRITICAL_GREEN</code> or
+     * <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
      */
     public void setDrawingStyleOfCriticalObject(int criticalStyle) {
         this.criticalStyle = criticalStyle;
@@ -271,12 +262,10 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     public boolean isVisible() {
         if (this.bNode != null) {
             this.visible = this.bNode.isVisible();
-
             if (this.getContext().getBasisGraph().isCompleteGraph()) {
                 this.visible = this.visible
                         && this.getType().getBasisType().isObjectOfTypeGraphNodeVisible();
             }
-
             return this.visible;
         }
         return this.visible;
@@ -341,28 +330,23 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
             AttrInstance attributes = this.bNode.getAttribute();
             if (attributes != null && getView() != null) {
                 AttrViewSetting mvs = this.view.getMaskedView();
-
                 int number = mvs.getSize(attributes);
                 for (int i = 0; i < number; i++) {
                     List<String> tmpAttrVector = new Vector<>(3);
                     int index = mvs.convertSlotToIndex(attributes, i);
                     DeclMember currentMember = (DeclMember) attributes
                             .getType().getMemberAt(index);
-
                     if (this.elemOfTG
                             && (currentMember != null)
                             && (currentMember.getHoldingTuple() != attributes
                             .getType())) {
-
 //						if (!((ValueMember)attributes.getMemberAt(index)).isSet()) 
                         continue;
                     }
-
                     if ("".equals(attributes.getTypeAsString(index))
                             || "".equals(attributes.getNameAsString(index))) {
                         continue;
                     }
-
                     tmpAttrVector.add(attributes.getTypeAsString(index));
                     tmpAttrVector.add(attributes.getNameAsString(index));
                     tmpAttrVector.add(attributes.getValueAsString(index));
@@ -376,18 +360,17 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Sets my attribute value to the attributes specified by the Node. Returns a list of lists with type, name, value
-     * of attribute members.
+     * Sets my attribute value to the attributes specified by the Node. Returns
+     * a list of lists with type, name, value of attribute members.
      */
     public List<List<String>> setAttributes(Node bNode) {
-        List<List<String>> attrs = new Vector< >();
+        List<List<String>> attrs = new Vector<>();
         if (bNode == null) {
             return attrs;
         }
         if (bNode.getAttribute() == null) {
             return attrs;
         }
-
         int nattrs = bNode.getAttribute().getNumberOfEntries();
         if (nattrs != 0) {
             for (int i = 0; i < nattrs; i++) {
@@ -456,7 +439,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         if (r.contains(X, Y)) {
             return true;
         }
-
         return false;
     }
 
@@ -475,7 +457,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
             Graphics2D g = (Graphics2D) grs;
             // save color, font style
             Color lastColor = g.getColor();
-
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g.setPaint(Color.LIGHT_GRAY);
@@ -496,19 +477,14 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
             if (!this.visible || this.bNode == null || this.bNode.getType() == null) {
                 return;
             }
-
             this.criticalStyle = this.eGraph.criticalStyle;
-
             Graphics2D g = (Graphics2D) grs;
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g.setStroke(EditorConstants.defaultStroke);
-
             // save the old color
             Color lastColor = g.getColor();
-
             myUpdate(g.getFontMetrics());
-
             if (getType().isIconable()) {
                 String fname = getType().imageFileName;
                 URL url = ClassLoader.getSystemClassLoader().getResource(fname);
@@ -536,14 +512,11 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                     return;
                 }
             }
-
             if (this.backgroundColor != null && this.backgroundColor != Color.white) {
                 g.setPaint(this.backgroundColor);
                 g.fill(new Rectangle2D.Double(this.x - this.w / 2, this.y - this.h / 2, this.w + 6, this.h + 6));
             }
-
             int sh = getShape();
-
             boolean hiddenObjOfType = this.eGraph.isTypeGraph()
                     && !this.eType.getBasisType().isObjectOfTypeGraphNodeVisible();
             switch (sh) {
@@ -781,20 +754,16 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                 default:
                     break;
             }
-
             if (this.errorMode) {
                 // if there was an error print in green
                 g.setPaint(Color.green);
             }
-
             // Text		
             if (this.bNode.getType().isAbstract()) {
                 g.setFont(new Font("Dialog", Font.ITALIC, g.getFont().getSize()));
             }
-
             g.setStroke(EditorConstants.defaultStroke);
             drawText(g, this.x, this.y);
-
             g.setFont(EditorConstants.defaultFont);
             g.setPaint(lastColor);
         }
@@ -818,26 +787,23 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Implements the AttrViewObserver. Makes update graphics if the attributes of my used object are changed.
+     * Implements the AttrViewObserver. Makes update graphics if the attributes
+     * of my used object are changed.
      */
     public void attributeChanged(AttrViewEvent ev) {
 //		 System.out.println("EdNode.attributeChanged: "+ev.getID());		
 //		 ((ValueTuple)this.bNode.getAttribute()).showValue();
-
         if (ev.getID() == AttrEvent.GENERAL_CHANGE // 0
                 || ev.getID() == AttrEvent.MEMBER_RETYPED
                 || ev.getID() == AttrEvent.MEMBER_RENAMED
                 || ev.getID() == AttrEvent.MEMBER_DELETED
                 || ev.getID() == AttrViewEvent.MEMBER_VISIBILITY
                 || ev.getID() == AttrViewEvent.MEMBER_MOVED) {
-
             if (ev.getSource().getTupleType().isValid()) {
                 this.attrChanged = true;
             }
-
         } else if (ev.getID() == AttrEvent.MEMBER_VALUE_CORRECTNESS // 70
                 || ev.getID() == AttrEvent.MEMBER_VALUE_MODIFIED) { // 80
-
             if (ev.getSource().isValid()) {
                 this.attrChanged = true;
                 if (this.myGraphPanel != null) {
@@ -856,7 +822,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                                 if (var == null) {
                                     return;
                                 }
-
                                 if (this.bNode.getContext().isNacGraph()) {
                                     var.setMark(VarMember.NAC);
                                 } else if (this.bNode.getContext().isPacGraph()) {
@@ -909,7 +874,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         }
         setWidth(w1);
         setHeight(h1);
-
         if (getType().isIconable()) {
             // String fname = getType().resourcesPath+getType().imageFileName;
             // URL url = ClassLoader.getSystemClassLoader().getResource(fname);
@@ -923,10 +887,8 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                 setWidth(w1);
                 setHeight(h1);
                 return;
-
             }
         }
-
         int sh = getShape();
         switch (sh) {
             case EditorConstants.RECT:
@@ -1008,7 +970,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         // System.out.println("h: "+th);
         // type name string
         String typeStr = getTypeString();
-
         if (this.elemOfTG) {
             if (this.bNode.getType().isAbstract()) {
                 if (!typeStr.equals("")) {
@@ -1032,12 +993,10 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         } else {
             ty = ty + fm.getHeight() + fm.getDescent() / 4;
         }
-
         if ((g.getFont().getSize() < 8)
                 || !this.attrVisible) {
             return;
         }
-
         // Attribute anzeigen
         List<List<String>> attrs = getAttributes();
         if (attrs != null && !attrs.isEmpty()) {
@@ -1062,7 +1021,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                     if (attr.get(2).length() != 0) {
                         attrStr = attrStr + "=" + attr.get(2);
                     }
-
                     if (!underlined) {
                         g.drawLine(tx, ty, tx + tw, ty);
                         underlined = true;
@@ -1080,9 +1038,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         if (!this.visible) {
             return;
         }
-
         this.criticalStyle = this.eGraph.criticalStyle;
-
         Graphics2D g = (Graphics2D) grs;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -1111,7 +1067,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         if (h1 < 20) {
             h1 = 30;
         }
-
         nn = 6; // default char width
         int w1 = 0;
         if (attrs != null) {
@@ -1168,13 +1123,10 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     public void XwriteObject(XMLHelper xmlh) {
         if (xmlh.openObject(this.bNode, this)) {
             xmlh.openSubTag("NodeLayout");
-
             int outX = (int) (this.x / this.itsScale);
             int outY = (int) (this.y / this.itsScale);
-
             xmlh.addAttr("X", outX);
             xmlh.addAttr("Y", outY);
-
 //			System.out.println("EdNode.XwriteObject:: X,Y: "+outX+" , "+outY);
             xmlh.close();
             // LayoutNode speichern:
@@ -1187,7 +1139,6 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
 
     public void XreadObject(XMLHelper xmlh) {
         xmlh.peekObject(this.bNode, this);
-
         if (xmlh.readSubTag("NodeLayout")) {
             this.hasDefaultLayout = true;
             String s = xmlh.readAttr("X");
@@ -1207,12 +1158,9 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
             this.x = 20;
             this.y = 20;
         }
-
         // layoutNode einlesen:
         xmlh.enrichObject(this.lNode);
-
         xmlh.close();
-
         if (this.bNode.xyAttr && this.getContext().getBasisGraph().isCompleteGraph()) {
             ValueMember xattr = ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisX");
             if (!xattr.isSet()) {
@@ -1223,14 +1171,13 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                 ((ValueTuple) this.bNode.getAttribute()).getValueMemberAt("thisY").setExprAsObject(this.y);
             }
         }
-
         this.attrVisible = true;
         this.attrChanged = false;
-
     }
 
     /**
-     * Checks whether the basis Nodes of this EdNode and the specified EdNode <code>enode</code> are equal.
+     * Checks whether the basis Nodes of this EdNode and the specified EdNode
+     * <code>enode</code> are equal.
      *
      * @param enode
      * @return true, if the basis nodes are equal, otherwise - false
@@ -1243,8 +1190,8 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Searchs through the specified vector for an EdNode with the same ID number. Such ID is set by the method
-     * <code>setNodeID(int)</code>.
+     * Searchs through the specified vector for an EdNode with the same ID
+     * number. Such ID is set by the method <code>setNodeID(int)</code>.
      *
      * @param enodes nodes to search
      * @return index of a node with the same ID, if found, otherwise returns -1.
@@ -1290,7 +1237,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         EdNode node;
         int xdist, ydist, dist;
         this.oldcluster = this.cluster;
-        this.cluster = new Vector< >();
+        this.cluster = new Vector<>();
         for (int i = 0; i < nodes.size(); i++) {
             node = nodes.get(i);
             if (!this.equals(node)) {
@@ -1306,13 +1253,11 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
                 }
             }
         }
-
     }
 
     public List<Integer> getOldCluster() {
         return this.oldcluster;
     }
-
 }
 // $Log: EdNode.java,v $
 // Revision 1.61  2010/11/14 12:59:11  olga
@@ -1724,3 +1669,4 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
 // Views koennen zwar benutzt werden. Sie werden
 // aber noch nicht nach dem Laden rekonstruiert.
 //
+

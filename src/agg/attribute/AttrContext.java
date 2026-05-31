@@ -2,23 +2,24 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
 import java.io.Serializable;
-
 import agg.attribute.handler.HandlerExpr;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.handler.SymbolTable;
 import agg.util.Disposable;
 
 /**
- * Framework for allocation of variables, administration of attribute mappings and application conditions in rules.
+ * Framework for allocation of variables, administration of attribute mappings
+ * and application conditions in rules.
  *
  * @author $Author: olga $
  * @version $Id: AttrContext.java,v 1.3 2007/09/10 13:05:31 olga Exp $
@@ -46,7 +47,8 @@ public interface AttrContext extends Serializable, SymbolTable, Disposable {
     public void setAttrContext(AttrContext source);
 
     /**
-     * Switching on the freeze mode; mapping removals are deferred until 'defreeze()' is called.
+     * Switching on the freeze mode; mapping removals are deferred until
+     * 'defreeze()' is called.
      */
     public void freeze();
 
@@ -56,16 +58,17 @@ public interface AttrContext extends Serializable, SymbolTable, Disposable {
     public void defreeze();
 
     /**
-     * @return If a match is not possible, the source (left side) attribute instance whose match first assigned a value
-     * to a variable which prevents 'source' from being matched to 'target'; null otherwise.
+     * @return If a match is not possible, the source (left side) attribute
+     * instance whose match first assigned a value to a variable which prevents
+     * 'source' from being matched to 'target'; null otherwise.
      */
     /*
 	 * public AttrInstance getMatchObstacle( AttrInstance source, AttrInstance
 	 * target );
      */
     /**
-     * Getting the type of an identifier. getType( String ) and getExpr( String ) allow to use an AttrContext as a
-     * SymbolTable when using an AttrHandler.
+     * Getting the type of an identifier. getType( String ) and getExpr( String
+     * ) allow to use an AttrContext as a SymbolTable when using an AttrHandler.
      *
      * @param name Identifier's name
      * @return Identifier's type
@@ -73,8 +76,8 @@ public interface AttrContext extends Serializable, SymbolTable, Disposable {
     public HandlerType getType(String name);
 
     /**
-     * Getting the value of an identifier. getType( String ) and getExpr( String ) allow to use an AttrContext as a
-     * SymbolTable when using an AttrHandler.
+     * Getting the value of an identifier. getType( String ) and getExpr( String
+     * ) allow to use an AttrContext as a SymbolTable when using an AttrHandler.
      *
      * @param name Identifier's name
      * @return Identifier's value as expression
@@ -82,9 +85,7 @@ public interface AttrContext extends Serializable, SymbolTable, Disposable {
     public HandlerExpr getExpr(String name);
 
     public void removeAllMappings();
-
 }
-
 /*
  * $Log: AttrContext.java,v $
  * Revision 1.3  2007/09/10 13:05:31  olga

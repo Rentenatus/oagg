@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -30,8 +32,9 @@ public class UndirectedGraph extends Graph {
     }
 
     /**
-     * Creates an empty graph with the specified TypeSet.Use {@link #Graph(TypeSet, boolean)}, to create a complete
-     * graph (a host graph).
+     * Creates an empty graph with the specified TypeSet.Use
+     * {@link #Graph(TypeSet, boolean)}, to create a complete graph (a host
+     * graph).
      *
      * @param aTypeSet
      */
@@ -50,7 +53,8 @@ public class UndirectedGraph extends Graph {
     }
 
     /**
-     * Adds the specified edge to my edges.The type of the specified edge has to be in my type set.<br>
+     * Adds the specified edge to my edges.The type of the specified edge has to
+     * be in my type set.<br>
      * The edge must be an instance of <code>UndirectedArc</code>.
      *
      * @param anArc
@@ -73,5 +77,4 @@ public class UndirectedGraph extends Graph {
     protected UndirectedArc createArcFast(Type t, Node src, Node tar) {
         return new UndirectedArc(t, src, tar, this);
     }
-
 }

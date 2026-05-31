@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
@@ -33,8 +34,9 @@ public interface AttrInstanceMember extends AttrMember {
     public boolean isSet();
 
     /**
-     * Retrieving the expression (value) contained in this member. The result can be queried and set according to the
-     * agg.attribute.handler.HandlerExpr interface.
+     * Retrieving the expression (value) contained in this member. The result
+     * can be queried and set according to the agg.attribute.handler.HandlerExpr
+     * interface.
      */
     public HandlerExpr getExpr();
 
@@ -44,9 +46,10 @@ public interface AttrInstanceMember extends AttrMember {
     public void setExpr(HandlerExpr expr);
 
     /**
-     * Retrieving the value of an entry. If the result is 'null', the reason can be: 1. The value is set as 'null'; 2.
-     * The value is not set at all. For testing if the value was set as 'null' or not set at all, use 'isSet()' of this
-     * interface.
+     * Retrieving the value of an entry. If the result is 'null', the reason can
+     * be: 1. The value is set as 'null'; 2. The value is not set at all. For
+     * testing if the value was set as 'null' or not set at all, use 'isSet()'
+     * of this interface.
      */
     public Object getExprAsObject();
 
@@ -70,7 +73,8 @@ public interface AttrInstanceMember extends AttrMember {
     public void setExprAsEvaluatedText(String expr);
 
     /**
-     * Setting an expression for this member without immediate evaluation. Syntax and type checking are performed.
+     * Setting an expression for this member without immediate evaluation.
+     * Syntax and type checking are performed.
      *
      * @param expr textual expression representation;
      */

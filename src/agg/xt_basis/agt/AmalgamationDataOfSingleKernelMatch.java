@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -17,12 +18,12 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
-
 import agg.xt_basis.Rule;
 
 /**
- * This class stores the data of amalgamation process for a single match of the kernel rule (subrule) and all possible
- * matches of multi rules (extending rules) of an interaction rule scheme.
+ * This class stores the data of amalgamation process for a single match of the
+ * kernel rule (subrule) and all possible matches of multi rules (extending
+ * rules) of an interaction rule scheme.
  *
  * @author olga
  *
@@ -33,22 +34,21 @@ public class AmalgamationDataOfSingleKernelMatch {
      * Store object of the amalgamation help morphisms of the kernel rule.
      */
     final public AmalgamationRuleData kernelInstData;
-
     /**
      * Store object of the amalgamation help morphisms of multi rules.
      */
     final public Hashtable<Rule, List<AmalgamationRuleData>> instMultiData;
 
     /**
-     * Creates a store object of help morphisms data of multi rules for only one match of the kernel rule. Each multi
-     * rule is referenced to a list of <code>AmalgamationRuleData</code>.
+     * Creates a store object of help morphisms data of multi rules for only one
+     * match of the kernel rule. Each multi rule is referenced to a list of
+     * <code>AmalgamationRuleData</code>.
      *
      *
      * @param kernelData help data of kernel rule
      */
     public AmalgamationDataOfSingleKernelMatch(final AmalgamationRuleData kernelData) {
         this.kernelInstData = kernelData;
-
         this.instMultiData = new Hashtable<Rule, List<AmalgamationRuleData>>();
     }
 
@@ -62,7 +62,6 @@ public class AmalgamationDataOfSingleKernelMatch {
         if (this.instMultiData.get(rule) == null) {
             this.instMultiData.put(rule, new ArrayList<AmalgamationRuleData>());
         }
-
         this.instMultiData.get(rule).add(data);
     }
 
@@ -76,13 +75,13 @@ public class AmalgamationDataOfSingleKernelMatch {
     /**
      *
      * @param rule the rule of a rule scheme
-     * @return	true, if the data list of the specified rule is empty, otherwise false.
+     * @return	true, if the data list of the specified rule is empty, otherwise
+     * false.
      */
     public boolean isEmpty(final Rule rule) {
         if (this.instMultiData.get(rule) != null) {
             return this.instMultiData.get(rule).isEmpty();
         }
-
         return true;
     }
 
@@ -95,7 +94,6 @@ public class AmalgamationDataOfSingleKernelMatch {
                 && (indx >= 0 && indx < this.instMultiData.get(rule).size())) {
             return this.instMultiData.get(rule).get(indx);
         }
-
         return null;
     }
 
@@ -103,7 +101,6 @@ public class AmalgamationDataOfSingleKernelMatch {
         if (this.instMultiData.get(rule) != null) {
             return this.instMultiData.get(rule).remove(data);
         }
-
         return false;
     }
 
@@ -111,7 +108,6 @@ public class AmalgamationDataOfSingleKernelMatch {
         if (this.instMultiData.get(rule) != null) {
             return this.instMultiData.get(rule).remove(indx);
         }
-
         return null;
     }
 
@@ -129,14 +125,10 @@ public class AmalgamationDataOfSingleKernelMatch {
         if (this.instMultiData.get(rule) != null) {
             return this.instMultiData.get(rule).size();
         }
-
         return 0;
     }
 
     public AmalgamationRuleData getKernelData() {
         return this.kernelInstData;
     }
-
 }
-
-

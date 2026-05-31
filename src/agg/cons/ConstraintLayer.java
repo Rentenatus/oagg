@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.cons;
 
@@ -15,10 +16,11 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
 //import com.objectspace.jgl.HashSet;
+
 /**
- * Constraint layer is a set of layer of a given layered graph grammar. The set is backed by a hash table.
+ * Constraint layer is a set of layer of a given layered graph grammar. The set
+ * is backed by a hash table.
  *
  * @author $Author: olga $
  * @version $ID
@@ -26,9 +28,7 @@ import java.util.Vector;
 public class ConstraintLayer {
 
     private Hashtable<Object, Object> constraintLayer;
-
     private Enumeration<Formula> constraints;
-
     private Vector<Formula> constraintsVec;
 
     /**
@@ -68,7 +68,6 @@ public class ConstraintLayer {
         this.constraintLayer.put(constraint, constraint.getLayer());
         // System.out.println("constraint layer: "
         // +((Integer)this.constraintLayer.get(rule)).toString());
-
     }
 
     private void initConstraintLayer() {
@@ -87,7 +86,8 @@ public class ConstraintLayer {
     }
 
     /**
-     * Returns the constraint (formula) layer. A constraint is a key, a layer is a value.
+     * Returns the constraint (formula) layer. A constraint is a key, a layer is
+     * a value.
      */
     public Hashtable<Object, Object> getConstraintLayer() {
         return this.constraintLayer;
@@ -122,7 +122,8 @@ public class ConstraintLayer {
     }
 
     /**
-     * Inverts and returns constraint layers so that a layer is a key and a set is a value.
+     * Inverts and returns constraint layers so that a layer is a key and a set
+     * is a value.
      */
     public Hashtable<Integer, HashSet<Object>> invertLayer() {
         Hashtable<Integer, HashSet<Object>> inverted = new Hashtable<Integer, HashSet<Object>>();

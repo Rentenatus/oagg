@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: BoundingBox.java,v 1.8 2010/08/23 07:32:23 olga Exp $
 package agg.editor.impl;
@@ -16,38 +17,31 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Vector;
-
 import agg.gui.editor.GraphCanvas;
 
 /**
- * A BoundingBox specifies a bounding rectangle around the objects of the class agg.editor.impl.EdGraphObject
+ * A BoundingBox specifies a bounding rectangle around the objects of the class
+ * agg.editor.impl.EdGraphObject
  */
 @SuppressWarnings("serial")
 public class BoundingBox extends Rectangle {
 
     private Vector<EdGraphObject> objs;
-
     private int space = 50;
-
     private Point min, max; // min, max points of a bounding box
-
     private Point upper_left = new Point(0, 0);
-
 //	private Point upper_right = new Point(0, 0);
     private Rectangle anchorUL, // UPPER_LEFT
             anchorUR, // UPPER_RIGHT
             anchorBR, // BOTTOM_RIGHT
             anchorBL; // BOTTOM_LEFT
-
     private Point anchor; // current anchor
-
     private int dx, dy; // only >= 0
-
     private int maxX; //, maxY, minX, minY; // min, max size of the graphical area
 
     /**
-     * Creates a bounding box with graphobjects within it. The elements of the objs are of class
-     * agg.editor.impl.EdGraphObject.
+     * Creates a bounding box with graphobjects within it. The elements of the
+     * objs are of class agg.editor.impl.EdGraphObject.
      */
     public BoundingBox(Vector<EdGraphObject> objs) {
         // System.out.println(">>> BoundingBox");
@@ -99,24 +93,19 @@ public class BoundingBox extends Rectangle {
         /* add a space area to this.max points of a bounding box */
         this.max.x = this.max.x + this.space;
         this.max.y = this.max.y + this.space / 2;
-
         /* set bounds of a bounding box */
         setBounds(this.min.x, this.min.y, this.max.x - this.min.x, this.max.y - this.min.y);
-
 //		minX = 0; // 10;
 //		minY = 0;
         this.maxX = GraphCanvas.MAX_XWIDTH;
 //		maxY = GraphCanvas.MAX_YHEIGHT;
-
         /* set an anchor on each corner of a bounding box */
         this.anchorUL = new Rectangle(this.min.x, this.min.y, 2, 2);
         this.anchorUR = new Rectangle(this.max.x, this.min.y, 2, 2);
         this.anchorBR = new Rectangle(this.max.x, this.max.y, 2, 2);
         this.anchorBL = new Rectangle(this.min.x, this.max.y, 2, 2);
-
         /* initialize a current anchor */
         this.anchor = new Point(-1, -1);
-
         /* initialize the overlapping of X and Y */
         this.dx = 0;
         this.dy = 0;
@@ -132,7 +121,6 @@ public class BoundingBox extends Rectangle {
             this.anchor.y = ay;
             return true;
         }
-
         this.anchor.x = -1;
         this.anchor.y = -1;
         return false;
@@ -180,7 +168,6 @@ public class BoundingBox extends Rectangle {
             newX = this.min.x + this.dx;
             newY = this.min.y + this.dy;
         }
-
         // System.out.println("BoundBox: "+newX+" "+this.maxX);
         if ((newX + getSize().width) > this.maxX) {
             newX = 0;
@@ -195,7 +182,6 @@ public class BoundingBox extends Rectangle {
         this.max.y = this.min.y + getSize().height;
         setBounds(this.min.x, this.min.y, getSize().width, getSize().height);
         // System.out.println("BB: "+this.min.x+" , "+this.min.y +" "+this.max.x+" , "+this.max.y);
-
         /* set absolute Position of graph objects */
         // System.out.println(">>> set absolute Position: ");
         for (int i = 0; i < this.objs.size(); i++) {
@@ -245,28 +231,32 @@ public class BoundingBox extends Rectangle {
     }
 
     /**
-     * Returns TRUE if the current this.anchor is on the upper left corner of the bounding box
+     * Returns TRUE if the current this.anchor is on the upper left corner of
+     * the bounding box
      */
     public boolean isUpperLeft() {
         return this.anchorUL.contains(this.anchor.x, this.anchor.y);
     }
 
     /**
-     * Returns TRUE if the current this.anchor is on the upper right corner of the bounding box
+     * Returns TRUE if the current this.anchor is on the upper right corner of
+     * the bounding box
      */
     public boolean isUpperRight() {
         return this.anchorUR.contains(this.anchor.x, this.anchor.y);
     }
 
     /**
-     * Returns TRUE if the current this.anchor is on the bottom right corner of the bounding box
+     * Returns TRUE if the current this.anchor is on the bottom right corner of
+     * the bounding box
      */
     public boolean isBottomRight() {
         return this.anchorBR.contains(this.anchor.x, this.anchor.y);
     }
 
     /**
-     * Returns TRUE if the current this.anchor is on the bottom left corner of the bounding box
+     * Returns TRUE if the current this.anchor is on the bottom left corner of
+     * the bounding box
      */
     public boolean isBottomLeft() {
         return this.anchorBL.contains(this.anchor.x, this.anchor.y);
@@ -285,13 +275,13 @@ public class BoundingBox extends Rectangle {
     }
 
     /**
-     * Moves the bounding box dragging the current this.anchor to the specified x,y
+     * Moves the bounding box dragging the current this.anchor to the specified
+     * x,y
      */
     public void moveTo(int ax, int ay) {
         if (this.anchor.x == -1 || this.anchor.y == -1) {
             return;
         }
-
         int diffX = ax - this.anchor.x;
         int diffY = ay - this.anchor.y;
         this.min.x = this.min.x + diffX;
@@ -308,7 +298,6 @@ public class BoundingBox extends Rectangle {
         if (this.anchor.x == -1 || this.anchor.y == -1) {
             return;
         }
-
         if (isUpperLeft()) {
             this.min.x = ax;
             this.min.y = ay;
@@ -343,12 +332,10 @@ public class BoundingBox extends Rectangle {
 //	public void setMaxY(int this.max) {
 //		maxY = this.max;
 //	}
-
     /* Sets the this.min x of the bounding box */
 //	public void setMinX(int this.min) {
 //		minX = this.min;
 //	}
-
     /* Sets the this.min y of the bounding box */
 //	public void setMinY(int this.min) {
 //		minY = this.min;
@@ -362,7 +349,6 @@ public class BoundingBox extends Rectangle {
     }
 
     public void setOverlap(Rectangle rect) {
-
     }
 
     /**

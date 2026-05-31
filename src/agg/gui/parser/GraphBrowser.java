@@ -2,19 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.parser;
 
 import java.awt.Component;
 import java.util.HashMap;
-
 import javax.swing.JSplitPane;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdMorphism;
@@ -26,7 +25,8 @@ import agg.gui.parser.event.ParserGUIListener;
 import agg.xt_basis.Graph;
 
 /**
- * This class displays two graphs. Each graph is the left side of a selected rule.
+ * This class displays two graphs. Each graph is the left side of a selected
+ * rule.
  *
  * @version $Id: GraphBrowser.java,v 1.9 2010/09/23 08:20:54 olga Exp $
  * @author $Author: olga $
@@ -36,11 +36,8 @@ import agg.xt_basis.Graph;
 public class GraphBrowser implements ParserGUIListener {
 
     JSplitPane graphPane;
-
     GraphEditor geLeft, geRight;
-
     EdGraGra layout;
-
     private boolean attrsVisible = true;
 
     /**
@@ -89,7 +86,8 @@ public class GraphBrowser implements ParserGUIListener {
     }
 
     /**
-     * The returned graph pane holds the two panels for the left hand side of the rules.
+     * The returned graph pane holds the two panels for the left hand side of
+     * the rules.
      *
      * @return The JSplitPane
      */
@@ -151,8 +149,8 @@ public class GraphBrowser implements ParserGUIListener {
     }
 
     /**
-     * The event occured when a window of a overlapping graph is selected. Therefor display of the overlapping morphisms
-     * has to be updated.
+     * The event occured when a window of a overlapping graph is selected.
+     * Therefor display of the overlapping morphisms has to be updated.
      *
      * @param pguie The event from the window.
      */

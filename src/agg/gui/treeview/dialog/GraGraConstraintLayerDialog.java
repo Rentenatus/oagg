@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -29,7 +31,6 @@ import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -43,41 +44,29 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.DefaultTableCellRenderer;
-
 //import agg.editor.impl.EdGraGra;
 import agg.gui.help.HtmlBrowser;
 import agg.cons.Formula;
 import java.util.List;
 
 /**
- * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers for graph
- * constraints.
+ * This class provides a window for a user dialog. This dialog is necessary to
+ * enter the grammar layers for graph constraints.
  */
 @SuppressWarnings("serial")
 public class GraGraConstraintLayerDialog extends JDialog implements ActionListener {
 
     private JPanel contentPane;
-
     private JPanel constraintPanel;
-
     private JPanel buttonPanel;
-
     private JScrollPane scrollPane;
-
     private JTable constraintTable;
-
     private JButton closeButton;
-
     private JButton cancelButton;
-
     private JButton helpButton;
-
     private boolean isCancelled;
-
     private List<Formula> constraints;
-
     private List<String> layers;
-
 //	private EdGraGra gragra;
     private HtmlBrowser helpBrowser;
 
@@ -89,22 +78,20 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
         Hashtable<Object, List<Object>> table;
 
         /**
-         * Creates a new model with hashtable and the title for the columns of the table.
+         * Creates a new model with hashtable and the title for the columns of
+         * the table.
          */
         public HashTableModel(List<Formula> constraints, List<String> layers) {
             super();
-
             layers.add(0, "Constraint / Rule Layer");
             for (int i = 0; i < layers.size(); i++) {
                 addColumn(layers.get(i));
             }
-
             this.table = new Hashtable<Object, List<Object>>(constraints.size());
-
             for (int i = 0; i < constraints.size(); i++) {
                 Formula f = constraints.get(i);
                 List<Integer> flayers = f.getLayer();
-                Vector<Object> tmpVector = new Vector< >();
+                Vector<Object> tmpVector = new Vector<>();
                 for (int k = 1; k < layers.size(); k++) {
                     String l = layers.get(k);
                     boolean found = false;
@@ -120,11 +107,9 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
                         tmpVector.add("");
                     }
                 }
-
                 List<Object> value = new Vector<Object>();
                 value.addAll(tmpVector);
                 this.table.put(f, value);
-
                 tmpVector.add(0, f);
                 // System.out.println("add row: "+tmpVector);
                 addRow(tmpVector);
@@ -136,8 +121,8 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
          *
          * @param rowIndex The index of the row of the cell.
          * @param columnIndex The index of the column of the cell.
-         * @return The layer function can only entered in the second column. So for any other column <CODE>false</CODE>
-         * is returned.
+         * @return The layer function can only entered in the second column. So
+         * for any other column <CODE>false</CODE> is returned.
          */
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return (columnIndex == 1);
@@ -216,18 +201,14 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             }
             return -1;
         }
-
     }
 
     public class LayerCellRenderer extends DefaultTableCellRenderer implements
             TableCellRenderer, MouseListener {
 
         List<JCheckBox> checks;
-
         int clmn;
-
         Color selColor = Color.WHITE;
-
         public final JTable jtable;
 
         public LayerCellRenderer(int indx, int size, JTable table,
@@ -240,7 +221,6 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             this.clmn = indx;
             // this.selColor = sColor;
             initLayers(indx, size);
-
             this.setEnabled(false);
         }
 
@@ -288,7 +268,6 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
 //							.getValueAt(i, this.clmn);
                     // System.out.println(" newValue: "+newValue);
                 }
-
             }
         }
 
@@ -307,7 +286,6 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
         public List<JCheckBox> getChecks() {
             return this.checks;
         }
-
     }
 
     /**
@@ -330,7 +308,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
         // this.constraintLayer = new ConstraintLayer(constraints);
         this.constraints = constraints;
         // this.layers = layersAsString;
-        this.layers = new Vector< >(layersAsString.size());
+        this.layers = new Vector<>(layersAsString.size());
         for (int i = 0; i < layersAsString.size(); i++) {
             this.layers.add(layersAsString.get(i));
         }
@@ -343,17 +321,16 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
     }
 
     /**
-     * This method is called from within the constructor to initialize the dialog.
+     * This method is called from within the constructor to initialize the
+     * dialog.
      */
     private void initComponents() {
         this.contentPane = new JPanel(new BorderLayout());
         this.contentPane.setBackground(Color.lightGray);
-
         this.constraintPanel = new JPanel(new BorderLayout());
         this.constraintPanel.setBackground(Color.orange);
         this.constraintPanel.setBorder(new TitledBorder(
                 "Select Rule Layer for Graph Constraint"));
-
         this.constraintTable = new JTable(new HashTableModel(this.constraints, this.layers));
         this.constraintTable.setRowSelectionAllowed(true);
         this.constraintTable.setColumnSelectionAllowed(true);
@@ -378,34 +355,28 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
         this.scrollPane = new JScrollPane(this.constraintTable);
         this.scrollPane.setPreferredSize(new Dimension(300, hght));
         this.constraintPanel.add(this.scrollPane);
-
         this.buttonPanel = new JPanel(new GridLayout(0, 3, 5, 5));
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
         this.closeButton.setToolTipText("Accept entries and close dialog.");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.isCancelled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.closeButton.setToolTipText("Reject entries and close dialog.");
         this.cancelButton.addActionListener(this);
-
         this.helpButton = new JButton();
         this.helpButton.setActionCommand("help");
         this.helpButton.setText("Help");
         this.helpButton.addActionListener(this);
-
         this.buttonPanel.add(this.closeButton);
         this.buttonPanel.add(this.cancelButton);
         this.buttonPanel.add(this.helpButton);
-
         this.contentPane.add(this.constraintPanel, BorderLayout.CENTER);
         this.contentPane.add(this.buttonPanel, BorderLayout.SOUTH);
         this.contentPane.revalidate();
-
         setContentPane(this.contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -436,7 +407,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             // System.out.println(key);
             List<Object> l = table.get(key);
             // System.out.println("l: "+l);
-            Vector<Integer> v = new Vector< >(l.size());
+            Vector<Integer> v = new Vector<>(l.size());
             for (int i = 0; i < l.size(); i++) {
                 String s = (String) l.get(i);
                 if (!s.equals("")) {
@@ -484,10 +455,10 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             }
         }
     }
-
 //	public void setGraGra(EdGraGra gra) {
 //		gragra = gra;
 //	}
+
     public boolean isCancelled() {
         return this.isCancelled;
     }
@@ -499,7 +470,6 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
         }
         return h;
     }
-
     /* constrainBuild() method
 	private void constrainBuild(Container container, Component component,
 			int grid_x, int grid_y, int grid_width, int grid_height, int fill,

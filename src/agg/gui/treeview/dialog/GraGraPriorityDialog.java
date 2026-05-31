@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -42,12 +43,13 @@ import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-
 //import com.objectspace.jgl.HashSet;
 //import com.objectspace.jgl.OrderedSet;
 //import com.objectspace.jgl.OrderedSetIterator;
+
 /**
- * This class provides a window for a user dialog. This dialog is necessary to enter the rule priorities.
+ * This class provides a window for a user dialog. This dialog is necessary to
+ * enter the rule priorities.
  *
  * @author $Author: olga $
  * @version $Id: GraGraPriorityDialog.java,v 1.3 2010/09/23 08:23:04 olga Exp $
@@ -56,23 +58,14 @@ import javax.swing.table.TableColumn;
 public class GraGraPriorityDialog extends JDialog implements ActionListener {
 
     private JPanel contentPane;
-
     private JPanel rulePanel;
-
     private JPanel buttonPanel;
-
     private JScrollPane ruleScrollPane;
-
     private JTable ruleTable;
-
     private JButton closeButton;
-
     private JButton cancelButton;
-
     private boolean isCancelled;
-
     private RulePriority priority;
-
 //	private EdGraGra gragra;
     boolean changed = false;
 
@@ -82,11 +75,11 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
     public class HashTableModel extends DefaultTableModel {
 
         Hashtable<Rule, Integer> table;
-
         RulePriority rulePriority;
 
         /**
-         * Creates a new model with hashtable and the title for the column of the table.
+         * Creates a new model with hashtable and the title for the column of
+         * the table.
          *
          * @param table The hashtable for the modle.
          * @param columnNames The array with the column names.
@@ -110,7 +103,8 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
         }
 
         /**
-         * Creates a new model with hashtable and the title for the column of the table.
+         * Creates a new model with hashtable and the title for the column of
+         * the table.
          *
          * @param priority The rule priority containing hashtable for the model.
          * @param columnNames The array with the column names.
@@ -118,7 +112,6 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
         @SuppressWarnings("rawtypes")
         public HashTableModel(RulePriority priority, String[] columnNames) {
             super();
-
             for (int i = 0; i < columnNames.length; i++) {
                 addColumn(columnNames[i]);
             }
@@ -126,14 +119,12 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
             this.rulePriority = priority;
             Integer startPriority = priority.getStartPriority();
             Hashtable<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
-
             SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
             for (Enumeration<Integer> en = invertedRulePriority.keys(); en
                     .hasMoreElements();) {
                 rulePrioritySet.add(en.nextElement());
             }
             int i = 0;
-
             Integer currentPriority = startPriority;
             boolean nextPriorityExists = true;
             while (nextPriorityExists && (currentPriority != null)) {
@@ -206,7 +197,6 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
         public Hashtable<Rule, Integer> getTable() {
             return this.table;
         }
-
     }
 
     /**
@@ -233,12 +223,12 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
     }
 
     /**
-     * This method is called from within the constructor to initialize the dialog.
+     * This method is called from within the constructor to initialize the
+     * dialog.
      */
     private void initComponents() {
         this.contentPane = new JPanel(new BorderLayout());
         this.contentPane.setBackground(Color.lightGray);
-
         JPanel help = new JPanel(new GridBagLayout());
         JLabel l1 = new JLabel(" Only priority > 0 allowed.");
         JLabel l2 = new JLabel(" The  smallest  priority is");
@@ -249,7 +239,6 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
                 GridBagConstraints.CENTER, 1.0, 0.0, 0, 20, 0, 10);
         constrainBuild(help, l3, 0, 2, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 0, 20, 10, 10);
-
         this.rulePanel = new JPanel(new BorderLayout());
         this.rulePanel.setBackground(Color.orange);
         this.rulePanel.setBorder(new TitledBorder("Set Rule Priority"));
@@ -263,33 +252,28 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
         this.ruleScrollPane = new JScrollPane(this.ruleTable);
         this.ruleScrollPane.setPreferredSize(new Dimension(200, hght));
         this.rulePanel.add(this.ruleScrollPane);
-
         this.buttonPanel = new JPanel(new GridBagLayout());
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
         this.closeButton.setToolTipText("Accept entries and close dialog.");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.isCancelled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.setToolTipText("Reject entries and close dialog.");
         this.cancelButton.addActionListener(this);
-
         constrainBuild(this.buttonPanel, this.closeButton, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 10, 10, 5);
         constrainBuild(this.buttonPanel, this.cancelButton, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 5, 10, 10);
-
         this.contentPane.add(help, BorderLayout.NORTH);
         this.contentPane.add(this.rulePanel, BorderLayout.CENTER);
         this.contentPane.add(this.buttonPanel, BorderLayout.SOUTH);
         this.contentPane.revalidate();
-
         setContentPane(this.contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -320,7 +304,6 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
             if (value.intValue() <= 0) {
                 return false;
             }
-
             // System.out.println(value.intValue()+"
             // "+((Rule)key).getPriority());
             if (value.intValue() != ((Rule) key).getPriority()) {
@@ -356,10 +339,10 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
             dispose();
         }
     }
-
 //	public void setGraGra(EdGraGra gra) {
 //		gragra = gra;
 //	}
+
     public boolean isCancelled() {
         return this.isCancelled;
     }
@@ -390,5 +373,4 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
         ((GridBagLayout) container.getLayout()).setConstraints(component, c);
         container.add(component);
     }
-
 }

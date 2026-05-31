@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.options;
 
@@ -30,15 +31,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-
 import agg.gui.IconResource;
 import agg.parser.CriticalPairOption;
 import agg.parser.OptionEventListener;
 import agg.parser.ParserOption;
 
 /**
- * A gui is provided for parser setting. The user can change the critical pair algorithm, the parser algorithm and some
- * display setttings.
+ * A gui is provided for parser setting. The user can change the critical pair
+ * algorithm, the parser algorithm and some display setttings.
  *
  * @version $Id: ParserOptionGUI.java,v 1.3 2010/09/23 08:20:39 olga Exp $
  * @author $Author: olga $
@@ -52,55 +52,44 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
      */
     @SuppressWarnings("rawtypes")
     JComboBox algorithms;
-
     /**
      * The choice of the parser algorithms.
      */
     @SuppressWarnings("rawtypes")
     JComboBox parserAlgorithms;
-
     /**
      * The choice if the stop graph shall be shown.
      */
     JCheckBox stopGraphButton;
-
     /**
      * The choice if the parsing process is hidden.
      */
     JCheckBox invisibleButton;
-
     /**
      * The choice if the host graph is shown.
      */
     JCheckBox hostGraphButton;
-
     /**
      * The delay time of the graph parsing.
      */
     JTextField delayField;
-
     /**
      * The choice of a layered parser.
      */
     JCheckBox layered;
-
     /**
      * This panel holds all the option.
      */
     JPanel firstPriorityOption;
-
     JButton displaySwitch;
-
     /**
      * Text for the critical pair choice.
      */
     public static final String EXCLUDEONLY = " conflicts ";
-
     /**
      * Text for the critical pair choice.
      */
     public static final String EXCLUDEANDBEFORE = "exclude and befor";
-
     /**
      * Text for the additional critical pair choice.
      */
@@ -108,41 +97,33 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
     public static final String TRIGGER_DEPEND = " trigger dependency ";
     public static final String SWITCH_DEPEND = " switch dependency ";
     public static final String TRIGGER_SWITCH_DEPEND = " trigger & switch dependencies ";
-
     /**
      * Text for the additional critical pair choice.
      */
     protected static final String INDEPENDING = "before independing on exclude";
-
     public static final String DISPLAYSETTINGS = "Display Settings...";
-
     /**
      * the text for a label
      */
     public static final String GENERALSETTINGS = " General Settings...";
-
     private static final String EXCLUDEPARSER = " Critical Pair Analysis";
-
     private static final String SIMPLEEXCLUDEPARSER = " Semi optimized backtracking";
-
     private static final String SIMPLEPARSER = " Backtracking without optimization";
-
     /**
      * the option for the display settings
      *
      * @serial A super class is serializable
      */
     private ParserGUIOption guiOption;
-
     /**
      * the option for the parser
      *
      * @serial A super class is serializable
      */
     private ParserOption pOption;
-
     /**
-     * The option for the critical pairs. They are needed for the settings of the algorithm.
+     * The option for the critical pairs. They are needed for the settings of
+     * the algorithm.
      */
     CriticalPairOption cpOption;
 
@@ -161,9 +142,7 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
         this.cpOption = cpOption;
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
-
         setLayout(gridbag);
-
         this.firstPriorityOption = makeFirstPriorityOption();
         c.fill = GridBagConstraints.BOTH;
         c.anchor = GridBagConstraints.NORTHWEST;
@@ -206,9 +185,7 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
         c.anchor = GridBagConstraints.NORTHWEST;
         JPanel optionPanel = makeInitialOptionPanel(true, "", c);
 //		optionPanel.setBorder(new TitledBorder(" General Settings "));
-
         addIcon(optionPanel);
-
         c.fill = GridBagConstraints.BOTH;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridheight = 1;
@@ -219,22 +196,18 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
         // placeHolder3.setBackground(java.awt.Color.green);
         placeHolder3.setPreferredSize(new Dimension(200, 2));
         optionPanel.add(placeHolder3, c);
-
         c.weighty = 0.0;
         JPanel parserOptionPanel = makeParserPanelOption();
         optionPanel.add(parserOptionPanel, c);
-
         c.weighty = 0.0;
         JPanel algorithmParser = makeParserAlgorithm();
         optionPanel.add(algorithmParser, c);
-
         c.weightx = 1.0;
         c.weighty = 1.0;
         JPanel placeHolder1 = new JPanel();
         // placeHolder1.setBackground(java.awt.Color.magenta);
         placeHolder1.setPreferredSize(new Dimension(200, 200));
         optionPanel.add(placeHolder1, c);
-
         c.weightx = 0.0;
         c.weighty = 0.0;
         c.gridwidth = 1;
@@ -242,28 +215,24 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
         // placeHolder.setBackground(java.awt.Color.blue);
         placeHolder.setPreferredSize(new Dimension(200, 200));
         optionPanel.add(placeHolder, c);
-
         c.weightx = 1.0;
         c.gridwidth = GridBagConstraints.RELATIVE;
         JPanel placeHolder2 = new JPanel();
         // placeHolder2.setBackground(java.awt.Color.yellow);
         placeHolder2.setPreferredSize(new Dimension(200, 200));
         optionPanel.add(placeHolder2, c);
-
         return optionPanel;
     }
 
     private JPanel makeParserPanelOption() {
         JPanel optionPanel = makeInitialOptionPanel("");
         optionPanel.setBorder(new TitledBorder(" Parser Display Option "));
-
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.gridheight = 1;
         JLabel show = new JLabel(" show...");
         optionPanel.add(show, c);
-
         this.stopGraphButton = new JCheckBox("Stop Graph");
         this.stopGraphButton.setFocusPainted(false);
         this.stopGraphButton.addActionListener(this);
@@ -281,49 +250,41 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
         this.hostGraphButton
                 .setSelected(this.guiOption.getParserDisplay()
                         - ParserGUIOption.SHOWSTOPGRAPH == ParserGUIOption.SHOWHOSTGRAPH);
-
         /* Group the radio buttons. */
         ButtonGroup group = new ButtonGroup();
         group.add(this.invisibleButton);
         group.add(this.hostGraphButton);
-
         optionPanel.add(this.invisibleButton, c);
         c.gridwidth = GridBagConstraints.RELATIVE;
         optionPanel.add(this.hostGraphButton, c);
         c.weightx = 1.0;
         optionPanel.add(this.stopGraphButton, c);
-
         JLabel delay = new JLabel(" Delay Time (ms) ");
         this.delayField = new JTextField();
         this.delayField.addActionListener(this);
         this.delayField.setText(String.valueOf(this.guiOption.getDelayAfterApplyRule()));
-
         c.weightx = 1.0;
         c.gridx = 1;
         optionPanel.add(delay, c);
         c.gridx = 2;
         optionPanel.add(this.delayField, c);
-
         return optionPanel;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private JPanel makeParserAlgorithm() {
         GridBagConstraints c = new GridBagConstraints();
-
         c.fill = GridBagConstraints.BOTH;
         c.gridwidth = GridBagConstraints.RELATIVE;
         c.gridheight = 1;
         c.weightx = 0.0;
         c.anchor = GridBagConstraints.WEST;
-
         JPanel optionPanel = makeInitialOptionPanel(true, "", c);
         optionPanel.setBorder(new TitledBorder(" Select algorithm for parser "));
         /* optionPanel.setBackground(Color.red); */
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.weightx = 1.0;
         optionPanel.add(new JPanel(), c);
-
         c.gridwidth = 1;
         c.weightx = 0.0;
         c.anchor = GridBagConstraints.WEST;
@@ -333,17 +294,14 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
         this.parserAlgorithms.addItem(SIMPLEPARSER);
         this.parserAlgorithms.addItemListener(this);
         optionPanel.add(this.parserAlgorithms, c);
-
         this.layered = new JCheckBox("layered", false);
         this.layered.setFocusPainted(false);
         this.layered.addActionListener(this);
         c.insets = new Insets(0, 20, 0, 0);
         optionPanel.add(this.layered, c);
-
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.weightx = 1.0;
         optionPanel.add(new JPanel(), c);
-
         return optionPanel;
     }
 
@@ -476,7 +434,6 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
         } else if (this.pOption.getSelectedParser() == ParserOption.SIMPLEEXCLUDEPARSER) {
             this.parserAlgorithms.setSelectedItem(SIMPLEEXCLUDEPARSER);
         }
-
         if (this.guiOption.getParserDisplay() == ParserGUIOption.PARSINGINVISIBLE) {
             this.stopGraphButton.setEnabled(false);
             this.stopGraphButton.setSelected(false);
@@ -494,14 +451,12 @@ public class ParserOptionGUI extends AbstractOptionGUI implements ItemListener,
             this.invisibleButton.setSelected(false);
             this.hostGraphButton.setSelected(true);
         }
-
         this.layered.setSelected(this.pOption.layerEnabled());
         // System.out.println("ParserOptionGUI.layered: "+layered.isSelected());
     }
 
     public void executeOnClose() {
     }
-
 }
 /*
  * $Log: ParserOptionGUI.java,v $

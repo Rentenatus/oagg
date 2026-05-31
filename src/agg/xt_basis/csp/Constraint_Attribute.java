@@ -1,16 +1,17 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.csp;
+
 import java.util.ArrayList;
 import java.util.List;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrException;
 import agg.attribute.AttrInstance;
@@ -29,42 +30,34 @@ public class Constraint_Attribute extends BinaryConstraint implements
         InstantiationHook {
 
     private GraphObject itsGraphObj;
-
     private AttrContext itsAttrContext;
-
     private AttrManager itsAttrManager;
-
     private AttrMapping itsAttrMapping;
-
     private boolean attributed = true;
-
     // pablo -->
     /**
-     * State of instantiation/uninstantiation process. Avoids unnecessary calls of instantiation_intern.
+     * State of instantiation/uninstantiation process. Avoids unnecessary calls
+     * of instantiation_intern.
      */
     private int state = NOTHING;
-
     /**
      * Do nothing.
      */
     private static final int NOTHING = -1;
-
     /**
      * Instantiate, if execute()-method is called.
      */
     private static final int INSTANTIATE = 0;
-
     /**
      * Uninstantiate, if execute()-method was called.
      */
     private static final int UNINSTANTIATE = 1;
-
     /**
      * Variable, which the constraint should be instantiated with.
      */
     private Variable instantiateVariable = null;
-    // pablo >
 
+    // pablo >
     public Constraint_Attribute(GraphObject graphobj, Variable var,
             AttrContext ac, AttrManager man) {
         super(var, 0);
@@ -72,7 +65,6 @@ public class Constraint_Attribute extends BinaryConstraint implements
         this.itsGraphObj = graphobj;
         this.itsAttrContext = ac;
         this.itsAttrManager = man;
-
         int fact = getWeightFactor();
         if (fact > 0) {
             this.itsWeight = this.itsWeight + fact;
@@ -90,12 +82,10 @@ public class Constraint_Attribute extends BinaryConstraint implements
                 || this.itsGraphObj.getAttribute() == null) {
             return 0;
         }
-
         VarTuple vars = null;
         if (this.itsAttrContext != null) {
             vars = (VarTuple) this.itsAttrContext.getVariables();
         }
-
         ValueTuple vt = (ValueTuple) this.itsGraphObj.getAttribute();
         for (int i = 0; i < vt.getSize(); i++) {
             ValueMember vm = vt.getValueMemberAt(i);
@@ -112,13 +102,13 @@ public class Constraint_Attribute extends BinaryConstraint implements
                 }
             }
         }
-
         return 1;
     }
 
     /**
-     * Return true iff the attributes of <code>graphobj</code> and of the current instance of <code>var</code> match.
-     * (The names correspond to my constructor arguments.)
+     * Return true iff the attributes of <code>graphobj</code> and of the
+     * current instance of <code>var</code> match. (The names correspond to my
+     * constructor arguments.)
      */
     public final boolean execute() {
         // pablo -->
@@ -127,12 +117,10 @@ public class Constraint_Attribute extends BinaryConstraint implements
             this.state = UNINSTANTIATE;
         }
         // pablo >
-
         if ((!this.attributed && this.itsAttrMapping == null)
                 || (this.attributed && this.itsAttrMapping != null)) {
             return true;
         }
-
         return false;
     }
 
@@ -146,7 +134,6 @@ public class Constraint_Attribute extends BinaryConstraint implements
         if (this.state == UNINSTANTIATE) {
             uninstantiate_intern(var);
         }
-
         this.state = NOTHING;
         this.instantiateVariable = null;
     }
@@ -155,15 +142,12 @@ public class Constraint_Attribute extends BinaryConstraint implements
         if (!(var.getInstance() instanceof GraphObject)) {
             return;
         }
-
         if (!this.itsGraphObj.attrExists()) {
             this.attributed = false;
             return;
         }
-
         AttrInstance origAttr = this.itsGraphObj.getAttribute();
         AttrInstance instAttr = ((GraphObject) var.getInstance()).getAttribute();
-
         try {
             if (origAttr != null && instAttr != null) {
                 this.itsAttrMapping = this.itsAttrManager.newMapping(
@@ -186,15 +170,14 @@ public class Constraint_Attribute extends BinaryConstraint implements
                     && go.getAttribute() != null) {
                 unsetUsedVariable(go);
             }
-
             if (this.itsAttrMapping != null) {
                 this.itsAttrMapping.remove();
                 this.itsAttrMapping = null;
             }
         }
     }
-    // pablo >
 
+    // pablo >
     public GraphObject getGraphObject() {
         return this.itsGraphObj;
     }
@@ -213,12 +196,10 @@ public class Constraint_Attribute extends BinaryConstraint implements
             }
         }
     }
-
     /*
 	private void showUsedVariable(GraphObject go) {
 		if (go.getAttribute() == null)
 			return;
-
 		List<String> attrVars = ((ValueTuple) go.getAttribute())
 				.getAllVariableNames();
 		VarTuple varTup = (VarTuple) this.itsAttrContext.getVariables();
@@ -230,6 +211,3 @@ public class Constraint_Attribute extends BinaryConstraint implements
 	}
      */
 }
-
-
-

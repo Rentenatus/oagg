@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: GraGraPopupMenu.java,v 1.11 2010/09/23 08:21:33 olga Exp $
 package agg.gui.popupmenu;
@@ -18,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.List;
-
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -26,7 +25,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdAtomic;
 import agg.editor.impl.EdConstraint;
 import agg.editor.impl.EdGraGra;
@@ -76,12 +74,9 @@ public class GraGraPopupMenu extends JPopupMenu {
     public GraGraPopupMenu(GraGraTreeView tree) {
         super("GraGra");
         this.treeView = tree;
-
         this.typeSelectionDialog = new NodeEdgeTypeSelectionDialog(this.treeView.getFrame());
-
         this.menuNew = new JMenu("New");
         add(this.menuNew);
-
         JMenuItem mi = this.menuNew.add(new JMenuItem(
                 "Type Graph                    Ctrl+Alt+T"));
         mi.setActionCommand("newTypeGraph");
@@ -90,7 +85,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 createTypeGraph();
             }
         });
-
         mi = this.menuNew.add(new JMenuItem(
                 "Graph                            Ctrl+Alt+G"));
         mi.setActionCommand("newGraph");
@@ -99,9 +93,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 createGraph();
             }
         });
-
         this.menuNew.addSeparator();
-
         mi = this.menuNew.add(new JMenuItem(
                 "Rule                               Ctrl+Alt+R"));
         mi.setActionCommand("newRule");
@@ -110,7 +102,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 createRule();
             }
         });
-
         this.miRuleScheme = new JMenuItem("RuleScheme                                ");
         this.menuNew.add(this.miRuleScheme);
         this.miRuleScheme.setActionCommand("newRuleScheme");
@@ -119,7 +110,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 createRuleScheme();
             }
         });
-
         this.miParallelRule = new JMenuItem("Make Parallel Rule by disjoint Union");
 //		this.menuNew.add(this.miParallelRule);
         this.miParallelRule.addActionListener(new ActionListener() {
@@ -127,9 +117,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 makeParallelRule();
             }
         });
-
         this.menuNew.addSeparator();
-
         mi = this.menuNew.add(new JMenuItem("Atomic Constraint         Ctrl+Alt+A"));
         mi.setActionCommand("newAtomic");
         mi.addActionListener(new ActionListener() {
@@ -137,7 +125,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 createAtomic();
             }
         });
-
         mi = this.menuNew.add(new JMenuItem("Constraint                     Ctrl+Alt+C"));
         mi.setActionCommand("newConstraint");
         mi.addActionListener(new ActionListener() {
@@ -145,9 +132,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 createGraphConstraint();
             }
         });
-
         this.menuNew.addSeparator();
-
         mi = this.menuNew.add(new JMenuItem("Rule Sequence        "));
         mi.setActionCommand("newRuleSequence");
         mi.addActionListener(new ActionListener() {
@@ -155,7 +140,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 createRuleSequence();
             }
         });
-
         mi = add(new JMenuItem("Add Copy of Current Host Graph"));
         mi.setActionCommand("addGraph");
         mi.addActionListener(new ActionListener() {
@@ -163,9 +147,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 addHostGraph();
             }
         });
-
         addSeparator();
-
         JMenu m = new JMenu("Layering");
         add(m);
         mi = m.add(new JMenuItem("Set Rule Layer"));
@@ -175,7 +157,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 setLayerOfRules();
             }
         });
-
         mi = m.add(new JMenuItem("Set Trigger Rule for Layer"));
         mi.setActionCommand("setTriggerRuleOfLayer");
         mi.addActionListener(new ActionListener() {
@@ -183,7 +164,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 setTriggerRuleOfLayer();
             }
         });
-
         mi = m.add(new JMenuItem("Select Rule Layer for Constraint"));
         mi.setActionCommand("setLayerOfConstraints");
         mi.addActionListener(new ActionListener() {
@@ -191,9 +171,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 setLayerOfConstraints();
             }
         });
-
         m.addSeparator();
-
         mi = m.add(new JMenuItem("Sort Rules by Layer"));
         mi.setActionCommand("sortRulesByLayer");
         mi.addActionListener(new ActionListener() {
@@ -201,7 +179,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 sortRulesByLayer();
             }
         });
-
         mi = m.add(new JMenuItem("Sort Constraints by Layer"));
         mi.setActionCommand("sortConstraintsByLayer");
         mi.addActionListener(new ActionListener() {
@@ -209,9 +186,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 sortConstraintsByLayer();
             }
         });
-
         m.addSeparator();
-
         mi = m.add(new JMenuItem("Disable Rule Layer"));
         mi.setActionCommand("disableLayerOfRules");
         mi.addActionListener(new ActionListener() {
@@ -219,9 +194,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 disableLayerOfRules();
             }
         });
-
         addSeparator();
-
         m = new JMenu("Priority");
         add(m);
         mi = m.add(new JMenuItem("Set Rule Priority"));
@@ -231,7 +204,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 setPriorityOfRules();
             }
         });
-
         mi = m.add(new JMenuItem("Select Rule Priority for Constraint"));
         mi.setActionCommand("setPriorityOfConstraints");
         mi.addActionListener(new ActionListener() {
@@ -239,9 +211,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 setPriorityOfConstraints();
             }
         });
-
         m.addSeparator();
-
         mi = m.add(new JMenuItem("Sort Rules by Priority"));
         mi.setActionCommand("sortRulesByPriority");
         mi.addActionListener(new ActionListener() {
@@ -249,7 +219,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 sortRulesByPriority();
             }
         });
-
         mi = m.add(new JMenuItem("Sort Constraints by Priority"));
         mi.setActionCommand("sortConstraintsByPriority");
         mi.addActionListener(new ActionListener() {
@@ -257,9 +226,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 sortConstraintsByPriority();
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Check Rule Applicability"));
         mi.setActionCommand("checkRuleApplicability");
         mi.addActionListener(new ActionListener() {
@@ -267,7 +234,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 checkRuleApplicability();
             }
         });
-
         mi = add(new JMenuItem("Dismiss Rule Applicability"));
         mi.setActionCommand("dismissRuleApplicability");
         mi.addActionListener(new ActionListener() {
@@ -276,10 +242,8 @@ public class GraGraPopupMenu extends JPopupMenu {
             }
         });
         addSeparator();
-
         m = new JMenu("Consistency");
         add(m);
-
         mi = m.add(new JMenuItem("Check Atomics"));
         mi.setActionCommand("checkAtomics");
         mi.addActionListener(new ActionListener() {
@@ -287,7 +251,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 doAtomics(1);
             }
         });
-
         mi = m.add(new JMenuItem("Check Constraints"));
         mi.setActionCommand("checkConstraints");
         mi.addActionListener(new ActionListener() {
@@ -295,9 +258,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 doAtomics(2);
             }
         });
-
         m.addSeparator();
-
         mi = m.add(new JMenuItem("Create Post Application Conditions"));
         mi.setActionCommand("convertConstraints");
         mi.addActionListener(new ActionListener() {
@@ -305,9 +266,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 doAtomics(0);
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Close                               Ctrl+W"));
         mi.setActionCommand("deleteGraGra");
         mi.addActionListener(new ActionListener() {
@@ -319,9 +278,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 }
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Save                                Ctrl+S"));
         mi.setActionCommand("save");
         mi.addActionListener(new ActionListener() {
@@ -329,7 +286,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 treeView.saveGraGra();
             }
         });
-
         mi = add(new JMenuItem("Save As                            Alt+S"));
         mi.setActionCommand("saveAs");
         mi.addActionListener(new ActionListener() {
@@ -337,30 +293,23 @@ public class GraGraPopupMenu extends JPopupMenu {
                 treeView.saveAsGraGra();
             }
         });
-
         addSeparator();
-
         JMenu submExport = (JMenu) add(new JMenu("Export"));
-
         mi = submExport.add(new JMenuItem("JPEG         Shift+J"));
         mi.setEnabled(true);
         mi.setActionCommand("exportGraphJPEG");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         mi = submExport.add(new JMenuItem("GXL          Shift+X"));
         mi.setEnabled(true);
         mi.setActionCommand("exportGXL");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         mi = submExport.add(new JMenuItem("GTXL        Shift+T"));
         mi.setEnabled(true);
         mi.setActionCommand("exportGTXL");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         mi = createMenuExportToColorGraph("COLOR GRAPH        ");
         submExport.add(mi);
         mi.setEnabled(true);
-
         JMenu submImport = (JMenu) add(new JMenu("Import"));
         submImport.setEnabled(true);
         mi = submImport.add(new JMenuItem(
@@ -368,29 +317,23 @@ public class GraGraPopupMenu extends JPopupMenu {
         mi.setEnabled(true);
         mi.setActionCommand("importGGX");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         mi = submImport.add(new JMenuItem(
                 "GXL                          Shift+Alt+X"));
         mi.setEnabled(true);
         mi.setActionCommand("importGXL");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         mi = new JMenuItem("GTXL");
         mi.setEnabled(false);
         mi.setActionCommand("importGTXL");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         mi = submImport.add(new JMenuItem("OMONDO XMI          Shift+Alt+O"));
         mi.setEnabled(true);
         mi.setActionCommand("importOMONDOXMI");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         mi = createMenuImportFromColorGraph("COLOR GRAPH        ");
         submImport.add(mi);
         mi.setEnabled(true);
-
         addSeparator();
-
         mi = add(new JMenuItem("Refresh Attributes"));
         mi.setActionCommand("refresh");
         mi.addActionListener(new ActionListener() {
@@ -398,9 +341,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 refreshAttrs();
             }
         });
-
         addSeparator();
-
         miReload = add(new JMenuItem("Reload                     Shift+Alt+R"));
         miReload.setActionCommand("reload");
         miReload.addActionListener(new ActionListener() {
@@ -408,9 +349,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 treeView.reloadGraGra();
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Textual Comments"));
         mi.setActionCommand("commentGraGra");
         mi.addActionListener(new ActionListener() {
@@ -418,7 +357,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                 editComments();
             }
         });
-
         pack();
         setBorderPainted(true);
     }
@@ -427,7 +365,6 @@ public class GraGraPopupMenu extends JPopupMenu {
         if (this.treeView == null) {
             return false;
         }
-
         if (this.treeView.getTree().getRowForLocation(x, y) != -1) {
             if (this.treeView.getTree().getPathForLocation(x, y).getPath().length == 2) {
                 this.path = this.treeView.getTree().getPathForLocation(x, y);
@@ -436,13 +373,11 @@ public class GraGraPopupMenu extends JPopupMenu {
                 if (this.data.isGraGra()) {
                     this.gra = this.data.getGraGra();
                     this.typeSelectionDialog.setGraGra(this.gra);
-
                     if (this.treeView.getGraGra().getRules().size() > 1) {
                         this.miParallelRule.setEnabled(true);
                     } else {
                         this.miParallelRule.setEnabled(false);
                     }
-
                     return true;
                 }
             }
@@ -454,7 +389,6 @@ public class GraGraPopupMenu extends JPopupMenu {
         if (this.treeView == null) {
             return false;
         }
-
         this.path = this.treeView.getSelectedPath();
         if (this.path != null) {
             this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
@@ -477,31 +411,25 @@ public class GraGraPopupMenu extends JPopupMenu {
 
     public void show(Component invoker, int x, int y) {
         super.show(invoker, x, y);
-
         this.typeSelectionDialog.setNodeType(this.treeView.getNodeTypeForColorGraph());
         this.typeSelectionDialog.setEdgeType(this.treeView.getEdgeTypeForColorGraph());
         this.typeSelectionDialog.setLocation(
                 this.getLocationOnScreen().x + 150,
                 this.getLocationOnScreen().y + 50);
-
     }
 
     private JMenu createMenuExportToColorGraph(final String title) {
         final JMenu expMenu = new JMenu(title);
-
         final JMenuItem miAll = expMenu.add(new JMenuItem("Export Complete Current Host Graph"));
         miAll.setSelected(true);
         miAll.setActionCommand(EXPORT_TO_COLOR_GRAPH);
         miAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 GraGraPopupMenu.this.treeView.setNodeTypeForColorGraph(null);
                 GraGraPopupMenu.this.treeView.setEdgeTypeForColorGraph(null);
-
                 GraGraPopupMenu.this.treeView.getActionAdapter().actionPerformed(e);
             }
         });
-
         final JMenuItem miSpecial = expMenu.add(new JMenuItem("Export specific Nodes and Edges of Current Host Graph"));
         miSpecial.setSelected(false);
         miSpecial.setActionCommand(EXPORT_BY_TYPE_TO_COLOR_GRAPH);
@@ -521,31 +449,25 @@ public class GraGraPopupMenu extends JPopupMenu {
                     } else {
                         GraGraPopupMenu.this.treeView.setEdgeTypeForColorGraph(null);
                     }
-
                     GraGraPopupMenu.this.treeView.getActionAdapter().actionPerformed(e);
                 }
             }
         });
-
         return expMenu;
     }
 
     private JMenu createMenuImportFromColorGraph(final String title) {
         final JMenu impMenu = new JMenu(title);
-
         final JMenuItem miAll = impMenu.add(new JMenuItem("Import into Current Host Graph"));
         miAll.setSelected(true);
         miAll.setActionCommand(IMPORT_FROM_COLOR_GRAPH);
         miAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 GraGraPopupMenu.this.treeView.setNodeTypeForColorGraph(null);
                 GraGraPopupMenu.this.treeView.setEdgeTypeForColorGraph(null);
-
                 GraGraPopupMenu.this.treeView.getActionAdapter().actionPerformed(e);
             }
         });
-
         final JMenuItem miSpecial = impMenu.add(new JMenuItem("Import specific Nodes into Current Host Graph"));
         miSpecial.setSelected(false);
         miSpecial.setActionCommand(IMPORT_BY_TYPE_FROM_COLOR_GRAPH);
@@ -555,24 +477,20 @@ public class GraGraPopupMenu extends JPopupMenu {
                 if (!GraGraPopupMenu.this.typeSelectionDialog.isCancelled()) {
                     final EdType nodeType = GraGraPopupMenu.this.typeSelectionDialog.getNodeType();
                     final EdType edgeType = GraGraPopupMenu.this.typeSelectionDialog.getEdgeType();
-
                     if (nodeType != null) {
                         GraGraPopupMenu.this.treeView.setNodeTypeForColorGraph(nodeType);
                     } else {
                         GraGraPopupMenu.this.treeView.setNodeTypeForColorGraph(null);
                     }
-
                     if (edgeType != null) {
                         GraGraPopupMenu.this.treeView.setEdgeTypeForColorGraph(edgeType);
                     } else {
                         GraGraPopupMenu.this.treeView.setEdgeTypeForColorGraph(null);
                     }
-
                     GraGraPopupMenu.this.treeView.getActionAdapter().actionPerformed(e);
                 }
             }
         });
-
         return impMenu;
     }
 
@@ -600,10 +518,8 @@ public class GraGraPopupMenu extends JPopupMenu {
         }
         if (gra.isEditable()) {
             EdGraph typeGraph = gra.createTypeGraph();
-
             TypeGraphTreeNodeData sdTypeGraph = new TypeGraphTreeNodeData(typeGraph);
             sdTypeGraph.setString("[D]TypeGraph");
-
             DefaultMutableTreeNode newTypeGraphNode = new DefaultMutableTreeNode(
                     sdTypeGraph);
             sdTypeGraph.setTreeNode(newTypeGraphNode);
@@ -644,7 +560,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                     "", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.path.getLastPathComponent();
         if (gra != this.treeView.getCurrentGraGra()) {
             JOptionPane.showMessageDialog(this.treeView.getFrame(),
@@ -666,9 +581,7 @@ public class GraGraPopupMenu extends JPopupMenu {
                 GraphTreeNodeData sdGraph = new GraphTreeNodeData(g);
                 DefaultMutableTreeNode newGraphNode = new DefaultMutableTreeNode(sdGraph);
                 sdGraph.setTreeNode(newGraphNode);
-
                 this.treeView.getTreeModel().insertNodeInto(newGraphNode, parent, indx);
-
                 return true;
             }
         } else {
@@ -687,7 +600,6 @@ public class GraGraPopupMenu extends JPopupMenu {
             String name = "Rule" + gra.getRules().size();
             name = ((GraGraTreeModel) this.treeView.getTree().getModel()).makeNewName(gra, name);
             EdRule newRule = gra.createRule(name);
-
             RuleTreeNodeData sdRule = new RuleTreeNodeData(newRule);
             if (gra.getBasisGraGra().isLayered()) {
                 String tag = "[" + newRule.getBasisRule().getLayer() + "]";
@@ -716,12 +628,10 @@ public class GraGraPopupMenu extends JPopupMenu {
             String name = "RuleScheme" + gra.getRules().size();
             name = ((GraGraTreeModel) this.treeView.getTree().getModel()).makeNewName(gra, name);
             EdRuleScheme newRuleScheme = gra.createRuleScheme(name);
-
             RuleSchemeTreeNodeData sdRuleScheme = new RuleSchemeTreeNodeData(newRuleScheme);
             DefaultMutableTreeNode newRuleSchemeNode = new DefaultMutableTreeNode(sdRuleScheme);
             sdRuleScheme.setTreeNode(newRuleSchemeNode);
             this.treeView.getTreeModel().insertNodeInto(newRuleSchemeNode, parent, newIndex);
-
             // make kernel rule tree node of rule scheme
             parent = newRuleSchemeNode;
             KernelRuleTreeNodeData sdKernelRule = new KernelRuleTreeNodeData(newRuleScheme.getKernelRule());
@@ -751,17 +661,14 @@ public class GraGraPopupMenu extends JPopupMenu {
             }
             name = ((GraGraTreeModel) this.treeView.getTree().getModel()).makeNewName(gra, name);
             EdAtomic newAtomic = gra.createAtomic(name);
-
             AtomicGraphConstraintTreeNodeData sd = new AtomicGraphConstraintTreeNodeData(newAtomic);
             DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(sd);
             sd.setTreeNode(newNode);
             this.treeView.getTreeModel().insertNodeInto(newNode, parent, newIndex);
-
             /* add first conclusion */
             newIndex = newAtomic.getConclusions().size() - 1;
             EdAtomic aConclusion = newAtomic.getConclusion(0);
             name = aConclusion.getMorphism().getName();
-
             ConclusionTreeNodeData sdc = new ConclusionTreeNodeData(aConclusion);
             DefaultMutableTreeNode aNode = new DefaultMutableTreeNode(sdc);
             sdc.setTreeNode(aNode);
@@ -788,9 +695,7 @@ public class GraGraPopupMenu extends JPopupMenu {
             }
             name = ((GraGraTreeModel) this.treeView.getTree().getModel()).makeNewName(gra, name);
             EdConstraint newConstraint = gra.createConstraint(name);
-
             handleRuleConstraints(parent, false, newConstraint);
-
             ConstraintTreeNodeData sd = new ConstraintTreeNodeData(newConstraint);
             if (gra.getBasisGraGra().isLayered()
                     && !newConstraint.getBasisConstraint().getLayer().isEmpty()) {
@@ -814,11 +719,9 @@ public class GraGraPopupMenu extends JPopupMenu {
                     + gra.getRules().size()
                     + gra.getAtomics().size()
                     + gra.getConstraints().size();
-
             if (gra.getTypeSet().getTypeGraph() != null) {
                 indx++;
             }
-
             this.treeView.fireTreeViewEvent(new TreeViewEvent(
                     this.treeView, TreeViewEvent.RULE_SEQUENCE,
                     this.path));
@@ -828,16 +731,13 @@ public class GraGraPopupMenu extends JPopupMenu {
                 for (int i = 0; i < gra.getBasisGraGra().getRuleSequences().size(); i++) {
                     RuleSequence rseq = gra.getBasisGraGra().getRuleSequences().get(i);
                     rseq.setCriticalPairOption(((AGGAppl) this.treeView.getFrame()).getCPA().getCriticalPairOption());
-
                     RuleSequenceTreeNodeData sdRuleSequence = new RuleSequenceTreeNodeData(rseq);
                     DefaultMutableTreeNode newRuleSequenceNode = new DefaultMutableTreeNode(sdRuleSequence);
                     sdRuleSequence.setTreeNode(newRuleSequenceNode);
                     this.treeView.getTreeModel().insertNodeInto(newRuleSequenceNode, parent, indx + i);
                 }
             }
-
             indx = indx + gra.getBasisGraGra().getRuleSequences().size();
-
             String name = "RuleSequence";
             if (!gra.getBasisGraGra().getRuleSequences().isEmpty()) {
                 name = "RuleSequence" + gra.getBasisGraGra().getRuleSequences().size();
@@ -845,7 +745,6 @@ public class GraGraPopupMenu extends JPopupMenu {
             RuleSequence rseq = new RuleSequence(gra.getBasisGraGra(), name);
             gra.getBasisGraGra().addRuleSequence(rseq);
             rseq.setCriticalPairOption(((AGGAppl) this.treeView.getFrame()).getCPA().getCriticalPairOption());
-
             GraGraTreeNodeData sdRuleSequence = new RuleSequenceTreeNodeData(rseq);
             DefaultMutableTreeNode newRuleSequenceNode = new DefaultMutableTreeNode(sdRuleSequence);
             sdRuleSequence.setTreeNode(newRuleSequenceNode);
@@ -889,7 +788,8 @@ public class GraGraPopupMenu extends JPopupMenu {
      * When <code>what</code> is <br>
      * 0: create Post Application Conditions for all rules<br>
      * 1: check all atomic graph constraints at the current host graph<br>
-     * 2: check all graph consistency constraints (formulae) at the current host graph.
+     * 2: check all graph consistency constraints (formulae) at the current host
+     * graph.
      *
      * @param what
      */
@@ -905,16 +805,13 @@ public class GraGraPopupMenu extends JPopupMenu {
                 return;
             }
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.path.getLastPathComponent();
-
         switch (what) {
             case 0:
                 handleRuleConstraints(parent, false, null);
                 if (this.gra.getBasisGraGra().getAtomics().hasMoreElements()
                         && this.gra.getBasisGraGra().getConstraints()
                                 .hasMoreElements()) {
-
                     JOptionPane pane = new JOptionPane(
                             "Creating post application conditions ... \n Please wait ... ",
                             JOptionPane.WARNING_MESSAGE);
@@ -933,7 +830,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                     d.setVisible(true);
                     while (thread.isAlive()) {
                     }
-
                     if (!this.msg.equals("")) {
                         this.treeView.fireTreeViewEvent(new TreeViewEvent(this.treeView,
                                 TreeViewEvent.CONVERT_STEP,
@@ -981,7 +877,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                             JOptionPane.ERROR_MESSAGE);
                     break;
                 }
-
                 boolean changed = this.gra.isChanged();
                 boolean all_good = false;
                 TreeViewEvent e = new TreeViewEvent(this.treeView, TreeViewEvent.CHECK);
@@ -1015,7 +910,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                     this.msg = "The graph fulfills all atomic graph constraints.";
                     JOptionPane.showMessageDialog(this.treeView.getFrame(), this.msg);
                 }
-
                 this.gra.setChanged(changed);
                 break;
             }
@@ -1039,7 +933,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                             JOptionPane.ERROR_MESSAGE);
                     break;
                 }
-
                 boolean changed = this.gra.isChanged();
                 boolean all_good = false;
                 TreeViewEvent e = new TreeViewEvent(this.treeView, TreeViewEvent.CHECK);
@@ -1070,7 +963,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                     this.msg = "The graph fulfills all constraints.";
                     JOptionPane.showMessageDialog(this.treeView.getFrame(), this.msg);
                 }
-
                 this.gra.setChanged(changed);
                 break;
             }
@@ -1096,7 +988,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                     }
                 }
             }
-
         } else if (sd.isRule()) {
             if (insert) {
                 treeView.addRuleConstraints(node, objToCheck);
@@ -1206,26 +1097,20 @@ public class GraGraPopupMenu extends JPopupMenu {
                 }
             }
             int indx = this.treeView.getTreeModel().getIndexOfChild(parent, node);
-
             node.removeAllChildren();
             this.treeView.getTreeModel().removeNodeFromParent(node);
-
             gra.sortRulesByLayer();
-
             GrammarTreeNodeData sdGra = new GrammarTreeNodeData(gra);
             node = new DefaultMutableTreeNode(sdGra);
             sdGra.setTreeNode(node);
             this.treeView.getTreeModel().insertNodeInto(node, parent, indx);
-
             GrammarTreeNode tmpTreeNode = new GrammarTreeNode();
             tmpTreeNode.updateTreeNodeData(this.treeView, node, gra);
-
             this.treeView.getTreeModel().nodeChanged(node);
             if (indx == 0) {
                 this.treeView.getTree().expandRow(indx);
             }
             this.treeView.getTree().expandRow(row);
-
             if (currRule != null) {
                 DefaultMutableTreeNode ruleNode = this.treeView.getTreeModel()
                         .getTreeNodeOfGraGraRule(node, currRule);
@@ -1266,26 +1151,20 @@ public class GraGraPopupMenu extends JPopupMenu {
                 }
             }
             int indx = this.treeView.getTreeModel().getIndexOfChild(parent, node);
-
             node.removeAllChildren();
             this.treeView.getTreeModel().removeNodeFromParent(node);
-
             gra.sortConstraintsByLayer();
-
             GrammarTreeNodeData sdGra = new GrammarTreeNodeData(gra);
             node = new DefaultMutableTreeNode(sdGra);
             sdGra.setTreeNode(node);
             this.treeView.getTreeModel().insertNodeInto(node, parent, indx);
-
             GrammarTreeNode tmpTreeNode = new GrammarTreeNode();
             tmpTreeNode.updateTreeNodeData(this.treeView, node, gra);
-
             this.treeView.getTreeModel().nodeChanged(node);
             if (indx == 0) {
                 this.treeView.getTree().expandRow(indx);
             }
             this.treeView.getTree().expandRow(row);
-
             DefaultMutableTreeNode constraintNode = this.treeView.getTreeModel()
                     .getTreeNodeOfGraGraRule(node, currConstraint);
             if (constraintNode != null) {
@@ -1407,26 +1286,20 @@ public class GraGraPopupMenu extends JPopupMenu {
                 }
             }
             int indx = this.treeView.getTreeModel().getIndexOfChild(parent, node);
-
             node.removeAllChildren();
             this.treeView.getTreeModel().removeNodeFromParent(node);
-
             gra.sortRulesByPriority();
-
             GrammarTreeNodeData sdGra = new GrammarTreeNodeData(gra);
             node = new DefaultMutableTreeNode(sdGra);
             sdGra.setTreeNode(node);
             this.treeView.getTreeModel().insertNodeInto(node, parent, indx);
-
             GrammarTreeNode tmpTreeNode = new GrammarTreeNode();
             tmpTreeNode.updateTreeNodeData(this.treeView, node, gra);
-
             this.treeView.getTreeModel().nodeChanged(node);
             if (indx == 0) {
                 this.treeView.getTree().expandRow(indx);
             }
             this.treeView.getTree().expandRow(row);
-
             if (currRule != null) {
                 DefaultMutableTreeNode ruleNode = this.treeView.getTreeModel()
                         .getTreeNodeOfGraGraRule(node, currRule);
@@ -1469,26 +1342,20 @@ public class GraGraPopupMenu extends JPopupMenu {
                 }
             }
             int indx = this.treeView.getTreeModel().getIndexOfChild(parent, node);
-
             node.removeAllChildren();
             this.treeView.getTreeModel().removeNodeFromParent(node);
-
             gra.sortConstraintsByPriority();
-
             GrammarTreeNodeData sdGra = new GrammarTreeNodeData(gra);
             node = new DefaultMutableTreeNode(sdGra);
             sdGra.setTreeNode(node);
             this.treeView.getTreeModel().insertNodeInto(node, parent, indx);
-
             GrammarTreeNode tmpTreeNode = new GrammarTreeNode();
             tmpTreeNode.updateTreeNodeData(this.treeView, node, gra);
-
             this.treeView.getTreeModel().nodeChanged(node);
             if (indx == 0) {
                 this.treeView.getTree().expandRow(indx);
             }
             this.treeView.getTree().expandRow(row);
-
             DefaultMutableTreeNode constraintNode = this.treeView.getTreeModel()
                     .getTreeNodeOfGraGraRule(node, currConstraint);
             if (constraintNode != null) {
@@ -1524,7 +1391,6 @@ public class GraGraPopupMenu extends JPopupMenu {
             }
             GraGraTextualComment comments = new GraGraTextualComment(this.treeView.getFrame(), p.x,
                     p.y, gra.getBasisGraGra());
-
             if (comments != null) {
                 comments.setVisible(true);
             }
@@ -1535,7 +1401,6 @@ public class GraGraPopupMenu extends JPopupMenu {
         if (gra != null) {
             int indxOfLastRule = node.getIndex(this.treeView.getTreeNodeOfRule(
                     data.getGraGra().getRules().lastElement()));
-
             final SelectRulesDialog dialog = new SelectRulesDialog(this.treeView.getFrame(),
                     data.getGraGra().getBasisGraGra(),
                     null, new Point(300, 200));
@@ -1550,7 +1415,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                             JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-
                 Rule failedRule = BaseFactory.theFactory().checkApplCondsOfRules(dialog.getRuleList());
                 if (failedRule != null) {
                     JOptionPane.showMessageDialog(this.treeView.getFrame(),
@@ -1560,7 +1424,6 @@ public class GraGraPopupMenu extends JPopupMenu {
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 makeParallelRuleOfRules(data.getGraGra(),
                         dialog.getRuleList(),
                         node,
@@ -1574,7 +1437,6 @@ public class GraGraPopupMenu extends JPopupMenu {
             final List<Rule> rules,
             final DefaultMutableTreeNode node,
             int indxOfLastRule) {
-
         EdRule parallelRule = gra.makeParallelRuleOfRules(rules, true);
         if (parallelRule != null) {
             if (parallelRule.getBasisRule().isApplicable()) {
@@ -1604,10 +1466,8 @@ public class GraGraPopupMenu extends JPopupMenu {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-
     JMenuItem miRuleScheme, miParallelRule, miReload;
     JMenu menuNew;
-
     GraGraTreeView treeView;
     TreePath path;
     DefaultMutableTreeNode node;
@@ -1615,5 +1475,4 @@ public class GraGraPopupMenu extends JPopupMenu {
     EdGraGra gra;
     String msg;
     final protected NodeEdgeTypeSelectionDialog typeSelectionDialog;
-
 }

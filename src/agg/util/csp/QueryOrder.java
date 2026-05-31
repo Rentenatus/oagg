@@ -1,11 +1,12 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: QueryOrder.java,v 1.3 2007/09/10 13:05:15 olga Exp $
 // $Log: QueryOrder.java,v $
@@ -48,7 +49,8 @@ public class QueryOrder implements BinaryPredicate {
     }
 
     /**
-     * Return true iff the weight of <code>q1</code> is greater or equal the weight of <code>q2</code>.
+     * Return true iff the weight of <code>q1</code> is greater or equal the
+     * weight of <code>q2</code>.
      * <p>
      * <b>Pre:</b> <code>q1,q2 instanceof Query</code>.
      *

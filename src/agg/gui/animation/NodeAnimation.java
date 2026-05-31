@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -19,9 +21,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.ImageIcon;
-
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
@@ -43,29 +43,18 @@ public class NodeAnimation {
     public final static int WORM = 20;
     public final static int CROSS = 30;
     public final static int COMBI_CROSS = 31;
-
     private ImageIcon image; //, inverseImage;	
-
     protected String imageFileName = "";
-
     private final Hashtable<EdType, ImageIcon> type2icon;
-
     private final Hashtable<String, ImageIcon> name2icon;
-
     protected int kind;
-
     protected boolean stop;
-
     protected int x1, y1, x2, y2, plus;
-
     protected EdNode nG, n1G;
-
     private int step, delay;
-
     protected EdRule r;
     protected EdGraph g;
     protected Hashtable<EdNode, Point> node2position;
-
     protected Graphics2D grs;
     protected boolean needGraphicsToMove;
     protected boolean left, right, top, down;
@@ -105,7 +94,6 @@ public class NodeAnimation {
         this.g = graph;
         this.grs = graphics;
         this.kind = animation;
-
         if (this.kind == JUMP) {
             // if an edge changed its target node
             this.setAnimationData();
@@ -119,7 +107,6 @@ public class NodeAnimation {
             // if an edge changed its target node
             this.setAnimationData();
         }
-
         return true;
     }
 
@@ -130,7 +117,6 @@ public class NodeAnimation {
         this.r = rule;
         this.g = graph;
         this.grs = graphics;
-
         this.kind = this.r.getAnimationKind();
 //		System.out.println("NodeAnimation.animation:: of rule: "+rule.getName()+"  kind: "+kind);
         if (this.kind == JUMP) {
@@ -146,15 +132,12 @@ public class NodeAnimation {
             // if an edge changed its target node
             this.setAnimationData();
         }
-
         return true;
     }
 
     public void animate() {
 //		System.out.println("NodeAnimation.running   ...");
-
         enableNodeAnimation();
-
         Enumeration<EdNode> keys = this.node2position.keys();
         while (keys.hasMoreElements()) {
             EdNode n = keys.nextElement();
@@ -176,7 +159,6 @@ public class NodeAnimation {
             for (int i = 0; i < dom.size() && !this.stop; i++) {
                 GraphObject oL = dom.get(i);
 //				System.out.println("NodeAnimation.setAnimationData::  oL: "+oL.getType().getName());
-
                 if (oL.isNode()) {
                     EdNode nL = this.r.getLeft().findNode(oL);
 //					System.out.println("NodeAnimation.setAnimationData::  nL: "+nL.getType().getName()+"   animated: "+nL.getType().isAnimated());
@@ -188,13 +170,10 @@ public class NodeAnimation {
                                 GraphObject oR = this.r.getBasisRule().getImage(oL);
                                 if (oR != null) {
 //									EdNode nR = this.r.getRight().findNode(oR);
-
                                     Arc outR = null;
-
                                     arcR = getTargetEdgeOfAnimation(((Node) oR).getOutgoingArcs(),
                                             nL.getType().animationParameter.targetEdgeTypeName);
 //									System.out.println("NodeAnimation.setAnimationData::  arcR: "+arcR);
-
                                     if (arcR == null) {
                                         for (Iterator<Arc> outsR = ((Node) oR).getOutgoingArcs(); outsR.hasNext();) {
                                             outR = outsR.next();
@@ -219,7 +198,6 @@ public class NodeAnimation {
                                 if (inv.hasNext()) {
                                     this.n1G = this.g.findNode(m.getImage(inv.next()));
                                     this.nG = this.g.findNode(m.getImage(oL));
-
 //									System.out.println("NodeAnimation.animationTest::  nG: "+nG);
 //									System.out.println("NodeAnimation.animationTest::  n1G: "+n1G);
 //									System.out.println(nG.getType().animationParameter.kind+"   "
@@ -232,11 +210,9 @@ public class NodeAnimation {
                                     setDelay(this.nG.getType().animationParameter.delay);
                                     setEndPlus(this.nG.getType().animationParameter.plus);
                                     this.imageFileName = this.nG.getType().imageFileName;
-
                                     this.node2position.put(this.nG, new Point(
                                             applyPlusToPosition(this.n1G.getX(), this.plus),
                                             applyPlusToPosition(this.n1G.getY(), this.plus)));
-
 //									correctAdjacentEdgesText(this.nG);
                                 }
                             }
@@ -273,11 +249,9 @@ public class NodeAnimation {
     private Arc getTargetEdgeOfAnimation(
             final Iterator<Arc> outArcs,
             final String targetEdgeTypeName) {
-
         if (targetEdgeTypeName == null) {
             return null;
         }
-
         String tname = ("[unnamed]".equals(targetEdgeTypeName)) ? "" : targetEdgeTypeName;
         while (outArcs.hasNext()) {
             final Arc a = outArcs.next();
@@ -324,7 +298,6 @@ public class NodeAnimation {
                                         setDelay(this.nG.getType().animationParameter.delay);
                                         setEndPlus(this.nG.getType().animationParameter.plus);
                                         this.imageFileName = this.nG.getType().imageFileName;
-
                                         if (lastpoint == null) {
                                             lastpoint = point;
                                             p++;
@@ -333,7 +306,6 @@ public class NodeAnimation {
                                             point = this.computeSimilarPosition(point, p * this.dx / 2, p * this.dy / 2, p);
                                             p++;
                                         }
-
                                         this.node2position.put(this.nG, new Point(
                                                 applyPlusToPosition(point.x, this.plus),
                                                 applyPlusToPosition(point.y, this.plus)));
@@ -389,7 +361,6 @@ public class NodeAnimation {
                                         setDelay(this.nG.getType().animationParameter.delay);
                                         setEndPlus(this.nG.getType().animationParameter.plus);
                                         this.imageFileName = this.nG.getType().imageFileName;
-
                                         this.node2position.put(this.nG, new Point(
                                                 applyPlusToPosition(point.x, this.plus),
                                                 applyPlusToPosition(point.y, this.plus)));
@@ -413,7 +384,6 @@ public class NodeAnimation {
                                     setDelay(this.nG.getType().animationParameter.delay);
                                     setEndPlus(this.nG.getType().animationParameter.plus);
                                     this.imageFileName = this.nG.getType().imageFileName;
-
                                     this.node2position.put(this.nG, new Point(
                                             applyPlusToPosition(point.x, this.plus),
                                             applyPlusToPosition(point.y, this.plus)));
@@ -435,7 +405,6 @@ public class NodeAnimation {
                                     setDelay(this.nG.getType().animationParameter.delay);
                                     setEndPlus(this.nG.getType().animationParameter.plus);
                                     this.imageFileName = this.nG.getType().imageFileName;
-
                                     if (lastpoint == null) {
                                         lastpoint = point;
                                         p++;
@@ -490,7 +459,6 @@ public class NodeAnimation {
                                         out = out1;
                                     }
                                 }
-
                                 this.n1G = this.g.findNode(out.getTarget());
                                 if (this.n1G != null) {
                                     setStartPosition(this.n1G.getX(), this.n1G.getY());
@@ -499,7 +467,6 @@ public class NodeAnimation {
                                     setDelay(this.nG.getType().animationParameter.delay);
                                     setEndPlus(this.nG.getType().animationParameter.plus);
                                     this.imageFileName = this.nG.getType().imageFileName;
-
                                     this.node2position.put(this.nG, new Point(
                                             applyPlusToPosition(this.n1G.getX(), this.plus),
                                             applyPlusToPosition(this.n1G.getY(), this.plus)));
@@ -578,9 +545,7 @@ public class NodeAnimation {
                     this.down = true;
                 }
             }
-
             final Point pos = computePosition(new Point(x0, y0), this.dx, this.dy);
-
             return pos;
         }
         return null;
@@ -632,7 +597,6 @@ public class NodeAnimation {
 
     private Point computeSimilarPosition(final Point pos0, int distx, int disty, int p) {
         Point pos = new Point(0, 0);
-
         if (!this.left && !this.down) {
 //			System.out.println("!left && !down");
             pos.x = pos0.x - distx;
@@ -682,7 +646,6 @@ public class NodeAnimation {
             pos.x = pos0.x - distx;
             pos.y = pos0.y + disty;
         }
-
         return pos;
     }
 
@@ -800,7 +763,6 @@ public class NodeAnimation {
         if (this.image == null && this.kind != CROSS && this.kind != COMBI_CROSS) {
             getAnimationImageOfNode();
         }
-
         nodeAnimation();
     }
 
@@ -814,7 +776,6 @@ public class NodeAnimation {
             final int endY,
             final int s,
             final int ms) {
-
         this.grs = graphics;
         this.imageFileName = imageName;
         this.kind = animation;
@@ -824,12 +785,10 @@ public class NodeAnimation {
         this.y2 = endY;
         this.step = s;
         this.delay = ms;
-
         this.image = this.name2icon.get(this.imageFileName);
         if (this.image == null) {
             getAnimationImageOfNode();
         }
-
         nodeAnimation();
     }
 
@@ -854,7 +813,6 @@ public class NodeAnimation {
 		y2 = endY;
 		step = s;
 		delay = ms;
-
 		this.image = name2icon.get(imageFileName);
 		if (this.image == null) {
 			getAnimationImageOfNode(n);
@@ -889,11 +847,9 @@ public class NodeAnimation {
         if (url == null) {
             url = ClassLoader.getSystemClassLoader().getResource("agg/lib/icons/smile.png");
         }
-
         if (url != null) {
             this.image = new ImageIcon(url);
             this.name2icon.put(this.imageFileName, this.image);
-
 //			url = ClassLoader.getSystemResource("agg/lib/icons/sad.png");
 //			this.animateInvImage = new ImageIcon(url);
         }
@@ -935,23 +891,19 @@ public class NodeAnimation {
                 int nX = this.x1 + sX;
                 // set next Y
                 int nY = this.y1 + sY;
-
                 // draw first image
                 this.grs.drawImage(this.image.getImage(),
                         nX, nY, null);
-
                 // do loop by length and step
                 for (int s = 0; s < l && !this.stop; s = s + this.step) {
                     // set next X
                     nX = nX + sX;
                     // set next Y
                     nY = nY + sY;
-
                     // draw next image
                     delay();
                     this.grs.drawImage(this.image.getImage(),
                             nX, nY, null);
-
                     //				delay();
                 }
             }
@@ -963,14 +915,11 @@ public class NodeAnimation {
         boolean hasResult = false;
         int dX = this.x2 - this.x1;
         int dY = this.y2 - this.y1;
-
         int lX = Math.abs(dX);
         int lY = Math.abs(dY);
         int l = lX;
-
         int sX = this.step;
         int sY = this.step;
-
         if (dX != 0 && dY != 0) {
             if (dX > 0) {
                 if (lX > lY) {
@@ -1020,7 +969,6 @@ public class NodeAnimation {
             Thread.sleep(this.delay);
         } catch (Exception ex) {
         }
-
 //		for (long l=0; l<delay; l++) {
 //			for (long l1=0; l1<1000000; l1++) {}
 //		}

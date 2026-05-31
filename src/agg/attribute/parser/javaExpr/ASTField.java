@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -20,7 +20,6 @@ import java.lang.reflect.Field;
 public class ASTField extends MemberNode {
 
     static final long serialVersionUID = 1L;
-
     protected Field field = null;
 
     ASTField(String id) {
@@ -34,7 +33,6 @@ public class ASTField extends MemberNode {
     protected String getFieldName() {
         Class<?> c = getNodeClass();
         String name = ((ASTMemberName) jjtGetChild(0)).name;
-
         if (c == null) {
             name = "\"" + name + "\"";
         } else {
@@ -71,14 +69,12 @@ public class ASTField extends MemberNode {
     public void checkContext(SimpleNode recipient) throws ASTWrongTypeException {
         Class<?> recClass = recipient.getNodeClass();
         String fieldName = ((ASTMemberName) jjtGetChild(0)).name;
-
         if (recClass.isArray()) {
             if (fieldName.equals("length")) {
                 setNodeClass(Integer.TYPE);
                 return;
             }
         }
-
         try {
             this.field = recClass.getField(fieldName);
             setNodeClass(this.field.getType());
@@ -96,7 +92,6 @@ public class ASTField extends MemberNode {
     public void interpret(SimpleNode recipient) {
         Class<?> recClass = recipient.getNodeClass();
         String fieldName = ((ASTMemberName) jjtGetChild(0)).name;
-
         if (recClass.isArray()) {
             if (fieldName.equals("length")) {
 //				stack[++top] = new Integer(Array.getLength(stack[top - 1]));
@@ -104,7 +99,6 @@ public class ASTField extends MemberNode {
             }
             return;
         }
-
         if (this.field == null) {
             checkContext(recipient);
         }
@@ -133,7 +127,6 @@ public class ASTField extends MemberNode {
         return copy;
     }
 }
-
 /*
  * $Log: ASTField.java,v $
  * Revision 1.6  2010/12/07 16:36:45  olga

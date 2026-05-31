@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
 import java.util.Iterator;
 import java.util.Vector;
-
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
@@ -23,11 +23,12 @@ import agg.xt_basis.Morphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.StaticStep;
 import agg.xt_basis.TypeException;
-
 // ---------------------------------------------------------------------------+
+
 /**
- * This parser eats graphs which are created by AGG. A parser needs a host graph and a stop graph. The graph grammar for
- * parsing must contain reducing rules. This abstract parser provides some convenient methods for parsing.
+ * This parser eats graphs which are created by AGG. A parser needs a host graph
+ * and a stop graph. The graph grammar for parsing must contain reducing rules.
+ * This abstract parser provides some convenient methods for parsing.
  *
  * @author $Author: olga $ Parser Group
  * @version $Id: AbstractParser.java,v 1.15 2010/08/18 09:26:52 olga Exp $
@@ -38,32 +39,28 @@ public abstract class AbstractParser implements Parser {
      * The grammar which can recognize a graph
      */
     protected GraGra grammar;
-
     /**
      * The Graph which will be parsed
      */
     protected Graph graph;
-
     /**
      * The graph which stops the algorithm
      */
     protected Graph stopGraph;
-
     /**
      * The set of critical pairs
      */
     protected PairContainer pairContainer;
-
     /**
      * All listerner which want to receive events
      */
     protected Vector<ParserEventListener> listener;
-
     protected int delay;
 
     /**
-     * Creates a new abstract parser. This parser stores all the basic information like host graph, stop graph, critical
-     * pairs and graph grammar.
+     * Creates a new abstract parser. This parser stores all the basic
+     * information like host graph, stop graph, critical pairs and graph
+     * grammar.
      *
      * @param grammar The graph grammar.
      * @param hostGraph The host graph.
@@ -107,7 +104,8 @@ public abstract class AbstractParser implements Parser {
     }
 
     /**
-     * Sets the grammar for the parser. This grammar must contain reducing rules.
+     * Sets the grammar for the parser. This grammar must contain reducing
+     * rules.
      *
      * @param grammar The grammar for the parser.
      */
@@ -116,7 +114,8 @@ public abstract class AbstractParser implements Parser {
     }
 
     /**
-     * Returns the host graph from the parser. This method is important to get the current state of parsing process.
+     * Returns the host graph from the parser. This method is important to get
+     * the current state of parsing process.
      *
      * @return The current host graph.
      */
@@ -125,7 +124,8 @@ public abstract class AbstractParser implements Parser {
     }
 
     /**
-     * Returns the host graph from the parser. This method is important to get the current state of parsing process.
+     * Returns the host graph from the parser. This method is important to get
+     * the current state of parsing process.
      *
      * @return The current host graph.
      */
@@ -151,8 +151,8 @@ public abstract class AbstractParser implements Parser {
     public abstract boolean parse();
 
     /**
-     * Applys a rule on a host graph. As the match provides access as well as to the rule of the match as to the host
-     * graph.
+     * Applys a rule on a host graph. As the match provides access as well as to
+     * the rule of the match as to the host graph.
      *
      * @param m The match.
      */
@@ -184,7 +184,8 @@ public abstract class AbstractParser implements Parser {
 
     // ----------------------------------------------------------------------+
     /**
-     * Finds a <B>valid</B> match for a set of rules. Additionally there is a check on <CODE>RuleInstances</CODE>.
+     * Finds a <B>valid</B> match for a set of rules. Additionally there is a
+     * check on <CODE>RuleInstances</CODE>.
      *
      * @param g The graph to match into. Usually the host graph.
      * @param rules This enumeration must contain rule objects.
@@ -197,10 +198,8 @@ public abstract class AbstractParser implements Parser {
         while (rules.hasNext() && !found) {
             Rule rule = (Rule) rules.next();
             resultMatch = BaseFactory.theFactory().createMatch(rule, g);
-
             resultMatch.setCompletionStrategy((MorphCompletionStrategy) this.grammar
                     .getMorphismCompletionStrategy().clone(), true);
-
             while (!found && resultMatch.nextCompletion()) {
                 if (resultMatch.isValid()) {
                     if (eri != null) {
@@ -236,10 +235,6 @@ public abstract class AbstractParser implements Parser {
     /**
      * Clears some internal stuff.
      */
-    protected void finalize() {
-        getHostGraph().dispose();
-    }
-
     // ----------------------------------------------------------------------+
     /**
      * Parse the methods and attributes of an UML-Diagram.
@@ -323,9 +318,7 @@ public abstract class AbstractParser implements Parser {
     public void setDelayAfterApplyRule(int miliseconds) {
         this.delay = miliseconds;
     }
-
 }
-
 /*
  * End of Parser.java
  * ----------------------------------------------------------------------------

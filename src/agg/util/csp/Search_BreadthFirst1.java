@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -139,13 +139,10 @@ public class Search_BreadthFirst1 implements SearchStrategy {
     public final Vector<Query> execute(CSP csp) {
         Vector<Query> aQueryResult = new Vector<Query>();
 
-
         SortedSeasonSet<Variable> allVarsLeft = new SortedSeasonSet<>(SimpleBiPredicateVariable.INSTANCE);
-
         Enumeration<?> anEnum = csp.getVariables();
         Variable aVar;
         Query aQuery;
-
         // only variables without instance will be used
         while (anEnum.hasMoreElements()) {
             aVar = (Variable) anEnum.nextElement();
@@ -154,9 +151,7 @@ public class Search_BreadthFirst1 implements SearchStrategy {
             }
         }
         // showVariables(allVarsLeft);
-
         List<Query> aQueryList = bfs(new SortedSeasonSet<>(SimpleBiPredicateVariable.INSTANCE), allVarsLeft);
-
         if (aQueryList != null) {
             Iterator<Query> iter1 = aQueryList.iterator();
             while (iter1.hasNext()) {
@@ -204,22 +199,18 @@ public class Search_BreadthFirst1 implements SearchStrategy {
             }
             // call recursively 
             List<Query> aVicQueryList = bfs(aVarSet, varsleft);
-
             // add result if not null
             if (aVicQueryList != null && !aVicQueryList.isEmpty()) {
                 aQueryList.addAll(aVicQueryList);
             }
-
             return aQueryList;
         } else {
             if (varsleft.isEmpty()) {
                 return null;
             }
-
             // get best variable which is the first Arc or if no arcs exist, the first Node
             Variable aVar = getBestVar(varsleft);
             breadthvars.add(aVar);
-
             // call recursively 
             return bfs(breadthvars, varsleft);
         }
@@ -229,7 +220,6 @@ public class Search_BreadthFirst1 implements SearchStrategy {
         // Remember: CSP implementation have to ensure that there
         // is always at least one incoming Query applicable for each
         // uninstantiated variable!
-
         // Initialize aBestSize with the size of the first applicable
         // Query:
         Iterator<Query> anEnum = var.getIncomingQueries();
@@ -264,7 +254,6 @@ public class Search_BreadthFirst1 implements SearchStrategy {
     /*
 	 * Returns the vicinity of the Variable v when it exists, otherwise - null.
      */
-
     private final SortedSeasonSet<Variable> getVicinity(Variable v, SortedSeasonSet<Variable> varsleft) {
         SortedSeasonSet<Variable> aVicinity = null;
         Variable aVar;
@@ -288,12 +277,11 @@ public class Search_BreadthFirst1 implements SearchStrategy {
      */
     private final Variable getBestVar(SortedSeasonSet<Variable> vars) {
         IteratorWalker<Variable> walker = vars.softWalker();
-
         Variable v = null;
-        if (walker.hasNext()) { 
-            v=walker.next();
+        if (walker.hasNext()) {
+            v = walker.next();
             while ((v.getKind() != Variable.ARC) && walker.hasNext()) {
-              v = walker.next();
+                v = walker.next();
             }
         }
         return v;
@@ -302,7 +290,6 @@ public class Search_BreadthFirst1 implements SearchStrategy {
     private final Variable getOtherVariable(BinaryConstraint bc, Variable v) {
         return v.equals(bc.getVar1()) ? bc.getVar2() : bc.getVar1();
     }
-
     /*	
 	private void showQueries(Vector<Query> aQueryVec, String text) {
 		System.out.println(text+"\n*** Search_BreadthFirst: QUERIES *** count: "
@@ -321,7 +308,6 @@ public class Search_BreadthFirst1 implements SearchStrategy {
 					+ "  LHS obj: "+ go.getType().getName());
 		}
 	}
-
 	private void showVariables(SortedSeasonSet allVars) {
 		for (Enumeration<?> en = allVars.elements(); en.hasMoreElements();) {
 			Variable aVar = (Variable) en.nextElement();

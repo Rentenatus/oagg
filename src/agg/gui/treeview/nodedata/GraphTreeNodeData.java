@@ -2,21 +2,22 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: GraphTreeNodeData.java,v 1.3 2010/09/23 08:23:32 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.editor.impl.EdGraph;
 
 /**
- * The GraphTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The GraphTreeNodeData implements an user object of a tree node in the
+ * GraGraTreeModel.
  *
  * @author $Author: olga $
  * @version $Id: GraphTreeNodeData.java,v 1.3 2010/09/23 08:23:32 olga Exp $
@@ -24,14 +25,11 @@ import agg.editor.impl.EdGraph;
 public class GraphTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private Object data;
-
     private EdGraph eGraph;
-
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */
@@ -140,5 +138,4 @@ public class GraphTreeNodeData extends GraGraTreeNodeDataAdapter {
         }
         return toolTipText;
     }
-
 }

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -52,7 +54,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.TableCellRenderer;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import agg.layout.evolutionary.LayoutPattern;
 import agg.layout.evolutionary.EvolutionaryGraphLayout;
 import agg.editor.impl.EdGraGra;
@@ -73,63 +74,42 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         ActionListener, ListSelectionListener, ChangeListener {
 
     protected EvolutionaryGraphLayout layouter;
-
     protected JCheckBox enableLayouterCB, saveCB, metricsCB, centerCB,
             fixedNodePositionCB, usePatternCB;
-
     protected JRadioButtonMenuItem x_leftCB, x_rightCB, x_equalCB, y_aboveCB, y_underCB,
             y_equalCB;
-
     protected Vector<JRadioButtonMenuItem> edgeXgroup, edgeYgroup;
-
     protected JTextField iterLayoutTF, generalEdgeLengthTF, temperatureTF,
             nodeClusterSpanTF, edgeLengthTF;
-
     // protected JTextField iterNodeInterTF, iterEdgeInterTF;
     protected int edgeLength, iterCount, generalEdgeLength, temperature, nodeClusterSpan;
-
     @SuppressWarnings("rawtypes")
     protected JComboBox edgeTypeCB, nodeTypeCB;
-
     protected JButton showPattern, displaySwitch1, displaySwitch2;
-
     protected JPanel layoutOptions;
-
     protected JPanel generalLayoutPatternP, nodeLayoutPatternP, edgeLayoutPatternP;
-
     protected JTable patternTable;
-
     protected JTabbedPane tabbedPane;
-
     protected JScrollPane scrollpanePatternTable;
-
     protected JDialog tableFrame;
-
     protected Vector<EdType> edgeTypes, nodeTypes;
-
     protected EdGraGra gragra;
 
     public GraphLayouterOptionGUI(EvolutionaryGraphLayout graphLayouter) {
         super();
         this.layouter = graphLayouter;
-
         this.layoutOptions = createLayoutOptionsPanel();
-
         GridBagLayout gridbag = new GridBagLayout();
         setLayout(gridbag);
-
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.BOTH;
         c.anchor = GridBagConstraints.NORTHWEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.weighty = 1.0;
         c.weightx = 1.0;
-
         add(this.layoutOptions, c);
         validate();
-
         enableButtons(this.enableLayouterCB.isSelected());
-
         updateGraphLayouter();
     }
 
@@ -141,7 +121,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         JPanel p = new JPanel();
         p.setLayout(gridbag);
         p.setBorder(border);
-
         JPanel p1 = new JPanel(new GridLayout(0, 1));
         this.enableLayouterCB = new JCheckBox(
                 " perform during graph transformation ", null, false);
@@ -153,7 +132,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             }
         });
         p1.add(this.enableLayouterCB);
-
         JPanel p2 = new JPanel(new GridLayout(0, 1));
         p2.setBorder(new TitledBorder(" Output "));
         JLabel l = new JLabel(" Graph sequence as JPEG ( .jpg ) images ");
@@ -169,7 +147,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             }
         });
         p2.add(this.saveCB);
-
         l = new JLabel(" Quality metrics ");
         p2.add(l);
         this.metricsCB = new JCheckBox(" write to ( .log ) file ", null, false);
@@ -180,7 +157,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             }
         });
         p2.add(this.metricsCB);
-
         /*
 		 * //JPanel p3 = new JPanel(new GridLayout(0, 1)); //l = new JLabel("
 		 * Center"); //p3.add(l); //centerCB = new JCheckBox(" to centre", null,
@@ -245,9 +221,7 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             }
         });
         p7.add(this.usePatternCB);
-
         JPanel p8 = createLayoutPatternOptionsPanel();
-
         constrainBuild(p, p1, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p, p2, 0, 1, 1, 1, GridBagConstraints.BOTH,
@@ -264,28 +238,22 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p, p8, 0, 7, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         p.validate();
-
         return p;
     }
 
     private JPanel createLayoutPatternOptionsPanel() {
         JPanel p = new JPanel();
         p.setLayout(new BorderLayout());
-
         this.tabbedPane = new JTabbedPane();
         this.tabbedPane.addChangeListener(this);
-
         this.generalLayoutPatternP = createGeneralPatternOptionsPanel();
         this.edgeLayoutPatternP = createEdgeLayoutPatternOptionsPanel();
         this.nodeLayoutPatternP = createNodeLayoutPatternOptionsPanel();
         this.patternTable = createLayoutPatternTable();
-
         this.tabbedPane.addTab(" General ", null, this.generalLayoutPatternP, "");
         this.tabbedPane.addTab(" Edge Type Pattern ", null, this.edgeLayoutPatternP, "");
         this.tabbedPane.addTab(" Node Type Pattern ", null, this.nodeLayoutPatternP, "");
-
         JPanel p3 = new JPanel();
         JLabel l = new JLabel(" Table of Graph Layout Pattern ");
         this.showPattern = new JButton("Show");
@@ -305,10 +273,8 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         p3.add(l);
         p3.add(this.showPattern);
-
         p.add(this.tabbedPane, BorderLayout.CENTER);
         p.add(p3, BorderLayout.SOUTH);
-
         return p;
     }
 
@@ -317,7 +283,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 //		GridBagConstraints c = new GridBagConstraints();
         JPanel p = new JPanel();
         p.setLayout(gridbag);
-
         // JPanel p3 = new JPanel(new GridLayout(0, 1));
         // l = new JLabel(" Center");
         // p3.add(l);
@@ -340,7 +305,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                     try {
                         Integer nb = Integer.valueOf(((JTextField) e.getSource())
                                 .getText());
-
                         GraphLayouterOptionGUI.this.layouter.setIterationCount(nb.intValue());
                         // System.out.println("Iteration count:
                         // "+layouter.getIterationCount());
@@ -352,7 +316,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         p4.add(this.iterLayoutTF);
         p4.add(l);
-
         JPanel p5 = new JPanel();
         l = new JLabel(" initial temperature of cooling ");
         this.temperature = 100;
@@ -376,7 +339,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         p5.add(this.temperatureTF);
         p5.add(l);
-
         JPanel p6 = new JPanel();
         l = new JLabel(" preferred edge length ");
         this.generalEdgeLength = 100;
@@ -398,7 +360,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         p6.add(this.generalEdgeLengthTF);
         p6.add(l);
-
         JPanel p7 = new JPanel();
         l = new JLabel(" span of node cluster ");
         this.nodeClusterSpan = 200;
@@ -420,7 +381,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         p7.add(this.nodeClusterSpanTF);
         p7.add(l);
-
         // constrainBuild(p, p3, 0, 2, 1, 1, GridBagConstraints.BOTH,
         // GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p, p4, 0, 0, 1, 1, GridBagConstraints.BOTH,
@@ -431,7 +391,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 GridBagConstraints.CENTER, 1.0, 0.0, 0, 5, 0, 5);
         constrainBuild(p, p7, 0, 3, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 0, 5, 0, 5);
-
         return p;
     }
 
@@ -442,27 +401,21 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         if (this.edgeYgroup == null) {
             this.edgeYgroup = new Vector<JRadioButtonMenuItem>();
         }
-
         GridBagLayout gridbag = new GridBagLayout();
 //		GridBagConstraints c = new GridBagConstraints();
         JPanel p = new JPanel();
         p.setLayout(gridbag);
-
         JPanel p1 = new JPanel(new GridLayout(1, 0));
         JLabel l = new JLabel(" Selected edge type ");
         p1.add(l);
         this.edgeTypeCB = createEdgeTypeComboBox();
         p1.add(this.edgeTypeCB);
-
         JPanel p2 = new JPanel(new BorderLayout()); // new GridLayout(0, 1));
         p2.setBorder(new TitledBorder(" Layout Pattern "));
-
         JPanel p2_1 = new JPanel(new GridLayout(1, 0));
-
         JPanel p2_1_1 = new JPanel(new GridLayout(0, 1));
         l = new JLabel("  X - Axis");
         p2_1_1.add(l);
-
         this.x_leftCB = new JRadioButtonMenuItem(" Target left Source", null, false);
         this.x_leftCB.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -499,7 +452,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         this.edgeXgroup.add(this.x_leftCB);
         p2_1_1.add(this.x_leftCB);
-
         this.x_rightCB = new JRadioButtonMenuItem(" Target right Source", null,
                 false);
         this.x_rightCB.addItemListener(new ItemListener() {
@@ -537,7 +489,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         this.edgeXgroup.add(this.x_rightCB);
         p2_1_1.add(this.x_rightCB);
-
         this.x_equalCB = new JRadioButtonMenuItem(" Target equal Source", null,
                 false);
         this.x_equalCB.addItemListener(new ItemListener() {
@@ -575,11 +526,9 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         this.edgeXgroup.add(this.x_equalCB);
         p2_1_1.add(this.x_equalCB);
-
         JPanel p2_1_2 = new JPanel(new GridLayout(0, 1));
         l = new JLabel("  Y - Axis");
         p2_1_2.add(l);
-
         this.y_aboveCB = new JRadioButtonMenuItem(" Target above Source", null,
                 false);
         this.y_aboveCB.addItemListener(new ItemListener() {
@@ -617,7 +566,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         this.edgeYgroup.add(this.y_aboveCB);
         p2_1_2.add(this.y_aboveCB);
-
         this.y_underCB = new JRadioButtonMenuItem(" Target under Source", null,
                 false);
         this.y_underCB.addItemListener(new ItemListener() {
@@ -655,7 +603,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         this.edgeYgroup.add(this.y_underCB);
         p2_1_2.add(this.y_underCB);
-
         this.y_equalCB = new JRadioButtonMenuItem(" Target equal Source", null,
                 false);
         this.y_equalCB.addItemListener(new ItemListener() {
@@ -693,10 +640,8 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         });
         this.edgeYgroup.add(this.y_equalCB);
         p2_1_2.add(this.y_equalCB);
-
         p2_1.add(p2_1_1);
         p2_1.add(p2_1_2);
-
         JPanel p2_2 = new JPanel();
         l = new JLabel(" preferred length ");
         this.edgeLength = 0; // 200;
@@ -775,20 +720,15 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 }
             }
         });
-
         p2_2.add(this.edgeLengthTF, BorderLayout.WEST);
         p2_2.add(l, BorderLayout.CENTER);
-
         p2.add(p2_1, BorderLayout.CENTER);
         p2.add(p2_2, BorderLayout.SOUTH);
-
         constrainBuild(p, p1, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p, p2, 0, 1, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         p.validate();
-
         return p;
     }
 
@@ -797,13 +737,11 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 //		GridBagConstraints c = new GridBagConstraints();
         JPanel p = new JPanel();
         p.setLayout(gridbag);
-
         JPanel p1 = new JPanel(new GridLayout(1, 0));
         JLabel l = new JLabel(" Selected node type ");
         p1.add(l);
         this.nodeTypeCB = createNodeTypeComboBox();
         p1.add(this.nodeTypeCB);
-
         JPanel p2 = new JPanel(new GridLayout(0, 1));
         this.fixedNodePositionCB = new JCheckBox(" fix node position ", null, false);
         this.fixedNodePositionCB.addActionListener(new ActionListener() {
@@ -838,14 +776,11 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             }
         });
         p2.add(this.fixedNodePositionCB);
-
         constrainBuild(p, p1, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p, p2, 0, 1, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         p.validate();
-
         return p;
     }
 
@@ -871,14 +806,12 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                     }
                 }
             });
-
             this.nodeTypeCB.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
 //					if (e.getStateChange() == ItemEvent.SELECTED) {
 //					}
                 }
             });
-
         }
         return this.nodeTypeCB;
     }
@@ -900,20 +833,16 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 this.fixedNodePositionCB.setSelected(false);
             }
         }
-
         this.nodeTypes = nodetypes;
         if (this.nodeTypes == null) {
             return this.nodeTypeCB;
         }
-
         if (this.nodeTypeCB != null) {
             this.nodeTypeCB.removeAllItems();
         }
-
         if (this.gragra == null) {
             this.layouter.clearLayoutPatterns();
         }
-
         if (this.nodeTypes != null) {
             // System.out.println("updateNodeTypeCB: by node types :
             // "+nodeTypes.hashCode());
@@ -974,7 +903,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             if (!mi.getText().equals(t.getName())) {
                 this.layouter.removeLayoutPattern(t.getBasisType());
             }
-
             mi.setText(t.getName());
             mi.setForeground(t.getColor());
             mi.setIcon(getNodeTypeIcon(t));
@@ -986,13 +914,11 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 }
             }
             this.nodeTypeCB.setSelectedItem(mi);
-
             this.patternTable.setValueAt(mi, index, 0);
             this.patternTable.setValueAt("", index, 1);
             this.patternTable.setValueAt("", index, 2);
             this.patternTable.setValueAt("", index, 3);
             this.patternTable.setValueAt("", index, 4);
-
             updateLayoutPatternOfType(t, index);
             // System.out.println("row changed");
         }
@@ -1033,7 +959,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 
     public void setGraGra(EdGraGra gra) {
         this.gragra = gra;
-
         updateNodeTypeComboBox(null);
         updateEdgeTypeComboBox(null);
         if (this.tableFrame != null) {
@@ -1044,7 +969,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             updateNodeTypeComboBox(this.gragra.getTypeSet().getNodeTypes());
             updateEdgeTypeComboBox(this.gragra.getTypeSet().getArcTypes());
             updateLayoutPatternTable();
-
             try {
                 int indx = this.nodeTypeCB.getSelectedIndex();
                 updateLayoutPatternOfType(this.nodeTypes.get(indx), indx);
@@ -1104,7 +1028,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         this.saveCB.setEnabled(b);
         this.metricsCB.setEnabled(b);
         this.usePatternCB.setEnabled(b);
-
         // iterLayoutTF.setEnabled(b);
         // temperatureTF.setEnabled(b);
         // generalEdgeLengthTF.setEnabled(b);
@@ -1114,17 +1037,14 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 
     void enablePattern(boolean layouterSelected, boolean usePatternSelected) {
         this.tabbedPane.setEnabled(layouterSelected);
-
         this.generalLayoutPatternP.setEnabled(layouterSelected);
         this.iterLayoutTF.setEnabled(layouterSelected);
         this.temperatureTF.setEnabled(layouterSelected);
         this.generalEdgeLengthTF.setEnabled(layouterSelected);
         this.nodeClusterSpanTF.setEnabled(layouterSelected);
-
         this.nodeLayoutPatternP.setEnabled(usePatternSelected);
         this.nodeTypeCB.setEnabled(usePatternSelected);
         this.fixedNodePositionCB.setEnabled(usePatternSelected);
-
         this.edgeLayoutPatternP.setEnabled(usePatternSelected);
         this.edgeTypeCB.setEnabled(usePatternSelected);
         this.x_leftCB.setEnabled(usePatternSelected);
@@ -1134,7 +1054,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         this.y_underCB.setEnabled(usePatternSelected);
         this.y_equalCB.setEnabled(usePatternSelected);
         this.edgeLengthTF.setEnabled(usePatternSelected);
-
         this.showPattern.setEnabled(usePatternSelected);
     }
 
@@ -1163,14 +1082,12 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                     }
                 }
             });
-
             this.edgeTypeCB.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     if (e.getStateChange() == ItemEvent.SELECTED) {
                     }
                 }
             });
-
         }
         return this.edgeTypeCB;
     }
@@ -1204,14 +1121,12 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 this.edgeLengthTF.setText("0");
             }
         }
-
         if (this.edgeTypeCB != null) {
             this.edgeTypeCB.removeAllItems();
         }
         if (this.gragra == null) {
             this.layouter.clearLayoutPatterns();
         }
-
         if (this.edgeTypes != null) {
             // System.out.println("updateEdgeTypeCB: by edge types :
             // "+edgeTypes.hashCode());
@@ -1262,7 +1177,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             if (!mi.getText().equals(t.getName())) {
                 this.layouter.removeLayoutPattern(t.getBasisType());
             }
-
             mi.setText(t.getName());
             mi.setForeground(t.getColor());
             mi.setIcon(getArcTypeIcon(t));
@@ -1274,14 +1188,12 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 }
             }
             this.edgeTypeCB.setSelectedItem(mi);
-
             int indx = index + this.nodeTypes.size();
             this.patternTable.setValueAt(mi, indx, 0);
             this.patternTable.setValueAt("", indx, 1);
             this.patternTable.setValueAt("", indx, 2);
             this.patternTable.setValueAt("", indx, 3);
             this.patternTable.setValueAt("", indx, 4);
-
             updateLayoutPatternOfType(t, indx);
         }
     }
@@ -1311,37 +1223,31 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 return null;
             }
         };
-
         JTable table = new JTable(dataModel);
         table.getSelectionModel().setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION);
         table.setDefaultRenderer(table.getColumnClass(0),
                 new MyTableCellRenderer(false));
-
         if (this.scrollpanePatternTable == null) {
             this.scrollpanePatternTable = new JScrollPane(table);
         } else {
             this.scrollpanePatternTable.setViewportView(table);
         }
-
         return table;
     }
 
     private void createEdgePatternTableEntries(JTable table) {
         for (int row = 0; row < this.edgeTypes.size(); row++) {
             EdType type = this.edgeTypes.get(row);
-
             JLabel typel = new JLabel(type.getName());
             typel.setIcon(getArcTypeIcon(type));
             typel.setForeground(type.getColor());
-
             int r = row + this.nodeTypes.size();
             table.getModel().setValueAt(typel, r, 0);
             table.getModel().setValueAt("", r, 1);
             table.getModel().setValueAt("", r, 2);
             table.getModel().setValueAt("", r, 3);
             table.getModel().setValueAt("", r, 4);
-
             // now set values of layout patterns
             if (this.gragra != null) {
                 List<LayoutPattern> v = this.gragra.getLayoutPatternsForType(type
@@ -1371,23 +1277,19 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 }
             }
         }
-
     }
 
     private void createNodePatternTableEntries(JTable table) {
         for (int row = 0; row < this.nodeTypes.size(); row++) {
             EdType type = this.nodeTypes.get(row);
-
             JLabel typel = new JLabel(type.getName());
             typel.setIcon(getNodeTypeIcon(type));
             typel.setForeground(type.getColor());
-
             table.getModel().setValueAt(typel, row, 0);
             table.getModel().setValueAt("", row, 1);
             table.getModel().setValueAt("", row, 2);
             table.getModel().setValueAt("", row, 3);
             table.getModel().setValueAt("", row, 4);
-
             // now set values of layout patterns
             if (this.gragra != null) {
                 List<LayoutPattern> v = this.gragra.getLayoutPatternsForType(type.getBasisType());
@@ -1405,7 +1307,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
     private void createPatternTableFrame(JTable table) {
         this.scrollpanePatternTable = new JScrollPane(table);
         table.getSelectionModel().addListSelectionListener(this);
-
         JButton closeButton = new JButton();
         closeButton.setText("Close");
         closeButton.addActionListener(new ActionListener() {
@@ -1413,7 +1314,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 GraphLayouterOptionGUI.this.tableFrame.setVisible(false);
             }
         });
-
         // create a dialog to show the pattern table
         this.tableFrame = new JDialog();
         this.tableFrame.setTitle(" Node & Edge Type Layout Pattern ");
@@ -1422,7 +1322,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                 setVisible(false);
             }
         });
-
         this.tableFrame.setModal(false);
         this.tableFrame.getContentPane().setLayout(new BorderLayout());
         this.tableFrame.getContentPane().add(this.scrollpanePatternTable,
@@ -1546,7 +1445,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                     this.y_underCB.setSelected(false);
                     this.y_equalCB.setSelected(false);
                 }
-
                 if (!((String) this.patternTable.getModel().getValueAt(indx, 3))
                         .equals("")) {
                     this.edgeLengthTF.setText((String) this.patternTable.getModel()
@@ -1580,7 +1478,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 			layouter.createLayoutPattern("x_tree", "edge", type.getBasisType(),
 					'x', 0);
 		}
-
 		if (y_aboveCB.isSelected()) {
 			layouter.createLayoutPattern("ver_tree", "edge", type
 					.getBasisType(), 'y', -1);
@@ -1591,7 +1488,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 			layouter.createLayoutPattern("y_tree", "edge", type.getBasisType(),
 					'y', 0);
 		}
-
 		try {
 			Integer nb = Integer.valueOf(edgeLengthTF.getText());
 			if (nb.intValue() > 0) {
@@ -1610,7 +1506,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
         // an example
         // constrainBuild(p, p4, 0, 4, 1, 1, GridBagConstraints.BOTH,
         // GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = grid_x;
         c.gridy = grid_y;
@@ -1677,7 +1572,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
             } else {
                 setBackground(Color.white);
             }
-
             if (value instanceof JLabel) {
                 JLabel l = (JLabel) value;
                 if (column == 0) {
@@ -1688,7 +1582,6 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
                     // System.out.println(l.getForeground());
                 }
                 return new JLabel(l.getText());
-
             } else if (value instanceof String) {
                 return new JLabel((String) value);
             } else {
@@ -1699,5 +1592,4 @@ public class GraphLayouterOptionGUI extends AbstractOptionGUI implements
 
     public void executeOnClose() {
     }
-
 }

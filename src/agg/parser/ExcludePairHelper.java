@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -16,7 +18,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrType;
@@ -54,7 +55,6 @@ public final class ExcludePairHelper {
             OrdinaryMorphism nac_NotToCheck,
             boolean firstRule,
             final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping) {
-
         boolean withNACs = true;
         m.getTarget().setCompleteGraph(false);
         if (!m.isTotal()) {
@@ -99,10 +99,8 @@ public final class ExcludePairHelper {
 
     protected static boolean hasVariableInContext(final OrdinaryMorphism morph,
             final AttrContext relatedAttrContext) {
-
         final VarTuple vars = (VarTuple) morph.getAttrContext().getVariables();
         final CondTuple conds = (CondTuple) morph.getAttrContext().getConditions();
-
         return hasVarInContext(vars, conds, morph, relatedAttrContext,
                 morph.getTarget().getNodesSet().iterator())
                 || hasVarInContext(vars, conds, morph, relatedAttrContext,
@@ -115,7 +113,6 @@ public final class ExcludePairHelper {
             final OrdinaryMorphism morph,
             final AttrContext relatedAttrContext,
             final Iterator<?> elems) {
-
         while (elems.hasNext()) {
             GraphObject o = (GraphObject) elems.next();
             if (o.getAttribute() == null) {
@@ -136,7 +133,6 @@ public final class ExcludePairHelper {
                             if (varm != null && varm.isInputParameter()) {
                                 return true;
                             }
-
                             for (int i = 0; i < conds.getSize(); i++) {
                                 CondMember cm = (CondMember) conds.getValueMemberAt(i);
                                 if (cm.getAllVariableNamesOfExpression()
@@ -144,7 +140,6 @@ public final class ExcludePairHelper {
                                     return true;
                                 }
                             }
-
                         }
                     }
                 }
@@ -155,7 +150,6 @@ public final class ExcludePairHelper {
                 for (int k = 0; k < vt.getSize(); k++) {
                     ValueMember vm = vt.getValueMemberAt(k);
                     ValueMember srcvm = srcvt.getValueMemberAt(k);
-
                     if (srcvm != null && vm.isSet()) {
                         if (vm.getExpr().isVariable()
                                 && !srcvm.isSet()) {
@@ -169,7 +163,6 @@ public final class ExcludePairHelper {
                                 if (varm.isInputParameter()) {
                                     return true;
                                 }
-
                                 for (int i = 0; i < conds.getSize(); i++) {
                                     CondMember cm = (CondMember) conds.getValueMemberAt(i);
                                     if (cm.getAllVariableNamesOfExpression()
@@ -177,7 +170,6 @@ public final class ExcludePairHelper {
                                         return true;
                                     }
                                 }
-
                             }
                         }
                     }
@@ -200,7 +192,6 @@ public final class ExcludePairHelper {
             if (o.getAttribute() == null || img.getAttribute() == null) {
                 continue;
             }
-
             final ValueTuple vt = (ValueTuple) o.getAttribute();
             final ValueTuple vtimg = (ValueTuple) img.getAttribute();
             for (int k = 0; k < vt.getSize(); k++) {
@@ -218,7 +209,6 @@ public final class ExcludePairHelper {
     }
 
     protected static boolean hasConstantInAttrOfNewObj(final OrdinaryMorphism morph) {
-
         return hasConstInAttrOfNewObj(morph, morph.getTarget().getNodesSet().iterator())
                 || hasConstInAttrOfNewObj(morph, morph.getTarget().getArcsSet().iterator());
     }
@@ -226,7 +216,6 @@ public final class ExcludePairHelper {
     protected static boolean hasConstInAttrOfNewObj(
             final OrdinaryMorphism morph,
             final Iterator<?> elems) {
-
         while (elems.hasNext()) {
             GraphObject o = (GraphObject) elems.next();
             if (o.getAttribute() == null) {
@@ -246,7 +235,6 @@ public final class ExcludePairHelper {
     }
 
     protected static boolean hasVariableInAttrOfNewObj(final OrdinaryMorphism morph) {
-
         return hasVarInAttrOfNewObj(morph, morph.getTarget().getNodesSet().iterator())
                 || hasVarInAttrOfNewObj(morph, morph.getTarget().getArcsSet().iterator());
     }
@@ -254,7 +242,6 @@ public final class ExcludePairHelper {
     protected static boolean hasVarInAttrOfNewObj(
             final OrdinaryMorphism morph,
             final Iterator<?> elems) {
-
         while (elems.hasNext()) {
             GraphObject o = (GraphObject) elems.next();
             if (o.getAttribute() == null) {
@@ -275,7 +262,6 @@ public final class ExcludePairHelper {
 
     protected static boolean graphSatisfiesTypeMaxMultiplicity(
             final OrdinaryMorphism morph) {
-
         TypeError error = morph.getTarget().getTypeSet()
                 .checkTypeMaxMultiplicity(morph.getTarget(),
                         TypeSet.ENABLED_MAX);
@@ -283,7 +269,6 @@ public final class ExcludePairHelper {
 //			System.out.println(error.getMessage());
             return false;
         }
-
         return true;
     }
 
@@ -296,15 +281,12 @@ public final class ExcludePairHelper {
             final GraphObject lhsRule2Object,
             final OrdinaryMorphism nacInsideOverlapGraph,
             final GraphObject overlapObject) {
-
         boolean result = false;
-
         final ValueMember rightMember = (ValueMember) lhsRule2Object
                 .getAttribute().getMemberAt(changedLeftMemberOfRule1.getName());
         if (rightMember == null) {
             return result;
         }
-
         final GraphObject r1Object = rule1.getImage(lhsRule1Object);
         final ValueMember l1Member = (ValueMember) lhsRule1Object
                 .getAttribute().getMemberAt(
@@ -312,7 +294,6 @@ public final class ExcludePairHelper {
         final ValueMember r1Member = (ValueMember) r1Object
                 .getAttribute().getMemberAt(
                         changedLeftMemberOfRule1.getName());
-
         if (rightMember.isSet()) {
             if (rightMember.getExpr().isConstant()) {
                 if (r1Member.isSet()) {
@@ -424,7 +405,6 @@ public final class ExcludePairHelper {
             final GraphObject l1Object,
             final GraphObject overlapObject,
             final Pair<OrdinaryMorphism, OrdinaryMorphism> helpPair) {
-
         boolean result = false;
         // when l2Objects are not found inside of LHS2
         // try to find it inside of PAC part of the extended LHS2
@@ -478,7 +458,6 @@ public final class ExcludePairHelper {
             final List<GraphObject> changedAttributesR1,
             final List<Type> forbiddenTypesR2,
             final Hashtable<ValueMember, Pair<String, String>> attrMember2Constant) {
-
         boolean result = false;
         Match match2 = (Match) overlapping.second;
         // check the NACs of the rule2
@@ -488,7 +467,6 @@ public final class ExcludePairHelper {
             if (!nac.isEnabled()) {
                 continue;
             }
-
             OrdinaryMorphism nacStar = (OrdinaryMorphism) match2.checkNAC(nac, true);
             if (nacInsideOverlapGraph == null) {
                 if (nacStar != null) {
@@ -513,7 +491,6 @@ public final class ExcludePairHelper {
 //						&& hasConstantInAttrOfNewObj(nac)) {
 //				return false;
 //			}
-
             if (nacStar != null) {
                 Iterator<?> l1Objs = overlapping.first.getSource().getNodesSet().iterator();
                 boolean nodechanged = checkNACStarAttributes(
@@ -527,7 +504,6 @@ public final class ExcludePairHelper {
                 if (!nacStar.isEnabled()) {
                     return false;
                 }
-
                 l1Objs = overlapping.first.getSource().getArcsSet().iterator();
                 boolean arcchanged = checkNACStarAttributes(
                         rule1, rule2,
@@ -540,7 +516,6 @@ public final class ExcludePairHelper {
                 if (!nacStar.isEnabled()) {
                     return false;
                 }
-
                 if (!nodechanged && !arcchanged) {
                     result = false;
                 } else {
@@ -558,17 +533,13 @@ public final class ExcludePairHelper {
             final Pair<OrdinaryMorphism, OrdinaryMorphism> pair,
             final String prefix1,
             final String prefix2) {
-
         List<String> variableEqualitiesList = new Vector<>();
         List<GraphObject> checked = new Vector<>();
         List<GraphObject> tocheck = new Vector<>();
-
         count1 = 1;
         count2 = 1;
-
         final OrdinaryMorphism morph1 = pair.first;
         final OrdinaryMorphism morph2 = pair.second;
-
         final Graph graph = morph1.getImage();
         Iterator<?> objs = graph.getNodesSet().iterator();
         while (objs.hasNext()) {
@@ -596,9 +567,7 @@ public final class ExcludePairHelper {
                 tocheck.add(o);
             }
         }
-
         renameSimilarVariables(r1, r2, morph1, morph2, checked, tocheck, prefix1, prefix2, variableEqualitiesList);
-
         if (!variableEqualitiesList.isEmpty()) {
             // save variable equalities as help info of the overlapping graph
             graph.setHelpInfo(graph.getHelpInfo() + ":VariableEquality:" + variableEqualitiesList.toString());
@@ -614,10 +583,8 @@ public final class ExcludePairHelper {
             final Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pair,
             final String prefix1,
             final String prefix2) {
-
         renameContextVariableOfOverlappingPair(r1, r2, pair.first, prefix1, prefix2);
     }
-
     static int count1;
     static int count2;
 
@@ -628,11 +595,9 @@ public final class ExcludePairHelper {
             final String prefix1,
             final String prefix2,
             final List<String> variableEqualitiesList) {
-
         // expected: o1 != null and o2 != null
         final GraphObject o1 = morph1.firstOfInverseImage(o);
         final GraphObject o2 = morph2.firstOfInverseImage(o);
-
         final ValueTuple vt = (ValueTuple) o.getAttribute();
         for (int i = 0; i < vt.getNumberOfEntries(); i++) {
             final ValueMember vm = vt.getValueMemberAt(i);
@@ -668,7 +633,6 @@ public final class ExcludePairHelper {
 //						saveVariableEquality(variableEqualitiesList, variableEquality);
 //					}					
                 }
-
                 // extend variable name of o1 by prefix2 "r2_"	
                 final ValueMember vm2 = ((ValueTuple) o2.getAttribute()).getValueMemberAt(vm.getName());
                 String part2 = "";
@@ -698,7 +662,6 @@ public final class ExcludePairHelper {
 //						saveVariableEquality(variableEqualitiesList, variableEquality);
 //					}
                 }
-
 //				if (const2) {
 //					vm.setExprAsObject(vm2.getExpr().getCopy());
 //				} else if (const1) {
@@ -706,7 +669,6 @@ public final class ExcludePairHelper {
 //				}
                 // build variable name
                 String varname = "";
-
                 if (!part1.equals("") && !part2.equals("")) {
                     varname = part1 + "_" + part2;
                     // save variable equality
@@ -717,7 +679,6 @@ public final class ExcludePairHelper {
                 } else if (!part1.equals("")) {
                     varname = part1;
                 }
-
                 if (!varname.equals("")
                         && vm.isSet() && vm.getExpr().isVariable()) {
                     // rename variable of morph1
@@ -764,19 +725,16 @@ public final class ExcludePairHelper {
             final String prefix1,
             final String prefix2,
             final List<String> variableEqualitiesList) {
-
         List<GraphObject> checked2 = new Vector<>();
         for (int j = 0; j < tocheck.size(); j++) {
             final GraphObject o = tocheck.get(j);
             if (o.getAttribute() == null) {
                 continue;
             }
-
             OrdinaryMorphism morph = null;
             GraphObject src1 = null;
             GraphObject src2 = null;
             ValueMember srcvm = null;
-
             if (morph1.hasInverseImage(o)) {
                 morph = morph1;
                 src1 = morph1.firstOfInverseImage(o);
@@ -784,20 +742,15 @@ public final class ExcludePairHelper {
                 morph = morph2;
                 src2 = morph2.firstOfInverseImage(o);
             }
-
             final ValueTuple value = (ValueTuple) o.getAttribute();
             for (int i = 0; i < value.getNumberOfEntries(); i++) {
                 final ValueMember valuem = value.getValueMemberAt(i);
                 String memberName = valuem.getName();
-
                 if (valuem.isSet()
                         && valuem.getExpr().isVariable()
                         && !valuem.isTransient()) {
-
                     List<GraphObject> list = new Vector<>();
-
                     final String varName = valuem.getExprAsText();
-
                     if (src1 != null) {
                         srcvm = ((ValueTuple) src1.getAttribute()).getValueMemberAt(memberName);
                         list.addAll(getObjsWithVariable(
@@ -811,7 +764,6 @@ public final class ExcludePairHelper {
                                 src2,
                                 morph2.getSource(), r2));
                     }
-
                     if (list.size() > 1) {
                         GraphObject src_l = null;
                         GraphObject tar_l = null;
@@ -826,11 +778,9 @@ public final class ExcludePairHelper {
                             }
                             tar_l = null;
                         }
-
                         if (src_l != null && tar_l != null) {
                             final ValueTuple src_l_value = (ValueTuple) src_l.getAttribute();
                             final ValueTuple tar_l_value = (ValueTuple) tar_l.getAttribute();
-
                             final ValueMember src_l_vm = src_l_value.getValueMemberAt(memberName);
                             final ValueMember tar_l_vm = tar_l_value.getValueMemberAt(memberName);
                             if (src_l_vm != null && tar_l_vm != null) {
@@ -940,13 +890,11 @@ public final class ExcludePairHelper {
                                         valuem.setTransient(false);
                                     }
                                 }
-
                                 if (!part1.equals("") && !part2.equals("")) {
                                     final String variableEquality = part1 + "=" + part2;
                                     saveVariableEquality(variableEqualitiesList, variableEquality);
                                 }
                             }
-
                             checked2.add(o);
                         }
                     } else {
@@ -1001,10 +949,8 @@ public final class ExcludePairHelper {
             final GraphObject startObj,
             final Graph graph,
             final Rule r) {
-
         final List<GraphObject> list = new Vector<>();
         list.add(startObj);
-
         objsWithVariable(varName, startObj,
                 graph.getNodesSet().iterator(),
                 list);
@@ -1019,7 +965,6 @@ public final class ExcludePairHelper {
             final GraphObject startObj,
             final Iterator<?> objs,
             final List<GraphObject> result) {
-
         while (objs.hasNext()) {
             final GraphObject o = (GraphObject) objs.next();
             if (o.getAttribute() == null || o == startObj) {
@@ -1039,12 +984,12 @@ public final class ExcludePairHelper {
      *
      * @param variablenName The name of the variable
      * @param obj The graph object to search in.
-     * @return A set of all attribute members which contain the variable with the given name, otherwise null.
+     * @return A set of all attribute members which contain the variable with
+     * the given name, otherwise null.
      */
     protected static List<ValueMember> findMemberWhichUsesVariable(
             final String variablenName,
             final GraphObject obj) {
-
         List<ValueMember> resultVector = null;
         if (obj.getAttribute() != null) {
             for (int i = 0; i < obj.getAttribute().getNumberOfEntries(); i++) {
@@ -1064,7 +1009,6 @@ public final class ExcludePairHelper {
     protected static List<Type> getForbiddenTypesRule2(
             final Rule rule2,
             final Hashtable<ValueMember, Pair<String, String>> attrMember2Constant) {
-
         List<Type> forbiddenTypesR2 = new Vector<>(2);
         Iterator<OrdinaryMorphism> nacsR2 = rule2.getNACs();
         while (nacsR2.hasNext()) {
@@ -1096,28 +1040,30 @@ public final class ExcludePairHelper {
     }
 
     /**
-     * Returns the <code>Type</code> of the <code>GraphObject imageObj</code> if 1) the <code>Morphism morph</code> does
-     * not define any inverse image, or 2) the <code>Morphism morph</code> defines an inverse image and an attribute
-     * member of it is in the <code>Hashtable attrMember2Constant</code>. The <code>Hashtable attrMember2Constant</code>
-     * contains Pairs of Strings where the first string is the name of a variable, the second string is a constant value
-     * of the same variable.
+     * Returns the <code>Type</code> of the <code>GraphObject imageObj</code> if
+     * 1) the <code>Morphism morph</code> does not define any inverse image, or
+     * 2) the <code>Morphism morph</code> defines an inverse image and an
+     * attribute member of it is in the
+     * <code>Hashtable attrMember2Constant</code>. The
+     * <code>Hashtable attrMember2Constant</code> contains Pairs of Strings
+     * where the first string is the name of a variable, the second string is a
+     * constant value of the same variable.
      *
      * Otherwise, returns null.
      *
      * @param morph the OrdinaryMorphism to search
      * @param imageObj the GraphObject to check
-     * @param attrMember2Constant the <code>Hashtable</code> of Pairs of Strings an the keys are ValuMembers.
+     * @param attrMember2Constant the <code>Hashtable</code> of Pairs of Strings
+     * an the keys are ValuMembers.
      * @return Type the Type of the imageObj
      */
     protected static Type getTypeWhenDifferentAttrValue(
             final OrdinaryMorphism morph,
             final GraphObject imageObj,
             final Hashtable<ValueMember, Pair<String, String>> attrMember2Constant) {
-
         if (imageObj.getAttribute() == null) {
             return null;
         }
-
         if (!morph.hasInverseImage(imageObj)) {
             return imageObj.getType();
         }
@@ -1140,14 +1086,14 @@ public final class ExcludePairHelper {
                 }
             }
         }
-
         return null;
     }
 
     /**
-     * Returns a set of all changed attribute members for the given graph object of the left-hand side of the given
-     * rule. An attribute member is changed if the appropriate right attribute member is set to a different variable, a
-     * different constant or an expression.
+     * Returns a set of all changed attribute members for the given graph object
+     * of the left-hand side of the given rule. An attribute member is changed
+     * if the appropriate right attribute member is set to a different variable,
+     * a different constant or an expression.
      *
      * @return a vector of changed members, otherwise null
      * @param r the rule.
@@ -1156,7 +1102,6 @@ public final class ExcludePairHelper {
     public static List<ValueMember> getChangedAttributeMember(
             final Rule r,
             final GraphObject leftObj) {
-
         List<ValueMember> resultVector = null;
         if (leftObj.getAttribute() != null) {
             final GraphObject goRight = r.getImage(leftObj);
@@ -1208,7 +1153,6 @@ public final class ExcludePairHelper {
     protected static boolean doesRuleChangeAttr(
             final Rule r,
             final GraphObject leftObj) {
-
         if (leftObj.getAttribute() != null) {
             final GraphObject goRight = r.getImage(leftObj);
             final AttrInstance leftAttr = leftObj.getAttribute();
@@ -1245,8 +1189,9 @@ public final class ExcludePairHelper {
     }
 
     /**
-     * Returns true if the specified GraphObject has an attribute member with constant value or a variable which is used
-     * as an input parameter. Otherwise, returns false.
+     * Returns true if the specified GraphObject has an attribute member with
+     * constant value or a variable which is used as an input parameter.
+     * Otherwise, returns false.
      *
      * @param r the rule
      * @param obj the GraphObject
@@ -1255,11 +1200,9 @@ public final class ExcludePairHelper {
             final Rule r,
             final GraphObject obj,
             final GraphObject refobj) {
-
         if (obj.getAttribute() == null) {
             return false;
         }
-
         for (int i = 0; i < obj.getAttribute().getNumberOfEntries(); i++) {
             final ValueMember vm = (ValueMember) obj.getAttribute().getMemberAt(i);
             if (vm.isSet()) {
@@ -1287,11 +1230,9 @@ public final class ExcludePairHelper {
     protected static boolean isAttrRestrictedByConstant(
             final Rule r,
             final GraphObject obj) {
-
         if (obj.getAttribute() == null) {
             return false;
         }
-
         for (int i = 0; i < obj.getAttribute().getNumberOfEntries(); i++) {
             final ValueMember vm = (ValueMember) obj.getAttribute().getMemberAt(i);
             if (vm.isSet() && vm.getExpr().isConstant()) {
@@ -1305,11 +1246,9 @@ public final class ExcludePairHelper {
             final Rule r,
             final GraphObject obj,
             boolean onlyInputParam) {
-
         if (obj.getAttribute() == null) {
             return false;
         }
-
         for (int i = 0; i < obj.getAttribute().getNumberOfEntries(); i++) {
             final ValueMember vm = (ValueMember) obj.getAttribute().getMemberAt(i);
             if (vm.isSet() && vm.getExpr().isVariable()) {
@@ -1345,7 +1284,6 @@ public final class ExcludePairHelper {
                         if (test_vm != null && test_vm.isInputParameter()) {
                             return true;
                         }
-
                         for (int i = 0; i < conds.getSize(); i++) {
                             CondMember cm = (CondMember) conds.getValueMemberAt(i);
                             if (cm.getAllVariableNamesOfExpression()
@@ -1353,7 +1291,6 @@ public final class ExcludePairHelper {
                                 return true;
                             }
                         }
-
                     }
                 }
             }
@@ -1374,7 +1311,6 @@ public final class ExcludePairHelper {
                         if (test_vm != null && test_vm.isInputParameter()) {
                             return true;
                         }
-
                         for (int i = 0; i < conds.getSize(); i++) {
                             CondMember cm = (CondMember) conds
                                     .getValueMemberAt(i);
@@ -1383,7 +1319,6 @@ public final class ExcludePairHelper {
                                 return true;
                             }
                         }
-
                     }
                 }
             }
@@ -1395,7 +1330,6 @@ public final class ExcludePairHelper {
             final Rule r,
             final OrdinaryMorphism nac,
             final Hashtable<ValueMember, String> var2const) {
-
         Iterator<?> en = nac.getTarget().getNodesSet().iterator();
         while (en.hasNext()) {
             GraphObject o = (GraphObject) en.next();
@@ -1478,19 +1412,15 @@ public final class ExcludePairHelper {
             final List<GraphObject> changedAttributesR1,
             final List<Type> forbiddenObjTypesR2,
             final Hashtable<ValueMember, Pair<String, String>> attrMember2Constant) {
-
         boolean result = false;
         boolean nacStarFailed = false;
-
         while (l1Objs.hasNext()) {
             GraphObject l1Obj = (GraphObject) l1Objs.next();
             GraphObject overlapObj = overlapping.first.getImage(l1Obj);
             if (changedAttributesR1.contains(l1Obj)) {
                 if (forbiddenObjTypesR2.contains(overlapObj.getType())) {
-
                     Iterator<GraphObject> e = nacStar.getInverseImage(overlapObj);
                     if (e.hasNext()) {
-
                         GraphObject nacObj = e.next();
                         ValueTuple vtNac = (ValueTuple) nacObj.getAttribute();
                         if (!nac.hasInverseImage(nacObj)) {
@@ -1572,7 +1502,6 @@ public final class ExcludePairHelper {
                                     }
                                 }
                             }
-
                         }
                     }
                 } else {
@@ -1661,16 +1590,13 @@ public final class ExcludePairHelper {
         if (!result && !nacStarFailed) {
             return false;
         }
-
         return true;
     }
 
     private static void doReplaceConstantByInputParam(
             final Rule r, OrdinaryMorphism nac,
             final Hashtable<ValueMember, String> var2const) {
-
         VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
-
         doReplaceConstantByInputParam(vars, nac.getTarget().getNodesSet().iterator(), nac,
                 var2const);
         doReplaceConstantByInputParam(vars, nac.getTarget().getArcsSet().iterator(), nac,
@@ -1692,7 +1618,6 @@ public final class ExcludePairHelper {
             final VarTuple vars,
             final Iterator<?> en, final OrdinaryMorphism nac,
             final Hashtable<ValueMember, String> var2const) {
-
         while (en.hasNext()) {
             GraphObject o = (GraphObject) en.next();
             if (o.getAttribute() == null) {
@@ -1720,7 +1645,6 @@ public final class ExcludePairHelper {
     protected static void replaceInputParamByConstant(
             final Rule r,
             final Hashtable<ValueMember, String> var2const) {
-
         final List<OrdinaryMorphism> nacs = r.getNACsList();
         for (int l = 0; l < nacs.size(); l++) {
             final OrdinaryMorphism nac = nacs.get(l);
@@ -1732,9 +1656,7 @@ public final class ExcludePairHelper {
             final Rule r,
             final OrdinaryMorphism nac,
             final Hashtable<ValueMember, String> var2const) {
-
         VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
-
         doReplaceInputParamByConstant(vars, nac.getTarget().getNodesSet().iterator(),
                 var2const);
         doReplaceInputParamByConstant(vars, nac.getTarget().getArcsSet().iterator(),
@@ -1769,12 +1691,10 @@ public final class ExcludePairHelper {
             int maxSize,
             final List<GraphObject> nodeSet,
             final List<GraphObject> arcs) {
-
         List<List<GraphObject>> result = new Vector<>();
         List<GraphObject> combi = null;
         result.add(nodeSet);
         if (nodeSet.size() < maxSize) {
-
             for (int j = 0; j < arcs.size(); j++) {
                 GraphObject o = arcs.get(j);
                 if (nodeSet.contains(((Arc) o).getSource())
@@ -1785,7 +1705,6 @@ public final class ExcludePairHelper {
                     combi.add(o);
                     // store new combi
                     result.add(combi);
-
                     if (j < arcs.size() - 1) {
                         // create new combi and fill from the previous once for the next
                         combi = new Vector<>(result.get(result.size() - 1));
@@ -1793,11 +1712,9 @@ public final class ExcludePairHelper {
                 } else {
                     continue;
                 }
-
                 if (combi != null && !combi.isEmpty()) {
                     for (int k = j + 1; k < arcs.size(); k++) {
                         GraphObject o1 = arcs.get(k);
-
                         if (nodeSet.contains(((Arc) o1).getSource())
                                 && nodeSet.contains(((Arc) o1).getTarget())) {
                             if (combi.size() < maxSize) {
@@ -1824,7 +1741,6 @@ public final class ExcludePairHelper {
             int maxSize,
             final List<List<GraphObject>> nodeSets,
             final List<List<GraphObject>> arcSets) {
-
         List<List<GraphObject>> result = new Vector<>();
         List<GraphObject> combi = null;
         for (int i = 0; i < nodeSets.size(); i++) {
@@ -1860,10 +1776,8 @@ public final class ExcludePairHelper {
             int maxSize,
             final List<List<GraphObject>> nodeSets,
             final List<List<GraphObject>> arcSets) {
-
         List<List<GraphObject>> result = new Vector<>();
         List<GraphObject> combi = null;
-
         for (int i = 0; i < nodeSets.size(); i++) {
             List<GraphObject> nodeSet = nodeSets.get(i);
             // add node inclusions
@@ -1894,18 +1808,15 @@ public final class ExcludePairHelper {
             final List<List<GraphObject>> set1,
             final List<GraphObject> set2,
             final List<?> set3) {
-
         // combine set1 with set2 above elements from set3;
         // result contains graph like inclusions only
         List<List<GraphObject>> result = new Vector<>();
-
         if (set1 == null || set1.isEmpty()
                 || set2 == null || set2.isEmpty()) {
             return result;
         }
         for (int i = 0; i < set1.size(); i++) {
             List<GraphObject> v1i = set1.get(i);
-
             /*
 			 * boundary is not used now List bound1 = new Vector(2); 
 			 * for(int ii = 0; ii < v1i.size() && !stop; ii++){
@@ -1921,9 +1832,7 @@ public final class ExcludePairHelper {
 			 * continue;
              */
             List<GraphObject> combi = new Vector<>();
-
             combi.addAll(v1i);
-
             // handle nodes first
             for (int jj = 0; jj < set2.size(); jj++) {
                 GraphObject o = set2.get(jj);
@@ -1953,7 +1862,6 @@ public final class ExcludePairHelper {
             }
             result.add(combi);
         }
-
         return result;
     }
 
@@ -1962,7 +1870,6 @@ public final class ExcludePairHelper {
             final List<GraphObject> set1,
             final List<List<GraphObject>> set2,
             final List<?> set3) {
-
         // combine set1 with set2 above elements from set3;
         // result contains graph like inclusions only!!!
         List<List<GraphObject>> result = new Vector<>();
@@ -2041,7 +1948,6 @@ public final class ExcludePairHelper {
             final List<GraphObject> set1,
             final List<List<GraphObject>> set2,
             final List<?> set3) {
-
         // combine set1 with set2 above elements from set3;
         // result contains graph like inclusions only!!!
         List<List<GraphObject>> result = new Vector<>();
@@ -2107,11 +2013,9 @@ public final class ExcludePairHelper {
             final List<List<GraphObject>> set1,
             final List<List<GraphObject>> set2,
             final List<?> set3) {
-
         // combine set1 with set2 above elements from set3;
         // result contains graph like inclusions only!!!
         List<List<GraphObject>> result = new Vector<>();
-
         if ((set1 != null) && !set1.isEmpty()) {
             if ((set2 == null) || set2.isEmpty()) {
                 result.addAll(set1);
@@ -2131,16 +2035,12 @@ public final class ExcludePairHelper {
             int size,
             final List<GraphObject> set,
             boolean graphLikeIncl) {
-
         final List<List<GraphObject>> combis = new Vector<>();
-
         // split set to node subset and edge subset
         final List<GraphObject> nodeSubset = new Vector<>(5);
         final List<GraphObject> arcSubset = new Vector<>(5);
-
         ExcludePairHelper.split(set, nodeSubset, arcSubset);
         List<List<GraphObject>> arcIncls = ExcludePairHelper.getArcInclusions(size, arcSubset);
-
         int tmpSize = nodeSubset.size();
         if (tmpSize > size) {
             tmpSize = size;
@@ -2164,7 +2064,6 @@ public final class ExcludePairHelper {
             final Graph g,
             int size,
             final List<GraphObject> nodes) {
-
         int tmpSize = nodes.size();
         if (tmpSize > size) {
             tmpSize = size;
@@ -2183,7 +2082,6 @@ public final class ExcludePairHelper {
 
     protected static List<List<GraphObject>> getArcInclusions(
             int size, final List<GraphObject> arcs) {
-
         final List<List<GraphObject>> arcSubsets = new Vector<>();
         int tmpSize = arcs.size();
         if (tmpSize > size) {
@@ -2233,7 +2131,6 @@ public final class ExcludePairHelper {
             final List<GraphObject> setToCombine,
             int size,
             final Graph g) {
-
         final List<GraphObject> nodes = new Vector<>();
         final List<GraphObject> arcs = new Vector<>();
         split(setToCombine, nodes, arcs);
@@ -2249,7 +2146,6 @@ public final class ExcludePairHelper {
     protected static void split(final List<GraphObject> set,
             final List<GraphObject> outNodeSubset,
             final List<GraphObject> outArcSubset) {
-
         if (!set.isEmpty()) {
             for (int i = 0; i < set.size(); i++) {
                 GraphObject go = set.get(i);
@@ -2268,9 +2164,7 @@ public final class ExcludePairHelper {
             final List<GraphObject> itsGOSet,
             List<List<GraphObject>> inclusions,
             boolean graphLike) {
-
         if (i > 0 && i <= itsGOSet.size()) {
-
             final List<Integer> select = new Vector<>(i);
             for (int j = 0; j < i; j++) {
                 select.add(new Integer(j));
@@ -2278,7 +2172,6 @@ public final class ExcludePairHelper {
             computeSelection(//g, 
                     1, itsGOSet, select, inclusions, graphLike);
         }
-
         return inclusions;
     }
 
@@ -2287,7 +2180,6 @@ public final class ExcludePairHelper {
             final List<GraphObject> itsGOSet,
             List<List<GraphObject>> inclusions,
             boolean graphLike) {
-
         if (i > 0 && i <= itsGOSet.size()) {
             final List<Integer> select = new Vector<Integer>(i);
             for (int j = 0; j < i; j++) {
@@ -2295,7 +2187,6 @@ public final class ExcludePairHelper {
             }
             computeSelection(1, itsGOSet, select, inclusions, graphLike);
         }
-
         return inclusions;
     }
 
@@ -2306,7 +2197,6 @@ public final class ExcludePairHelper {
             final List<Integer> select,
             List<List<GraphObject>> inclusions,
             boolean graphLike) {
-
         int max = itsGOSet.size();
         int selSize = select.size();
         int v;
@@ -2344,7 +2234,6 @@ public final class ExcludePairHelper {
     private static List<GraphObject> makeGraphObjectSet(
             final List<Integer> select,
             final List<GraphObject> itsGOSet) {
-
         List<GraphObject> tmp = new Vector<GraphObject>();
         for (int i = 0; i < select.size(); i++) {
             int v = select.get(i).intValue();
@@ -2357,7 +2246,6 @@ public final class ExcludePairHelper {
             final List<GraphObject> goSet,
             List<List<GraphObject>> inclusions,
             boolean graphLike) {
-
 //		List<GraphObject> incl = new Vector<GraphObject>(5);
         if (graphLike) {
 //			for (int i = 0; i < goSet.size(); i++) {
@@ -2371,7 +2259,6 @@ public final class ExcludePairHelper {
 //					if (incl.contains(((Arc) go).getSource()) 
 //							&& incl.contains(((Arc) go).getTarget()))
 //						incl.add(go);
-
                     if (!goSet.contains(((Arc) go).getSource())
                             || !goSet.contains(((Arc) go).getTarget())) {
                         goSet.remove(i);
@@ -2388,38 +2275,35 @@ public final class ExcludePairHelper {
 //		}
 //		incl.trimToSize();
 //		inclusions.addElement(incl);
-
         return (inclusions);
     }
 
     /**
-     * Try to shift the specified application condition <code>cond</code> of the given Rule <code>rule</code> over the
-     * morphism <code>morph</code>.
+     * Try to shift the specified application condition <code>cond</code> of the
+     * given Rule <code>rule</code> over the morphism <code>morph</code>.
      *
      * @param rule the rule
-     * @param cond the application condition at the graph <code>morph.getSource()</code>
+     * @param cond the application condition at the graph
+     * <code>morph.getSource()</code>
      * @param morph the morphism for shift over
-     * @return	list of application conditions at the graph <code>morph.getTarget()</code>
+     * @return	list of application conditions at the graph
+     * <code>morph.getTarget()</code>
      */
     public static List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shiftCondOverMorphism(
             final Rule rule,
             final OrdinaryMorphism cond,
             final OrdinaryMorphism morph) {
-
         final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> list = new Vector<>();
-
         // make an iso-copy of the source graph of the condition
         final OrdinaryMorphism condSrcIsom = cond.getSource().isomorphicCopy();
         if (condSrcIsom == null) {
             return list;
         }
-
         // extend the target graph of condSrcIsom by elements of the target graph of cond
 //		final OrdinaryMorphism 
 //		condExt = BaseFactory.theFactory().extendTargetGraph1ByTargetGraph2(condSrcIsom, cond);
         // get the extended result graph
         final Graph dCondGraph = condSrcIsom.getTarget();
-
         final List<GraphObject> condDom = condSrcIsom.getDomainObjects();
         final List<Object> requiredObjs = new Vector<Object>(condDom.size());
         final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(condDom.size());
@@ -2448,45 +2332,44 @@ public final class ExcludePairHelper {
             OrdinaryMorphism condSh = p.second;
             condSh.setEnabled(cond.isEnabled());
             condSh.setName(cond.getName().concat("_").concat(String.valueOf(list.size())));
-
             list.add(p);
         }
-
         return list;
     }
 
     /**
-     * Tries to construct a left application condition : r.LHS --> criticalGraph. The specified Pair p is one of the
-     * critical overlapping pairs of the corresponding rule pair. The specified rule is one of the rules of the
-     * corresponding rule pair. The criticalGraph is the target graph of the specified critical pair. Use
-     * <tt>Rule.addNAC(OrdinaryMorphism)</tt> to be able to use the result as a Negative AC, or
-     * <tt>Rule.addPAC(OrdinaryMorphism)</tt> to be able to use the result as a Positive AC, or
-     * <tt>Rule.addNestedAC(OrdinaryMorphism)</tt> to be able to use the result as a General AC,
+     * Tries to construct a left application condition : r.LHS -->
+     * criticalGraph. The specified Pair p is one of the critical overlapping
+     * pairs of the corresponding rule pair. The specified rule is one of the
+     * rules of the corresponding rule pair. The criticalGraph is the target
+     * graph of the specified critical pair. Use
+     * <tt>Rule.addNAC(OrdinaryMorphism)</tt> to be able to use the result as a
+     * Negative AC, or
+     * <tt>Rule.addPAC(OrdinaryMorphism)</tt> to be able to use the result as a
+     * Positive AC, or
+     * <tt>Rule.addNestedAC(OrdinaryMorphism)</tt> to be able to use the result
+     * as a General AC,
      */
     public static OrdinaryMorphism makeLeftACFromGraph(
             final Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p,
             final Rule r,
             boolean isFirstRule,
             boolean nested) {
-
         Graph criticalGraph = p.first.first.getTarget();
         OrdinaryMorphism iso = criticalGraph.isoCopy();
         if (iso == null) {
             return null;
         }
-
         iso.getTarget().setName(iso.getTarget().getName().replace("_copy", ""));
         // create an ac morphism : r.LHS --> iso.target
         OrdinaryMorphism ac = (nested)
                 ? BaseFactory.theFactory().createGeneralMorphism(r.getLeft(), iso.getTarget())
                 : BaseFactory.theFactory().createMorphism(r.getLeft(), iso.getTarget());
-
         // get critical pair
         Pair<OrdinaryMorphism, OrdinaryMorphism> cp1 = p.first;
         Pair<OrdinaryMorphism, OrdinaryMorphism> cp2 = p.second;
         OrdinaryMorphism o1 = cp1.first;
         OrdinaryMorphism o2 = cp1.second;
-
 //		Hashtable<String,String> 
 //		varEqualName = VariableEqualityDialog.getVarNameEquality(
 //							criticalGraph.getHelpInfoAboutVariableEquality());
@@ -2545,7 +2428,6 @@ public final class ExcludePairHelper {
             ac.dispose(false, true);
             return null;
         }
-
         return ac;
     }
 
@@ -2596,11 +2478,9 @@ public final class ExcludePairHelper {
 
     protected static List<GraphObject> getImgOfObj(
             OrdinaryMorphism om, List<GraphObject> objs) {
-
         if (objs == null || objs.isEmpty()) {
             return null;
         }
-
         List<GraphObject> list = new Vector<GraphObject>(1);
         for (GraphObject o : objs) {
             GraphObject i = om.getImage(o);
@@ -2622,7 +2502,6 @@ public final class ExcludePairHelper {
             OrdinaryMorphism om1, // NAC of rule2 morphism
             OrdinaryMorphism om2, // NAC of rule2 into overlap graph
             boolean isConst, boolean isVar) {	// what to attent
-
         if (srcObjs == null || srcObjs.isEmpty()
                 || objs == null || objs.isEmpty()) {
             return null;
@@ -2640,9 +2519,7 @@ public final class ExcludePairHelper {
                         Iterator<GraphObject> en2 = om2.getInverseImage(obj);
                         if (en2.hasNext()) {
                             GraphObject n2_obj = en2.next();
-
                             List<Pair<GraphObject, ValueMember>> tmp = new Vector<Pair<GraphObject, ValueMember>>(1);
-
                             AttrInstance t_attr = t.getAttribute();
                             AttrInstance obj_attr = obj.getAttribute();
                             AttrInstance n2_obj_attr = n2_obj.getAttribute();
@@ -2651,14 +2528,12 @@ public final class ExcludePairHelper {
                                 ValueMember t_vm = (ValueMember) t_attr.getMemberAt(s_vm.getName());
                                 ValueMember obj_vm = (ValueMember) obj_attr.getMemberAt(s_vm.getName());
                                 ValueMember n2_obj_vm = (ValueMember) n2_obj_attr.getMemberAt(s_vm.getName());
-
                                 if (obj_vm != null && n2_obj_vm != null && n2_obj_vm.isSet()) {
                                     // ?is s_vm != t_vm already given?
                                     if (!t_vm.isSet()
                                             || (s_vm.isSet() && s_vm.getExprAsText().equals(t_vm.getExprAsText()))) {
                                         continue;
                                     }
-
                                     // now t_vm.isSet()
                                     if (isConst && n2_obj_vm.getExpr().isConstant()) {
                                         if (t_vm.getExpr().isConstant()) {
@@ -2680,19 +2555,16 @@ public final class ExcludePairHelper {
                                                 break;
                                             }
                                         }
-
                                     } else if (isVar && n2_obj_vm.getExpr().isVariable()) {
                                         // collect potential critical attr. member
                                         tmp.add(new Pair<GraphObject, ValueMember>(obj, obj_vm));
                                     }
                                 }
                             }
-
                             if (!tmp.isEmpty()) {
                                 for (Pair<GraphObject, ValueMember> p : tmp) {
                                     ValueMember obj_vm = p.second;
                                     list.add(new Triple<GraphObject, ValueMember, String>(obj, obj_vm, obj_vm.getExprAsText()));
-
                                     /*
 									if (obj_vm.getExpr().isConstant()) {
 	//									String vname = "v"+String.valueOf(obj_vm.hashCode());
@@ -2756,7 +2628,6 @@ public final class ExcludePairHelper {
     public static boolean checkIfMorphSimilar(Graph overlap1, Graph overlap2,
             OrdinaryMorphism first1, OrdinaryMorphism first2,
             OrdinaryMorphism second1, OrdinaryMorphism second2) {
-
         OrdinaryMorphism morph1 = (BaseFactory.theFactory()).createMorphism(overlap1, overlap2);
         OrdinaryMorphism morph2 = (BaseFactory.theFactory()).createMorphism(overlap1, overlap2);
         if (morph1.makeDiagram(first1, first2) && morph1.getSize() > 0) {
@@ -2799,7 +2670,6 @@ public final class ExcludePairHelper {
     public static boolean newNode_TypeToTypeMap(
             final Rule rule1,
             final OrdinaryMorphism overlap1) {
-
         Iterator<Node> en1 = overlap1.getSource().getNodesSet().iterator();
         while (en1.hasNext()) {
             Node go1 = en1.next();
@@ -2815,7 +2685,6 @@ public final class ExcludePairHelper {
     public static List<Pair<ValueMember, ValueMember>> getAttrMemberByParentType(
             final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> attrs,
             final AttrType attrtype) {
-
         Enumeration<AttrType> keys = attrs.keys();
         while (keys.hasMoreElements()) {
             AttrType t = keys.nextElement();
@@ -2829,7 +2698,6 @@ public final class ExcludePairHelper {
     public static List<Pair<ValueMember, ValueMember>> getAttrMemberByChildType(
             final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> attrs,
             final AttrType attrtype) {
-
         Enumeration<AttrType> keys = attrs.keys();
         while (keys.hasMoreElements()) {
             AttrType t = keys.nextElement();

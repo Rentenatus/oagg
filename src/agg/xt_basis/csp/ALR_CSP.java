@@ -1,11 +1,12 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.csp;
 
@@ -18,7 +19,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.ArrayList;
 import java.util.List;
-
 import agg.attribute.AttrContext;
 import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.impl.ValueTuple;
@@ -44,23 +44,21 @@ import java.util.List;
 public class ALR_CSP extends CSP {
 
     private AttrContext itsAttrContext;
-
     private boolean randomizedDomain;
-
     private boolean directed = true;
-
 //	private boolean withNTI;
     /**
-     * A 1:1 mapping of the objects of <code>itsVariableGraph</code> to the variables of the CSP. Keys are of type
-     * <code>GraphObject</code>, values of type <code>Variable</code>.
+     * A 1:1 mapping of the objects of <code>itsVariableGraph</code> to the
+     * variables of the CSP. Keys are of type <code>GraphObject</code>, values
+     * of type <code>Variable</code>.
      */
     final private Dictionary<GraphObject, Variable> itsObjVarMap = new Hashtable<GraphObject, Variable>();
-
     /**
-     * A mapping of every <code>Type.convertToKey()</code> of the variable graph to the set of graph objects of this
-     * type in the domain graph.
+     * A mapping of every <code>Type.convertToKey()</code> of the variable graph
+     * to the set of graph objects of this type in the domain graph.
      * <p>
-     * Keys are of type <code>String</code>, values of type <code>List</code> of <code>GraphObject</code>.
+     * Keys are of type <code>String</code>, values of type <code>List</code> of
+     * <code>GraphObject</code>.
      *
      * @see agg.xt_basis.Type
      * @see agg.xt_basis.GraphObject
@@ -76,10 +74,8 @@ public class ALR_CSP extends CSP {
             final AttrContext ac,
             boolean injective) {
         super(new agg.util.csp.Solution_Backjump(injective));
-
         this.itsAttrContext = ac;
 //		this.withNTI = vargraph.getTypeSet().hasInheritance();
-
         this.directed = vargraph.getTypeSet().isArcDirected();
         buildConstraintGraph(vargraph);
     }
@@ -91,69 +87,70 @@ public class ALR_CSP extends CSP {
             final AttrContext ac,
             final SolutionStrategy st) {
         super(st);
-
         this.itsAttrContext = ac;
 //		this.withNTI = vargraph.getTypeSet().hasInheritance();
-
         this.directed = vargraph.getTypeSet().isArcDirected();
         buildConstraintGraph(vargraph);
     }
 
     /**
-     * Construct myself to be a CSP where every GraphObject of the specified Graph <code>vargraph</code> corresponds to
-     * exactly one of my variables.<br>
+     * Construct myself to be a CSP where every GraphObject of the specified
+     * Graph <code>vargraph</code> corresponds to exactly one of my
+     * variables.<br>
      * <b>Pre:</b> <code>vargraph.isGraph()</code>.<br>
      * <b>Post:</b> <code>getDomain() == null</code>.<br>
      *
-     * @param vargraph The graph whose elements correspond to the variables of the CSP.
+     * @param vargraph The graph whose elements correspond to the variables of
+     * the CSP.
      * @param ac The attribute context to map attributes in.
      * @see agg.attribute.AttrMapping
-     * @param injective If <code>true</code>, then only injective solutions will be considered.
-     * @param randomizeDomainOfVariable If <code>true</code>, then do randomize the object domain of each CSP variable
+     * @param injective If <code>true</code>, then only injective solutions will
+     * be considered.
+     * @param randomizeDomainOfVariable If <code>true</code>, then do randomize
+     * the object domain of each CSP variable
      */
     public ALR_CSP(final Graph vargraph,
             final AttrContext ac,
             boolean injective,
             boolean randomizeDomainOfVariable) {
-
         super(new agg.util.csp.Solution_Backjump(injective));
-
         this.itsAttrContext = ac;
         this.randomizedDomain = randomizeDomainOfVariable;
 //		this.withNTI = vargraph.getTypeSet().hasInheritance();
-
         this.directed = vargraph.getTypeSet().isArcDirected();
         buildConstraintGraph(vargraph);
     }
 
     /**
-     * Construct myself to be a CSP where every GraphObject of the specified Graph <code>vargraph</code> corresponds to
-     * exactly one of my variables.<br>
+     * Construct myself to be a CSP where every GraphObject of the specified
+     * Graph <code>vargraph</code> corresponds to exactly one of my
+     * variables.<br>
      * <b>Pre:</b> <code>vargraph.isGraph()</code>.<br>
      * <b>Post:</b> <code>getDomain() == null</code>.<br>
      *
-     * @param vargraph The graph whose elements correspond to the variables of the CSP.
+     * @param vargraph The graph whose elements correspond to the variables of
+     * the CSP.
      * @param ac The attribute context to map attributes in.
      * @see agg.attribute.AttrMapping
      * @param st The search solution strategy
-     * @param randomizeDomainOfVariable If <code>true</code>, then do randomize the object domain of each CSP variable
+     * @param randomizeDomainOfVariable If <code>true</code>, then do randomize
+     * the object domain of each CSP variable
      */
     public ALR_CSP(final Graph vargraph,
             final AttrContext ac,
             final SolutionStrategy st,
             boolean randomizeDomainOfVariable) {
         super(st);
-
         this.itsAttrContext = ac;
         this.randomizedDomain = randomizeDomainOfVariable;
 //		this.withNTI = vargraph.getTypeSet().hasInheritance();
-
         this.directed = vargraph.getTypeSet().isArcDirected();
         buildConstraintGraph(vargraph);
     }
 
     /**
-     * Construct myself to be a CSP. The CSP variables correspond to nodes and edge of the specified sets.
+     * Construct myself to be a CSP. The CSP variables correspond to nodes and
+     * edge of the specified sets.
      */
     public ALR_CSP(
             final Collection<Node> varnodes,
@@ -175,7 +172,6 @@ public class ALR_CSP extends CSP {
     private synchronized final void buildConstraintGraph(
             Collection<Node> varnodes,
             Collection<Arc> varedges) {
-
         // Create a value empty TypeMap for all specified nodes and edges.
         // Edges without source / target are not taken in account.
         // iterate over the nodes and create variables for them
@@ -189,13 +185,10 @@ public class ALR_CSP extends CSP {
             // create a variable for the current graph object			
             final Variable anObjVar = new Variable();
 //			anObjVar.setRandomizedDomain(false);
-
             anObjVar.setKind(0);
             anObjVar.setGraphObject(anObj);
-
             this.itsObjVarMap.put(anObj, anObjVar);
         }
-
         // iterate over the edges and create variables for them
         while (varedges.iterator().hasNext()) {
             final Arc anObj = varedges.iterator().next();
@@ -209,20 +202,16 @@ public class ALR_CSP extends CSP {
                         || this.itsTypeMap.get(tar_keystr) == null) {
                     continue;
                 }
-
                 // put edge type
                 this.itsTypeMap.put(keystr, new LinkedHashSet<GraphObject>());
             }
             // create a variable for the current graph object
             final Variable anObjVar = new Variable();
 //			anObjVar.setRandomizedDomain(false);
-
             anObjVar.setKind(1);
             anObjVar.setGraphObject(anObj);
-
             this.itsObjVarMap.put(anObj, anObjVar);
         }
-
         buildQueriesAndConstraints(this.itsObjVarMap.keys());
     }
 
@@ -231,7 +220,6 @@ public class ALR_CSP extends CSP {
     private synchronized final void buildConstraintGraph(final Graph vargraph) {
         // Create a value empty TypeMap for all the GraphObject types of
         // the variable graph (LHS of a morphism):
-
         // iterate over all objects in the vargraph 
         // and create variables for them
         final Iterator<Node> nodes = vargraph.getNodesSet().iterator();
@@ -245,13 +233,10 @@ public class ALR_CSP extends CSP {
             // create a variable for the current graph object
             final Variable anObjVar = new Variable();
 //			anObjVar.setRandomizedDomain(this.randomizedDomain);
-
             anObjVar.setKind(0);
             anObjVar.setGraphObject(anObj);
-
             this.itsObjVarMap.put(anObj, anObjVar);
         }
-
         final Iterator<Arc> arcs = vargraph.getArcsSet().iterator();
         while (arcs.hasNext()) {
             final GraphObject anObj = arcs.next();
@@ -264,35 +249,27 @@ public class ALR_CSP extends CSP {
             // create a variable for the current graph object
             final Variable anObjVar = new Variable();
 //			anObjVar.setRandomizedDomain(this.randomizedDomain); 
-
             anObjVar.setKind(1);
             anObjVar.setGraphObject(anObj);
-
             this.itsObjVarMap.put(anObj, anObjVar);
         }
-
         buildQueriesAndConstraints(this.itsObjVarMap.keys());
     }
 
     private void buildQueriesAndConstraints(final Enumeration<GraphObject> anEnum) {
         GraphObject anObj;
         Variable anObjVar, aSrcObjVar, aTarObjVar;
-
         Query query;
         BinaryConstraint constraint;
-
         while (anEnum.hasMoreElements()) {
             anObj = anEnum.nextElement();
             anObjVar = this.itsObjVarMap.get(anObj);
-
             // create queries for the current variable
 //			query = new Query_Type(itsTypeMap.get(anObj.convertToKey()), anObjVar);
             query = new Query_Type(anObjVar);
             ((Query_Type) query).setRandomizedDomain(this.randomizedDomain);
-
             constraint = new Constraint_Type(anObj, anObjVar);
             query.setCorrespondent(constraint);
-
             if (anObj.getType().getAttrType() != null
                     || anObj.getType().hasInheritedAttribute()) {
                 new Constraint_Attribute(anObj, anObjVar,
@@ -309,23 +286,19 @@ public class ALR_CSP extends CSP {
 //				}
 //			} 
 //			else {
-
             // create queries for source and target nodes of an arc
             if (anObj.isArc()) {
                 aSrcObjVar = this.itsObjVarMap.get(((Arc) anObj).getSource());
                 aTarObjVar = this.itsObjVarMap.get(((Arc) anObj).getTarget());
-
                 if (this.directed) {
                     // constraint_source
                     constraint = new Constraint_Source(aSrcObjVar, anObjVar);
-
                     query = new Query_Outgoing(aSrcObjVar, anObjVar);
                     query.setCorrespondent(constraint);
                     query = new Query_Source(anObjVar, aSrcObjVar);
                     query.setCorrespondent(constraint);
                     // constraint_target
                     constraint = new Constraint_Target(aTarObjVar, anObjVar);
-
                     query = new Query_Incoming(aTarObjVar, anObjVar);
                     query.setCorrespondent(constraint);
                     query = new Query_Target(anObjVar, aTarObjVar);
@@ -346,7 +319,6 @@ public class ALR_CSP extends CSP {
                 }
             }
         }
-
     }
 
     protected synchronized final void preprocessDomain(final Object domaingraph) {
@@ -380,7 +352,6 @@ public class ALR_CSP extends CSP {
             }
             if (go.getType().compareTo(t)) {
                 Variable var = this.itsObjVarMap.get(go);
-
                 return !var.hasNext();
             }
         }
@@ -400,7 +371,6 @@ public class ALR_CSP extends CSP {
                     && ((Arc) go).getSource().getType().compareTo(src)
                     && ((Arc) go).getTarget().getType().compareTo(tar)) {
                 Variable var = this.itsObjVarMap.get(go);
-
                 return !var.hasNext();
             }
         }
@@ -425,8 +395,9 @@ public class ALR_CSP extends CSP {
     }
 
     /**
-     * An additional object name constraint will be added for the CSP variable of the given GraphObject anObj. This
-     * constraint requires equality of the object names.
+     * An additional object name constraint will be added for the CSP variable
+     * of the given GraphObject anObj. This constraint requires equality of the
+     * object names.
      */
     public void addObjectNameConstraint(GraphObject anObj) {
         Variable anObjVar = this.itsObjVarMap.get(anObj);
@@ -436,7 +407,8 @@ public class ALR_CSP extends CSP {
     }
 
     /**
-     * Removes the object name constraint for the CSP variable of the given GraphObject anObj.
+     * Removes the object name constraint for the CSP variable of the given
+     * GraphObject anObj.
      */
     public void removeObjectNameConstraint(GraphObject anObj) {
         Variable anObjVar = this.itsObjVarMap.get(anObj);
@@ -459,7 +431,6 @@ public class ALR_CSP extends CSP {
         while (anEnum.hasNext()) {
             Node anObj = (Node) anEnum.next();
             String keystr = anObj.convertToKey();
-
             if (anObj.getType().hasParent()) {
                 List<Type> myParents = anObj.getType().getAllParents();
                 if (myParents != null) {
@@ -481,16 +452,12 @@ public class ALR_CSP extends CSP {
         while (anEnum.hasNext()) {
             Arc anObj = (Arc) anEnum.next();
             String keystr = anObj.convertToKey();
-
             if (anObj.getSource().getType().hasParent()
                     || anObj.getTarget().getType().hasParent()) {
                 List<Type> mySrcParents = anObj.getSource().getType().getAllParents();
                 List<Type> myTarParents = anObj.getTarget().getType().getAllParents();
-
                 for (int i = 0; i < mySrcParents.size(); ++i) {
-
                     for (int j = 0; j < myTarParents.size(); ++j) {
-
                         keystr = mySrcParents.get(i).convertToKey()
                                 + anObj.getType().convertToKey()
                                 + myTarParents.get(j).convertToKey();
@@ -518,7 +485,6 @@ public class ALR_CSP extends CSP {
                 removeFromObjectVarMap((Arc) iter.next());
             }
         }
-
         Variable v = this.itsObjVarMap.get(anObj);
         if (v != null) {
             v.setInstance(null);
@@ -546,14 +512,11 @@ public class ALR_CSP extends CSP {
                     anObjVec.remove(anObj);
                 }
             }
-
         } else {
             if (((Arc) anObj).getSource().getType().hasParent()
                     || ((Arc) anObj).getTarget().getType().hasParent()) {
-
                 List<Type> mySrcParents = ((Arc) anObj).getSource().getType().getAllParents();
                 List<Type> myTarParents = ((Arc) anObj).getTarget().getType().getAllParents();
-
                 for (int i = 0; i < mySrcParents.size(); ++i) {
                     for (int j = 0; j < myTarParents.size(); ++j) {
                         String keystr = mySrcParents.get(i).convertToKey()
@@ -565,7 +528,6 @@ public class ALR_CSP extends CSP {
                         }
                     }
                 }
-
             } else {
                 HashSet<GraphObject> anObjVec = this.itsTypeMap.get(anObj.getType().convertToKey());
                 if (anObjVec != null) {
@@ -586,16 +548,13 @@ public class ALR_CSP extends CSP {
                 list = new LinkedHashSet<GraphObject>();
                 g.getTypeObjectsMap().put(key, list);
             }
-
             this.itsTypeMap.put(key, list);
-
             var.getTypeQuery().setObjects(list);
         }
     }
 
     protected void resetTypeMap(
             final Hashtable<String, HashSet<GraphObject>> aTypeMap) {
-
         final Enumeration<GraphObject> lhsObjs = this.itsObjVarMap.keys();
         while (lhsObjs.hasMoreElements()) {
             final GraphObject obj = lhsObjs.nextElement();
@@ -606,9 +565,7 @@ public class ALR_CSP extends CSP {
                 list = new LinkedHashSet<GraphObject>();
                 aTypeMap.put(key, list);
             }
-
             this.itsTypeMap.put(key, list);
-
             var.getTypeQuery().setObjects(list);
         }
     }
@@ -636,7 +593,6 @@ public class ALR_CSP extends CSP {
                 cspVars.nextElement().setInstance(null);
             }
         }
-
         unsetAttrContextVariable();
     }
 
@@ -676,8 +632,4 @@ public class ALR_CSP extends CSP {
             }
         }
     }
-
 }
-
-
-

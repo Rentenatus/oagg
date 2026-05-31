@@ -2,36 +2,31 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
 import java.util.Hashtable;
-
 import agg.util.Pair;
 
 public class InverseRuleConstructData {
 
     private Rule invRule;
-
     private boolean extended;
-
     private OrdinaryMorphism l2rInv, r2lInv;
-
     // key: NAC, value: Pair
     // Pair.first: L -> Lcopy+NAC, 
     // Pair.second: NAC -> Lcopy+NAC
     private Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftNAC2extLeft;
-
     // key: PAC, value: Pair
     // Pair.first: L -> Lcopy+PAC, 
     // Pair.second: PAC -> Lcopy+PAC
     private Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftPAC2extLeft;
-
     // key: PAC, value: Pair
     // Pair.first: L -> Lcopy+PAC, 
     // Pair.second: PAC -> Lcopy+PAC
@@ -96,26 +91,25 @@ public class InverseRuleConstructData {
     }
 
     /**
-     * This method does not destroy the Rule and OrdinaryMorphism instances of the inverse construction. They must be
-     * disposed by the user object explicitly.
+     * This method does not destroy the Rule and OrdinaryMorphism instances of
+     * the inverse construction. They must be disposed by the user object
+     * explicitly.
      */
     public void dispose() {
-
     }
 
     /**
-     * Destroys the Rule and OrdinaryMorphism instances of the inverse construction. The local references set to null.
+     * Destroys the Rule and OrdinaryMorphism instances of the inverse
+     * construction. The local references set to null.
      */
     public void destroy() {
         if (this.invRule != null) {
             this.dispose();
             this.l2rInv.dispose();
             this.r2lInv.dispose();
-
             this.invRule = null;
             this.l2rInv = null;
             this.r2lInv = null;
-
             if (this.leftAC2extLeft != null) {
                 this.leftAC2extLeft.clear();
             }
@@ -130,5 +124,4 @@ public class InverseRuleConstructData {
             this.leftPAC2extLeft = null;
         }
     }
-
 }

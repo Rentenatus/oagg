@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -49,7 +50,6 @@ import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.Border;
 import javax.swing.SwingUtilities;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdRule;
 import agg.gui.help.HtmlBrowser;
@@ -61,81 +61,53 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
         ListSelectionListener {
 
     protected final JFrame applFrame;
-
     protected EdGraGra gragra;
-
     protected List<EdRule> rules;
-
     protected JTable ruleList, groupList, groupRuleList;
-
     protected JScrollPane scrollRuleList, scrollGroupList, scrollGroupRuleList;
-
     protected List<Pair<List<Pair<String, String>>, String>> groups;
     protected List<Pair<String, String>> group;
-
     @SuppressWarnings("rawtypes")
     protected JList ruleSequenceTextList;
-
     protected JScrollPane scrollpaneSequenceText;
-
     final protected List<String> ruleNames = new Vector<String>();
     final protected List<String> groupNames = new Vector<String>();
-
     protected JButton addGroup, deleteGroup, addRule, deleteRule, close, cancel, help, objectFlow;
-
     boolean enabled;
     public boolean showWarning;
-
     protected Integer groupCount = Integer.valueOf(0);
-
     protected MouseListener ml;
-
     protected ListSelectionListener lsl;
-
     protected int fromIndx, toIndx, selGroupIndx = -1, selRuleIndx = -1;
-
     final protected List<String> groupListColumnNames;
     final protected List<String> groupRuleListColumnNames;
-
     protected JDialog dialog;
-
     protected HtmlBrowser helpBrowser;
-
     final protected String title = "Transformation by Rule Sequence";
-
     final protected Hashtable<RuleSequence, ObjectFlowDesktop> objFlowDesktopList = new Hashtable<RuleSequence, ObjectFlowDesktop>();
     protected ObjectFlowDesktop objFlowDesktop;
 
     public RuleSequenceDialog(final JFrame frame, final Point location) {
         super(); //frame);
-
         this.applFrame = frame;
         this.dialog = this;
         this.showWarning = true;
-
         setModal(false);
         setTitle(this.title);
-
         this.groups = new Vector<Pair<List<Pair<String, String>>, String>>();
         this.group = new Vector<Pair<String, String>>();
-
         this.groupListColumnNames = new Vector<String>(2);
         this.groupListColumnNames.add("Subsequence");
         this.groupListColumnNames.add("Iterations");
-
         this.groupRuleListColumnNames = new Vector<String>(2);
         this.groupRuleListColumnNames.add("Rule");
         this.groupRuleListColumnNames.add("Iterations");
-
         final JPanel content = initContentPane();
-
         JScrollPane scroll = new JScrollPane(content);
         scroll.setPreferredSize(new Dimension(550, 750));
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(scroll, BorderLayout.CENTER);
         validate();
-
         setLocation(location);
         pack();
     }
@@ -155,7 +127,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 i--;
             }
         }
-
         this.updateRuleSequences(subsequences);
     }
 
@@ -166,7 +137,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
             this.group = null;
             clearGroups();
         }
-
         this.rules = edrules;
         if (this.ruleList != null) {
             this.scrollRuleList.getViewport().remove(this.ruleList);
@@ -176,7 +146,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                     EdRule r = edrules.get(i);
                     this.ruleNames.add(r.getBasisRule().getName());
                 }
-
                 this.ruleList = new JTable(this.ruleNames.size(), 1);
                 this.ruleList.getModel().addTableModelListener(this);
                 for (int i = 0; i < this.ruleNames.size(); i++) {
@@ -190,7 +159,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 this.scrollRuleList.getViewport().setView(this.ruleList);
             }
             this.ruleList.getSelectionModel().clearSelection();
-
             updateObjectFlow();
         }
     }
@@ -206,7 +174,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
     public void updateRuleSequences(
             final List<Pair<List<Pair<String, String>>, String>> sequences) {
         clearGroups();
-
         if (sequences != null) {
             this.groups.addAll(sequences);
 //			addAllElements(sequences, groups);
@@ -218,11 +185,13 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
     }
 
     /**
-     * Returns a Vector with elements of type Pair(Vector, String) which represents a rule sequence. A Vector of Pair
-     * represents a rule sequence. A String of Pair is the value for the iteration count of a rule sequence,
-     * Furthermore, a Vector contains of Pair(String, String). Here the first String is the name of a rule, the second
-     * String is the value for the iteration count of a rule. The value for the iteration count can be "*" or an integer
-     * > 0.
+     * Returns a Vector with elements of type Pair(Vector, String) which
+     * represents a rule sequence. A Vector of Pair represents a rule sequence.
+     * A String of Pair is the value for the iteration count of a rule sequence,
+     * Furthermore, a Vector contains of Pair(String, String). Here the first
+     * String is the name of a rule, the second String is the value for the
+     * iteration count of a rule. The value for the iteration count can be "*"
+     * or an integer > 0.
      */
     public List<Pair<List<Pair<String, String>>, String>> getRuleSequences() {
         return this.groups;
@@ -250,13 +219,11 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
     @SuppressWarnings("rawtypes")
     private JPanel initContentPane() {
         Border border = new TitledBorder("");
-
         this.ml = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isMiddleMouseButton(e)) {
                     RuleSequenceDialog.this.dialog.setCursor(new Cursor(Cursor.MOVE_CURSOR));
                 }
-
                 if (e.getSource() == RuleSequenceDialog.this.groupList) {
                     RuleSequenceDialog.this.fromIndx = RuleSequenceDialog.this.groupList.rowAtPoint(new Point(e.getX(), e
                             .getY()));
@@ -267,7 +234,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                         ((DefaultCellEditor) RuleSequenceDialog.this.groupList.getCellEditor(RuleSequenceDialog.this.fromIndx,
                                 1)).getComponent().setEnabled(true);
                     }
-
                 } else if (e.getSource() == RuleSequenceDialog.this.groupRuleList) {
                     RuleSequenceDialog.this.fromIndx = RuleSequenceDialog.this.groupRuleList.rowAtPoint(new Point(e.getX(), e
                             .getY()));
@@ -288,7 +254,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                             .rowAtPoint(new Point(e.getX(), e.getY()));
                     if (RuleSequenceDialog.this.toIndx >= 0) {
                         RuleSequenceDialog.this.selGroupIndx = RuleSequenceDialog.this.toIndx;
-
                         if (SwingUtilities.isMiddleMouseButton(e)) {
                             Pair<List<Pair<String, String>>, String> v = RuleSequenceDialog.this.groups
                                     .get(RuleSequenceDialog.this.fromIndx);
@@ -306,7 +271,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                             .getY()));
                     if (RuleSequenceDialog.this.toIndx >= 0) {
                         RuleSequenceDialog.this.selRuleIndx = RuleSequenceDialog.this.toIndx;
-
                         if (SwingUtilities.isMiddleMouseButton(e)) {
                             Pair<String, String> v = RuleSequenceDialog.this.group.get(RuleSequenceDialog.this.fromIndx);
                             RuleSequenceDialog.this.group.remove(v);
@@ -322,12 +286,9 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 RuleSequenceDialog.this.dialog.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
         };
-
         JPanel p = new JPanel(new BorderLayout());
-
         JPanel p0 = new JPanel(new GridLayout(0, 1));
         p0.setLayout(new GridBagLayout());
-
         JPanel p1 = new JPanel(new GridBagLayout());
         p1.setBorder(border);
         JPanel p11 = new JPanel(new BorderLayout());
@@ -382,7 +343,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
         p12.add(l, BorderLayout.NORTH);
         p12.add(this.scrollRuleList, BorderLayout.CENTER);
         p12.add(addRuleP, BorderLayout.EAST);
-
         constrainBuild(p1, p11,
                 0, 0,
                 1, 1,
@@ -397,7 +357,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 GridBagConstraints.NORTH,
                 1.0, 1.0,
                 5, 5, 10, 5);
-
         JPanel p2 = new JPanel(new GridBagLayout());
         p2.setBorder(border);
         JPanel p21 = new JPanel(new BorderLayout());
@@ -466,7 +425,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
         p22.add(l, BorderLayout.NORTH);
         p22.add(this.scrollGroupRuleList, BorderLayout.CENTER);
         p22.add(deleteRulePanel, BorderLayout.SOUTH);
-
         constrainBuild(p2, p21, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p2, p22,
@@ -476,18 +434,14 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 GridBagConstraints.NORTH,
                 1.0, 1.0,
                 5, 5, 5, 5);
-
         JPanel p3 = new JPanel(new BorderLayout());
         p3.setBorder(border);
         p3.add(new JLabel(" Transformation rule sequence defined "),
                 BorderLayout.NORTH);
-
         this.ruleSequenceTextList = new JList();
-
         this.scrollpaneSequenceText = new JScrollPane(this.ruleSequenceTextList);
         this.scrollpaneSequenceText.setPreferredSize(new Dimension(250, 100));
         p3.add(this.scrollpaneSequenceText, BorderLayout.CENTER);
-
         JPanel p4 = new JPanel(new GridBagLayout());
         this.close = new JButton("Close");
         this.close.addActionListener(new ActionListener() {
@@ -496,9 +450,7 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 setVisible(false);
             }
         });
-
         this.objectFlow = this.makeObjectFlowButton();
-
         this.cancel = new JButton("Cancel");
         this.cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -522,7 +474,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 }
             }
         });
-
         constrainBuild(p4, this.close, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 25, 5, 25);
         constrainBuild(p4, this.objectFlow, 1, 0, 1, 1, GridBagConstraints.BOTH,
@@ -531,7 +482,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 25, 5, 25);
         constrainBuild(p4, this.help, 3, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 25, 5, 25);
-
         constrainBuild(p0, p1,
                 GridBagConstraints.RELATIVE, GridBagConstraints.RELATIVE,
                 1, 1,
@@ -548,7 +498,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                 5, 5, 5, 5);
         constrainBuild(p0, p3, 0, 2, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         p.add(p0, BorderLayout.CENTER);
         p.add(p4, BorderLayout.SOUTH);
         return p;
@@ -617,13 +566,11 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
         b.setEnabled(true);
         b.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-
                 if (RuleSequenceDialog.this.gragra.getBasisGraGra().getCurrentRuleSequence().containsRuleLoop()
                         && RuleSequenceDialog.this.objFlowDesktop != null
                         && RuleSequenceDialog.this.objFlowDesktop.getGraGra() != RuleSequenceDialog.this.gragra) {
                     RuleSequenceDialog.this.showWarning = true;
                 }
-
                 RuleSequenceDialog.this.objFlowDesktop = RuleSequenceDialog.this.objFlowDesktopList.get(RuleSequenceDialog.this.gragra.getBasisGraGra().getCurrentRuleSequence());
                 if (RuleSequenceDialog.this.objFlowDesktop == null) {
                     // create new Object Flow desktop
@@ -632,11 +579,9 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                             RuleSequenceDialog.this.gragra,
                             RuleSequenceDialog.this.gragra.getBasisGraGra().getCurrentRuleSequence(),
                             new Point(RuleSequenceDialog.this.dialog.getLocation().x + 100, RuleSequenceDialog.this.dialog.getLocation().y + 50));
-
                     RuleSequenceDialog.this.objFlowDesktopList.put(
                             RuleSequenceDialog.this.gragra.getBasisGraGra().getCurrentRuleSequence(),
                             RuleSequenceDialog.this.objFlowDesktop);
-
                     if (RuleSequenceDialog.this.gragra.getBasisGraGra().getCurrentRuleSequence().containsRuleLoop()) {
                         RuleSequenceDialog.this.showWarning = (showWarnDialog() == 0);
                     }
@@ -667,16 +612,12 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
 //							gragra.getBasisGraGra().getCurrentRuleSequence().setCheckAtGraph(true);
                         }
                     }
-
                     RuleSequenceDialog.this.objFlowDesktop.refresh();
-
                     if (RuleSequenceDialog.this.showWarning
                             && RuleSequenceDialog.this.gragra.getBasisGraGra().getCurrentRuleSequence().containsRuleLoop()) {
                         RuleSequenceDialog.this.showWarning = (showWarnDialog() == 0);
                     }
-
                 }
-
                 RuleSequenceDialog.this.objFlowDesktop.setVisible(true);
             }
         });
@@ -758,7 +699,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
             } else if (grpRules.size() > 1 || grpIters > 1) {
                 grpStr = grpStr + ")";
             }
-
             if (grpRules.size() > 0) {
                 if (grpItersStr.equals("*")) {
                     grpStr = grpStr + "{" + grpItersStr + "}";
@@ -769,7 +709,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
             if (grpStr.length() > 0) {
                 grpStr = grpStr + "\n";
             }
-
             v.add(grpStr);
         }
         return v;
@@ -832,7 +771,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
             } else if (grpRules.size() > 1 || grpIters > 1) {
                 grpStr = grpStr.concat(")");
             }
-
             if (grpRules.size() > 0) {
                 if (grpItersStr.equals("*")) {
                     grpStr = grpStr.concat("{");
@@ -858,7 +796,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
         if (this.rules == null || this.rules.isEmpty()) {
             return true;
         }
-
         return false;
     }
 
@@ -871,7 +808,6 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
         this.groups = new Vector<Pair<List<Pair<String, String>>, String>>();
         this.group = new Vector<Pair<String, String>>();
         this.groupCount = Integer.valueOf(0);
-
         this.updateGroupList();
         this.updateGroupRuleList();
         this.updateRuleSequencesTextList(null);
@@ -891,16 +827,13 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
             rd.add(this.groups.get(i).second);
             data.add(rd);
         }
-
         if (this.groupList != null) {
             this.scrollGroupList.getViewport().remove(this.groupList);
         }
-
         this.groupList = new JTable((Vector<Vector<String>>) data, (Vector<String>) this.groupListColumnNames);
         this.groupList.getModel().addTableModelListener(this);
         this.groupList.addMouseListener(this.ml);
         this.scrollGroupList.getViewport().setView(this.groupList);
-
         this.groupList.getSelectionModel().setSelectionMode(0);
         this.groupList.getSelectionModel().addListSelectionListener(this);
     }
@@ -912,14 +845,11 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
             Vector<String> rd = new Vector<String>(2);
             rd.add(p.first);
             rd.add(p.second);
-
             data.add(rd);
         }
-
         if (this.groupRuleList != null) {
             this.scrollGroupRuleList.getViewport().remove(this.groupRuleList);
         }
-
         this.groupRuleList = new JTable((Vector<Vector<String>>) data, (Vector<String>) this.groupRuleListColumnNames);
         this.groupRuleList.getModel().addTableModelListener(this);
         this.groupRuleList.addMouseListener(this.ml);
@@ -934,14 +864,11 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
             Vector<String> rd = new Vector<String>(2);
             rd.add(p.first);
             rd.add(p.second);
-
             data.add(rd);
         }
-
         if (this.groupRuleList != null) {
             this.scrollGroupRuleList.getViewport().remove(this.groupRuleList);
         }
-
         this.groupRuleList = new JTable((Vector<Vector<String>>) data, (Vector<String>) this.groupRuleListColumnNames);
         this.groupRuleList.getModel().addTableModelListener(this);
         this.groupRuleList.addMouseListener(this.ml);
@@ -971,10 +898,8 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                         ok = true;
                     }
                 }
-
                 if (ok) {
                     this.groups.get(indx).second = iters;
-
                     updateRuleSequencesTextList(getRuleSequencesText(this.groups));
                     this.gragra.getBasisGraGra().getCurrentRuleSequence().refresh();
                 }
@@ -999,14 +924,11 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
                             ok = true;
                         }
                     }
-
                     if (ok) {
                         int i = this.groupList.getSelectedRow();
                         Pair<String, String> p = this.groups.get(i).first.get(row);
                         p.second = iters;
-
                         this.group.get(row).second = iters;
-
                         updateRuleSequencesTextList(getRuleSequencesText(this.groups));
                         this.gragra.getBasisGraGra().getCurrentRuleSequence().refresh();
                     }
@@ -1033,5 +955,4 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
         ((GridBagLayout) container.getLayout()).setConstraints(component, c);
         container.add(component);
     }
-
 }

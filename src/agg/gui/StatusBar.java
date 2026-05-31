@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui;
 
@@ -18,7 +19,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Vector;
-
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -30,7 +30,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
-
 import agg.gui.event.EditEvent;
 import agg.gui.event.EditEventListener;
 import agg.gui.event.LoadEvent;
@@ -64,20 +63,16 @@ public class StatusBar extends JPanel implements SaveEventListener,
     public StatusBar() {
         super(new BorderLayout(), true);
         setBackground(new Color(102, 200, 155));
-
         this.mode = new JLabel("");
-
         final JPanel modePanel = new JPanel(new BorderLayout());
         modePanel.setBackground(new Color(102, 200, 155));
         modePanel.setPreferredSize(new Dimension(40, 40));
         modePanel.add(new JLabel("    "), BorderLayout.WEST);
         modePanel.add(this.mode, BorderLayout.CENTER);
         add(modePanel, BorderLayout.WEST);
-
         this.content = new JPanel(new BorderLayout());
         this.content.setPreferredSize(new Dimension(550, 40));
         this.content.setBackground(new Color(102, 200, 155));
-
         this.statusJSP = new JScrollPane(
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -86,7 +81,6 @@ public class StatusBar extends JPanel implements SaveEventListener,
         this.status.setIcon(new TextIcon(" ", true));
         this.statusJSP.setViewportView(this.status);
         this.content.add(this.statusJSP, BorderLayout.CENTER);
-
         this.typePanel = new JPanel();
         this.typePanel.setBorder(new TitledBorder(""));
         this.typeList = new JList();
@@ -99,22 +93,18 @@ public class StatusBar extends JPanel implements SaveEventListener,
         this.types.add(new JLabel("   "));
         ((DefaultListModel) this.typeList.getModel()).add(0, "");
         ((DefaultListModel) this.typeList.getModel()).add(1, "");
-
         this.add(this.content, BorderLayout.CENTER);
         this.add(this.typePanel, BorderLayout.EAST);
-
         this.modeStr = "";
         this.msg = "";
         this.lastModeStr = this.modeStr;
         this.lastMsg = this.msg;
-
         final MouseListener ml = new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
                 setMsg(StatusBar.this.mode.getToolTipText());
             }
         };
         this.mode.addMouseListener(ml);
-
         welcome();
     }
 
@@ -247,7 +237,6 @@ public class StatusBar extends JPanel implements SaveEventListener,
         if (!this.msg.equals(aMessage)) {
             this.msg = aMessage;
             this.status.setText(this.msg);
-
 //			doResize(this.msg);
 //			status.invalidate();
 //			status.repaint();
@@ -354,7 +343,6 @@ public class StatusBar extends JPanel implements SaveEventListener,
         } else if (msgkey == TreeViewEvent.RULE_COPY) {
             setMsg(e.getMessage());
         }
-
     }
 
     /* Implements agg.gui.event.EditEventListener */
@@ -397,7 +385,6 @@ public class StatusBar extends JPanel implements SaveEventListener,
             }
             this.modeStr = "CriticPairs";
             setMode(new TextIcon("CP", true), "");
-
             String s = "";
             if (e.getMessage().indexOf("finished") != -1) {
                 if (e.getMessage().indexOf("Critical") != -1) {
@@ -418,7 +405,6 @@ public class StatusBar extends JPanel implements SaveEventListener,
             }
             this.modeStr = "Parser";
             setMode(new TextIcon("P", true), "");
-
             String s = "";
             if (e.getMessage().indexOf("finished") != -1) {
                 if (e.getMessage().indexOf("Critical") != -1) {
@@ -550,7 +536,6 @@ public class StatusBar extends JPanel implements SaveEventListener,
         }
         // else if(modestr.equals("View"))
         // image = new TextIcon("V", true);
-
         return image;
     }
 
@@ -584,7 +569,6 @@ public class StatusBar extends JPanel implements SaveEventListener,
         } else {
             this.types.add(index, typeLabel);
         }
-
         String typeName = "";
         if (typeLabel != null) {
             typeName = typeLabel.getText();
@@ -592,13 +576,13 @@ public class StatusBar extends JPanel implements SaveEventListener,
         ((DefaultListModel) this.typeList.getModel()).remove(index);
         ((DefaultListModel) this.typeList.getModel()).add(index, typeName);
     }
-
 //	 Display an icon and a string for each object in the list.
+
     @SuppressWarnings("rawtypes")
     class MyCellRenderer extends JLabel implements ListCellRenderer {
+
         // This is the only method defined by ListCellRenderer.
         // We just reconfigure the JLabel each time we're called.
-
         public Component getListCellRendererComponent(JList list,
                 Object value, // value to display
                 int index, // cell index
@@ -609,47 +593,30 @@ public class StatusBar extends JPanel implements SaveEventListener,
             if (value.toString().length() > 0) {
                 str = value.toString() + " ";
             }
-
             if (list == StatusBar.this.typeList && !StatusBar.this.types.isEmpty()) {
                 Icon icon = StatusBar.this.types.get(index).getIcon();
                 setIcon(icon);
                 setForeground(StatusBar.this.types.get(index).getForeground());
             }
-
             setText(str);
-
             setBackground(list.getBackground());
-
             setEnabled(list.isEnabled());
             setFont(list.getFont());
             setOpaque(true);
             return this;
         }
-
     }
-
 //	private JFrame frame;
     private final JPanel typePanel;
-
     @SuppressWarnings("rawtypes")
     final JList typeList;
-
     final Vector<JLabel> types;
-
     final JLabel mode;
-
     private final JPanel content;
-
     private final JScrollPane statusJSP;
-
     private final JLabel status;
-
     private String msg = "";
-
     private String modeStr = "";
-
     private String lastModeStr = "";
-
     private String lastMsg = "";
-
 }

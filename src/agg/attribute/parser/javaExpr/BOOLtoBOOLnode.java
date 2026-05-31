@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -29,9 +29,7 @@ public class BOOLtoBOOLnode extends SimpleNode {
 
     public void checkContext() throws ASTWrongTypeException {
         Node child1 = jjtGetChild(0);
-
         child1.checkContext();
-
         if (((SimpleNode) child1).getNodeClass() == Boolean.TYPE) {
             setNodeClass(Boolean.TYPE);
         } else {

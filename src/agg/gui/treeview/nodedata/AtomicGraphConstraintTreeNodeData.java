@@ -2,37 +2,36 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: AtomicGraphConstraintTreeNodeData.java,v 1.4 2010/08/24 21:35:50 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.editor.impl.EdAtomic;
 
 /**
- * The AtomicGraphConstraintTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The AtomicGraphConstraintTreeNodeData implements an user object of a tree
+ * node in the GraGraTreeModel.
  *
  * @author $Author: olga $
- * @version $AtomicGraphConstraintTreeNodeData.java,v 1.1 2008/10/29 09:04:10 olga Exp $
+ * @version $AtomicGraphConstraintTreeNodeData.java,v 1.1 2008/10/29 09:04:10
+ * olga Exp $
  */
 public class AtomicGraphConstraintTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private Object data;
-
     private EdAtomic eAtomic;
-
 //	private EdAtomic firstConclusion;
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */
@@ -46,7 +45,6 @@ public class AtomicGraphConstraintTreeNodeData extends GraGraTreeNodeDataAdapter
 //		if (a.isParent()) {
 //			firstConclusion = a.getConclusion(0);
 //		} 
-
         this.data = a;
         this.string = a.getBasisAtomic().getAtomicName();
         this.eAtomic = a;

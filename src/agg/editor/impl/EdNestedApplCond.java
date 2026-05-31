@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -14,7 +16,6 @@ package agg.editor.impl;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
-
 import agg.util.Pair;
 import agg.util.XMLHelper;
 import agg.xt_basis.Arc;
@@ -37,13 +38,9 @@ import java.util.Iterator;
 public class EdNestedApplCond extends EdPAC {
 
     EdNestedApplCond itsParent;
-
     EdGraph itsSource;
-
     List<EdNestedApplCond> itsACs = new Vector<>(0, 1);
-
     boolean badMapping = false;
-
     String errMsg = "";
 
     public EdNestedApplCond(final EdNestedApplCond parent) {
@@ -64,11 +61,9 @@ public class EdNestedApplCond extends EdPAC {
     public EdNestedApplCond(final EdNestedApplCond parent, OrdinaryMorphism m, EdTypeSet types) {
         super(m, types);
         this.itsParent = parent;
-
         List<NestedApplCond> list = ((NestedApplCond) m).getNestedACs();
         for (int i = 0; i < list.size(); i++) {
             this.createNestedAC(list.get(i));
-
         }
     }
 
@@ -93,9 +88,7 @@ public class EdNestedApplCond extends EdPAC {
                 || this.morphism == null) {
             return;
         }
-
         GraphObject oldImg = this.morphism.getImage(src.getBasisObject());
-
         if (oldImg != null) {
             EdGraphObject go = this.findGraphObject(oldImg);
             if (go != null) {
@@ -117,7 +110,6 @@ public class EdNestedApplCond extends EdPAC {
                     EditUndoManager.AC_MAPPING_DELETE_CREATE,
                     "Undo Delete AC Mapping");
         }
-
         addEdit(src, tar, EditUndoManager.AC_MAPPING_DELETE_CREATE,
                 "Undo Delete AC Mapping");
     }
@@ -166,7 +158,6 @@ public class EdNestedApplCond extends EdPAC {
 
     public void setRule(EdRule er) {
         super.setRule(er);
-
         for (int i = 0; i < this.itsACs.size(); i++) {
             this.itsACs.get(i).setRule(er);
         }
@@ -207,7 +198,6 @@ public class EdNestedApplCond extends EdPAC {
         if (!this.editable) {
             return false;
         }
-
         if (ac.getMorphism().getImage(leftObj.getBasisObject()) != null) {
             ac.getMorphism().removeMapping(leftObj.getBasisObject());
             this.updateNestedAC(ac);
@@ -266,7 +256,6 @@ public class EdNestedApplCond extends EdPAC {
         if (indx >= 0 && indx < this.itsACs.size()) {
             return this.itsACs.get(indx);
         }
-
         return null;
     }
 
@@ -292,7 +281,6 @@ public class EdNestedApplCond extends EdPAC {
                 || !this.editable) {
             return null;
         }
-
         EdNestedApplCond eAC = new EdNestedApplCond(this,
                 ((NestedApplCond) this.morphism).createNestedAC(), this.typeSet);
         eAC.setName(nameStr);
@@ -313,14 +301,14 @@ public class EdNestedApplCond extends EdPAC {
     }
 
     /**
-     * Creates a new Nested AC layout of the used object specified by the OrdinaryMorphism ac
+     * Creates a new Nested AC layout of the used object specified by the
+     * OrdinaryMorphism ac
      */
     public EdPAC createNestedAC(OrdinaryMorphism ac) {
         if (this.morphism == null
                 || !this.editable) {
             return null;
         }
-
         EdNestedApplCond eAC = new EdNestedApplCond(this, ac, this.typeSet);
         eAC.getBasisGraph().setName(ac.getName());
         eAC.getBasisGraph().setKind(GraphKind.AC);
@@ -345,7 +333,6 @@ public class EdNestedApplCond extends EdPAC {
         if (this.morphism == null) {
             return false;
         }
-
         if (ac.getTypeSet().getBasisTypeSet().compareTo(
                 this.typeSet.getBasisTypeSet())) {
             if (((NestedApplCond) this.morphism)
@@ -381,13 +368,10 @@ public class EdNestedApplCond extends EdPAC {
         OrdinaryMorphism morph = ac.getMorphism();
         // Remove all of my mappings.
         morph.clear();
-
         // Remove my image.
         morph.getImage().clear();
-
         // Remove my visible image;
         ac.clear();
-
         for (int i = 0; i < this.getNodes().size(); i++) {
             EdNode en = this.getNodes().get(i);
             identicNode(en, ac, morph);
@@ -396,18 +380,16 @@ public class EdNestedApplCond extends EdPAC {
             EdArc ea = this.getArcs().get(j);
             identicArc(ea, ac, morph);
         }
-
         this.updateNestedAC(ac);
     }
 
     /**
-     * Sets the layout from another EdGraph. The basis graphs may be different. The corresponding graph objects are
-     * found by its index.
+     * Sets the layout from another EdGraph. The basis graphs may be different.
+     * The corresponding graph objects are found by its index.
      */
     public void setLayoutByIndex(EdGraph layout, boolean ofNodesOnly) {
         if (layout instanceof EdNestedApplCond) {
             super.setLayoutByIndex(layout, ofNodesOnly);
-
             if (this.itsACs.size() == ((EdNestedApplCond) layout).getNestedACs().size()) {
                 for (int i = 0; i < this.itsACs.size(); i++) {
                     EdNestedApplCond c = this.itsACs.get(i);
@@ -439,33 +421,26 @@ public class EdNestedApplCond extends EdPAC {
         EdNode enAC = null;
         EdArc eaL = null;
         EdArc eaAC = null;
-
         ac.clearMarks();
-
         Iterator<GraphObject> domain = ac.getMorphism().getDomain();
-
         while (domain.hasNext()) {
             GraphObject bOrig = domain.next();
             GraphObject bImage = ac.getMorphism().getImage(bOrig);
-
             enL = this.findNode(bOrig);
             if (enL != null) {
                 if (enL.isMorphismMarkEmpty()) {
                     enL.addMorphismMark(enL.getMyKey());
                 }
-
                 enAC = ac.findNode(bImage);
                 if (enAC != null) {
                     enAC.addMorphismMark(enL.getMorphismMark());
                 }
             }
-
             eaL = this.findArc(bOrig);
             if (eaL != null) {
                 if (eaL.isMorphismMarkEmpty()) {
                     eaL.addMorphismMark(eaL.getMyKey());
                 }
-
                 eaAC = ac.findArc(bImage);
                 if (eaAC != null) {
                     eaAC.addMorphismMark(eaL.getMorphismMark());
@@ -485,7 +460,6 @@ public class EdNestedApplCond extends EdPAC {
     private EdNode identicNode(EdNode en, EdGraph eg, OrdinaryMorphism morph) {
         this.badMapping = false;
         this.errMsg = "";
-
         EdNode cn = null;
         Node bn = null;
         try {
@@ -497,15 +471,11 @@ public class EdNestedApplCond extends EdPAC {
             cn.setReps(en.getX(), en.getY(), en.isVisible(), false);
             // cn.getLNode().setFrozen(true);
             cn.getLNode().setFrozenByDefault(true);
-
             eg.addCreatedToUndo(cn);
             eg.undoManagerEndEdit();
-
             try {
                 this.addCreatedMappingToUndo(en, cn);
-
                 morph.addMapping(en.getBasisNode(), bn);
-
                 this.undoManagerEndEdit();
             } catch (BadMappingException ex) {
                 this.badMapping = true;
@@ -518,13 +488,10 @@ public class EdNestedApplCond extends EdPAC {
     private EdArc identicArc(EdArc ea, EdGraph eg, OrdinaryMorphism morph) {
         this.badMapping = false;
         this.errMsg = "";
-
         EdArc ca = null;
         Arc ba = null;
-
         GraphObject bSrc = morph.getImage(ea.getBasisArc().getSource());
         GraphObject bTar = morph.getImage(ea.getBasisArc().getTarget());
-
         try {
             ba = eg.getBasisGraph().copyArc(ea.getBasisArc(), (Node) bSrc,
                     (Node) bTar);
@@ -534,7 +501,6 @@ public class EdNestedApplCond extends EdPAC {
         if (ba != null) {
             try {
                 ca = eg.addArc(ba, ea.getType());
-
                 ca.setReps(ea.isDirected(), ea.isVisible(), false);
                 ca.setTextOffset(ea.getTextOffset().x, ea.getTextOffset().y);
                 if (ea.isLine()) {
@@ -549,16 +515,12 @@ public class EdNestedApplCond extends EdPAC {
                         ca.setHeight(ea.getHeight());
                     }
                 }
-
                 eg.addCreatedToUndo(ca);
                 eg.undoManagerEndEdit();
-
                 this.errMsg = "";
                 try {
                     this.addCreatedMappingToUndo(ea, ca);
-
                     morph.addMapping(ea.getBasisArc(), ba);
-
                     this.undoManagerEndEdit();
                 } catch (BadMappingException ex) {
                     this.badMapping = true;
@@ -586,7 +548,6 @@ public class EdNestedApplCond extends EdPAC {
             if (go != null) {
                 vec.add(go);
             }
-
         }
         return vec;
     }
@@ -594,7 +555,6 @@ public class EdNestedApplCond extends EdPAC {
     public boolean deleteGraphObjectsOfType(
             final EdType t,
             boolean addToUndo) {
-
         boolean alldone = true;
         for (int n = 0; n < this.itsACs.size(); n++) {
             EdNestedApplCond ac = this.itsACs.get(n);
@@ -607,7 +567,6 @@ public class EdNestedApplCond extends EdPAC {
     public boolean deleteGraphObjectsOfType(
             final EdGraphObject tgo,
             boolean addToUndo) {
-
         boolean alldone = true;
         for (int n = 0; n < this.itsACs.size(); n++) {
             EdNestedApplCond ac = this.itsACs.get(n);
@@ -620,7 +579,6 @@ public class EdNestedApplCond extends EdPAC {
     protected List<EdGraphObject> getGraphObjectsOfType(
             final EdGraphObject tgo,
             final EdGraph g) {
-
         List<EdGraphObject> list = new Vector<>();
         if (tgo.isArc()) {
             for (int i = 0; i < g.arcs.size(); i++) {
@@ -645,7 +603,6 @@ public class EdNestedApplCond extends EdPAC {
     protected List<EdGraphObject> getGraphObjectsOfType(
             final EdType t,
             final EdGraph g) {
-
         List<EdGraphObject> list = new Vector<>();
         if (t.isArcType()) {
             for (int i = 0; i < g.arcs.size(); i++) {
@@ -668,13 +625,10 @@ public class EdNestedApplCond extends EdPAC {
     protected void storeMappingOfGraphObjectsOfType(
             final EdGraphObject tgo,
             final EdGraph src) {
-
         List<EdGraphObject> list = getGraphObjectsOfType(tgo, src);
-
         for (int n = 0; n < this.itsACs.size(); n++) {
             EdNestedApplCond ac = this.itsACs.get(n);
 //			ac.storeMappingOfGraphObjectsOfType(tgo, ac);
-
             for (int i = 0; i < list.size(); i++) {
                 EdGraphObject go = list.get(i);
                 EdGraphObject rgo = ac.findGraphObject(
@@ -691,13 +645,10 @@ public class EdNestedApplCond extends EdPAC {
     protected void storeMappingOfGraphObjectsOfType(
             final EdType t,
             final EdGraph src) {
-
         List<EdGraphObject> list = getGraphObjectsOfType(t, src);
-
         for (int n = 0; n < this.itsACs.size(); n++) {
             EdNestedApplCond ac = this.itsACs.get(n);
 //			ac.storeMappingOfGraphObjectsOfType(t, ac);
-
             for (int i = 0; i < list.size(); i++) {
                 EdGraphObject go = list.get(i);
                 EdGraphObject rgo = ac.findGraphObject(
@@ -745,7 +696,6 @@ public class EdNestedApplCond extends EdPAC {
 
     public void XreadObject(XMLHelper h) {
         super.XreadObject(h);
-
         h.peekObject(this.bGraph, this);
         for (int j = 0; j < this.itsACs.size(); j++) {
             EdPAC ac = this.itsACs.get(j);
@@ -755,12 +705,10 @@ public class EdNestedApplCond extends EdPAC {
 
     public void XwriteObject(XMLHelper h) {
         super.XwriteObject(h);
-
         if (h.openObject(this.bGraph, this)) {
             for (int j = 0; j < this.itsACs.size(); j++) {
                 h.addObject("", this.itsACs.get(j), true);
             }
         }
     }
-
 }

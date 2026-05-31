@@ -1,10 +1,10 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
- * reserved. This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0 which accompanies this
- * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
  * *****************************************************************************
  */
@@ -14,7 +14,6 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.ArrayList;
 import java.util.List;
-
 import agg.xt_basis.csp.CompletionPropertyBits;
 
 /**
@@ -34,65 +33,35 @@ import agg.xt_basis.csp.CompletionPropertyBits;
 public class GraTraOptions {
 
     public final static String CSP = "CSP";
-
     public final static String CSP_WO_BJ = "CSP w/o BJ";
-
     public final static String INJECTIVE = "injective";
-
     public final static String DANGLING = "dangling";
-
     public final static String IDENTIFICATION = "identification";
-
     public final static String NACS = "NACs";
-
     public final static String PACS = "PACs";
-
     public final static String GACS = "GACs";
-
     public final static String RANDOM_CSP_DOMAIN = "randomCSPDomain";
-
     public final static String DETERMINED_CSP_DOMAIN = "determinedCSPDomain";
-
     public final static String CONSISTENT_ONLY = "consistency";
-
     public final static String CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO = "consistencyCheckAfterGraphTrafo";
-
     public final static String STOP_INCONSISTENT = "stopInconsistency";
-
     public final static String CHECK_RULE_APPLICABILITY = "checkRuleApplicability";
-
     public final static String SHOW_GRAPH_AFTER_STEP = "showGraphAfterStep";
-
     public final static String WAIT_AFTER_STEP = "waitAfterStep";
-
     public final static String SELECT_NEW_AFTER_STEP = "selectNewAfterStep";
-
     public final static String NONDETERMINISTICALLY = "nondeterministically";
-
     public final static String PRIORITY = "priority";
-
     public final static String RULE_SEQUENCE = "ruleSequence";
-
     public final static String EACH_RULE_TO_APPLY = "eachRuleToApply";
-
     public final static String LAYERED = "layered";
-
     public final static String LOOP_OVER_LAYER = "layeredLoop";
-
     public final static String RESET_GRAPH = "resetGraph";
-
     public final static String STOP_LAYER_AND_WAIT = "stopLayerAndWait";
-
     public final static String BREAK_LAYER = "breakLayer";
-
     public final static String BREAK_ALL_LAYER = "breakAllLayer";
-
     public final static String PARALLEL_MATCHING = "parallelMatching";
-
     public final static String XY_POS_ATTRIBUTE = "xyPosAttribute";
-
     final private List<String> options;
-
     private MorphCompletionStrategy strategy;
 
     /**
@@ -127,7 +96,6 @@ public class GraTraOptions {
         if (this.options.contains(name)) {
             return true;
         }
-
         return false;
     }
 
@@ -171,7 +139,6 @@ public class GraTraOptions {
         } else if (this.options.contains("CSP w/o BJ")) {
             stratName = "CSP w/o BJ";
         }
-
         Enumeration<MorphCompletionStrategy> strats = CompletionStrategySelector.getStrategies();
         while (strats.hasMoreElements()) {
             MorphCompletionStrategy mcs = strats.nextElement();
@@ -180,11 +147,9 @@ public class GraTraOptions {
                 this.strategy = mcs;
             }
         }
-
         if (this.strategy == null) {
             return;
         }
-
         // set match conditions
         // BitSet supportbits =
         this.strategy.getSupportedProperties();
@@ -197,7 +162,6 @@ public class GraTraOptions {
                 activebits.clear(j);
             }
         }
-
         if (this.options.contains(GraTraOptions.DETERMINED_CSP_DOMAIN)) {
             this.strategy.setRandomisedDomain(false);
         }

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,12 +17,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import javax.swing.JCheckBox;
 //import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-
 import agg.gui.AGGAppl;
 import agg.gui.event.EditEventListener;
 import agg.gui.event.EditEvent;
@@ -68,18 +68,13 @@ public class AGGParser implements ParserEventListener, OptionListener,
         this.treeView = treeView;
         this.listener = new Vector<ParserEventListener>();
         this.pmlistener = new Vector<StatusMessageListener>();
-
         this.option = new ParserGUIOption();
-
         this.lOption = new LayerOption();
         this.lOptionGUI = new LayerOptionGUI(this.lOption);
         this.lOption.addOptionListener(this.lOptionGUI);
-
         this.pOption = new ParserOption();
         this.pOptionGUI = new ParserOptionGUI(this.option, this.pOption, this.cpOption);
-
         this.parserDesktop = new ParserDesktop(this, this.option, null, null, null);
-
         this.menus = new Vector<JMenu>(2);
         this.menu = new JMenu("Parser", true);
         // menu.setMnemonic('r');
@@ -92,11 +87,8 @@ public class AGGParser implements ParserEventListener, OptionListener,
         this.backP = new JMenuItem("back         Shift+Alt+Z");
         this.backP.setMnemonic('b');
         this.options = new JMenuItem("Options...");
-
         createParserMenu();
-
         addParserEventListener(this);
-
         this.changer = new GUIExchange(this.parent);
     }
 
@@ -160,7 +152,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
         } else if (e.getMessage().indexOf("Result") != -1) {
             this.startP.setEnabled(false);
             this.stopP.setEnabled(false);
-
             this.pairsGraGra.setChanged(false);
             this.hostGraphGrammar.setChanged(false);
             this.stopGraphGrammar.setChanged(false);
@@ -192,7 +183,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
                 openParserDialog();
             }
         });
-
         this.startP.setEnabled(false);
         this.menu.add(this.startP);
         this.startP.addActionListener(new ActionListener() {
@@ -200,7 +190,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
                 startParser();
             }
         });
-
         this.stopP.setEnabled(false);
         this.menu.add(this.stopP);
         this.stopP.addActionListener(new ActionListener() {
@@ -208,7 +197,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
                 stopParser();
             }
         });
-
         this.backP.setEnabled(false);
         this.menu.add(this.backP);
         this.backP.addActionListener(new ActionListener() {
@@ -216,16 +204,13 @@ public class AGGParser implements ParserEventListener, OptionListener,
                 backToGUI();
             }
         });
-
         this.menu.addSeparator();
-
         this.menu.add(this.options);
         this.options.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showOptionGUI();
             }
         });
-
         this.menus.addElement(this.menu);
     }
 
@@ -252,7 +237,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
                         "Thread - Parsing -  was stopped."));
                 return;
             }
-
 //			if (pOption.getSelectedParser() != ParserOption.SIMPLEPARSER) {
 //				if (hostGraphGrammar.getBasisGraGra().getTypeSet()
 //						.usesInheritance()
@@ -292,10 +276,8 @@ public class AGGParser implements ParserEventListener, OptionListener,
                             this.pOptionGUI.update();
                         }
                     }
-
                     this.tmpPairs = ParserFactory.createEmptyCriticalPairs(
                             this.pairsGraGra.getBasisGraGra(), this.cpOption);
-
                     if (this.tmpPairs == null) {
                         javax.swing.JOptionPane.showMessageDialog(null,
                                 "Generating of critical pairs is failed.",
@@ -306,7 +288,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
                         return;
                     }
                     this.generateCP = true;
-
                     /* add PairEventListeners */
                     for (int i = 0; i < this.listener.size(); i++) {
                         if (this.tmpPairs instanceof LayeredExcludePairContainer) {
@@ -318,11 +299,9 @@ public class AGGParser implements ParserEventListener, OptionListener,
                         }
                     }
                     this.activeParser = true;
-
                     fireParserEvent(new ParserMessageEvent(this,
                             "Generate critical pairs. Please wait ..."));
                     ParserFactory.generateCriticalPairs(this.tmpPairs);
-
                 } // if( != ParserOption.SIMPLEPARSER )
                 else {
                     // Backtracking without CP == ParserOption.SIMPLEPARSER
@@ -351,20 +330,17 @@ public class AGGParser implements ParserEventListener, OptionListener,
             else {
                 this.generateCP = false;
                 if (this.tmpPairs instanceof LayeredExcludePairContainer) {
-
                     this.ruleLayer = new RuleLayer(this.tmpPairs.getGrammar()
                             .getListOfRules());
                     this.pOption.enableLayer(true);
                     this.pOptionGUI.update();
                 }
-
                 if (this.option.getParserDisplay() != ParserGUIOption.PARSINGINVISIBLE) {
                     if (!this.changer.isSet()) // || !activeParser)
                     {
                         this.changer.changeWith(this.parserDesktop.getComponent());
                     }
                 }
-
                 /* set pairs gragra */
                 if (this.pairsGraGra == null) {
                     this.pairsGraGra = new EdGraGra(this.tmpPairs.getGrammar());
@@ -374,7 +350,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
                     System.out
                             .println("WARNING! The grammar loaded with critical pairs has some differences to the loaded stop grammar with parsing rules. The critical pairs grammar will be used for parsing.");
                 }
-
                 if (this.pairsGraGra == null || this.pairsGraGra.getBasisGraGra() == null) {
                     javax.swing.JOptionPane.showMessageDialog(null,
                             "Parsing rules are not exist.", "Warning",
@@ -384,11 +359,9 @@ public class AGGParser implements ParserEventListener, OptionListener,
                     return;
                 }
             }
-
             if (!checkIfReadyToTransform(this.hostGraphGrammar)) {
                 return;
             }
-
             ((AttrTupleManager) AttrTupleManager.getDefaultManager())
                     .setVariableContext(false);
             // create parser
@@ -421,7 +394,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
                             .addParserEventListener(this.listener.elementAt(i));
                 }
             }
-
             this.parserDesktop.setLayout(this.hostGraphGrammar);
             this.parserDesktop.setStopLayout(this.stopGraphGrammar.getGraph());
             this.parserDesktop.setParser(this.excludeParser, om);
@@ -444,12 +416,10 @@ public class AGGParser implements ParserEventListener, OptionListener,
                     "Generating critical pairs ...  Please wait."));
             return;
         }
-
         this.openP.setEnabled(false);
         this.startP.setEnabled(false);
         this.stopP.setEnabled(true);
         this.backP.setEnabled(true);
-
         this.parserDesktop.hostFrameSetAnimationIcon();
         fireParserEvent(new ParserMessageEvent(this, "Starting parser ..."));
         /* create parser thread and start parser */
@@ -466,7 +436,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
         } else if (this.excludeParser instanceof SimpleParser) {
             ((SimpleParser) this.excludeParser).stop();
         }
-
         this.startP.setEnabled(true);
         this.stopP.setEnabled(false);
     }
@@ -490,7 +459,6 @@ public class AGGParser implements ParserEventListener, OptionListener,
                             .removePairEventListener(this.listener.elementAt(i));
                 }
             }
-
             /* remove parser event listeners */
             for (int i = 0; i < this.listener.size(); i++) {
                 if (this.excludeParser instanceof ExcludeParser) {
@@ -507,15 +475,12 @@ public class AGGParser implements ParserEventListener, OptionListener,
                             .removeParserEventListener(this.listener.elementAt(i));
                 }
             }
-
             this.parserDesktop.disposeTestHostGraph(this.hostGraphGrammar);
-
             this.activeParser = false;
             this.openP.setEnabled(true);
             this.startP.setEnabled(false);
             this.stopP.setEnabled(false);
             this.backP.setEnabled(false);
-
             fireParserEvent(new ParserMessageEvent(this, "back to AGG editor"));
         }
     }
@@ -588,49 +553,26 @@ public class AGGParser implements ParserEventListener, OptionListener,
             this.listener.elementAt(i).parserEventOccured(e);
         }
     }
-
     private final GUIExchange changer;
-
     private final ParserGUIOption option;
-
     private final ParserOptionGUI pOptionGUI;
-
     private final ParserOption pOption;
-
     private final LayerOptionGUI lOptionGUI;
-
     private final LayerOption lOption;
-
     private CriticalPairOption cpOption;
-
     private final ParserDesktop parserDesktop;
-
     private ParserDialog parserStartDialog;
-
     private Parser excludeParser;
-
     private PairContainer tmpPairs;
-
     private final JMenu menu;
-
     private final JMenuItem openP, startP, stopP, backP, options;
-
     private final Vector<ParserEventListener> listener;
-
     private final Vector<StatusMessageListener> pmlistener;
-
     private boolean activeParser;
-
     private boolean generateCP;
-
     private final agg.gui.AGGAppl parent;
-
     private EdGraGra pairsGraGra, hostGraphGrammar, stopGraphGrammar;
-
     private RuleLayer ruleLayer;
-
     private final agg.gui.treeview.GraGraTreeView treeView;
-
     private final Vector<JMenu> menus;
-
 }

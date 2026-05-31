@@ -2,31 +2,31 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.cpa;
-
 //import java.util.Enumeration;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
 import agg.cons.AtomConstraint;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 
 /**
- * This class models a set of rules as a tree. This tree is used to display all rules of a selected graph grammar.
+ * This class models a set of rules as a tree. This tree is used to display all
+ * rules of a selected graph grammar.
  *
  * @version $Id: RuleModel.java,v 1.4 2010/09/23 08:18:50 olga Exp $
  * @author $Author: olga $
@@ -37,11 +37,8 @@ public class RuleModel implements TreeModel {
     public class TreeData extends DefaultMutableTreeNode {
 
         boolean atomic;
-
         boolean rule;
-
         boolean nac;
-
         boolean root;
 
         TreeData(Object o) {
@@ -50,7 +47,6 @@ public class RuleModel implements TreeModel {
             this.rule = false;
             this.nac = false;
             this.root = false;
-
             if (o instanceof String) {
                 this.root = true;
             } else if (o instanceof AtomConstraint) {
@@ -67,7 +63,6 @@ public class RuleModel implements TreeModel {
             if (isRule() || isNAC() || isAtomic()) {
                 return (OrdinaryMorphism) tmpObj;
             }
-
             return null;
         }
 
@@ -76,7 +71,6 @@ public class RuleModel implements TreeModel {
             if (isRule() || isNAC() || isAtomic()) {
                 return ((OrdinaryMorphism) tmpObj).getName();
             }
-
             return tmpObj.toString();
         }
 
@@ -96,18 +90,15 @@ public class RuleModel implements TreeModel {
             return this.root;
         }
     }
-
     private Vector<TreeModelListener> treeModelListeners;
-
     private TreeData rootNode;
-
     private GraGra grammar;
-
 //	private boolean showAtomics;
     private boolean withNACs;
 
     /**
-     * Creates a new model for a set of rule. These rules are given by a graph grammar.
+     * Creates a new model for a set of rule. These rules are given by a graph
+     * grammar.
      *
      * @param gragra The grammar provides the set of rules.
      */
@@ -184,7 +175,6 @@ public class RuleModel implements TreeModel {
         if (morph != null && this.withNACs && morph instanceof Rule) {
             return getNACs((Rule) morph).elementAt(index);
         }
-
         // hier muessen NACs sein. NACs haben keine Kinder
         return null;
     }
@@ -199,14 +189,12 @@ public class RuleModel implements TreeModel {
         if (parent == getRoot()) {
             return getRules().size();
         }
-
         TreeData td = (TreeData) parent;
         OrdinaryMorphism morph = td.getData();
         if (morph != null && this.withNACs && morph instanceof Rule) {
             int result = getNACs((Rule) morph).size();
             return result;
         }
-
         // NACs haben Null Kinder
         return 0;
     }
@@ -222,13 +210,11 @@ public class RuleModel implements TreeModel {
         if (parent == getRoot()) {
             return getRules().indexOf(child);
         }
-
         TreeData td = (TreeData) parent;
         OrdinaryMorphism morph = td.getData();
         if (morph != null && this.withNACs && morph instanceof Rule) {
             return getNACs((Rule) morph).indexOf(child);
         }
-
         return 0;
     }
 
@@ -251,11 +237,9 @@ public class RuleModel implements TreeModel {
         if (node == getRoot()) {
             return false;
         }
-
         // getChildCount liefert fuer NACs immer Null
         // bei Rules ist es abhaengig, ob NACs vorhanden sind.
         return getChildCount(node) == 0;
-
     }
 
     /**
@@ -268,7 +252,8 @@ public class RuleModel implements TreeModel {
     }
 
     /**
-     * Messaged when the user has altered the value for the item identified by path to newValue. Not used by this model.
+     * Messaged when the user has altered the value for the item identified by
+     * path to newValue. Not used by this model.
      *
      * @param path The path to a node.
      * @param newValue The new value for a node.
@@ -277,7 +262,6 @@ public class RuleModel implements TreeModel {
         System.out.println("*** valueForPathChanged : " + path + " --> "
                 + newValue);
     }
-
 }
 /*
  * $Log: RuleModel.java,v $

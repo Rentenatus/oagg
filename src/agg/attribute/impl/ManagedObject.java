@@ -2,19 +2,21 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import agg.attribute.AttrManager;
 
 /**
- * This intermediate class was designed without a special purpose. It was thought, at one point all the attributes might
- * want to access a central institution. Till now no need has occured.
+ * This intermediate class was designed without a special purpose. It was
+ * thought, at one point all the attributes might want to access a central
+ * institution. Till now no need has occured.
  *
  * @author $Author: olga $
  * @version $Id: ManagedObject.java,v 1.3 2010/09/23 08:14:09 olga Exp $

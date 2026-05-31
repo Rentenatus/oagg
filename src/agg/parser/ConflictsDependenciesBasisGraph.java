@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -16,7 +18,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import agg.parser.ExcludePairContainer;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
@@ -39,17 +40,11 @@ import agg.util.Pair;
 public class ConflictsDependenciesBasisGraph {
 
     ExcludePairContainer conflictCont;
-
     ExcludePairContainer dependCont;
-
     GraGra grammar;
-
     Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
-
     Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
-
     Graph conflictGraph, dependGraph, combiGraph;
-
     Hashtable<Node, Rule> node2rule;
 
     public ConflictsDependenciesBasisGraph(
@@ -90,33 +85,37 @@ public class ConflictsDependenciesBasisGraph {
     }
 
     /**
-     * Returns conflict graph. The nodes represent the rules and the edges - conflict relations.
+     * Returns conflict graph. The nodes represent the rules and the edges -
+     * conflict relations.
      */
     public Graph getConflictsGraph() {
         return this.conflictGraph;
     }
 
     /**
-     * Returns dependency graph. The nodes represent the rules and the edges - dependency relations.
+     * Returns dependency graph. The nodes represent the rules and the edges -
+     * dependency relations.
      */
     public Graph getDependenciesGraph() {
         return this.dependGraph;
     }
 
     /**
-     * Returns conflict-dependency graph. The nodes represent the rules and the edges - conflict and dependency
-     * relations.
+     * Returns conflict-dependency graph. The nodes represent the rules and the
+     * edges - conflict and dependency relations.
      */
     public Graph getConflictsDependenciesGraph() {
         return this.combiGraph;
     }
 
     /**
-     * Replace the nodes representing a rule scheme by only one node. The name of the new node is the name of the rule
-     * scheme. The edges of replaced nodes will be redirected to/from the new node. This method should be used before
-     * <code>get...Graph()</code> methods.
+     * Replace the nodes representing a rule scheme by only one node. The name
+     * of the new node is the name of the rule scheme. The edges of replaced
+     * nodes will be redirected to/from the new node. This method should be used
+     * before <code>get...Graph()</code> methods.
      *
-     * @param g a graph which combines conflict and dependency between rule nodes
+     * @param g a graph which combines conflict and dependency between rule
+     * nodes
      */
     @SuppressWarnings("unused")
     private void collapseRuleSchemes(Graph g) {
@@ -127,18 +126,19 @@ public class ConflictsDependenciesBasisGraph {
     }
 
     /**
-     * Replace the nodes representing a rule scheme by only one node. The name of the new node is the name of the rule
-     * scheme. The edges of replaced nodes will be redirected to/from the new node. This method should be used before
-     * <code>get...Graph()</code> methods.
+     * Replace the nodes representing a rule scheme by only one node. The name
+     * of the new node is the name of the rule scheme. The edges of replaced
+     * nodes will be redirected to/from the new node. This method should be used
+     * before <code>get...Graph()</code> methods.
      *
-     * @param g a graph which contains conflict or dependency edges between rule nodes
+     * @param g a graph which contains conflict or dependency edges between rule
+     * nodes
      * @param tname the name of the arc type
      */
     public void collapseRuleSchemes(Graph g, String tname) {
         if (this.node2rule == null) {
             return;
         }
-
         Hashtable<RuleScheme, List<Node>> map = new Hashtable<RuleScheme, List<Node>>();
         Iterator<Node> iter = g.getNodesSet().iterator();
         while (iter.hasNext()) {
@@ -163,9 +163,7 @@ public class ConflictsDependenciesBasisGraph {
             nt.getAttrType().addMember(
                     DefaultInformationFacade.self().getJavaHandler(), "String", "name");
         }
-
         List<Arc> ll = new Vector<Arc>();
-
         Iterator<RuleScheme> rsIter = map.keySet().iterator();
         while (rsIter.hasNext()) {
             RuleScheme rs = rsIter.next();
@@ -174,7 +172,6 @@ public class ConflictsDependenciesBasisGraph {
                 Node rsn = g.createNode(nt);
                 ValueTuple vt = (ValueTuple) rsn.getAttribute();
                 vt.getValueMemberAt("name").setExprAsObject(rs.getName());
-
                 for (Node n : l) {
                     Iterator<Arc> arcsIn = n.getIncomingArcsSet().iterator();
                     while (arcsIn.hasNext()) {
@@ -197,7 +194,6 @@ public class ConflictsDependenciesBasisGraph {
                             }
                         }
                     }
-
                     Iterator<Arc> arcsOut = n.getOutgoingArcsSet().iterator();
                     while (arcsOut.hasNext()) {
                         Arc a = arcsOut.next();
@@ -226,7 +222,6 @@ public class ConflictsDependenciesBasisGraph {
             } catch (TypeException e) {
             }
         }
-
         for (Arc a : ll) {
             try {
                 g.destroyArc(a, false);
@@ -234,7 +229,6 @@ public class ConflictsDependenciesBasisGraph {
             }
         }
         ll.clear();
-
         List<Arc> la = new Vector<Arc>();
         List<Arc> arcs = new Vector<Arc>(g.getArcsSet());
         for (Arc a : arcs) {
@@ -267,7 +261,6 @@ public class ConflictsDependenciesBasisGraph {
             }
         }
         la.clear();
-
         Iterator<List<Node>> ln = map.values().iterator();
         while (ln.hasNext()) {
             List<Node> l = ln.next();
@@ -297,11 +290,9 @@ public class ConflictsDependenciesBasisGraph {
         if ((this.conflicts == null) && (this.dependencies == null)) {
             return;
         }
-
         Hashtable<String, Node> common = new Hashtable<String, Node>();
         Hashtable<String, Node> local = new Hashtable<String, Node>();
         node2rule = new Hashtable<Node, Rule>();
-
         TypeSet types = null;
         if (this.conflicts != null) {
             this.conflictGraph = BaseFactory.theFactory().createGraph();
@@ -325,7 +316,6 @@ public class ConflictsDependenciesBasisGraph {
             Type nodeType = types.createNodeType(true);
             Type arcTypeConflict = types.createArcType(false);
             Type arcTypeDepend = types.createArcType(false);
-
             nodeType.setStringRepr("Rule");
             nodeType.setAdditionalRepr("[NODE]");
             arcTypeConflict.setStringRepr("c");
@@ -334,12 +324,10 @@ public class ConflictsDependenciesBasisGraph {
             arcTypeDepend.setStringRepr("d");
             arcTypeDepend
                     .setAdditionalRepr(":DOT_LINE:java.awt.Color[r=0,g=0,b=255]::[EDGE]:");
-
             InformationFacade info = DefaultInformationFacade.self();
             AttrHandler javaHandler = info.getJavaHandler();
             AttrType attrType = nodeType.getAttrType();
             attrType.addMember(javaHandler, "String", "name");
-
             if (this.conflicts != null) {
                 for (Enumeration<Rule> keys1 = this.conflicts.keys(); keys1.hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
@@ -399,7 +387,6 @@ public class ConflictsDependenciesBasisGraph {
                     }
                 }
             }
-
             if (this.dependencies != null) {
                 local.clear();
                 for (Enumeration<Rule> keys1 = this.dependencies.keys(); keys1
@@ -472,19 +459,15 @@ public class ConflictsDependenciesBasisGraph {
         if ((this.conflicts == null) && (this.dependencies == null)) {
             return;
         }
-
         List<Rule> rlist = this.grammar.getRulesWithIntegratedRulesOfRuleScheme();
         Hashtable<String, Rule> name2rule = new Hashtable<String, Rule>();
         for (Rule r : rlist) {
             name2rule.put(r.getQualifiedName(), r);
         }
-
         node2rule = new Hashtable<Node, Rule>();
-
         TypeSet types = combiCPAGraph.getTypeSet();
         Type arcTypeConflict = types.getTypeByName("c");
         Type arcTypeDepend = types.getTypeByName("d");
-
         if (this.conflicts != null) {
             // copy combiGraph and delete dependency edges
             this.conflictGraph = combiCPAGraph.copy();
@@ -496,7 +479,6 @@ public class ConflictsDependenciesBasisGraph {
                         this.conflictGraph.destroyArc(a);
                     } catch (TypeException ex) {
                     }
-
                 }
             }
         }
@@ -540,25 +522,21 @@ public class ConflictsDependenciesBasisGraph {
         Iterator<Arc> e = g.getArcsSet().iterator();
         while (e.hasNext()) {
             Arc a = e.next();
-
             if (a.getSource() == a.getTarget()) {
                 continue;
             }
             if (!a.isDirected()) {
                 continue;
             }
-
             Iterator<Arc> e1 = g.getArcsSet().iterator();
             while (e1.hasNext()) {
                 Arc a1 = e1.next();
-
                 if (a1.getSource() == a1.getTarget()) {
                     continue;
                 }
                 if (!a1.isDirected()) {
                     continue;
                 }
-
                 if (a != a1) {
                     if (a.getType().getName().equals(a1.getType().getName())
                             && (a.getSource() == a1.getTarget())
@@ -650,5 +628,4 @@ public class ConflictsDependenciesBasisGraph {
         }
         return null;
     }
-
 }

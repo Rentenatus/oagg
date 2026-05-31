@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,8 +17,8 @@ import agg.attribute.parser.javaExpr.Node;
 import java.util.List;
 
 /**
- * This interface is implemented by Attribute Handlers; provides services for the Attribute Manager. It is used in the
- * "SymbolTable".
+ * This interface is implemented by Attribute Handlers; provides services for
+ * the Attribute Manager. It is used in the "SymbolTable".
  *
  * @see SymbolTable
  * @version $Id: HandlerExpr.java,v 1.2 2007/09/10 13:05:52 olga Exp $
@@ -46,26 +48,30 @@ public interface HandlerExpr extends java.io.Serializable, Cloneable {
      * Type-check the expression under a given symbol table with declarations.
      *
      * @param symTab the declaration Table to use for the checking
-     * @exception AttrHandlerException if the checking yields an inconsitency. An exception is preferred over a return
-     * value as it is a ready-to-use propagation mechanism with specific information easily attached.
+     * @exception AttrHandlerException if the checking yields an inconsitency.
+     * An exception is preferred over a return value as it is a ready-to-use
+     * propagation mechanism with specific information easily attached.
      */
     public void check(SymbolTable symTab) throws AttrHandlerException;
 
     /**
-     * Type-check the constant expression under a given symbol table with declarations.
+     * Type-check the constant expression under a given symbol table with
+     * declarations.
      *
      * @param symtab the declaration Table to use for the checking
-     * @exception AttrHandlerException if the checking yields an inconsistency. An exception is preferred over a return
-     * value as it is a ready-to-use propagation mechanism with specific information easily attached.
+     * @exception AttrHandlerException if the checking yields an inconsistency.
+     * An exception is preferred over a return value as it is a ready-to-use
+     * propagation mechanism with specific information easily attached.
      */
     public void checkConstant(SymbolTable symtab) throws AttrHandlerException;
 
     /**
-     * Evaluate the expression under a given symbol table containing variable declarations and (hopefully) also the
-     * assignments.
+     * Evaluate the expression under a given symbol table containing variable
+     * declarations and (hopefully) also the assignments.
      *
      * @param symTab the declaration Table to use for the evaluation
-     * @exception AttrHandlerException if the evaluation yields an error (a missing value for a variable etc.)
+     * @exception AttrHandlerException if the evaluation yields an error (a
+     * missing value for a variable etc.)
      */
     public void evaluate(SymbolTable symTab) throws AttrHandlerException;
 
@@ -75,24 +81,24 @@ public interface HandlerExpr extends java.io.Serializable, Cloneable {
     public String getString();
 
     /**
-     * Checks if the expression is constant. Needed for keeping users from giving expressions that are not allowed in a
-     * context.
+     * Checks if the expression is constant. Needed for keeping users from
+     * giving expressions that are not allowed in a context.
      *
      * @return 'true' if constant, 'false' sonst.
      */
     public boolean isConstant();
 
     /**
-     * Checks if the expression is a single Variable. Needed for keeping users from giving expressions that are not
-     * allowed in a context.
+     * Checks if the expression is a single Variable. Needed for keeping users
+     * from giving expressions that are not allowed in a context.
      *
      * @return 'true' if a variable, 'false' sonst.
      */
     public boolean isVariable();
 
     /**
-     * Checks if the expression is a complex one (like x+1). Needed for keeping users from giving expressions that are
-     * not allowed in a context.
+     * Checks if the expression is a complex one (like x+1). Needed for keeping
+     * users from giving expressions that are not allowed in a context.
      *
      * @return 'true' if is complex, 'false' sonst.
      */
@@ -101,10 +107,12 @@ public interface HandlerExpr extends java.io.Serializable, Cloneable {
     public boolean equals(HandlerExpr testObject);
 
     /**
-     * Checks if the recipient can be "matched", "unified" with the first parameter under a certain variable assignment.
+     * Checks if the recipient can be "matched", "unified" with the first
+     * parameter under a certain variable assignment.
      *
      * @param expr The expression to check if unifiable with;
-     * @param symTab Contains the variable assignments under which to perform the test.
+     * @param symTab Contains the variable assignments under which to perform
+     * the test.
      * @return 'true' if the two expressions ar matching, 'false' sonst.
      */
     public boolean isUnifiableWith(HandlerExpr expr, SymbolTable symTab);
@@ -115,7 +123,8 @@ public interface HandlerExpr extends java.io.Serializable, Cloneable {
     public Node getAST();
 
     /**
-     * fills the List with the names of all variables which occur in this expression
+     * fills the List with the names of all variables which occur in this
+     * expression
      */
     public void getAllVariables(List<String> v);
 }

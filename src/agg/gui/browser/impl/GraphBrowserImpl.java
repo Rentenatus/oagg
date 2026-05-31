@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.browser.impl;
 
@@ -24,12 +25,10 @@ import java.awt.event.WindowListener;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 //import agg.editor.impl.EdTypeSet;
@@ -48,8 +47,8 @@ import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 
 /**
- * A graph browser for viewing graphs. A graph can be one of types: <code>agg.editor.impl.EdGraph</code> or
- * <code>agg.xt_basis.Graph</code>
+ * A graph browser for viewing graphs. A graph can be one of types:
+ * <code>agg.editor.impl.EdGraph</code> or <code>agg.xt_basis.Graph</code>
  *
  * @author $Author: olga $
  * @version $Id: GraphBrowserImpl.java,v 1.10 2010/09/23 08:18:19 olga Exp $
@@ -59,39 +58,28 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
         SaveEventListener, LoadEventListener {
 
     static int ITS_WIDTH = 500;
-
     static int ITS_HEIGHT = 300;
-
     GraphEditor editor;
-
     ModePopupMenu modePopupMenu; // select + move
-
     private EdGraGra gragra;
-
     private EdGraph graph;
-
 //	private EdTypeSet types;
     private Object myObject;
-
     private String msg;
 
     public GraphBrowserImpl() {
         super(true);
         setLayout(new BorderLayout());
-
         // create graph editor
         this.editor = new GraphEditor(null);
         add(this.editor, BorderLayout.CENTER);
-
         // create and set popup menu
         this.modePopupMenu = new ModePopupMenu();
         this.modePopupMenu.setViewModel(true);
         this.modePopupMenu.setLabel("Edit Modes");
         this.modePopupMenu.setEditor(this.editor);
-
         this.editor.setEditMode(EditorConstants.SELECT);
         this.editor.setEditCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
         MouseListener ml = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (e.getSource() == GraphBrowserImpl.this.editor.getGraphPanel().getCanvas()
@@ -190,7 +178,8 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
     }
 
     /**
-     * Return gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
+     * Return gragra. The gragra is of type
+     * <code>agg.editor.impl.EdGraGra</code>.
      */
     public EdGraGra getGraGra() {
         return this.gragra;
@@ -242,12 +231,10 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
             this.gragra = gragraLoad.getGraGra();
             this.gragra.update();
             // BaseFactory.theFactory().notify(this.gragra.getBasisGraGra());
-
             // set types
 //			types = this.gragra.getTypeSet();
             // set graph
             this.graph = this.gragra.getGraph();
-
             JOptionPane.showMessageDialog(frame, "Loading is finished");
         }
         return this.gragra;
@@ -259,7 +246,6 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
     public GraGra loadBaseGraGra(JFrame frame) {
 //		String dirName = "";
 //		String fileName = "";
-
         // load dialog
         GraGraLoad gragraLoad = new GraGraLoad(frame);
         gragraLoad.addLoadEventListener(this);
@@ -271,11 +257,9 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
         } else if (gragraLoad.getBaseGraGra() != null) {
 //			dirName = gragraLoad.getDirName();
 //			fileName = gragraLoad.getFileName();
-
             // get base gragra
             GraGra basis = gragraLoad.getBaseGraGra();
             BaseFactory.theFactory().notify(basis);
-
             JOptionPane.showMessageDialog(frame, "Loading is finished");
             return basis;
         } else {
@@ -312,31 +296,26 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
     public static void main(String[] args) {
         // create frame
         JFrame frame = new JFrame("AGG Graph Browser");
-
         WindowListener l = new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
         };
         frame.addWindowListener(l);
-
         frame.setBackground(Color.white);
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame.setLocation(screenSize.width / 2 - ITS_WIDTH / 2, screenSize.height
                 / 2 - ITS_HEIGHT / 2);
         frame.setSize(ITS_WIDTH, ITS_HEIGHT);
-
         ImageIcon icon = makeIcon("AGG_ICON64.gif");
         if (icon != null) {
             frame.setIconImage(icon.getImage());
         } else {
             System.out.println("AGG_ICON64.gif not found!");
         }
-
         // create browser
         GraphBrowserImpl browser = new GraphBrowserImpl();
-
         frame.getContentPane().add(browser, BorderLayout.CENTER);
         frame.setVisible(true);
     }
@@ -360,7 +339,6 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
             }
             in.close();
             out.flush();
-
             buffer = out.toByteArray();
             if (buffer.length == 0) {
                 System.err.println("warning: " + gifFile + " is zero-length");
@@ -372,7 +350,6 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
         }
         return new ImageIcon(buffer);
     }
-
 }
 // $Log: GraphBrowserImpl.java,v $
 // Revision 1.10  2010/09/23 08:18:19  olga
@@ -435,3 +412,4 @@ public class GraphBrowserImpl extends JPanel implements GraphBrowser,
 // Revision 1.3 1999/08/17 10:51:23 shultzke
 // neues Package hinzugefuegt
 //
+

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.saveload;
 
@@ -22,7 +23,6 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.AGGAppl;
 import agg.gui.ProgressBar;
@@ -49,21 +49,17 @@ public class GraGraLoad {
         this.applFrame = fr;
         this.dirName = dname;
         this.fileName = fname;
-
         /* create a file chooser */
         if (!this.dirName.equals("")) {
             this.chooser = new JFileChooser(this.dirName);
         } else {
             this.chooser = new JFileChooser(System.getProperty("user.dir"));
         }
-
         /* create file filters */
         this.filterXML = new AGGFileFilter("ggx", "AGG Files XML (.ggx)");
         this.chooser.addChoosableFileFilter(this.filterXML);
-
         /* set a file filter */
         this.chooser.setFileFilter(this.filterXML);
-
         /* create a progress bar */
         this.bar = createProgressBar();
     }
@@ -93,7 +89,6 @@ public class GraGraLoad {
                 if (!this.dirName.endsWith(File.separator)) {
                     this.dirName += File.separator;
                 }
-
                 reload();
             } else {
                 fireLoad(new LoadEvent(this, LoadEvent.EMPTY_ERROR, ""));
@@ -115,48 +110,37 @@ public class GraGraLoad {
 
     public void reload() {
         AGGAppl.showFileLoadLogo();
-
         if (!this.fileName.endsWith(".ggx")
                 && this.chooser.getFileFilter() == this.filterXML) {
             this.fileName = this.fileName + ".ggx";
         }
-
         if (this.fileName.endsWith(".ggx")
                 || this.chooser.getFileFilter() != this.filterXML) {
-
             File f = new File(this.dirName + this.fileName);
             if (f.exists()) {
                 fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
-
                 XMLHelper h = new XMLHelper();
                 /*
 				 * if(XMLHelper.hasGermanSpecialCh(this.fileName)){
 				 * JOptionPane.showMessageDialog(null, "\t"+this.fileName +"\n Read
 				 * file name exception occurred! " +"\n Maybe the German
-				 * characters like ä, ö, ü, ß or space were used. " +"\n Please
+				 * characters like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼, ÃƒÅ¸ or space were used. " +"\n Please
 				 * rename the file " +"\nand try again.", "Cannot load file",
 				 * JOptionPane.WARNING_MESSAGE); this.gra = null; return; }
                  */
-
                 if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
                         || h.read_from_xml(this.dirName + this.fileName)) {
-
                     long time0 = System.currentTimeMillis();
-
                     GraGra bgra = BaseFactory.theFactory().createGraGra(false);
                     h.getTopObject(bgra);
-
                     this.gra = new EdGraGra(bgra);
                     this.gra.setDirName(this.dirName);
                     this.gra.setFileName(this.fileName);
                     this.gra.getTypeSet().setResourcesPath(this.dirName);
-
                     h.enrichObject(this.gra);
-
                     System.out.println("(Base) Grammar  <" + this.gra.getName()
                             + ">  loaded in  "
                             + (System.currentTimeMillis() - time0) + "ms");
-
                     fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName
                             + this.fileName));
                     fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
@@ -174,7 +158,6 @@ public class GraGraLoad {
                 fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, this.bar
                         .getContentPanel(), ""));
                 this.bar.start();
-
                 int key = -1;
                 this.addMsg = "";
                 try {
@@ -192,7 +175,6 @@ public class GraGraLoad {
                         this.gra.getTypeSet().setAdditionalReprOfBasisType();
                     }
                     this.gra.update();
-
                     fis.close();
                     key = LoadEvent.LOADED;
                 } // try
@@ -254,7 +236,6 @@ public class GraGraLoad {
 
     public void loadBase() {
         fireLoad(new LoadEvent(this, LoadEvent.LOAD, ""));
-
         int returnVal = this.chooser.showOpenDialog(this.applFrame);
         this.dirName = this.chooser.getCurrentDirectory().toString();
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -275,27 +256,23 @@ public class GraGraLoad {
 
     public void reloadBase() {
         AGGAppl.showFileLoadLogo();
-
         if (this.fileName.endsWith(".ggx")
                 && this.chooser.getFileFilter() == this.filterXML) {
             fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, ""));
-
             XMLHelper h = new XMLHelper();
             /*
 			 * if(XMLHelper.hasGermanSpecialCh(this.fileName)){
 			 * JOptionPane.showMessageDialog(null, "\t"+this.fileName +"\n Read file
 			 * name exception occurred! " +"\n Maybe the German characters like
-			 * ä, ö, ü, ß or space were used. " +"\n Please rename the file "
+			 * ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼, ÃƒÅ¸ or space were used. " +"\n Please rename the file "
 			 * +"\nand try again.", "Cannot load file",
 			 * JOptionPane.WARNING_MESSAGE); this.gra = null; return; }
              */
             if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
                     || h.read_from_xml(this.dirName + this.fileName)) {
-
                 //			this.basis = BaseFactory.theFactory().createGraGra();
                 this.basis = new GraGra(false);
                 h.getTopObject(this.basis);
-
                 fireLoad(new LoadEvent(this, LoadEvent.LOADED, this.dirName + this.fileName));
                 // fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_FINISHED, ""));
             }
@@ -305,7 +282,6 @@ public class GraGraLoad {
                 fireLoad(new LoadEvent(this, LoadEvent.PROGRESS_BEGIN, this.bar
                         .getContentPanel(), ""));
                 this.bar.start();
-
                 int key = -1;
                 this.addMsg = "";
                 try {
@@ -313,11 +289,9 @@ public class GraGraLoad {
                     long datei = f.length();
                     double multi = (datei + datei * 0.04) / 16000.0;
                     LoadSaveStatus.setMaximum((int) (100 * multi));
-
                     FileInputStream fis = new FileInputStream(f);
                     ObjectInputStream ois = new ObjectInputStream(fis);
                     this.basis = (GraGra) ois.readObject();
-
                     fis.close();
                     key = LoadEvent.LOADED;
                 } catch (FileNotFoundException fnfx) {
@@ -381,9 +355,7 @@ public class GraGraLoad {
             this.chooser = new JFileChooser(this.dirName);
             /* create file filters */
             this.filterXML = new AGGFileFilter("ggx", "AGG Files XML (.ggx)");
-
             this.chooser.addChoosableFileFilter(this.filterXML);
-
             /* set a file filter */
             this.chooser.setFileFilter(this.filterXML);
         }
@@ -460,29 +432,17 @@ public class GraGraLoad {
         pbar.setFinishAppend(false);
         return pbar;
     }
-
     private ProgressBar bar;
-
     private JFrame applFrame;
-
     private JFileChooser chooser;
-
     private boolean canceled;
-
     private ExtensionFileFilter filterXML;
-
     private String addMsg;
-
     private EdGraGra gra;
-
     private GraGra basis;
-
     private String dirName = "";
-
     private String fileName = "";
-
 }
-
 // $Log: GraGraLoad.java,v $
 // Revision 1.4  2010/09/23 08:22:04  olga
 // tuning
@@ -650,3 +610,4 @@ public class GraGraLoad {
 // Progressbalken fuer das Laden und Speichern
 // integriert.
 //
+

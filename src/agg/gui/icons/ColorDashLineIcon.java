@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 //$Id: ColorDashLineIcon.java,v 1.4 2010/08/23 07:33:26 olga Exp $
 package agg.gui.icons;
@@ -16,9 +17,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-
 import javax.swing.Icon;
-
 import agg.editor.impl.Line;
 
 public class ColorDashLineIcon implements Icon {
@@ -47,7 +46,6 @@ public class ColorDashLineIcon implements Icon {
         Color oldColor = g.getColor();
         Line line = new Line(x, y + 7, x + 20, y + 7);
         line.setColor(this.color);
-
         if (this.filled) {
             ((Graphics2D) g).setStroke(new BasicStroke(3.0f));
             line.drawColorDotLine(g, 4, 4);

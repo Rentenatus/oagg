@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -102,7 +102,6 @@
 package agg.util.csp;
 
 import java.util.Enumeration;
-
 import agg.xt_basis.GraphObject;
 
 /**
@@ -112,11 +111,8 @@ import agg.xt_basis.GraphObject;
 public abstract class CSP {
 
     protected Object itsDomain;
-
     protected Object itsRequester;
-
     protected SolutionStrategy itsSolver;
-
     protected boolean itsTouchedFlag;
 
     /**
@@ -203,8 +199,7 @@ public abstract class CSP {
      * Pre-process the given domain for optimization purposes (to get more
      * accurate data for Constraint weights, or to initialize Query
      * databases).This is a template method to be implemented in subclasses, and
-     * is invoked out of
-     * <code>setDomain()</code>.
+     * is invoked out of <code>setDomain()</code>.
      *
      * @param domain
      * @see agg.util.csp.CSP#setDomain
@@ -274,8 +269,7 @@ public abstract class CSP {
 
     /**
      * Reinitialize my search algorithm.The search queries will be generated
-     * newly if the given parameter is
-     * <code>true</code>.
+     * newly if the given parameter is <code>true</code>.
      *
      * @param doUpdateQueries
      */
@@ -283,5 +277,4 @@ public abstract class CSP {
         this.itsSolver.reinitialize(doUpdateQueries);
         this.itsTouchedFlag = false;
     }
-
 }

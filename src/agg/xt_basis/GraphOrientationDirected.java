@@ -1,7 +1,8 @@
 /**
  * <copyright>
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -33,8 +34,8 @@ public class GraphOrientationDirected implements GraphOrientation {
     }
 
     /**
-     * Returns an error if the type multiplicity check failed after an edge of the specified type would be created,
-     * otherwise - null.
+     * Returns an error if the type multiplicity check failed after an edge of
+     * the specified type would be created, otherwise - null.
      *
      * @param g
      * @param edgeType
@@ -49,7 +50,6 @@ public class GraphOrientationDirected implements GraphOrientation {
             final Node source,
             final Node target,
             int currentTypeGraphLevel) {
-
         return g.itsTypes.canCreateArc(g, edgeType, source, target, currentTypeGraphLevel);
     }
 
@@ -92,5 +92,4 @@ public class GraphOrientationDirected implements GraphOrientation {
                 && ((anArc.getTarget().getType().compareTo(typeArc.getTarget().getType()))
                 || (anArc.getTarget().getType().isChildOf(typeArc.getTarget().getType())));
     }
-
 }

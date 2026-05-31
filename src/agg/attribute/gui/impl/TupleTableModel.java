@@ -1,18 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
-
-import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
-//import javax.swing.table.TableCellEditor;
 
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrEvent;
@@ -27,14 +23,17 @@ import agg.attribute.gui.AttrTupleEditor;
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.HandlerExpr;
 import agg.attribute.impl.AttrSession;
-import agg.attribute.impl.ValueMember;
-import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.DeclMember;
+import agg.attribute.impl.DeclTuple;
+import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.VerboseControl;
+import javax.swing.JOptionPane;
+import javax.swing.table.AbstractTableModel;
 
 /**
- * Table model for tuple editors. The following behavior can be customized by method calls: which columns to display,
- * their order, their titles, classes of their content objects and if their objects are editable. When more specific
+ * Table model for tuple editors. The following behavior can be customized by
+ * method calls: which columns to display, their order, their titles, classes of
+ * their content objects and if their objects are editable. When more specific
  * customization is needed, this class can be extended.
  *
  * @version $Id: TupleTableModel.java,v 1.22 2010/11/28 22:08:46 olga Exp $
@@ -47,46 +46,35 @@ public class TupleTableModel extends AbstractTableModel implements
      *
      */
     private static final long serialVersionUID = 2201742847657275100L;
-
     // Property keys for internal array access. Must be [0,1,2,...]
     protected static final int COLUMN_INDEX = 0;
-
     protected static final int COLUMN_TITLE = 1;
-
     protected static final int COLUMN_CLASS = 2;
-
     protected static final int COLUMN_EDITABLE = 3;
-
     protected static final int N_COLUMN_PROPERTIES = 4;
-
     /**
-     * Decides if more rows can be interactively added to the tuple, by displaying an extra row at the table bottom.
+     * Decides if more rows can be interactively added to the tuple, by
+     * displaying an extra row at the table bottom.
      */
     protected boolean isExtensible = false;
-
     /**
      * Columns to display and their order.
      */
     protected int columnArray[] = {NAME, EXPR};
-
     /**
      * Properties of each column with respect to the table.
      */
     protected Object columnData[][] = new Object[N_TUPLE_KEYS][N_COLUMN_PROPERTIES];
-
     /**
-     * Owning editor, serves e.g. for accessing of the edited tuple, the view setting or, the EditorManager when
-     * selecting a handler editor.
+     * Owning editor, serves e.g. for accessing of the edited tuple, the view
+     * setting or, the EditorManager when selecting a handler editor.
      */
     protected AttrTupleEditor editor = null;
-
     /**
      * Temporary trick. Later, the editor manager will be asked each time.
      */
     protected AttrHandler defaultHandler = null;
-
     protected int currentColumn;
-
     protected boolean valueChanged;
 
     /**
@@ -115,7 +103,6 @@ public class TupleTableModel extends AbstractTableModel implements
         for (int i = 0; i < N_TUPLE_KEYS; i++) {
             this.columnData[i][COLUMN_INDEX] = new Integer(-1);
         }
-
         // Assigning column numbers to wanted columns.
         for (int i = 0; i < this.columnArray.length; i++) {
             this.columnData[this.columnArray[i]][COLUMN_INDEX] = new Integer(i);
@@ -123,14 +110,16 @@ public class TupleTableModel extends AbstractTableModel implements
     }
 
     /**
-     * Setting if more rows can be interactively added to the tuple, by displaying an extra row at the table bottom.
+     * Setting if more rows can be interactively added to the tuple, by
+     * displaying an extra row at the table bottom.
      */
     public void setExtensible(boolean b) {
         this.isExtensible = b;
     }
 
     /**
-     * Tests if more rows can be interactively added to the tuple, by displaying an extra row at the table bottom.
+     * Tests if more rows can be interactively added to the tuple, by displaying
+     * an extra row at the table bottom.
      */
     public boolean isExtensible() {
         return this.isExtensible;
@@ -154,11 +143,12 @@ public class TupleTableModel extends AbstractTableModel implements
      * Setting if a field at column is editable.
      */
     public void setColumnEditable(int key, boolean b) {
-        setColumnProperty(key, COLUMN_EDITABLE, new Boolean(b));
+        setColumnProperty(key, COLUMN_EDITABLE, Boolean.valueOf(b));
     }
 
     /**
-     * Returns the member of 'tuple' at the specified row. Used internally and by the editor that uses this table model.
+     * Returns the member of 'tuple' at the specified row. Used internally and
+     * by the editor that uses this table model.
      */
     public AttrMember getMember(AttrTuple tuple, int row) {
         return tuple.getMemberAt(this.editor.getViewSetting(), row);
@@ -179,8 +169,9 @@ public class TupleTableModel extends AbstractTableModel implements
     }
 
     /**
-     * TupleEditor's AttrObserver interface implementation. notifies the table of the change. The default implementation
-     * is simply updating the whole table. For optimizing consider the data in the delivered event.
+     * TupleEditor's AttrObserver interface implementation. notifies the table
+     * of the change. The default implementation is simply updating the whole
+     * table. For optimizing consider the data in the delivered event.
      */
     public void attributeChanged(AttrEvent event) {
         if (event == null) {
@@ -209,9 +200,10 @@ public class TupleTableModel extends AbstractTableModel implements
     }
 
     /**
-     * Returns the number of rows. If this is a model for an extendable table, makes the table one row higher than the
-     * number of its members. The last row is for adding of a new member. Otherwise returns the exact number of tuple
-     * members.
+     * Returns the number of rows. If this is a model for an extendable table,
+     * makes the table one row higher than the number of its members. The last
+     * row is for adding of a new member. Otherwise returns the exact number of
+     * tuple members.
      */
     public int getRowCount() {
         AttrTuple tuple = this.editor.getTuple();
@@ -233,43 +225,33 @@ public class TupleTableModel extends AbstractTableModel implements
     protected void initColumnProperties() {
         Class<?> stringClass = "".getClass();
         Class<?> booleanClass = Boolean.TRUE.getClass();
-
         setColumnTitle(UNKNOWN, "???");
         setColumnClass(UNKNOWN, null);
         setColumnEditable(UNKNOWN, false);
-
         setColumnTitle(HANDLER, "Handler");
         setColumnClass(HANDLER, stringClass);
         setColumnEditable(HANDLER, false);
-
         setColumnTitle(TYPE, "Type");
         setColumnClass(TYPE, stringClass);
         setColumnEditable(TYPE, true);
-
         setColumnTitle(NAME, "Name");
         setColumnClass(NAME, stringClass);
         setColumnEditable(NAME, true);
-
         setColumnTitle(EXPR, "Expression");
         setColumnClass(EXPR, stringClass);
         setColumnEditable(EXPR, true);
-
         setColumnTitle(YIELDS, "Yields");
         setColumnClass(YIELDS, stringClass);
         setColumnEditable(YIELDS, false);
-
         setColumnTitle(CORRECTNESS, "OK");
         setColumnClass(CORRECTNESS, booleanClass);
         setColumnEditable(CORRECTNESS, false);
-
         setColumnTitle(IS_INPUT_PARAMETER, "In");
         setColumnClass(IS_INPUT_PARAMETER, booleanClass);
         setColumnEditable(IS_INPUT_PARAMETER, true);
-
         setColumnTitle(IS_OUTPUT_PARAMETER, "Out");
         setColumnClass(IS_OUTPUT_PARAMETER, booleanClass);
         setColumnEditable(IS_OUTPUT_PARAMETER, true);
-
         setColumnTitle(VISIBILITY, "Shown");
         setColumnClass(VISIBILITY, booleanClass);
         setColumnEditable(VISIBILITY, true);
@@ -281,11 +263,9 @@ public class TupleTableModel extends AbstractTableModel implements
     protected Object getItem(AttrMember member, int key, AttrTuple tuple,
             int row) {
         // AttrInstanceMember m = (AttrInstanceMember) member;
-
         if (member instanceof AttrTypeMember) {
             return getItemOfAttrTypeMember(member, key, tuple, row);
         } else if (member instanceof AttrInstanceMember) {
-
             AttrInstanceMember m = (AttrInstanceMember) member;
             switch (key) {
                 case HANDLER:
@@ -295,18 +275,18 @@ public class TupleTableModel extends AbstractTableModel implements
                 case NAME:
                     return m.getDeclaration().getName();
                 case VISIBILITY:
-                    return new Boolean(this.editor.getViewSetting()
+                    return Boolean.valueOf(this.editor.getViewSetting()
                             .isVisible(tuple, row));
                 case EXPR:
                     return m.getExprAsText();
                 case CORRECTNESS:
-                    return new Boolean(m.isValid() && m.getDeclaration().isValid());
+                    return Boolean.valueOf(m.isValid() && m.getDeclaration().isValid());
                 case YIELDS:
-                    return new Boolean(m.isValid() && m.getDeclaration().isValid());
+                    return Boolean.valueOf(m.isValid() && m.getDeclaration().isValid());
                 case IS_INPUT_PARAMETER:
-                    return new Boolean(((AttrVariableMember) m).isInputParameter());
+                    return Boolean.valueOf(((AttrVariableMember) m).isInputParameter());
                 case IS_OUTPUT_PARAMETER:
-                    return new Boolean(((AttrVariableMember) m).isOutputParameter());
+                    return Boolean.valueOf(((AttrVariableMember) m).isOutputParameter());
                 default:
                     return null;
             }
@@ -319,7 +299,6 @@ public class TupleTableModel extends AbstractTableModel implements
             AttrTuple tuple, int row) {
         if (member instanceof AttrTypeMember) {
             AttrTypeMember m = (AttrTypeMember) member;
-
             switch (key) {
                 case HANDLER:
                     return m.getHandler().getName();
@@ -328,7 +307,7 @@ public class TupleTableModel extends AbstractTableModel implements
                 case NAME:
                     return m.getName();
                 case VISIBILITY:
-                    return new Boolean(this.editor.getViewSetting()
+                    return Boolean.valueOf(this.editor.getViewSetting()
                             .isVisible(tuple, row));
                 case EXPR:
                 case CORRECTNESS:
@@ -360,13 +339,10 @@ public class TupleTableModel extends AbstractTableModel implements
             AttrTuple tuple, int row) {
         // System.out.println("TupleTableModel.setItem ");
         // AttrInstanceMember m = (AttrInstanceMember) member;
-
         if (member instanceof AttrTypeMember) {
             setItemOfAttrTypeMember(aValue, member, key, tuple, row);
         } else if (member instanceof AttrInstanceMember) {
-
             AttrInstanceMember m = (AttrInstanceMember) member;
-
             switch (key) {
                 case HANDLER:
                     AttrSession.stdoutPrintln(VerboseControl.logTrace, "Handler");
@@ -399,12 +375,9 @@ public class TupleTableModel extends AbstractTableModel implements
                     // set expr iff the type and the name of the member are valid
                     if (m.getDeclaration().isValid()) {
                         AttrSession.stdoutPrintln(VerboseControl.logTrace, "Expr");
-
                         HandlerExpr oldexpr = m.getExpr();
-
                         ((ValueMember) m).checkValidity(oldexpr);
                         String olderrorMsg = ((ValueMember) m).getErrorMsg();
-
                         String newText = (String) aValue;
                         if (newText.equals("")) {
                             m.setExprAsText(newText);
@@ -422,10 +395,8 @@ public class TupleTableModel extends AbstractTableModel implements
                                 HandlerExpr expression = ((ValueMember) m).getHandler()
                                         .newHandlerExpr(((ValueMember) m).getDeclaration()
                                                 .getType(), newText); // (String)aValue);
-
                                 ((ValueMember) m).checkValidity(expression);
                                 String errorMsg = ((ValueMember) m).getErrorMsg();
-
                                 if (m.isValid()) {
                                     m.setExprAsText(newText);
                                 } else if (oldexpr != null && olderrorMsg.length() == 0) {
@@ -435,7 +406,6 @@ public class TupleTableModel extends AbstractTableModel implements
                                             errorMsg,
                                             " Attribute Parser ", JOptionPane.ERROR_MESSAGE);
                                 }
-
                             } catch (agg.attribute.handler.AttrHandlerException ex) {
                                 //						System.out.println(ex.getLocalizedMessage());
                             }
@@ -466,7 +436,6 @@ public class TupleTableModel extends AbstractTableModel implements
             int key, AttrTuple tuple, int row) {
         if (member instanceof AttrTypeMember) {
             AttrTypeMember m = (AttrTypeMember) member;
-
             switch (key) {
                 case HANDLER:
                     AttrSession.stdoutPrintln(VerboseControl.logTrace, "Handler");
@@ -522,7 +491,6 @@ public class TupleTableModel extends AbstractTableModel implements
                 }
             } catch (ClassNotFoundException cex) {
 //				System.out.println(cex.getMessage());
-
                 String tst = aValue;
                 String pack = null;
                 String tmp = "";
@@ -560,7 +528,6 @@ public class TupleTableModel extends AbstractTableModel implements
 //		System.out.println(
 //				"TupleTableModel:\n->setItemOfNewRow\nnumber of entries: "
 //						+ tuple.getNumberOfEntries());
-
         if (tuple instanceof AttrConditionTuple) {
             // System.out.println("TupleTableModel.setItemOfNewRow ::
             // addCondition: "+(String) aValue);
@@ -589,7 +556,6 @@ public class TupleTableModel extends AbstractTableModel implements
             setItem(aValue, m, key, tuple, row);
             AttrSession.logPrintln(VerboseControl.logTrace,
                     "TupleTableModel:\n<-setItemOfNewRow");
-
         }
     }
 
@@ -612,8 +578,9 @@ public class TupleTableModel extends AbstractTableModel implements
     }
 
     /**
-     * Tests if the item at 'key' of the specified member is editable. Default implementation looks only at the key,
-     * ignoring 'member'. When needed, this behaviour can be overridden.
+     * Tests if the item at 'key' of the specified member is editable. Default
+     * implementation looks only at the key, ignoring 'member'. When needed,
+     * this behaviour can be overridden.
      */
     protected boolean isItemEditable(AttrMember member, int key) {
         return ((Boolean) getColumnProperty(key, COLUMN_EDITABLE))
@@ -621,7 +588,8 @@ public class TupleTableModel extends AbstractTableModel implements
     }
 
     /**
-     * Tests if the item at 'key' in the new bottom row is editable. Default implementation: same as other rows.
+     * Tests if the item at 'key' in the new bottom row is editable. Default
+     * implementation: same as other rows.
      */
     protected boolean isNewRowEditable(int key) {
         return ((Boolean) getColumnProperty(key, COLUMN_EDITABLE))
@@ -667,7 +635,8 @@ public class TupleTableModel extends AbstractTableModel implements
     }
 
     /**
-     * Returns true if a new value was created or an already exist value was changed, otherwise false.
+     * Returns true if a new value was created or an already exist value was
+     * changed, otherwise false.
      */
     public final boolean isColumnValueChanged() {
         return this.valueChanged;
@@ -695,7 +664,6 @@ public class TupleTableModel extends AbstractTableModel implements
         if (tuple == null) {
             return;
         }
-
         Object oldvalue = getValueAt(row, column);
         this.currentColumn = column;
         if (row >= tuple.getNumberOfEntries()) {

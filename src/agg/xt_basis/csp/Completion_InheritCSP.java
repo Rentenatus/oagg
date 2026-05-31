@@ -1,14 +1,15 @@
 package agg.xt_basis.csp;
+
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
-
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Dictionary;
-
 import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.VarMember;
@@ -40,24 +40,21 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Type;
 
 /**
- * An implementation of morphism completion as a Constraint Satisfaction Problem (CSP).
+ * An implementation of morphism completion as a Constraint Satisfaction Problem
+ * (CSP).
  *
- * Please note: This class is only for internal use of the critical pair analysis for grammars with node type
- * inheritance. Do not use it for any kind of implementations.
+ * Please note: This class is only for internal use of the critical pair
+ * analysis for grammars with node type inheritance. Do not use it for any kind
+ * of implementations.
  */
 public class Completion_InheritCSP extends MorphCompletionStrategy {
 
     private ALR_InheritCSP itsCSP;
-
     private Morphism itsMorph;
-
     private Dictionary<Object, Variable> relatedVarMap;
-
     // private boolean allowRestrictedDomain;
     private HashMap<String, String> mapInputParameter = new HashMap<String, String>(1);
-
     private String errorMsg;
-
     private static final BitSet itsSupportedProperties = new BitSet(6);
 
     static {
@@ -87,21 +84,18 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
     }
 
     /**
-     * Initialize the CSP by the specified morphism. The CSP variables are created for each node and edge of the source
-     * graph of this morphism.
+     * Initialize the CSP by the specified morphism. The CSP variables are
+     * created for each node and edge of the source graph of this morphism.
      */
     public final void initialize(OrdinaryMorphism morph)
             throws BadMappingException {
         this.itsMorph = morph;
         AttrContext aContext = initializeAttrContext(morph);
-
         // create CSP
         this.itsCSP = new ALR_InheritCSP(morph.getOriginal(), aContext);
-
         if (morph.getImage().getTypeObjectsMap().isEmpty()) {
             morph.getImage().fillTypeObjectsMap();
         }
-
         this.itsCSP.setRequester(morph);
         this.itsCSP.setDomain(morph.getImage());
     }
@@ -113,8 +107,8 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
                     ((Match) morph).getRule().getAttrContext());
             c.setIgnoreOfConstContext(((ContextView) morph.getAttrContext()).isIgnoreConstContext());
             return c;
-
 //			return morph.getAttrManager().newContext(
+
         
         ////					agg.attribute.AttrMapping.MATCH_MAP,
 //					((ContextView)morph.getAttrContext()).getAllowedMapping(),
@@ -140,7 +134,8 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
 	}
      */
     /**
-     * Template method to enable creation of CSPs with varying solution strategies by subclasses.
+     * Template method to enable creation of CSPs with varying solution
+     * strategies by subclasses.
      */
     protected SolutionStrategy createSolutionStrategy() {
         return new Solution_Backjump(getProperties().get(CompletionPropertyBits.INJECTIVE));
@@ -211,7 +206,6 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
         if (this.relatedVarMap != null) {
             return true;
         }
-
         return false;
     }
 
@@ -219,7 +213,6 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
         if (this.itsCSP != null) {
             return this.itsCSP.getInstanceVarMap();
         }
-
         return null;
     }
 
@@ -259,7 +252,6 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
                 return false;
             }
         }
-
         return doNext((OrdinaryMorphism) this.itsMorph);
     }
 
@@ -267,12 +259,10 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
         this.itsCSP.setRelatedInstanceVarMap(this.relatedVarMap);
         boolean flag = false;
         this.errorMsg = "";
-
         if (morph.getAttrContext() != null) {
             ((VarTuple) morph.getAttrContext().getVariables())
                     .unsetNotInputVariables();
         }
-
         while (this.itsCSP.nextSolution()) {
             flag = true;
             this.errorMsg = "";
@@ -317,11 +307,9 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
             if (!flag) {
                 continue;
             }
-
             if (morph.getAttrContext() != null) {
                 flag = flag && checkObjectsWithSameVariable(morph);
             }
-
             if (flag) {
                 break;
             }
@@ -373,7 +361,6 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
                     }
                 }
             }
-
             if (v.size() > 1) {
                 Pair<GraphObject, String> p = v.get(0);
                 GraphObject img = morph.getImage(p.first);
@@ -413,21 +400,19 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
     }
 
     /**
-     * An additional object name constraint will be added for the CSP variable of the given GraphObject anObj. This
-     * constraint requires equality of the object names.<br>
+     * An additional object name constraint will be added for the CSP variable
+     * of the given GraphObject anObj. This constraint requires equality of the
+     * object names.<br>
      */
     public void addObjectNameConstraint(GraphObject anObj) {
         this.itsCSP.addObjectNameConstraint(anObj);
     }
 
     /**
-     * Removes the object name constraint for the CSP variable of the given GraphObject anObj.
+     * Removes the object name constraint for the CSP variable of the given
+     * GraphObject anObj.
      */
     public void removeObjectNameConstraint(GraphObject anObj) {
         this.itsCSP.removeObjectNameConstraint(anObj);
     }
 }
-
-
-
-

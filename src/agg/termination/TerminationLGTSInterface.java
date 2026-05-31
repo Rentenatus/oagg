@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -24,12 +26,14 @@ import java.util.List;
  * This class implements termination conditions of Layered Graph Grammar.
  *
  * @author $Author: olga $
- * @version $Id: TerminationLGTSInterface.java,v 1.4 2009/02/04 10:11:29 olga Exp $
+ * @version $Id: TerminationLGTSInterface.java,v 1.4 2009/02/04 10:11:29 olga
+ * Exp $
  */
 public interface TerminationLGTSInterface {
 
     /**
-     * Initialize a termination layers of the grammar. Initially the termination conditions are invalid.
+     * Initialize a termination layers of the grammar. Initially the termination
+     * conditions are invalid.
      *
      * @param gra The graph grammar.
      */
@@ -131,7 +135,8 @@ public interface TerminationLGTSInterface {
     public Integer getStartLayer();
 
     /**
-     * Inverts a layer function so that the layer is the key and the value is a set.
+     * Inverts a layer function so that the layer is the key and the value is a
+     * set.
      *
      * @param layer The layer function will be inverted.
      * @return The inverted layer function.
@@ -151,5 +156,4 @@ public interface TerminationLGTSInterface {
      * @return The text.
      */
     public String toString();
-
 }

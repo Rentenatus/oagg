@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.lang;
 
@@ -17,35 +18,20 @@ package agg.attribute.gui.lang;
 public interface AttrDialogLang {
 
     static final String ATTR_INSTANCE_EDITOR_TITLE = "Attribute Editor";
-
     static final String ATTR_HELP_TITLE = "Help";
-
     static final String ATTR_WARNING_TITLE = "Warning!";
-
     static final String ACCEPT_BUTTON_LABEL = "Accept";
-
     static final String CANCEL_BUTTON_LABEL = "Cancel";
-
     static final String CHANGE_VALUE_BUTTON_LABEL = "Change Value";
-
     static final String CLEAR_BUTTON_LABEL = "Clear";
-
     static final String CLOSE_BUTTON_LABEL = "Close";
-
     static final String HANDLER_CONFIG_BUTTON_LABEL = "Config";
-
     static final String HELP_BUTTON_LABEL = "Help";
-
     static final String NEW_ENTRY_BUTTON_LABEL = "New Entry";
-
     static final String STACK_BUTTON_LABEL = "See Stack-Trace";
-
     static final String EDIT_TYPE_LABEL = "Type:";
-
     static final String EDIT_NAME_LABEL = "Name:";
-
     static final String EDIT_VALUE_LABEL = "Value:";
-
     static final String EDIT_INSTANCE_HELP = "<New Entry>\t Add a new attribute entry;\n"
             + "<Change Value>\t Edit selected entry value;\n"
             + "\"Double-click a line\"\t Edit selected entry value;\n"

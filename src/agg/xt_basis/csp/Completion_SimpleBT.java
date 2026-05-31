@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃ¤t Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -20,7 +22,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Hashtable;
-
 import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.ValueTuple;
@@ -36,8 +37,8 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.NACStarMorphism;
 import agg.xt_basis.OrdinaryMorphism;
-
 //import com.objectspace.jgl.Deque;
+
 /**
  * Simple Backtracking implementation of morphism completion.
  *
@@ -46,10 +47,9 @@ import agg.xt_basis.OrdinaryMorphism;
 public class Completion_SimpleBT extends MorphCompletionStrategy {
 
     private boolean itsInjectiveFlag;
-
     private boolean initialized;
-
 //	private List<GraphObject> domain;
+
     public Completion_SimpleBT(int i) {
         // no properties supported:
         super(new BitSet(1));
@@ -71,7 +71,6 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
         this.itsObjectsToMap = new ArrayList<GraphObject>();
         this.itsState = START;
 //		itsPreviousCompletion = null;
-
         Iterator<?> iter = this.itsMorphism.getOriginal().getNodesSet().iterator();
         while (iter.hasNext()) {
             GraphObject obj = (GraphObject) iter.next();
@@ -99,7 +98,6 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
             this.itsStack.clear();
             this.itsObjectsToMap.clear();
             this.itsState = START;
-
             // System.out.println("Completion_SimpleBT.setPartialMorphism...");
             Iterator<?> iter = this.itsMorphism.getOriginal().getNodesSet().iterator();
             while (iter.hasNext()) {
@@ -139,9 +137,7 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
         // while(en.hasMoreElements()){
         // domain.add(en.nextElement());
         // }
-
         this.itsState = START;
-
         // this.itsObjectsToMap.clear();
         // Enumeration iter = this.itsMorphism.getOriginal().getElements();
         // while ( iter.hasMoreElements() ){
@@ -150,7 +146,6 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
         // }
         // System.out.println("Completion_SimpleBT.refreshStack()... DONE ");
     }
-
 //	private void refreshObjectsMap() {
 //		this.itsObjectsToMap.clear();
 //		Iterator<?> iter = this.itsMorphism.getOriginal().getNodesSet().iterator();
@@ -164,11 +159,11 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
 //			this.itsObjectsToMap.pushBack(obj);
 //		}
 //	}
+
     private final GraphObject nextMapping() {
         if (this.itsStack.empty()) {
             return null;
         }
-
         GraphObject image;
         GraphObject obj = this.itsStack.peek().object;
         Iterator<GraphObject> iter = this.itsStack.peek().iter;
@@ -207,18 +202,14 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
 
     public final boolean next(OrdinaryMorphism morph) {
         this.errorMsg = "";
-
         storeValueOfInputParameter(morph);
-
         if (morph != this.itsMorphism) {
             initialize(morph);
         }
-
         if (this.itsState == SUCCESS) {
             // savePreviousCompletion();
             this.itsState = MAP_NEXT;
         }
-
         GraphObject obj;
         while (true) {
             switch (this.itsState) {
@@ -229,7 +220,6 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
                         this.itsState = SELECT;
                     }
                     break;
-
                 case SELECT:
                     obj = selectObjectToMap();
                     if (obj == null) {
@@ -239,7 +229,6 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
                         this.itsState = MAP_NEXT;
                     }
                     break;
-
                 case MAP_NEXT:
                     obj = nextMapping();
                     if (obj != null) {
@@ -255,9 +244,7 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
                         this.itsState = BACK;
                     }
                     restoreValueOfInputParameter(morph);
-
                     break;
-
                 case BACK:
                     if (this.itsStack.size() > 1) {
                         // this.itsObjectsToMap.pushFront( ((StackItem)
@@ -269,7 +256,6 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
                         this.itsState = NO_MORE_COMPLETIONS;
                     }
                     break;
-
                 case SUCCESS:
                     if (!checkInputParameter(morph)) {
                         this.itsState = MAP_NEXT;
@@ -285,19 +271,14 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
                             break;
                         }
                     }
-
                     restoreValueOfInputParameter(morph);
-
                     return true;
-
                 case NO_MORE_COMPLETIONS:
                     // if (itsPreviousCompletion != null)
                     // restorePreviousCompletion();
-
                     // refreshStack();
                     // this.itsState = START;
                     return false;
-
                 default:
                 // System.out.println("Completion_SimpleBT: Should have never
                 // come here...");
@@ -329,7 +310,6 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
         if (areReferencesMapped(obj)) {
             return obj;
         }
-
 //		this.itsObjectsToMap.pushBack(obj);
         this.itsObjectsToMap.add(obj);
         return selectObjectToMap();
@@ -353,7 +333,6 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
 			itsPreviousCompletion.add(this.itsMorphism.getImage(obj));
 		}
 	}
-
 	private final void restorePreviousCompletion() {
 		for (int i = 0; i < itsPreviousCompletion.size();) {
 			this.itsMorphism.addMapping(itsPreviousCompletion.get(i++),
@@ -546,36 +525,23 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
     public String getErrorMsg() {
         return this.errorMsg;
     }
-
     // ---- member variables ------------------------
     private OrdinaryMorphism itsMorphism;
-
 //	private Deque itsObjectsToMap;
     private List<GraphObject> itsObjectsToMap;
-
     private Stack<StackItem> itsStack;
-
     private int itsState = START;
-
 //	private List<GraphObject> itsPreviousCompletion;
     private HashMap<Integer, String> mapInputParameter = new HashMap<Integer, String>(
             1);
-
     private String errorMsg;
-
     // constants for morphism completion state machine:
     private final static int START = 1;
-
     private final static int SELECT = 2;
-
     private final static int MAP_NEXT = 3;
-
     private final static int BACK = 4;
-
     private final static int SUCCESS = 5;
-
     private final static int NO_MORE_COMPLETIONS = 6;
-
 }
 
 class StackItem {
@@ -584,12 +550,6 @@ class StackItem {
         this.object = obj;
         this.iter = iter;
     }
-
     protected Iterator<GraphObject> iter;
-
     protected GraphObject object;
 }
-
-
-
-

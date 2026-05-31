@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -43,8 +45,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of a graph morphism. Note: This implementation is guaranteed to keep morphism properties when objects
- * are deleted/created/modified in the original or image graphs.
+ * Implementation of a graph morphism. Note: This implementation is guaranteed
+ * to keep morphism properties when objects are deleted/created/modified in the
+ * original or image graphs.
  */
 // Class OrdinaryMorphism is capable of passing the following change
 // informations as an argument to its observers' <code>update()</code> methods:
@@ -59,37 +62,29 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     protected String itsName;
     protected String comment = "";
-
     protected MorphCompletionStrategy itsCompleter;
     protected boolean itsTouchedFlag = true;
     protected boolean itsInteractiveFlag = true;
-
     protected Map<AttrInstance, AttrMapping> itsAttrMappings;
     protected AttrContext itsAttrContext;
     protected AttrManager itsAttrManager;
-
     protected Graph itsOrig;
     protected Graph itsImag;
-
     /**
-     * Use this constant as a parameter in my constructors or in the <code>initialize()</code> method to indicate that
-     * the attribute context in question should not be altered.
+     * Use this constant as a parameter in my constructors or in the
+     * <code>initialize()</code> method to indicate that the attribute context
+     * in question should not be altered.
      */
     protected static final AttrContext cKeepContext = null;
-
     final protected List<GraphObject> itsDomObjects = new ArrayList<>();
     final protected List<GraphObject> itsCodomObjects = new ArrayList<>();
-
     protected OrdinaryMorphism itsCoMorph;
-
     protected boolean enabled = true;
     boolean mappingChanged;
     protected boolean changed;
     protected boolean typeObjectsMapChanged;
     protected boolean partialMorphCompletion;
-
     protected boolean shifted;
-
     protected String errorMsg;
 //	protected List<String> errors;
 
@@ -119,71 +114,59 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
      */
     public OrdinaryMorphism(final Graph orig, final Graph img, final AttrContext ac) {
         this.itsName = "OrdinaryMorphism";
-
         this.itsOrig = orig;
 //		this.itsOrig.setKind(GraphKind.SOURCE);
         this.itsOrig.addUsingMorph(this);
-
         this.itsImag = img;
 //		this.itsImag.setKind(GraphKind.TARGET);
         this.itsImag.addUsingMorph(this);
-
         this.itsAttrContext = ac;
         this.itsAttrMappings = new Hashtable<AttrInstance, AttrMapping>(20);
         this.itsAttrManager = AttrTupleManager.getDefaultManager();
-
         setCompletionStrategy(CompletionStrategySelector.getDefault());
         this.itsTouchedFlag = true;
         this.itsInteractiveFlag = true;
-
         this.errorMsg = "";
 //		this.errors = new List<String>(2, 2);
     }
 
     /**
-     * Remove all graph object mappings and all relations to its source and target graphs.
+     * Remove all graph object mappings and all relations to its source and
+     * target graphs.
      */
     public void dispose() {
         if (this.itsCompleter != null) {
             this.itsCompleter.dispose();
         }
-
         removeAllMappings();
-
         this.itsOrig.removeUsingMorph(this);
         this.itsImag.removeUsingMorph(this);
-
         if (this.itsCoMorph != null) {
             this.itsCoMorph.dispose();
             this.itsCoMorph = null;
         }
         this.clearErrorMsg();
-
         super.dispose();
     }
 
     /**
-     * Remove all graph object mappings and all relations to its source and target graphs. Dispose its source graph if
-     * disposableSource is TRUE, dispose its target graph if disposableTarget is TRUE.
+     * Remove all graph object mappings and all relations to its source and
+     * target graphs. Dispose its source graph if disposableSource is TRUE,
+     * dispose its target graph if disposableTarget is TRUE.
      */
     public void dispose(boolean disposableSource, boolean disposableTarget) {
         if (this.itsCompleter != null) {
             this.itsCompleter.dispose();
         }
-
         removeAllMappings();
-
         this.itsOrig.removeUsingMorph(this);
         this.itsImag.removeUsingMorph(this);
-
         if (this.itsCoMorph != null) {
             this.itsCoMorph.dispose();
             this.itsCoMorph = null;
         }
         this.clearErrorMsg();
-
         super.dispose();
-
         if (disposableSource) {
             this.itsOrig.dispose();
             this.itsOrig = null;
@@ -265,7 +248,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Return an error message if this morphism is failed, otherwise - empty message.
+     * Return an error message if this morphism is failed, otherwise - empty
+     * message.
      */
     public String getErrorMsg() {
         return this.errorMsg;
@@ -287,8 +271,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Returns true, if the same source object refers the same target object, otherwise false. Precondition: this.source
-     * == m.source, this.target == m.target
+     * Returns true, if the same source object refers the same target object,
+     * otherwise false. Precondition: this.source == m.source, this.target ==
+     * m.target
      */
     public final boolean isCommutative(Morphism m) {
         if (this.itsOrig.getTypeSet().isArcDirected()) {
@@ -302,7 +287,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (m == this) {
             return true;
         }
-
         if (m.getOriginal() == this.itsOrig) {
             final Iterator<Node> allOrigNodes = this.itsOrig.getNodesSet().iterator();
             while (allOrigNodes.hasNext()) {
@@ -339,7 +323,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (m == this) {
             return true;
         }
-
         if (m.getOriginal() == this.itsOrig) {
             final Iterator<Node> allOrigNodes = this.itsOrig.getNodesSet().iterator();
             while (allOrigNodes.hasNext()) {
@@ -380,7 +363,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (m == this) {
             return true;
         }
-
         if (m.getOriginal() == this.itsOrig) {
             final Iterator<Arc> allOrigArcs = this.itsOrig.getArcsSet().iterator();
             while (allOrigArcs.hasNext()) {
@@ -420,10 +402,12 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Returns true, if the same source object of m1 and (this o m2) refers the same target object of this:
-     * m2.getImage(this.getImage(obj)) == m1.getImage(obj). Otherwise returns false.
+     * Returns true, if the same source object of m1 and (this o m2) refers the
+     * same target object of this: m2.getImage(this.getImage(obj)) ==
+     * m1.getImage(obj). Otherwise returns false.
      *
-     * Precondition: m1.source == this.source, m2.source == this.target, m1.target == m2.target
+     * Precondition: m1.source == this.source, m2.source == this.target,
+     * m1.target == m2.target
      */
     public final boolean isCommutative(Morphism m1, Morphism m2) {
         if (this.itsOrig.getTypeSet().isArcDirected()) {
@@ -438,7 +422,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (m1 == this) {
             return ((OrdinaryMorphism) m1).isCommutativeORIG(m2);
         }
-
         if (m1.getOriginal() == this.itsOrig
                 && this.itsImag == m2.getOriginal()
                 && m1.getImage() == m2.getImage()) {
@@ -481,7 +464,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (m1 == this) {
             return ((OrdinaryMorphism) m1).isCommutative1(m2);
         }
-
         if (m1.getOriginal() == this.itsOrig
                 && this.itsImag == m2.getOriginal()
                 && m1.getImage() == m2.getImage()) {
@@ -524,7 +506,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (m1 == this) {
             return ((OrdinaryMorphism) m1).isCommutative2(m2);
         }
-
         if (m1.getOriginal() == this.itsOrig
                 && this.itsImag == m2.getOriginal()
                 && m1.getImage() == m2.getImage()) {
@@ -570,13 +551,16 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * *************************************************************************
-     * Konstruiert aus dem Morphismus einen Match. * Der Morphismus muss zwischen der linken Regelseite * der
-     * mitgegebenen Regel und dem aktuellen Arbeitsgraphen definiert sein.*
+     * Konstruiert aus dem Morphismus einen Match. * Der Morphismus muss
+     * zwischen der linken Regelseite * der mitgegebenen Regel und dem aktuellen
+     * Arbeitsgraphen definiert sein.*
      * ************************************************************************
      */
     /**
-     * Construct a Match of the specified Rule from this morphism . The source graph is the LHS of the rule. The mapping
-     * of this morphism is used for the match mapping. Returns null when a BadMappingException occurred, otherwise true.
+     * Construct a Match of the specified Rule from this morphism . The source
+     * graph is the LHS of the rule. The mapping of this morphism is used for
+     * the match mapping. Returns null when a BadMappingException occurred,
+     * otherwise true.
      */
     public Match makeMatch(Rule rule) {
         final Match m = (BaseFactory.theFactory()).createMatch(rule, this.itsImag);
@@ -597,19 +581,17 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Make a copy of the source graph, copy of the target graph, and the homomorphism on both graphs. The result shall
-     * not poses far reaching references onto Rules, GraGras those kinds of objects.
+     * Make a copy of the source graph, copy of the target graph, and the
+     * homomorphism on both graphs. The result shall not poses far reaching
+     * references onto Rules, GraGras those kinds of objects.
      */
     public OrdinaryMorphism morphcopy() {
         synchronized (this) {
             boolean failed = false;
-
             final Hashtable<GraphObject, GraphObject> orig2copySource = new Hashtable<>();
             final Hashtable<GraphObject, GraphObject> orig2copyTarget = new Hashtable<>();
-
             Graph sourceCopy = this.itsOrig.copy(orig2copySource);
             Graph targetCopy = this.itsImag.copy(orig2copyTarget);
-
             if (sourceCopy == null && targetCopy == null) {
                 return null;
             } else if (sourceCopy == null) {
@@ -619,14 +601,12 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 sourceCopy = null;
                 return null;
             }
-
             // Mapping is still empty
             OrdinaryMorphism theCopy = (BaseFactory.theFactory())
                     .createMorphism(sourceCopy, targetCopy);
             Iterator<GraphObject> domainOrig = this.getDomain();
             while (!failed && domainOrig.hasNext()) {
                 GraphObject x = domainOrig.next();
-
                 if (x.isNode()) {
                     Node y = (Node) this.getImage(x);
                     if (y != null) {
@@ -653,7 +633,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                     if (y != null) {
                         Node vtx3 = (Node) y.getSource();
                         Node vtx4 = (Node) y.getTarget();
-
                         vtx3Copy = (Node) orig2copyTarget.get(vtx3);
                         vtx4Copy = (Node) orig2copyTarget.get(vtx4);
                     }
@@ -702,7 +681,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                         targetCopy = null;
                     }
                 }
-
             }
             return (theCopy);
         }
@@ -744,7 +722,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (!theFirst.getOriginal().equals(theSecond.getOriginal())) {
             return (false);
         }
-
         // Untersuche Anwendungsvoraussetzungen: Graphen
         // (nur lesend, nicht schreibend)
         // Zusicherung hier: alle drei Morphismen leben auf den gleichen
@@ -759,7 +736,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         // Reihenfolgenkenntnisse effizient nutzbar machen kann.]
         Iterator<GraphObject> firstDom;
         Iterator<GraphObject> secondDom;
-
         firstDom = theFirst.getDomain();
         while (firstDom.hasNext()) {
             boolean result = false;
@@ -781,7 +757,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                  */
             }
         }
-
         secondDom = theSecond.getDomain();
         while (secondDom.hasNext()) {
             boolean result = false;
@@ -798,7 +773,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 return (result);
             }
         }
-
         // Zusicherung hier: theFirst und theSecond haben den
         // selben Definitionsbereich.
         // ----------------------------------------------------------------
@@ -816,10 +790,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 if (!(theSecond.getImage(x)).equals(z)) {
                     return (false);
                 }
-
             }
         }
-
         // this.getAttrContext()).getAllowedMapping());
         // Zusicherung hier: Wo this definiert ist, gilt die Gleichung
         // this(theFirst(x))=theSecond(x)=z
@@ -852,8 +824,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * <b>makeWeakDiagram</b>: fuer <em>DISAGG</em><br>
-     * Der vorliegende Homomorphismus (this) nimmt zwei weitere (theFirst, theSecond) als Input und wird selbst so
-     * vervollstaendigt, dass<br>
+     * Der vorliegende Homomorphismus (this) nimmt zwei weitere (theFirst,
+     * theSecond) als Input und wird selbst so vervollstaendigt, dass<br>
      * <em>theFirst o this <= theSecond</em>
      */
     //
@@ -876,7 +848,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     // -----------------------------------------------------------
     public boolean makeWeakDiagram(final OrdinaryMorphism theFirst,
             final OrdinaryMorphism theSecond) {
-
         /*
 		 * System.out.println(">>> OrdinaryMorphism.makeWeakDiagram(1, 2)");
 		 * 
@@ -906,7 +877,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 && !theSecond.getDomain().hasNext()) {
             return this.nextCompletion();
         }
-
         // Zusicherung hier: theFirst und theSecond haben den
         // selben Definitionsbereich.
         // ----------------------------------------------------------------
@@ -928,7 +898,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 }
             }
         }
-
         Iterator<GraphObject> firstDom = theFirst.getDomain();
         // Zusicherung hier: Wo this definiert ist, gilt die Gleichung
         // this(theFirst(x))=theSecond(x)=z
@@ -952,12 +921,12 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 || !theSecond.getDomain().hasNext()) {
             return this.nextCompletion();
         }
-
         return (true);
     }
 
     /**
-     * The current Homomorphismus (this) morphism takes two morphisms with : <br>
+     * The current Homomorphismus (this) morphism takes two morphisms with :
+     * <br>
      * theFirst.source == theSecond.source, <br>
      * this.source == theFirst.target, <br>
      * this.target == theSecond.target.<br>
@@ -992,10 +961,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (!theFirst.getOriginal().equals(theSecond.getOriginal())) {
             return (false);
         }
-
         Iterator<GraphObject> firstDom;
         Iterator<GraphObject> secondDom;
-
         /* suche nach gemeinsammen Elementen in theFirst und theSecond */
         firstDom = theFirst.getOriginal().iteratorOfElems();
         while (firstDom.hasNext()) {
@@ -1013,7 +980,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 return result;
             }
         }
-
         secondDom = theSecond.getOriginal().iteratorOfElems();
         while (secondDom.hasNext()) {
             boolean result = false;
@@ -1030,7 +996,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 return (result);
             }
         }
-
         // Zusicherung hier: theFirst und theSecond haben den
         // selben Definitionsbereich.
         // ----------------------------------------------------------------
@@ -1051,7 +1016,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 }
             }
         }
-
         // Zusicherung hier: Wo this definiert ist, gilt die Gleichung
         // this(theFirst(x))=theSecond(x)=z
         // --------------------------------
@@ -1071,14 +1035,15 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 }
             }
         }
-
         return true;
     }
 
     /**
-     * The current (this) morphism takes three morphisms, such that: this.source == theFirst.target, theSecond.source ==
-     * theFirst.source, theThird.source == theSecond.target, this.target == theThird.target as input and this morphism
-     * will be completed so that the diagram comutes: theFirst o this == theSecond o theThird .
+     * The current (this) morphism takes three morphisms, such that: this.source
+     * == theFirst.target, theSecond.source == theFirst.source, theThird.source
+     * == theSecond.target, this.target == theThird.target as input and this
+     * morphism will be completed so that the diagram comutes: theFirst o this
+     * == theSecond o theThird .
      */
     //
     // [Graph X]---------------------->[Graph Y]
@@ -1099,14 +1064,14 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             final OrdinaryMorphism theThird) {
         // System.out.println(">>> OrdinaryMorphism.makeDiagram(1, 2, 3)");
         OrdinaryMorphism tmpMorph = theSecond.compose(theThird);
-
         return this.makeDiagram(theFirst, tmpMorph);
     }
 
     /**
      * <b>makeWeakDiagram</b>: fuer <em>DISAGG</em><br>
-     * Der vorliegende Homomorphismus (this) nimmt drei weitere (theFirst, theSecond, theThird) als Input und wird
-     * selbst so vervollstaendigt, dass Diagramm schwach kommutiert.
+     * Der vorliegende Homomorphismus (this) nimmt drei weitere (theFirst,
+     * theSecond, theThird) als Input und wird selbst so vervollstaendigt, dass
+     * Diagramm schwach kommutiert.
      */
     //
     // [Graph X]---------------------->[Graph Y]
@@ -1126,7 +1091,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             final OrdinaryMorphism theSecond,
             final OrdinaryMorphism theThird) {
         OrdinaryMorphism tmpMorph = theSecond.compose(theThird);
-
         if (this.makeWeakDiagram(theFirst, tmpMorph)) {
             return true;
         }
@@ -1134,8 +1098,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Der vorliegende Homomorphismus (this) nimmt drei weitere (theFirst, theSecond, theThird) als Input und wird
-     * selbst so vervollstaendigt, dass Diagramm kommutiert.
+     * Der vorliegende Homomorphismus (this) nimmt drei weitere (theFirst,
+     * theSecond, theThird) als Input und wird selbst so vervollstaendigt, dass
+     * Diagramm kommutiert.
      */
     //
     // [Graph X]---------------------->[Graph Y]
@@ -1157,7 +1122,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         // OrdinaryMorphism tmpMorph = theSecond.compose(theThird);
         OrdinaryMorphism tmpMorph = (BaseFactory.theFactory()).createMorphism(
                 theSecond.getOriginal(), theThird.getImage());
-
         final Iterator<Node> theSecondDomNodes = theSecond.getOriginal().getNodesSet().iterator();
         while (theSecondDomNodes.hasNext()) {
             GraphObject theSecondGo = theSecondDomNodes.next();
@@ -1186,7 +1150,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 }
             }
         }
-
         if (this.makeFullDiagram(theFirst, tmpMorph)) {
             return true;
         }
@@ -1205,16 +1168,13 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (this.itsOrig.getArcsCount() != this.itsOrig.getArcsCount()) {
             return false;
         }
-
         if (this.isTotal()) {
             return true;
         }
-
         boolean result = false;
         this.setCompletionStrategy(new Completion_InjCSP());
         if (this.nextCompletion()) {
             result = true;
-
             // additionally, check type of source - target nodes in case of
             // Typegraph with Node Type Inheritance
             if (this.itsOrig.getTypeSet().getTypeGraph() != null
@@ -1255,11 +1215,13 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * This method tries to add morphism mapping between elements of my source graph and elements of the specified list.
-     * The elements of this list should be objects (nodes/edges) of my target graph. The order of the list has to be the
-     * order of the graph objects of my source graph. It is allowed to put null element into this list. A morphism
-     * mapping would be set for non-null elements only. As result a partial (total) graph morphism is done, if no errors
-     * occured.
+     * This method tries to add morphism mapping between elements of my source
+     * graph and elements of the specified list. The elements of this list
+     * should be objects (nodes/edges) of my target graph. The order of the list
+     * has to be the order of the graph objects of my source graph. It is
+     * allowed to put null element into this list. A morphism mapping would be
+     * set for non-null elements only. As result a partial (total) graph
+     * morphism is done, if no errors occured.
      */
     public void addMapping(final List<GraphObject> listOfGraphObjects)
             throws BadMappingException {
@@ -1322,7 +1284,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Returns an error if the type compatibility of the specified nodes failed, otherwise - null.
+     * Returns an error if the type compatibility of the specified nodes failed,
+     * otherwise - null.
      */
     public TypeError checkCreateMapping(final Node src, final Node tar) {
         if (!checkType(src.getType(), tar.getType())) {
@@ -1356,8 +1319,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Returns null if the source and target nodes of the specified edges are already mapped and the type compatibility
-     * of these two edges is satisfied, otherwise - an error.
+     * Returns null if the source and target nodes of the specified edges are
+     * already mapped and the type compatibility of these two edges is
+     * satisfied, otherwise - an error.
      */
     public TypeError checkCreateMapping(final Arc src, final Arc tar) {
         final GraphObject aSrc = src.getSource();
@@ -1388,8 +1352,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Please note: This method is only for internal use of the critical pair analysis for grammars with node type
-     * inheritance. Do not use it for any kind of implementations.
+     * Please note: This method is only for internal use of the critical pair
+     * analysis for grammars with node type inheritance. Do not use it for any
+     * kind of implementations.
      *
      * @param o is a child node
      * @param i is a parent node
@@ -1425,7 +1390,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                     if (aPreviousImage != null) {
                         removeMapping(o);
                     }
-
                     // try to add attribute mapping
                     try {
                         this.doAddChild2ParentAttrMapping(o, i);
@@ -1457,8 +1421,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Please note: This method is only for internal use of the critical pair analysis for grammars with node type
-     * inheritance. Do not use it for any kind of implementations.
+     * Please note: This method is only for internal use of the critical pair
+     * analysis for grammars with node type inheritance. Do not use it for any
+     * kind of implementations.
      *
      * @param orig is a child node
      * @param image is a parent node
@@ -1483,7 +1448,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                                 (ContextView) getAttrContext()))) {
                     canMapAttr = false;
                 }
-
                 if (canMapAttr) {
                     try {
                         addAttrMapping(orig.getAttribute(), image.getAttribute());
@@ -1492,7 +1456,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //						this.errors.add(this.errorMsg);
                         throw new BadMappingException(this.errorMsg);
                     }
-
                     addDomainMapping(orig, image, true);
                 } else {
                     this.errorMsg = "Attribute mapping failed!";
@@ -1509,7 +1472,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         } else {
             if (!orig.getType().isChildOf(image.getType())) {
                 addAttrMapping(orig.getAttribute(), image.getAttribute());
-
                 addDomainMapping(orig, image, true);
             }
         }
@@ -1523,7 +1485,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         this.itsDomObjects.add(orig);
         this.itsCodomObjects.add(image);
         this.mappingChanged = true;
-
         if (notificationRequired) {
             if (isNotificationRequired()) {
                 propagateChange(new Change(Change.MAPPING_ADDED, orig, this));
@@ -1541,8 +1502,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Map an object of source graph to an object of target graph. The original and image objects have to belong to the
-     * same morphism.
+     * Map an object of source graph to an object of target graph. The original
+     * and image objects have to belong to the same morphism.
      *
      * <p>
      * <b>Pre:</b>
@@ -1558,7 +1519,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
      *
      * @param i the target object of the mapping.
      *
-     * @exception agg.xt_basis.BadMappingException if the given mapping violates morphism properties. *
+     * @exception agg.xt_basis.BadMappingException if the given mapping violates
+     * morphism properties. *
      */
     public void addMapping(final GraphObject o, final GraphObject i)
             throws BadMappingException {
@@ -1566,7 +1528,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             this.errorMsg = "Mapping failed! The source or target object is null.";
             throw new BadMappingException(this.errorMsg);
         }
-
         if (this.getImage(o) != i) {
             if (this.getSource().isElement(o) && this.getTarget().isElement(i)) {
                 try {
@@ -1589,8 +1550,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * The user of this method must take care about any checks for the mapping of the specified graph objects. Otherwise
-     * is null pointer exception can be thrown.
+     * The user of this method must take care about any checks for the mapping
+     * of the specified graph objects. Otherwise is null pointer exception can
+     * be thrown.
      *
      * @param o
      * @param i
@@ -1602,7 +1564,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             this.errorMsg = "Mapping failed! The source or target object is null.";
             throw new BadMappingException(this.errorMsg);
         }
-
         if (this.getImage(o) != i) {
             try {
                 doAddMappingFast(o, i);
@@ -1624,7 +1585,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
      */
     private void doAddMappingFast(final GraphObject orig, final GraphObject image)
             throws BadMappingException {
-
         // try to add attribute mapping
         try {
             this.doAddAttrMappingFast(orig, image);
@@ -1682,7 +1642,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Try to add a mapping of two GraphObjects without setting the attr mapping.
+     * Try to add a mapping of two GraphObjects without setting the attr
+     * mapping.
      *
      * @param orig
      * @param image
@@ -1774,19 +1735,16 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //			this.errors.add(this.errorMsg);
             throw new BadMappingException(this.errorMsg);
         }
-
         if (!checkType(orig.getType(), image.getType())) {
             this.errorMsg = "Objects to map must be of the same type.";
 //			this.errors.add(this.errorMsg);
             throw new BadMappingException(this.errorMsg);
         }
-
         try {
             this.checkNodeTypePreserving(orig, image);
         } catch (BadMappingException ex) {
             throw new BadMappingException(this.errorMsg);
         }
-
         try {
             this.checkEdgeSourceTargetCompatibility(orig, image);
         } catch (BadMappingException ex) {
@@ -1798,13 +1756,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (aPreviousImage != null) {
             removeMapping(orig);
         }
-
         // try to add attribute mapping
         try {
             this.doAddAttrMapping(orig, image);
             this.addDomainMapping(orig, image, true);
             this.changed = true;
-
         } catch (BadMappingException exc) {
             this.errorMsg = exc.getMessage();
 //			this.errors.add(this.errorMsg);
@@ -1843,7 +1799,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                     "Attribute mapping failed! Attribute of source or target object is null.");
         }
     }
-
     protected boolean removeAttrMapping = true;
 
     protected void removeAttrMapping(final AttrInstance o) {
@@ -1877,7 +1832,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (!this.itsImag.isAttributed()) {
             return;
         }
-
         for (int i = 0; i < this.itsDomObjects.size(); i++) {
             final GraphObject obj = this.itsDomObjects.get(i);
             final GraphObject img = this.itsCodomObjects.get(i);
@@ -1887,8 +1841,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * This method should be used after the method <code>removeMapping(GraphObject go)</code> called and befor the
-     * method <code>nextCompletion(Iterator varnodes, Iterator varedges)</code> performed.
+     * This method should be used after the method
+     * <code>removeMapping(GraphObject go)</code> called and befor the method
+     * <code>nextCompletion(Iterator varnodes, Iterator varedges)</code>
+     * performed.
      *
      * @param go is an element of my source graph
      */
@@ -1916,7 +1872,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 if (i != j && this.itsDomObjects.get(j) == src) {
                     i = j;
                 }
-
                 if (i == j) {
                     GraphObject aNeighbor;
                     Iterator<Arc> anIter = src.getIncomingArcsSet().iterator();
@@ -1939,7 +1894,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                     if (i != j && this.itsDomObjects.get(j) == src) {
                         i = j;
                     }
-
                     if (i == j) {
                         removeAttrMapping(src.getAttribute());
                         removeDomainMapping(i, true);
@@ -1960,7 +1914,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         final GraphObject codom = this.itsCodomObjects.get(i);
         this.itsCodomObjects.remove(i);
         this.mappingChanged = true;
-
         if (notificationRequired) {
             if (isNotificationRequired()) {
                 propagateChange(new Change(Change.MAPPING_REMOVED, dom, this));
@@ -1978,8 +1931,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Returns TRUE if removed, otherwise - FALSE. Note: The source and target nodes of the specified src and tar edges
-     * still mapped. They should be removed explicitly.
+     * Returns TRUE if removed, otherwise - FALSE. Note: The source and target
+     * nodes of the specified src and tar edges still mapped. They should be
+     * removed explicitly.
      */
     public boolean removeMapping(final Arc src, final Arc tar) {
         if (this.getSource().isElement(src) && this.getTarget().isElement(tar)) {
@@ -1989,7 +1943,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 if (i != j && this.itsDomObjects.get(j) == src) {
                     i = j;
                 }
-
                 if (i == j) {
                     removeAttrMapping(src.getAttribute());
                     removeDomainMapping(i, true);
@@ -2001,8 +1954,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Remove the mapping of the given GraphObject. In case of node, any mappings of incoming / outgoing arcs will be
-     * removed as well.
+     * Remove the mapping of the given GraphObject. In case of node, any
+     * mappings of incoming / outgoing arcs will be removed as well.
      *
      */
     public void removeMapping(final GraphObject o) {
@@ -2017,9 +1970,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Remove the mapping of the given GraphObject. In case of node, any mappings of incoming / outgoing arcs will be
-     * removed as well. Precondition: <br>
-     * - if left is true, the obj belongs to the source graph - if left is false, the obj belongs to the target graph
+     * Remove the mapping of the given GraphObject. In case of node, any
+     * mappings of incoming / outgoing arcs will be removed as well.
+     * Precondition: <br>
+     * - if left is true, the obj belongs to the source graph - if left is
+     * false, the obj belongs to the target graph
      */
     public void removeMappingFast(final GraphObject obj, boolean left) {
         if (left) {
@@ -2051,13 +2006,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                         doRemoveMapping(aNeighbor);
                     }
                 }
-
                 // update the index of Node o
                 i = this.itsDomObjects.indexOf(o);
             }
-
             removeAttrMapping(o.getAttribute());
-
             removeDomainMapping(i, true);
         }
     }
@@ -2070,17 +2022,14 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             this.itsCoMorph.dispose();
         }
         removeAllMappings();
-
         if (this.itsAttrContext.getVariables().getNumberOfEntries() != 0) {
             ((ContextView) this.itsAttrContext).resetVariableTuple();
             ((ContextView) this.itsAttrContext).resetConditionTuple();
-
 //			((VarTuple) itsAttrContext.getVariables()).getContext().removeAllMappings();
 //			((CondTuple) itsAttrContext.getConditions()).getContext().removeAllMappings();		
 //			((VarTuple) itsAttrContext.getVariables()).updateByParent();
 //			((VarTuple) itsAttrContext.getVariables()).unsetNotInputVariables();
         }
-
         this.mappingChanged = false;
         this.partialMorphCompletion = false;
         clearErrorMsg();
@@ -2093,7 +2042,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             key.getContext().removeAllMappings();
         }
         ((Hashtable<AttrInstance, AttrMapping>) this.itsAttrMappings).clear();
-
         this.itsAttrContext.removeAllMappings();
     }
 
@@ -2139,7 +2087,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Return the objects of my source graph which are actually taking part in the current morphism mappings.
+     * Return the objects of my source graph which are actually taking part in
+     * the current morphism mappings.
      */
     @Override
     public Iterator<GraphObject> getDomain() {
@@ -2151,7 +2100,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Return the objects of my target graph which are actually taking part in the current morphism mappings.
+     * Return the objects of my target graph which are actually taking part in
+     * the current morphism mappings.
      */
     @Override
     public Iterator<GraphObject> getCodomain() {
@@ -2183,8 +2133,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Return an Iterator of the inverse images of the specified object. Iterator will be empty when the object is not
-     * in codomain. Iterator elements are of type <code>GraphObject</code>.
+     * Return an Iterator of the inverse images of the specified object.
+     * Iterator will be empty when the object is not in codomain. Iterator
+     * elements are of type <code>GraphObject</code>.
      */
     @Override
     public Iterator<GraphObject> getInverseImage(final GraphObject o) {
@@ -2235,8 +2186,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Set the algorithm of morphism completion.Class <code>CompletionStrategySelector</code> provides a way to present
-     * and obtain available algorithms.
+     * Set the algorithm of morphism completion.Class
+     * <code>CompletionStrategySelector</code> provides a way to present and
+     * obtain available algorithms.
      *
      * @param s
      * @see agg.xt_basis.CompletionStrategySelector
@@ -2253,8 +2205,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Set the algorithm of morphism completion.Class <code>CompletionStrategySelector</code> provides a way to present
-     * and obtain available algorithms. The given strategy is internally cloned to prevent undesired side effects.
+     * Set the algorithm of morphism completion.Class
+     * <code>CompletionStrategySelector</code> provides a way to present and
+     * obtain available algorithms. The given strategy is internally cloned to
+     * prevent undesired side effects.
      *
      * @param s
      * @see agg.xt_basis.CompletionStrategySelector
@@ -2274,8 +2228,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Return true if my source graph can be a subgraph of the given graph g basically. It can only work for INJECTIVE
-     * search.
+     * Return true if my source graph can be a subgraph of the given graph g
+     * basically. It can only work for INJECTIVE search.
      */
     public boolean canMatch(final Graph g, final MorphCompletionStrategy strategy) {
         // check graph size if injective morphism
@@ -2324,7 +2278,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * *************************************************************************
-     * Compute next completion: * Invoke this method successively to get all completions.
+     * Compute next completion: * Invoke this method successively to get all
+     * completions.
      *
      * @return <code>false</code> if there are no more completions.*
      * ************************************************************************
@@ -2349,8 +2304,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * *************************************************************************
-     * Compute next completion: * Invoke this method successively to get all completions for the nodes and edges
-     * specified by the List varnodes and List varedges, only.
+     * Compute next completion: * Invoke this method successively to get all
+     * completions for the nodes and edges specified by the List varnodes and
+     * List varedges, only.
      *
      * @return <code>false</code> if there are no more completions.*
      * ************************************************************************
@@ -2376,14 +2332,14 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Compute next completion: Invoke this method successively to get all completions.
+     * Compute next completion: Invoke this method successively to get all
+     * completions.
      *
      * @return <code>false</code> if there are no more completions.
      */
     public boolean nextCompletionWithConstantsChecking(
             Collection<Node> varnodes,
             Collection<Arc> varedges) {
-
         // Diese Methode ist nur bei Instanzen von OrdinaryMorphism sinvoll.
         // Daraus folgt: Attribute Mappingsmode ist PLAIN_MAP.
         boolean found = false;
@@ -2399,14 +2355,14 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Compute next completion: Invoke this method successively to get all completions.
+     * Compute next completion: Invoke this method successively to get all
+     * completions.
      *
      * @return <code>false</code> if there are no more completions.
      */
     public boolean nextCompletionWithConstantsAndVariablesChecking(
             Collection<Node> varnodes,
             Collection<Arc> varedges) {
-
         // Diese Methode ist nur bei Instanzen von OrdinaryMorphism sinvoll.
         // Daraus folgt: Attribute Mappingsmode ist PLAIN_MAP.
         boolean found = false;
@@ -2437,7 +2393,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Try to get completion using only nodes and edges specified by the List varnodes and List varedges.
+     * Try to get completion using only nodes and edges specified by the List
+     * varnodes and List varedges.
      */
     private boolean doNextCompletion(
             Collection<Node> varnodes,
@@ -2456,7 +2413,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Compute next completion. Invoke this method successively to get all completions.
+     * Compute next completion. Invoke this method successively to get all
+     * completions.
      *
      * @return <code>false</code> if there are no more completions.
      */
@@ -2476,7 +2434,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Compute next completion. Invoke this method successively to get all completions.
+     * Compute next completion. Invoke this method successively to get all
+     * completions.
      *
      * @return <code>false</code> if there are no more completions.
      */
@@ -2523,7 +2482,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             if (obj.getAttribute() == null) {
                 continue;
             }
-
             GraphObject img = this.getImage(obj);
             ValueTuple imgVal = (ValueTuple) img.getAttribute();
             for (int j = 0; j < imgVal.getNumberOfEntries(); j++) {
@@ -2590,7 +2548,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 if (var.isSet()) {
 //					itsVar.setExprAsText(var.getExprAsText());
                     itsVar.setExpr(var.getExpr());
-
                     // check if var itself uses another variable
                     final VarMember tmp = vars.getVarMemberAt(var.getExprAsText());
                     if (tmp != null && tmp.isTransient()) {
@@ -2608,7 +2565,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             if (obj.getAttribute() == null) {
                 continue;
             }
-
             GraphObject img = this.getImage(obj);
             ValueTuple imgVal = (ValueTuple) img.getAttribute();
             for (int j = 0; j < imgVal.getNumberOfEntries(); j++) {
@@ -2703,15 +2659,12 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     public void writeMorphism(XMLHelper h) {
         h.openSubTag("Morphism");
         h.addAttr("name", this.itsName);
-
         if (!this.comment.equals("")) {
             h.addAttr("comment", this.comment);
         }
-
         Iterator<GraphObject> e = getDomain();
         while (e.hasNext()) {
             GraphObject s = e.next();
-
             h.openSubTag("Mapping");
             h.addObject("orig", s, false);
             h.addObject("image", getImage(s), false);
@@ -2729,12 +2682,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             if (!str.equals("")) {
                 this.comment = str.toString();
             }
-
             Hashtable<GraphObject, GraphObject> map = new Hashtable<GraphObject, GraphObject>();
             while (h.readSubTag("Mapping")) {
                 GraphObject o = (GraphObject) h.getObject("orig", null, false);
                 GraphObject i = (GraphObject) h.getObject("image", null, false);
-
                 if (o != null && i != null) {
                     if (o instanceof Node) {
                         try {
@@ -2748,7 +2699,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 h.close();
             }
             h.close();
-
             Iterator<GraphObject> en = map.keySet().iterator();
             while (en.hasNext()) {
                 GraphObject o = en.next();
@@ -2792,7 +2742,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //		itsSubMorphs.add(aSubMorph);
 //		return aSubMorph;
 //	}
-
     /*
 	 * Create and return a new submorphism. It is automatically added to my set *
 	 * of submorphisms. The new submorphism's image and original graphs are set *
@@ -2816,7 +2765,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //		itsSubMorphs.add(aSubMorph);
 //		return aSubMorph;
 //	}
-
 	/*
 	 * Remove a submorphism from my set of submorphisms. *
 	 * 
@@ -2833,7 +2781,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //		}
 //		return false;
 //	}
-
 //	private void destroySubMorphisms() {
 //		if (itsSubMorphs != null) {
 //			while (itsSubMorphs.size() > 0) {
@@ -2843,7 +2790,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //			}
 //		}
 //	}
-
 	/*
 	 * Return an Iterator of all of my submorphisms (not including myself).
 	 * Iterator elements are of type <code>OrdinarySubMorphism</code>.*
@@ -2854,12 +2800,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //		else
 //			return (new List<OrdinarySubMorphism>(0)).elements();
 //	}
-
 	// ----------- ADDITIONAL METHODS according to Gabi's new AGG design
 	// --------------
 	// -------------------- attention: yet untested! (Aug.1999)
 	// -----------------------
-
 	/** swop domain and range <--->, if possible */
 	public OrdinaryMorphism invert() {
         if (!(this.isInjective())) {
@@ -2881,8 +2825,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     public OrdinaryMorphism simplecopy() /**
      * *************************************************************************
-     * Unlike "morphcopy(.)" of above, "simplecopy()" * does only return a copy of itself without creating copies of its
-     * source and target graphs.* ************************************************************************
+     * Unlike "morphcopy(.)" of above, "simplecopy()" * does only return a copy
+     * of itself without creating copies of its source and target graphs.*
+     * ************************************************************************
      */
     {
         final OrdinaryMorphism output = (BaseFactory.theFactory()).createMorphism(
@@ -2904,7 +2849,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         final Iterator<GraphObject> dom = this.getDomain();
         final List<GraphObject> hDom = new ArrayList<>();
         final Iterator<GraphObject> hd = h.getDomain();
-
         while (hd.hasNext()) {
             hDom.add(hd.next());
         }
@@ -2916,7 +2860,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                     return false;
                 }
                 hDom.remove(go);
-
             } else {
                 hDom.clear();
                 return false;
@@ -2929,9 +2872,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     public boolean isIsomorphicTo(final OrdinaryMorphism h, final OrdinaryMorphism targetIso) /**
-     * Test if the specified morphism h is isomorphic to this morphism, assuming that : - this and h are total, - this
-     * and h have one and the same original graph, - the target graph of this is the source graph of targetIso, - the
-     * target graph of h is the target graph of targetIso, - targetIso is an isomorphism.
+     * Test if the specified morphism h is isomorphic to this morphism, assuming
+     * that : - this and h are total, - this and h have one and the same
+     * original graph, - the target graph of this is the source graph of
+     * targetIso, - the target graph of h is the target graph of targetIso, -
+     * targetIso is an isomorphism.
      */
     {
         // System.out.println("OrdinaryMorphism.isIsomorphicTo(h, targetIso)
@@ -2947,7 +2892,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //			Thread.dumpStack();
             return false;
         }
-
         final Iterator<Node> e = this.getSource().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject o = e.next();
@@ -2978,8 +2922,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Test if this morphism is partial isomorphic to the specified morphism h, assuming that they have one and the same
-     * original and one and the same image graph.
+     * Test if this morphism is partial isomorphic to the specified morphism h,
+     * assuming that they have one and the same original and one and the same
+     * image graph.
      */
     public boolean isPartialIsomorphicTo(final OrdinaryMorphism h) {
         final Iterator<GraphObject> dom = this.getDomain();
@@ -3007,7 +2952,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (nonMapped.hasNext()) {
             return (false);
         }
-
         return (true);
     }
 
@@ -3025,20 +2969,19 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (isInjective() && isSurjective()) {
             return (true);
         }
-
         return (false);
     }
 
     public Iterator<GraphObject> nonMappedOriginals() /**
      * *************************************************************************
-     * Returns all graph objects of the original graph * that are not mapped by this morphism. Iterator * elements are
-     * of type <code>GraphObject</code>.
+     * Returns all graph objects of the original graph * that are not mapped by
+     * this morphism. Iterator * elements are of type <code>GraphObject</code>.
      *
-     * @see agg.xt_basis.GraphObject.* ************************************************************************
+     * @see agg.xt_basis.GraphObject.*
+     * ************************************************************************
      */
     {
         final List<GraphObject> nonMapped = new ArrayList<>();
-
         final Iterator<Node> nodes = this.itsOrig.getNodesSet().iterator();
         while (nodes.hasNext()) {
             GraphObject go = nodes.next();
@@ -3058,10 +3001,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     public Iterator<GraphObject> nonMappedImages() /**
      * *************************************************************************
-     * Returns all graph objects of the image graph * that are not used by this morphism. Iterator * elements are of
-     * type <code>GraphObject</code>.
+     * Returns all graph objects of the image graph * that are not used by this
+     * morphism. Iterator * elements are of type <code>GraphObject</code>.
      *
-     * @see agg.xt_basis.GraphObject * ************************************************************************
+     * @see agg.xt_basis.GraphObject *
+     * ************************************************************************
      */
     {
         final List<GraphObject> nonMapped = new ArrayList<>();
@@ -3108,11 +3052,13 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Constructs composition of given morphisms morph1 and morph2 morphisms, where <br>
+     * Constructs composition of given morphisms morph1 and morph2 morphisms,
+     * where <br>
      * this.source == morph1.source <br>
      * this.target == morph2.target <br>
      * morph1.target == morph2.source. <br>
-     * Returns true, if the source-target condition is satisfied, otherwise - false.
+     * Returns true, if the source-target condition is satisfied, otherwise -
+     * false.
      */
     public boolean doCompose(final OrdinaryMorphism morph1, final OrdinaryMorphism morph2) {
         if (this.itsOrig == morph1.getSource()
@@ -3162,10 +3108,12 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Given an input morphism with input.getSource() == this.getSource() and <br>
+     * Given an input morphism with input.getSource() == this.getSource() and
+     * <br>
      * input.getTarget() == output.getSource() and <br>
      * this.getTarget() == output.getTarget(). <br>
-     * For each key try to complete output.addMapping(input.get(key), this.getImage(key)).<br>
+     * For each key try to complete output.addMapping(input.get(key),
+     * this.getImage(key)).<br>
      * Returns true by success, otherwise true.
      */
     public OrdinaryMorphism completeDiagram(final OrdinaryMorphism input) {
@@ -3191,8 +3139,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Given d = g o f with f: A->B, g: B->C, d: A->C. f and d is known, g is this. Try to complete g. Returns true by
-     * success, otherwise false.
+     * Given d = g o f with f: A->B, g: B->C, d: A->C. f and d is known, g is
+     * this. Try to complete g. Returns true by success, otherwise false.
      */
     public boolean completeDiagram(final Hashtable<GraphObject, GraphObject> f,
             final OrdinaryMorphism d) {
@@ -3220,9 +3168,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * We have a diagram third = first o second with first: A->B, second: B->C, third: A->C,<br>
+     * We have a diagram third = first o second with first: A->B, second: B->C,
+     * third: A->C,<br>
      * second and third are complete.<br>
-     * Try to complete first. Note, first morphism is this morphism. Returns true by success, otherwise false.
+     * Try to complete first. Note, first morphism is this morphism. Returns
+     * true by success, otherwise false.
      */
     public boolean completeDiagram1(
             final OrdinaryMorphism second,
@@ -3231,7 +3181,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //			AttrContext context = agg.attribute.impl.AttrTupleManager
 //						.getDefaultManager().newContext(AttrMapping.PLAIN_MAP);
 //			this.setAttrContext(context);
-
             final Iterator<GraphObject> dom = second.getDomain();
             while (dom.hasNext()) {
                 GraphObject go2 = dom.next();
@@ -3256,9 +3205,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * We have a diagram third = first o second with first: A->B, second: B->C, third: A->C,<br>
+     * We have a diagram third = first o second with first: A->B, second: B->C,
+     * third: A->C,<br>
      * first and third are complete.<br>
-     * Try to complete second. Note, second morphism is this morphism. Returns true by success, otherwise false.
+     * Try to complete second. Note, second morphism is this morphism. Returns
+     * true by success, otherwise false.
      */
     public boolean completeDiagram2(
             final OrdinaryMorphism first,
@@ -3271,7 +3222,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //				AttrContext context = agg.attribute.impl.AttrTupleManager
 //						.getDefaultManager().newContext(AttrMapping.PLAIN_MAP);
 //				this.setAttrContext(context);
-
                 final Iterator<GraphObject> dom = first.getDomain();
                 while (dom.hasNext()) {
                     GraphObject go1 = dom.next();
@@ -3296,9 +3246,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * We have a diagram third = first o second with first: A->B, second: B->C, third: A->C,<br>
+     * We have a diagram third = first o second with first: A->B, second: B->C,
+     * third: A->C,<br>
      * first and second are complete.<br>
-     * Try to complete third. Note, third morphism is this morphism. Returns true by success, otherwise false.
+     * Try to complete third. Note, third morphism is this morphism. Returns
+     * true by success, otherwise false.
      */
     public boolean completeDiagram3(
             final OrdinaryMorphism first,
@@ -3311,7 +3263,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 //				AttrContext context = agg.attribute.impl.AttrTupleManager
 //						.getDefaultManager().newContext(AttrMapping.PLAIN_MAP);
 //				this.setAttrContext(context);
-
                 final Iterator<GraphObject> dom = first.getDomain();
                 while (dom.hasNext()) {
                     GraphObject go1 = dom.next();
@@ -3335,8 +3286,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Given this = d = g o f with f: A->B, g: B->C, d: A->C. d and f are complete. Try to complete g. Returns true by
-     * success, otherwise false.
+     * Given this = d = g o f with f: A->B, g: B->C, d: A->C. d and f are
+     * complete. Try to complete g. Returns true by success, otherwise false.
      */
     public boolean completeDiagram(
             final OrdinaryMorphism f,
@@ -3349,7 +3300,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 AttrContext context = agg.attribute.impl.AttrTupleManager
                         .getDefaultManager().newContext(AttrMapping.PLAIN_MAP);
                 g.setAttrContext(context);
-
                 final Iterator<GraphObject> fDom = f.getDomain();
                 while (fDom.hasNext()) {
                     final GraphObject fGO = fDom.next();
@@ -3374,14 +3324,15 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * The given morphisms h1, v2, v1 are already complete. Try to complete this morphism : C -> D so that v2 o h1 = h2
-     * o v1 .
+     * The given morphisms h1, v2, v1 are already complete. Try to complete this
+     * morphism : C -> D so that v2 o h1 = h2 o v1 .
      *
      * @param v1 : A -> C
      * @param h1 : A -> B
      * @param v2 : B -> D
      *
-     * @return true if morphism this morphism : C -> D completed, otherwise false
+     * @return true if morphism this morphism : C -> D completed, otherwise
+     * false
      */
     public boolean completeDiagram(final OrdinaryMorphism v1,
             final OrdinaryMorphism h1,
@@ -3405,15 +3356,16 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     public Iterator<GraphObject> intersectCoDomains(final OrdinaryMorphism input) /**
      * *************************************************************************
-     * Return all graph objects of current codomain that reside * in the codomain of the input morphism, too. Iterator *
-     * elements are of type <code>GraphObject</code>.
+     * Return all graph objects of current codomain that reside * in the
+     * codomain of the input morphism, too. Iterator * elements are of type
+     * <code>GraphObject</code>.
      *
-     * @see agg.xt_basis.GraphObject * ************************************************************************
+     * @see agg.xt_basis.GraphObject *
+     * ************************************************************************
      */
     {
         final List<GraphObject> intersection = new ArrayList<>();
         final Iterator<GraphObject> inpCodom = input.getCodomain();
-
         while (inpCodom.hasNext()) {
             final GraphObject g = inpCodom.next();
             if (this.itsCodomObjects.contains(g)) {
@@ -3424,19 +3376,18 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Check if the constant value of the same attribute member of the original and image graph objects are equal.
+     * Check if the constant value of the same attribute member of the original
+     * and image graph objects are equal.
      */
     public boolean checkConstants() {
         if (this.itsDomObjects.isEmpty()) {
             return true;
         }
-
         for (int j = 0; j < this.itsDomObjects.size(); j++) {
             final GraphObject orig = this.itsDomObjects.get(j);
             if (orig.getAttribute() == null) {
                 continue;
             }
-
             final GraphObject image = getImage(orig);
             final ValueTuple valOrig = (ValueTuple) orig.getAttribute();
             final ValueTuple valImage = (ValueTuple) image.getAttribute();
@@ -3467,19 +3418,18 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Check if the variable of the same attribute member of the original and image graph objects are equal.
+     * Check if the variable of the same attribute member of the original and
+     * image graph objects are equal.
      */
     public boolean checkVariables() {
         if (this.itsDomObjects.isEmpty()) {
             return true;
         }
-
         for (int j = 0; j < this.itsDomObjects.size(); j++) {
             final GraphObject orig = this.itsDomObjects.get(j);
             if (orig.getAttribute() == null) {
                 continue;
             }
-
             final GraphObject image = getImage(orig);
             final ValueTuple valOrig = (ValueTuple) orig.getAttribute();
             final ValueTuple valImage = (ValueTuple) image.getAttribute();
@@ -3510,7 +3460,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Check if the setting of the same attribute member of the original and image graph objects are equal.
+     * Check if the setting of the same attribute member of the original and
+     * image graph objects are equal.
      */
     protected boolean checkAll() {
         if (this.itsDomObjects.isEmpty()) {
@@ -3521,7 +3472,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             if (orig.getAttribute() == null) {
                 continue;
             }
-
             final GraphObject image = getImage(orig);
             final ValueTuple valOrig = (ValueTuple) orig.getAttribute();
             final ValueTuple valImage = (ValueTuple) image.getAttribute();
@@ -3551,10 +3501,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     public void putVarToAttrContext() {
         final VarTuple vars = (VarTuple) getAttrContext().getVariables();
-
         putVarToAttrContext(this.itsOrig.getNodesSet().iterator(), vars);
         putVarToAttrContext(this.itsOrig.getArcsSet().iterator(), vars);
-
         putVarToAttrContext(this.itsImag.getNodesSet().iterator(), vars);
         putVarToAttrContext(this.itsImag.getArcsSet().iterator(), vars);
     }
@@ -3562,13 +3510,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     private void putVarToAttrContext(
             final Iterator<?> elems,
             final VarTuple vars) {
-
         while (elems.hasNext()) {
             final GraphObject o = (GraphObject) elems.next();
             if (o.getAttribute() == null) {
                 continue;
             }
-
             final ValueTuple val = (ValueTuple) o.getAttribute();
             int n = val.getNumberOfEntries();
             for (int i = 0; i < n; i++) {
@@ -3590,8 +3536,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * If the value of an attribute member of the original graphobject is unset or is a variable, fill up such attribute
-     * value with the value (it should be a constant value) of the same attribute member of the image graphobject.
+     * If the value of an attribute member of the original graphobject is unset
+     * or is a variable, fill up such attribute value with the value (it should
+     * be a constant value) of the same attribute member of the image
+     * graphobject.
      */
     public void fillUpOriginalAttrs() {
         final Iterator<GraphObject> elems = this.itsDomObjects.iterator();
@@ -3630,9 +3578,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Iff the value of an attribute member of the image graphobject is unset or is a variable, fill up the value of
-     * such attribute member with the value (it should be a constant value) of the same attribute member of the original
-     * graphobject.
+     * Iff the value of an attribute member of the image graphobject is unset or
+     * is a variable, fill up the value of such attribute member with the value
+     * (it should be a constant value) of the same attribute member of the
+     * original graphobject.
      */
     public void fillUpImageAttrs() {
         final Iterator<GraphObject> elems = this.itsDomObjects.iterator();
@@ -3705,7 +3654,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Iff the value of an attribute member of the original graphobject is an expression, unset it.
+     * Iff the value of an attribute member of the original graphobject is an
+     * expression, unset it.
      */
     public void unsetOriginalAttrsIfExpression() {
         final Iterator<Node> elems = this.itsOrig.getNodesSet().iterator();
@@ -3765,7 +3715,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         final VarTuple avt = (VarTuple) this.getAttrContext().getVariables();
         final VarTuple avtOther = (VarTuple) other.getVariables();
         // System.out.println("--> "+avt+" "+avtOther);
-
         // gehe <other> Attrcontext durch und stelle fest
         // ob er schon in <this> attrcontext vorhandene Variablen
         // mit einem Wert als Konstante hat oder
@@ -3776,7 +3725,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             final VarMember avmOther = avtOther.getVarMemberAt(i);
             final String name = avtOther.getNameAsString(i);
             final VarMember avm = avt.getVarMemberAt(name);
-
             // System.out.println(name+" "+avm+" "+avmOther);
             if (avm != null) {
                 // if(avmOther.isInputParameter())
@@ -3796,16 +3744,13 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if ((other == null) || (this.getAttrContext() == null)) {
             return;
         }
-
         final VarTuple avt = (VarTuple) this.itsAttrContext.getVariables();
         final VarTuple avtOther = (VarTuple) other.getVariables();
         int nn = avtOther.getNumberOfEntries();
-
         for (int i = 0; i < nn; i++) {
             final VarMember avmOther = avtOther.getVarMemberAt(i);
             final String name = avtOther.getNameAsString(i);
             final VarMember avm = avt.getVarMemberAt(name);
-
             // System.out.println(name+" "+avm+" "+avmOther);
             if (avm != null) {
                 // ersetze den Wert von der Variablen
@@ -3821,20 +3766,16 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             else {
                 // System.out.println("add new member");
                 final DeclMember dm = (DeclMember) avmOther.getDeclaration();
-
                 avt.declare(dm.getHandler(), dm.getTypeName(), dm.getName());
                 final ValueMember newMember = avt.getVarMemberAt(dm.getName());
-
                 if ((newMember != null) && (avmOther.getExpr() != null)
                         && avmOther.getExpr().isConstant()) {
                     newMember.setExprAsText(avmOther.getExprAsText());
                     // System.out.println(name+" "+avm+"\nas copy of:
                     // "+avmOther);
                 }
-
                 (avt.getVarMemberAt(dm.getName())).setInputParameter(avmOther
                         .isInputParameter());
-
                 (avt.getVarMemberAt(dm.getName())).setTransient(avmOther
                         .isTransient());
                 // System.out.println(name+" "+newMember+"\nas copy of:
@@ -3852,7 +3793,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             final AttrContext attrContext) {
         // AttrContext attrContext = getAttrContext();
         final Hashtable<VarMember, List<Pair<ValueMember, Type>>> ht = new Hashtable<VarMember, List<Pair<ValueMember, Type>>>();
-
 //		if (this instanceof SubRule) {
         // System.out.println("OrdinaryMorphism.getUsageOfInputParameters :
         // this instance of SubRule");
@@ -3861,7 +3801,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         if (attrContext == null || attrContext.getVariables() == null) {
             return ht;
         }
-
         final List<Type> tmp = new ArrayList<>();
         final VarTuple avt = (VarTuple) attrContext.getVariables();
         for (int i = 0; i < avt.getSize(); i++) {
@@ -3871,7 +3810,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             }
             // System.out.println(avm+" "+avm.getExpr());
             // System.out.println(avm.getDeclaration().getName());
-
             final List<Pair<ValueMember, Type>> v = new ArrayList<>();
             if (avm.isInputParameter()) {
                 // System.out.println("search source graph");
@@ -3986,12 +3924,16 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Computes an overlapping set of the graphs: - this.source with other.source if other instance of OrdinaryMorphism
-     * and left is true, or - this.target with other.target if other instance of OrdinaryMorphism and left is false, or
-     * - this.sorce with other if other instance of Graph and left is true, or - this.target with other if other
-     * instance of Graph and left is false, or with respect of the rules if this and other are instances of Rule.
+     * Computes an overlapping set of the graphs: - this.source with
+     * other.source if other instance of OrdinaryMorphism and left is true, or -
+     * this.target with other.target if other instance of OrdinaryMorphism and
+     * left is false, or - this.sorce with other if other instance of Graph and
+     * left is true, or - this.target with other if other instance of Graph and
+     * left is false, or with respect of the rules if this and other are
+     * instances of Rule.
      *
-     * @param union If true - the overlappings contain disjunion, too. Iterator elements are of type <code>Pair</code>.
+     * @param union If true - the overlappings contain disjunion, too. Iterator
+     * elements are of type <code>Pair</code>.
      * @return A set of overlappings.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
@@ -4007,13 +3949,17 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Computes an overlapping set of the graphs: - this.source with other.source if other instance of OrdinaryMorphism
-     * and left is true, or - this.target with other.target if other instance of OrdinaryMorphism and left is false, or
-     * - this.sorce with other if other instance of Graph and left is true, or - this.target with other if other
-     * instance of Graph and left is false, or with respect of the rules if this and other are instances of Rule.
+     * Computes an overlapping set of the graphs: - this.source with
+     * other.source if other instance of OrdinaryMorphism and left is true, or -
+     * this.target with other.target if other instance of OrdinaryMorphism and
+     * left is false, or - this.sorce with other if other instance of Graph and
+     * left is true, or - this.target with other if other instance of Graph and
+     * left is false, or with respect of the rules if this and other are
+     * instances of Rule.
      *
      * @param sizeOfInclusions The size of graph object inclusions.
-     * @param union If true - the overlappings contain disjunion, too. Iterator elements are of type <code>Pair</code>.
+     * @param union If true - the overlappings contain disjunion, too. Iterator
+     * elements are of type <code>Pair</code>.
      * @return A set of overlappings.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
@@ -4048,7 +3994,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     private void delTransientContextVar(
             final Iterator<?> elems,
             final VarTuple vars) {
-
         while (elems.hasNext()) {
             GraphObject obj = (GraphObject) elems.next();
             if (obj.getAttribute() == null) {
@@ -4114,24 +4059,21 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             errMsgHolder = errMsgHolder + "Morphism mapping is different";
             return false;
         }
-
         return true;
     }
 
     /**
-     * Returns a List with variable declarations used in LHS and RHS of this graph morphism. An Element of the List is a
-     * Pair.
+     * Returns a List with variable declarations used in LHS and RHS of this
+     * graph morphism. An Element of the List is a Pair.
      *
-     * @see agg.util.Pair The first element is a type, the second element is a name of a variable declaration, both
-     * elements are of the type String.
+     * @see agg.util.Pair The first element is a type, the second element is a
+     * name of a variable declaration, both elements are of the type String.
      */
     public List<Pair<String, String>> getVariableDeclarations() {
         final List<Pair<String, String>> varDecls = new ArrayList<>(2);
-
         // search left graph
         putVarDecl(this.itsOrig.getNodesSet().iterator(), varDecls);
         putVarDecl(this.itsOrig.getArcsSet().iterator(), varDecls);
-
         // search right graph
         // first search values as a variable
         putVarDecl(this.itsImag.getNodesSet().iterator(), varDecls);
@@ -4139,7 +4081,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         // now search values as a complex expression
         putVarOfExpr(this.itsImag.getNodesSet().iterator(), varDecls);
         putVarOfExpr(this.itsImag.getArcsSet().iterator(), varDecls);
-
         return varDecls;
     }
 
@@ -4218,7 +4159,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                                     p = new Pair<String, String>(t, n);
                                 }
                             }
-
                             boolean found = false;
                             for (int j = 0; j < varDecls.size(); j++) {
                                 Pair<String, String> pj = varDecls
@@ -4244,13 +4184,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     public ArrayMovie<Type> getUsedTypes() {
         final ArrayMovie<Type> vec = new ArraySeason<>();
-
         addUsedType(this.itsOrig.getNodesSet().iterator(), vec);
         addUsedType(this.itsOrig.getArcsSet().iterator(), vec);
-
         addUsedType(this.itsImag.getNodesSet().iterator(), vec);
         addUsedType(this.itsImag.getArcsSet().iterator(), vec);
-
         return vec;
     }
 
@@ -4274,7 +4211,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     public void disableUnusedAttrCondition() {
         final VarTuple avt = (VarTuple) this.getAttrContext().getVariables();
         final CondTuple act = (CondTuple) this.getAttrContext().getConditions();
-
         for (int k = 0; k < act.getSize(); k++) {
             final CondMember cm = act.getCondMemberAt(k);
             final List<String> vars = cm.getAllVariables();
@@ -4293,7 +4229,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     public void enableUnusedAttrCondition() {
         final VarTuple avt = (VarTuple) this.getAttrContext().getVariables();
         final CondTuple act = (CondTuple) this.getAttrContext().getConditions();
-
         for (int k = 0; k < act.getSize(); k++) {
             final CondMember cm = act.getCondMemberAt(k);
             final List<String> vars = cm.getAllVariables();
@@ -4334,7 +4269,6 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
             final Iterator<?> elems,
             final Hashtable<String, String> valMemberHashcode2Expr) {
 //		((VarTuple)ac.getVariables()).showVariables();
-
 //		final VarTuple vars = ((VarTuple)this.getAttrContext().getVariables());
 //		final CondTuple conds = (CondTuple)this.getAttrContext().getConditions();
         while (elems.hasNext()) {
@@ -4370,10 +4304,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     private void resetAttrValueAsExpr(final Iterator<?> elems,
             final Hashtable<String, String> valMembeHashcoder2Expr) {
-
         final VarTuple vars = ((VarTuple) this.getAttrContext().getVariables());
         final CondTuple conds = (CondTuple) this.getAttrContext().getConditions();
-
         while (elems.hasNext()) {
             final GraphObject go = (GraphObject) elems.next();
             if (go.getAttribute() != null) {
@@ -4399,9 +4331,7 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 }
             }
         }
-
 //		vars.showVariables();
 //		conds.showConditions();
     }
-
 }

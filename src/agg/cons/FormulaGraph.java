@@ -2,7 +2,7 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import agg.util.Pair;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Graph;
@@ -61,12 +60,10 @@ public class FormulaGraph {
     public static final String OR = "OR";
     public static final String NOT = "NOT";
     public static final String FORALL = "FORALL";
-
     List<Evaluable> evals = new Vector<Evaluable>();
     List<String> vars = new Vector<String>();
     Formula formula;
     String fStr, fNameStr;
-
     Graph g;
     Type not, and, or, forall, connectAt, refinedBy;
     Node top;
@@ -109,37 +106,31 @@ public class FormulaGraph {
      */
     private void createDefaultTypes(final TypeSet types) {
         // TODO create TRUE and FALSE node types
-
         // create node types which represent operators of a formula
         this.not = types.createNodeType(false);
         this.not.setStringRepr(FormulaGraph.NOT);
         //EditorConstants.ROUNDRECT, Color.RED);
         this.not.setAdditionalRepr(":ROUNDRECT:java.awt.Color[r=255,g=0,b=0]::[NODE]:");
         this.name2type.put(FormulaGraph.NOT, this.not);
-
         this.and = types.createNodeType(false);
         this.and.setStringRepr(FormulaGraph.AND);
         //EditorConstants.ROUNDRECT, Color.BLACK);
         this.and.setAdditionalRepr(":ROUNDRECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:");
         this.name2type.put(FormulaGraph.AND, this.and);
-
         this.or = types.createNodeType(false);
         this.or.setStringRepr(FormulaGraph.OR);
         //EditorConstants.ROUNDRECT, Color.BLACK);
         this.or.setAdditionalRepr(":ROUNDRECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:");
         this.name2type.put(FormulaGraph.OR, this.or);
-
         this.forall = types.createNodeType(false);
         this.forall.setStringRepr(FormulaGraph.FORALL);
         //EditorConstants.ROUNDRECT, Color.BLACK);
         this.forall.setAdditionalRepr(":ROUNDRECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:");
         this.name2type.put(FormulaGraph.FORALL, this.forall);
-
         // create an edge type to connect nodes
         this.connectAt = types.createArcType(false);
         //EditorConstants.SOLID, Color.BLACK);	
         this.connectAt.setAdditionalRepr(":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:");
-
         // create an edge type to refine nodes
         this.refinedBy = types.createArcType(false);
         //EditorConstants.SOLID, Color.BLUE);
@@ -279,7 +270,6 @@ public class FormulaGraph {
             Pair<String, String> p = graph2text(this.top);
             this.fNameStr = p.first;
             this.fStr = p.second;
-
             if (this.evals.size() > 0) {
                 this.formula = new Formula(this.evals, p.second);
             }
@@ -345,7 +335,6 @@ public class FormulaGraph {
                     }
                     break;
                 }
-
                 n1 = (Node) n.getOutgoingArcs().next().getTarget();
                 if (n.getType().getName().equals("NOT")) {
                     Pair<String, String> p = graph2text(n1);
@@ -380,7 +369,6 @@ public class FormulaGraph {
         }
         return new Pair<String, String>(s1, s2);
     }
-
 //	private Node refineBy(final Node node, final String name) {
 //		Node n = null;
 //		if (node != null) {
@@ -394,12 +382,11 @@ public class FormulaGraph {
 //		}
 //		return n;
 //	}
+
     private boolean isOpType(final Type t) {
         return (t == this.and || t == this.or
                 || t == this.not || t == this.forall) ? true : false;
-
     }
-
     /*
 	public static void main(String argv[]) {		
 		List<Evaluable> evalTest = new Vector<Evaluable>();
@@ -434,30 +421,23 @@ public class FormulaGraph {
 		System.out.println("by name : "+fg.getFormulaTextByName());
 	}
 	
-
 	static class AtomTest implements Evaluable {
 		int val;
-
 		public AtomTest(int i) {
 			this.val = i;
 		}
-
 		public boolean eval(java.lang.Object o) {
 			return this.val % 4 == 0;
 		}
-
 		public boolean eval(java.lang.Object o, int tick) {
 			return tick % 4 == 0;
 		}
-
 		public boolean eval(java.lang.Object o, boolean negaition) {
 			return this.val % 4 == 0;
 		}
-
 		public boolean eval(java.lang.Object o, int tick, boolean negaition) {
 			return tick % 4 == 0;
 		}
-
 		public boolean evalForall(Object o, int tick) {
 			return false;
 		}

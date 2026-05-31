@@ -2,25 +2,24 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: RuleSchemePopupMenu.java,v 1.17 2010/10/16 22:44:43 olga Exp $
 package agg.gui.popupmenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdRule;
 import agg.editor.impl.EdRuleScheme;
 import agg.gui.event.TreeViewEvent;
@@ -40,7 +39,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
     public RuleSchemePopupMenu(GraGraTreeView tree) {
         super("RuleScheme");
         this.treeView = tree;
-
         this.mi = add(new JMenuItem("New Multi Rule"));
         this.mi.setActionCommand("newMultiRule");
 //		this.mi.addActionListener(treeView.getActionAdapter());
@@ -49,9 +47,7 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                 addMultiRule();
             }
         });
-
         addSeparator();
-
         this.miParallelKernelMatch = add(new JCheckBoxMenuItem("parallel Match of Kernel Rule"));
         this.miParallelKernelMatch.setActionCommand("parallelKernelMatch");
 //		this.miParallelKernelMatches.addActionListener(treeView.getActionAdapter());
@@ -60,7 +56,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                 setParallelKernelMatch(((JCheckBoxMenuItem) e.getSource()).isSelected());
             }
         });
-
         this.miDisjointMultiMatch = add(new JCheckBoxMenuItem("disjoint Match of Multi Rule"));
         this.miDisjointMultiMatch.setActionCommand("disjointMultiMatch");
 //		this.miDisjointMultiMatches.addActionListener(treeView.getActionAdapter());
@@ -69,7 +64,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                 setDisjointMultiMatch(((JCheckBoxMenuItem) e.getSource()).isSelected());
             }
         });
-
         this.miConflictFreeMultiMatch = new JCheckBoxMenuItem("conflict free Match of Multi Rule");
         add(this.miConflictFreeMultiMatch);
         this.miConflictFreeMultiMatch.setActionCommand("conflictFreeMultiMatch");
@@ -79,7 +73,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                 setConflictFreeMultiMatch(((JCheckBoxMenuItem) e.getSource()).isSelected());
             }
         });
-
         this.miAtLeastOneMultiMatch = add(new JCheckBoxMenuItem("apply at least One Multi Rule"));
         this.miAtLeastOneMultiMatch.setActionCommand("atLeastOneMultiMatch");
 //		miAtLeastOneMultiMatches.addActionListener(treeView.getActionAdapter());
@@ -88,9 +81,7 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                 setAtLeastOneMultiMatchRequired(((JCheckBoxMenuItem) e.getSource()).isSelected());
             }
         });
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Create Amalgamated Rule"));
         this.mi.setActionCommand("createAmalgamatedRule");
 //		this.mi.addActionListener(treeView.getActionAdapter());
@@ -99,33 +90,26 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                 createAmalgamatedRule();
             }
         });
-
         addSeparator();
-
         this.mi = add(new JMenuItem(
                 "Set Layer                                 "));
         this.mi.setActionCommand("setRuleLayer");
         this.mi.addActionListener(this.treeView.getActionAdapter());
         // mi.setMnemonic('L');
         this.mi.setEnabled(true);
-
         this.mi = add(new JMenuItem(
                 "Set Priority                              "));
         this.mi.setActionCommand("setRulePriority");
         this.mi.addActionListener(this.treeView.getActionAdapter());
         // mi.setMnemonic('P');
         this.mi.setEnabled(true);
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Move"));
         this.mi.setActionCommand("moveRuleScheme");
         this.mi.addActionListener(this.treeView.getActionAdapter());
         // mi.setMnemonic('M');
         this.mi.setEnabled(true);
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Copy"));
         this.mi.setActionCommand("copyRuleScheme");
 //		this.mi.addActionListener(treeView.getActionAdapter());
@@ -135,7 +119,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
             }
         });
         this.mi.setEnabled(true);
-
         this.mi = add(new JMenuItem("Make Inverse RuleScheme"));
         this.mi.setActionCommand("reverseRuleScheme");
 //		this.mi.addActionListener(this.treeView.getActionAdapter());
@@ -145,9 +128,7 @@ public class RuleSchemePopupMenu extends JPopupMenu {
             }
         });
         this.mi.setEnabled(true);
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Delete                "));
         this.mi.setActionCommand("deleteRuleScheme");
         this.mi.addActionListener(this.treeView.getActionAdapter());
@@ -162,17 +143,13 @@ public class RuleSchemePopupMenu extends JPopupMenu {
         });
         // this.mi.setMnemonic('D');
         this.mi.setEnabled(true);
-
         addSeparator();
-
         this.miDisabled = new JCheckBoxMenuItem("disabled");
         this.miDisabled.setActionCommand("disableRuleScheme");
         this.miDisabled.addActionListener(this.treeView.getActionAdapter());
         add(this.miDisabled);
 //		miDisabled.setEnabled(true);
-
         addSeparator();
-
 //		miAnimated = new JRadioButtonMenuItem("animated");
 //		miAnimated.setActionCommand("animatedRule");
         ////		miAnimated.addActionListener(treeView);
@@ -194,15 +171,12 @@ public class RuleSchemePopupMenu extends JPopupMenu {
             }
         });
         add(this.miWait);
-
         addSeparator();
-
         this.mi = add(new JMenuItem("Textual Comments"));
         // this.mi = new JMenuItem("Textual Comments");
         this.mi.setActionCommand("commentRuleScheme");
         this.mi.addActionListener(this.treeView.getActionAdapter());
         // mi.setMnemonic('T');
-
         pack();
         setBorderPainted(true);
     }
@@ -219,12 +193,10 @@ public class RuleSchemePopupMenu extends JPopupMenu {
             this.ruleScheme = this.treeView.getRuleScheme((DefaultMutableTreeNode) path.getLastPathComponent());
             if (this.ruleScheme != null) {
                 // treeView.selectPath(x,y);
-
                 this.miParallelKernelMatch.setSelected(this.ruleScheme.getBasisRuleScheme().parallelKernelMatch());
                 this.miDisjointMultiMatch.setSelected(this.ruleScheme.getBasisRuleScheme().disjointMultiMatches());
                 this.miConflictFreeMultiMatch.setSelected(this.ruleScheme.getBasisRuleScheme().checkDeleteUseConflictRequired());
                 this.miAtLeastOneMultiMatch.setSelected(this.ruleScheme.getBasisRuleScheme().atLeastOneMultiMatchRequired());
-
                 this.miDisabled.setSelected(!this.ruleScheme.getBasisRule().isEnabled());
                 this.miWait.setSelected(this.ruleScheme.getBasisRule().isWaitBeforeApplyEnabled());
                 return true;
@@ -244,22 +216,18 @@ public class RuleSchemePopupMenu extends JPopupMenu {
         TreePath rsPath = this.treeView.getSelectedPath();
         DefaultMutableTreeNode rsNode = (DefaultMutableTreeNode) rsPath.getLastPathComponent();
         GraGraTreeNodeData data = (GraGraTreeNodeData) rsNode.getUserObject();
-
         if (data != null && data.isRuleScheme()) {
             EdRuleScheme rs = data.getRuleScheme();
             EdRule multiRule = rs.addMultiRule("MultiRule" + String.valueOf(rs.getBasisRuleScheme().getCountOfMultiRules()));
             multiRule.update();
-
             MultiRuleTreeNodeData sdMultiRule = new MultiRuleTreeNodeData(multiRule);
             DefaultMutableTreeNode newMultiRuleNode = new DefaultMutableTreeNode(sdMultiRule);
             sdMultiRule.setTreeNode(newMultiRuleNode);
-
             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.treeView.selPath
                     .getLastPathComponent();
             int newIndex = rs.getBasisRuleScheme().getCountOfMultiRules();
             this.treeView.getTreeModel().insertNodeInto(newMultiRuleNode, parent, newIndex);
         }
-
     }
 
     protected void deleteRuleScheme() {
@@ -277,7 +245,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
         rsPath = this.treeView.getSelectedPath();
         rsNode = (DefaultMutableTreeNode) rsPath.getLastPathComponent();
         data = (GraGraTreeNodeData) rsNode.getUserObject();
-
         if (graPath != null) {
             DefaultMutableTreeNode graNode = (DefaultMutableTreeNode) graPath
                     .getLastPathComponent();
@@ -293,7 +260,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                     EdRule rs = data.getRuleScheme();
                     //				treeView.getGraGraStore().storeRuleScheme(rs.getGraGra(), (EdRuleScheme)rs);
                     graData.getGraGra().removeRule(rs);
-
                     row--;
                     this.treeView.setEditPath(row);
                     this.treeView.setFlagForNew();
@@ -310,13 +276,11 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                     EdRule rs = data.getRule();
                     treeView.getGraGraStore().storeRuleScheme(rs.getGraGra(), (EdRuleScheme) rs);
                     graData.getGraGra().removeRule(rs);
-
                     row--;
                     this.treeView.setEditPath(row);
                     this.treeView.setFlagForNew();
                     this.treeView.fireTreeViewEvent(new TreeViewEvent(this,
                             TreeViewEvent.SELECTED, this.treeView.editorPath));
-
                     if ((((GraGraTreeNodeData) ((DefaultMutableTreeNode) this.treeView.selPath.getLastPathComponent())
                             .getUserObject()).isGraph()
                             && !this.treeView.getCurrentGraGra().getRules().isEmpty())) {
@@ -343,11 +307,9 @@ public class RuleSchemePopupMenu extends JPopupMenu {
             if (baseRS.getAmalgamatedRule() == null) {
                 if (baseRS.isValid()) {
                     baseRS.clearMatchesOfMultiRules();
-
                     if (!baseRS.isInputParameterSet(true)) {
                         this.treeView.fireTreeViewEvent(
                                 new TreeViewEvent(this.treeView, TreeViewEvent.INPUT_PARAMETER_NOT_SET, baseRS));
-
                         JOptionPane.showMessageDialog(null,
                                 "Please set Input Parameter of the rule scheme\n"
                                 + "and call <Create Amalgamated Rule> again.",
@@ -356,23 +318,18 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                         return;
                     }
                     baseRS.applyValueOfInputParameter();
-
                     final Covering cov = new Covering(
                             baseRS,
                             rs.getGraGra().getBasisGraGra().getGraph(),
                             rs.getGraGra().getBasisGraGra().getMorphismCompletionStrategy());
                     if (cov.amalgamate()
                             && cov.getAmalgamatedRule() != null) {
-
                         final AmalgamatedRule amalgamatedRule = cov.getAmalgamatedRule();
                         baseRS.setAmalgamatedRule(amalgamatedRule);
-
                         final EdRule edAmalgamatedRule = new EdRule(amalgamatedRule);
-
                         amalgamatedRule.setName("Amalgamation");
                         edAmalgamatedRule.update();
                         rs.setAmalgamatedRule(edAmalgamatedRule);
-
                         //add amalgamated Rule to the tree       
                         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.treeView.selPath.getLastPathComponent();
                         int newIndex = parent.getChildCount();
@@ -380,10 +337,8 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                         DefaultMutableTreeNode newRuleNode = new DefaultMutableTreeNode(sdRule);
                         sdRule.setTreeNode(newRuleNode);
                         this.treeView.getTreeModel().insertNodeInto(newRuleNode, parent, newIndex);
-
                         this.treeView.getTree().expandPath(this.treeView.selPath);
                         this.treeView.getTree().treeDidChange();
-
                         // add NACs,  for test only
                         //				for (int j = 0; j < edAmalgamatedRule.getNACs().size(); j++) {
                         //					final EdNAC nac = edAmalgamatedRule.getNACs().elementAt(j);
@@ -464,7 +419,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
             return;
         }
         graPath = this.path.getParentPath();
-
         if (graPath != null) {
             DefaultMutableTreeNode graNode = (DefaultMutableTreeNode) graPath.getLastPathComponent();
             GraGraTreeNodeData graData = (GraGraTreeNodeData) graNode.getUserObject();
@@ -473,7 +427,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                     (DefaultMutableTreeNode) node.getParent(),
                     ((DefaultMutableTreeNode) node.getParent()).getIndex(node) + 1);
             this.treeView.getTree().treeDidChange();
-
             this.treeView.fireTreeViewEvent(new TreeViewEvent(this,
                     TreeViewEvent.RULE_ADDED, this.path));
         }
@@ -489,7 +442,6 @@ public class RuleSchemePopupMenu extends JPopupMenu {
             return;
         }
         graPath = this.path.getParentPath();
-
         if (graPath != null) {
             DefaultMutableTreeNode graNode = (DefaultMutableTreeNode) graPath.getLastPathComponent();
             GraGraTreeNodeData graData = (GraGraTreeNodeData) graNode.getUserObject();
@@ -498,9 +450,7 @@ public class RuleSchemePopupMenu extends JPopupMenu {
                 this.treeView.putRuleSchemeIntoTree(invRS,
                         (DefaultMutableTreeNode) node.getParent(),
                         ((DefaultMutableTreeNode) node.getParent()).getIndex(node) + 1);
-
                 this.treeView.getTree().treeDidChange();
-
                 if (!invRS.getBasisRule().getErrorMsg().equals("")) {
                     String warnMsg = invRS.getBasisRule().getErrorMsg().replaceAll(";", "<br>");
                     warnMsg = warnMsg.replaceAll("\n", "<br>");
@@ -530,15 +480,11 @@ public class RuleSchemePopupMenu extends JPopupMenu {
             }
         }
     }
-
     GraGraTreeView treeView;
     TreePath path;
     DefaultMutableTreeNode node;
-
     private int locationRow;
-
     protected EdRuleScheme ruleScheme;
-
     private JMenuItem miDisabled,
             //					miPAC, miParallelApply, miAnimated, 
             miDisjointMultiMatch, miConflictFreeMultiMatch,

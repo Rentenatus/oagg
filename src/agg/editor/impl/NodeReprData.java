@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -30,25 +30,15 @@ import javax.swing.undo.*;
 public class NodeReprData implements StateEditable {
 
     protected int typeHashCode;
-
     protected TypeReprData typeRepresentation;
-
     protected Vector<String> parents; // names of direct parents only
-
     protected Vector<String> children; // names of its own children only
-
     protected boolean elemOfTG;
-
     protected Hashtable<String, Pair<String, String>> attributes;
-
     protected Point location;
-
     protected String nodeHC;
-
     protected int nodeHashCode;
-
     protected int key = this.hashCode();
-
     protected boolean frozen, frozenAsDefault;
 
     public void storeState(Hashtable<Object, Object> state) {
@@ -58,10 +48,8 @@ public class NodeReprData implements StateEditable {
     public void restoreState(Hashtable<?, ?> state) {
         NodeReprData data = (NodeReprData) state.get(Integer.valueOf(this.key));
         state.remove(Integer.valueOf(this.key));
-
         if (data != null) {
             this.typeHashCode = data.typeHashCode;
-
             this.typeRepresentation = data.typeRepresentation;
             this.parents = data.parents;
             this.children = data.children;
@@ -78,27 +66,23 @@ public class NodeReprData implements StateEditable {
         if (n.getBasisNode() == null) {
             return;
         }
-
         this.key = this.hashCode();
         this.nodeHashCode = n.hashCode();
         this.typeHashCode = n.getType().hashCode();
         this.elemOfTG = n.isElementOfTypeGraph();
         this.parents = new Vector<String>(5, 5);
         this.children = new Vector<String>(5, 5);
-
         if (n.isElementOfTypeGraph()) {
             this.typeRepresentation = new TypeReprData(n);
         } else {
             this.typeRepresentation = new TypeReprData(n.getType());
         }
-
         this.nodeHC = n.getContextUsage();
         if (n.getContextUsage().indexOf(String.valueOf(n.hashCode())) == -1) {
             this.nodeHC = String.valueOf(n.hashCode()) + ":"
                     + n.getContextUsage();
         }
         // System.out.println("NodeReprData:: nodeHC = "+nodeHC);
-
         this.attributes = new Hashtable<String, Pair<String, String>>();
         if (n.getBasisObject().getAttribute() != null) {
             ValueTuple vt = (ValueTuple) n.getBasisObject().getAttribute();
@@ -114,9 +98,7 @@ public class NodeReprData implements StateEditable {
                 }
             }
         }
-
         this.location = new Point(n.getX(), n.getY());
-
         if (n.isElementOfTypeGraph()) {
             Type btype = n.getType().getBasisType();
             for (int i = 0; i < btype.getParents().size(); i++) {
@@ -128,7 +110,6 @@ public class NodeReprData implements StateEditable {
             // System.out.println("parents: "+ parents);
             // System.out.println("children: "+children);
         }
-
         this.frozen = n.getLNode().isFrozen();
         this.frozenAsDefault = n.getLNode().isFrozenByDefault();
     }
@@ -149,15 +130,12 @@ public class NodeReprData implements StateEditable {
         if (this.elemOfTG != n.isElementOfTypeGraph()) {
             return;
         }
-
         this.typeRepresentation.restoreTypeFromTypeRepr(n.getType());
         n.setContextUsage(this.nodeHC);
-
         if (n.isElementOfTypeGraph()) {
             restoreParentsAndChildren(n);
             restoreMultiplicity(n, this.typeRepresentation);
         }
-
         if (!this.attributes.isEmpty()) {
             if (n.getBasisObject().getAttribute() != null) {
                 Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
@@ -165,10 +143,8 @@ public class NodeReprData implements StateEditable {
                 restoreAttributes(attrs, n);
             }
         }
-
         n.setX(this.location.x);
         n.setY(this.location.y);
-
         n.getLNode().setFrozen(this.frozen);
         n.getLNode().setFrozenByDefault(this.frozenAsDefault);
     }
@@ -180,7 +156,6 @@ public class NodeReprData implements StateEditable {
             if (t.hashCode() == typeHC) {
                 return t;
             }
-
             if (t.getContextUsage().indexOf(
                     String.valueOf(this.typeRepresentation
                             .getTypeHashCode())) >= 0) {
@@ -197,7 +172,6 @@ public class NodeReprData implements StateEditable {
         if (n.getBasisNode().getContext().isTypeGraph()) { // n.isElementOfTypeGraph()){
             TypeGraph tg = (TypeGraph) n.getBasisNode().getContext();
             Type myType = n.getBasisNode().getType();
-
             // restore inheritance, first parents
             // System.out.println("NodeReprData.restoreParentsAndChildren::
             // parents: "+parents);
@@ -244,7 +218,6 @@ public class NodeReprData implements StateEditable {
                     }
                 }
             }
-
             // now children
             // System.out.println("NodeReprData.restoreParentsAndChildren::
             // children: "+children);
@@ -284,7 +257,6 @@ public class NodeReprData implements StateEditable {
             if (ti == t) {
                 return t;
             }
-
             if (ti.getContextUsage().indexOf(
                     String.valueOf(this.typeRepresentation
                             .getTypeHashCode())) >= 0) {
@@ -303,31 +275,23 @@ public class NodeReprData implements StateEditable {
         if (type == null) {
             return null;
         }
-
         if (this.elemOfTG != g.getBasisGraph().isTypeGraph()) {
             return null;
         }
-
         EdNode n = null;
         try {
             Node basis = g.getBasisGraph().createNode(type.getBasisType());
             n = g.addNode(basis, type);
-
             n.addContextUsage(this.nodeHC);
-
             if (n.isElementOfTypeGraph()) {
                 restoreParentsAndChildren(n);
                 restoreMultiplicity(n, this.typeRepresentation);
             }
-
             refreshAttributes(n);
-
             n.setX(this.location.x);
             n.setY(this.location.y);
-
             n.getLNode().setFrozen(this.frozen);
             n.getLNode().setFrozenByDefault(this.frozenAsDefault);
-
             return n;
         } catch (TypeException ex) {
             return null;
@@ -339,7 +303,6 @@ public class NodeReprData implements StateEditable {
             if (n.getBasisObject().getAttribute() == null) {
                 n.getBasisObject().createAttributeInstance();
             }
-
             Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
             attrs.putAll(this.attributes);
             restoreAttributes(attrs, n);
@@ -378,7 +341,6 @@ public class NodeReprData implements StateEditable {
             }
         }
     }
-
 //	public void showData() {
 //		System.out.println(this.typeRepresentation.name);
 //	}

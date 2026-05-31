@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -27,14 +29,12 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.EventObject;
-
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
@@ -55,7 +55,6 @@ import agg.gui.parser.event.ParserGUIListener;
 import agg.gui.parser.event.ParserGUIEvent;
 import agg.gui.saveload.GraphicsExportJPEG;
 import agg.gui.treeview.GraGraTreeView;
-
 import agg.parser.CriticalPairOption;
 import agg.parser.CriticalPair;
 import agg.parser.ExcludePairContainer;
@@ -101,30 +100,23 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.treeView = graTreeView;
         this.listener = new Vector<ParserEventListener>();
         this.pmlistener = new Vector<StatusMessageListener>();
-
         this.cpOption = new CriticalPairOption();
         this.cpOption.addOptionListener(this);
         this.cpOptionGUI = new CriticalPairOptionGUI(this, this.cpOption, this.option, this.pOption);
         this.pairsGUI = new CriticalPairAnalysisGUI(appl, this.option);
         this.pairsIOGUI = new PairIOGUI(this.parent);
-
         this.back = new JMenu("               Back to AGG Editor             ");
         this.back.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 backToMainGUI(false);
             }
         });
-
         this.menus = new Vector<JMenu>(2);
         createAnalysisMenu();
-
         addCPAnalysisEventListener(this);
         this.pairsGUI.addStatusMessageListener(this);
-
         this.changer = new GUIExchange(this.parent);
-
         cpa = this;
-
         this.wl = new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 if (e.getSource() instanceof JFrame) {
@@ -176,9 +168,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             CriticalPairAnalysis.this.hostGraphCPA.getPairContainer(
                                     CriticalPair.TRIGGER_DEPENDENCY)
                                     .enableUseHostGraph(false, null, null);
-
                         }
-
                         CriticalPairAnalysis.this.pairsGraGra.setChanged(false);
                         resetRuleApplicable(CriticalPairAnalysis.this.pairsGraGra.getBasisGraGra());
                         if (CriticalPairAnalysis.this.selectedGraGra != null) {
@@ -197,10 +187,8 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             public void windowActivated(WindowEvent e) {
             }
         };
-
         ((JFrame) this.parent).addWindowListener(this.wl);
     }
-
     JMenu back;
 
     private void addBackToAGGMenuBar(AGGAppl appl) {
@@ -278,20 +266,17 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.cpaGraph = null;
         this.ruleList1 = null;
         this.ruleList2 = null;
-
         if (this.pairsGraGra != null) {
             this.rulesCP.setEnabled(true);
             this.resetCP.setEnabled(true);
             this.startCP.setEnabled(true);
             this.debugCP.setEnabled(true);
-
             if (this.pairsGraGra.getBasisGraGra().isLayered()) {
                 this.cpOptionGUI
                         .initLayers(this.pairsGraGra.getBasisGraGra().getEnabledLayers());
             }
-
             this.gragraChanged
-                    .put(this.pairsGraGra, new Boolean(this.pairsGraGra.isChanged()));
+                    .put(this.pairsGraGra, Boolean.valueOf(this.pairsGraGra.isChanged()));
         } else {
             this.rulesCP.setEnabled(false);
             this.resetCP.setEnabled(false);
@@ -359,7 +344,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 && (e.getMessage().indexOf("finished") != -1)) {
             this.pairsSaved = false;
             updateCPAgraph();
-
             this.startCP.setEnabled(true);
             this.stopCP.setEnabled(false);
             this.consistCP.setEnabled(true);
@@ -378,7 +362,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             }
             fireParserEvent(new ParserMessageEvent(this,
                     " Please select a pair of rules to see results."));
-
         } else if ((e.getMessage().indexOf("Checking Host Graph ") != -1)
                 && (e.getMessage().indexOf("started") != -1)) {
             if (this.hostGraphCPA != null) {
@@ -387,7 +370,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                                 this.parent,
                                 "Checking of the host graph has started. Please wait for the finish-message.",
                                 "  CPA  ", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-
             }
         } else if ((e.getMessage().indexOf("Checking Host Graph") != -1)
                 && (e.getMessage().indexOf("finished") != -1)) {
@@ -457,7 +439,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         if (e.getSource() instanceof CriticalPairOption) {
             if (this.pairsContainer != null) {
                 setCPoptions((ExcludePairContainer) this.pairsContainer);
-
                 if (this.pairsContainer instanceof LayeredExcludePairContainer) {
                     ((LayeredExcludePairContainer) this.pairsContainer)
                             .setLayer(this.cpOption.getLayer());
@@ -467,7 +448,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 ((DependencyPairContainer) this.pairsContainer2).
                         enableSwitchDependency(this.cpOption.switchDependencyEnabled());
                 setCPoptions((ExcludePairContainer) this.pairsContainer2);
-
                 if (this.pairsContainer2 instanceof LayeredDependencyPairContainer) {
                     ((LayeredDependencyPairContainer) this.pairsContainer2)
                             .setLayer(this.cpOption.getLayer());
@@ -486,7 +466,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             // System.out.println(excludePC);
             if (excludePC != null) {
                 setCPoptions(excludePC);
-
 //				if (excludePC instanceof LayeredExcludePairContainer) {
                 // ((LayeredExcludePairContainer)excludePC).setLayer(this.cpOption.getLayer());
 //				}
@@ -495,7 +474,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 ((DependencyPairContainer) excludePC2).
                         enableSwitchDependency(this.cpOption.switchDependencyEnabled());
                 setCPoptions(excludePC2);
-
 //				if (excludePC2 instanceof LayeredDependencyPairContainer) {
                 // ((LayeredDependencyPairContainer)excludePC2).setLayer(this.cpOption.getLayer());
 //				}
@@ -514,7 +492,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 this.cpOption.equalVariableNameOfAttrMappingEnabled());
         pc.enableNamedObjectOnly(this.cpOption.namedObjectEnabled());
         pc.enableMaxBoundOfCriticKind(this.cpOption.getMaxBoundOfCriticKind());
-
         if (!(pc instanceof DependencyPairContainer)) {
             pc.enableDirectlyStrictConfluent(this.cpOption.directlyStrictConflEnabled());
             pc.enableDirectlyStrictConfluentUpToIso(
@@ -529,26 +506,22 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         /* create Critical pair menu */
         this.pairsMenu = new JMenu("Critical Pair Analysis");
         this.pairsMenu.setMnemonic('C');
-
         this.resetCP = new JMenuItem("Reset");
         this.resetCP.setEnabled(false);
         this.resetCP.setMnemonic('s');
         this.pairsMenu.add(this.resetCP);
         resetCPaddActionListener();
-
         this.unlockCP = new JMenuItem("Unlock");
         this.unlockCP.setEnabled(false);
         this.unlockCP.setMnemonic('U');
         this.pairsMenu.add(this.unlockCP);
         unlockCPaddActionListener();
-
         this.rulesCP = new JMenuItem("Set Rules");
         this.rulesCP.setEnabled(false);
 //		this.rulesCP.setMnemonic('s');
         this.pairsMenu.add(this.rulesCP);
         rulesCPaddActionListener();
         this.pairsMenu.addSeparator();
-
         this.startCP = new JMenu("Generate");
         this.startCP.setMnemonic('G');
         this.startCPconflicts = new JMenuItem("Conflicts");
@@ -561,40 +534,34 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.pairsMenu.add(this.startCP);
         startCPaddActionListener();
         this.pairsMenu.addSeparator();
-
         this.stopCP = new JMenuItem("Stop");
         this.stopCP.setEnabled(false);
         this.stopCP.setMnemonic('o');
         this.pairsMenu.add(this.stopCP);
         stopCPaddActionListener();
-
         this.emptyCP = new JMenuItem("Empty");
         this.emptyCP.setEnabled(false);
         this.emptyCP.setMnemonic('y');
         this.pairsMenu.add(this.emptyCP);
         emptyCPaddActionListener();
         this.pairsMenu.addSeparator();
-
         this.debugCP = new JMenuItem("Debug");
         this.debugCP.setEnabled(false);
         this.debugCP.setMnemonic('D');
         this.pairsMenu.add(this.debugCP);
         debugCPaddActionListener();
         this.pairsMenu.addSeparator();
-
         this.consistCP = new JMenuItem("Check Consistency");
         this.consistCP.setEnabled(false);
         this.consistCP.setMnemonic('k');
         this.pairsMenu.add(this.consistCP);
         consistCPaddActionListener();
-
         this.checkHostGraphCP = new JMenuItem("Check Host Graph");
         this.checkHostGraphCP.setEnabled(false);
         this.checkHostGraphCP.setMnemonic(KeyEvent.VK_H);
         this.pairsMenu.add(this.checkHostGraphCP);
         checkHostGraphCPaddActionListener();
         this.pairsMenu.addSeparator();
-
         this.loadCP = new JMenu("Load");
         this.loadCP.setMnemonic('L');
         this.pairsMenu.add(this.loadCP);
@@ -607,13 +574,11 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.loadCP.add(this.loadCPcpx);
         this.loadCP.add(this.loadSeparateCPcpx);
         this.loadCPaddActionListener();
-
         this.saveCP = new JMenuItem("Save");
         this.saveCP.setEnabled(false);
         this.saveCP.setMnemonic('v');
         this.pairsMenu.add(this.saveCP);
         saveCPaddActionListener();
-
         this.showCP = new JMenu("Show");
         this.showCP.setMnemonic('w');
         this.showCP.setEnabled(false);
@@ -626,7 +591,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.pairsMenu.add(this.showCP);
         showCPaddActionListener();
         this.pairsMenu.addSeparator();
-
 //		this.consistCP = new JMenuItem("Check Consistency");
 //		this.consistCP.setEnabled(false);
 //		this.consistCP.setMnemonic('k');
@@ -644,7 +608,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.backCP.setMnemonic('b');
         this.pairsMenu.add(this.backCP);
         backCPaddActionListener();
-
         this.menus.add(this.pairsMenu);
     }
 
@@ -655,7 +618,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             }
         });
     }
-
     private SelectRulesForCPAnalysisDialog rulesDialog;
 
     void setRulesForCPA(EdGraGra selGraGra) {
@@ -664,10 +626,8 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     this.selectedGraGra.getBasisGraGra(),
                     new Point(300, 300));
             this.rulesDialog.setVisible(true);
-
             this.ruleList1 = this.rulesDialog.getExtendedRuleList1(); // columns
             this.ruleList2 = this.rulesDialog.getExtendedRuleList2(); // rows
-
             this.debugCPA();
         }
     }
@@ -715,7 +675,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     this.cpaGraph = null;
                     this.conflictDependGraph = null;
                     this.pairsGraGra = selGraGra;
-                    this.gragraChanged.put(this.pairsGraGra, new Boolean(this.pairsGraGra
+                    this.gragraChanged.put(this.pairsGraGra, Boolean.valueOf(this.pairsGraGra
                             .isChanged()));
                     this.pairsGUI.setGraGra(this.pairsGraGra);
                     this.pairsSaved = true;
@@ -763,14 +723,12 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             public void actionPerformed(ActionEvent e) {
                 if (!CriticalPairAnalysis.this.backCP.isEnabled()) { // remain in main_GUI
                     unlockAllGraGras();
-
                     ((AttrTupleManager) agg.attribute.impl.AttrTupleManager
                             .getDefaultManager()).setVariableContext(false);
                     if (CriticalPairAnalysis.this.selectedGraGra != null) {
                         CriticalPairAnalysis.this.selectedGraGra.setEditable(true);
                         CriticalPairAnalysis.this.selectedGraGra.updateRules();
                     }
-
                     CriticalPairAnalysis.this.isLocked = false;
                     fireParserEvent(new ParserMessageEvent(this,
                             "Grammar isn't locked anymore."));
@@ -787,7 +745,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 generateConflicts();
             }
         });
-
         this.startCPdependencies.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 unlockAllGraGras();
@@ -807,9 +764,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 this.message = "layered";
                 return false;
             }
-
             return true;
-
         }
         if (!this.pairsGraGra.getBasisGraGra().compareTo(
                 this.selectedGraGra.getBasisGraGra(), true)
@@ -832,7 +787,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             } else if (answer == 2) {
                 return;
             }
-
             if (!resetGraGra(this.selectedGraGra)) {
                 javax.swing.JOptionPane.showMessageDialog(null,
                         "Something gone wrong. Cannot set selected grammar",
@@ -843,14 +797,12 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         } else if (!this.isLocked) {
             resetWarning(false);
         }
-
         if ((this.pairsGraGra == null) || (this.pairsGraGra.getBasisGraGra() == null)) {
             javax.swing.JOptionPane.showMessageDialog(null,
                     "There isn't any graph grammar available.", "Warning",
                     javax.swing.JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         if (!doAllowInheritance(this.pairsGraGra.getBasisGraGra())) {
             inheritanceWarning();
             return;
@@ -885,7 +837,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             } else if (answer == 2) {
                 return;
             }
-
             if (!resetGraGra(this.selectedGraGra)) {
                 javax.swing.JOptionPane.showMessageDialog(null,
                         "Something gone wrong. Cannot set selected grammar.",
@@ -896,7 +847,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         } else if (!this.isLocked) {
             resetWarning(false);
         }
-
         if ((this.pairsGraGra == null) || (this.pairsGraGra.getBasisGraGra() == null)) {
             javax.swing.JOptionPane.showMessageDialog(null,
                     "No graph grammar is available.", "Warning",
@@ -948,27 +898,22 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 return null;
             }
             if (checkIfReadyToTransform(this.pairsGraGra)) {
-
                 if (this.ruleList1 != null && this.ruleList2 != null) {
                     pc.setRules(this.ruleList1, this.ruleList2);
                 }
-
                 resetCP_GUI(this.pairsGraGra, pc, true);
                 this.rulesCP.setEnabled(false);
                 this.resetCP.setEnabled(false);
                 this.unlockCP.setEnabled(false);
                 this.debugCP.setEnabled(false);
                 this.backCP.setEnabled(true);
-
                 this.changeToCPAgui(this.pairsGUI.getContainer());
                 // start a new CP-Thread
                 this.pairsGraGra.setEditable(false);
                 this.isLocked = true;
-
                 ParserFactory.generateCriticalPairs(pc);
                 fireParserEvent(new ParserMessageEvent(this,
                         "Generate critical pairs ...  Please wait ..."));
-
                 this.startCP.setEnabled(false);
                 this.stopCP.setEnabled(true);
                 this.emptyCP.setEnabled(false);
@@ -1057,13 +1002,11 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     }
                     resetCP_GUI(this.pairsGraGra, pc_tmp, false);
                     ParserFactory.generateCriticalPairs(pc_tmp);
-
                 } else {
                     if (pc != null
                             && this.ruleList1 != null && this.ruleList2 != null) {
                         pc.setRules(this.ruleList1, this.ruleList2);
                     }
-
                     resetCP_GUI(this.pairsGraGra, pc, false);
                     ParserFactory.generateCriticalPairs(pc);
                 }
@@ -1158,7 +1101,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             pc = CriticalPairAnalysis.this.pairsContainer2;
                         }
                     }
-
                     if (pc == CriticalPairAnalysis.this.pairsContainer) {
                         if (!CriticalPairAnalysis.this.pairsContainer.isEmpty()) {
                             if (!CriticalPairAnalysis.this.pairsContainer.getGrammar().getConstraints().hasMoreElements()) {
@@ -1166,7 +1108,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                                         "Nothing to check. Any constraint doesn't exist.");
                                 return;
                             }
-
                             Thread t = new Thread() {
                                 public void run() {
                                     ((ExcludePairContainer) CriticalPairAnalysis.this.pairsContainer)
@@ -1177,7 +1118,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             t.start();
                             while (t.isAlive()) {
                             }
-
                             CriticalPairAnalysis.this.pairsGUI.setCriticalPairs(CriticalPairAnalysis.this.pairsContainer);
                         }
                     } else if (pc == CriticalPairAnalysis.this.pairsContainer2) {
@@ -1187,7 +1127,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                                         "Nothing to check. Any constraint doesn't exist.");
                                 return;
                             }
-
                             Thread t = new Thread() {
                                 public void run() {
                                     ((ExcludePairContainer) CriticalPairAnalysis.this.pairsContainer2)
@@ -1198,7 +1137,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             t.start();
                             while (t.isAlive()) {
                             }
-
                             CriticalPairAnalysis.this.pairsGUI.setCriticalPairs(CriticalPairAnalysis.this.pairsContainer2);
                         }
                     } else {
@@ -1238,7 +1176,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     } else if (pc == CriticalPairAnalysis.this.pairsContainer2) {
                         title = "Rule Dependencies";
                     }
-
                     if (pc != null) {
                         int answer = JOptionPane.YES_OPTION;
                         if (pc.isComputed() || !pc.isEmpty()) {
@@ -1247,7 +1184,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         if (answer == JOptionPane.YES_OPTION) {
                             pc.clear();
                             pc.refreshOptions(cpOption);
-
                             if (pc.getKindOfConflict() == CriticalPair.CONFLICT) {
                                 CriticalPairAnalysis.this.pairsGUI.getGraphDesktop()
                                         .getConflictPairPanel().refreshView();
@@ -1361,7 +1297,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
     void saveCriticalPairs() {
         ConflictsDependenciesContainerSaveLoad cdPC = new ConflictsDependenciesContainerSaveLoad(
                 this.pairsContainer, this.pairsContainer2, this.cpaGraph, this.pairsGraGra);
-
         this.pairsIOGUI.setCriticalPairContainer(cdPC);
         this.pairsIOGUI.save();
         if (this.pairsIOGUI.fileIsSaved()) {
@@ -1397,7 +1332,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 || !checkIfReadyToTransform(this.pairsGraGra)) {
             return;
         }
-
         if (!this.changer.isSet()) { // main_GUI, change to CP_GUI
             if (!compareCurrentGraGraToSelectedGraGra()) {
                 int answer = gragraWarning("");
@@ -1407,7 +1341,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 } else if (answer == 2) {
                     return;
                 }
-
                 setGraGra(this.selectedGraGra);
                 if (!resetGraGra(this.selectedGraGra)) {
                     javax.swing.JOptionPane
@@ -1421,14 +1354,11 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             } else if (!this.isLocked && !this.resetDone) {
                 resetWarning(true);
             }
-
             unlockAllGraGras();
-
             // locking gragra
             this.pairsGraGra.setEditable(false);
             this.isLocked = !this.pairsGraGra.isEditable();
             this.changeToCPAgui(this.pairsGUI.getContainer());
-
             this.rulesCP.setEnabled(false);
             this.resetCP.setEnabled(false);
             this.unlockCP.setEnabled(false);
@@ -1439,7 +1369,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             this.showCP.setEnabled(true);
             this.checkHostGraphCP.setEnabled(true);
             this.backCP.setEnabled(true);
-
             if (this.pairsContainer == null
                     && this.cpOption.getCriticalPairAlgorithm()
                     == CriticalPairOption.EXCLUDEONLY) {
@@ -1453,11 +1382,9 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             javax.swing.JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-
                 if (this.ruleList1 != null && this.ruleList2 != null) {
                     this.pairsContainer.setRules(this.ruleList1, this.ruleList2);
                 }
-
                 resetCP_GUI(this.pairsGraGra, this.pairsContainer, true);
                 fireParserEvent(new ParserMessageEvent(this,
                         "Choose a pair of rules to check it."));
@@ -1476,11 +1403,9 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             javax.swing.JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-
                 if (this.ruleList1 != null && this.ruleList2 != null) {
                     this.pairsContainer2.setRules(this.ruleList1, this.ruleList2);
                 }
-
                 resetCP_GUI(this.pairsGraGra, CriticalPairAnalysis.this.pairsContainer2, true);
                 fireParserEvent(new ParserMessageEvent(this,
                         "Choose a pair of rules to check it."));
@@ -1530,7 +1455,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.loadCPcpx.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 unlockAllGraGras();
-
                 if (loadPairContainer(".cpx")
                         && CriticalPairAnalysis.this.pairsGraGra != null) {
                     Object[] options = {"YES", "NO"};
@@ -1546,11 +1470,9 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 }
             }
         });
-
         this.loadSeparateCPcpx.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 final CriticalPairAnalysisSeparated separatedFrame = loadPairContainerSeparated(".cpx");
-
                 if (separatedFrame.getGraGra() != null) {
                     Object[] options = {"YES", "NO"};
                     int answer = JOptionPane.showOptionDialog(null,
@@ -1567,7 +1489,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 }
             }
         });
-
         /*
 		 * loadCPdpx.addActionListener(new ActionListener(){ public void
 		 * actionPerformed(ActionEvent e){ loadPairContainer(".dpx"); }});
@@ -1592,7 +1513,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         inheritanceWarning();
                         return;
                     }
-
                     if (!CriticalPairAnalysis.this.treeView.getCurrentGraGra()
                             .getBasisGraGra()
                             .isGraphReadyForTransform()) {
@@ -1604,7 +1524,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                                         javax.swing.JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-
                     int kind = CriticalPair.CONFLICT;
                     if (CriticalPairAnalysis.this.pairsContainer == null && CriticalPairAnalysis.this.pairsContainer2 == null) {
                         CriticalPairAnalysis.this.hostGraphCPA = new CriticalPairAnalysisSeparated(
@@ -1653,13 +1572,10 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                                 javax.swing.JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-
                     if (CriticalPairAnalysis.this.hostGraphCPA != null) {
-
                         if (CriticalPairAnalysis.this.changer.isSet()) {
                             backToMainGUI(true);
                         }
-
                         CriticalPairAnalysis.this.hostGraphFrame = CriticalPairAnalysis.this.hostGraphCPA.getFrame();
                         CriticalPairAnalysis.this.separatedFrames.put(CriticalPairAnalysis.this.hostGraphFrame, CriticalPairAnalysis.this.hostGraphCPA);
                         CriticalPairAnalysis.this.hostGraphFrame.addWindowListener(CriticalPairAnalysis.this.wl);
@@ -1668,7 +1584,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         CriticalPairAnalysis.this.hostGraphCPA.setLocation(CriticalPairAnalysis.this.x, CriticalPairAnalysis.this.y);
                         fireParserEvent(new ParserMessageEvent(this,
                                 "Critical pairs are loaded. Checking the host graph. Please wait ..."));
-
                         if (CriticalPairAnalysis.this.hostGraphCPA.getCriticalPairAnalysisGUI()
                                 .getCriticalPairPanel(kind) != null) {
                             CriticalPairAnalysis.this.hostGraphCPA.getCriticalPairAnalysisGUI()
@@ -1677,7 +1592,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             CriticalPairAnalysis.this.hostGraphCPA.getCriticalPairAnalysisGUI()
                                     .getCriticalPairPanel(kind)
                                     .addParserGUIListener(cpa);
-
                             ExcludePairContainer epc = CriticalPairAnalysis.this.hostGraphCPA.getPairContainer(kind);
                             if (epc != null) {
                                 if (CriticalPairAnalysis.this.treeView
@@ -1694,11 +1608,9 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                                                     .getCurrentGraGra()
                                                     .getBasisGraGra()
                                                     .getMorphismCompletionStrategy());
-
                                     ParserFactory.generateCriticalPairs(epc);
                                     while (epc.isAlive()) {
                                     }
-
                                     fireParserEvent(new ParserMessageEvent(
                                             this, " "));
                                     CriticalPairAnalysis.this.startCP.setEnabled(true);
@@ -1710,7 +1622,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                                     CriticalPairAnalysis.this.saveCP.setEnabled(true);
                                     CriticalPairAnalysis.this.showCP.setEnabled(true);
                                     CriticalPairAnalysis.this.checkHostGraphCP.setEnabled(true);
-
                                     CriticalPairAnalysis.this.hostGraphCPA
                                             .getCriticalPairAnalysisGUI()
                                             .getGraphDesktop()
@@ -1723,7 +1634,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                                                             .getCriticalPairAnalysisGUI()
                                                             .getCriticalPairPanel2(),
                                                     true);
-
                                     CriticalPairAnalysis.this.hostGraphCPA.showFrame();
                                 } else {
                                     CriticalPairAnalysis.this.separatedFrames.remove(CriticalPairAnalysis.this.hostGraphFrame);
@@ -1753,13 +1663,11 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 showPairContainer(CriticalPair.CONFLICT);
             }
         });
-
         this.showDependencyCP.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showPairContainer(CriticalPair.TRIGGER_DEPENDENCY);
             }
         });
-
         showCPAGraphCPaddActionListener();
     }
 
@@ -1786,23 +1694,18 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     this.pairsGUI.getGraphDesktop()
                             .removeActionListenerFromCPAGraphMenu(
                                     this.conflictDependGraph);
-
                     this.conflictDependGraph.dispose();
                     this.cpaGraph = null;
                 }
-
                 this.pairsGUI.getGraphDesktop().removeAllGraphFrames();
                 this.pairsGUI.getGraphDesktop().removeRuleFrames();
                 this.pairsGUI.getGraphDesktop().removeCPAGraphFrame();
                 this.pairsGUI.getGraphDesktop().getDesktop().repaint();
-
                 this.conflictDependGraph = new ConflictsDependenciesGraph(
                         (ExcludePairContainer) this.pairsContainer,
                         (ExcludePairContainer) this.pairsContainer2, null, false);
-
                 this.cpaGraph = this.conflictDependGraph.getGraph();
                 if (this.cpaGraph != null) {
-
                     if (this.pairsContainer != null) {
                         this.pairsGUI.getGraphDesktop().getConflictPairPanel()
                                 .addParserGUIListener(this.conflictDependGraph);
@@ -1825,7 +1728,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 this.conflictDependGraph = new ConflictsDependenciesGraph(
                         (ExcludePairContainer) this.pairsContainer,
                         (ExcludePairContainer) this.pairsContainer2);
-
                 this.cpaGraph = this.conflictDependGraph.getGraph();
                 if (this.cpaGraph != null) {
                     if (this.pairsContainer != null) {
@@ -1840,14 +1742,12 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                             this.conflictDependGraph);
                     this.conflictDependGraph.setGraphDesktop(this.pairsGUI
                             .getGraphDesktop());
-
                     this.pairsGUI.getGraphDesktop().getDesktop().repaint();
                     try {
                         this.pairsGUI.getGraphDesktop().addGraph(this.cpaGraph, 400, 300)
                                 .setIcon(false);
                     } catch (java.beans.PropertyVetoException pve) {
                     }
-
                 } else {
                     javax.swing.JOptionPane.showMessageDialog(null,
                             "There is nothing to show.", "Warning",
@@ -1885,7 +1785,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 return;
             }
         }
-
         this.changeToAGGgui();
         if (!this.stopCP.isEnabled()) {
             this.rulesCP.setEnabled(true);
@@ -1906,17 +1805,14 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.saveCP.setEnabled(false);
         this.showCP.setEnabled(false);
         this.backCP.setEnabled(false);
-
         //test
         this.pairsGraGra.setEditable(true);
         this.pairsGraGra.getBasisGraGra().removeShiftedApplConditionsFromMultiRules();
-
         if (this.pairsContainer != null) {
             this.pairsContainer.restoreExprReplacedByVarInApplConds();
         } else if (this.pairsContainer2 != null) {
             this.pairsContainer2.restoreExprReplacedByVarInApplConds();
         }
-
         if ((this.pairsContainer instanceof LayeredExcludePairContainer)
                 || (this.pairsContainer2 instanceof LayeredDependencyPairContainer)) {
             this.treeView.getTreeModel().ruleNameChanged(this.pairsGraGra, true);
@@ -1956,18 +1852,14 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
 //			if (this.pairsGUI.getCriticalPairs2() != null)
 //				this.pairsGUI.getCriticalPairs2().refreshOptions(cpOption);
         }
-
         if (e.getSource() instanceof GraphDesktop) {
             this.graphDesktop = (GraphDesktop) e.getSource();
             if (e.getData() instanceof Graph) {
                 if (this.overlapGraphs == null) {
                     this.overlapGraphs = new Hashtable<Graph, Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>>();
                 }
-
                 this.overlapGraph = (Graph) e.getData();
-
                 if (this.overlapGraphs.get(this.overlapGraph) == null) {
-
                     ExcludePairContainer epc = this.hostGraphCPA
                             .getPairContainer(CriticalPair.CONFLICT);
                     if (epc == null) {
@@ -1975,9 +1867,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         return;
                     }
                     Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> ht = epc.getExcludeContainerForTestGraph();
-
                     List<Hashtable<GraphObject, GraphObject>> matches = ht.get(this.overlapGraph);
-
                     if (matches != null) {
                         this.hostGraphMappings = new Vector<>(
                                 matches.size());
@@ -1990,14 +1880,11 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         } else {
                             this.nextMatchAtHostGraphButton = null;
                         }
-
                         Pair<List<Hashtable<GraphObject, GraphObject>>, JButton> pair = new Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>(
                                 this.hostGraphMappings, this.nextMatchAtHostGraphButton);
                         this.overlapGraphs.put(this.overlapGraph, pair);
-
                         if (this.hostGraphMappings.size() > 0) {
                             Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
-
                             showCriticalMatch(this.treeView.getCurrentGraGra()
                                     .getGraph(), this.graphDesktop
                                             .getInternalLayoutGraph(this.overlapGraph), objs);
@@ -2015,14 +1902,11 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     }
                 } else {
                     Pair<List<Hashtable<GraphObject, GraphObject>>, JButton> pair = this.overlapGraphs.get(this.overlapGraph);
-
                     this.hostGraphMappings = pair.first;
                     this.nextMatchAtHostGraphButton = pair.second;
-
                     if (this.hostGraphMappings != null
                             && this.hostGraphMappings.size() > 0) {
                         Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
-
                         showCriticalMatch(this.treeView.getCurrentGraGra()
                                 .getGraph(), this.graphDesktop
                                         .getInternalLayoutGraph(this.overlapGraph), objs);
@@ -2039,7 +1923,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             if (((JButton) e.getSource()) == this.nextMatchAtHostGraphButton) {
                 if (this.hostGraphMappings != null && this.hostGraphMappings.size() > 0) {
                     Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
-
                     showCriticalMatch(this.treeView.getCurrentGraGra().getGraph(),
                             this.graphDesktop.getInternalLayoutGraph(this.overlapGraph),
                             objs);
@@ -2058,7 +1941,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 this.pairsContainer2.refreshOptions(this.cpOption);
             }
         }
-
     }
 
     public void refreshOptionsOfPairContainer() {
@@ -2090,22 +1972,17 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         if (this.pairsGUI.isOnePairThreadAlive()) {
             this.pairsGUI.stopOnePairThread();
         }
-
         this.pairsIOGUI.setFileFilter(filefilter);
         this.pairsIOGUI.setDirectoryName(this.treeView.getFileDirectory(), "");
-
         Object o = this.pairsIOGUI.load(true);
         if (o == null) {
             this.cpOption.enableLayered(false);
             return false;
         }
         this.treeView.setFileDirectory(this.pairsIOGUI.getDirectoryName());
-
         if (this.pairsIOGUI.isCombined()) {
 //			ConflictsDependenciesContainer cdc = (ConflictsDependenciesContainer) o;
-
             ConflictsDependenciesContainerSaveLoad cdc = (ConflictsDependenciesContainerSaveLoad) o;
-
             if (this.cpaGraph != null) {
                 if (this.conflictDependGraph != null) {
                     if (this.pairsContainer != null) {
@@ -2123,9 +2000,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 }
                 this.cpaGraph = null;
             }
-
             this.cpOption.setOptionsFromList(cdc.getLoadedCPAOptions());
-
             if (this.pairsContainer != null) {
                 removeEventListenersFromPairContainer(this.pairsContainer);
             }
@@ -2133,11 +2008,9 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 removeEventListenersFromPairContainer(this.pairsContainer2);
             }
             this.pairsGUI.reinitGraphDesktop();
-
             this.pairsContainer = null;
             this.pairsContainer2 = null;
             this.pairsGUI.getGraphDesktop().getDesktop().repaint();
-
             if (cdc.isPriority()) {
                 if (cdc.getPriorityExcludePairContainer() != null) {
                     this.pairsContainer = cdc.getPriorityExcludePairContainer();
@@ -2168,7 +2041,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 this.cpOption.enablePriority(false);
                 this.cpOption.enableLayered(false);
             }
-
             if (cdc.getContainerCount() == 2) {
 //				this.pairsGraGra = new EdGraGra(this.pairsContainer.getGrammar());
                 this.pairsGraGra = cdc.getPairsGraGra();
@@ -2179,7 +2051,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 if (this.pairsContainer != null) {
 //					test
 //					((ExcludePairContainer)this.pairsContainer).reduceCriticalPairs();
-
 //					this.pairsGraGra = new EdGraGra(this.pairsContainer.getGrammar());
                     this.pairsGraGra = cdc.getPairsGraGra();
                     this.pairsGUI.setGraGra(this.pairsGraGra);
@@ -2191,17 +2062,14 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     resetCP_GUI(this.pairsGraGra, this.pairsContainer2, true);
                 }
             }
-
             this.cpaGraph = cdc.getCPAGraph();
             if (this.cpaGraph != null) {
                 this.conflictDependGraph = new ConflictsDependenciesGraph(
                         (ExcludePairContainer) this.pairsContainer,
                         (ExcludePairContainer) this.pairsContainer2, this.cpaGraph, true);
-
                 this.conflictDependGraph.setGraphDesktop(this.pairsGUI.getGraphDesktop());
                 this.pairsGUI.getGraphDesktop().addActionListenerToCPAGraphMenu(
                         this.conflictDependGraph);
-
                 if (this.pairsContainer != null) {
                     this.pairsGUI.getGraphDesktop().getConflictPairPanel()
                             .addParserGUIListener(this.conflictDependGraph);
@@ -2210,7 +2078,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     this.pairsGUI.getGraphDesktop().getDependPairPanel()
                             .addParserGUIListener(this.conflictDependGraph);
                 }
-
                 this.pairsGUI.getGraphDesktop().addGraph(this.cpaGraph, 400, 300);
                 try {
                     if (this.pairsGUI.getGraphDesktop().getInternalCPAGraphFrame().isIcon()) {
@@ -2218,10 +2085,8 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     }
                 } catch (java.beans.PropertyVetoException pve) {
                 }
-
                 this.pairsGUI.getGraphDesktop().refresh();
             }
-
             if (this.pairsGraGra != null) {
                 this.pairsGraGra.setChanged(false);
                 if (this.pairsGraGra.getBasisGraGra().isLayered()) {
@@ -2230,10 +2095,8 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 }
             }
             this.cpOptionGUI.update();
-
             if (!this.changer.isSet()) { // main_GUI, change to CP_GUI
                 this.changeToCPAgui(this.pairsGUI.getContainer());
-
                 this.rulesCP.setEnabled(false);
                 this.resetCP.setEnabled(false);
                 this.startCP.setEnabled(true);
@@ -2249,7 +2112,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             }
             fireParserEvent(new ParserMessageEvent(this,
                     "Critical pairs are loaded."));
-
             this.pairsSaved = true;
             this.pairsGraGra.setChanged(false);
             return true;
@@ -2277,7 +2139,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     "Critical pairs are loaded."));
             this.treeView.setFileDirectory(this.pairsIOGUI.getDirectoryName());
         }
-
         return separatedFrame;
     }
 
@@ -2301,7 +2162,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         if (answer == JOptionPane.YES_OPTION) {
             resetCPAGraGra(this.selectedGraGra);
         } else {
-            this.gragraChanged.put(this.selectedGraGra, new Boolean(this.selectedGraGra
+            this.gragraChanged.put(this.selectedGraGra, Boolean.valueOf(this.selectedGraGra
                     .isChanged()));
         }
     }
@@ -2333,7 +2194,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             hostg.update();
             return;
         }
-
         Enumeration<?> en1 = map.keys();
         while (en1.hasMoreElements()) {
             GraphObject o = (GraphObject) en1.nextElement();
@@ -2356,7 +2216,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             }
             // System.out.println("Critical obj of host graph set");
         }
-
         // select critical graph objects
         for (int i = 0; i < hostg.getNodes().size(); i++) {
             EdNode n = hostg.getNodes().get(i);
@@ -2370,7 +2229,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 hostg.setSelectedArc(a);
             }
         }
-
         hostg.update();
     }
 
@@ -2440,7 +2298,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 return true;
             }
             return false;
-
         } else if (((this.pairsContainer != null) && (this.pairsContainer.getLayer() != null))
                 || ((this.pairsContainer2 != null) && (this.pairsContainer2
                         .getLayer() != null))) {
@@ -2457,7 +2314,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 this.pairsContainer.refreshOptions(cpOption);
                 return this.pairsContainer;
             }
-
             PairContainer pc = ParserFactory.createEmptyCriticalPairs(
                     this.pairsGraGra.getBasisGraGra(), kindOfAlgorithm, this.cpOption
                     .layeredEnabled());
@@ -2466,7 +2322,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 this.conflictDependGraph.setConflictPairContainer(pc);
             }
             return pc;
-
         } else if (kindOfAlgorithm == CriticalPairOption.TRIGGER_DEPEND
                 || kindOfAlgorithm == CriticalPairOption.TRIGGER_SWITCH_DEPEND) {
             if (this.pairsContainer2 != null) {
@@ -2474,7 +2329,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 this.pairsContainer2.refreshOptions(cpOption);
                 return this.pairsContainer2;
             }
-
             PairContainer pc = ParserFactory.createEmptyCriticalPairs(
                     this.pairsGraGra.getBasisGraGra(), kindOfAlgorithm, this.cpOption
                     .layeredEnabled());
@@ -2482,9 +2336,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                 pc.addPairEventListener(this.conflictDependGraph);
                 this.conflictDependGraph.setDependencyPairContainer(pc);
             }
-
             return pc;
-
         } else {
             return null;
         }
@@ -2494,7 +2346,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         if ((gragra == null) || gragra.getRules().isEmpty()) {
             return;
         }
-
         if (pc != null) {
             this.pairsGUI.showGACsWarn = true;
             if (this.pairsGUI.getGraGra() == gragra) {
@@ -2505,7 +2356,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                     this.pairsGUI.update();
                 }
                 setCPoptions((ExcludePairContainer) pc);
-
                 if (pc instanceof LayeredExcludePairContainer) {
                     ((LayeredExcludePairContainer) pc).setLayer(this.cpOption
                             .getLayer());
@@ -2523,7 +2373,6 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         .getPairContainer(CriticalPairOption.EXCLUDEONLY);
                 ExcludePairContainer excludePC2 = cpas
                         .getPairContainer(CriticalPairOption.TRIGGER_DEPEND);
-
                 if (excludePC != null) {
                     setCPoptions(excludePC);
                 }
@@ -2649,97 +2498,54 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         this.removeBackFromAGGMenuBar(this.parent);
         this.changer.restore();
     }
-
     protected static CriticalPairAnalysis cpa; // this
-
     protected GUIExchange changer;
-
     protected ParserGUIOption option;
-
     protected ParserOptionGUI pOptionGUI;
-
     protected ParserOption pOption;
-
     protected LayerOption lOption;
-
     protected CriticalPairOptionGUI cpOptionGUI;
-
     protected CriticalPairOption cpOption;
-
     protected CriticalPairAnalysisGUI pairsGUI;
-
     protected PairContainer pairsContainer, pairsContainer2;
-
     protected ConflictsDependenciesGraph conflictDependGraph;
-
     protected PairIOGUI pairsIOGUI;
-
     protected JMenu pairsMenu, startCP, loadCP, cpaGraphCP, showCP;
-
     protected JMenuItem rulesCP, resetCP, unlockCP,
             startCPconflicts, startCPdependencies, stopCP,
             //			reduceCP, 
             consistCP, debugCP, emptyCP, loadCPcpx, loadCPdpx,
             loadSeparateCPcpx, loadSeparateCPdpx, saveCP, showConflictCP,
             showDependencyCP, cpaCombiGraphCP, checkHostGraphCP, backCP;
-
     protected List<ParserEventListener> listener;
-
     protected List<StatusMessageListener> pmlistener;
-
     protected AGGAppl parent;
-
     protected EdGraGra pairsGraGra;
-
     protected EdGraph cpaGraph;
-
     protected RuleLayer rlayer;
-
     protected GraGraTreeView treeView;
-
     protected EdGraGra selectedGraGra;
-
     protected List<Rule> ruleList1, ruleList2;
-
     protected List<JMenu> menus;
-
     protected Hashtable<EdGraGra, Boolean> gragraChanged = new Hashtable<EdGraGra, Boolean>();
-
     protected boolean isWarned = false;
-
     protected boolean isLocked = true, resetDone = false;
     ;
-
 	protected Hashtable<JFrame, CriticalPairAnalysisSeparated> separatedFrames = new Hashtable<JFrame, CriticalPairAnalysisSeparated>();
-
     protected CriticalPairAnalysisSeparated hostGraphCPA;
     Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> hostGraphCPAcontainer;
-
     // CriticalPairAnalysisSeparated combinedCPA;
     protected JFrame hostGraphFrame;
-
     protected Hashtable<Graph, Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>> overlapGraphs;
-
     protected Graph overlapGraph;
-
     protected List<Hashtable<GraphObject, GraphObject>> hostGraphMappings;
-
     protected JButton nextMatchAtHostGraphButton;
-
     protected GraphDesktop graphDesktop;
-
     protected int x = 100, y = 50;
-
     protected int mouseX = -1, mouseY = -1;
-
     protected WindowListener wl;
-
     protected JFrame lastActiveFrame;
-
     protected boolean pairsSaved = false;
-
     protected GraphicsExportJPEG exportJPEG;
-
     protected String message = "";
-
 }

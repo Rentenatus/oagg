@@ -2,7 +2,7 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved.
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -35,7 +35,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 //import javax.swing.border.Border;
-
 import agg.gui.icons.CompletionIcon;
 import agg.gui.trafo.GraGraTransform;
 import agg.xt_basis.CompletionStrategySelector;
@@ -52,13 +51,11 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
     public GraTraMatchOptionGUI(GraGraTransform trans) {
         super();
         this.transform = trans;
-
         GridBagLayout gridbag = new GridBagLayout();
         setLayout(gridbag);
 //		GridBagConstraints c = new GridBagConstraints();		
 //		Border border = new TitledBorder("");
         // Border border = BorderFactory.createEtchedBorder();
-
         // create panel for strategy
         JPanel stratPanel = new JPanel();
         stratPanel.setLayout(new GridLayout(0, 1));
@@ -67,20 +64,16 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
         icon.setEnabled(true);
         stratLabel.setIcon(icon);
         stratPanel.add(stratLabel);
-
         Enumeration<MorphCompletionStrategy> strategies = CompletionStrategySelector.getStrategies();
-
         while (strategies.hasMoreElements()) {
             MorphCompletionStrategy mcs = strategies.nextElement();
             this.strategyNames.addElement(CompletionStrategySelector.getName(mcs));
         }
-
         if (this.strategy == null) {
             /* default ist CSP strategy */
             this.strategy = CompletionStrategySelector.getDefault();
             // strategy.showProperties();
         }
-
         this.strategyComboBox = new JComboBox(this.strategyNames);
         this.strategyComboBox.setSelectedItem(CompletionStrategySelector
                 .getName(this.strategy));
@@ -102,19 +95,15 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                 }
             }
         });
-
         stratPanel.add(this.strategyComboBox);
-
         // create panel for match properties
         JPanel matchPanel = new JPanel(new BorderLayout());
         matchPanel.setBorder(new TitledBorder("  Match conditions  "));
-
         JPanel matchP = new JPanel(new GridLayout(1, 0));
         JPanel matchP1 = new JPanel(new GridLayout(0, 1));
         JPanel matchP2 = new JPanel(new GridLayout(0, 1));
         matchP.add(matchP1);
         matchP.add(matchP2);
-
         this.supportbits = this.strategy.getSupportedProperties();
         this.activebits = this.strategy.getProperties();
         for (int i = 0; i < CompletionPropertyBits.BITNAME.length; i++) {
@@ -181,7 +170,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
         matchP3.add(randomCSPDomain);
         matchPanel.add(matchP, BorderLayout.CENTER);
         matchPanel.add(matchP3, BorderLayout.SOUTH);
-
         JPanel consistencyPanel = new JPanel();
         consistencyPanel.setBorder(new TitledBorder(
                 "  Consistency check during transformation  "));
@@ -216,9 +204,7 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                 GraTraMatchOptionGUI.this.transform.updateGraTraOption(GraTraOptions.CONSISTENT_ONLY, GraTraMatchOptionGUI.this.consistency);
             }
         });
-
         consistencyPanel.add(new JLabel(" Consistency check at the end of ( layer ) graph trafo"));
-
         this.consistencyCheckAfterGraphTrafoCB = new JCheckBox("consistent at the end", null, false);
         consistencyPanel.add(this.consistencyCheckAfterGraphTrafoCB);
         this.consistencyCheckAfterGraphTrafo = false;
@@ -230,7 +216,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                 GraTraMatchOptionGUI.this.transform.updateGraTraOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO, GraTraMatchOptionGUI.this.consistencyCheckAfterGraphTrafo);
             }
         });
-
 //		JLabel consistencyLabel1 = new JLabel(
 //				"  ( If a grammar doesn't contain any graph constraints,");
 //		consistencyPanel.add(consistencyLabel1);
@@ -252,11 +237,9 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                         GraTraMatchOptionGUI.this.checkRuleAppl);
             }
         });
-
         // create panel for display settings
         JPanel displayPanel = new JPanel(new GridLayout(0, 1));
         displayPanel.setBorder(new TitledBorder("  Graph display settings  "));
-
         this.selectMatchCB = new JCheckBox("select objects of match",
                 null, false);
         displayPanel.add(this.selectMatchCB);
@@ -267,7 +250,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                 GraTraMatchOptionGUI.this.selectMatch = GraTraMatchOptionGUI.this.selectMatchCB.isSelected();
             }
         });
-
         this.showGraphAfterStepCB = new JCheckBox("show after step", null, true);
         displayPanel.add(this.showGraphAfterStepCB);
         this.showGraphAfterStep = true;
@@ -285,7 +267,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                 GraTraMatchOptionGUI.this.waitAfterStep = GraTraMatchOptionGUI.this.waitAfterStepCB.isSelected();
             }
         });
-
         this.selectNewAfterStepCB = new JCheckBox("select new objects after step",
                 null, false);
         displayPanel.add(this.selectNewAfterStepCB);
@@ -296,7 +277,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                 GraTraMatchOptionGUI.this.selectNewAfterStep = GraTraMatchOptionGUI.this.selectNewAfterStepCB.isSelected();
             }
         });
-
         constrainBuild(this, stratPanel, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(this, matchPanel, 0, 1, 1, 1, GridBagConstraints.BOTH,
@@ -351,14 +331,12 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
         if (optionNames.isEmpty()) {
             return;
         }
-
         // set strategy
         if (optionNames.contains("CSP")) {
             this.strategyComboBox.setSelectedItem("CSP");
         } else if (optionNames.contains("CSP w/o BJ")) {
             this.strategyComboBox.setSelectedItem("CSP w/o BJ");
         }
-
         String stratName = (String) this.strategyComboBox.getSelectedItem();
         Enumeration<MorphCompletionStrategy> strats = CompletionStrategySelector.getStrategies();
         while (strats.hasMoreElements()) {
@@ -369,19 +347,15 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                 break;
             }
         }
-
         if (this.strategy == null) {
             this.strategy = CompletionStrategySelector.getDefault();
         }
-
         // set match conditions
         this.supportbits = this.strategy.getSupportedProperties();
         this.activebits = this.strategy.getProperties();
-
         for (int j = 0; j < this.checkboxBitNames.size(); j++) {
             JCheckBox elem = this.checkboxBitNames.elementAt(j);
             elem.setEnabled(this.supportbits.get(j));
-
             if (elem.isEnabled()) {
                 if (elem.getText().equals(GraTraOptions.INJECTIVE)) {
                     if (optionNames.contains(GraTraOptions.INJECTIVE)) {
@@ -432,7 +406,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
                         this.activebits.clear(j);
                     }
                 }
-
                 fireOptionEvent(new agg.gui.parser.event.OptionEvent(elem));
             }
         }
@@ -441,7 +414,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
         } else {
             this.identCB.setEnabled(true);
         }
-
         if (optionNames.contains(GraTraOptions.DETERMINED_CSP_DOMAIN)) {
             this.randomCSPDomain.setSelected(false);
             this.strategy.setRandomisedDomain(false);
@@ -449,7 +421,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
             this.randomCSPDomain.setSelected(true);
             this.strategy.setRandomisedDomain(true);
         }
-
         // set consistency
         if (optionNames.contains(GraTraOptions.CONSISTENT_ONLY)) {
             this.consistencyRB1.setSelected(true);
@@ -458,7 +429,6 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
             this.consistencyRB2.setSelected(true);
             this.consistency = false;
         }
-
         if (optionNames.contains(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
             this.consistencyCheckAfterGraphTrafoCB.setSelected(true);
             this.consistencyCheckAfterGraphTrafo = true;
@@ -470,12 +440,10 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
             this.consistencyRB1.setEnabled(true);
             this.consistencyRB2.setEnabled(true);
         }
-
         if (optionNames.contains(GraTraOptions.SELECT_NEW_AFTER_STEP)) {
             this.selectNewAfterStep = true;
             this.selectNewAfterStepCB.setSelected(true);
         }
-
         if (optionNames.contains(GraTraOptions.WAIT_AFTER_STEP)) {
             this.waitAfterStep = true;
             this.waitAfterStepCB.setSelected(true);
@@ -579,14 +547,10 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
 
     public void executeOnClose() {
     }
-
     GraGraTransform transform;
-
     MorphCompletionStrategy strategy;
-
     @SuppressWarnings("rawtypes")
     JComboBox strategyComboBox;
-
     JCheckBox injCB, identCB, dangCB,
             //PACsCB, NACsCB, 
             checkRuleApplCB, parallelMatchingCB,
@@ -594,26 +558,16 @@ public class GraTraMatchOptionGUI extends AbstractOptionGUI // implements
             waitAfterStepCB, selectNewAfterStepCB,
             consistencyCheckAfterGraphTrafoCB,
             randomCSPDomain;
-
     JRadioButton consistencyRB1, consistencyRB2;
-
     Vector<String> strategyNames = new Vector<String>(3);
-
     Vector<String> bitNames = new Vector<String>(3);
-
     String bitName = "";
-
     Vector<JCheckBox> checkboxBitNames = new Vector<JCheckBox>(3);
-
     BitSet supportbits;
-
     BitSet activebits;
-
     JPanel mainPanel;
-
     boolean consistency, showGraphAfterStep, waitAfterStep,
             selectMatch, selectNewAfterStep,
             checkRuleAppl, parallelMatching,
             consistencyCheckAfterGraphTrafo;
-
 }

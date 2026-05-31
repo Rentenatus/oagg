@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
@@ -21,7 +22,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Insets;
 import java.net.URL;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrManager;
 import agg.attribute.AttrTuple;
@@ -31,7 +31,8 @@ import agg.attribute.view.AttrViewSetting;
 import agg.gui.saveload.GraphicsExportJPEG;
 
 /**
- * Combination of both a context and a full instance editor of an attribute manager. Delegating, most of the time.
+ * Combination of both a context and a full instance editor of an attribute
+ * manager. Delegating, most of the time.
  *
  * @author $Author: olga $
  * @version $Id: TopEditor.java,v 1.14 2010/08/18 09:24:53 olga Exp $
@@ -40,21 +41,13 @@ public class TopEditor extends AbstractEditor implements AttrTopEditor {
 
     protected JPanel titlePanel;
     protected JLabel titleLabel;
-
     protected JPanel instPanel, contextPanel;
-
     protected JTabbedPane tabbedPane;
-
     protected JPanel tabPanel;
-
     protected ContextEditor contextEditor;
-
     protected FullInstanceTupleEditor instEditor;
-
     protected CustomizingEditor customEditor;
-
     protected GraphicsExportJPEG exportJPEG;
-
     protected JButton exportJPEGButton;
 
     public TopEditor(AttrManager m, AttrEditorManager em) {
@@ -76,10 +69,8 @@ public class TopEditor extends AbstractEditor implements AttrTopEditor {
         this.tabbedPane.addTab("Customize", this.customEditor.getComponent());
         int i = this.tabbedPane.indexOfTab("Current Attribute");
         this.tabbedPane.setSelectedIndex(i);
-
         this.tabPanel = new JPanel(new BorderLayout());
         this.tabPanel.add(this.tabbedPane, BorderLayout.CENTER);
-
         this.exportJPEGButton = createExportJPEGButton();
         this.titlePanel = new JPanel(new BorderLayout());
         this.titleLabel = new JLabel("     ");
@@ -88,15 +79,12 @@ public class TopEditor extends AbstractEditor implements AttrTopEditor {
         if (this.exportJPEGButton != null) {
             this.titlePanel.add(this.exportJPEGButton, BorderLayout.EAST);
         }
-
         this.mainPanel = new JPanel(new BorderLayout());
         this.mainPanel.add(this.titlePanel, BorderLayout.NORTH);
-
         // mainPanel.setDebugGraphicsOptions( DebugGraphics.LOG_OPTION );
         // mainPanel.setDebugGraphicsOptions( DebugGraphics.FLASH_OPTION );
         // mainPanel.setDebugGraphicsOptions( DebugGraphics.BUFFERED_OPTION );
         this.mainPanel.add(this.tabPanel, BorderLayout.CENTER);
-
     }
 
     private JButton createExportJPEGButton() {
@@ -118,7 +106,6 @@ public class TopEditor extends AbstractEditor implements AttrTopEditor {
             return b;
         }
         return null;
-
     }
 
     /**
@@ -230,7 +217,6 @@ public class TopEditor extends AbstractEditor implements AttrTopEditor {
     public void setTitleText(String str) {
         this.titleLabel.setText(str);
     }
-
 }
 /*
  * $Log: TopEditor.java,v $

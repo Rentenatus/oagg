@@ -2,25 +2,26 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.browser;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 
 /**
- * The interface that defines a graph browser for viewing graphs. The graph can be one of types:
- * <code>editor.impl.EdGraph</code> or <code>agg.xt_basis.Graph</code> ,
+ * The interface that defines a graph browser for viewing graphs. The graph can
+ * be one of types: <code>editor.impl.EdGraph</code> or
+ * <code>agg.xt_basis.Graph</code> ,
  *
  * @author $Author: olga $
  * @version $Id: GraphBrowser.java,v 1.2 2007/09/10 13:05:53 olga Exp $
@@ -53,7 +54,8 @@ public interface GraphBrowser {
     public abstract void showGraph();
 
     /**
-     * Return gragra. The gragra is of type <code>agg.editor.impl.EdGraGra</code>.
+     * Return gragra. The gragra is of type
+     * <code>agg.editor.impl.EdGraGra</code>.
      */
     public abstract EdGraGra getGraGra();
 
@@ -91,7 +93,6 @@ public interface GraphBrowser {
      * Read base graph and update graphics.
      */
     public abstract void updateGraphics();
-
 }
 // $Log: GraphBrowser.java,v $
 // Revision 1.2  2007/09/10 13:05:53  olga
@@ -120,3 +121,4 @@ public interface GraphBrowser {
 // Revision 1.3 1999/08/17 10:51:13 shultzke
 // neues Package hinzugefuegt
 //
+

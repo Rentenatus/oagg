@@ -2,23 +2,22 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.popupmenu;
 
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdGraph;
 import agg.gui.treeview.GraGraTreeView;
 import agg.gui.treeview.nodedata.GraGraTextualComment;
@@ -30,7 +29,6 @@ public class GraphPopupMenu extends JPopupMenu {
     public GraphPopupMenu(GraGraTreeView tree) {
         super("Graph");
         this.treeView = tree;
-
         JMenuItem mi = add(new JMenuItem("Reset"));
         mi.setActionCommand("resetGraph");
 //		mi.addActionListener(this.treeView);
@@ -40,7 +38,6 @@ public class GraphPopupMenu extends JPopupMenu {
             }
         });
         // mi.setMnemonic('r');
-
         mi = add(new JMenuItem("Delete                   Delete"));
         mi.setActionCommand("deleteGraph");
 //		mi.addActionListener(this.treeView);
@@ -55,9 +52,7 @@ public class GraphPopupMenu extends JPopupMenu {
         });
         mi.setEnabled(false);
         this.delete = mi;
-
         addSeparator();
-
         mi = add(new JMenuItem("Textual Comments"));
         mi.setActionCommand("commentGraph");
 //		mi.addActionListener(this.treeView);
@@ -66,7 +61,6 @@ public class GraphPopupMenu extends JPopupMenu {
                 editComments();
             }
         });
-
         pack();
         setBorderPainted(true);
     }
@@ -103,18 +97,15 @@ public class GraphPopupMenu extends JPopupMenu {
             }
             GraGraTextualComment comments = new GraGraTextualComment(this.treeView.getFrame(), p.x,
                     p.y, this.graph.getBasisGraph());
-
             if (comments != null) {
                 comments.setVisible(true);
             }
         }
     }
-
     private GraGraTreeView treeView;
     TreePath path;
     DefaultMutableTreeNode node;
     GraGraTreeNodeData data;
     EdGraph graph;
-
     private JMenuItem delete;
 }

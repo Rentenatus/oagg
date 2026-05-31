@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.gui;
 
@@ -15,8 +16,9 @@ import agg.attribute.handler.HandlerExpr;
 import agg.attribute.handler.HandlerType;
 
 /**
- * Returning the appropriate editors/renderers. All the return valus can be null, meaning the client should use his
- * default editors and change the edited objects by using the usual interface.
+ * Returning the appropriate editors/renderers. All the return valus can be
+ * null, meaning the client should use his default editors and change the edited
+ * objects by using the usual interface.
  *
  * @version $Id: HandlerEditorManager.java,v 1.2 2007/09/10 13:05:51 olga Exp $
  * @author $Author: olga $

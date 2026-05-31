@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import java.util.Vector;
-
 import agg.attribute.AttrMember;
 import agg.attribute.AttrTuple;
 import agg.attribute.AttrType;
@@ -33,7 +33,6 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
      * Parent of this type. All parent entries are "inherited".
      */
     protected TupleObject parent;
-
     /* Parent list of this type. All parent entries are "inherited". */
 //	 protected Vector<TupleObject> parents = new Vector<TupleObject>(2);
     /**
@@ -46,9 +45,6 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
     public TupleObject(AttrTupleManager manager, TupleObject parent) {
         super(manager);
         assignParent(parent);
-    }
-
-    protected void finalize() {
     }
 
     public void dispose() {
@@ -65,7 +61,6 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
         if (this.parent != null) {
             this.parent.removeObserver(this);
         }
-
         this.parent = newParent;
         if (this.parent != null) {
             this.parent.addObserver(this);
@@ -96,13 +91,11 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
         if ((this.members.size() == 0) || (indx < 0)) {
             return null;
         }
-
         if (indx >= this.members.size()) {
             // warn("index="+index+" >= size=" + this.members.size()+"\nSetting to
             // 0.", true );
             indx = 0;
         }
-
         return this.members.elementAt(indx);
     }
 
@@ -130,7 +123,8 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
     // End of container-specific access.
     //
     /**
-     * This method interface is needed in order to treat attribute types and instances uniformly.
+     * This method interface is needed in order to treat attribute types and
+     * instances uniformly.
      */
     public abstract DeclTuple getTupleType();
 
@@ -176,7 +170,6 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
         if (this.parent == null) {
             return 0;
         }
-
         return this.parent.getSize();
     }
 
@@ -250,7 +243,8 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
     /**
      * Translation between number- and name-oriented access.
      *
-     * @return The corresponding index if the name is declared within the tuple, -1 otherwise.
+     * @return The corresponding index if the name is declared within the tuple,
+     * -1 otherwise.
      */
     public int getIndexForName(String name) {
         return getTupleType().getIndexForName(name);
@@ -259,14 +253,14 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
     /**
      * Translation between address- and number-oriented access.
      *
-     * @return The corresponding index if the member is within the tuple, -1 otherwise.
+     * @return The corresponding index if the member is within the tuple, -1
+     * otherwise.
      */
     public int getIndexForMember(AttrMember m) {
         if (m == null) {
             return -1;
         }
         int size = getSize();
-
         for (int i = 0; i < size; i++) {
             if (m == getMemberAt(i)) {
                 return i;
@@ -280,8 +274,8 @@ public abstract class TupleObject extends ChainedObserver implements AttrTuple,
     //
     /**
      * *************************************************************************
-     * Getting the total number of shown attribute entries (lines); The retrieval index range is [0 ..
-     * (getNumberOfEntries() - 1)].
+     * Getting the total number of shown attribute entries (lines); The
+     * retrieval index range is [0 .. (getNumberOfEntries() - 1)].
      */
     public int getNumberOfEntries() {
         return getSize();

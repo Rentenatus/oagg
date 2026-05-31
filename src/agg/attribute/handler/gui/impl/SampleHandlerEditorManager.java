@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.gui.impl;
 
@@ -19,10 +20,11 @@ import agg.attribute.handler.gui.HandlerExprEditor;
 import agg.attribute.handler.gui.HandlerTypeEditor;
 import agg.attribute.handler.impl.javaExpr.JexHandler;
 import agg.attribute.handler.impl.javaExpr.gui.JexHandlerEditor;
-
 // import java.util.EventObject;
+
 /**
- * @version $Id: SampleHandlerEditorManager.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
+ * @version $Id: SampleHandlerEditorManager.java,v 1.1 2005/08/25 11:56:58
+ * enrico Exp $
  * @author $Author: olga $
  */
 public class SampleHandlerEditorManager extends Object implements
@@ -43,7 +45,6 @@ public class SampleHandlerEditorManager extends Object implements
             return new JexHandlerEditor(handler);
         }
         return null;
-
     }
 
     public HandlerTypeEditor getTypeEditor(AttrHandler handler, HandlerType type) {
@@ -57,7 +58,6 @@ public class SampleHandlerEditorManager extends Object implements
             return new ColorValueEditor(handler);
         }
         return null;
-
     }
 }
 /*

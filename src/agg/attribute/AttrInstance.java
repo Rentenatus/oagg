@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
@@ -36,9 +37,10 @@ public interface AttrInstance extends AttrTuple, XMLObject {
     public boolean isValueSetAt(String name);
 
     /**
-     * Retrieving the value of an entry. If the result is 'null', the reason can be: 1. The value is set as 'null'; 2.
-     * The value is not set at all. For testing, if the value was set as 'null' or not set at all, use 'isValueSetAt()'
-     * of this class.
+     * Retrieving the value of an entry. If the result is 'null', the reason can
+     * be: 1. The value is set as 'null'; 2. The value is not set at all. For
+     * testing, if the value was set as 'null' or not set at all, use
+     * 'isValueSetAt()' of this class.
      */
     public Object getValueAt(String name);
 
@@ -59,7 +61,8 @@ public interface AttrInstance extends AttrTuple, XMLObject {
     public void setExprValueAt(String expr, String name);
 
     /**
-     * Setting an expression as an entry without immediate evaluation. Syntax and type checking are performed.
+     * Setting an expression as an entry without immediate evaluation. Syntax
+     * and type checking are performed.
      *
      * @param expr textual expression representation;
      * @param name specifies the entry to change;
@@ -67,7 +70,8 @@ public interface AttrInstance extends AttrTuple, XMLObject {
     public void setExprAt(String expr, String name);
 
     /**
-     * Copying the contents of an attribute instance into another; The reference to the attribute type is shared.
+     * Copying the contents of an attribute instance into another; The reference
+     * to the attribute type is shared.
      */
     public void copy(AttrInstance source);
 
@@ -77,18 +81,20 @@ public interface AttrInstance extends AttrTuple, XMLObject {
     public void copyEntries(AttrInstance source);
 
     /**
-     * Getting the number of variables declared by this instance which have no value assigned to them yet. Each variable
-     * name is counted only once, even if it is used more than once in this tuple.
+     * Getting the number of variables declared by this instance which have no
+     * value assigned to them yet. Each variable name is counted only once, even
+     * if it is used more than once in this tuple.
      *
      * @return The number of free variables.
      */
     public int getNumberOfFreeVariables(AttrContext context);
 
     /**
-     * Applying a rule; the substitutions occur "in-place" (in the recipient); In Graph Transformation, this method is
-     * applied to attributes of host graph objects, "rightSide" being an attribute of the right side of the rule and
-     * "context" being the "match"-context built up by subsequently matching the attributes of corresponding graphical
-     * objects.
+     * Applying a rule; the substitutions occur "in-place" (in the recipient);
+     * In Graph Transformation, this method is applied to attributes of host
+     * graph objects, "rightSide" being an attribute of the right side of the
+     * rule and "context" being the "match"-context built up by subsequently
+     * matching the attributes of corresponding graphical objects.
      */
     public void apply(AttrInstance rightSide, AttrContext context);
 
@@ -102,7 +108,6 @@ public interface AttrInstance extends AttrTuple, XMLObject {
      */
 //	public void apply(AttrInstance rightSide, AttrContext context,
 //			AttrInstance g);
-
     /*
 	 * This method works like public void apply( AttrInstance rightSide,
 	 * AttrContext context, AttrInstance g ) but also allows using variables
@@ -111,8 +116,9 @@ public interface AttrInstance extends AttrTuple, XMLObject {
 //	public void apply(AttrInstance rightSide, AttrContext context,
 //			AttrInstance g, boolean allowVariableWithoutValue);
     /**
-     * This method works like public void apply( AttrInstance rightSide, AttrContext context ) but also allows using
-     * variables without value in value of attribute member as expression
+     * This method works like public void apply( AttrInstance rightSide,
+     * AttrContext context ) but also allows using variables without value in
+     * value of attribute member as expression
      */
     public void apply(AttrInstance rightSide, AttrContext context,
             boolean allowVariableWithoutValue);
@@ -120,15 +126,13 @@ public interface AttrInstance extends AttrTuple, XMLObject {
     public boolean compareTo(AttrInstance another);
 
     /**
-     * Unset the value of the own attribute members (not of attribute members of its parents). The value of its
-     * attribute member is null after this.
+     * Unset the value of the own attribute members (not of attribute members of
+     * its parents). The value of its attribute member is null after this.
      */
     public void unsetValue();
-
     // /** Glueing - for later realization. */
     // public AttrInstance glue( AttrInstance withInstance );
 }
-
 /*
  * $Log: AttrInstance.java,v $
  * Revision 1.4  2010/08/05 14:12:04  olga

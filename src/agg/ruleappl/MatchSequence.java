@@ -1,23 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
+ * *****************************************************************************
  */
 package agg.ruleappl;
-
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
@@ -32,11 +23,18 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.agt.AmalgamatedRule;
 import agg.xt_basis.agt.RuleScheme;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
- * This class is used inside of the <code>RuleSequence</code> class to save information about matches computed during
- * applicability check of rule sequences. The class <code>ApplRuleSequencesGraTraImpl</code> makes use of this
- * information to compute transformation matches of the rules of an applicable rule sequences.
+ * This class is used inside of the <code>RuleSequence</code> class to save
+ * information about matches computed during applicability check of rule
+ * sequences. The class <code>ApplRuleSequencesGraTraImpl</code> makes use of
+ * this information to compute transformation matches of the rules of an
+ * applicable rule sequences.
  *
  * @author olga
  *
@@ -44,21 +42,13 @@ import agg.xt_basis.agt.RuleScheme;
 public class MatchSequence {
 
     RuleSequence ruleSequence;
-
     Graph graph;
-
     final List<Rule> rules;
-
     final Vector<Hashtable<GraphObject, GraphObject>> matches;
-
     final Vector<Hashtable<GraphObject, GraphObject>> comatches;
-
     Hashtable<String, ObjectFlow> objectFlow;
-
     final Hashtable<Integer, Rule> imgObj2Rule;
-
     final Hashtable<Integer, ConcurrentRule> imgObj2ConcurrentRule;
-
     int trafoIndx = -1;
 
     /**
@@ -69,7 +59,6 @@ public class MatchSequence {
     public MatchSequence(final RuleSequence ruleSeq) {
         this.ruleSequence = ruleSeq;
         this.graph = this.ruleSequence.getGraph();
-
         this.rules = new Vector<Rule>();
         this.matches = new Vector<Hashtable<GraphObject, GraphObject>>();
         this.comatches = new Vector<Hashtable<GraphObject, GraphObject>>();
@@ -116,7 +105,8 @@ public class MatchSequence {
     }
 
     /**
-     * Saves information about current rule and match on which this rule is applicable at a host graph.
+     * Saves information about current rule and match on which this rule is
+     * applicable at a host graph.
      *
      * @param currentRule an applicable rule
      * @param m	a valid match
@@ -127,7 +117,6 @@ public class MatchSequence {
         while (objs.hasNext()) {
             GraphObject obj = objs.next();
             GraphObject img = m.getImage(obj);
-
             match.put(obj, img);
         }
         this.matches.add(match);
@@ -135,11 +124,13 @@ public class MatchSequence {
     }
 
     /**
-     * Saves information about current rule and its pure enabling predecessor rule.
+     * Saves information about current rule and its pure enabling predecessor
+     * rule.
      *
      * @param currentRule the current rule
      * @param totalPureRule	a pure enabling predecessor rule
-     * @param m	embedding of the LHS of the current rule into the RHS of the pure enabling predecessor rule
+     * @param m	embedding of the LHS of the current rule into the RHS of the
+     * pure enabling predecessor rule
      * @param indx_currentRule
      * @param indx_totalPureRule
      */
@@ -149,13 +140,11 @@ public class MatchSequence {
             final OrdinaryMorphism m,
             int indx_currentRule,
             int indx_totalPureRule) {
-
         final Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>();
         final Iterator<GraphObject> objs = m.getDomain();
         while (objs.hasNext()) {
             GraphObject obj = objs.next();
             GraphObject img = m.getImage(obj);
-
             match.put(obj, img);
         }
         this.matches.add(match);
@@ -164,8 +153,8 @@ public class MatchSequence {
     }
 
     /**
-     * Saves information about current rule and corresponding concurrent rule and match which are computed during
-     * applicability check of rule sequence.
+     * Saves information about current rule and corresponding concurrent rule
+     * and match which are computed during applicability check of rule sequence.
      *
      * @param currentRule a rule
      * @param concurrentRule	computed concurrent rule
@@ -175,13 +164,11 @@ public class MatchSequence {
             final Rule currentRule,
             final ConcurrentRule concurrentRule,
             final OrdinaryMorphism m) {
-
         Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>();
         final Iterator<GraphObject> objs = m.getDomain();
         while (objs.hasNext()) {
             GraphObject obj = objs.next();
             GraphObject img = m.getImage(obj);
-
             match.put(obj, img);
         }
         this.matches.add(match);
@@ -191,7 +178,8 @@ public class MatchSequence {
     }
 
     /**
-     * Saves information about the comatch after the given applicable rule was applied at a host graph.
+     * Saves information about the comatch after the given applicable rule was
+     * applied at a host graph.
      *
      * @param r
      * @param com
@@ -225,7 +213,6 @@ public class MatchSequence {
     public Hashtable<GraphObject, GraphObject> getDirectMatch(
             int indx,
             final Rule rule) {
-
         // predefined matches exist
         if (indx >= 0 && indx < this.matches.size()) {
             return this.matches.get(indx);
@@ -234,8 +221,9 @@ public class MatchSequence {
     }
 
     /**
-     * Returns GraphObject pairs of partial match of the specified rule at the specified index in the rule sequence if
-     * and only if an object flow is defined.
+     * Returns GraphObject pairs of partial match of the specified rule at the
+     * specified index in the rule sequence if and only if an object flow is
+     * defined.
      *
      * @param indx
      * @param rule
@@ -244,7 +232,6 @@ public class MatchSequence {
     public Hashtable<GraphObject, GraphObject> getMatch(
             int indx,
             final Rule rule) {
-
         // no predefined matches exist
         if (this.matches.size() == 0) {
             final Hashtable<GraphObject, GraphObject> match = makeMatchMapByObjectFlow(rule, indx);
@@ -254,7 +241,8 @@ public class MatchSequence {
     }
 
     /**
-     * Returns GraphObject pairs of partial match of the specified rule at the specified index in the rule sequence.
+     * Returns GraphObject pairs of partial match of the specified rule at the
+     * specified index in the rule sequence.
      *
      * @param indx	index of the current rule
      * @param rule pure enabling predecessor rule
@@ -270,16 +258,12 @@ public class MatchSequence {
             final int preRuleIndx,
             final Rule preRule,
             final Graph g) {
-
         // no predefined matches exist
         if (this.matches.size() == 0) {
             final Hashtable<GraphObject, GraphObject> match = makeMatchMapByObjectFlow(rule, indx);
             return match;
-
         } else if (indx >= 0 && indx < this.matches.size() && preRuleIndx < indx) {
-
             final Hashtable<GraphObject, GraphObject> srcMatch = this.matches.get(indx);
-
             // rule is the first rule
             if (preRule == null) {
                 if (this.ruleSequence.getGraph() != null
@@ -292,23 +276,19 @@ public class MatchSequence {
                             this.objectFlow.get("0:1"));
                     return match;
                 }
-
                 // initial match of the first rule
                 return srcMatch;
             }
-
             Hashtable<GraphObject, GraphObject> match = makeMatchMapByObjectFlow(
                     rule,
                     indx);
             if (!match.isEmpty()) {
                 return match;
             }
-
             if (this.imgObj2Rule.get(Integer.valueOf(indx)) != null) {
                 match = makeMatchMapByTotalPureRule(
                         indx, preRule, this.comatches.get(preRuleIndx));
                 return match;
-
             } else if (this.imgObj2ConcurrentRule.get(Integer.valueOf(indx)) != null
                     && this.imgObj2ConcurrentRule.get(Integer.valueOf(indx)).getSecondSourceRule() == rule) {
                 match = makeMatchMapByConcurrentRuleBackward(
@@ -319,7 +299,6 @@ public class MatchSequence {
                 return srcMatch;
             }
         }
-
         return null;
     }
 
@@ -337,21 +316,17 @@ public class MatchSequence {
             final Hashtable<GraphObject, GraphObject> preRuleComatch) {
 //		System.out.println("## MatchSequence.makeMatchByTotalPureRule  :: ");
         final Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>();
-
         final Hashtable<GraphObject, GraphObject> srcMatch = this.matches.get(indx);
         final Rule totalPureRule = this.imgObj2Rule.get(Integer.valueOf(indx));
-
         final Enumeration<GraphObject> objs = srcMatch.keys();
         while (objs.hasMoreElements()) {
             GraphObject obj = objs.nextElement();
             GraphObject img = srcMatch.get(obj);
-
             if (totalPureRule == preRule) {
                 GraphObject img2 = preRuleComatch.get(img);
                 if (img2 != null && img2.getContext() != null) {
                     match.put(obj, img2);
                 }
-
             } else {
                 final Hashtable<GraphObject, GraphObject> srcComatch
                         = this.comatches.get(this.ruleSequence.getIndexOf(totalPureRule));
@@ -371,14 +346,12 @@ public class MatchSequence {
             final ObjectFlow objFlow,
             final Object srcOfOutput,
             final Hashtable<GraphObject, GraphObject> matchmap) {
-
         if (srcOfOutput instanceof Rule) {
             final Rule preRule = (Rule) srcOfOutput;
             int indx_preRule = objFlow.getIndexOfOutput();
             if (this.ruleSequence.getGraph() != null) {
                 indx_preRule--;
             }
-
             if (indx_preRule >= 0 && indx_preRule < this.comatches.size()) {
                 final Hashtable<GraphObject, GraphObject> srcComatch = this.comatches.get(indx_preRule);
                 if (srcComatch != null) {
@@ -460,44 +433,33 @@ public class MatchSequence {
             final Rule rule,
             int indx,
             final ObjectFlow objFlow) {
-
 //		System.out.println("### MatchSequence.makeMatchByObjectFlow  of rule:  "+rule.getName());
         final Hashtable<GraphObject, GraphObject> matchmap = new Hashtable<GraphObject, GraphObject>();
-
         final Object srcOfOutput = objFlow.getSourceOfOutput();
-
         fillMatchMapByObjectFlow(rule, objFlow, srcOfOutput, matchmap);
-
         return matchmap;
     }
 
     public Hashtable<GraphObject, GraphObject> makeMatchMapByObjectFlow(
             final Rule rule,
             int indx) {
-
 //		System.out.println("## MatchSequence.makeMatchByObjectFlow  of rule:  "+rule.getName());
         final Hashtable<GraphObject, GraphObject> matchmap = new Hashtable<GraphObject, GraphObject>();
-
         if (indx == -1) {
             return matchmap;
         }
-
         int index = indx;
         if (this.ruleSequence.getGraph() != null) {
             index++;
         }
-
         Enumeration<String> keys = this.objectFlow.keys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             String[] keyItems = key.split(":");
             ObjectFlow objFlow = this.objectFlow.get(key);
-
             if (Integer.valueOf(keyItems[1]).intValue() == index
                     && rule.getName().equals(((Rule) objFlow.getSourceOfInput()).getName())) {
-
                 Object srcOfOutput = objFlow.getSourceOfOutput();
-
                 fillMatchMapByObjectFlow(rule, objFlow, srcOfOutput, matchmap);
             }
         }
@@ -507,15 +469,11 @@ public class MatchSequence {
     public Hashtable<GraphObject, GraphObject> makeMatchMapByObjectFlow(
             final Rule rule,
             final List<ObjectFlow> objFlowList) {
-
 //		System.out.println("##### MatchSequence.makeMatchByObjectFlow  of rule:  "+rule.getName());
         final Hashtable<GraphObject, GraphObject> matchmap = new Hashtable<GraphObject, GraphObject>();
-
         for (int i = 0; i < objFlowList.size(); i++) {
             ObjectFlow objFlow = objFlowList.get(i);
-
             Object srcOfOutput = objFlow.getSourceOfOutput();
-
             fillMatchMapByObjectFlow(rule, objFlow, srcOfOutput, matchmap);
         }
         return matchmap;
@@ -525,12 +483,9 @@ public class MatchSequence {
             int indx,
             final Rule ruleAtIndx,
             final Graph g) {
-
         final Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>();
-
 //		final Hashtable<GraphObject, GraphObject> srcMatch = this.matches.get(indx);
         final ConcurrentRule concurRule = this.imgObj2ConcurrentRule.get(Integer.valueOf(indx));
-
         boolean secondRuleIsRuleAtIndx = false;
         ConcurrentRule testCR = concurRule;
         while (!secondRuleIsRuleAtIndx) {
@@ -542,12 +497,9 @@ public class MatchSequence {
                 break;
             }
         }
-
         if (secondRuleIsRuleAtIndx) {
             if (concurRule.getSecondSourceConcurrentRule() != null) {
-
                 final Vector<GraphObject> domList = new Vector<GraphObject>();
-
                 ConcurrentRule tmpCR = concurRule;
                 ConcurrentRule tmpPreCR = tmpCR.getSecondSourceConcurrentRule();
                 // find recursively all done comatches of rule before
@@ -566,7 +518,6 @@ public class MatchSequence {
                     tmpCR = tmpPreCR;
                     tmpPreCR = tmpCR.getSecondSourceConcurrentRule();
                 }
-
                 int i = tmpCR.getIndexOfFirstSourceRule();
                 if (i >= 0 && i < this.comatches.size()
                         && this.comatches.get(i) != null) {
@@ -578,14 +529,11 @@ public class MatchSequence {
                         }
                     }
                 }
-
                 makeGraphObjectMap(ruleAtIndx, domList, match, g);
             }
         }
-
         return match;
     }
-
 
     /*
 	private Hashtable<GraphObject, GraphObject> makeMatchMapByConcurrentRuleForward(
@@ -594,7 +542,6 @@ public class MatchSequence {
 			final Graph g) {
 		
 		final Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>();
-
 		final Hashtable<GraphObject, GraphObject> srcMatch = this.matches.get(indx);
 		final ConcurrentRule concurRule = this.imgObj2ConcurrentRule.get(Integer.valueOf(indx));
 				
@@ -645,7 +592,6 @@ public class MatchSequence {
             final Vector<GraphObject> goSet,
             final Hashtable<GraphObject, GraphObject> map,
             final Graph g) {
-
         if (!goSet.isEmpty()) {
             // create test match
             Match m = BaseFactory.theFactory().createMatch(r, g);
@@ -653,10 +599,8 @@ public class MatchSequence {
             final Iterator<Arc> arcs = m.getSource().getArcsSet().iterator();
             while (arcs.hasNext()) {
                 final Arc a = arcs.next();
-
                 for (int i = 0; i < goSet.size(); i++) {
                     final GraphObject obj = goSet.get(i);
-
                     if (obj.getContext() != null
                             && obj.isArc()
                             && a.getType().compareTo(obj.getType())) {
@@ -688,7 +632,6 @@ public class MatchSequence {
                             try {
                                 m.addMapping(a, obj);
                                 map.put(a, obj);
-
                                 goSet.remove(obj);
                                 goSet.remove(((Arc) obj).getSource());
                                 goSet.remove(((Arc) obj).getTarget());
@@ -732,5 +675,4 @@ public class MatchSequence {
     public void setTrafoIndex(int i) {
         this.trafoIndx = i;
     }
-
 }

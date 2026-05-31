@@ -1,7 +1,8 @@
 /**
  * <copyright>
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -34,8 +35,8 @@ public interface GraphOrientation {
     void sourceRemoveArc(final Arc anArc);
 
     /**
-     * Returns an error if the type multiplicity check failed after an edge of the specified type would be created,
-     * otherwise - null.
+     * Returns an error if the type multiplicity check failed after an edge of
+     * the specified type would be created, otherwise - null.
      *
      * @param g
      * @param edgeType
@@ -71,7 +72,7 @@ public interface GraphOrientation {
      */
     public boolean isParallelArcAllowed(final Graph g, Type edgeType, Node src, Node tar);
 
-    /** 
+    /**
      *
      * @param arc
      * @return
@@ -86,5 +87,4 @@ public interface GraphOrientation {
      * @return
      */
     public boolean isUsingArcType(Arc anArc, Arc typeArc);
-
 }

@@ -2,17 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.util.colim;
 
 /**
- * ForwardIterator is the interface of all iterators that can read and/or write one item at a time in a forward
- * direction.
+ * ForwardIterator is the interface of all iterators that can read and/or write
+ * one item at a time in a forward direction.
  */
 public interface ForwardIterator extends InputIterator, OutputIterator {
 
@@ -44,7 +45,8 @@ public interface ForwardIterator extends InputIterator, OutputIterator {
     public void put(int offset, Object object);
 
     /**
-     * Return the distance from myself to another iterator. I should be before the specified iterator.
+     * Return the distance from myself to another iterator. I should be before
+     * the specified iterator.
      *
      * @param iterator The iterator to compare myself against.
      */

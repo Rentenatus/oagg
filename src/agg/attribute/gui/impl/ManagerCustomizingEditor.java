@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JLabel;
@@ -25,7 +25,6 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
 //import javax.swing.table.TableModel;
-
 import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrEditor;
 import agg.attribute.gui.AttrEditorManager;
@@ -35,7 +34,8 @@ import agg.attribute.handler.AttrHandler;
  * Customizing of an attribute manager. To be completed.
  *
  * @author $Author: olga $
- * @version $Id: ManagerCustomizingEditor.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
+ * @version $Id: ManagerCustomizingEditor.java,v 1.1 2005/08/25 11:56:58 enrico
+ * Exp $
  */
 public class ManagerCustomizingEditor extends AbstractEditor implements
         AttrEditor, ScrollPaneConstants {
@@ -43,20 +43,14 @@ public class ManagerCustomizingEditor extends AbstractEditor implements
     public ManagerCustomizingEditor(AttrManager m, AttrEditorManager em) {
         super(m, em);
     }
-
     protected JTable handlerList;
-
     protected JPanel handlerListP;
-
     protected Box messageBox;
-
     protected String handlerData[][];
-
     protected String headers[] = null;
 
     @SuppressWarnings("serial")
     protected void genericCreateAllViews() {
-
         // List of handlers
         if (this.headers == null) {
             String h[] = {"Name", "Class", "Editor Class"};
@@ -76,7 +70,6 @@ public class ManagerCustomizingEditor extends AbstractEditor implements
                 handlerEditorName};
             this.handlerData[i] = row;
         }
-
 //		TableModel model = 
         new AbstractTableModel() {
             public Object getValueAt(int row, int column) {
@@ -95,7 +88,6 @@ public class ManagerCustomizingEditor extends AbstractEditor implements
                 return ManagerCustomizingEditor.this.headers[column];
             }
         };
-
         this.handlerList = new JTable(this.handlerData, this.headers);
         // handlerList = new JTable( model );
         this.handlerList.getTableHeader().setReorderingAllowed(false);
@@ -111,7 +103,6 @@ public class ManagerCustomizingEditor extends AbstractEditor implements
         this.handlerListP.setBorder(BorderFactory.createTitledBorder(
                 new EtchedBorder(), "Registered Attribute Handlers",
                 TitledBorder.LEFT, TitledBorder.TOP));
-
         // Under construction message
         this.messageBox = Box.createVerticalBox();
         this.messageBox.add(new JLabel("For now, just displaying."));
@@ -129,7 +120,6 @@ public class ManagerCustomizingEditor extends AbstractEditor implements
         this.mainPanel.add(this.messageBox, BorderLayout.CENTER);
     }
 }
-
 /*
  * $Log: ManagerCustomizingEditor.java,v $
  * Revision 1.4  2010/08/18 09:24:53  olga

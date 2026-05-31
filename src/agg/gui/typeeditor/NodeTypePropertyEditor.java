@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: NodeTypePropertyEditor.java,v 1.5 2010/09/23 08:24:01 olga Exp $
 package agg.gui.typeeditor;
@@ -24,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -43,7 +43,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.border.TitledBorder;
 import javax.swing.undo.*;
-
 import agg.editor.impl.EdType;
 import agg.editor.impl.EditUndoManager;
 import agg.editor.impl.TypeReprData;
@@ -62,21 +61,17 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             TypePalette palette) {
         super(new BorderLayout());
         this.setBorder(new TitledBorder(" Node Type Properties "));
-
         this.applFrame = aggappl;
         this.typeEditor = typeEditor;
         this.palette = palette;
-
         this.colorChooser = new ColorChooserDialog();
         this.colorChooser.addChangeListener(this);
-
         this.fileChooser = new JFileChooser(System.getProperty("user.dir"));
         final AGGFileFilter filter = new AGGFileFilter();
         filter.addExtension("jpg");
         filter.addExtension("gif");
         filter.setDescription("JPG & GIF Images");
         this.fileChooser.setFileFilter(filter);
-
         this.dialog = new JDialog(this.applFrame, " Node Type Editor ");
         this.nameEditor = new JTextField(this.typeName);
         this.colorGroup = new ButtonGroup();
@@ -92,7 +87,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         this.deleteButton = new JButton();
         this.closeButton = new JButton();
         this.cancelButton = new JButton();
-
         initComponents();
     }
 
@@ -131,7 +125,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         String kind = "";
         Vector<TypeReprData> gos = new Vector<TypeReprData>(1);
         gos.add(new TypeReprData(type));
-
         if (first.equals(EditUndoManager.CREATE_DELETE)) {
             kind = EditUndoManager.DELETE_CREATE;
         } else if (first.equals(EditUndoManager.DELETE_CREATE)) {
@@ -141,7 +134,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         } else if (first.equals(EditUndoManager.CHANGE)) {
             kind = EditUndoManager.CHANGE;
         }
-
         this.undoObj = new Pair<String, Vector<?>>(kind, gos);
         this.undoManager.end(this.newEdit);
         // System.out.println("NodeTypePropertyEditor.undoManagerEndEdit
@@ -149,18 +141,16 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
     }
 
     /**
-     * Implements the interface <EM>StateEditable</EM>. The type representation data <EM>TypeReprData</EM> is stored
-     * into <EM>state</EM>.
+     * Implements the interface <EM>StateEditable</EM>. The type representation
+     * data <EM>TypeReprData</EM> is stored into <EM>state</EM>.
      */
     public void storeState(Hashtable<Object, Object> state) {
         if (this.undoObj.first != null && this.undoObj.second != null) {
             // System.out.println("NodeTypePropertyEditor.storeState state:
             // "+state);
-
             state.put(String.valueOf(this.hashCode()), this.undoObj);
             // System.out.println("NodeTypePropertyEditor.storeState state:
             // "+state);
-
             if (this.undoObj.first.equals(EditUndoManager.COMMON_DELETE_CREATE)) {
                 this.typeEditor.storeState(state);
             }
@@ -168,8 +158,8 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
     }
 
     /**
-     * Implements the interface <EM>StateEditable</EM>. The type representation data <EM>TypeReprData</EM> is extracted
-     * out of <EM>state</EM>
+     * Implements the interface <EM>StateEditable</EM>. The type representation
+     * data <EM>TypeReprData</EM> is extracted out of <EM>state</EM>
      * and applyed to this type.
      */
     public void restoreState(Hashtable<?, ?> state) {
@@ -188,11 +178,9 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         if (obj.first == null || obj.second == null) {
             return;
         }
-
         String op = (String) (obj).first;
         Vector<?> vec = (Vector<?>) (obj).second;
         TypeReprData data = (TypeReprData) vec.firstElement();
-
         if (op.equals(EditUndoManager.CHANGE)) {
             // changing
             int hc = data.getTypeHashCode();
@@ -281,7 +269,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
     private void showPropertyDialog() {
         this.animatedCB.setEnabled(this.typeEditor.getTypeSet().getTypeGraph() != null
                 && !this.typeEditor.getTypeSet().getTypeGraph().getArcs().isEmpty());
-
         if (!this.dialog.isVisible()) {
             if ((this.location.y + this.dialog.getHeight() + 10) > Toolkit.getDefaultToolkit().getScreenSize().height) {
                 this.location.y = Toolkit.getDefaultToolkit().getScreenSize().height - (this.dialog.getHeight() + 10);
@@ -296,34 +283,27 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         final JPanel p1 = new JPanel(new BorderLayout());
         final JPanel namePanel = initName();
         p1.add(namePanel, BorderLayout.CENTER);
-
         final JPanel p2 = new JPanel(new GridLayout(1, 0, 5, 5));
         final JPanel colorPanel = initColors();
         final JPanel shapePanel = initShapes();
         p2.add(colorPanel);
         p2.add(shapePanel);
-
         final JPanel imagePanel = initImageAndAnimation();
-
         final JPanel commentPanel = initComment();
         final JPanel closePanel = initButtons();
-
         final JPanel p3 = new JPanel(new BorderLayout());
         p3.add(imagePanel, BorderLayout.NORTH);
         p3.add(commentPanel, BorderLayout.CENTER);
         p3.add(closePanel, BorderLayout.SOUTH);
-
         this.add(p1, BorderLayout.NORTH);
         this.add(p2, BorderLayout.CENTER);
         this.add(p3, BorderLayout.SOUTH);
-
         this.dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 // close();
                 NodeTypePropertyEditor.this.dialog.setVisible(false);
             }
         });
-
         this.dialog.setContentPane(this);
         this.dialog.validate();
         this.dialog.pack();
@@ -333,7 +313,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
     private JPanel initName() {
         final JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new TitledBorder(" Name "));
-
         this.nameEditor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (addType(true)) {
@@ -352,7 +331,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
     private JPanel initColors() {
         final JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.setBorder(new TitledBorder(" Color "));
-
         final JCheckBox black = new JCheckBox("Black", null, true);
         this.colorGroup.add(black);
         black.setForeground(Color.black);
@@ -369,7 +347,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(black);
-
         final JCheckBox red = new JCheckBox("Red", null);
         this.colorGroup.add(red);
         red.setForeground(Color.red);
@@ -386,7 +363,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(red);
-
         final JCheckBox orange = new JCheckBox("Orange", null);
         this.colorGroup.add(orange);
         orange.setForeground(Color.orange);
@@ -403,7 +379,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(orange);
-
         final JCheckBox blue = new JCheckBox("Blue", null);
         this.colorGroup.add(blue);
         blue.setForeground(Color.blue);
@@ -420,7 +395,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(blue);
-
         final JCheckBox pink = new JCheckBox("Pink", null);
         this.colorGroup.add(pink);
         pink.setForeground(Color.pink);
@@ -437,7 +411,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(pink);
-
         this.colorGroup.add(this.moreColor);
         if (!this.colorGroup.isSelected(this.colorGroup.getSelection())) {
             this.moreColor.setSelected(true);
@@ -450,7 +423,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 NodeTypePropertyEditor.this.colorChooser.showColorDialog(NodeTypePropertyEditor.this.dialog, NodeTypePropertyEditor.this.location);
             }
         });
-
         panel.add(this.moreColor);
         return panel;
     }
@@ -458,7 +430,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
     private JPanel initShapes() {
         final JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.setBorder(new TitledBorder(" Shape "));
-
         final JCheckBox rect = new JCheckBox("Rectangle", null, true);
         this.shapeGroup.add(rect);
         if (this.typeShape == EditorConstants.RECT) {
@@ -467,7 +438,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             rect.setSelected(false);
         }
         panel.add(rect);
-
         final JCheckBox roundrect = new JCheckBox("Roundrect", null);
         this.shapeGroup.add(roundrect);
         if (this.typeShape == EditorConstants.ROUNDRECT) {
@@ -476,7 +446,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             roundrect.setSelected(false);
         }
         panel.add(roundrect);
-
         final JCheckBox oval = new JCheckBox("Oval", null);
         this.shapeGroup.add(oval);
         if (this.typeShape == EditorConstants.OVAL) {
@@ -485,7 +454,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             oval.setSelected(false);
         }
         panel.add(oval);
-
         final JCheckBox circle = new JCheckBox("Circle", null);
         this.shapeGroup.add(circle);
         if (this.typeShape == EditorConstants.CIRCLE) {
@@ -494,17 +462,14 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             circle.setSelected(false);
         }
         panel.add(circle);
-
         panel.add(new JLabel("      "));
         panel.add(this.filledCB);
-
         return panel;
     }
 
     private JPanel initImageAndAnimation() {
         final JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new TitledBorder(" Image "));
-
         if (this.imageFileName.equals("")) {
             this.imageCB.setText("Load");
             this.imageCB.setSelected(false);
@@ -529,7 +494,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(this.imageCB, BorderLayout.WEST);
-
         this.animatedCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (NodeTypePropertyEditor.this.typeEditor.getTypeSet().getBasisTypeSet().getTypeGraph() != null) {
@@ -539,7 +503,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                                 NodeTypePropertyEditor.this.animationParam,
                                 NodeTypePropertyEditor.this.typeEditor.getSelectedNodeType().getBasisType(),
                                 NodeTypePropertyEditor.this.typeEditor.getTypeSet().getBasisTypeSet().getTypeGraph());
-
                         NodeTypePropertyEditor.this.animationDialog.showParameterDialog(300, 300);
                     }
                 } else {
@@ -550,7 +513,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 }
             }
         });
-
         panel.add(this.animatedCB, BorderLayout.EAST);
         return panel;
     }
@@ -558,7 +520,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
     private JPanel initComment() {
         final JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new TitledBorder(" Comment "));
-
         // commentEditor = new JEditorPane();
         // final DefaultEditorKit kit = (DefaultEditorKit)
         // JEditorPane.createEditorKitForContentType("text/plain");
@@ -575,7 +536,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         final JPanel p = new JPanel(new GridLayout(2, 0, 10, 10));
         final JPanel p1 = new JPanel(new GridLayout(0, 3, 10, 10));
         final JPanel p2 = new JPanel(new GridLayout(0, 2, 10, 10));
-
         this.addButton.setActionCommand("add");
         this.addButton.setText("Add");
         this.addButton.setToolTipText("Add new type.");
@@ -586,7 +546,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 NodeTypePropertyEditor.this.deleteButton.setEnabled(true);
             }
         });
-
         this.modifyButton.setActionCommand("change");
         this.modifyButton.setText("Modify");
         this.modifyButton.setToolTipText("Modify type properties.");
@@ -595,7 +554,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 changeType();
             }
         });
-
         this.deleteButton.setActionCommand("delete");
         this.deleteButton.setText("Delete");
         this.deleteButton.setToolTipText("Delete type.");
@@ -604,11 +562,9 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 deleteType();
             }
         });
-
         p1.add(this.addButton);
         p1.add(this.modifyButton);
         p1.add(this.deleteButton);
-
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
         this.closeButton.setToolTipText("Accept type properties and close dialog.");
@@ -617,7 +573,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 close();
             }
         });
-
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.setToolTipText("Cancel changes and close dialog.");
@@ -626,10 +581,8 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 cancel();
             }
         });
-
         p2.add(this.closeButton);
         p2.add(this.cancelButton);
-
         p.add(p1);
         p.add(p2);
         return p;
@@ -650,7 +603,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             this.changed = true;
             this.typeName = this.nameEditor.getText().replaceAll(" ", "");
         }
-
         Enumeration<AbstractButton> en = this.colorGroup.getElements();
         while (en.hasMoreElements()) {
             JCheckBox cb = (JCheckBox) en.nextElement();
@@ -672,7 +624,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 }
             }
         }
-
         en = this.shapeGroup.getElements();
         while (en.hasMoreElements()) {
             JCheckBox cb = (JCheckBox) en.nextElement();
@@ -685,13 +636,11 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 }
             }
         }
-
         // shape filled with color
         if (this.filledShape != this.filledCB.isSelected()) {
             this.changed = true;
             this.filledShape = this.filledCB.isSelected();
         }
-
         // animated shape
         if (this.animatedShape != this.animatedCB.isSelected()) {
             this.changed = true;
@@ -705,7 +654,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 }
             }
         }
-
         // resourcesPath && image file name - already set
         String imagefname = this.imageCB.getText();
         if (!imagefname.equals(this.imageFileName)) {
@@ -719,7 +667,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 this.changed = true;
             }
         }
-
         if (!this.typeComment.equals(this.commentEditor.getText())) {
             this.typeComment = this.commentEditor.getText();
             this.changed = true;
@@ -731,7 +678,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         accept();
         EdType t = this.typeEditor.addNodeType(this.typeName, this.typeColor, this.typeShape, this.filledShape,
                 this.resourcesPath, this.imageFileName, this.typeComment, this.animatedShape);
-
         if (t == null) {
             if (!suppressWarning) {
                 JOptionPane.showMessageDialog(this.dialog, "Type already exists.");
@@ -762,7 +708,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 return;
             }
         }
-
         EdType t = this.typeEditor.getSelectedNodeType();
         // set animation parameter 
         if (t.isAnimated()) {
@@ -772,7 +717,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 this.animationDialog.unsetChanged();
             }
         }
-
         this.changed = false;
     }
 
@@ -845,10 +789,8 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         this.typeColor = t.getColor();
         this.typeShape = t.getShape();
         this.filledShape = t.hasFilledShape();
-
         this.animatedShape = t.isAnimated();
         this.setAnimationParameter(t.animationParameter);
-
         this.resourcesPath = t.getResourcesPath();
         this.imageFileName = t.getImageFileName();
         this.typeComment = t.getBasisType().getTextualComment();
@@ -887,10 +829,8 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         this.typeColor = t.getColor();
         this.typeShape = t.getShape();
         this.filledShape = t.hasFilledShape();
-
         this.animatedShape = t.isAnimated();
         this.setAnimationParameter(t.animationParameter);
-
         this.resourcesPath = t.getResourcesPath();
         this.imageFileName = t.getImageFileName();
         this.typeComment = t.getBasisType().getTextualComment();
@@ -906,7 +846,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
     private void setTypeProperty() {
         this.nameEditor.setText(this.typeName);
         this.nameEditor.setForeground(this.typeColor);
-
         String colorStr = getTypeColorStr(this.typeColor);
         Enumeration<AbstractButton> en = this.colorGroup.getElements();
         while (en.hasMoreElements()) {
@@ -919,7 +858,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 break;
             }
         }
-
         String shapeStr = getTypeShapeStr(this.typeShape);
         en = this.shapeGroup.getElements();
         while (en.hasMoreElements()) {
@@ -928,14 +866,11 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
                 cb.setSelected(true);
             }
         }
-
         this.filledCB.setSelected(this.filledShape);
-
         this.animatedCB.setSelected(this.animatedShape);
         if (this.animationDialog != null) {
             this.animationDialog.setVisible(false);
         }
-
         if ((this.imageFileName.indexOf(".gif") != -1)
                 || (this.imageFileName.indexOf(".jpg") != -1)) {
             this.imageCB.setText(this.imageFileName);
@@ -945,7 +880,6 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
             this.imageCB.setText("Load");
             this.imageCB.setSelected(false);
         }
-
         this.commentEditor.setText(this.typeComment);
     }
 
@@ -1090,58 +1024,32 @@ public class NodeTypePropertyEditor extends JPanel implements ChangeListener,
         }
         return icon;
     }
-
     private EditUndoManager undoManager;
-
     private StateEdit newEdit;
-
 //	private TypeReprData typeReprData;
     private Pair<String, Vector<?>> undoObj;
-
     protected int undoID;
-
     private final JFrame applFrame;
-
     private final TypePalette palette;
-
     protected final TypeEditor typeEditor;
-
     private String typeName = "";
-
     private String typeComment = "";
-
     private Color typeColor = Color.black;
-
     protected int typeShape = EditorConstants.RECT;
-
     protected boolean filledShape, animatedShape;
-
     protected final AnimationParam animationParam;
-
     protected AnimationParamDialog animationDialog;
-
     private final JFileChooser fileChooser;
-
     private String resourcesPath = System.getProperty("user.dir");
-
     private String imageFileName = "";
-
     protected Point location;
-
     protected final ColorChooserDialog colorChooser;
-
     private final ButtonGroup colorGroup, shapeGroup;
-
     protected final JTextField nameEditor;
-
     private final JEditorPane commentEditor;
-
     protected final JButton addButton, modifyButton, deleteButton, closeButton,
             cancelButton;
-
     protected final JCheckBox moreColor, imageCB, filledCB, animatedCB;
-
     protected final JDialog dialog;
-
     protected boolean changed = false;
 }

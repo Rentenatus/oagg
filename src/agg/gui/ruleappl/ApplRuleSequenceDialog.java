@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.ruleappl;
 
@@ -30,7 +30,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.ListSelectionListener;
@@ -53,7 +52,6 @@ import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.Border;
 //import javax.swing.SwingUtilities;
-
 import agg.gui.help.HtmlBrowser;
 import agg.ruleappl.RuleSequence;
 import agg.util.Pair;
@@ -70,51 +68,32 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
     static final Color DARK_BLUE = new Color(0, 0, 155);
     static final Color BLUE = new Color(155, 205, 255);
     static final Color ORANGE = new Color(255, 255, 100);
-
     protected final String title = "Applicability of Rule Sequences ";
-
     protected JTable groupList, groupRuleList;
-
     protected JScrollPane scrollGroupList, scrollGroupRuleList;
-
     protected final List<RuleSequence> groups = new Vector<RuleSequence>();
-
     protected final List<String> groupNames = new Vector<String>();
-
     protected List<String> group;
-
     protected JButton checking,
             checkGroup, uncheckGroup, resultGroup, refreshGroup,
             close, save,
             help;
-
     protected JCheckBox useGraph, maxIntersectionOfConcurrency,
             incompleteCPAcheck, ignoreDanglingEdgeOfDelNode,
             useObjectFlow, previousSequenceResults; //, consistentConcurrency;
-
     protected JTextField concurrencyDepth;
     protected String depth = "";
-
     protected boolean useGraphToCheck, enabledObjectFlow, usePreviousSequenceResults;
-
     protected Integer groupCount = Integer.valueOf(0);
-
     protected MouseListener ml;
-
     protected int selGroupIndx; //, fromIndx, toIndx, 
-
     protected final List<String> groupListColumnNames = new Vector<String>(1);
     protected final List<String> groupRuleListColumnNames = new Vector<String>(1);
-
     protected JDialog dialog;
-
     protected HtmlBrowser helpBrowser;
-
     protected ApplicabilityRuleSequence ars;
     protected Thread checkThread;
-
     protected boolean changed, empty;
-
     protected String selectSeq = " Selected rule sequence to check :   ";
     protected final JLabel selectSeqLabel;
 
@@ -126,7 +105,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         setModal(false);
         this.dialog = this;
         setTitle(this.title);
-
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 ApplRuleSequenceDialog.this.ars.closeAllResultTables();
@@ -134,23 +112,16 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 setVisible(false);
             }
         });
-
         this.selectSeqLabel = new JLabel(this.selectSeq);
-
         this.ars = applRuleSeq;
-
         this.groupListColumnNames.add("List  of  Rule  Sequences");
         this.groupRuleListColumnNames.add("Rules of selected  Rule  Sequence");
-
         JPanel content = initContentPane();
-
         JScrollPane scroll = new JScrollPane(content);
         scroll.setPreferredSize(new Dimension(600, 650));
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(scroll);
         validate();
-
         setLocation(location);
         pack();
     }
@@ -187,7 +158,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
             }
             updateGroupList();
             this.empty = this.groups.isEmpty();
-
             if (this.groups.isEmpty()) {
                 if (this.groupRuleList != null) {
                     this.scrollGroupRuleList.getViewport().remove(this.groupRuleList);
@@ -216,7 +186,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                         sequence.refresh();
                     }
                     updateGroupList();
-
                 }
             }
         }
@@ -249,7 +218,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         this.uncheckGroup.setEnabled(b);
         this.resultGroup.setEnabled(b);
         this.refreshGroup.setEnabled(b);
-
         this.concurrencyDepth.setEditable(b);
         this.maxIntersectionOfConcurrency.setEnabled(b);
         this.incompleteCPAcheck.setEnabled(b);
@@ -264,9 +232,7 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
 
     private JPanel initContentPane() {
         Border border = new TitledBorder("");
-
         this.ml = this.makeMouseAdapter();
-
         JPanel p0 = new JPanel(new GridBagLayout());
         JPanel p1 = this.makeAddRuleSequencePanel(border);
         JPanel p2 = this.makeCheckRuleSequencePanel(border);
@@ -274,10 +240,8 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         JPanel p31 = this.makeObjectFlowOptionPanel(border);
         JPanel p32 = this.makeUsePreviousRuleSequenceResultsOptionPanel(border);
         JPanel p4 = this.makeButtonsPanel(border);
-
         constrainBuild(p0, p1, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         constrainBuild(p0, p2, 0, 1, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p0, p3, 0, 2, 1, 1, GridBagConstraints.BOTH,
@@ -288,7 +252,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p0, p4, 0, 5, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         return p0;
     }
 
@@ -321,7 +284,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
 //		this.clear();
         setVisible(false);
         this.changed = false;
-
         this.ars.closeGraGra();
     }
 
@@ -333,14 +295,12 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 closeWithWarning();
             }
         });
-
         this.save = new JButton("Save");
         this.save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 saveRuleSequencesAndGrammar();
             }
         });
-
         this.help = new JButton("Help");
         this.help.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -358,14 +318,12 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 }
             }
         });
-
         constrainBuild(p5, this.close, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 10, 5, 10);
         constrainBuild(p5, this.save, 1, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 10, 5, 10);
         constrainBuild(p5, this.help, 2, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 10, 5, 10);
-
         return p5;
     }
 
@@ -428,7 +386,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
     private JPanel makeConcurrencyOptionsPanel(final Border border) {
         final JPanel p4 = new JPanel(new BorderLayout());
         p4.setBorder(border);
-
         final JPanel p = new JPanel(new BorderLayout());
         this.concurrencyDepth = new JTextField(this.depth, 3);
         this.concurrencyDepth.setEditable(false);
@@ -448,7 +405,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                         }
                     } catch (NumberFormatException ex) {
                         ApplRuleSequenceDialog.this.concurrencyDepth.setText("");
-
                     }
                 } else {
                     int i = ApplRuleSequenceDialog.this.groupList.getSelectedRow();
@@ -460,7 +416,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         });
         p.add(this.concurrencyDepth, BorderLayout.WEST);
         p.add(new JLabel(" Number of direct enabling predecessors  "), BorderLayout.CENTER);
-
         final JPanel pmax = new JPanel(new BorderLayout());
         this.maxIntersectionOfConcurrency = new JCheckBox(" ");
         this.maxIntersectionOfConcurrency.setEnabled(false);
@@ -479,9 +434,7 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         pmax.add(this.maxIntersectionOfConcurrency, BorderLayout.WEST);
         pmax.add(new JLabel("Max intersection of direct enabling predecessors"), BorderLayout.CENTER);
         p.add(pmax, BorderLayout.SOUTH);
-
         p4.add(p, BorderLayout.WEST);
-
         final JPanel p1 = new JPanel(new BorderLayout());
         this.incompleteCPAcheck = new JCheckBox(" ");
         this.incompleteCPAcheck.setEnabled(false);
@@ -502,9 +455,7 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         p2.add(new JLabel("Incomplete recognition of potential"));
         p2.add(new JLabel("conflictfree summarized predecessors"));
         p1.add(p2, BorderLayout.CENTER);
-
         p4.add(p1, BorderLayout.EAST);
-
 //		final JPanel p3 = new JPanel(new BorderLayout());
         this.ignoreDanglingEdgeOfDelNode = new JCheckBox(
                 " Ignore the case of possible dangling edges of node-deleting rules");
@@ -526,16 +477,13 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
 //		p2.add(new JLabel("Incomplete recognition of potential"));
 //		p2.add(new JLabel("conflictfree summarized predecessors"));
 //		p1.add(p2, BorderLayout.CENTER);
-
         p4.add(this.ignoreDanglingEdgeOfDelNode, BorderLayout.SOUTH);
-
         return p4;
     }
 
     private JPanel makeObjectFlowOptionPanel(final Border border) {
         final JPanel p = new JPanel(new BorderLayout());
         p.setBorder(border);
-
         this.useObjectFlow = new JCheckBox("Use defined object flow ");
         this.useObjectFlow.setEnabled(false);
         this.useObjectFlow.setSelected(true);
@@ -555,16 +503,13 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 }
             }
         });
-
         p.add(this.useObjectFlow, BorderLayout.CENTER);
-
         return p;
     }
 
     private JPanel makeUsePreviousRuleSequenceResultsOptionPanel(final Border border) {
         final JPanel p = new JPanel(new BorderLayout());
         p.setBorder(border);
-
         this.previousSequenceResults = new JCheckBox("Use results of previous rule sequence ");
         this.previousSequenceResults.setEnabled(false);
         this.previousSequenceResults.setSelected(true);
@@ -578,9 +523,7 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 }
             }
         });
-
         p.add(this.previousSequenceResults, BorderLayout.CENTER);
-
         return p;
     }
 
@@ -592,30 +535,21 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         this.groupNames.clear();
         this.scrollGroupList = new JScrollPane();
         this.scrollGroupList.setPreferredSize(new Dimension(400, 100));
-
         this.groupList = createGroupList(this.groupNames);
-
         List<JButton> buttons = new Vector<JButton>(4);
-
         makeCheckButton(buttons);
         makeResultButton(buttons);
         makeUncheckButton(buttons);
         makeUpdateButton(buttons);
-
         JPanel groupButtonPanel = makeButton(buttons);
-
         p21.add(this.selectSeqLabel, BorderLayout.NORTH);
         p21.add(this.scrollGroupList, BorderLayout.CENTER);
         p21.add(groupButtonPanel, BorderLayout.SOUTH);
-
         JLabel l = new JLabel("     ");
         this.group = new Vector<String>();
-
         this.scrollGroupRuleList = new JScrollPane();
         this.scrollGroupRuleList.setPreferredSize(new Dimension(400, 150));
-
         this.groupRuleList = createGroupRuleList(this.group);
-
         p22.add(l, BorderLayout.NORTH);
         p22.add(this.scrollGroupRuleList, BorderLayout.CENTER);
         constrainBuild(p2, p21, 0, 0, 1, 1, GridBagConstraints.BOTH,
@@ -634,7 +568,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 if (i >= 0) {
                     ApplRuleSequenceDialog.this.selGroupIndx = i;
                     RuleSequence ruleseq = ApplRuleSequenceDialog.this.ars.getRuleSequence(i);
-
                     if (ApplRuleSequenceDialog.this.group.isEmpty()) {
                         JOptionPane.showMessageDialog(ApplRuleSequenceDialog.this.dialog,
                                 "<html><body>"
@@ -658,7 +591,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                                     JOptionPane.ERROR_MESSAGE);
                             return;
                         }
-
                         if (!ruleseq.isObjFlowValid()) {
                             String error = "";
                             if (ruleseq.getMessageOfInvalidObjectFlow() == 0) {
@@ -666,7 +598,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                             } else if (ruleseq.getMessageOfInvalidObjectFlow() == 1) {
                                 error = "\n( persistent object flow failed )";
                             }
-
                             JOptionPane.showMessageDialog(null,
                                     "Object flow of the current rule sequence is not valid!"
                                     + error,
@@ -675,9 +606,7 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                             return;
                         }
                         try {
-
                             ruleseq.tryCompleteObjFlowTransClosure();
-
                             if (!ApplRuleSequenceDialog.this.concurrencyDepth.getText().equals("")) {
                                 ruleseq.setDepthOfConcurrentRule(Integer.valueOf(ApplRuleSequenceDialog.this.concurrencyDepth.getText()).intValue());
                             }
@@ -685,19 +614,16 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                             ruleseq.setCompleteCPAOfConcurrency(!ApplRuleSequenceDialog.this.incompleteCPAcheck.isSelected());
                             ruleseq.setIgnoreDanglingEdgeOfDelNode(ApplRuleSequenceDialog.this.ignoreDanglingEdgeOfDelNode.isSelected());
 //							ruleseq.setConsistentConcurrency(consistentConcurrency.isSelected());
-
                             if (i > 0) {
                                 int nextIndx = ruleseq.tryToApplyResultsOfRuleSequence(
                                         ApplRuleSequenceDialog.this.ars.getRuleSequence(i - 1));
                                 ruleseq.setStartIndexOfCheck(nextIndx);
                             }
-
                             // for test only!!!
 //							ars.check(selGroupIndx);
                             ApplRuleSequenceDialog.this.checkThread = new Thread(ruleseq.getApplicabilityChecker());
                             ApplRuleSequenceDialog.this.checkThread.setPriority(4);
                             ApplRuleSequenceDialog.this.checkThread.start();
-
                             final String oldtext = ApplRuleSequenceDialog.this.checking.getText();
                             final Color oldcolor = ApplRuleSequenceDialog.this.checking.getBackground();
                             final Border oldborder = ApplRuleSequenceDialog.this.checking.getBorder();
@@ -708,18 +634,14 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                                     BorderFactory.createEtchedBorder(Color.RED, Color.RED));
                             ApplRuleSequenceDialog.this.checking.doClick();
                             ApplRuleSequenceDialog.this.checking.setEnabled(false);
-
                             while (ApplRuleSequenceDialog.this.checkThread.isAlive()) {
                             }
                             ApplRuleSequenceDialog.this.checkThread = null;
-
                             ApplRuleSequenceDialog.this.groupList.clearSelection();
                             ApplRuleSequenceDialog.this.groupList.getSelectionModel().setLeadSelectionIndex(i);
-
                             ApplRuleSequenceDialog.this.uncheckGroup.setEnabled(true);
                             ApplRuleSequenceDialog.this.resultGroup.setEnabled(true);
                             ApplRuleSequenceDialog.this.changed = true;
-
                             ApplRuleSequenceDialog.this.checking.setText(oldtext);
                             ApplRuleSequenceDialog.this.checking.setForeground(Color.BLACK);
                             ApplRuleSequenceDialog.this.checking.setBackground(oldcolor);
@@ -786,7 +708,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 if (i >= 0) {
                     ApplRuleSequenceDialog.this.selGroupIndx = i;
                     uncheckRuleSequence(i);
-
                     if (i > 0) {
                         if (ApplRuleSequenceDialog.this.ars.getRuleSequence(i - 1).isChecked()) {
                             ApplRuleSequenceDialog.this.previousSequenceResults.setEnabled(true);
@@ -823,11 +744,8 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
             public void actionPerformed(ActionEvent e) {
                 if (ApplRuleSequenceDialog.this.ars.getApplRuleSequence().getRuleSequences().size()
                         != ApplRuleSequenceDialog.this.ars.getGraGra().getBasisGraGra().getRuleSequences().size()) {
-
                     ApplRuleSequenceDialog.this.ars.getApplRuleSequence().setRuleSequences(ApplRuleSequenceDialog.this.ars.getGraGra().getBasisGraGra().getRuleSequences());
-
                     updateRuleSequences(ApplRuleSequenceDialog.this.ars.getGraGra().getBasisGraGra().getRuleSequences());
-
                     if (ApplRuleSequenceDialog.this.ars.getApplRuleSequence().getRuleSequences().size() > 0) {
                         ApplRuleSequenceDialog.this.selectRuleSequence(0);
                     }
@@ -852,9 +770,7 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                         }
                         if (answer == 0) {
                             ruleSeq.setGraph(ApplRuleSequenceDialog.this.ars.getGraGra().getGraph().getBasisGraph());
-
                             updateRuleSequence(ruleSeq);
-
                             ApplRuleSequenceDialog.this.groupList.clearSelection();
                             ApplRuleSequenceDialog.this.selGroupIndx = -1;
                             ApplRuleSequenceDialog.this.groupList.changeSelection(i, 0, false, false);
@@ -869,35 +785,28 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
     private JPanel makeAddRuleSequencePanel(final Border border) {
         final JPanel p = new JPanel(new GridBagLayout());
         p.setBorder(border);
-
 //		this.addRS.setText(addRStext);
         this.checking = new JButton("   Checking   ");
         this.checking.setEnabled(false);
-
         final JPanel p1 = new JPanel(new BorderLayout());
         p1.add(this.checking, BorderLayout.EAST);
-
         this.makeUseGraphCheck();
         final JPanel p2 = new JPanel(new BorderLayout());
 //		final JLabel useGraphText = new JLabel(
 //				" If selected, a rule sequence will be checked at current graph of the grammar.");
         p2.add(this.useGraph, BorderLayout.WEST);
         p2.add(new JLabel("to check a rule sequence at current graph  "), BorderLayout.EAST);
-
         final JPanel p3 = new JPanel(new BorderLayout());
         p3.add(p1, BorderLayout.EAST);
         p3.add(p2, BorderLayout.WEST);
         p3.add(new JLabel("       "), BorderLayout.SOUTH);
-
         constrainBuild(p, p3, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 10, 5, 5, 5);
-
         return p;
     }
 
     private MouseAdapter makeMouseAdapter() {
         return new MouseAdapter() {
-
             public void mousePressed(MouseEvent e) {
 //			if (SwingUtilities.isMiddleMouseButton(e)) {
 //				ApplRuleSequenceDialog.this.dialog.setCursor(new Cursor(Cursor.MOVE_CURSOR));
@@ -970,9 +879,7 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
 
     public void loadRuleSequences(final List<Rule> allrules,
             final List<RuleSequence> sequences) {
-
         this.updateRuleSequences(sequences);
-
         if (!this.groups.isEmpty()) {
             this.selectSequence(0);
             this.groupList.changeSelection(0, 0, false, false);
@@ -998,33 +905,26 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
             if (ruleseq == null) {
                 return;
             }
-
             this.selectSeqLabel.setText(this.selectSeq + ruleseq.getName());
-
             this.resultGroup.setEnabled(ruleseq.isChecked());
             this.uncheckGroup.setEnabled(ruleseq.isChecked());
             this.checkGroup.setEnabled(true);
             this.group = this.groups.get(indx).getRuleNames();
             updateGroupRuleList();
-
             this.useGraphToCheck = ruleseq.getGraph() != null;
             this.useGraph.setSelected(this.useGraphToCheck);
-
             this.concurrencyDepth.setEditable(true);
             this.maxIntersectionOfConcurrency.setEnabled(true);
             this.incompleteCPAcheck.setEnabled(true);
 //			consistentConcurrency.setEnabled(true);
-
             setConcurrencyDepth(ruleseq.getDepthOfConcurrentRule());
             this.maxIntersectionOfConcurrency.setSelected(!ruleseq.getCompleteConcurrency());
             this.incompleteCPAcheck.setSelected(!ruleseq.getCompleteCPAOfConcurrency());
             this.ignoreDanglingEdgeOfDelNode.setSelected(ruleseq.getIgnoreDanglingEdgeOfDelNode());
 //			consistentConcurrency.setSelected(ruleseq.getConsistentConcurrency());
-
             this.enabledObjectFlow = ruleseq.isObjFlowEnabled();
             this.useObjectFlow.setEnabled(this.enabledObjectFlow);
             this.useObjectFlow.setSelected(ruleseq.isObjFlowActive());
-
             if (indx > 0) {
                 if (this.ars.getRuleSequence(indx - 1).isChecked()) {
                     this.previousSequenceResults.setEnabled(true);
@@ -1072,7 +972,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
             graphStr = graphStr.concat(sequence.getGraph().getName());
             graphStr = graphStr.concat(" <= ");
         }
-
 //		String grpStr = " ( ";		
 //		for (int i = 0; i < sequence.getRules().size(); i++) {					
 //			String rulename = sequence.getRules().get(i).getName();
@@ -1093,7 +992,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         this.clearGroups();
         this.enableARSbuttons(false);
         this.enableGUIbuttons(false);
-
         this.ars.clear();
     }
 
@@ -1132,11 +1030,9 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
             rd.add(lstr);
             data.add(rd);
         }
-
         if (this.groupList != null) {
             this.scrollGroupList.getViewport().remove(this.groupList);
         }
-
         this.groupList = new JTable(data, (Vector) this.groupListColumnNames);
         this.groupList.setDefaultRenderer(this.groupList.getColumnClass(0),
                 new MyTableCellRenderer(this.ars, this.groups));
@@ -1147,7 +1043,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         }
         this.groupList.addMouseListener(this.ml);
         this.scrollGroupList.getViewport().setView(this.groupList);
-
         this.groupList.getSelectionModel().setSelectionMode(0);
         this.groupList.getSelectionModel().addListSelectionListener(this);
     }
@@ -1161,11 +1056,9 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
             rd.add(r);
             data.add(rd);
         }
-
         if (this.groupRuleList != null) {
             this.scrollGroupRuleList.getViewport().remove(this.groupRuleList);
         }
-
         this.groupRuleList = new JTable(data, (Vector) this.groupRuleListColumnNames);
         this.groupRuleList.getModel().addTableModelListener(this);
         for (int i = 0; i < this.groupRuleList.getRowCount(); i++) {
@@ -1173,9 +1066,7 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                     .getComponent().setEnabled(false);
         }
         this.groupRuleList.addMouseListener(this.ml);
-
         this.scrollGroupRuleList.getViewport().setView(this.groupRuleList);
-
         this.groupRuleList.getSelectionModel().setSelectionMode(0);
     }
 
@@ -1188,11 +1079,9 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
             rd.add(r);
             data.add(rd);
         }
-
         if (this.groupRuleList != null) {
             this.scrollGroupRuleList.getViewport().remove(this.groupRuleList);
         }
-
         this.groupRuleList = new JTable((Vector) data, (Vector) this.groupRuleListColumnNames);
         this.groupRuleList.getModel().addTableModelListener(this);
         for (int i = 0; i < this.groupRuleList.getRowCount(); i++) {
@@ -1247,13 +1136,9 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
         public Component getTableCellRendererComponent(JTable table,
                 Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
-
             setOpaque(true);
-
             Pair<Boolean, String> resultPair = this.arsHandler.getApplicabilityResultOfRulesequence(row);
-
             Pair<Boolean, String> result2Pair = this.arsHandler.getNonApplicabilityResultOfRulesequence(row);
-
             if (value instanceof JLabel) {
                 JLabel l = (JLabel) value;
                 if (column > 0) {
@@ -1264,7 +1149,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                 return new JLabel(l.getText());
             } else if (value instanceof String) {
                 this.setText((String) value);
-
                 if (resultPair != null) {
 //					System.out.println("string:: "+resultPair.first.booleanValue()+ "   "+resultPair.second);
                     if (resultPair.first.booleanValue()) {
@@ -1295,7 +1179,6 @@ public class ApplRuleSequenceDialog extends JDialog implements TableModelListene
                         this.setBackground(Color.white);
                         this.setForeground(Color.black);
                     }
-
                 } else if (isSelected) {
                     this.setBackground(SEL_COLOR);
                     this.setForeground(Color.black);

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -24,12 +26,14 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
 //****************************************************************************+
+
 /**
- * This class provides a parser which needs critical pairs. The critical pair must be <code>ExcludePair</code>. So
- * objects has to be instanciated with <code>ExcludePairContainer</code>. To be independent of a grammar it is necessary
- * to instanciate an object with a host graph and stop graph seperately.
+ * This class provides a parser which needs critical pairs. The critical pair
+ * must be <code>ExcludePair</code>. So objects has to be instanciated with
+ * <code>ExcludePairContainer</code>. To be independent of a grammar it is
+ * necessary to instanciate an object with a host graph and stop graph
+ * seperately.
  *
  * @author $Author: olga $
  * @version $Id: SimpleExcludeParser.java,v 1.11 2010/08/18 09:26:52 olga Exp $
@@ -37,7 +41,8 @@ import java.util.Vector;
 public class SimpleExcludeParser extends ExcludeParser {
 
     /**
-     * Creates a new parser that is a little bit simpler than a <CODE>ExcludeParser</CODE>.
+     * Creates a new parser that is a little bit simpler than a
+     * <CODE>ExcludeParser</CODE>.
      *
      * @param grammar The graph grammar.
      * @param hostGraph The host graph.
@@ -61,7 +66,6 @@ public class SimpleExcludeParser extends ExcludeParser {
         this.correct = true;
         fireParserEvent(new ParserMessageEvent(this,
                 "Starting simple exclude parser ..."));
-
         Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
         if (this.stop) {
             return false;
@@ -92,19 +96,14 @@ public class SimpleExcludeParser extends ExcludeParser {
         Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
         excludeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
         conflictFreeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-
         if (this.stop) {
             return false;
         }
-
         makeLightContainer(exclude, excludeLight);
-
         if (this.stop) {
             return false;
         }
-
         makeLightContainer(conflictFree, conflictFreeLight);
-
         if (this.stop) {
             return false;
         }
@@ -120,7 +119,6 @@ public class SimpleExcludeParser extends ExcludeParser {
 		 * immer wieder angesetzt wird
          */
         RuleInstances eri = new RuleInstances();
-
         fireParserEvent(new ParserMessageEvent(this, "Parser initialized"));
         if (this.stop) {
             return false;
@@ -128,13 +126,11 @@ public class SimpleExcludeParser extends ExcludeParser {
         boolean ruleApplied = false;
         while (!this.stop && !this.graph.isIsomorphicTo(this.stopGraph) && this.correct) {
             ruleApplied = false;
-
             /* zuerst sollen alle konfliktfreien Regeln probiert werden. */
             for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
                     .hasMoreElements()
                     && !ruleApplied;) {
                 Rule r = keys.nextElement();
-
 //				Report.println("versuche konfliktfreie Regel " + r.getName(),
 //						Report.PARSER);
                 fireParserEvent(new ParserMessageEvent(this,
@@ -158,7 +154,6 @@ public class SimpleExcludeParser extends ExcludeParser {
                 }
             }
             /* Die konfliktfreien Regeln sind abgearbeitet */
-
  /* Die Excluderegeln muessen ueberprueft werden */
             if (!this.stop && !ruleApplied) {
                 /*
@@ -174,7 +169,6 @@ public class SimpleExcludeParser extends ExcludeParser {
                             getHostGraph());
                     m.setCompletionStrategy((MorphCompletionStrategy) this.grammar
                             .getMorphismCompletionStrategy().clone(), true);
-
                     boolean found = false;
                     while (!found && m.nextCompletion()) {
                         if (!eri.isIn(m) && m.isValid()) {
@@ -190,7 +184,7 @@ public class SimpleExcludeParser extends ExcludeParser {
                             /*
 							 * ERI muss nicht kopiert werden, da nur an
 							 * Entscheidungsstellen der Match/die Matches gemerkt
-							 * werden mssen, die uns m�licherweise auf einen Holzweg
+							 * werden mssen, die uns mÃ¯Â¿Â½licherweise auf einen Holzweg
 							 * fhren. Der Match in ERI ist eine Stufe tiefer (also
 							 * nach Regelanwendung, denn wir l&ouml;schen) nicht
 							 * mehr verfgbar. Dadurch kann ein neues ERI erzeugt
@@ -212,7 +206,6 @@ public class SimpleExcludeParser extends ExcludeParser {
                                     (MorphCompletionStrategy) this.grammar
                                             .getMorphismCompletionStrategy()
                                             .clone(), true);
-
                             boolean notFound = false;
                             while (!this.stop && !n.isValid() && !notFound) {
                                 if (!n.nextCompletion()) {
@@ -249,13 +242,11 @@ public class SimpleExcludeParser extends ExcludeParser {
                 }
             }
         }
-
         /* Fertig mit den Excluderegeln */
         while (!this.stack.empty()) {
             try {
                 fireParserEvent(new ParserMessageEvent(this, "Cleaning stack."));
                 Pair<?, ?> tmpPair = (Pair) this.stack.pop();
-
                 Graph g = (Graph) tmpPair.first;
                 BaseFactory.theFactory().destroyGraph(g);
                 tmpPair.second = null;
@@ -266,9 +257,7 @@ public class SimpleExcludeParser extends ExcludeParser {
                 "Stopping parser. Result is " + this.correct + "."));
         return this.correct;
     }
-
 }
-
 // End of ExcludeParser.java
 /*
  * $Log: SimpleExcludeParser.java,v $
