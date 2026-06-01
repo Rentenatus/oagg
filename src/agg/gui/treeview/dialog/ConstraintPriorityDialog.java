@@ -46,6 +46,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.DefaultTableCellRenderer;
 import agg.gui.help.HtmlBrowser;
 import agg.cons.Formula;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.List;
 
 /**
@@ -90,7 +91,7 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
             this.table = new Hashtable<Object, List<Object>>(constraints.size());
             for (int i = 0; i < constraints.size(); i++) {
                 Formula f = constraints.get(i);
-                List<Integer> value = f.getPriority();
+                ArrayMovieInt value = f.getPriority();
                 Vector<Object> tmpVector = new Vector<Object>();
                 for (int k = 1; k < priorities.size(); k++) {
                     String l = priorities.get(k);

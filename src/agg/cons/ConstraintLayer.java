@@ -11,6 +11,7 @@
  */
 package agg.cons;
 
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -75,7 +76,7 @@ public class ConstraintLayer {
         for (int i = 0; i < this.constraintsVec.size(); i++) {
             Object constraint = this.constraintsVec.elementAt(i);
             if (constraint instanceof Formula) {
-                Vector<Integer> layer = ((Formula) constraint).getLayer();
+                ArrayMovieInt layer = ((Formula) constraint).getLayer();
                 if (layer != null) {
                     this.constraintLayer.put(constraint, layer);
                 }

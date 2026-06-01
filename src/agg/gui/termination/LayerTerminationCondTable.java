@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -129,9 +130,9 @@ public class LayerTerminationCondTable extends JDialog implements
         JPanel rowHead = new JPanel();
         rowHead.setLayout(new GridLayout(termination.getOrderedRuleLayer()
                 .size(), 1));
-        Iterator<Integer> en = termination.getOrderedRuleLayer().iterator();
-        while (en.hasNext()) {
-            String text = en.next().toString();
+        ArrayMovieInt orderedLayers = termination.getOrderedRuleLayer();
+        for (int idx = 0; idx < orderedLayers.size(); idx++) {
+            String text = String.valueOf(orderedLayers.get(idx));
             JLabel act = new JLabel(" Layer " + text + " ");
             act.setToolTipText("");
             rowHead.add(act);
@@ -149,27 +150,23 @@ public class LayerTerminationCondTable extends JDialog implements
         }
         // create the center panel with a button for each rule
         this.tablePanel = new JPanel();
-        this.tablePanel.setLayout(new GridLayout(termination.getOrderedRuleLayer()
-                .size(), 3));
-        int i = 0;
-        while (i < termination.getOrderedRuleLayer().size()) {
-            int ii = 0;
-            while (ii < 3) {
+        this.tablePanel.setLayout(new GridLayout(orderedLayers.size(), 3));
+        for (int i = 0; i < orderedLayers.size(); i++) {
+            int currentLayer = orderedLayers.get(i);
+            for (int ii = 0; ii < 3; ii++) {
                 JButton act = new JButton("   ");
                 act.setToolTipText(this.conds.elementAt(ii).first);
                 act.setMinimumSize(new Dimension(act.getHeight(), act
                         .getHeight()));
                 act.addActionListener(this);
-                // System.out.println(termination.getOrderedRuleLayer().elementAt(i));
+                // System.out.println(currentLayer);
                 // System.out.println(this.conds.elementAt(ii));
-                this.addButton(termination.getOrderedRuleLayer().get(i),
+                this.addButton(currentLayer,
                         this.conds.elementAt(ii).first, act);
                 this.tablePanel.add(act);
-                refreshView(termination.getOrderedRuleLayer().get(i),
+                refreshView(currentLayer,
                         this.conds.elementAt(ii).first, act);
-                ii++;
             }
-            i++;
         }
         // get the preferred size for the center panel
         Dimension dim = this.tablePanel.getPreferredSize();
@@ -324,7 +321,7 @@ public class LayerTerminationCondTable extends JDialog implements
      * adds the button to the internal structur, so it can be adressed for
      * relabeling.
      */
-    void addButton(Integer layer, String condName, JButton button) {
+    void addButton(int layer, String condName, JButton button) {
         // create buttons-Hashtable
         Hashtable<String, JButton> hash1 = this.buttons.get(layer);
         if (hash1 == null) {
@@ -340,7 +337,7 @@ public class LayerTerminationCondTable extends JDialog implements
     /**
      * returns the button for the given rule pair (r1,r2)
      */
-    JButton getButton(Integer layer, String condName) {
+    JButton getButton(int layer, String condName) {
         Hashtable<String, JButton> hash1 = this.buttons.get(layer);
         if (hash1 == null) {
             return null;
@@ -366,7 +363,7 @@ public class LayerTerminationCondTable extends JDialog implements
     /**
      * renews the button for the given pair (first, second).
      */
-    void refreshView(Integer first, String second) {
+    void refreshView(int first, String second) {
         // the button for the pair
         refreshView(first, second, getButton(first, second));
     } // refreshView
@@ -374,7 +371,7 @@ public class LayerTerminationCondTable extends JDialog implements
     /**
      * renews the button for the given pair (layer, cond).
      */
-    void refreshView(Integer layer, String cond, JButton button) {
+    void refreshView(int layer, String cond, JButton button) {
         boolean value = getValue(layer, cond);
         if (value) {
             button.setBackground(VALID);
@@ -385,7 +382,7 @@ public class LayerTerminationCondTable extends JDialog implements
         }
     }
 
-    private boolean getValue(Integer layer, String condName) {
+    private boolean getValue(int layer, String condName) {
         if (condName.equals("Deletion_1")) {
             Pair<Boolean, List<Rule>> value = this.termination
                     .getResultTypeDeletion().get(layer);

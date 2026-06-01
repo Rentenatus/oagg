@@ -45,6 +45,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 //import agg.editor.impl.EdGraGra;
 import agg.gui.help.HtmlBrowser;
 import agg.cons.Formula;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.List;
 
 /**
@@ -90,7 +91,7 @@ public class GraGraConstraintPriorityDialog extends JDialog implements
             this.table = new Hashtable<Object, Vector<Object>>(constraints.size());
             for (int i = 0; i < constraints.size(); i++) {
                 Formula f = constraints.get(i);
-                Vector<Integer> priors = f.getPriority();
+                ArrayMovieInt priors = f.getPriority();
                 Vector<Object> tmpVector = new Vector<Object>();
                 for (int k = 1; k < priorities.size(); k++) {
                     String p = priorities.get(k);

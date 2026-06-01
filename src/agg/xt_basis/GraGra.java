@@ -41,6 +41,7 @@ import agg.xt_basis.csp.Completion_CSP_NoBJ;
 import de.jare.ndimcol.ref.ArrayMovie;
 import de.jare.ndimcol.ref.ArrayTape;
 import de.jare.ndimcol.ref.IteratorWalker;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import de.jare.ndimcol.ref.SortedSeasonSet;
 import de.jare.ndimcol.utils.BiPredicateInteger;
 import java.io.File;
@@ -256,11 +257,7 @@ public class GraGra implements Disposable, XMLObject {
         for (int i = 0; i < this.itsAtomics.size(); i++) {
             this.itsAtomics.get(i).trimToSize();
         }
-        // ArrayList does not require trimToSize()
-        // this.itsConstraints.trimToSize();
-        for (int i = 0; i < this.itsConstraints.size(); i++) {
-            this.itsConstraints.get(i).trimToSize();
-        }
+ 
         // ArrayList does not require trimToSize()
         // ((List<RuleSequence>) this.itsRuleSequences).trimToSize();
         for (int i = 0; i < this.itsRuleSequences.size(); i++) {
@@ -1374,13 +1371,12 @@ public class GraGra implements Disposable, XMLObject {
         final List<Formula> v = new ArrayList<Formula>(5);
         for (int i = 0; i < this.itsConstraints.size(); i++) {
             final Formula c = this.itsConstraints.get(i);
-            final List<Integer> layer = c.getLayer();
+            final ArrayMovieInt layer = c.getLayer();
             if (l == -1 && layer.isEmpty()) {
                 v.add(c);
             } else if ((l > -1) && !layer.isEmpty()) {
                 for (int j = 0; j < layer.size(); j++) {
-                    final Integer I = layer.get(j);
-                    if (I.intValue() == l) {
+                    if (layer.get(j) == l) {
                         v.add(c);
                         break;
                     }
@@ -1401,13 +1397,12 @@ public class GraGra implements Disposable, XMLObject {
         List<Formula> v = new ArrayList<Formula>(5);
         for (int i = 0; i < this.itsConstraints.size(); i++) {
             Formula c = this.itsConstraints.get(i);
-            List<Integer> prior = c.getPriority();
+            ArrayMovieInt prior = c.getPriority();
             if (p == -1 && prior.isEmpty()) {
                 v.add(c);
             } else if ((p > -1) && !prior.isEmpty()) {
                 for (int j = 0; j < prior.size(); j++) {
-                    Integer I = prior.get(j);
-                    if (I.intValue() == p) {
+                    if (prior.get(j) == p) {
                         v.add(c);
                         break;
                     }
@@ -1428,15 +1423,16 @@ public class GraGra implements Disposable, XMLObject {
         List<String> itsLayers = getLayers();
         for (int i = 0; i < this.itsConstraints.size(); i++) {
             Formula c = this.itsConstraints.get(i);
-            List<Integer> layer = c.getLayer();
-            Enumeration<Integer> e = Collections.enumeration(layer);
-            while (e.hasMoreElements()) {
-                Integer l = e.nextElement();
+            ArrayMovieInt layer = c.getLayer();
+            // Create a copy to iterate safely while potentially removing elements
+            ArrayMovieInt layerCopy = layer.cloneMovie();
+            for (int idx = 0; idx < layerCopy.size(); idx++) {
+                int l = layerCopy.get(idx);
                 boolean found = false;
                 for (int j = 0; j < itsLayers.size(); j++) {
                     try {
                         Integer I = Integer.valueOf(itsLayers.get(j));
-                        if (I.intValue() == l.intValue()) {
+                        if (I.intValue() == l) {
                             found = true;
                             break;
                         }
@@ -1445,7 +1441,6 @@ public class GraGra implements Disposable, XMLObject {
                 }
                 if (!found) {
                     layer.remove(l);
-                    e = Collections.enumeration(layer);
                 }
             }
         }
@@ -1455,15 +1450,16 @@ public class GraGra implements Disposable, XMLObject {
         List<String> itsPriors = getPriorities();
         for (int i = 0; i < this.itsConstraints.size(); i++) {
             Formula c = this.itsConstraints.get(i);
-            List<Integer> prior = c.getPriority();
-            Enumeration<Integer> e = Collections.enumeration(prior);
-            while (e.hasMoreElements()) {
-                Integer p = e.nextElement();
+            ArrayMovieInt prior = c.getPriority();
+            // Create a copy to iterate safely while potentially removing elements
+            ArrayMovieInt priorCopy = prior.cloneMovie();
+            for (int idx = 0; idx < priorCopy.size(); idx++) {
+                int p = priorCopy.get(idx);
                 boolean found = false;
                 for (int j = 0; j < itsPriors.size(); j++) {
                     try {
                         Integer I = Integer.valueOf(itsPriors.get(j));
-                        if (I.intValue() == p.intValue()) {
+                        if (I.intValue() == p) {
                             found = true;
                             break;
                         }
@@ -1472,7 +1468,6 @@ public class GraGra implements Disposable, XMLObject {
                 }
                 if (!found) {
                     prior.remove(p);
-                    e = Collections.enumeration(prior);
                 }
             }
         }

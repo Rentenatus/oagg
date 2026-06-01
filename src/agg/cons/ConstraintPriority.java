@@ -11,6 +11,7 @@
  */
 package agg.cons;
 
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -76,7 +77,7 @@ public class ConstraintPriority {
         for (int i = 0; i < this.constraintsVec.size(); i++) {
             Object constraint = this.constraintsVec.elementAt(i);
             if (constraint instanceof Formula) {
-                Vector<Integer> prior = ((Formula) constraint).getPriority();
+                ArrayMovieInt prior = ((Formula) constraint).getPriority();
                 if (prior != null) {
                     this.constraintPriority.put(constraint, prior);
                 }

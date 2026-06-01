@@ -15,6 +15,7 @@ package agg.gui.treeview.nodedata;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Vector;
 import agg.editor.impl.EdConstraint;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 
 /**
  * The ConstraintTreeNodeData implements an user object of a tree node in the
@@ -111,12 +112,12 @@ public class ConstraintTreeNodeData extends GraGraTreeNodeDataAdapter {
                     .length()));
         }
         String sL = "";
-        Vector<Integer> layer = this.eConstraint.getBasisConstraint().getLayer();
+        ArrayMovieInt layer = this.eConstraint.getBasisConstraint().getLayer();
         if (this.eConstraint.getGraGra().getBasisGraGra().isLayered()
                 && !layer.isEmpty()) {
             sL = "[";
             for (int k = 0; k < layer.size(); k++) {
-                int l = layer.get(k).intValue();
+                int l = layer.get(k) ;
                 sL = sL + String.valueOf(l);
                 if (k < layer.size() - 1) {
                     sL = sL + ",";

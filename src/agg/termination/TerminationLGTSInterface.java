@@ -18,6 +18,7 @@ import agg.xt_basis.GraGra;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -51,7 +52,7 @@ public interface TerminationLGTSInterface {
 
     public Hashtable<Integer, HashSet<Rule>> getInvertedRuleLayer();
 
-    public List<Integer> getOrderedRuleLayer();
+    public ArrayMovieInt getOrderedRuleLayer();
 
     public Hashtable<Integer, HashSet<Object>> getInvertedTypeDeletionLayer();
 

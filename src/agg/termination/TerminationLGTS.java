@@ -27,6 +27,8 @@ import agg.xt_basis.Type;
 import de.jare.ndimcol.ref.IteratorWalker;
 import de.jare.ndimcol.ref.SortedSeasonSet;
 import de.jare.ndimcol.utils.BiPredicateInteger;
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -67,7 +69,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     private SortedSeasonSet<Integer> orderedTypeCreationLayerSet;
     private Integer //startLayer, 
             startRuleLayer;
-    private List<Integer> orderedRuleLayer;
+    private ArraySeasonInt orderedRuleLayer;
     // private List orderedTypeDeletionLayer;
     // private List orderedTypeCreationLayer;
     private Hashtable<Integer, Pair<Boolean, List<Rule>>> resultTypeDeletion;
@@ -179,7 +181,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         return this.invertedRuleLayer;
     }
 
-    public List<Integer> getOrderedRuleLayer() {
+    public ArrayMovieInt getOrderedRuleLayer() {
         return this.orderedRuleLayer;
     }
 
@@ -442,7 +444,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     }
 
     private void initResults() {
-        this.orderedRuleLayer = new Vector<>();
+        this.orderedRuleLayer = new ArraySeasonInt();
         this.resultTypeDeletion = new Hashtable<>();
         this.resultDeletion = new Hashtable<>();
         this.resultNonDeletion = new Hashtable<>();
@@ -1323,8 +1325,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     private boolean setValidResult() {
         boolean result = true;
         for (int i = 0; i < this.orderedRuleLayer.size(); i++) {
-            Integer currentLayer = this.orderedRuleLayer.get(i);
-//			System.out.println("Layer: "+currentLayer.intValue());
+            int currentLayer = this.orderedRuleLayer.get(i);
+//			System.out.println("Layer: "+currentLayer);
             boolean localresult = false;
             Pair<Boolean, List<Rule>> p = this.resultTypeDeletion.get(currentLayer);
             if (p != null) {

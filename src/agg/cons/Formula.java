@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import java.io.Serializable;
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.NestedApplCond;
@@ -41,8 +43,8 @@ public class Formula implements Evaluable, XMLObject, Serializable {
     private boolean evaluable = true;
     private boolean enabled = true;
     private String comment = "";
-    private Vector<Integer> layer = new Vector<Integer>(5);
-    private Vector<Integer> priority = new Vector<Integer>(5);
+    private ArraySeasonInt layer = new ArraySeasonInt();
+    private ArraySeasonInt priority = new ArraySeasonInt();
 
     private void init(int _op, Evaluable e1, Evaluable e2) {
         this.op = _op;
@@ -795,14 +797,14 @@ public class Formula implements Evaluable, XMLObject, Serializable {
     /**
      * Returns my layer. The layer is used by layered grammar.
      */
-    public Vector<Integer> getLayer() {
+    public ArrayMovieInt getLayer() {
         return this.layer;
     }
 
     public String getLayerAsString() {
         String str = "";
         for (int k = 0; k < this.layer.size(); k++) {
-            int l = this.layer.get(k).intValue();
+            int l = this.layer.get(k);
             str = str + String.valueOf(l);
             if (k < this.layer.size() - 1) {
                 str = str + ",";
@@ -817,8 +819,8 @@ public class Formula implements Evaluable, XMLObject, Serializable {
     public void addLayer(int l) {
         boolean added = false;
         for (int i = 0; i < this.layer.size(); i++) {
-            if (l <= this.layer.get(i).intValue()) {
-                this.layer.add(i, l);
+            if (l <= this.layer.get(i)) {
+                this.layer.addAt(i, l);
                 added = true;
                 break;
             }
@@ -833,20 +835,23 @@ public class Formula implements Evaluable, XMLObject, Serializable {
      * Vector is an Integer..
      */
     public void setLayer(Vector<Integer> l) {
-        this.layer = l;
+        this.layer = new ArraySeasonInt();
+        for (Integer i : l) {
+            this.layer.add(i != null ? i : 0);
+        }
     }
 
     /**
      * Returns my priority. The layer is used by grammar with rule priority.
      */
-    public Vector<Integer> getPriority() {
+    public ArrayMovieInt getPriority() {
         return this.priority;
     }
 
     public String getPriorityAsString() {
         String str = "";
         for (int k = 0; k < this.priority.size(); k++) {
-            int l = this.priority.get(k).intValue();
+            int l = this.priority.get(k);
             str = str + String.valueOf(l);
             if (k < this.priority.size() - 1) {
                 str = str + ",";
@@ -861,8 +866,8 @@ public class Formula implements Evaluable, XMLObject, Serializable {
     public void addPriority(int p) {
         boolean added = false;
         for (int i = 0; i < this.priority.size(); i++) {
-            if (p <= this.priority.get(i).intValue()) {
-                this.priority.add(i, p);
+            if (p <= this.priority.get(i)) {
+                this.priority.addAt(i, p);
                 added = true;
                 break;
             }
@@ -877,7 +882,10 @@ public class Formula implements Evaluable, XMLObject, Serializable {
      * Vector is an Integer.
      */
     public void setPriority(Vector<Integer> p) {
-        this.priority = p;
+        this.priority = new ArraySeasonInt();
+        for (Integer i : p) {
+            this.priority.add(i != null ? i : 0);
+        }
     }
 
     @SuppressWarnings("unused")
@@ -896,7 +904,7 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                 this.enabled = true;
             }
             if (this.layer == null) {
-                this.layer = new Vector<Integer>(5);
+                this.layer = new ArraySeasonInt();
             } else {
                 this.layer.clear();
             }
@@ -923,7 +931,7 @@ public class Formula implements Evaluable, XMLObject, Serializable {
                 h.close();
             }
             if (this.priority == null) {
-                this.priority = new Vector<Integer>(5);
+                this.priority = new ArraySeasonInt();
             } else {
                 this.priority.clear();
             }
@@ -963,10 +971,10 @@ public class Formula implements Evaluable, XMLObject, Serializable {
         if (this.layer.size() == 0) {
             h.addAttr("Layer", "");
         } else if (this.layer.size() == 1) {
-            String l = this.layer.get(0).toString();
+            String l = String.valueOf(this.layer.get(0));
             h.addAttr("Layer", l);
         } else {
-            h.addAttr("Layer", this.layer.toString());
+            h.addAttr("Layer", getLayerAsString());
         }
         h.addAttr("Size", String.valueOf(this.layer.size()));
         h.close();
@@ -975,10 +983,10 @@ public class Formula implements Evaluable, XMLObject, Serializable {
         if (this.priority.size() == 0) {
             h.addAttr("Priority", "");
         } else if (this.priority.size() == 1) {
-            String p = this.priority.get(0).toString();
+            String p = String.valueOf(this.priority.get(0));
             h.addAttr("Priority", p);
         } else {
-            h.addAttr("Priority", this.priority.toString());
+            h.addAttr("Priority", getPriorityAsString());
         }
         h.addAttr("Size", String.valueOf(this.priority.size()));
         h.close();
@@ -1014,11 +1022,4 @@ public class Formula implements Evaluable, XMLObject, Serializable {
         return false;
     }
 
-    /**
-     * Trims the capacity of used vectors to be the vector's current size.
-     */
-    public void trimToSize() {
-        this.layer.trimToSize();
-        this.priority.trimToSize();
-    }
 }

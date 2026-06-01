@@ -47,6 +47,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 //import agg.editor.impl.EdGraGra;
 import agg.gui.help.HtmlBrowser;
 import agg.cons.Formula;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.List;
 
 /**
@@ -90,7 +91,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             this.table = new Hashtable<Object, List<Object>>(constraints.size());
             for (int i = 0; i < constraints.size(); i++) {
                 Formula f = constraints.get(i);
-                List<Integer> flayers = f.getLayer();
+                ArrayMovieInt flayers = f.getLayer();
                 Vector<Object> tmpVector = new Vector<>();
                 for (int k = 1; k < layers.size(); k++) {
                     String l = layers.get(k);

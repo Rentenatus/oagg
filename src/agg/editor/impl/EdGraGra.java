@@ -56,6 +56,7 @@ import agg.attribute.impl.CondMember;
 import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
 import agg.layout.evolutionary.LayoutPattern;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import de.jare.ndimcol.ref.ArrayMovie;
 import org.w3c.dom.Element;
 
@@ -503,9 +504,9 @@ public class EdGraGra implements XMLObject {
         Vector<EdConstraint> v = new Vector<EdConstraint>(5);
         for (int i = 0; i < this.eConstraints.size(); i++) {
             EdConstraint c = this.eConstraints.get(i);
-            Vector<Integer> layer = c.getBasisConstraint().getLayer();
+            ArrayMovieInt layer = c.getBasisConstraint().getLayer();
             for (int j = 0; j < layer.size(); j++) {
-                if (layer.get(j).intValue() == l) {
+                if (layer.get(j)  == l) {
                     v.add(c);
                 }
             }

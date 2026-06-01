@@ -28,6 +28,7 @@ import agg.editor.impl.EdPAC;
 import agg.editor.impl.EdRule;
 import agg.editor.impl.EdRuleScheme;
 import agg.gui.treeview.nodedata.GraGraTreeNodeData;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 
 /**
  * The class GraGraTreeModel extends JTreeModel to define valueForPathChanged.
@@ -344,7 +345,7 @@ public class GraGraTreeModel extends DefaultTreeModel {
                             tagD = "[D]";
                         }
                         String tag = "";
-                        Vector<Integer> layer = sd.getConstraint().getBasisConstraint()
+                        ArrayMovieInt layer = sd.getConstraint().getBasisConstraint()
                                 .getLayer();
                         if (layered && !layer.isEmpty()) {
                             tag = "["
@@ -381,9 +382,9 @@ public class GraGraTreeModel extends DefaultTreeModel {
                             tagD = "[D]";
                         }
                         String tag = "";
-                        Vector<Integer> layer = sd.getConstraint().getBasisConstraint()
+                        ArrayMovieInt layer = sd.getConstraint().getBasisConstraint()
                                 .getLayer();
-                        Vector<Integer> prior = sd.getConstraint().getBasisConstraint()
+                        ArrayMovieInt prior = sd.getConstraint().getBasisConstraint()
                                 .getPriority();
                         if (layered && !layer.isEmpty()) {
                             tag = "["
@@ -413,7 +414,7 @@ public class GraGraTreeModel extends DefaultTreeModel {
                 tagD = "[D]";
             }
             String tag = "";
-            Vector<Integer> layer = sd.getConstraint().getBasisConstraint().getLayer();
+            ArrayMovieInt layer = sd.getConstraint().getBasisConstraint().getLayer();
             if (layered && !layer.isEmpty()) {
                 tag = "["
                         + sd.getConstraint().getBasisConstraint()
@@ -434,8 +435,8 @@ public class GraGraTreeModel extends DefaultTreeModel {
                 tagD = "[D]";
             }
             String tag = "";
-            Vector<Integer> layer = sd.getConstraint().getBasisConstraint().getLayer();
-            Vector<Integer> prior = sd.getConstraint().getBasisConstraint()
+            ArrayMovieInt layer = sd.getConstraint().getBasisConstraint().getLayer();
+            ArrayMovieInt prior = sd.getConstraint().getBasisConstraint()
                     .getPriority();
             if (layered && !layer.isEmpty()) {
                 tag = "["

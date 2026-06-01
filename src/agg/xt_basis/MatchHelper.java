@@ -28,6 +28,7 @@ import agg.cons.Evaluable;
 import agg.cons.Formula;
 import agg.util.Pair;
 import agg.util.Triple;
+import de.jare.ndimcol.primint.ArraySeasonInt;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -673,7 +674,7 @@ public final class MatchHelper {
             int tgchecklevel) {
         errorMsg = "";
         final List<Triple<Node, Type, Type>> srcNodes = new ArrayList<Triple<Node, Type, Type>>();
-        final List<Integer> ndel = new ArrayList<Integer>();
+        final ArraySeasonInt ndel = new ArraySeasonInt();
         final List<Pair<Integer, Integer>> tarMinMax = new ArrayList<Pair<Integer, Integer>>();
         Iterator<String> iter = type2delarcs.keySet().iterator();
         while (iter.hasNext()) {
@@ -683,9 +684,9 @@ public final class MatchHelper {
                 final Arc a = incoms.get(j); // edge in host graph
                 int indx = getIndexOfNode(srcNodes, (Node) a.getSource(), a.getType(), a.getTargetType());
                 if (indx >= 0) {
-                    int nn = ndel.get(indx).intValue() + 1;
-                    ndel.add(indx, nn);
-                    ndel.remove(indx + 1);
+                    int nn = ndel.get(indx) + 1;
+                    ndel.addAt(indx, nn);
+                    ndel.removeAt(indx + 1);
                 } else {
                     final List<Arc> newarcs = type2newarcs.get(typekey);
                     int nn = 0;
@@ -727,7 +728,7 @@ public final class MatchHelper {
                         }
                     }
                 }
-                int nn = ndel.get(indx).intValue();
+                int nn = ndel.get(indx);
                 final Node src = srcNodes.get(indx).first;
                 int outs = src.getNumberOfOutgoingArcs(a.getType(), targetNodeType);
                 if (tgchecklevel > TypeSet.ENABLED_MAX
@@ -763,7 +764,7 @@ public final class MatchHelper {
             int tgchecklevel) {
         errorMsg = "";
         final List<Triple<Node, Type, Type>> tarNodes = new ArrayList<Triple<Node, Type, Type>>();
-        final List<Integer> ndel = new ArrayList<Integer>();
+        final ArraySeasonInt ndel = new ArraySeasonInt();
         final List<Pair<Integer, Integer>> srcMinMax = new ArrayList<Pair<Integer, Integer>>();
         Iterator<String> iter = type2delarcs.keySet().iterator();
         while (iter.hasNext()) {
@@ -773,7 +774,7 @@ public final class MatchHelper {
                 final Arc a = outcoms.get(j);
                 int indx = getIndexOfNode(tarNodes, (Node) a.getTarget(), a.getType(), a.getSourceType());
                 if (indx >= 0) {
-                    int nn = ndel.get(indx).intValue() + 1;
+                    int nn = ndel.get(indx) + 1;
                     ndel.set(indx, nn);
                 } else {
                     final List<Arc> newarcs = type2newarcs.get(typekey);
@@ -817,7 +818,7 @@ public final class MatchHelper {
                         }
                     }
                 }
-                int nn = ndel.get(indx).intValue();
+                int nn = ndel.get(indx);
                 final Node tar = tarNodes.get(indx).first;
                 int ins = tar.getNumberOfIncomingArcs(a.getType(), sourceNodeType);
                 if (tgchecklevel > TypeSet.ENABLED_MAX
@@ -892,8 +893,8 @@ public final class MatchHelper {
             int tgchecklevel) {
         errorMsg = "";
         final List<Triple<Node, Type, Type>> srcNodes = new ArrayList<Triple<Node, Type, Type>>();
-        final List<Integer> nnew = new ArrayList<Integer>();
-        final List<Integer> tarMax = new ArrayList<Integer>();
+        final ArraySeasonInt nnew = new ArraySeasonInt();
+        final ArraySeasonInt tarMax = new ArraySeasonInt();
         final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();	// RHS objects
         // type2newarcs contains arcs sorted by type.convertToKey() string which contains
         // name of source and target type, too
@@ -922,7 +923,7 @@ public final class MatchHelper {
             }
             int indx = getIndexOfNode(srcNodes, src, a.getType(), a.getTargetType());
             if (indx >= 0) {
-                int nn = nnew.get(indx).intValue() + 1;
+                int nn = nnew.get(indx) + 1;
                 nnew.set(indx, nn);
             } else {
 //				final List<Arc> newarcs = type2newarcs.get(typekey);
@@ -953,7 +954,7 @@ public final class MatchHelper {
                     }
                 }
             }
-            int nn = nnew.get(indx).intValue();
+            int nn = nnew.get(indx);
             List<Arc> outarcs = src.getOutgoingArcs(a.getType(), targetNodeType);
             int outs = outarcs.size();
             for (int k = 0; k < outarcs.size(); k++) {
@@ -974,8 +975,8 @@ public final class MatchHelper {
 //			System.out.println("MatchHelper:  Target Max: "
 //					+src.getType().getName()+"   "
 //					+a.getType().getName()+"   "+outs+"   "+nn);
-            if (tarMax.get(indx).intValue() != TypeSet.UNDEFINED
-                    && (outs + nn) > tarMax.get(indx).intValue()) {
+            if (tarMax.get(indx) != TypeSet.UNDEFINED
+                    && (outs + nn) > tarMax.get(indx)) {
                 errorMsg = "Target multiplicity of edge type failed!"
                         + "\nType  \"" + a.getType().getName() + "\""
                         + " - target maximum failed.";
@@ -995,8 +996,8 @@ public final class MatchHelper {
             int tgchecklevel) {
         errorMsg = "";
         final List<Triple<Node, Type, Type>> tarNodes = new ArrayList<Triple<Node, Type, Type>>();
-        final List<Integer> nnew = new ArrayList<Integer>();
-        final List<Integer> srcMax = new ArrayList<Integer>();
+        final ArraySeasonInt nnew = new ArraySeasonInt();
+        final ArraySeasonInt srcMax = new ArraySeasonInt();
         final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();	// RHS objects
         // type2newarcs will contain arcs  by type.convertToKey() string 
         // with name of source and target type, too
@@ -1028,7 +1029,7 @@ public final class MatchHelper {
             // tarNodes, tar in a host graph, a in the RHS
             int indx = getIndexOfNode(tarNodes, tar, a.getType(), a.getSourceType());
             if (indx >= 0) {
-                int nn = nnew.get(indx).intValue() + 1;
+                int nn = nnew.get(indx) + 1;
                 nnew.set(indx, nn);
             } else {
 //				final List<Arc> newarcs = type2newarcs.get(typekey);				
@@ -1059,7 +1060,7 @@ public final class MatchHelper {
                     }
                 }
             }
-            int nn = nnew.get(nnew.size() - 1).intValue();
+            int nn = nnew.get(nnew.size() - 1);
             List<Arc> inarcs = tar.getIncomingArcs(a.getType(), sourceNodeType);
             int ins = inarcs.size();
             for (int k = 0; k < inarcs.size(); k++) {
@@ -1081,8 +1082,8 @@ public final class MatchHelper {
 //			System.out.println("MatchHelper:  Source Max: "
 //					+tar.getType().getName()+"   "
 //					+a.getType().getName()+"   " +ins+"   "+nn);
-            if (srcMax.get(indx).intValue() != TypeSet.UNDEFINED
-                    && (ins + nn) > srcMax.get(indx).intValue()) {
+            if (srcMax.get(indx) != TypeSet.UNDEFINED
+                    && (ins + nn) > srcMax.get(indx)) {
                 errorMsg = "Source multiplicity of edge type failed!"
                         + "\nType  \"" + a.getType().getName() + "\""
                         + " - source maximum failed.";
