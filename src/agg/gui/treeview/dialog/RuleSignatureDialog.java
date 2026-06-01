@@ -18,8 +18,9 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import java.util.Vector;
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -58,8 +59,8 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     protected boolean inFailed, outFailed;
     protected String signatureTxt;
     protected String s0, s1, s2, s3, s4, s5;
-    private List<Integer> indexesIn;
-    private List<Integer> store;// 0:indxOut; 1...nn: indexesIn;
+    private ArrayMovieInt indexesIn;
+    private ArrayMovieInt store;// 0:indxOut; 1...nn: indexesIn;
     private JTextField signTxt;
     private static boolean showInfoMsg; // = true;
 
@@ -91,10 +92,13 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
 
     private void initData() {
         indxOut = -1;
-        indexesIn = new Vector<Integer>(5);
+        indexesIn = new ArraySeasonInt();
         if (this.rule.getBasisRule().getSignaturOrder() != null) {
             VarTuple vars = (VarTuple) this.rule.getBasisRule().getAttrContext().getVariables();
-            indexesIn.addAll(vars.getSignaturOrder());
+            ArrayMovieInt signaturOrder = vars.getSignaturOrder();
+            for (int i = 0; i < signaturOrder.size(); i++) {
+                indexesIn.add(signaturOrder.get(i));
+            }
             fillSignatureItems(vars);
         }
         fillSignatureItems();
@@ -112,7 +116,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     private void fillSignatureItems(VarTuple vars) {
         fillSignatureItems();
         for (int i = 0; i < indexesIn.size(); i++) {
-            VarMember m = (VarMember) vars.getMemberAt(indexesIn.get(i).intValue());
+            VarMember m = (VarMember) vars.getMemberAt(indexesIn.get(i));
             String nt = m.getName().concat(":").concat(m.getDeclaration().getTypeName());
             s3 = s3.concat(nt);
             if (i < (indexesIn.size() - 1)) {
@@ -211,8 +215,8 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     }
 
     private void storeIndexes() {
-        this.store = new Vector<Integer>(this.indexesIn);
-        this.store.add(0, Integer.valueOf(this.indxOut));
+        this.store = this.indexesIn.cloneMovie();
+        this.store.addAt(0, this.indxOut);
     }
 
     protected void clearSignature() {
@@ -223,7 +227,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     }
 
     protected void restoreSignature() {
-        this.indxOut = this.store.get(0).intValue();
+        this.indxOut = this.store.get(0);
         this.indexesIn.clear();
         for (int i = 1; i < this.store.size(); i++) {
             this.indexesIn.add(this.store.get(i));
@@ -233,7 +237,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
             ((VarMember) vars.getMemberAt(this.indxOut)).setOutputParameter(true);
         }
         for (int i = 0; i < this.indexesIn.size(); i++) {
-            ((VarMember) vars.getMemberAt(this.indexesIn.get(i).intValue())).setInputParameter(true);
+            ((VarMember) vars.getMemberAt(this.indexesIn.get(i))).setInputParameter(true);
         }
         fillSignatureItems(vars);
         setSignatureText();
@@ -279,7 +283,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                     }
                     String nt = variableEditor.getSelectedMember().getDeclaration().getName()
                             + ":" + variableEditor.getSelectedMember().getDeclaration().getTypeName();
-                    if (indexesIn.contains(Integer.valueOf(i))) {
+                    if (indexesIn.contains(i)) {
                         s3 = s3.replaceFirst(nt, "");
                         if (s3.equals(", ")) {
                             s3 = "";
@@ -288,13 +292,13 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                         } else {
                             s3 = s3.replaceFirst(", , ", ", ");
                         }
-                        indexesIn.remove(Integer.valueOf(i));
+                        indexesIn.remove(i);
                     }
                     s3 = s3.concat(nt);
                     if (!s4.isEmpty()) {
                         s3 = s3 + ", ";
                     }
-                    indexesIn.add(Integer.valueOf(i));
+                    indexesIn.add(i);
                     setSignatureText();
                 }
             }
@@ -373,7 +377,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                 case TupleTableModel.IS_INPUT_PARAMETER:
                     if (var != null && !var.isInputParameter()) {
                         int i = variableEditor.getTuple().getIndexForMember(var);
-                        if (indexesIn.contains(Integer.valueOf(i))) {
+                        if (indexesIn.contains(i)) {
                             clearSignatureText();
                         }
                     }
@@ -389,7 +393,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                 case TupleTableModel.NAME:
                     if (var != null) {
                         int i = variableEditor.getTuple().getIndexForMember(var);
-                        if (indexesIn.contains(Integer.valueOf(i))) {
+                        if (indexesIn.contains(i)) {
                             warning("Incorrect Signature", "Changing of the type or name of an input|output parameter \nleads to an incorrect signature.\n\n"
                                     + "The current rule signature will be unset.");
                             clearSignatureText();
@@ -426,7 +430,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     protected boolean checkIn() {
         inFailed = false;
         for (int l = 0; l < indexesIn.size(); l++) {
-            int i = indexesIn.get(l).intValue();
+            int i = indexesIn.get(l);
             VarMember m = ((VarTuple) variableEditor.getTuple()).getVarMemberAt(i);
             if (m == null || !m.isInputParameter()) {
                 inFailed = true;

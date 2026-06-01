@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
 import javax.swing.ImageIcon;
 import javax.swing.undo.*;
 import agg.attribute.AttrEvent;
@@ -64,7 +66,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     private Node bNode;
     private LayoutNode lNode;
     private int nodeid;
-    private List<Integer> cluster, oldcluster;
+    private ArraySeasonInt cluster, oldcluster;
     private Color ownColor = null;
 
     /**
@@ -1226,10 +1228,13 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
     }
 
     public void setCluster(List<Integer> clus) {
-        this.cluster = new Vector<>(clus);
+        this.cluster = new ArraySeasonInt();
+        for (Integer i : clus) {
+            this.cluster.add(i != null ? i : 0);
+        }
     }
 
-    public List<Integer> getCluster() {
+    public ArrayMovieInt getCluster() {
         return this.cluster;
     }
 
@@ -1237,7 +1242,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         EdNode node;
         int xdist, ydist, dist;
         this.oldcluster = this.cluster;
-        this.cluster = new Vector<>();
+        this.cluster = new ArraySeasonInt();
         for (int i = 0; i < nodes.size(); i++) {
             node = nodes.get(i);
             if (!this.equals(node)) {
@@ -1255,7 +1260,7 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
         }
     }
 
-    public List<Integer> getOldCluster() {
+    public ArrayMovieInt getOldCluster() {
         return this.oldcluster;
     }
 }

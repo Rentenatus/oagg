@@ -21,6 +21,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Vector;
 import java.util.Hashtable;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
@@ -352,7 +353,7 @@ public class LayoutMetrics {
     public void calcClusterDiffs(EdGraph eg) {
         List<EdNode> nodes = eg.getNodes();
         EdNode node;
-        List<Integer> oldcluster, newcluster;
+        ArrayMovieInt oldcluster, newcluster;
         int sumplus = 0, summinus = 0;
 //		int oldid, newid;
         for (int i = 0; i < nodes.size(); i++) {

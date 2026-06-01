@@ -14,8 +14,9 @@
 package agg.attribute.impl;
 
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Vector;
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrVariableTuple;
 import agg.attribute.handler.AttrHandler;
@@ -40,7 +41,7 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
      */
     protected final int FIXED_VALUE = -1;
 //	private static transient int COUNTER = 0;
-    private Vector<Integer> signaturOrder;
+    private ArraySeasonInt signaturOrder;
 
     public VarTuple(AttrTupleManager manager, ContextView context,
             ValueTuple parent) {
@@ -424,7 +425,7 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
 
     public void initSignaturOrder() {
         if (this.signaturOrder == null) {
-            this.signaturOrder = new Vector<Integer>(5);
+            this.signaturOrder = new ArraySeasonInt();
             for (int i = 0; i < this.getSize(); i++) {
                 VarMember m = (VarMember) this.getMemberAt(i);
                 if (m.isInputParameter()) {
@@ -437,7 +438,7 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
     public void disposeSignaturOrder() {
         if (this.signaturOrder != null) {
             for (int i = 0; i < this.signaturOrder.size(); i++) {
-                VarMember m = (VarMember) this.getMemberAt(this.signaturOrder.get(i).intValue());
+                VarMember m = (VarMember) this.getMemberAt(this.signaturOrder.get(i));
                 if (m != null) {
                     m.setInputParameter(false);
                     m.setOutputParameter(false);
@@ -447,7 +448,7 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
         }
     }
 
-    public List<Integer> getSignaturOrder() {
+    public ArrayMovieInt getSignaturOrder() {
         return this.signaturOrder;
     }
 
@@ -456,9 +457,9 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
             VarMember m = this.getVarMemberAt(indxOfVar);
             if (m != null) {
                 m.setInputParameter(true);
-                int i = this.signaturOrder.indexOf(Integer.valueOf(indxOfVar));
+                int i = this.signaturOrder.indexOf(indxOfVar);
                 if (i != -1) {
-                    this.signaturOrder.remove(i);
+                    this.signaturOrder.removeAt(i);
                 }
                 this.signaturOrder.add(indxOfVar);
             }
@@ -470,7 +471,7 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
             VarMember m = this.getVarMemberAt(indxOfVar);
             if (m != null) {
                 m.setInputParameter(false);
-                this.signaturOrder.remove(Integer.valueOf(indxOfVar));
+                this.signaturOrder.remove(indxOfVar);
             }
         }
     }
@@ -568,11 +569,11 @@ public class VarTuple extends LoneTuple implements AttrVariableTuple {
             h.close();
         }
         if (h.readSubTag("Input")) {
-            this.signaturOrder = new Vector<Integer>(5);
+            this.signaturOrder = new ArraySeasonInt();
             String order = h.readAttr("order");
             String[] array = order.split(", ");
             for (int i = 0; i < array.length; i++) {
-                this.signaturOrder.add(Integer.valueOf(array[i]));
+                this.signaturOrder.add(Integer.parseInt(array[i]));
             }
             h.close();
         }

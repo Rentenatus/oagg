@@ -39,6 +39,7 @@ import agg.util.XMLObject;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -4819,7 +4820,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         ((VarTuple) this.getAttrContext().getVariables()).disposeSignaturOrder();
     }
 
-    public List<Integer> getSignaturOrder() {
+    public ArrayMovieInt getSignaturOrder() {
         return ((VarTuple) this.getAttrContext().getVariables()).getSignaturOrder();
     }
 
@@ -4827,9 +4828,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         VarTuple vars = (VarTuple) this.getAttrContext().getVariables();
         String s = this.getName().concat("(");
         String s1 = "";
-        List<Integer> order = vars.getSignaturOrder();
+        ArrayMovieInt order = vars.getSignaturOrder();
         for (int i = 0; i < order.size(); i++) {
-            VarMember m = (VarMember) vars.getMemberAt(order.get(i).intValue());
+            VarMember m = (VarMember) vars.getMemberAt(order.get(i));
             String nt = m.getName().concat(":").concat(m.getDeclaration().getTypeName());
             s1 = s1.concat(nt);
             if (i < (order.size() - 1)) {

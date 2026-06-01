@@ -21,6 +21,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrMapping;
@@ -5679,10 +5681,10 @@ public class BaseFactory {
         if (i == 0) {
             return putInclusion(thisGraph, new ArrayList<GraphObject>(), inclusions);
         }
-        List<Integer> select = new ArrayList<Integer>();
+        ArraySeasonInt select = new ArraySeasonInt();
         if (i <= itsGOSet.size()) {
             for (int j = 1; j <= i; j++) {
-                select.add(Integer.valueOf(j - 1));
+                select.add(j - 1);
             }
             computeSelection(thisGraph, 1, itsGOSet, select, inclusions,
                     requiredObjectsInsideSubgraphs, onlyRequiredObjectsInsideSubgraphs);
@@ -5697,7 +5699,7 @@ public class BaseFactory {
             final Graph thisGraph,
             int s,
             List<GraphObject> itsGOSet,
-            List<Integer> select,
+            ArrayMovieInt select,
             List<OrdinaryMorphism> inclusions,
             final List<Object> requiredObjectsInsideSubgraph,
             boolean onlyRequiredObjectsInsideSubgraphs) {
@@ -5707,7 +5709,7 @@ public class BaseFactory {
         List<GraphObject> goSet;
         if (s <= selSize && s >= 1) {
             try {
-                v = select.get(s - 1).intValue();
+                v = select.get(s - 1);
                 while (v < max - selSize + s) {
 //					int tmp = max - selSize + s;
                     inclusions = computeSelection(thisGraph, s + 1, itsGOSet, select,
@@ -5718,16 +5720,15 @@ public class BaseFactory {
                             inclusions = putInclusion(thisGraph, goSet, inclusions);
                         }
                     }
-                    select.set(Integer.valueOf(v + 1), s - 1);
-                    v = select.get(s - 1).intValue();
+                    select.set(s - 1, v + 1);
+                    v = select.get(s - 1);
                 }
                 if (s > 1) {
-                    v = select.get(s - 2).intValue();
+                    v = select.get(s - 2);
                     if (v < max - selSize + s + 1) {
-                        select.set(Integer.valueOf(v + 1), s - 2);
+                        select.set(s - 2, v + 1);
                         for (int j = 1; j <= selSize - s + 1; j++) {
-                            select.set(Integer.valueOf(v + 1 + j), s + j
-                                    - 2);
+                            select.set(s + j - 2, v + 1 + j);
                         }
                     }
                 }
@@ -5739,7 +5740,7 @@ public class BaseFactory {
     }
 
     private List<GraphObject> makeGraphObjectSet(
-            List<Integer> select,
+            ArrayMovieInt select,
             List<GraphObject> itsGOSet,
             final List<Object> requiredObjectsInsideSubgraph,
             boolean onlyRequiredObjectsInsideSubgraphs) {
@@ -5747,7 +5748,7 @@ public class BaseFactory {
         if (requiredObjectsInsideSubgraph == null
                 || requiredObjectsInsideSubgraph.isEmpty()) {
             for (int i = 0; i < select.size(); i++) {
-                int v = select.get(i).intValue();
+                int v = select.get(i);
                 tmp.add(itsGOSet.get(v));
             }
         } else if (onlyRequiredObjectsInsideSubgraphs
@@ -5755,7 +5756,7 @@ public class BaseFactory {
             // all required objects must be in subgraph but not more
             int found = 0;
             for (int i = 0; i < select.size(); i++) {
-                int v = select.get(i).intValue();
+                int v = select.get(i);
                 GraphObject go = itsGOSet.get(v);
                 if (requiredObjectsInsideSubgraph.contains(go)) {
                     found++;
@@ -5768,7 +5769,7 @@ public class BaseFactory {
         } else { // at least as required
             int found = 0;
             for (int i = 0; i < select.size(); i++) {
-                int v = select.get(i).intValue();
+                int v = select.get(i);
                 GraphObject go = itsGOSet.get(v);
                 if (requiredObjectsInsideSubgraph.contains(go)) {
                     found++;
