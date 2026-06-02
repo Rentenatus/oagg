@@ -78,7 +78,7 @@ public class GraphOrientationUndirected implements GraphOrientation {
     public String[] arcStringKeys(final Arc arc) {
         String[] keystr = new String[2];
         keystr[0] = arc.convertToKey();
-        keystr[1] = ((UndirectedArc) arc).convertToInverseKey();
+        keystr[1] = getInverseArcKey(arc);
         return keystr;
     }
 
@@ -119,12 +119,34 @@ public class GraphOrientationUndirected implements GraphOrientation {
 
     @Override
     public Arc createArc(Graph context, Type type, Node src, Node tar) {
-        return new UndirectedArc(type, src, tar, context);
+        return new Arc(type, src, tar, context);
     }
 
     @Override
     public boolean isDirected() {
         return false;
+    }
+
+    @Override
+    public void addArcToNodes(Arc arc, Node src, Node tar) {
+        // In undirected graphs, both nodes store the arc in their outgoing arcs
+        src.addOut(arc);
+        tar.addOut(arc);
+    }
+
+    @Override
+    public void removeArcFromNodes(Arc arc, Node src, Node tar) {
+        // In undirected graphs, both nodes store the arc in their outgoing arcs
+        src.removeOut(arc);
+        tar.removeOut(arc);
+    }
+
+    @Override
+    public String getInverseArcKey(Arc arc) {
+        // For undirected graphs, the inverse key is target->type->source
+        return arc.getTarget().getType().convertToKey()
+                .concat(arc.getType().convertToKey())
+                .concat(arc.getSource().getType().convertToKey());
     }
 
     @Override

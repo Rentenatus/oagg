@@ -36,7 +36,6 @@ import java.util.List;
 public class Arc extends GraphObject implements XMLObject {
 
     protected boolean inheritance = false;
-    protected boolean directed = true;
     protected GraphObject itsSource;
     protected GraphObject itsTarget;
     protected String keyStr = null;
@@ -110,20 +109,20 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     /*
-	 * Add <code>this</code> to the outgoing arcs of the <code>src</code> 
-	 * and to the incoming arcs of the <code>tar</code> .
+	 * Add <code>this</code> to the source and target nodes according to the
+	 * graph's orientation strategy.
      */
     protected void addToSrcTar(final GraphObject src, final GraphObject tar) {
-        if ((src != null) && (tar != null)) {
-            ((Node) src).addOut(this);
-            ((Node) tar).addIn(this);
+        if ((src != null) && (tar != null) && this.itsContext != null) {
+            ((Graph) this.itsContext).getOrientation().addArcToNodes(this, (Node) src, (Node) tar);
         }
     }
 
     public void dispose() {
 //		long t = System.nanoTime();
-        ((Node) this.itsTarget).removeIn(this);
-        ((Node) this.itsSource).removeOut(this);
+        if (this.itsContext != null && this.itsSource != null && this.itsTarget != null) {
+            ((Graph) this.itsContext).getOrientation().removeArcFromNodes(this, (Node) this.itsSource, (Node) this.itsTarget);
+        }
         if (this.itsAttr != null) {
             this.itsAttr.removeObserver(this);
             ((ValueTuple) this.itsAttr).dispose();
@@ -179,18 +178,30 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     public void setSource(Node n) {
-        ((Node) this.itsSource).removeOut(this);
+        if (this.itsSource != null && this.itsContext != null) {
+            Graph g = (Graph) this.itsContext;
+            g.getOrientation().removeArcFromNodes(this, (Node) this.itsSource, (Node) this.itsTarget);
+        }
         this.itsSource = n;
-        n.addOut(this);
+        if (n != null && this.itsContext != null) {
+            Graph g = (Graph) this.itsContext;
+            g.getOrientation().addArcToNodes(this, n, (Node) this.itsTarget);
+        }
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
     }
 
     public void setTarget(Node n) {
-        ((Node) this.itsTarget).removeIn(this);
+        if (this.itsTarget != null && this.itsContext != null) {
+            Graph g = (Graph) this.itsContext;
+            g.getOrientation().removeArcFromNodes(this, (Node) this.itsSource, (Node) this.itsTarget);
+        }
         this.itsTarget = n;
-        n.addIn(this);
+        if (n != null && this.itsContext != null) {
+            Graph g = (Graph) this.itsContext;
+            g.getOrientation().addArcToNodes(this, (Node) this.itsSource, n);
+        }
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
@@ -259,12 +270,26 @@ public class Arc extends GraphObject implements XMLObject {
         return this.convertToKey();
     }
 
-    public void setDirected(boolean b) {
-        this.directed = b;
+    /**
+     * Returns whether this arc is directed. The direction is determined by
+     * the graph's orientation, not by an internal flag.
+     *
+     * @return true if the graph is directed, false otherwise
+     */
+    public boolean isDirected() {
+        return this.itsContext != null && this.itsContext.isDirected();
     }
 
-    public boolean isDirected() {
-        return this.directed;
+    /**
+     * Sets the directed flag. This method is deprecated as the direction
+     * is now determined by the graph's orientation. This method does nothing.
+     *
+     * @param b the directed flag (ignored)
+     */
+    @Deprecated
+    public void setDirected(boolean b) {
+        // Direction is now determined by the graph's orientation, not by an internal flag
+        // This method is kept for backward compatibility but does nothing
     }
 
     public boolean isLoop() {
@@ -351,9 +376,6 @@ public class Arc extends GraphObject implements XMLObject {
     @Override
     public void XwriteObject(XMLHelper h) {
         h.openNewElem("Edge", this);
-        if (!this.directed) {
-            h.addAttr("directed", "false");
-        }
         if (!this.visible) {
             h.addAttr("visible", "false");
         }
@@ -398,9 +420,7 @@ public class Arc extends GraphObject implements XMLObject {
     @Override
     public void XreadObject(XMLHelper h) {
         if (h.isTag("Edge", this)) {
-            String str = h.readAttr("directed");
-            this.directed = !str.equals("false");
-            str = h.readAttr("visible");
+            String str = h.readAttr("visible");
             this.visible = !str.equals("false");
             str = h.readAttr("name");
             this.setObjectName(str);
@@ -478,7 +498,7 @@ public class Arc extends GraphObject implements XMLObject {
             tTrg = "[unnamed]";
         }
         result = " (" + "[" + hashCode() + "] " + "Arc: " + tSrc + "---" + t
-                + "--->" + tTrg + ") ";
+                + "---" + tTrg + ") ";
         if (this.itsAttr != null) {
             result = result + this.itsAttr.toString();
         }

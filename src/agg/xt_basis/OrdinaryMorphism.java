@@ -2705,18 +2705,19 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
                 GraphObject i = map.get(o);
                 GraphObject s = ((Arc) o).getSource();
                 GraphObject t = ((Arc) o).getTarget();
-                if (o instanceof UndirectedArc) {
-                    if (((((UndirectedArc) i).getSource() == getImage(s))
-                            && (((UndirectedArc) i).getTarget() == getImage(t)))
-                            || ((((UndirectedArc) i).getTarget() == getImage(s))
-                            && (((UndirectedArc) i).getSource() == getImage(t)))) {
+                Arc arcO = (Arc) o;
+                Arc arcI = (Arc) i;
+                // For undirected graphs, arcs can match in either direction
+                if (!arcO.getContext().isDirected()) {
+                    if (((arcI.getSource() == getImage(s) && arcI.getTarget() == getImage(t)))
+                            || ((arcI.getTarget() == getImage(s) && arcI.getSource() == getImage(t)))) {
                         try {
                             addMapping(o, i);
                         } catch (BadMappingException ex) {
                         }
                     }
-                } else if ((((Arc) i).getSource() == getImage(s))
-                        && (((Arc) i).getTarget() == getImage(t))) {
+                } else if ((arcI.getSource() == getImage(s))
+                        && (arcI.getTarget() == getImage(t))) {
                     try {
                         addMapping(o, i);
                     } catch (BadMappingException ex) {

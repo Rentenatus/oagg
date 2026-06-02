@@ -1404,7 +1404,6 @@ public   class Graph extends ExtObservable
             throw new TypeException(typeError);
         }
         Arc anArc = orientation.createArc(this, t, src, tar);
-        anArc.setDirected(orientation.isDirected());
 //		check for type mismatches, also multiplicity max of source and target
         typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
         if (typeError != null) {

@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import agg.util.csp.Query;
 import agg.util.csp.Variable;
 import agg.xt_basis.Arc;
-import agg.xt_basis.UndirectedArc;
+import agg.xt_basis.Graph;
 import agg.xt_basis.Node;
 
 public class Query_OutgoingIncoming extends Query {
@@ -32,9 +32,17 @@ public class Query_OutgoingIncoming extends Query {
      */
     public Query_OutgoingIncoming(Variable obj, Variable tar) {
         super(obj, tar, 6);
-        this.arcKey = ((Arc) this.itsTarget.getGraphObject()).convertToKey();
-        this.arcKey2 = ((UndirectedArc) this.itsTarget.getGraphObject()).convertToInverseKey();
-        this.withNTI = ((Arc) this.itsTarget.getGraphObject()).getContext().getTypeSet().hasInheritance();
+        Arc arc = ((Arc) this.itsTarget.getGraphObject());
+        this.arcKey = arc.convertToKey();
+        // For undirected graphs, we need to check the inverse key as well
+        if (arc.getContext() != null && !arc.getContext().isDirected()) {
+            this.arcKey2 = arc.getTarget().getType().convertToKey()
+                    .concat(arc.getType().convertToKey())
+                    .concat(arc.getSource().getType().convertToKey());
+        } else {
+            this.arcKey2 = null;
+        }
+        this.withNTI = arc.getContext().getTypeSet().hasInheritance();
     }
 
     public final HashSet<?> execute() {//Arc
@@ -48,7 +56,7 @@ public class Query_OutgoingIncoming extends Query {
         while (iter.hasNext()) {
             Arc a = iter.next();
             if (a.convertToKey().equals(this.arcKey)
-                    || a.convertToKey().equals(this.arcKey2)) {
+                    || (this.arcKey2 != null && a.convertToKey().equals(this.arcKey2))) {
                 result.add(a);
             }
         }

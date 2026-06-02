@@ -104,6 +104,25 @@ public class GraphOrientationDirected implements GraphOrientation {
     }
 
     @Override
+    public void addArcToNodes(Arc arc, Node src, Node tar) {
+        src.addOut(arc);
+        tar.addIn(arc);
+    }
+
+    @Override
+    public void removeArcFromNodes(Arc arc, Node src, Node tar) {
+        src.removeOut(arc);
+        tar.removeIn(arc);
+    }
+
+    @Override
+    public String getInverseArcKey(Arc arc) {
+        // For directed graphs, inverse key is the same as the forward key
+        // (since direction matters, there's no symmetry)
+        return arc.convertToKey();
+    }
+
+    @Override
     public TypeError validateArcCreation(Graph g, Type edgeType, Node src, Node tar) {
         if (g.getTypeSet().getTypeGraph() == null
                 || g.getTypeSet().getLevelOfTypeGraphCheck() == TypeSet.DISABLED

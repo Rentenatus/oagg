@@ -14,7 +14,6 @@ import agg.xt_basis.Node;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeError;
 import agg.xt_basis.TypeSet;
-import agg.xt_basis.UndirectedArc;
 
 /**
  *
@@ -89,7 +88,7 @@ public interface GraphOrientation {
     public boolean isUsingArcType(Arc anArc, Arc typeArc);
 
     /**
-     * Creates a new arc of the appropriate type (Arc or UndirectedArc) for this orientation.
+     * Creates a new arc for this orientation.
      *
      * @param context the graph context
      * @param type the arc type
@@ -105,6 +104,38 @@ public interface GraphOrientation {
      * @return true for directed, false for undirected
      */
     boolean isDirected();
+
+    /**
+     * Adds an arc to its source and target nodes according to this orientation.
+     * For directed graphs: adds to source.outgoing and target.incoming.
+     * For undirected graphs: adds to both source.outgoing and target.outgoing.
+     *
+     * @param arc the arc to add
+     * @param src the source node
+     * @param tar the target node
+     */
+    void addArcToNodes(Arc arc, Node src, Node tar);
+
+    /**
+     * Removes an arc from its source and target nodes according to this orientation.
+     * For directed graphs: removes from source.outgoing and target.incoming.
+     * For undirected graphs: removes from both source.outgoing and target.outgoing.
+     *
+     * @param arc the arc to remove
+     * @param src the source node
+     * @param tar the target node
+     */
+    void removeArcFromNodes(Arc arc, Node src, Node tar);
+
+    /**
+     * Generates the inverse key for an arc. For directed graphs, this returns
+     * the same as convertToKey(). For undirected graphs, this returns the
+     * reversed key (target->type->source).
+     *
+     * @param arc the arc to generate the inverse key for
+     * @return the inverse key string
+     */
+    String getInverseArcKey(Arc arc);
 
     /**
      * Validates if an arc of the specified type can be created between the given nodes.
