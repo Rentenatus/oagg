@@ -13,7 +13,7 @@ import agg.xt_basis.calculator.GraphOrientation;
 public class GraphOrientationDirected implements GraphOrientation {
 
     public final static GraphOrientation INSTANCE = new GraphOrientationDirected();
-
+ 
     /**
      *
      * @param anArc
@@ -103,5 +103,30 @@ public class GraphOrientationDirected implements GraphOrientation {
         return true;
     }
 
+    @Override
+    public TypeError validateArcCreation(Graph g, Type edgeType, Node src, Node tar) {
+        if (g.getTypeSet().getTypeGraph() == null
+                || g.getTypeSet().getLevelOfTypeGraphCheck() == TypeSet.DISABLED
+                || g.getTypeSet().getLevelOfTypeGraphCheck() == TypeSet.ENABLED_INHERITANCE) {
+            if (isParallelArcAllowed(g, edgeType, src, tar)) {
+                return null;
+            }
+            return new TypeError(TypeError.NO_PARALLEL_ARC,
+                    "No parallel edges allowed");
+        }
+        Arc typearc = getTypeGraphArc(g, edgeType, src, tar);
+        if (typearc != null) {
+            if (isParallelArcAllowed(g, edgeType, src, tar)) {
+                return null;
+            }
+            return new TypeError(TypeError.NO_PARALLEL_ARC,
+                    "No parallel edges allowed");
+        }
+        return new TypeError(TypeError.NO_SUCH_TYPE,
+                "The edge of the type \"" + edgeType.getName()
+                + "\" is not allowed between node types \""
+                + src.getType().getName() + "\"  and  \""
+                + tar.getType().getName() + "\".");
+    }
 
 }

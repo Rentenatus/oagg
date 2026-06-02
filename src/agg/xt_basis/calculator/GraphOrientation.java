@@ -105,4 +105,16 @@ public interface GraphOrientation {
      * @return true for directed, false for undirected
      */
     boolean isDirected();
+
+    /**
+     * Validates if an arc of the specified type can be created between the given nodes.
+     * This method combines type graph checks with orientation-specific parallel arc checks.
+     *
+     * @param g the graph context
+     * @param edgeType the type of the edge to create
+     * @param src the source node
+     * @param tar the target node
+     * @return null if valid, TypeError otherwise
+     */
+    TypeError validateArcCreation(Graph g, Type edgeType, Node src, Node tar);
 }

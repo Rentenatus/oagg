@@ -312,33 +312,6 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     *
-     * @param anArc
-     */
-    protected void sourceRemoveArc(final Arc anArc) {
-        orientation.sourceRemoveArc(anArc);
-    }
-
-    /**
-     *
-     * @param anArc
-     */
-    protected void targetRemoveArc(Arc anArc) {
-        orientation.targetRemoveArc(anArc);
-    }
-
-    /**
-     *
-     * @param t
-     * @param src
-     * @param tar
-     * @return
-     */
-    protected Arc createArcFast(Type t, Node src, Node tar) {
-        return orientation.createArc(this, t, src, tar);
-    }
-
-    /**
      * Tries to add a copy of the specified graph to my elements.The existing
      * type graph should be disabled.
      *
@@ -1220,8 +1193,8 @@ public   class Graph extends ExtObservable
 
     protected void removeArc(final Arc anArc) {
         if (anArc.getContext() == this)  synchronized (monitorMorphs) {
-            sourceRemoveArc(anArc);
-            targetRemoveArc(anArc);
+            orientation.sourceRemoveArc(anArc);
+            orientation.targetRemoveArc(anArc);
             removeMapping(anArc);
             this.itsArcs.remove(anArc);
             removeArcFromTypeObjectsMap(anArc);
@@ -1430,13 +1403,13 @@ public   class Graph extends ExtObservable
         if (typeError != null) {
             throw new TypeException(typeError);
         }
-        Arc anArc = createArcFast(t, src, tar);
+        Arc anArc = orientation.createArc(this, t, src, tar);
         anArc.setDirected(orientation.isDirected());
 //		check for type mismatches, also multiplicity max of source and target
         typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
         if (typeError != null) {
-            sourceRemoveArc(anArc);
-            targetRemoveArc(anArc);
+            orientation.sourceRemoveArc(anArc);
+            orientation.targetRemoveArc(anArc);
             throw new TypeException(typeError);
         }
         this.attributed = this.attributed || anArc.getAttribute() != null;
@@ -1456,7 +1429,7 @@ public   class Graph extends ExtObservable
      */
     protected Arc newArcFast(Type t, Node src, Node tar) {
 //		long time = System.nanoTime();
-        Arc anArc = createArcFast(t, src, tar);
+        Arc anArc = orientation.createArc(this, t, src, tar);
         this.attributed = this.attributed || anArc.getAttribute() != null;
         this.itsArcs.add(anArc);
         addToTypeObjectsMap(anArc);
@@ -1493,7 +1466,7 @@ public   class Graph extends ExtObservable
         if (typeError != null) {
             throw new TypeException(typeError);
         }
-        Arc anArc = createArcFast(arcType, src, tar);
+        Arc anArc = orientation.createArc(this, arcType, src, tar);
         postCreatingArc(anArc);
         return anArc;
     }
@@ -1504,8 +1477,8 @@ public   class Graph extends ExtObservable
         // against its type graph
         typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
         if (typeError != null) {
-            sourceRemoveArc(anArc);
-            targetRemoveArc(anArc);
+            orientation.sourceRemoveArc(anArc);
+            orientation.targetRemoveArc(anArc);
             throw new TypeException(typeError);
         }
         this.attributed = this.attributed || anArc.getAttribute() != null;
@@ -3600,28 +3573,7 @@ public   class Graph extends ExtObservable
      * @return
      */
     public TypeError checkConnectValid(Type edgeType, Node src, Node tar) {
-        if (this.itsTypes.getTypeGraph() == null
-                || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED
-                || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.ENABLED_INHERITANCE) {
-            if (isParallelArcAllowed(edgeType, src, tar)) {
-                return null;
-            }
-            return new TypeError(TypeError.NO_PARALLEL_ARC,
-                    "No parallel edges allowed");
-        }
-        Arc typearc = orientation.getTypeGraphArc(this, edgeType, src, tar);
-        if (typearc != null) {
-            if (isParallelArcAllowed(edgeType, src, tar)) {
-                return null;
-            }
-            return new TypeError(TypeError.NO_PARALLEL_ARC,
-                    "No parallel edges allowed");
-        }
-        return new TypeError(TypeError.NO_SUCH_TYPE,
-                "The edge of the type \"" + edgeType.getName()
-                + "\" is not allowed between node types \""
-                + src.getType().getName() + "\"  and  \""
-                + tar.getType().getName() + "\".");
+        return orientation.validateArcCreation(this, edgeType, src, tar);
     }
 
     public boolean isParallelArcAllowed(Type edgeType, Node src, Node tar) {
