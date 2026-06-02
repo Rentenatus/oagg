@@ -30,7 +30,6 @@ import agg.util.LinkedGOHashSet;
 import agg.util.Pair;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
-import agg.xt_basis.calculator.GraphOrientation;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
 import de.jare.ndimcol.ref.ArraySeason;

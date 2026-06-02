@@ -303,10 +303,10 @@ public class Arc extends GraphObject implements XMLObject {
      * Sets the directed flag. This method is deprecated as the direction
      * is now determined by the graph's orientation. This method does nothing.
      *
-     * @param b the directed flag (ignored)
+     * @param directed the directed flag (ignored)
      */
     @Deprecated
-    public void setDirected(boolean b) {
+    public void setDirected(boolean directed) {
         // Direction is now determined by the graph's orientation, not by an internal flag
         // This method is kept for backward compatibility but does nothing
     }
@@ -316,69 +316,70 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     /**
+     * Compares this arc to another graph object for equality.
      *
-     * @param o
-     * @return
+     * @param otherObject the graph object to compare with
+     * @return true if the objects are equal, false otherwise
      */
     @Override
-    public boolean compareTo(GraphObject o) {
-        if (o == null || !o.isArc()) {
+    public boolean compareTo(GraphObject otherObject) {
+        if (otherObject == null || !otherObject.isArc()) {
             return false;
         }
-        Arc a = (Arc) o;
-//		if (!this.getObjectName().equals(a.getObjectName())) {
+        Arc otherArc = (Arc) otherObject;
+//		if (!this.getObjectName().equals(otherArc.getObjectName())) {
 //			return false;
 //		}
-        if (!this.itsType.isParentOf(a.getType())) {
+        if (!this.itsType.isParentOf(otherArc.getType())) {
             return false;
         }
-        if ((this.itsAttr == null && a.getAttribute() == null)
-                || (this.attrExists() && a.attrExists()
-                && this.itsAttr.compareTo(a.getAttribute()))) {
+        if ((this.itsAttr == null && otherArc.getAttribute() == null)
+                || (this.attrExists() && otherArc.attrExists()
+                && this.itsAttr.compareTo(otherArc.getAttribute()))) {
             ;
         } else {
             return false;
         }
-        if (!this.compareSrcTarTo(a)) {
+        if (!this.compareSrcTarTo(otherArc)) {
             return false;
         }
-        if (!this.compareMultiplicityTo(a)) {
+        if (!this.compareMultiplicityTo(otherArc)) {
             return false;
         }
         return true;
     }
 
-    protected boolean compareSrcTarTo(Arc a) {
-        return ((Node) getSource()).compareTo(a.getSource())
-                && ((Node) getTarget()).compareTo(a.getTarget());
+    protected boolean compareSrcTarTo(Arc otherArc) {
+        return ((Node) getSource()).compareTo(otherArc.getSource())
+                && ((Node) getTarget()).compareTo(otherArc.getTarget());
     }
 
-    protected boolean compareMultiplicityTo(Arc a) {
+    protected boolean compareMultiplicityTo(Arc otherArc) {
         if (this.itsContext.isTypeGraph()) {
-            Type srcType = getSource().getType();
-            Type tarType = getTarget().getType();
-            Type a_srcType = a.getSource().getType();
-            Type a_tarType = a.getTarget().getType();
-            int minmax = this.itsType.getSourceMin(srcType, tarType);
-            int a_minmax = a.getType().getSourceMin(a_srcType, a_tarType);
-            if (minmax != a_minmax) {
+            Type sourceType = getSource().getType();
+            Type targetType = getTarget().getType();
+            Type otherSourceType = otherArc.getSource().getType();
+            Type otherTargetType = otherArc.getTarget().getType();
+            int minmax = this.itsType.getSourceMin(sourceType, targetType);
+            int otherMinmax = otherArc.getType().getSourceMin(otherSourceType, otherTargetType);
+            if (minmax != otherMinmax) {
                 return false;
             } else {
-                minmax = this.itsType.getTargetMin(srcType, tarType);
-                a_minmax = a.getType().getTargetMin(a_srcType, a_tarType);
-                if (minmax != a_minmax) {
+                minmax = this.itsType.getTargetMin(sourceType, targetType);
+                otherMinmax = otherArc.getType().getTargetMin(otherSourceType, otherTargetType);
+                if (minmax != otherMinmax) {
                     return false;
                 } else {
-                    minmax = this.itsType.getSourceMax(srcType, tarType);
-                    a_minmax = a.getType().getSourceMax(a_srcType,
-                            a_tarType);
-                    if (minmax != a_minmax) {
+                    minmax = this.itsType.getSourceMax(sourceType, targetType);
+                    otherMinmax = otherArc.getType().getSourceMax(otherSourceType,
+                            otherTargetType);
+                    if (minmax != otherMinmax) {
                         return false;
                     } else {
-                        minmax = this.itsType.getTargetMax(srcType, tarType);
-                        a_minmax = a.getType().getTargetMax(a_srcType,
-                                a_tarType);
-                        if (minmax != a_minmax) {
+                        minmax = this.itsType.getTargetMax(sourceType, targetType);
+                        otherMinmax = otherArc.getType().getTargetMax(otherSourceType,
+                                otherTargetType);
+                        if (minmax != otherMinmax) {
                             return false;
                         }
                     }
@@ -389,21 +390,22 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     /**
+     * Writes this arc to XML.
      *
-     * @param h
+     * @param xmlHelper the XML helper to write with
      */
     @Override
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("Edge", this);
+    public void XwriteObject(XMLHelper xmlHelper) {
+        xmlHelper.openNewElem("Edge", this);
         if (!this.visible) {
-            h.addAttr("visible", "false");
+            xmlHelper.addAttr("visible", "false");
         }
         if (!this.getObjectName().equals("")) {
-            h.addAttr("name", this.getObjectName());
+            xmlHelper.addAttr("name", this.getObjectName());
         }
-        h.addObject("type", this.itsType, false);
-        h.addObject("source", getSource(), false);
-        h.addObject("target", getTarget(), false);
+        xmlHelper.addObject("type", this.itsType, false);
+        xmlHelper.addObject("source", getSource(), false);
+        xmlHelper.addObject("target", getTarget(), false);
         // save multiplicity, if part of type graph
         if (this.itsContext != null && this.itsContext.isTypeGraph()) {
             // System.out.println("Arc.Xwrite... is elem of type graph");
@@ -411,37 +413,38 @@ public class Arc extends GraphObject implements XMLObject {
             Type targetType = getTarget().getType();
             int minmax = this.itsType.getSourceMin(sourceType, targetType);
             if (minmax != Type.UNDEFINED) {
-                h.addAttr("sourcemin", Integer.toString(minmax));
+                xmlHelper.addAttr("sourcemin", Integer.toString(minmax));
             }
             minmax = this.itsType.getTargetMin(sourceType, targetType);
             // System.out.println("targetmin " +minmax);
             if (minmax != Type.UNDEFINED) {
-                h.addAttr("targetmin", Integer.toString(minmax));
+                xmlHelper.addAttr("targetmin", Integer.toString(minmax));
             }
             minmax = this.itsType.getSourceMax(sourceType, targetType);
             if (minmax != Type.UNDEFINED) {
-                h.addAttr("sourcemax", Integer.toString(minmax));
+                xmlHelper.addAttr("sourcemax", Integer.toString(minmax));
             }
             minmax = this.itsType.getTargetMax(sourceType, targetType);
             // System.out.println("targetmax " +minmax);
             if (minmax != Type.UNDEFINED) {
-                h.addAttr("targetmax", Integer.toString(minmax));
+                xmlHelper.addAttr("targetmax", Integer.toString(minmax));
             }
         }
-        h.addObject("", this.itsAttr, true);
-        h.close();
+        xmlHelper.addObject("", this.itsAttr, true);
+        xmlHelper.close();
     }
 
     /**
+     * Reads this arc from XML.
      *
-     * @param h
+     * @param xmlHelper the XML helper to read from
      */
     @Override
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("Edge", this)) {
-            String str = h.readAttr("visible");
+    public void XreadObject(XMLHelper xmlHelper) {
+        if (xmlHelper.isTag("Edge", this)) {
+            String str = xmlHelper.readAttr("visible");
             this.visible = !str.equals("false");
-            str = h.readAttr("name");
+            str = xmlHelper.readAttr("name");
             this.setObjectName(str);
             if (this.itsType.getAttrType() != null
                     || this.itsType.hasInheritedAttribute()) {
@@ -463,9 +466,9 @@ public class Arc extends GraphObject implements XMLObject {
                 // mem.setExprAsObject(hc);
                 // mem.checkValidity();
                 // }
-                h.enrichObject(attri);
+                xmlHelper.enrichObject(attri);
             }
-            h.close();
+            xmlHelper.close();
             // if this node uses variable
             // in its attribute so the variable will be marked
             if (this.itsContext != null

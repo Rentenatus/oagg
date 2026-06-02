@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
-package agg.xt_basis.calculator;
+package agg.xt_basis;
 
 import agg.xt_basis.Arc;
 import agg.xt_basis.Graph;

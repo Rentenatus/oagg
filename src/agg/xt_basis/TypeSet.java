@@ -20,7 +20,6 @@ import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.ValueTuple;
 import agg.cons.AtomConstraint;
 import agg.util.Pair;
-import agg.xt_basis.calculator.GraphOrientation;
 import de.jare.ndimcol.ref.ArrayMovie;
 import de.jare.ndimcol.ref.ArraySeason;
 import de.jare.ndimcol.ref.IteratorWalker;

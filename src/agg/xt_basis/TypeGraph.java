@@ -19,7 +19,6 @@ import agg.attribute.impl.VarMember;
 import agg.util.Change;
 import agg.util.Pair;
 import agg.util.XMLHelper;
-import agg.xt_basis.calculator.GraphOrientation;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
