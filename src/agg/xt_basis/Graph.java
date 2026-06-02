@@ -68,7 +68,7 @@ import java.util.Observer;
 // * @see agg.xt_basis.Graph_Change_ObjectDestroyed
 // * @see agg.xt_basis.Graph_Change_ObjectModified
 // * @see agg.util.Change_ObservableGone
-public class Graph extends ExtObservable
+public   class Graph extends ExtObservable
         implements Observer, XMLObject {
 
     // test: node XY-position as attribute
@@ -227,6 +227,24 @@ public class Graph extends ExtObservable
         return this.observer;
     }
 
+    /**
+     * Returns the graph orientation (directed or undirected).
+     *
+     * @return the graph orientation
+     */
+    public GraphOrientation getOrientation() {
+        return this.orientation;
+    }
+
+    /**
+     * Returns whether this graph is directed.
+     *
+     * @return true if directed, false if undirected
+     */
+    public boolean isDirected() {
+        return this.orientation.isDirected();
+    }
+
     public void setObservers(List<?> o) {
         if (o == null) {
             return;
@@ -317,7 +335,7 @@ public class Graph extends ExtObservable
      * @return
      */
     protected Arc createArcFast(Type t, Node src, Node tar) {
-        return new Arc(t, src, tar, this);
+        return orientation.createArc(this, t, src, tar);
     }
 
     /**
@@ -1413,7 +1431,7 @@ public class Graph extends ExtObservable
             throw new TypeException(typeError);
         }
         Arc anArc = createArcFast(t, src, tar);
-        anArc.setDirected(!(this instanceof UndirectedGraph));
+        anArc.setDirected(orientation.isDirected());
 //		check for type mismatches, also multiplicity max of source and target
         typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
         if (typeError != null) {
@@ -3442,10 +3460,6 @@ public class Graph extends ExtObservable
      */
     public void setCompleteGraph(boolean complete) {
         this.completeGraph = complete;
-    }
-
-    public boolean isDirected() {
-        return this.getTypeSet().isArcDirected();
     }
 
     /**

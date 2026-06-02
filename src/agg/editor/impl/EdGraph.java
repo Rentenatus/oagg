@@ -45,7 +45,7 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TypeException;
 import agg.xt_basis.TypeSet;
-import agg.xt_basis.UndirectedGraph;
+
 import agg.xt_basis.agt.KernelRule;
 import agg.xt_basis.agt.MultiRule;
 import agg.gui.editor.EditorConstants;
@@ -3998,7 +3998,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
         if (t != null) {
             this.typeSet.setSelectedArcType(t);
             try {
-                boolean directed = !(this.bGraph instanceof UndirectedGraph);
+                boolean directed = this.bGraph.isDirected();
                 ca = addArc(t, src, tar, null, directed);
                 if (ca != null) {
                     ca.getBasisArc().copyAttributes(ea.getBasisArc());

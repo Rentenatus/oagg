@@ -87,4 +87,22 @@ public interface GraphOrientation {
      * @return
      */
     public boolean isUsingArcType(Arc anArc, Arc typeArc);
+
+    /**
+     * Creates a new arc of the appropriate type (Arc or UndirectedArc) for this orientation.
+     *
+     * @param context the graph context
+     * @param type the arc type
+     * @param src the source node
+     * @param tar the target node
+     * @return a new arc instance
+     */
+    Arc createArc(Graph context, Type type, Node src, Node tar);
+
+    /**
+     * Returns whether this orientation is directed.
+     *
+     * @return true for directed, false for undirected
+     */
+    boolean isDirected();
 }

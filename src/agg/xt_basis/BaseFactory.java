@@ -162,16 +162,32 @@ public class BaseFactory {
      * Create a new graph
      */
     public final Graph createGraph(TypeSet types) {
-//		return new Graph(types);
-        return types.isArcDirected() ? new Graph(types) : new UndirectedGraph(types);
+        return types.isArcDirected() 
+            ? new Graph(types) 
+            : new Graph(GraphOrientationUndirected.INSTANCE, types);
     }
 
     /**
      * Create a new graph
      */
     public final Graph createGraph(TypeSet types, boolean complete) {
-        return types.isArcDirected() ? new Graph(types, complete)
-                : new UndirectedGraph(types, complete);
+        return types.isArcDirected() 
+            ? new Graph(types, complete)
+            : new Graph(GraphOrientationUndirected.INSTANCE, types, complete);
+    }
+
+    /**
+     * Create a new undirected graph explicitly.
+     */
+    public final Graph createUndirectedGraph(TypeSet types) {
+        return new Graph(GraphOrientationUndirected.INSTANCE, types);
+    }
+
+    /**
+     * Create a new undirected graph explicitly.
+     */
+    public final Graph createUndirectedGraph(TypeSet types, boolean complete) {
+        return new Graph(GraphOrientationUndirected.INSTANCE, types, complete);
     }
 
     /**

@@ -32,7 +32,7 @@ import java.util.Map;
  * @author Olga
  * @author Janusch Rentenatus
  */
-public class TypeGraph extends Graph {
+public final class TypeGraph extends Graph {
 
     /**
      * Creates an empty type graph for the specified type set.
@@ -44,6 +44,7 @@ public class TypeGraph extends Graph {
 
     /**
      * Creates an empty type graph for the specified type set.
+     * Uses directed orientation by default.
      *
      * @param aTypeSet
      */
@@ -51,6 +52,8 @@ public class TypeGraph extends Graph {
         super(aTypeSet);
         this.kind = GraphKind.TG;
     }
+
+ 
 
     /**
      * prepare this graph for garbage collection. so cut all connections to
@@ -421,7 +424,9 @@ public class TypeGraph extends Graph {
             boolean failed = false;
             final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(this
                     .getSize());
-            TypeGraph theCopy = typeSet.isArcDirected() ? new TypeGraph(typeSet) : new UndirectedTypeGraph(typeSet);
+            // Use the same orientation as this type graph, but respect the type set's directed setting
+            GraphOrientation copyOrientation = typeSet.isArcDirected() ? this.getOrientation() : GraphOrientationUndirected.INSTANCE;
+            TypeGraph theCopy = new TypeGraph(copyOrientation, typeSet);
             Iterator<?> iter = this.itsNodes.iterator();
             while (!failed && iter.hasNext()) {
                 Node vtxOrig = (Node) iter.next();
@@ -516,7 +521,9 @@ public class TypeGraph extends Graph {
             boolean failed = false;
             Iterator<Arc> arcList = this.getArcsSet().iterator();
             Iterator<Node> vtxList = this.getNodesSet().iterator();
-            TypeGraph theCopy = typeSet.isArcDirected() ? new TypeGraph(typeSet) : new UndirectedTypeGraph(typeSet);
+            // Use the same orientation as this type graph, but respect the type set's directed setting
+            GraphOrientation copyOrientation = typeSet.isArcDirected() ? this.getOrientation() : GraphOrientationUndirected.INSTANCE;
+            TypeGraph theCopy = new TypeGraph(copyOrientation, typeSet);
             final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(this
                     .getSize());
             while (vtxList.hasNext() && !failed) {
@@ -1010,9 +1017,9 @@ public class TypeGraph extends Graph {
     @Override
     public Arc createArc(final Type type, final Node src, final Node tar) throws TypeException {
         if (src == null || tar == null) {
-            throw new TypeException("UndirectedGraph.createArc:: Cannot create an UndirectedArc of type : " + type.getStringRepr() + "   Source or target node is null!");
+            throw new TypeException("TypeGraph.createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "   Source or target node is null!");
         } else if (!this.isNode(src) || !this.isNode(tar)) {
-            throw new TypeException("UndirectedGraph.createArc:: Cannot create an UndirectedArc of type : " + type.getStringRepr() + "  Source or target does not belong to this graph!");
+            throw new TypeException("TypeGraph.createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "  Source or target does not belong to this graph!");
         }
         Type arcType = null;
         if (this.itsTypes.containsType(type)) {

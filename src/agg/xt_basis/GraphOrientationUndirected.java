@@ -116,4 +116,16 @@ public class GraphOrientationUndirected implements GraphOrientation {
         }
         return false;
     }
+
+    @Override
+    public Arc createArc(Graph context, Type type, Node src, Node tar) {
+        return new UndirectedArc(type, src, tar, context);
+    }
+
+    @Override
+    public boolean isDirected() {
+        return false;
+    }
+
+
 }

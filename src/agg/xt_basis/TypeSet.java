@@ -12,7 +12,7 @@
  * </copyright>
  */
 package agg.xt_basis;
-
+ 
 import agg.attribute.AttrManager;
 import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.impl.DeclMember;
@@ -20,6 +20,7 @@ import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.ValueTuple;
 import agg.cons.AtomConstraint;
 import agg.util.Pair;
+import agg.xt_basis.calculator.GraphOrientation;
 import de.jare.ndimcol.ref.ArrayMovie;
 import de.jare.ndimcol.ref.ArraySeason;
 import de.jare.ndimcol.ref.IteratorWalker;
@@ -891,11 +892,10 @@ public class TypeSet {
      * Creates an empty type graph. Already existing type graph will be lost.
      */
     public Graph createTypeGraph() {
-        if (this.directed) {
-            this.typeGraph = new TypeGraph(this);
-        } else {
-            this.typeGraph = new UndirectedTypeGraph(this);
-        }
+        GraphOrientation orientation = this.directed 
+            ? GraphOrientationDirected.INSTANCE 
+            : GraphOrientationUndirected.INSTANCE;
+        this.typeGraph = new TypeGraph(orientation, this);
         this.typeGraph.setName("TypeGraph");
         this.typeGraph.setKind(GraphKind.TG);
         agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager

@@ -92,4 +92,16 @@ public class GraphOrientationDirected implements GraphOrientation {
                 && ((anArc.getTarget().getType().compareTo(typeArc.getTarget().getType()))
                 || (anArc.getTarget().getType().isChildOf(typeArc.getTarget().getType())));
     }
+
+    @Override
+    public Arc createArc(Graph context, Type type, Node src, Node tar) {
+        return new Arc(type, src, tar, context);
+    }
+
+    @Override
+    public boolean isDirected() {
+        return true;
+    }
+
+
 }

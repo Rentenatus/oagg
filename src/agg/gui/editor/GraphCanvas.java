@@ -42,8 +42,7 @@ import agg.xt_basis.Node;
 import agg.xt_basis.Arc;
 import agg.xt_basis.TypeGraph;
 import agg.xt_basis.TypeSet;
-import agg.xt_basis.UndirectedGraph;
-import agg.xt_basis.UndirectedTypeGraph;
+
 import agg.attribute.impl.ValueTuple;
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraGra;
@@ -677,8 +676,7 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return null;
         }
-        boolean directed = !(this.eGraph.getBasisGraph() instanceof UndirectedGraph
-                || this.eGraph.getBasisGraph() instanceof UndirectedTypeGraph);
+        boolean directed = this.eGraph.getBasisGraph().isDirected();
         boolean doAddArc = (!this.eGraph.isTypeGraph()
                 || addSimilarParentArc(this.eGraph.getTypeSet().getSelectedArcType().getBasisType(),
                         s.getType().getBasisType(),
