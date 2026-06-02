@@ -111,10 +111,10 @@ public interface GraphOrientation {
      * For undirected graphs: adds to both source.outgoing and target.outgoing.
      *
      * @param arc the arc to add
-     * @param src the source node
-     * @param tar the target node
+     * @param source the source node
+     * @param target the target node
      */
-    void addArcToNodes(Arc arc, Node src, Node tar);
+    void addArcToNodes(Arc arc, Node source, Node target);
 
     /**
      * Removes an arc from its source and target nodes according to this orientation.
@@ -122,10 +122,10 @@ public interface GraphOrientation {
      * For undirected graphs: removes from both source.outgoing and target.outgoing.
      *
      * @param arc the arc to remove
-     * @param src the source node
-     * @param tar the target node
+     * @param source the source node
+     * @param target the target node
      */
-    void removeArcFromNodes(Arc arc, Node src, Node tar);
+    void removeArcFromNodes(Arc arc, Node source, Node target);
 
     /**
      * Generates the inverse key for an arc. For directed graphs, this returns

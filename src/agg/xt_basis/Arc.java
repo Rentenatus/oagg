@@ -108,16 +108,23 @@ public class Arc extends GraphObject implements XMLObject {
         }
     }
 
-    /*
-	 * Add <code>this</code> to the source and target nodes according to the
-	 * graph's orientation strategy.
+    /**
+     * Adds this arc to the source and target nodes according to the
+     * graph's orientation strategy.
+     *
+     * @param sourceNode the source node
+     * @param targetNode the target node
      */
-    protected void addToSrcTar(final GraphObject src, final GraphObject tar) {
-        if ((src != null) && (tar != null) && this.itsContext != null) {
-            ((Graph) this.itsContext).getOrientation().addArcToNodes(this, (Node) src, (Node) tar);
+    protected void addToSrcTar(final GraphObject sourceNode, final GraphObject targetNode) {
+        if ((sourceNode != null) && (targetNode != null) && this.itsContext != null) {
+            ((Graph) this.itsContext).getOrientation().addArcToNodes(this, (Node) sourceNode, (Node) targetNode);
         }
     }
 
+    /**
+     * Disposes this arc by removing it from its source and target nodes
+     * according to the graph's orientation strategy and cleaning up resources.
+     */
     public void dispose() {
 //		long t = System.nanoTime();
         if (this.itsContext != null && this.itsSource != null && this.itsTarget != null) {
@@ -177,30 +184,42 @@ public class Arc extends GraphObject implements XMLObject {
         return this.itsTarget;
     }
 
-    public void setSource(Node n) {
+    /**
+     * Sets the source node of this arc and updates the node's arc lists
+     * according to the graph's orientation.
+     *
+     * @param newSource the new source node
+     */
+    public void setSource(Node newSource) {
         if (this.itsSource != null && this.itsContext != null) {
             Graph g = (Graph) this.itsContext;
             g.getOrientation().removeArcFromNodes(this, (Node) this.itsSource, (Node) this.itsTarget);
         }
-        this.itsSource = n;
-        if (n != null && this.itsContext != null) {
+        this.itsSource = newSource;
+        if (newSource != null && this.itsContext != null) {
             Graph g = (Graph) this.itsContext;
-            g.getOrientation().addArcToNodes(this, n, (Node) this.itsTarget);
+            g.getOrientation().addArcToNodes(this, newSource, (Node) this.itsTarget);
         }
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
                 .concat(this.itsTarget.getType().convertToKey());
     }
 
-    public void setTarget(Node n) {
+    /**
+     * Sets the target node of this arc and updates the node's arc lists
+     * according to the graph's orientation.
+     *
+     * @param newTarget the new target node
+     */
+    public void setTarget(Node newTarget) {
         if (this.itsTarget != null && this.itsContext != null) {
             Graph g = (Graph) this.itsContext;
             g.getOrientation().removeArcFromNodes(this, (Node) this.itsSource, (Node) this.itsTarget);
         }
-        this.itsTarget = n;
-        if (n != null && this.itsContext != null) {
+        this.itsTarget = newTarget;
+        if (newTarget != null && this.itsContext != null) {
             Graph g = (Graph) this.itsContext;
-            g.getOrientation().addArcToNodes(this, (Node) this.itsSource, n);
+            g.getOrientation().addArcToNodes(this, (Node) this.itsSource, newTarget);
         }
         this.keyStr = this.itsSource.getType().convertToKey()
                 .concat(this.itsType.convertToKey())
