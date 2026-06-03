@@ -31,7 +31,7 @@ import java.util.List;
  * @author Jansuch Rentenatus
  */
 @SuppressWarnings("serial")
-public abstract class GraphObject implements XMLObject, AttrObserver {
+public abstract class GraphObject implements GraphElement, XMLObject, AttrObserver {
 
     protected String name = "";
     protected Graph itsContext = null;
@@ -82,8 +82,12 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         }
     }
 
-    public final void setObjectName(final String n) {
-        this.name = (n != null) ? n : "";
+    /**
+     * Sets the object name.
+     * @param name the name to set (can be null)
+     */
+    public final void setObjectName(final String name) {
+        this.name = (name != null) ? name : "";
     }
 
     public final String getObjectName() {
@@ -94,24 +98,40 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         return this.itsContextUsage;
     }
 
-    public final void setContextUsage(int aContextUsage) {
-        this.itsContextUsage = aContextUsage;
+    /**
+     * Sets the context usage identifier.
+     * @param contextUsage the context usage to set
+     */
+    public final void setContextUsage(int contextUsage) {
+        this.itsContextUsage = contextUsage;
     }
 
+    /**
+     * Returns the graph context.
+     * @return the graph context
+     */
     public final Graph getContext() {
         return this.itsContext;
     }
 
-    public final void setCritical(boolean b) {
-        this.critical = b;
+    /**
+     * Sets whether this object is critical.
+     * @param critical true if critical, false otherwise
+     */
+    public final void setCritical(boolean critical) {
+        this.critical = critical;
     }
 
     public final boolean isCritical() {
         return this.critical;
     }
 
-    public final void setVisible(boolean b) {
-        this.visible = b;
+    /**
+     * Sets whether this object is visible.
+     * @param visible true if visible, false otherwise
+     */
+    public final void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public final boolean isVisible() {
@@ -161,12 +181,16 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         return this.itsAttr == null ? new ArrayList<String>(0) : ((ValueTuple) this.itsAttr).getAllVariableNames();
     }
 
-    public synchronized void copyAttributes(GraphObject orig) {
-        if (orig.getAttribute() != null) {
+    /**
+     * Copies attributes from another graph object.
+     * @param original the graph object to copy attributes from
+     */
+    public synchronized void copyAttributes(GraphObject original) {
+        if (original.getAttribute() != null) {
             if (this.itsAttr == null) {
                 this.createAttributeInstance();
             }
-            this.itsAttr.copyEntries(orig.getAttribute());
+            this.itsAttr.copyEntries(original.getAttribute());
         }
     }
 
@@ -209,11 +233,16 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         return 0;
     }
 
-    public boolean doesChangeAttr(GraphObject go) {
-        if (this.attrExists() && go.attrExists()) {
+    /**
+     * Checks if attributes change between this object and another.
+     * @param otherObject the other graph object to compare with
+     * @return true if attributes change, false otherwise
+     */
+    public boolean doesChangeAttr(GraphObject otherObject) {
+        if (this.attrExists() && otherObject.attrExists()) {
             for (int i = 0; i < this.itsAttr.getNumberOfEntries(); i++) {
                 ValueMember vm = (ValueMember) this.itsAttr.getMemberAt(i);
-                ValueMember vm2 = ((ValueTuple) go.getAttribute()).getEntryAt(vm.getName());
+                ValueMember vm2 = ((ValueTuple) otherObject.getAttribute()).getEntryAt(vm.getName());
                 if (vm2 != null
                         && vm.getDeclaration().getTypeName().equals(vm2.getDeclaration().getTypeName())
                         && vm.isSet()
@@ -225,11 +254,16 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         return false;
     }
 
-    public boolean isAttrMemValDifferent(GraphObject go) {
-        if (this.attrExists() && go.attrExists()) {
+    /**
+     * Checks if attribute member values are different.
+     * @param otherObject the other graph object to compare with
+     * @return true if values are different, false otherwise
+     */
+    public boolean isAttrMemValDifferent(GraphObject otherObject) {
+        if (this.attrExists() && otherObject.attrExists()) {
             for (int i = 0; i < this.itsAttr.getNumberOfEntries(); i++) {
                 ValueMember vm = (ValueMember) this.itsAttr.getMemberAt(i);
-                ValueMember vm2 = ((ValueTuple) go.getAttribute()).getEntryAt(vm.getName());
+                ValueMember vm2 = ((ValueTuple) otherObject.getAttribute()).getEntryAt(vm.getName());
                 if (vm2 != null
                         && vm.getDeclaration().getTypeName().equals(vm2.getDeclaration().getTypeName())
                         && vm.isSet() && vm2.isSet()
@@ -241,11 +275,16 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         return false;
     }
 
-    public boolean isAttrMemConstantValDifferent(GraphObject go) {
-        if (this.attrExists() && go.attrExists()) {
+    /**
+     * Checks if attribute member constant values are different.
+     * @param otherObject the other graph object to compare with
+     * @return true if constant values are different, false otherwise
+     */
+    public boolean isAttrMemConstantValDifferent(GraphObject otherObject) {
+        if (this.attrExists() && otherObject.attrExists()) {
             for (int i = 0; i < this.itsAttr.getNumberOfEntries(); i++) {
                 ValueMember vm = (ValueMember) this.itsAttr.getMemberAt(i);
-                ValueMember vm2 = ((ValueTuple) go.getAttribute()).getEntryAt(vm.getName());
+                ValueMember vm2 = ((ValueTuple) otherObject.getAttribute()).getEntryAt(vm.getName());
                 if (vm.isSet() && vm.getExpr().isConstant()) {
                     if (vm2 != null && vm2.isSet() && vm2.getExpr().isConstant()
                             && !vm.getExprAsText().equals(vm2.getExprAsText())) {
@@ -257,17 +296,23 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
         return false;
     }
 
-    public boolean isAttrMemConstantValDifferent(GraphObject go1, GraphObject go2) {
-        if (this.attrExists() && go1.attrExists() && go2.attrExists()) {
+    /**
+     * Checks if attribute member constant values are different between three objects.
+     * @param first the first graph object to compare
+     * @param second the second graph object to compare
+     * @return true if constant values are different, false otherwise
+     */
+    public boolean isAttrMemConstantValDifferent(GraphObject first, GraphObject second) {
+        if (this.attrExists() && first.attrExists() && second.attrExists()) {
             for (int i = 0; i < this.itsAttr.getNumberOfEntries(); i++) {
                 ValueMember vm = (ValueMember) this.itsAttr.getMemberAt(i);
-                ValueMember vm2 = ((ValueTuple) go1.getAttribute()).getEntryAt(vm.getName());
+                ValueMember vm2 = ((ValueTuple) first.getAttribute()).getEntryAt(vm.getName());
                 if (vm.isSet() && vm.getExpr().isConstant()) {
                     if (vm2 != null && vm2.isSet() && vm2.getExpr().isConstant()
                             && !vm.getExprAsText().equals(vm2.getExprAsText())) {
                         return true;
                     } else {
-                        vm2 = ((ValueTuple) go2.getAttribute()).getEntryAt(vm.getName());
+                        vm2 = ((ValueTuple) second.getAttribute()).getEntryAt(vm.getName());
                         if (vm2 != null && vm2.isSet() && vm2.getExpr().isConstant()
                                 && !vm.getExprAsText().equals(vm2.getExprAsText())) {
                             return true;
@@ -283,17 +328,32 @@ public abstract class GraphObject implements XMLObject, AttrObserver {
 
     public abstract boolean isNode();
 
-    public abstract boolean compareTo(GraphObject o);
+    /**
+     * Compares this graph object to another for equality.
+     * @param otherObject the graph object to compare with
+     * @return true if objects are equal, false otherwise
+     */
+    public abstract boolean compareTo(GraphObject otherObject);
 
-    public abstract void XwriteObject(XMLHelper h);
+    /**
+     * Writes this graph object to XML.
+     * @param xmlHelper the XML helper to write with
+     */
+    public abstract void XwriteObject(XMLHelper xmlHelper);
 
-    public abstract void XreadObject(XMLHelper h);
+    /**
+     * Reads this graph object from XML.
+     * @param xmlHelper the XML helper to read from
+     */
+    public abstract void XreadObject(XMLHelper xmlHelper);
 
     /**
      * Checks whether the attribute observer wants a persistent connection to
      * the given attribute.
+     * @param attrTuple the attribute tuple to check
+     * @return false (default implementation)
      */
-    public boolean isPersistentFor(AttrTuple at) {
+    public boolean isPersistentFor(AttrTuple attrTuple) {
         return false;
     }
 }

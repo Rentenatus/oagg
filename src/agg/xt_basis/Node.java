@@ -423,14 +423,15 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     *
-     * @param t (parent) type of the target node of an outgoing arc
-     * @return true when an outgoing arc exists
+    /**
+     * Checks if this node has an outgoing arc to a node of the specified type.
+     * @param targetType the (parent) type of the target node of an outgoing arc
+     * @return true when an outgoing arc exists, false otherwise
      */
-    public boolean hasOutgoingArcTo(Type t) {
-        for (Arc a : this.itsOutgoingArcs) {
-            if (t.isParentOf(a.getTargetType())
-                    || a.getTargetType().isParentOf(t)) {
+    public boolean hasOutgoingArcTo(Type targetType) {
+        for (Arc arc : this.itsOutgoingArcs) {
+            if (targetType.isParentOf(arc.getTargetType())
+                    || arc.getTargetType().isParentOf(targetType)) {
                 return true;
             }
         }
@@ -468,44 +469,44 @@ public class Node extends GraphObject implements XMLObject {
 
     /**
      *
-     * @param o
-     * @return
+     * @param otherObject the graph object to compare with
+     * @return true if objects are equal, false otherwise
      */
     @Override
-    public boolean compareTo(GraphObject o) {
-        if (!o.isNode()) {
+    public boolean compareTo(GraphObject otherObject) {
+        if (!otherObject.isNode()) {
             return false;
         }
-        Node n = (Node) o;
-//		if (!this.getObjectName().equals(n.getObjectName())) {
+        Node otherNode = (Node) otherObject;
+//		if (!this.getObjectName().equals(otherNode.getObjectName())) {
 //			return false;
 //		}
-        if (!this.itsType.isParentOf(n.getType())) {
+        if (!this.itsType.isParentOf(otherNode.getType())) {
             return false;
         }
-        if ((this.itsAttr == null && n.getAttribute() == null)
-                || ((this.attrExists() && n.attrExists())
-                && this.itsAttr.compareTo(n.getAttribute()))) {
+        if ((this.itsAttr == null && otherNode.getAttribute() == null)
+                || ((this.attrExists() && otherNode.attrExists())
+                && this.itsAttr.compareTo(otherNode.getAttribute()))) {
             ;
         } else {
             return false;
         }
-        if (!this.compareMultiplicityTo(n)) {
+        if (!this.compareMultiplicityTo(otherNode)) {
             return false;
         }
         return true;
     }
 
-    protected boolean compareMultiplicityTo(Node n) {
+    protected boolean compareMultiplicityTo(Node otherNode) {
         if (this.itsContext.isTypeGraph()) {
             int minmax = this.itsType.getSourceMin();
-            int n_minmax = n.getType().getSourceMin();
-            if (minmax != n_minmax) {
+            int otherMinmax = otherNode.getType().getSourceMin();
+            if (minmax != otherMinmax) {
                 return false;
             } else {
                 minmax = this.itsType.getSourceMax();
-                n_minmax = n.getType().getSourceMax();
-                if (minmax != n_minmax) {
+                otherMinmax = otherNode.getType().getSourceMax();
+                if (minmax != otherMinmax) {
                     return false;
                 }
             }
@@ -514,55 +515,55 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     *
-     * @param h
+     * Writes this node to XML.
+     * @param xmlHelper the XML helper to write with
      */
     @Override
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("Node", this);
+    public void XwriteObject(XMLHelper xmlHelper) {
+        xmlHelper.openNewElem("Node", this);
         if (!this.visible) {
-            h.addAttr("visible", "false");
+            xmlHelper.addAttr("visible", "false");
         }
         if (!this.getObjectName().equals("")) {
-            h.addAttr("name", this.getObjectName());
+            xmlHelper.addAttr("name", this.getObjectName());
         }
-        // if(!itsContextUsage.equals("")) h.addAttr("context",
+        // if(!itsContextUsage.equals("")) xmlHelper.addAttr("context",
         // itsContextUsage);
-        h.addObject("type", this.itsType, false);
+        xmlHelper.addObject("type", this.itsType, false);
         // System.out.println("Node.XwriteObject ...
         // "+itsAttr.toString());
-        // h.addObject("", itsAttr, true);
+        // xmlHelper.addObject("", itsAttr, true);
         // save multiplicity, if part of type graph
         if (this.itsContext != null && this.itsContext.isTypeGraph()) {
             // System.out.println("Node.Xwrite... is elem of type graph");
             int minmax = this.itsType.getSourceMin();
             if (minmax != Type.UNDEFINED) {
-                h.addAttr("sourcemin", Integer.toString(minmax));
+                xmlHelper.addAttr("sourcemin", Integer.toString(minmax));
             }
             minmax = this.itsType.getSourceMax();
             if (minmax != Type.UNDEFINED) {
-                h.addAttr("sourcemax", Integer.toString(minmax));
+                xmlHelper.addAttr("sourcemax", Integer.toString(minmax));
             }
         } //else 
         {
             // System.out.println("Node.XwriteObject ...
             // "+itsAttr.toString());
-            h.addObject("", this.itsAttr, true);
+            xmlHelper.addObject("", this.itsAttr, true);
         }
-        h.close();
+        xmlHelper.close();
     }
 
     /**
-     *
-     * @param h
+     * Reads this node from XML.
+     * @param xmlHelper the XML helper to read from
      */
     @Override
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("Node", this)) {
+    public void XreadObject(XMLHelper xmlHelper) {
+        if (xmlHelper.isTag("Node", this)) {
             // System.out.println("Node.XreadObject: ");
-            String str = h.readAttr("visible");
+            String str = xmlHelper.readAttr("visible");
             this.visible = !str.equals("false");
-            str = h.readAttr("name");
+            str = xmlHelper.readAttr("name");
             this.setObjectName(str);
             if (this.itsType.getAttrType() != null
                     || this.itsType.hasInheritedAttribute()
@@ -599,9 +600,9 @@ public class Node extends GraphObject implements XMLObject {
                 // mem.setExprAsObject(hc);
                 // mem.checkValidity();
                 // }
-                h.enrichObject(attri);
+                xmlHelper.enrichObject(attri);
             }
-            h.close();
+            xmlHelper.close();
             // if this node uses variable
             // in its attribute so the variable will be marked
             if (this.itsContext != null && this.itsContext.getAttrContext() != null

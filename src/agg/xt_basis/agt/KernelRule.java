@@ -29,6 +29,18 @@ public class KernelRule extends Rule {
     private RuleScheme itsRuleScheme;
 
     /**
+     * Accepts a visitor for this kernel rule.
+     *
+     * @param visitor the visitor to accept
+     * @param <T> the return type of the visitor
+     * @return the result of visiting this kernel rule
+     */
+    @Override
+    public <T> T accept(agg.xt_basis.RuleVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
+    /**
      *
      */
     public KernelRule() {

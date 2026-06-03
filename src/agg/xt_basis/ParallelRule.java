@@ -42,6 +42,18 @@ import java.util.List;
  */
 public class ParallelRule extends Rule {
 
+    /**
+     * Accepts a visitor for this parallel rule.
+     *
+     * @param visitor the visitor to accept
+     * @param <T> the return type of the visitor
+     * @return the result of visiting this parallel rule
+     */
+    @Override
+    public <T> T accept(RuleVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
     // private Rule r1, r2;
     List<Rule> sources;
     List<OrdinaryMorphism> embeddingLeft;

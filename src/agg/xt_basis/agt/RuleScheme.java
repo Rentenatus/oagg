@@ -52,6 +52,18 @@ import java.util.List;
 public class RuleScheme extends Rule //implements Observer 
 {
 
+    /**
+     * Accepts a visitor for this rule scheme.
+     *
+     * @param visitor the visitor to accept
+     * @param <T> the return type of the visitor
+     * @return the result of visiting this rule scheme
+     */
+    @Override
+    public <T> T accept(agg.xt_basis.RuleVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
     private String schemeName = "RuleScheme";
     private int itsIndex = -1;
     private boolean hasInputParameter;

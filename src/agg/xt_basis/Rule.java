@@ -56,6 +56,17 @@ import java.util.Map;
  */
 public class Rule extends OrdinaryMorphism implements XMLObject {
 
+    /**
+     * Accepts a visitor for this rule.
+     *
+     * @param visitor the visitor to accept
+     * @param <T> the return type of the visitor
+     * @return the result of visiting this rule
+     */
+    public <T> T accept(RuleVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
+
     protected Formula itsFormula = new Formula(true);
     protected String formStr = "true";
     protected String formReadStr = "true";

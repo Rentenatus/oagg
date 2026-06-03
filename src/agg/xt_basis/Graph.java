@@ -199,23 +199,27 @@ public   class Graph extends ExtObservable
     }
 
     /**
+     * Adds an observer to this graph.
      * @see java.util.Observable#addObserver(java.util.Observer)
+     * @param observer the observer to add
      */
-    public synchronized void addObserver(Observer o) {
-        if (!this.observer.contains(o)) {
-            this.observer.add(o);
+    public synchronized void addObserver(Observer observer) {
+        if (!this.observer.contains(observer)) {
+            this.observer.add(observer);
             this.notificationRequired = true;
-            super.addObserver(o);
+            super.addObserver(observer);
         }
     }
 
     /**
+     * Removes an observer from this graph.
      * @see java.util.Observable#deleteObserver(java.util.Observer)
+     * @param observer the observer to remove
      */
-    public synchronized void deleteObserver(Observer o) {
-        if (this.observer.contains(o)) {
-            this.observer.remove(o);
-            super.deleteObserver(o);
+    public synchronized void deleteObserver(Observer observer) {
+        if (this.observer.contains(observer)) {
+            this.observer.remove(observer);
+            super.deleteObserver(observer);
             if (this.observer.isEmpty()) {
                 this.notificationRequired = false;
             }
@@ -244,12 +248,16 @@ public   class Graph extends ExtObservable
         return this.orientation.isDirected();
     }
 
-    public void setObservers(List<?> o) {
-        if (o == null) {
+    /**
+     * Sets the observers for this graph.
+     * @param observers the list of observers to set
+     */
+    public void setObservers(List<?> observers) {
+        if (observers == null) {
             return;
         }
-        for (int i = 0; i < o.size(); i++) {
-            this.addObserver((Observer) o.get(i));
+        for (int i = 0; i < observers.size(); i++) {
+            this.addObserver((Observer) observers.get(i));
         }
     }
 
@@ -267,19 +275,23 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * A kind is a role of a graph in a grammar, for exmpl.: a type graph - TG,
+     * A kind is a role of a graph in a grammar, for example: a type graph - TG,
      * a host graph - HOST, the left graph of a rule - LHS, the right graph of a
      * rule - RHS, a NAC graph - NAC, a PAC graph - PAC and so on.
      *
-     * @param aKind
+     * @param kind the kind of graph
      * @see agg.xt_basis.GraphKind
      */
-    public void setKind(final String aKind) {
-        this.kind = aKind;
+    public void setKind(final String kind) {
+        this.kind = kind;
     }
 
-    public void setNotificationRequired(boolean b) {
-        this.notificationRequired = b;
+    /**
+     * Sets whether notification is required for this graph.
+     * @param notificationRequired true if notification is required, false otherwise
+     */
+    public void setNotificationRequired(boolean notificationRequired) {
+        this.notificationRequired = notificationRequired;
     }
 
     public boolean isNotificationRequired() {
@@ -1008,25 +1020,33 @@ public   class Graph extends ExtObservable
     }
 
     @Override
-    public final void update(Observable obs, Object change) {
+    public final void update(Observable observable, Object changeEvent) {
     }
 
-    public final void setName(String n) {
-        this.itsName = n;
+    /**
+     * Sets the name of this graph.
+     * @param name the name to set
+     */
+    public final void setName(String name) {
+        this.itsName = name;
     }
 
+    /**
+     * Returns the name of this graph.
+     * @return the graph name
+     */
     public final String getName() {
         return this.itsName;
     }
 
     /**
-     * The user of AGG APIs can set help info for his own purposes. He takes
-     * care of usage and unset this help info, too.
+     * The user of AGG APIs can set help info for their own purposes. They take
+     * care of usage and must unset this help info as well.
      *
-     * @param str help info
+     * @param helpInfo the help information text
      */
-    public void setHelpInfo(String str) {
-        this.info = str;
+    public void setHelpInfo(String helpInfo) {
+        this.info = helpInfo;
     }
 
     public String getHelpInfo() {
@@ -1135,153 +1155,176 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Adds the specified node to my nodes.The type of the specified node has to
-     * be in my type set.
+     * Adds the specified node to this graph. The type of the specified node has to
+     * be in this graph's type set.
      *
-     * @param n
+     * @param node the node to add
      */
-    public void addNode(Node n) {
-        if (!this.itsNodes.contains(n)) {
-            this.itsNodes.add(n);
-            addToTypeObjectsMap(n);
-//			if (n.getAttribute() != null) {
-//				((ValueTuple) n.getAttribute()).addObserver(n);
+    public void addNode(Node node) {
+        if (!this.itsNodes.contains(node)) {
+            this.itsNodes.add(node);
+            addToTypeObjectsMap(node);
+//			if (node.getAttribute() != null) {
+//				((ValueTuple) node.getAttribute()).addObserver(node);
 //			}
-            this.attributed = this.attributed || n.getAttribute() != null;
-            this.changed = true;
-        }
-    }
-
-    protected void removeNode(final Node n) {
-        if (n.getContext() == this) {
-            synchronized (monitorMorphs) {
-                removeMapping(n);
-                Iterator<Arc> anIter = n.getIncomingArcsSet().iterator();
-                while (anIter.hasNext()) {
-                    Arc aNeighbor = anIter.next();
-                    removeArc(aNeighbor);
-                    anIter = n.getIncomingArcsSet().iterator();
-                }
-                anIter = n.getOutgoingArcsSet().iterator();
-                while (anIter.hasNext()) {
-                    Arc aNeighbor = anIter.next();
-                    removeArc(aNeighbor);
-                    anIter = n.getOutgoingArcsSet().iterator();
-                }
-            }
-            this.itsNodes.remove(n);
-            removeNodeFromTypeObjectsMap(n);
+            this.attributed = this.attributed || node.getAttribute() != null;
             this.changed = true;
         }
     }
 
     /**
-     * Adds the specified edge to my edges.The type of the specified edge has to
-     * be in my type set.
-     *
-     * @param anArc
+     * Removes the specified node from this graph.
+     * @param node the node to remove
      */
-    public void addArc(Arc anArc) {
-        if (!this.itsArcs.contains(anArc)) {
-            this.itsArcs.add(anArc);
-            addToTypeObjectsMap(anArc);
-            this.attributed = this.attributed || anArc.getAttribute() != null;
+    protected void removeNode(final Node node) {
+        if (node.getContext() == this) {
+            synchronized (monitorMorphs) {
+                removeMapping(node);
+                Iterator<Arc> arcIterator = node.getIncomingArcsSet().iterator();
+                while (arcIterator.hasNext()) {
+                    Arc neighborArc = arcIterator.next();
+                    removeArc(neighborArc);
+                    arcIterator = node.getIncomingArcsSet().iterator();
+                }
+                arcIterator = node.getOutgoingArcsSet().iterator();
+                while (arcIterator.hasNext()) {
+                    Arc neighborArc = arcIterator.next();
+                    removeArc(neighborArc);
+                    arcIterator = node.getOutgoingArcsSet().iterator();
+                }
+            }
+            this.itsNodes.remove(node);
+            removeNodeFromTypeObjectsMap(node);
             this.changed = true;
         }
     }
 
-    protected void removeArc(final Arc anArc) {
-        if (anArc.getContext() == this)  synchronized (monitorMorphs) {
-            orientation.sourceRemoveArc(anArc);
-            orientation.targetRemoveArc(anArc);
-            removeMapping(anArc);
-            this.itsArcs.remove(anArc);
-            removeArcFromTypeObjectsMap(anArc);
+    /**
+     * Adds the specified arc to this graph. The type of the specified arc has to
+     * be in this graph's type set.
+     *
+     * @param arc the arc to add
+     */
+    public void addArc(Arc arc) {
+        if (!this.itsArcs.contains(arc)) {
+            this.itsArcs.add(arc);
+            addToTypeObjectsMap(arc);
+            this.attributed = this.attributed || arc.getAttribute() != null;
+            this.changed = true;
+        }
+    }
+
+    /**
+     * Removes the specified arc from this graph.
+     * @param arc the arc to remove
+     */
+    protected void removeArc(final Arc arc) {
+        if (arc.getContext() == this)  synchronized (monitorMorphs) {
+            orientation.sourceRemoveArc(arc);
+            orientation.targetRemoveArc(arc);
+            removeMapping(arc);
+            this.itsArcs.remove(arc);
+            removeArcFromTypeObjectsMap(arc);
             this.changed = true;
         }
     }
 
     /**
      * Creates and adds a new node.
+     * @param nodeType the type for the new node
+     * @return the created node
+     * @throws TypeException if the node cannot be created due to type errors
      */
-    protected Node newNode(Type t) throws TypeException {
-        Node aNode = new Node(t, this);
+    protected Node newNode(Type nodeType) throws TypeException {
+        Node node = new Node(nodeType, this);
         // check for type mismatches, also multiplicity max
-        TypeError typeError = this.itsTypes.checkType(aNode, this.isCompleteGraph());
+        TypeError typeError = this.itsTypes.checkType(node, this.isCompleteGraph());
         if (typeError != null) {
             throw new TypeException(typeError);
         }
-        this.attributed = this.attributed || aNode.getAttribute() != null;
-        this.itsNodes.add(aNode);
-        addToTypeObjectsMap(aNode);
+        this.attributed = this.attributed || node.getAttribute() != null;
+        this.itsNodes.add(node);
+        addToTypeObjectsMap(node);
         this.changed = true;
-        propagateChange(new Change(Change.OBJECT_CREATED, aNode));
-        return aNode;
-    }
-
-    protected Node newNodeFast(Type t) {
-        Node aNode = new Node(t, this);
-        this.attributed = this.attributed || aNode.getAttribute() != null;
-        this.itsNodes.add(aNode);
-        addToTypeObjectsMap(aNode);
-        this.changed = true;
-        propagateChange(new Change(Change.OBJECT_CREATED, aNode));
-        return aNode;
+        propagateChange(new Change(Change.OBJECT_CREATED, node));
+        return node;
     }
 
     /**
-     * Creates and adds a new Node of the specified type.
-     *
+     * Creates and adds a new node without type checking.
+     * @param nodeType the type for the new node
+     * @return the created node
+     */
+    protected Node newNodeFast(Type nodeType) {
+        Node node = new Node(nodeType, this);
+        this.attributed = this.attributed || node.getAttribute() != null;
+        this.itsNodes.add(node);
+        addToTypeObjectsMap(node);
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_CREATED, node));
+        return node;
+    }
+
+    /**
+     * Creates and adds a new node of the specified type.
+     * @param type the node type
+     * @return the created node
+     * @throws TypeException if the node cannot be created due to type errors
      */
     public Node createNode(Type type) throws TypeException {
-        Type t = this.itsTypes.adoptClan(type);
-        Node aNode = new Node(t, this);
+        Type adoptedType = this.itsTypes.adoptClan(type);
+        Node node = new Node(adoptedType, this);
         // check for type mismatches
-        TypeError typeError = this.itsTypes.checkType(aNode, this.isCompleteGraph());
+        TypeError typeError = this.itsTypes.checkType(node, this.isCompleteGraph());
         if (typeError != null) {
             throw new TypeException(typeError);
         }
-        this.attributed = this.attributed || aNode.getAttribute() != null;
-        this.itsNodes.add(aNode);
-        addToTypeObjectsMap(aNode);
+        this.attributed = this.attributed || node.getAttribute() != null;
+        this.itsNodes.add(node);
+        addToTypeObjectsMap(node);
         this.changed = true;
-        propagateChange(new Change(Change.OBJECT_CREATED, aNode));
-        return aNode;
+        propagateChange(new Change(Change.OBJECT_CREATED, node));
+        return node;
     }
 
     /**
      * @deprecated use the method <code>copyNode(Node orig)</code>
+     * @param originalNode the node to create a copy from
+     * @return the created node copy
      */
-    public Node createNode(Node orig) throws TypeException {
-        Node aNode = createNode(orig.getType());
-        if (aNode != null) {
-            if (orig.getAttribute() != null) {
-                ((ValueTuple) aNode.getAttribute()).copyEntries(orig
+    public Node createNode(Node originalNode) throws TypeException {
+        Node node = createNode(originalNode.getType());
+        if (node != null) {
+            if (originalNode.getAttribute() != null) {
+                ((ValueTuple) node.getAttribute()).copyEntries(originalNode
                         .getAttribute());
             }
         }
-        return aNode;
+        return node;
     }
 
     /**
-     * Creates a new node as a copy of the specified <code>orig</code>. Only
+     * Creates a new node as a copy of the specified original. Only
      * type and attributes are copied, the structural context (incoming/outgoing
-     * arcs) - is not.
+     * arcs) is not.
+     * @param originalNode the node to copy
+     * @return the copied node
+     * @throws TypeException if the node cannot be copied
      */
-    public Node copyNode(Node orig) throws TypeException {
+    public Node copyNode(Node originalNode) throws TypeException {
         try {
-            Node node = createNode(orig.getType());
+            Node node = createNode(originalNode.getType());
             if (node != null) {
-                node.setInputVector(orig.copyInputVector());
-                node.setObjectName(orig.getObjectName());
-                if (orig.getAttribute() != null) {
+                node.setInputVector(originalNode.copyInputVector());
+                node.setObjectName(originalNode.getObjectName());
+                if (originalNode.getAttribute() != null) {
                     node.createAttributeInstance();
                     ((ValueTuple) node.getAttribute()).
-                            copyEntries(orig.getAttribute());
+                            copyEntries(originalNode.getAttribute());
                 }
             } else {
                 throw new TypeException("Graph.copyNode:: Cannot create a Node of type : "
-                        + orig.getType().getStringRepr());
+                        + originalNode.getType().getStringRepr());
             }
             return node;
         } catch (TypeException ex) {

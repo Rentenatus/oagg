@@ -105,40 +105,54 @@ public class BaseFactory {
     }
 
     /**
-     * Dispose the specified gragra and remove from the gragra list.
+     * Disposes the specified gragra and removes it from the gragra list.
+     * @param graGra the gragra to destroy
      */
-    public void destroyGraGra(GraGra gg) {
-        if (this.itsGraGras.contains(gg)) {
-            this.itsGraGras.remove(gg);
-            gg.dispose();
+    public void destroyGraGra(GraGra graGra) {
+        if (this.itsGraGras.contains(graGra)) {
+            this.itsGraGras.remove(graGra);
+            graGra.dispose();
         }
     }
 
     /**
-     * Remove the specified gragra from the gragra list.
+     * Removes the specified gragra from the gragra list.
+     * @param graGra the gragra to remove
      */
-    public void removeGraGra(GraGra gg) {
-        if (this.itsGraGras.contains(gg)) {
-            this.itsGraGras.remove(gg);
+    public void removeGraGra(GraGra graGra) {
+        if (this.itsGraGras.contains(graGra)) {
+            this.itsGraGras.remove(graGra);
         }
     }
 
+    /**
+     * Returns an enumeration of all gragras.
+     * @return enumeration of gragras
+     */
     public Enumeration<GraGra> getGraGras() {
         return Collections.enumeration(this.itsGraGras);
     }
 
+    /**
+     * Returns the count of gragras.
+     * @return the number of gragras
+     */
     public int getCountOfGraGras() {
         return this.itsGraGras.size();
     }
 
-    public void notify(GraGra gg) {
-        if (!this.isElement(gg)) {
-            (this.itsGraGras).add(gg);
+    /**
+     * Notifies the factory about a gragra.
+     * @param graGra the gragra to notify about
+     */
+    public void notify(GraGra graGra) {
+        if (!this.isElement(graGra)) {
+            (this.itsGraGras).add(graGra);
         }
     }
 
-    private boolean isElement(GraGra gg) {
-        if (this.itsGraGras.contains(gg)) {
+    private boolean isElement(GraGra graGra) {
+        if (this.itsGraGras.contains(graGra)) {
             return true;
         }
         return false;
@@ -502,28 +516,28 @@ public class BaseFactory {
         return new Pair<OrdinaryMorphism, OrdinaryMorphism>(r, m);
     }
 
-    /*
-	 * Given morphism g: D --> G.<br>
-	 * Computes Initial Pushout (IPO) as a triple of morphisms:
-	 * b1: B --> D, b2: B --> L, b3: L --> G. 
-	 * 
-	 * The attributes of nodes and edges of the graphs B and L are still unset.
-	 * 
-	 * @return a triple of morphisms or NULL
+    /**
+     * Given morphism g: D --> G.<br>
+     * Computes Initial Pushout (IPO) as a triple of morphisms:
+     * b1: B --> D, b2: B --> L, b3: L --> G. 
+     * 
+     * The attributes of nodes and edges of the graphs B and L are still unset.
+     * @param morphism the morphism g: D --> G
+     * @return a triple of morphisms or NULL
      */
-    public final Triple<OrdinaryMorphism, OrdinaryMorphism, OrdinaryMorphism> makeIPO(final OrdinaryMorphism g) {
-        final Graph B = BaseFactory.theFactory().createGraph(g.getTarget().getTypeSet());
-        final Graph D = g.getSource();
-        final Graph L = BaseFactory.theFactory().createGraph(g.getTarget().getTypeSet());
-        final Graph G = g.getTarget();
+    public final Triple<OrdinaryMorphism, OrdinaryMorphism, OrdinaryMorphism> makeIPO(final OrdinaryMorphism morphism) {
+        final Graph B = BaseFactory.theFactory().createGraph(morphism.getTarget().getTypeSet());
+        final Graph D = morphism.getSource();
+        final Graph L = BaseFactory.theFactory().createGraph(morphism.getTarget().getTypeSet());
+        final Graph G = morphism.getTarget();
         final OrdinaryMorphism b1 = new OrdinaryMorphism(B, D,
-                g.getAttrManager().newContext(
+                morphism.getAttrManager().newContext(
                         AttrMapping.PLAIN_MAP));
         final OrdinaryMorphism b2 = new OrdinaryMorphism(B, L,
-                g.getAttrManager().newContext(
+                morphism.getAttrManager().newContext(
                         AttrMapping.PLAIN_MAP));
         final OrdinaryMorphism b3 = new OrdinaryMorphism(L, G,
-                g.getAttrManager().newContext(
+                morphism.getAttrManager().newContext(
                         AttrMapping.PLAIN_MAP));
         Hashtable<Object, Object> n2n_L = new Hashtable<Object, Object>();
         Hashtable<Object, Object> n2n_B = new Hashtable<Object, Object>();
@@ -531,48 +545,48 @@ public class BaseFactory {
         // source/target in G and in D add to B, add mappings to b1 and b2
         Iterator<Arc> arcs = G.getArcsCollection().iterator();
         while (arcs.hasNext()) {
-            Arc a = arcs.next();
-            if (!g.hasInverseImage(a)) {
+            Arc arc = arcs.next();
+            if (!morphism.hasInverseImage(arc)) {
                 // edge is in G but not in D
                 try {
                     // add edge to L
-                    Node s_L = (n2n_L.get(a.getSource()) == null
-                            || !(n2n_L.get(a.getSource()) instanceof Node))
-                            ? L.createNode(a.getSourceType())
-                            : (Node) n2n_L.get(a.getSource());
-                    Node t_L = (n2n_L.get(a.getTarget()) == null
-                            || !(n2n_L.get(a.getTarget()) instanceof Node))
-                            ? L.createNode(a.getTargetType())
-                            : (Node) n2n_L.get(a.getTarget());
-                    Arc a_L = L.createArc(a.getType(), s_L, t_L);
-                    n2n_L.put(a.getSource(), s_L);
-                    n2n_L.put(a.getTarget(), t_L);
+                    Node source_L = (n2n_L.get(arc.getSource()) == null
+                            || !(n2n_L.get(arc.getSource()) instanceof Node))
+                            ? L.createNode(arc.getSourceType())
+                            : (Node) n2n_L.get(arc.getSource());
+                    Node target_L = (n2n_L.get(arc.getTarget()) == null
+                            || !(n2n_L.get(arc.getTarget()) instanceof Node))
+                            ? L.createNode(arc.getTargetType())
+                            : (Node) n2n_L.get(arc.getTarget());
+                    Arc arc_L = L.createArc(arc.getType(), source_L, target_L);
+                    n2n_L.put(arc.getSource(), source_L);
+                    n2n_L.put(arc.getTarget(), target_L);
                     try {
-                        b3.addMapping(s_L, a.getSource());
-                        b3.addMapping(t_L, a.getTarget());
-                        b3.addMapping(a_L, a);
+                        b3.addMapping(source_L, arc.getSource());
+                        b3.addMapping(target_L, arc.getTarget());
+                        b3.addMapping(arc_L, arc);
                     } catch (BadMappingException ex1) {
                     }
-                    if (g.hasInverseImage(a.getSource())) {
+                    if (morphism.hasInverseImage(arc.getSource())) {
                         // edge's source is in D, so add it to B
-                        if (n2n_B.get(a.getSource()) == null) {
-                            Node s_B = B.createNode(a.getSourceType());
-                            n2n_B.put(a.getSource(), s_B);
+                        if (n2n_B.get(arc.getSource()) == null) {
+                            Node source_B = B.createNode(arc.getSourceType());
+                            n2n_B.put(arc.getSource(), source_B);
                             try {
-                                b1.addMapping(s_B, g.firstOfInverseImage(a.getSource()));
-                                b2.addMapping(s_B, s_L);
+                                b1.addMapping(source_B, morphism.firstOfInverseImage(arc.getSource()));
+                                b2.addMapping(source_B, source_L);
                             } catch (BadMappingException ex1) {
                             }
                         }
                     }
-                    if (g.hasInverseImage(a.getTarget())) {
+                    if (morphism.hasInverseImage(arc.getTarget())) {
                         // edge's target is in D, so add it to B
-                        if (n2n_B.get(a.getTarget()) == null) {
-                            Node t_B = B.createNode(a.getTargetType());
-                            n2n_B.put(a.getTarget(), t_B);
+                        if (n2n_B.get(arc.getTarget()) == null) {
+                            Node target_B = B.createNode(arc.getTargetType());
+                            n2n_B.put(arc.getTarget(), target_B);
                             try {
-                                b1.addMapping(t_B, g.firstOfInverseImage(a.getTarget()));
-                                b2.addMapping(t_B, t_L);
+                                b1.addMapping(target_B, morphism.firstOfInverseImage(arc.getTarget()));
+                                b2.addMapping(target_B, target_L);
                             } catch (BadMappingException ex1) {
                             }
                         }
@@ -580,24 +594,24 @@ public class BaseFactory {
                 } catch (TypeException ex) {
                 }
             } else {
-                if (n2n_L.get(a.getSource()) == null) {
-                    n2n_L.put(a.getSource(), a);
+                if (n2n_L.get(arc.getSource()) == null) {
+                    n2n_L.put(arc.getSource(), arc);
                 }
-                if (n2n_L.get(a.getTarget()) == null) {
-                    n2n_L.put(a.getTarget(), a);
+                if (n2n_L.get(arc.getTarget()) == null) {
+                    n2n_L.put(arc.getTarget(), arc);
                 }
             }
         }
         Iterator<Node> nodes = G.getNodesCollection().iterator();
         // single node in G but not in D add to L, add mappings to b3
         while (nodes.hasNext()) {
-            Node n = nodes.next();
-            if (n2n_L.get(n) == null
-                    && !g.hasInverseImage(n)) {
+            Node node = nodes.next();
+            if (n2n_L.get(node) == null
+                    && !morphism.hasInverseImage(node)) {
                 try {
-                    Node n_L = L.createNode(n.getType());
+                    Node node_L = L.createNode(node.getType());
                     try {
-                        b3.addMapping(n_L, n);
+                        b3.addMapping(node_L, node);
                     } catch (BadMappingException ex1) {
                     }
                 } catch (TypeException ex) {
