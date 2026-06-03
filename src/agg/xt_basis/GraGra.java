@@ -50,13 +50,13 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.w3c.dom.Element;
-
+ 
 /**
  * This class provides functionality of a graph grammar, consisting of an
  * arbitrary number of graphs (the "host graphs"), an arbitrary number of rules,
@@ -75,7 +75,7 @@ public class GraGra implements Disposable, XMLObject {
      * The set of my rules. Elements are of type <code>Rule</code>.
      */
     final protected List<Rule> itsRules = new ArrayList<Rule>();
-    Hashtable<Integer, List<Rule>> ruleSets;
+    Map<Integer, List<Rule>> ruleSets;
     /**
      * The set of my atomic graph constraints.
      */
@@ -633,7 +633,7 @@ public class GraGra implements Disposable, XMLObject {
 
     private Map<ValueTuple, ValueTuple> storeAttrValueOfAttrTypeObserver() {
 //		System.out.println("######  storeAttrValueOfAttrTypeObserver......");
-        final Map<ValueTuple, ValueTuple> attrStore = new Hashtable<ValueTuple, ValueTuple>();
+        final Map<ValueTuple, ValueTuple> attrStore = new HashMap<ValueTuple, ValueTuple>();
         final IteratorWalker<Type> types = this.typeSet.getTypeWalker();
         while (types.hasNext()) {
             final Type t = types.next();
@@ -1552,9 +1552,9 @@ public class GraGra implements Disposable, XMLObject {
     public void sortRulesByPriority() {
         RulePriority priority = new RulePriority(this.itsRules);
         Integer startPriority = priority.getStartPriority();
-        Hashtable<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
+        Map<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
         SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = invertedRulePriority.keys(); en
+        for (Enumeration<Integer> en = Collections.enumeration(invertedRulePriority.keySet()); en
                 .hasMoreElements();) {
             rulePrioritySet.add(en.nextElement());
         }
@@ -3896,7 +3896,7 @@ public class GraGra implements Disposable, XMLObject {
         if (this.ruleSets != null) {
             this.ruleSets.clear();
         }
-        this.ruleSets = new Hashtable<Integer, List<Rule>>();
+        this.ruleSets = new HashMap<Integer, List<Rule>>();
         List<Rule> set = new ArrayList<Rule>(this.itsRules);
         this.ruleSets.put(Integer.valueOf(1), set);
     }
@@ -3915,7 +3915,7 @@ public class GraGra implements Disposable, XMLObject {
         this.ruleSets.put(Integer.valueOf(this.ruleSets.size()), set);
     }
 
-    public Hashtable<Integer, List<Rule>> getRuleSubsets() {
+    public Map<Integer, List<Rule>> getRuleSubsets() {
         return this.ruleSets;
     }
 

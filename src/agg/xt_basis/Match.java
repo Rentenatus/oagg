@@ -13,6 +13,7 @@
  */
 package agg.xt_basis;
 
+import java.util.Collections;
 import agg.attribute.AttrMapping;
 import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.impl.CondMember;
@@ -25,9 +26,10 @@ import agg.util.XMLObject;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is used to represent matches (morphism from the left side graph of
@@ -47,9 +49,9 @@ public class Match extends OrdinaryMorphism implements XMLObject {
     private Rule itsRule;
     private boolean matchValid;
     private transient NACStarMorphism itsCurrentNACstar;
-    private Hashtable<OrdinaryMorphism, NACStarMorphism> itsNACstars;
+    private Map<OrdinaryMorphism, NACStarMorphism> itsNACstars;
     private transient PACStarMorphism itsCurrentPACstar;
-    private Hashtable<OrdinaryMorphism, PACStarMorphism> itsPACstars;
+    private Map<OrdinaryMorphism, PACStarMorphism> itsPACstars;
     // Totality, Identification, Dangling, Gluing;
     private boolean condsTIDGchecked = false;
     private boolean ignoreInParam;
@@ -65,11 +67,11 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         this.itsRule = rule;
         this.itsName = "MatchOf_" + rule.getName();
         if (!rule.getNACsList().isEmpty()) {
-            this.itsNACstars = new Hashtable<OrdinaryMorphism, NACStarMorphism>(rule
+            this.itsNACstars = new HashMap<OrdinaryMorphism, NACStarMorphism>(rule
                     .getNACsList().size());
         }
         if (!rule.getPACsList().isEmpty()) {
-            this.itsPACstars = new Hashtable<OrdinaryMorphism, PACStarMorphism>(rule
+            this.itsPACstars = new HashMap<OrdinaryMorphism, PACStarMorphism>(rule
                     .getPACsList().size());
         }
     }
@@ -127,7 +129,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         super.clear();
         this.condsTIDGchecked = false;
         if (this.itsNACstars != null) {
-            final Enumeration<OrdinaryMorphism> nacs = this.itsNACstars.keys();
+            final Enumeration<OrdinaryMorphism> nacs = Collections.enumeration(this.itsNACstars.keySet());
             while (nacs.hasMoreElements()) {
                 NACStarMorphism nacStar = this.itsNACstars.get(nacs.nextElement());
 //				nacStar.clear();
@@ -138,7 +140,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
             this.itsNACstars.clear();
         }
         if (this.itsPACstars != null) {
-            final Enumeration<OrdinaryMorphism> pacs = this.itsPACstars.keys();
+            final Enumeration<OrdinaryMorphism> pacs = Collections.enumeration(this.itsPACstars.keySet());
             while (pacs.hasMoreElements()) {
                 PACStarMorphism pacStar = this.itsPACstars.get(pacs.nextElement());
 //				pacStar.clear();	
@@ -157,13 +159,13 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         this.itsCompleter.resetTypeMap(this.itsImag);
         this.typeObjectsMapChanged = true;
         if (this.itsNACstars != null) {
-            final Enumeration<OrdinaryMorphism> keys = this.itsNACstars.keys();
+            final Enumeration<OrdinaryMorphism> keys = Collections.enumeration(this.itsNACstars.keySet());
             while (keys.hasMoreElements()) {
                 this.itsNACstars.get(keys.nextElement()).setTarget(this.itsImag);
             }
         }
         if (this.itsPACstars != null) {
-            final Enumeration<OrdinaryMorphism> keys = this.itsPACstars.keys();
+            final Enumeration<OrdinaryMorphism> keys = Collections.enumeration(this.itsPACstars.keySet());
             while (keys.hasMoreElements()) {
                 this.itsPACstars.get(keys.nextElement()).setTarget(this.itsImag);
             }
@@ -490,7 +492,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
                             else if (((Node) this.getImage(src)).hasArc(a.getType(), (Node) this.getImage(tar))) {
                                 this.errorMsg = "No parallel edges allowed.";
                                 return false;
-                            } else if (!this.getImage().getTypeSet().isArcDirected()
+                            } else if (!this.getImage().isDirected()
                                     && ((Node) this.getImage(tar)).hasArc(a.getType(), (Node) this.getImage(src))) {
                                 this.errorMsg = "No parallel edges allowed.";
                                 return false;

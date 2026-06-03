@@ -8,13 +8,6 @@
  */
 package agg.xt_basis;
 
-import agg.xt_basis.Arc;
-import agg.xt_basis.Graph;
-import agg.xt_basis.Node;
-import agg.xt_basis.Type;
-import agg.xt_basis.TypeError;
-import agg.xt_basis.TypeSet;
-
 /**
  * Abstract base class for graph orientation strategies.
  * Contains common logic for directed and undirected graph orientations.
@@ -36,13 +29,13 @@ public abstract class AbstractGraphOrientation implements GraphOrientation {
      *
      * @param context the graph context
      * @param type the arc type
-     * @param src the source node
-     * @param tar the target node
+     * @param source the source node
+     * @param target the target node
      * @return a new arc instance
      */
     @Override
-    public Arc createArc(final Graph context, final Type type, final Node src, final Node tar) {
-        return new Arc(type, src, tar, context);
+    public Arc createArc(final Graph context, final Type type, final Node source, final Node target) {
+        return new Arc(type, source, target, context);
     }
 
     /**

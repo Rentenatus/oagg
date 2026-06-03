@@ -14,8 +14,8 @@
  */
 package agg.xt_basis;
 
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import agg.attribute.AttrException;
 import agg.attribute.impl.VarTuple;
 import agg.util.Pair;
@@ -151,7 +151,7 @@ public class ApplRuleSequencesGraTraImpl extends RuleSequencesGraTraImpl {
             if (this.ruleSequence != null) {
                 this.indx++;
                 int preIndx = this.indx - 1;
-                Hashtable<GraphObject, GraphObject> matchMap
+                Map<GraphObject, GraphObject> matchMap
                         = this.ruleSequence.getMatchSequence().getMatch(
                                 this.indx,
                                 r,

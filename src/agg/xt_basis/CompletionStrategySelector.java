@@ -11,9 +11,10 @@
  */
 package agg.xt_basis;
 
-import java.util.Dictionary;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import agg.xt_basis.csp.Completion_CSP_NoBJ;
 
 /**
@@ -27,7 +28,7 @@ public class CompletionStrategySelector {
      * The dictionary of available Strategies, each associated with a short
      * descriptive name.
      */
-    private static final Dictionary<MorphCompletionStrategy, String> itsStrategies = new Hashtable<MorphCompletionStrategy, String>(2);
+    private static final Map<MorphCompletionStrategy, String> itsStrategies = new HashMap<MorphCompletionStrategy, String>(2);
     /**
      * The default strategy.
      */
@@ -51,7 +52,7 @@ public class CompletionStrategySelector {
      * @see agg.xt_basis.MorphCompletionStrategy
      */
     public static Enumeration<MorphCompletionStrategy> getStrategies() {
-        return itsStrategies.keys();
+        return Collections.enumeration(itsStrategies.keySet());
     }
 
     /**

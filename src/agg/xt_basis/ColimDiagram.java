@@ -12,11 +12,11 @@ package agg.xt_basis;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import agg.attribute.impl.TupleMapping;
 import agg.xt_basis.colim.ALPHA_DIAGRAM;
 import agg.xt_basis.colim.COLIM_DEFS;
@@ -45,7 +45,7 @@ public class ColimDiagram implements COLIM_DEFS {
         this.itsDiagram = new ALPHA_DIAGRAM();
         this.itsColimGraph = result;
         this.itsColimMorphisms = new ArrayList<OrdinaryMorphism>();
-        this.itsGraphIndexMap = new Hashtable<Graph, Integer>(8);
+        this.itsGraphIndexMap = new HashMap<Graph, Integer>(8);
         this.itsInplaceFlag = false;
     }
 
@@ -64,7 +64,7 @@ public class ColimDiagram implements COLIM_DEFS {
         COLIM_VECTOR allObjectsAttrs = new COLIM_VECTOR(32);
         // Mapping of graph objects to their index in diagram representation
         // (maps GraphObject to Integer):
-        Dictionary<GraphObject, Integer> anIndexMap = new Hashtable<GraphObject, Integer>(32);
+        Map<GraphObject, Integer> anIndexMap = new HashMap<GraphObject, Integer>(32);
         if (graph == this.itsColimGraph) {
             this.itsInplaceFlag = true;
         }
@@ -106,7 +106,7 @@ public class ColimDiagram implements COLIM_DEFS {
             final COLIM_VECTOR allObjects,
             final COLIM_VECTOR allObjectsRefs,
             final COLIM_VECTOR allObjectsAttrs,
-            final Dictionary<GraphObject, Integer> anIndexMap,
+            final Map<GraphObject, Integer> anIndexMap,
             final Iterator<?> anObjectIter) {
         // fill allObjects and allObjectsRefs
         int count = allObjects.size();
@@ -150,7 +150,7 @@ public class ColimDiagram implements COLIM_DEFS {
         Graph aSourceGraph = morph.getOriginal();
         Graph aTargetGraph = morph.getImage();
         GraphObject anObject = null;
-        Dictionary<GraphObject, Integer> aTargetIndexMap = new Hashtable<GraphObject, Integer>(32);
+        Map<GraphObject, Integer> aTargetIndexMap = new HashMap<GraphObject, Integer>(32);
         // maps GraphObject to Integer
         int count = 0;
         Iterator<?> anObjectIter = aTargetGraph.getNodesSet().iterator();
@@ -471,7 +471,7 @@ public class ColimDiagram implements COLIM_DEFS {
      * <code>itsDiagram</code>. Keys are of type <code>Graph</code>, values of
      * type <code>Integer</code>.
      */
-    private Dictionary<Graph, Integer> itsGraphIndexMap;
+    private Map<Graph, Integer> itsGraphIndexMap;
     private ALPHA_DIAGRAM itsDiagram;
     private List<OrdinaryMorphism> itsColimMorphisms;
     private boolean itsInplaceFlag;

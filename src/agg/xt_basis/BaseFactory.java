@@ -17,9 +17,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import de.jare.ndimcol.primint.ArrayMovieInt;
 import de.jare.ndimcol.primint.ArraySeasonInt;
@@ -56,6 +57,7 @@ import agg.xt_basis.agt.KernelRule;
 import agg.xt_basis.agt.MultiRule;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.Completion_InheritCSP;
+import java.util.Hashtable;
 
 /**
  * A factory class for Graphs, Morphisms, Rules, Matches.
@@ -389,7 +391,7 @@ public class BaseFactory {
 		final OrdinaryMorphism c = new OrdinaryMorphism(C, G, 
 									g.getAttrManager().newContext(AttrMapping.PLAIN_MAP));
 		
-		final Hashtable<Object,Object> o2o = new Hashtable<Object,Object>();
+		final Map<Object,Object> o2o = new HashMap<Object,Object>();
 		Enumeration<GraphObject> dom = l.getDomain();
 		while (dom.hasMoreElements()) {
 			GraphObject goK = dom.nextElement();
@@ -475,7 +477,7 @@ public class BaseFactory {
         final OrdinaryMorphism m = new OrdinaryMorphism(L, G,
                 f.getAttrManager().newContext(
                         AttrMapping.PLAIN_MAP));
-        Hashtable<Object, Object> n2n = new Hashtable<Object, Object>();
+        Map<Object, Object> n2n = new HashMap<Object, Object>();
         Iterator<Node> nodes = H.getNodesCollection().iterator();
         while (nodes.hasNext()) {
             Node n = nodes.next();
@@ -539,8 +541,8 @@ public class BaseFactory {
         final OrdinaryMorphism b3 = new OrdinaryMorphism(L, G,
                 morphism.getAttrManager().newContext(
                         AttrMapping.PLAIN_MAP));
-        Hashtable<Object, Object> n2n_L = new Hashtable<Object, Object>();
-        Hashtable<Object, Object> n2n_B = new Hashtable<Object, Object>();
+        Map<Object, Object> n2n_L = new HashMap<Object, Object>();
+        Map<Object, Object> n2n_B = new HashMap<Object, Object>();
         // an edge in G but not in D add with source and target to L, add mappings to b3
         // source/target in G and in D add to B, add mappings to b1 and b2
         Iterator<Arc> arcs = G.getArcsCollection().iterator();
@@ -639,7 +641,7 @@ public class BaseFactory {
         final OrdinaryMorphism f = new OrdinaryMorphism(D, H,
                 t.getAttrManager().newContext(
                         AttrMapping.PLAIN_MAP));
-        Hashtable<Object, Object> n2n = new Hashtable<Object, Object>();
+        Map<Object, Object> n2n = new HashMap<Object, Object>();
         Iterator<Node> nodes = G.getNodesCollection().iterator();
         while (nodes.hasNext()) {
             Node n = nodes.next();
@@ -1035,8 +1037,8 @@ public class BaseFactory {
         Graph rgraph = h.getImage();
         Graph left = rule.getLeft();
         Graph right = rule.getRight();
-        Hashtable<GraphObject, GraphObject> ltable = new Hashtable<GraphObject, GraphObject>();
-        Hashtable<GraphObject, GraphObject> rtable = new Hashtable<GraphObject, GraphObject>();
+        Map<GraphObject, GraphObject> ltable = new HashMap<GraphObject, GraphObject>();
+        Map<GraphObject, GraphObject> rtable = new HashMap<GraphObject, GraphObject>();
         Iterator<Node> rnodes = rgraph.getNodesSet().iterator();
         while (rnodes.hasNext()) {
             Node rNode = rnodes.next();
@@ -1687,7 +1689,7 @@ public class BaseFactory {
      * @return ConcurrentRule
      */
     private ConcurrentRule makeConcurrentRuleByDisjointUnion(final Rule r1, final Rule r2) {
-        final Hashtable<String, String> storeNewName2OldName = new Hashtable<String, String>();
+        final Map<String, String> storeNewName2OldName = new HashMap<String, String>();
         if (r1 != r2) {
             BaseFactory.theFactory().renameSimilarVariable(r2, r1, "r1_", storeNewName2OldName);
 //			((VarTuple) r1.getAttrContext().getVariables()).showVariables();
@@ -1719,13 +1721,13 @@ public class BaseFactory {
     private ConcurrentRule makeConcurrentRuleByObjectFlow(
             final Rule r1,
             final Rule r2,
-            final Hashtable<Object, Object> objFlow) {
+            final Map<Object, Object> objFlow) {
         if (objFlow.isEmpty()) {
             return this.makeConcurrentRuleByDisjointUnion(r1, r2);
         }
         ConcurrentRule cr = null;
         // rename similar variables of rule1
-        final Hashtable<String, String> storeNewName2OldName = new Hashtable<String, String>();
+        final Map<String, String> storeNewName2OldName = new HashMap<String, String>();
         if (r1 != r2) {
             BaseFactory.theFactory().renameSimilarVariable(r2, r1, "r1_", storeNewName2OldName);
 //			((VarTuple) r1.getAttrContext().getVariables()).showVariables();
@@ -1742,10 +1744,8 @@ public class BaseFactory {
 //			boolean disjoint_union = false;
 //			boolean withIsomorphic = true; //false;
             // matchmap inverse:: keys to values, values to keys, because of inverse r1
-            final Hashtable<Object, Object> inversematchmap = new Hashtable<Object, Object>();
-            Enumeration<?> keys = objFlow.keys();
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            final Map<Object, Object> inversematchmap = new HashMap<Object, Object>();
+            for (Object key : objFlow.keySet()) {
                 // r2.lhs.object -> r1inverse.rhs.object
                 inversematchmap.put(objFlow.get(key),
                         inverseRulePair.second.second.getImage((GraphObject) key));
@@ -4653,7 +4653,7 @@ public class BaseFactory {
             final Rule r1,
             final Rule r2,
             final String prefix,
-            final Hashtable<String, String> storeNewName2OldName) {
+            final Map<String, String> storeNewName2OldName) {
         int index = 1;
         String mark = String.valueOf(index);
         VarTuple varsm1 = (VarTuple) r1.getAttrContext().getVariables();
@@ -4704,7 +4704,7 @@ public class BaseFactory {
      */
     public void restoreVariableNameOfRule(
             final Rule r,
-            final Hashtable<String, String> storeNewName2OldName) {
+            final Map<String, String> storeNewName2OldName) {
         VarTuple varsm2 = (VarTuple) r.getAttrContext().getVariables();
         for (int i = 0; i < varsm2.getSize(); i++) {
             VarMember vm2 = varsm2.getVarMemberAt(i);
@@ -5137,7 +5137,7 @@ public class BaseFactory {
             final Graph thisGraph,
             final Graph g,
             final int sizeOfInclusion,
-            final Hashtable<Object, Object> objectMap,
+            final Map<Object, Object> objectMap,
             final boolean union,
             final boolean withIsomorphic) {
         final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
@@ -5181,7 +5181,7 @@ public class BaseFactory {
             final Graph g,
             final List<OrdinaryMorphism> subs,
             final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet,
-            final Hashtable<Object, Object> objectMap) {
+            final Map<Object, Object> objectMap) {
         if (objectMap == null || objectMap.isEmpty()) {
             makeOverlappingPairs(thisGraph, g, subs, oSet);
             return;
@@ -5374,7 +5374,7 @@ public class BaseFactory {
     private void makeOverlappingPairByPredefinedIntersection(
             final Graph thisGraph,
             final Graph g,
-            final Hashtable<Object, Object> intersection, // thisGraph -> g
+            final Map<Object, Object> intersection, // thisGraph -> g
             final OrdinaryMorphism inclusion, // subgraph -> thisGraph
             final MorphCompletionStrategy strategy,
             final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet) {
@@ -5388,7 +5388,7 @@ public class BaseFactory {
         match.setCompletionStrategy(strategy, true);
         // set match mapping:  first of nodes
         boolean mappingOK = true;
-        Enumeration<Object> keys = intersection.keys();
+        Enumeration<Object> keys = Collections.enumeration(intersection.keySet());
         while (keys.hasMoreElements() && mappingOK) {
             Object thisGraph_obj = keys.nextElement();
             if (thisGraph_obj instanceof Node) {
@@ -5412,7 +5412,7 @@ public class BaseFactory {
             }
         }
         // set match mapping:  now of edges
-        keys = intersection.keys();
+        keys = Collections.enumeration(intersection.keySet());
         while (keys.hasMoreElements() && mappingOK) {
             Object thisGraph_obj = keys.nextElement();
             if (thisGraph_obj instanceof Arc) {
@@ -5585,7 +5585,7 @@ public class BaseFactory {
             final Graph thisGraph,
             final Graph g,
             final int sizeOfInclusion,
-            final Hashtable<Object, Object> objectMap,
+            final Map<Object, Object> objectMap,
             boolean disjunion,
             boolean withIsomorphic) {
         return overlappingSet(thisGraph, g, sizeOfInclusion, objectMap, disjunion, withIsomorphic);
@@ -5594,7 +5594,7 @@ public class BaseFactory {
     public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingByPredefinedIntersection(
             final Graph thisGraph,
             final Graph g,
-            final Hashtable<Object, Object> intersection) {
+            final Map<Object, Object> intersection) {
         if (intersection != null && !intersection.isEmpty()) {
             final Set<Object> intersectionOfThisGraph = intersection.keySet();
             List<GraphObject> goSet = new ArrayList<GraphObject>();
@@ -5630,7 +5630,7 @@ public class BaseFactory {
             final Graph thisGraph,
             final Graph g,
             final List<Object> requiredInsideSubgraphs,
-            final Hashtable<Object, Object> partialIntersection,
+            final Map<Object, Object> partialIntersection,
             boolean onlyRequiredObjectsInsideSubgraphs) {
         final List<Pair<OrdinaryMorphism, OrdinaryMorphism>> oSet = new ArrayList<Pair<OrdinaryMorphism, OrdinaryMorphism>>();
         List<OrdinaryMorphism> subs = new ArrayList<OrdinaryMorphism>();
@@ -5973,9 +5973,9 @@ public class BaseFactory {
             final OrdinaryMorphism ruleMorph,
             final OrdinaryMorphism matchMorph,
             final OrdinaryMorphism isoMorph) {
-        final Hashtable<Arc, Arc> img2origInArc = new Hashtable<Arc, Arc>();
-        final Hashtable<Arc, Arc> img2origOutArc = new Hashtable<Arc, Arc>();
-        final Hashtable<Arc, Arc> orig2img_isoMorph = new Hashtable<Arc, Arc>();
+        final Map<Arc, Arc> img2origInArc = new HashMap<Arc, Arc>();
+        final Map<Arc, Arc> img2origOutArc = new HashMap<Arc, Arc>();
+        final Map<Arc, Arc> orig2img_isoMorph = new HashMap<Arc, Arc>();
         final Iterator<Node> en = matchMorph.getSource().getNodesSet().iterator();
         while (en.hasNext()) {
             img2origInArc.clear();
@@ -6054,7 +6054,7 @@ public class BaseFactory {
                             matchMorph.removeMapping(child);
                             // reset mappings
                             matchMorph.addMapping(child, childNode);
-                            Enumeration<Arc> keys = img2origOutArc.keys();
+                            Enumeration<Arc> keys = Collections.enumeration(img2origOutArc.keySet());
                             while (keys.hasMoreElements()) {
                                 Arc img = keys.nextElement();
                                 Arc orig = img2origOutArc.get(img);
@@ -6071,7 +6071,7 @@ public class BaseFactory {
                                     }
                                 }
                             }
-                            keys = img2origInArc.keys();
+                            keys = Collections.enumeration(img2origInArc.keySet());
                             while (keys.hasMoreElements()) {
                                 Arc img = keys.nextElement();
                                 Arc orig = img2origInArc.get(img);
@@ -6092,7 +6092,7 @@ public class BaseFactory {
                             if (parent.getNumberOfInOutArcs() == 0) {
                                 // reset mappings
                                 isoMorph.addMapping(orig_rStar, childNode);
-                                keys = orig2img_isoMorph.keys();
+                                keys = Collections.enumeration(orig2img_isoMorph.keySet());
                                 while (keys.hasMoreElements()) {
                                     Arc a = keys.nextElement();
                                     Arc img = orig2img_isoMorph.get(a);
@@ -6140,9 +6140,9 @@ public class BaseFactory {
     public boolean replaceParentByChild(
             final OrdinaryMorphism morph1,
             final OrdinaryMorphism morph2) {
-        final Hashtable<Arc, Arc> img2origInArc = new Hashtable<Arc, Arc>();
-        final Hashtable<Arc, Arc> img2origOutArc = new Hashtable<Arc, Arc>();
-        final Hashtable<Arc, Arc> orig2img_isoMorph = new Hashtable<Arc, Arc>();
+        final Map<Arc, Arc> img2origInArc = new HashMap<Arc, Arc>();
+        final Map<Arc, Arc> img2origOutArc = new HashMap<Arc, Arc>();
+        final Map<Arc, Arc> orig2img_isoMorph = new HashMap<Arc, Arc>();
         final Iterator<Node> en = morph1.getSource().getNodesSet().iterator();
         while (en.hasNext()) {
             img2origInArc.clear();
@@ -6224,7 +6224,7 @@ public class BaseFactory {
                             // add new mapping
                             morph1.addMapping(child, childNode);
                             // reset mapping of arcs
-                            Enumeration<Arc> keys = img2origOutArc.keys();
+                            Enumeration<Arc> keys = Collections.enumeration(img2origOutArc.keySet());
                             while (keys.hasMoreElements()) {
                                 Arc img = keys.nextElement();
                                 Arc orig = img2origOutArc.get(img);
@@ -6241,7 +6241,7 @@ public class BaseFactory {
                                     }
                                 }
                             }
-                            keys = img2origInArc.keys();
+                            keys = Collections.enumeration(img2origInArc.keySet());
                             while (keys.hasMoreElements()) {
                                 Arc img = keys.nextElement();
                                 Arc orig = img2origInArc.get(img);
@@ -6262,7 +6262,7 @@ public class BaseFactory {
                             if (parent.getNumberOfInOutArcs() == 0) {
                                 // reset mappings
                                 morph2.addMapping(orig_rStar, childNode);
-                                keys = orig2img_isoMorph.keys();
+                                keys = Collections.enumeration(orig2img_isoMorph.keySet());
                                 while (keys.hasMoreElements()) {
                                     Arc a = keys.nextElement();
                                     Arc img = orig2img_isoMorph.get(a);

@@ -41,13 +41,13 @@ public class Arc extends GraphObject implements XMLObject {
     protected String keyStr = null;
 
     protected Arc(final Type type,
-            final GraphObject src,
-            final GraphObject tar,
+            final GraphObject source,
+            final GraphObject target,
             final Graph context) {
         this.itsContext = context;
         this.itsType = type;
-        this.itsSource = src;
-        this.itsTarget = tar;
+        this.itsSource = source;
+        this.itsTarget = target;
         addToSrcTar(this.itsSource, this.itsTarget);
         this.itsContextUsage = hashCode();
         if (!this.itsType.isAttrTypeEmpty()) {
@@ -66,20 +66,20 @@ public class Arc extends GraphObject implements XMLObject {
      * @param attr An attribute instance of a new arc if it should have
      * attributes. May be <code>null</code>.
      * @param type An arc type of a new arc.
-     * @param src A source node of a new arc.
-     * @param tar A target node of a new arc.
+     * @param source A source node of a new arc.
+     * @param target A target node of a new arc.
      * @param context A graph in which to consider a new arc with its source and
      * target nodes.
      */
     public Arc(final AttrInstance attr,
             final Type type,
-            final GraphObject src,
-            final GraphObject tar,
+            final GraphObject source,
+            final GraphObject target,
             final Graph context) {
         this.itsContext = context;
         this.itsType = type;
-        this.itsSource = src;
-        this.itsTarget = tar;
+        this.itsSource = source;
+        this.itsTarget = target;
         addToSrcTar(this.itsSource, this.itsTarget);
         this.itsContextUsage = hashCode();
         this.itsAttr = attr;
@@ -92,10 +92,10 @@ public class Arc extends GraphObject implements XMLObject {
     }
 
     protected Arc(final Arc orig,
-            final GraphObject src,
-            final GraphObject tar,
+            final GraphObject source,
+            final GraphObject target,
             final Graph context) {
-        this(orig.getType(), src, tar, context);
+        this(orig.getType(), source, target, context);
         if (orig.getAttribute() != null) {
             if (this.itsAttr == null) {
                 this.createAttributeInstance();
