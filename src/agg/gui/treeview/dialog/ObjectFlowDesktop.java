@@ -65,6 +65,7 @@ import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
+import java.util.Collections;
 
 /**
  * @author olga
@@ -550,7 +551,7 @@ public class ObjectFlowDesktop extends JDialog
         ((ContextView) morph.getAttrContext()).changeAllowedMapping(AttrMapping.OBJECT_FLOW_MAP); //MATCH_MAP);
         if (!objFlow.getMapping().isEmpty()) {
             List<Object> list = new Vector<Object>();
-            Enumeration<Object> keys = objFlow.getMapping().keys();
+            Enumeration<Object> keys = Collections.enumeration(objFlow.getMapping().keySet());
             // first set mapping of nodes
             while (keys.hasMoreElements()) {
                 Object out = keys.nextElement();

@@ -13,10 +13,12 @@ package agg.ruleappl;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Rule;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -38,7 +40,7 @@ import java.util.Vector;
  */
 public class ObjectFlow {
 
-    final Hashtable<Object, Object> outputInputMap;
+    final Map<Object, Object> outputInputMap;
     final Object srcOfOutput;  // Graph | Rule
     final Object srcOfInput;	// Rule
     int indxOfOutput = -1, indxOfInput = -1;
@@ -57,12 +59,12 @@ public class ObjectFlow {
         this.srcOfInput = sourceOfInput;
         this.indxOfOutput = indxOfOutput;
         this.indxOfInput = indxOfInput;
-        this.outputInputMap = new Hashtable<Object, Object>();
+        this.outputInputMap = new HashMap<Object, Object>();
     }
 
     public ObjectFlow(final Object sourceOfOutput, final Object sourceOfInput,
             int indxOfOutput, int indxOfInput,
-            final Hashtable<Object, Object> outputInputMap) {
+            final Map<Object, Object> outputInputMap) {
         this.srcOfOutput = sourceOfOutput;
         this.srcOfInput = sourceOfInput;
         this.indxOfOutput = indxOfOutput;
@@ -132,7 +134,7 @@ public class ObjectFlow {
      * @return mappings where first object is an output and second object is an
      * input of the object flow
      */
-    public Hashtable<Object, Object> getMapping() {
+    public Map<Object, Object> getMapping() {
         return this.outputInputMap;
     }
 
@@ -149,7 +151,7 @@ public class ObjectFlow {
      */
     public Object getOutput(final Object input) {
         if (input != null) {
-            Enumeration<Object> keys = this.outputInputMap.keys();
+            Enumeration<Object> keys = Collections.enumeration(this.outputInputMap.keySet());
             while (keys.hasMoreElements()) {
                 Object out = keys.nextElement();
                 if (this.outputInputMap.get(out) == input) {
@@ -200,7 +202,7 @@ public class ObjectFlow {
     }
 
     public boolean isOutputObject(final Object obj) {
-        Enumeration<Object> outputs = this.outputInputMap.keys();
+        Enumeration<Object> outputs = Collections.enumeration(this.outputInputMap.keySet());
         while (outputs.hasMoreElements()) {
             if (outputs.nextElement() == obj) {
                 return true;

@@ -19,9 +19,10 @@ import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.Rule;
 import java.io.File;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -349,14 +350,14 @@ public class ApplRuleSequence implements XMLObject {
                 h.close();
             }
             // save each rule result
-            Hashtable<String, Pair<Boolean, List<String>>> ruleRes = seq.getRuleResults();
+            Map<String, Pair<Boolean, List<String>>> ruleRes = seq.getRuleResults();
             for (int j = 0; j < seq.getRules().size(); j++) {
                 Rule rule = seq.getRules().get(j);
                 String ruleName = rule.getName();
                 h.openSubTag("Rule");
                 h.addObject("id", rule, false);
                 if (ruleRes != null) {
-                    Enumeration<String> keys = ruleRes.keys();
+                    Enumeration<String> keys = Collections.enumeration(ruleRes.keySet());
                     while (keys.hasMoreElements()) {
                         String key = keys.nextElement();
                         if (key.indexOf(String.valueOf(j).concat(ruleName)) == 0) {

@@ -56,7 +56,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.w3c.dom.Element;
- 
+
 /**
  * This class provides functionality of a graph grammar, consisting of an
  * arbitrary number of graphs (the "host graphs"), an arbitrary number of rules,
@@ -257,7 +257,7 @@ public class GraGra implements Disposable, XMLObject {
         for (int i = 0; i < this.itsAtomics.size(); i++) {
             this.itsAtomics.get(i).trimToSize();
         }
- 
+
         // ArrayList does not require trimToSize()
         // ((List<RuleSequence>) this.itsRuleSequences).trimToSize();
         for (int i = 0; i < this.itsRuleSequences.size(); i++) {
@@ -4187,7 +4187,7 @@ public class GraGra implements Disposable, XMLObject {
                 }
                 // write object flow : rule1.RHS -> rule2.LHS			
                 if (seq.isObjFlowDefined()) {
-                    Enumeration<String> keys = seq.getObjectFlow().keys();
+                    Enumeration<String> keys = Collections.enumeration(seq.getObjectFlow().keySet());
                     while (keys.hasMoreElements()) {
                         String key = keys.nextElement();
                         ObjectFlow objFlow = seq.getObjectFlow().get(key);
@@ -4214,7 +4214,7 @@ public class GraGra implements Disposable, XMLObject {
                                     + "."
                                     + ((Rule) objFlow.getSourceOfInput()).getName());
                         }
-                        Enumeration<Object> elems = objFlow.getMapping().keys();
+                        Enumeration<Object> elems = Collections.enumeration(objFlow.getMapping().keySet());
                         while (elems.hasMoreElements()) {
                             GraphObject o = (GraphObject) elems.nextElement();
                             h.openSubTag("Mapping");

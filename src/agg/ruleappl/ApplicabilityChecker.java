@@ -41,9 +41,12 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -419,7 +422,7 @@ public class ApplicabilityChecker implements Runnable {
         return result;
     }
 
-    private Hashtable<GraphObject, GraphObject> makeMatchMapByObjectFlow(
+    private Map<GraphObject, GraphObject> makeMatchMapByObjectFlow(
             int indx,
             final Rule r,
             final Graph g) {
@@ -428,12 +431,12 @@ public class ApplicabilityChecker implements Runnable {
             return null;
         }
         final List<ObjectFlow> objFlowList = this.ruleSequence.getObjFlowForRule(r, indx);
-        Hashtable<GraphObject, GraphObject> matchmap = this.ruleSequence.getMatchSequence().makeMatchMapByObjectFlow(r, objFlowList);
+        Map<GraphObject, GraphObject> matchmap = this.ruleSequence.getMatchSequence().makeMatchMapByObjectFlow(r, objFlowList);
         boolean result = (matchmap.size() == sizeOfObjectFlow);
         if (!result) {
             Rule ri = r;
             int i = indx;
-            final Hashtable<GraphObject, GraphObject> inputToPostInput = new Hashtable<GraphObject, GraphObject>();
+            final Map<GraphObject, GraphObject> inputToPostInput = new HashMap<GraphObject, GraphObject>();
             while (ri != null) {
                 matchmap.putAll(this.ruleSequence.getInput2outputMapIntoGraphAbovePreRule(
                         r, indx, objFlowList,
@@ -463,7 +466,7 @@ public class ApplicabilityChecker implements Runnable {
             m.enableInputParameter(false);
             // try to use object flow
             if (!r.getLeft().isEmpty() && this.ruleSequence.isObjFlowActive()) {
-                Hashtable<GraphObject, GraphObject> matchmap = makeMatchMapByObjectFlow(indx, r, g);
+                Map<GraphObject, GraphObject> matchmap = makeMatchMapByObjectFlow(indx, r, g);
                 if (matchmap != null && !matchmap.isEmpty()) {
                     try {
                         m.addMapping(matchmap);
@@ -508,7 +511,7 @@ public class ApplicabilityChecker implements Runnable {
         return false;
     }
 
-    private Hashtable<GraphObject, GraphObject> makeMatchMapByObjectFlow(
+    private Map<GraphObject, GraphObject> makeMatchMapByObjectFlow(
             final ConcurrentRule cr,
             int indx,
             final Graph g) {
@@ -516,13 +519,13 @@ public class ApplicabilityChecker implements Runnable {
         if (sizeOfObjectFlow == 0) {
             return null;
         }
-        Hashtable<GraphObject, GraphObject> matchmap = cr.applyReflectedObjectFlowToMatchMap(g);
+        Map<GraphObject, GraphObject> matchmap = cr.applyReflectedObjectFlowToMatchMap(g);
         boolean result = (matchmap.size() == sizeOfObjectFlow);
         if (!result) {
             final List<ObjectFlow> objFlowList = this.ruleSequence.getObjFlowForRule(cr.getLastSecondSourceRule(), indx + cr.getDepth());
             Rule ri = cr.getLastSecondSourceRule();
             int i = indx + cr.getDepth();
-            final Hashtable<GraphObject, GraphObject> inputToPostInput = new Hashtable<GraphObject, GraphObject>();
+            final Map<GraphObject, GraphObject> inputToPostInput = new HashMap<GraphObject, GraphObject>();
             while (ri != null) {
                 matchmap.putAll(this.ruleSequence.getReflectedObjectFlowOfGraphAndPreRule(
                         cr,
@@ -579,7 +582,7 @@ public class ApplicabilityChecker implements Runnable {
                 else if (this.ruleSequence.isObjFlowActive()) {
                     withOF = true;
                     if (cr.getSizeOfReflectedInputObjectFlow() > 0) {
-                        Hashtable<GraphObject, GraphObject> matchmap = makeMatchMapByObjectFlow(
+                        Map<GraphObject, GraphObject> matchmap = makeMatchMapByObjectFlow(
                                 cr,
                                 this.ruleSequence.getIndexOf(cr.getFirstSourceRule()),
                                 this.ruleSequence.getGraph());
@@ -957,7 +960,7 @@ public class ApplicabilityChecker implements Runnable {
     /*
 	private boolean asymParallelIndependentByCPA(final Rule r1, final Rule r2, final Graph graph) {		
 		final CriticalRulePairAtGraph crp = new CriticalRulePairAtGraph(r1, r2, graph);
-//		final List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> 
+//		final List<Pair<Map<GraphObject, GraphObject>, Map<GraphObject, GraphObject>>> 
 //		crpResult = crp.isCriticalAtGraph(); 
 		return (crp.isCriticalAtGraph() == null);
 	}
@@ -1688,7 +1691,7 @@ public class ApplicabilityChecker implements Runnable {
     private boolean pureEnablingAlongObjectFlow(
             final OrdinaryMorphism morph,
             final ObjectFlow objFlow) {
-        Enumeration<Object> outs = objFlow.getMapping().keys();
+        Enumeration<Object> outs =  Collections.enumeration(objFlow.getMapping().keySet());
         while (outs.hasMoreElements()) {
             Object out = outs.nextElement();
             Object in = objFlow.getMapping().get(out);
@@ -2028,7 +2031,7 @@ public class ApplicabilityChecker implements Runnable {
                     concurRuleLists.add(list);
                     int d = 1;
                     // set match of concurrent rule,  (check due to ObjectFlow?)
-                    final Hashtable<GraphObject, GraphObject> rjMatch = this.ruleSequence.getMatchSequence().getDirectMatch(j, rj);
+                    final Map<GraphObject, GraphObject> rjMatch = this.ruleSequence.getMatchSequence().getDirectMatch(j, rj);
                     if (rjMatch != null) {
                         for (int c = 0; c < list.size(); c++) {
                             final ConcurrentRule cr = list.get(c);
@@ -2404,7 +2407,7 @@ public class ApplicabilityChecker implements Runnable {
             final int rIndx,
             final List<List<ConcurrentRule>> crsOfRule,
             final int listIndx,
-            final Hashtable<?, ?> matchmap) {
+            final Map<?, ?> matchmap) {
 //		System.out.println("=== >>>  ApplicabilityChecker.completeConcurrentRules:  of "+r.getName());
         boolean res = false;
         if (listIndx >= crsOfRule.size()) {
@@ -2583,7 +2586,7 @@ public class ApplicabilityChecker implements Runnable {
                     if (objFlow != null && !objFlow.isEmpty()) {
                         // test:: reset depth when using ObjectFlow  
 //  					this.depth = 1; 
-                        final Hashtable<Object, Object> objFlowMap = objFlow.getMapping();
+                        final Map<Object, Object> objFlowMap = objFlow.getMapping();
                         System.out.println("=== >>>  ApplicabilityChecker.buildConcurrentRulesBackwards::  USE   ObjectFlow ");
                         list = this.makeConcurrentRules(ri_1, i_1, ri, i, objFlowMap);
                     } else {
@@ -2651,7 +2654,7 @@ public class ApplicabilityChecker implements Runnable {
  			int indx_r1,
  			final List<ConcurrentRule> crules,
  			int indx_cr,
-			final Hashtable<?, ?> matchmap) {
+			final Map<?, ?> matchmap) {
  		
  		final List<ConcurrentRule> reslist = new Vector<ConcurrentRule>();
  		for (int i=0; i<crules.size(); i++) {
@@ -2670,7 +2673,7 @@ public class ApplicabilityChecker implements Runnable {
             int indx_r1,
             final Rule r2,
             int indx_r2,
-            final Hashtable<?, ?> matchmap) {
+            final Map<?, ?> matchmap) {
         final DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
         dependencyContainer.enableProduceConcurrentRule(true);
         // if this.completeConcurrency Is false, only max overlapping above nodes will be considered
@@ -2713,7 +2716,7 @@ public class ApplicabilityChecker implements Runnable {
     private List<ConcurrentRule> makeConcurrentRulesDuetoDependency(
             final ConcurrentRule cr1,
             final Rule r2,
-            final Hashtable<?, ?> matchmap) {
+            final Map<?, ?> matchmap) {
 //		System.out.println("---> ApplicabilityChecker.makeConcurrentRulesDuetoDependency(ConcurrentRule r1, final Rule r2 ");
         final DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
         dependencyContainer.enableProduceConcurrentRule(true);
@@ -2750,12 +2753,12 @@ public class ApplicabilityChecker implements Runnable {
         return list;
     }
 
-    private Hashtable<Object, Object> getObjectFlowForRules(
+    private Map<Object, Object> getObjectFlowForRules(
             final Rule r1,
             int indx_r1,
             final ConcurrentRule cr,
             int indx_cr) {
-        Hashtable<Object, Object> map = new Hashtable<Object, Object>();
+        Map<Object, Object> map = new HashMap<Object, Object>();
 //		Rule r2 = cr.getFirstSourceRule();	
         map.putAll(cr.getReflectedInputObjectFlowFromRule(
                 r1,
@@ -2780,7 +2783,7 @@ public class ApplicabilityChecker implements Runnable {
 //						System.out.println("=== >>>  try to forward the object flow to concurrent rule along embedding");
 //		 	 			final Hashtable<Object, Object> matchmap12 = objFlow.getMapping(); 
                     // output --> input		 	 			
-                    final Hashtable<Object, Object> matchmap = getObjectFlowForRules(r1, indx_r1, cr, indx_cr);
+                    final Map<Object, Object> matchmap = getObjectFlowForRules(r1, indx_r1, cr, indx_cr);
                     if (!matchmap.isEmpty()) {
                         // make shifting object flow along embedding
 //				 		final Hashtable<Object, Object> matchmap = new Hashtable<Object, Object>();
@@ -2848,13 +2851,13 @@ public class ApplicabilityChecker implements Runnable {
             int indx_r1,
             final Rule r2,
             int indx_r2,
-            final Hashtable<?, ?> objFlowMap) {
+            final Map<?, ?> objFlowMap) {
         if (objFlowMap == null || objFlowMap.isEmpty()) {
             return makeConcurrentRules(r1, indx_r1, r2, indx_r2);
         }
         System.out.println("=== >>>  ApplicabilityChecker.makeConcurrentRules::  " + r1.getName() + "   " + r2.getName() + "  by  Object Flow: ");
         // rename similar variables of rule1
-        final Hashtable<String, String> storeNewName2OldName = new Hashtable<String, String>();
+        final Map<String, String> storeNewName2OldName = new HashMap<String, String>();
         if (r1 != r2) {
             BaseFactory.theFactory().renameSimilarVariable(r2, r1, "r1_", storeNewName2OldName);
 //			((VarTuple) r1.getAttrContext().getVariables()).showVariables();
@@ -2866,8 +2869,8 @@ public class ApplicabilityChecker implements Runnable {
         int maxsize = objFlowMap.size();
         if (maxsize > 0) {
             // matchmap inverse:: keys to values, values to keys, because of inverse r1
-            final Hashtable<Object, Object> inversematchmap = new Hashtable<Object, Object>();
-            Enumeration<?> keys = objFlowMap.keys();
+            final Map<Object, Object> inversematchmap = new HashMap<Object, Object>();
+            Enumeration<?> keys = Collections.enumeration(objFlowMap.keySet());
             while (keys.hasMoreElements()) {
                 Object key = keys.nextElement();
                 inversematchmap.put(objFlowMap.get(key),
@@ -2915,7 +2918,7 @@ public class ApplicabilityChecker implements Runnable {
             int indx_r2) {
         System.out.println("=== >>>  ApplicabilityChecker.makeConcurrentRules::  of  " + r1.getName() + "   " + r2.getName());
         // rename similar variables of rule1
-        final Hashtable<String, String> storeNewName2OldName = new Hashtable<String, String>();
+        final Map<String, String> storeNewName2OldName = new HashMap<String, String>();
         if (r1 != r2) {
             BaseFactory.theFactory().renameSimilarVariable(r2, r1, "r1_", storeNewName2OldName);
 //			((VarTuple) rule1.getAttrContext().getVariables()).showVariables();
@@ -3041,7 +3044,7 @@ public class ApplicabilityChecker implements Runnable {
      */
     private boolean checkIntersectionDuetoObjectFlow(
             final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping,
-            final Hashtable<?, ?> objFlow) {
+            final Map<?, ?> objFlow) {
         boolean ok = true;
         if (objFlow != null) {
             List<GraphObject> r2LHSobjs = getOverlappingObjectsOfFirstMorphism(overlapping);
@@ -3077,7 +3080,7 @@ public class ApplicabilityChecker implements Runnable {
 
     private boolean checkConcurrentRuleDuetoObjectFlow(
             final ConcurrentRule cr,
-            final Hashtable<?, ?> objFlow) {
+            final Map<?, ?> objFlow) {
         if (objFlow == null || objFlow.isEmpty()
                 || cr.getOverlappingObjectsOfSecondRule() == null) {
             return true;
@@ -3089,11 +3092,11 @@ public class ApplicabilityChecker implements Runnable {
 //		while (r2_objFlow.hasNext() && ok) {
 //			ok = ok && r2LHSobjs.contains(r2_objFlow.next());
 //		}
-        Enumeration<?> outs = objFlow.keys();
+        Enumeration<?> outs = Collections.enumeration(objFlow.keySet());
         while (outs.hasMoreElements()) {
             GraphObject out = (GraphObject) outs.nextElement();
-            Hashtable<GraphObject, GraphObject> map = cr.getOverlappingObjects();
-            Enumeration<GraphObject> objs = map.keys();
+            Map<GraphObject, GraphObject> map = cr.getOverlappingObjects();
+            Enumeration<GraphObject> objs = Collections.enumeration(map.keySet());
             while (objs.hasMoreElements()) {
                 GraphObject obj_rhs1 = objs.nextElement();// == output object
                 GraphObject obj_lhs2 = map.get(obj_rhs1); // == input object
@@ -3122,7 +3125,7 @@ public class ApplicabilityChecker implements Runnable {
         if (this.ruleSequence.isObjFlowActive()) {
             final ObjectFlow objFlow = this.ruleSequence.getObjFlowForRules(r1, indx_r1, r2, indx_r2);
             if (objFlow != null && !objFlow.isEmpty()) {
-                Hashtable<Object, Object> map = objFlow.getMapping();
+                Map<Object, Object> map = objFlow.getMapping();
                 // remove overlappings without object flow
                 for (int c = 0; c < list.size(); c++) {
                     ConcurrentRule cr = list.get(c);

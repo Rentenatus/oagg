@@ -29,6 +29,8 @@ import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
 import agg.ruleappl.ObjectFlow;
 import agg.util.Pair;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Construct a concurrent rule based on two source rules and already computed
@@ -234,8 +236,8 @@ public class ConcurrentRule {
             final List<ObjectFlow> list) {
         Hashtable<GraphObject, GraphObject> objmap = new Hashtable<GraphObject, GraphObject>();
         for (int i = 0; i < list.size(); i++) {
-            Hashtable<Object, Object> map = list.get(i).getMapping();
-            Enumeration<Object> objs1 = map.keys();
+            Map<Object, Object> map = list.get(i).getMapping();
+            Enumeration<Object> objs1 = Collections.enumeration(map.keySet());
             while (objs1.hasMoreElements()) {
                 GraphObject obj1 = (GraphObject) objs1.nextElement();
                 GraphObject obj2 = (GraphObject) map.get(obj1);
@@ -256,8 +258,8 @@ public class ConcurrentRule {
             final List<ObjectFlow> list) {
         Hashtable<GraphObject, GraphObject> objmap = new Hashtable<GraphObject, GraphObject>();
         for (int i = 0; i < list.size(); i++) {
-            Hashtable<Object, Object> map = list.get(i).getMapping();
-            Enumeration<Object> objs1 = map.keys();
+            Map<Object, Object> map = list.get(i).getMapping();
+            Enumeration<Object> objs1 = Collections.enumeration(map.keySet());
             while (objs1.hasMoreElements()) {
                 GraphObject obj1 = (GraphObject) objs1.nextElement();
                 GraphObject obj2 = (GraphObject) map.get(obj1);
@@ -342,8 +344,8 @@ public class ConcurrentRule {
         final Iterator<ObjectFlow> iterator = objFlowOfSource.iterator();
         while (iterator.hasNext()) {
             ObjectFlow objFlow = iterator.next();
-            Hashtable<Object, Object> map = objFlow.getMapping();
-            Enumeration<Object> outputs = map.keys();
+            Map<Object, Object> map = objFlow.getMapping();
+            Enumeration<Object> outputs = Collections.enumeration(map.keySet());
             while (outputs.hasMoreElements()) {
                 Object output = outputs.nextElement();
                 Object input = map.get(output);
@@ -650,13 +652,13 @@ public class ConcurrentRule {
      * @return	true if all mappings forwarded successfully, otherwise false
      */
     public boolean forwardMatchMappingOfFirstSourceRule(
-            final Hashtable<GraphObject, GraphObject> map,
+            final Map<GraphObject, GraphObject> map,
             final Graph g) {
         boolean result = false;
         Match m = BaseFactory.theFactory().createMatch(this.concurrentRule, g);
         if (m != null) {
             this.concurrentRule.setMatch(m);
-            Enumeration<GraphObject> objs = map.keys();
+            Enumeration<GraphObject> objs = Collections.enumeration(map.keySet());
             while (objs.hasMoreElements()) {
                 final GraphObject obj = objs.nextElement();
                 if (obj.isNode()) {
@@ -675,7 +677,7 @@ public class ConcurrentRule {
                     }
                 }
             }
-            objs = map.keys();
+            objs = Collections.enumeration(map.keySet());
             while (objs.hasMoreElements()) {
                 final GraphObject obj = objs.nextElement();
                 if (obj.isArc()) {

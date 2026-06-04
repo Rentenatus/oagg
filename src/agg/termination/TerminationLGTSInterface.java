@@ -20,8 +20,8 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements termination conditions of Layered Graph Grammar.
@@ -50,27 +50,27 @@ public interface TerminationLGTSInterface {
 
     public List<Rule> getListOfRules();
 
-    public Hashtable<Integer, HashSet<Rule>> getInvertedRuleLayer();
+    public Map<Integer, HashSet<Rule>> getInvertedRuleLayer();
 
     public ArrayMovieInt getOrderedRuleLayer();
 
-    public Hashtable<Integer, HashSet<Object>> getInvertedTypeDeletionLayer();
+    public Map<Integer, HashSet<Object>> getInvertedTypeDeletionLayer();
 
-    public Hashtable<Integer, HashSet<Object>> getInvertedTypeCreationLayer();
+    public Map<Integer, HashSet<Object>> getInvertedTypeCreationLayer();
 
-    public Hashtable<Integer, List<Type>> getDeletionType();
+    public Map<Integer, List<Type>> getDeletionType();
 
-    public Hashtable<Integer, List<GraphObject>> getDeletionTypeObject();
+    public Map<Integer, List<GraphObject>> getDeletionTypeObject();
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultTypeDeletion();
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultTypeDeletion();
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultDeletion();
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultDeletion();
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultNondeletion();
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultNondeletion();
 
     public void resetLayer();
 
-    public void initRuleLayer(Hashtable<?, Integer> init);
+    public void initRuleLayer(Map<?, Integer> init);
 
     public void initAll(boolean generate);
 
@@ -102,7 +102,7 @@ public interface TerminationLGTSInterface {
      *
      * @return The rule layer.
      */
-    public Hashtable<Rule, Integer> getRuleLayer();
+    public Map<Rule, Integer> getRuleLayer();
 
     public int getRuleLayer(Rule r);
 
@@ -111,7 +111,7 @@ public interface TerminationLGTSInterface {
      *
      * @return The creation layer.
      */
-    public Hashtable<Object, Integer> getCreationLayer();
+    public Map<Object, Integer> getCreationLayer();
 
     public int getCreationLayer(Type t);
 
@@ -122,7 +122,7 @@ public interface TerminationLGTSInterface {
      *
      * @return The deletion layer.
      */
-    public Hashtable<Object, Integer> getDeletionLayer();
+    public Map<Object, Integer> getDeletionLayer();
 
     public int getDeletionLayer(Type t);
 
@@ -142,8 +142,8 @@ public interface TerminationLGTSInterface {
      * @param layer The layer function will be inverted.
      * @return The inverted layer function.
      */
-    public Hashtable<Integer, HashSet<Rule>> invertLayer(
-            Hashtable<Rule, Integer> layer);
+    public Map<Integer, HashSet<Rule>> invertLayer(
+            Map<Rule, Integer> layer);
 
     public void saveRuleLayer();
 

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 public class RuleSequencesGraTraImpl extends GraTra {
 
@@ -211,7 +212,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
     private void propagateObjFlowOfRule(
             int ind,
             final Rule r) {
-        Hashtable<GraphObject, GraphObject> matchMap = (r.getRuleScheme() == null)
+        Map<GraphObject, GraphObject> matchMap = (r.getRuleScheme() == null)
                 ? this.ruleSequence.getMatchSequence().getMatch(ind, r)
                 : this.ruleSequence.getMatchSequence().getMatch(ind, r.getRuleScheme().getKernelRule());
         if (r.getMatch() == null) {
