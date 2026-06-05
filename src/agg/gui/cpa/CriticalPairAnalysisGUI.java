@@ -53,6 +53,7 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.util.Pair;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Holds the whole GUI for the critical pair analysis
@@ -508,7 +509,7 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
     List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getOverlappingsByEvent(final ParserGUIEvent pguie) {
         List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = null;
-        Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> overlappingsForGraph = null;
+        Map<Graph, List<Map<GraphObject, GraphObject>>> overlappingsForGraph = null;
         try {
             if (!CriticalPairAnalysisGUI.this.isPanel2) { // conflicts
                 if (pguie.getData() instanceof Pair) {

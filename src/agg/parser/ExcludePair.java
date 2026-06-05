@@ -3472,8 +3472,8 @@ public class ExcludePair implements CriticalPair {
     boolean ruleRestrictsAttributes(
             boolean strongCheck,
             final Rule r,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
         final VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
         final CondTuple conds = (CondTuple) r.getAttrContext().getConditions();
         ruleRestrictsAtts(strongCheck, r, leftChangedAttrs, otherChangedAttrs,
@@ -3536,7 +3536,7 @@ public class ExcludePair implements CriticalPair {
 
     private List<Pair<ValueMember, ValueMember>> checkAttrFamily(
             GraphObject go,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
         List<Pair<ValueMember, ValueMember>> otherv = checkAttributeParents(go.getAttribute().getTupleType(), otherChangedAttrs);
         if (otherv == null) {
             otherv = checkAttributeChilds(go, otherChangedAttrs);
@@ -3548,7 +3548,7 @@ public class ExcludePair implements CriticalPair {
             Rule r,
             AttrType attrType,
             List<Pair<ValueMember, ValueMember>> r_changedAttrs,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
         List<Pair<ValueMember, ValueMember>> otherv = null;
         for (int i = 0; i < r_changedAttrs.size(); i++) {
             Pair<ValueMember, ValueMember> p = r_changedAttrs.get(i);
@@ -3569,7 +3569,7 @@ public class ExcludePair implements CriticalPair {
 
     private List<Pair<ValueMember, ValueMember>> checkAttributeChilds(
             GraphObject go,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
         List<Pair<ValueMember, ValueMember>> otherv = null;
         List<Type> goTypeChilds = go.getType().getAllChildren();
         for (Type t : goTypeChilds) {
@@ -3584,7 +3584,7 @@ public class ExcludePair implements CriticalPair {
 
     private List<Pair<ValueMember, ValueMember>> checkAttributeParents(
             AttrType attrType,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
         List<Pair<ValueMember, ValueMember>> otherv = null;
         Enumeration<DeclTuple> parents = ((agg.attribute.impl.DeclTuple) attrType).getAllParents();
         while (parents.hasMoreElements()) {
@@ -3600,8 +3600,8 @@ public class ExcludePair implements CriticalPair {
     private void ruleRestrictsAtts(
             boolean strongCheck,
             final Rule r,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs,
             final VarTuple vars,
             final CondTuple conds,
             final Iterator<?> en) {
@@ -3681,8 +3681,8 @@ public class ExcludePair implements CriticalPair {
             final OrdinaryMorphism nac,
             final VarTuple vars,
             final CondTuple conds,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
         final List<GraphObject> result = new Vector<GraphObject>(5);
         final List<String> varNames = conds.getAllVariables();
         nacRestrictsAttr(nac, vars, conds, leftChangedAttrs, otherChangedAttrs,
@@ -3696,8 +3696,8 @@ public class ExcludePair implements CriticalPair {
             final OrdinaryMorphism nac,
             final VarTuple vars,
             final CondTuple conds,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs,
             final List<GraphObject> res,
             final List<String> varNames,
             final Iterator<?> en) {
@@ -3770,8 +3770,8 @@ public class ExcludePair implements CriticalPair {
             final OrdinaryMorphism pac,
             final VarTuple vars,
             final CondTuple conds,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs) {
         List<GraphObject> result = new Vector<GraphObject>(5);
         final List<String> varsNames = conds.getAllVariables();
         pacRestrictsAttr(pac, vars, conds, leftChangedAttrs, otherChangedAttrs,
@@ -3785,8 +3785,8 @@ public class ExcludePair implements CriticalPair {
             final OrdinaryMorphism pac,
             final VarTuple vars,
             final CondTuple conds,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> leftChangedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> otherChangedAttrs,
             final List<GraphObject> res,
             final List<String> varsNames,
             final Iterator<?> en) {
