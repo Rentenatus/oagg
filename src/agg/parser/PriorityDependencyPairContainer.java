@@ -13,9 +13,11 @@
  */
 package agg.parser;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
@@ -177,12 +179,12 @@ public class PriorityDependencyPairContainer extends DependencyPairContainer {
         }
         h.addAttr("kind", kind);
         // Inhalt von excludeContainer schreiben (save)
-        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
+        for (Enumeration<Rule> keys = Collections.enumeration(this.excludeContainer.keySet()); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
@@ -229,12 +231,12 @@ public class PriorityDependencyPairContainer extends DependencyPairContainer {
         }
         h.close();
         h.openSubTag("conflictFreeContainer");
-        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
+        for (Enumeration<Rule> keys = Collections.enumeration(this.excludeContainer.keySet()); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
+            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);

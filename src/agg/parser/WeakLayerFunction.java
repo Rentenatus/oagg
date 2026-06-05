@@ -13,6 +13,7 @@
  */
 package agg.parser;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,7 +53,7 @@ public class WeakLayerFunction extends LayerFunction {
         Report.trace("starte ckeckLayer()", 2);
         boolean result = true;
         /* 0<= cl(l)<=dl(l)<=n */
-        for (Enumeration<?> en = getDeletionLayer().keys(); en.hasMoreElements()
+        for (Enumeration<?> en = Collections.enumeration(getDeletionLayer().keySet()); en.hasMoreElements()
                 && result;) {
             Object key = en.nextElement();
             Integer dl = getDeletionLayer().get(key);
@@ -75,7 +76,7 @@ public class WeakLayerFunction extends LayerFunction {
         }
         HashSet<Object> deletionSet = new HashSet<Object>();
         HashSet<Object> creationSet = new HashSet<Object>();
-        Enumeration<Rule> rules = getRuleLayer().keys();
+        Enumeration<Rule> rules = Collections.enumeration(getRuleLayer().keySet());
         while (result && rules.hasMoreElements()) {
             deletionSet.clear();
             creationSet.clear();

@@ -13,9 +13,11 @@
  */
 package agg.parser;
 
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.List;
 import java.util.Vector;
 import agg.xt_basis.Arc;
@@ -55,7 +57,7 @@ public class DependencyPairContainer extends ExcludePairContainer {
         this.completeConcurrency = true;
     }
 
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getDependencyContainer() {
         return super.getExcludeContainer();
     }
@@ -205,7 +207,7 @@ public class DependencyPairContainer extends ExcludePairContainer {
             continueComputeCriticalPair(
                     Rule r1,
                     Rule r2,
-                    final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container) {
+                    final Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container) {
         // get Entry
         Entry e = this.getEntry(r1, r2, true);
         if (!e.isProgressIndexSet()) {
@@ -321,12 +323,12 @@ public class DependencyPairContainer extends ExcludePairContainer {
         }
         h.addAttr("kind", kind);
         // Inhalt von excludeContainer schreiben (save)
-        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
+        for (Enumeration<Rule> keys = Collections.enumeration(this.excludeContainer.keySet()); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
@@ -378,12 +380,12 @@ public class DependencyPairContainer extends ExcludePairContainer {
         h.close();
         if (this.conflictFreeContainer != null) {
             h.openSubTag("conflictFreeContainer");
-            for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
+            for (Enumeration<Rule> keys = Collections.enumeration(this.conflictFreeContainer.keySet()); keys.hasMoreElements();) {
                 Rule r1 = keys.nextElement();
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
-                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
-                for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
+                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
                     h.openSubTag("Rule");
                     h.addObject("R2", r2, false);

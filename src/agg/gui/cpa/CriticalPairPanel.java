@@ -24,9 +24,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ScrollPaneConstants;
@@ -112,7 +113,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      */
     private ExcludePairContainer container;
     private Hashtable<JButton, CriticalPairData> b2cpData = new Hashtable<JButton, CriticalPairData>();
-    private Hashtable<Rule, Hashtable<Rule, JButton>> buttons = new Hashtable<Rule, Hashtable<Rule, JButton>>();
+    private Map<Rule, Map<Rule, JButton>> buttons = new HashMap<Rule, Map<Rule, JButton>>();
     private Hashtable<JButton, Rule> firstRules = new Hashtable<JButton, Rule>();
     private Hashtable<JButton, Rule> secondRules = new Hashtable<JButton, Rule>();
     /**
@@ -624,20 +625,20 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
     }
 
     private void setRuleContextVisible(Rule rule1, Rule rule2, boolean vis) {
-        for (Enumeration<Rule> keys = this.container.getExcludeContainer().keys(); keys
+        for (Enumeration<Rule> keys = Collections.enumeration(this.container.getExcludeContainer().keySet()); keys
                 .hasMoreElements();) {
             Rule r1 = keys.nextElement();
             if (r1 == rule1) {
                 // System.out.println("ExcludePC:: reduce: "+r1.getName());
-                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.container
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> secondPart = this.container
                         .getExcludeContainer().get(r1);
-                for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
 //					ExcludePairContainer.Entry entry = container.getEntry(r1,r2);
                     // if(entry.isCritical())
                     setRelationVisible(r1, r2, vis);
                 }
-                for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
                     // if(r2 != rule1)
                     {
@@ -793,10 +794,10 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
     }
 
     private void clearView() {
-        Enumeration<Rule> en1 = this.buttons.keys();
+        Enumeration<Rule> en1 = Collections.enumeration(this.buttons.keySet());
         while (en1.hasMoreElements()) {
             Rule r1 = en1.nextElement();
-            Enumeration<Rule> en2 = this.buttons.get(r1).keys();
+            Enumeration<Rule> en2 = Collections.enumeration(this.buttons.get(r1).keySet());
             while (en2.hasMoreElements()) {
                 Rule r2 = en2.nextElement();
                 JButton btn = this.getButton(r1, r2);
@@ -822,10 +823,10 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      */
     public void refreshView() {
         this.b2cpData.clear();
-        Enumeration<Rule> en1 = this.buttons.keys();
+        Enumeration<Rule> en1 = Collections.enumeration(this.buttons.keySet());
         while (en1.hasMoreElements()) {
             Rule r1 = en1.nextElement();
-            Enumeration<Rule> en2 = this.buttons.get(r1).keys();
+            Enumeration<Rule> en2 = Collections.enumeration(this.buttons.get(r1).keySet());
             while (en2.hasMoreElements()) {
                 Rule r2 = en2.nextElement();
                 refreshView(r1, r2, getButton(r1, r2), -1);

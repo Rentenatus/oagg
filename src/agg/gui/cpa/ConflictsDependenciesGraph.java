@@ -13,10 +13,11 @@
  */
 package agg.gui.cpa;
 
-import java.util.Hashtable;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -390,11 +391,11 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if (this.cpaLayout == null || pc == null) {
             return;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
-        for (Enumeration<Rule> keys = container.keys(); keys.hasMoreElements();) {
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
+        for (Enumeration<Rule> keys = Collections.enumeration(container.keySet()); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> secondPart = container.get(r1);
+            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 ExcludePairContainer.Entry entry = ((ExcludePairContainer) pc)
                         .getEntry(r1, r2);
@@ -504,11 +505,11 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if (this.cpaLayout == null || pc == null) {
             return;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
-        for (Enumeration<Rule> keys = container.keys(); keys.hasMoreElements();) {
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
+        for (Enumeration<Rule> keys = Collections.enumeration(container.keySet()); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> secondPart = container.get(r1);
+            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 ExcludePairContainer.Entry entry = ((ExcludePairContainer) pc)
                         .getEntry(r1, r2);
@@ -643,14 +644,14 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 }
             }
         }
-        for (Enumeration<Rule> keys1 = table1.keys(); keys1.hasMoreElements();) {
+        for (Enumeration<Rule> keys1 = Collections.enumeration(table1.keySet()); keys1.hasMoreElements();) {
             Rule r1 = keys1.nextElement();
             Node n1 = getNode(g.getBasisGraph(), r1);
             if (n1 == null) {// new rule node
                 n1 = createNode(g.getBasisGraph(), "Rule", r1);
             }
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table2 = table1.get(r1);
-            for (Enumeration<Rule> keys2 = table2.keys(); keys2.hasMoreElements();) {
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> table2 = table1.get(r1);
+            for (Enumeration<Rule> keys2 = Collections.enumeration(table2.keySet()); keys2.hasMoreElements();) {
                 Rule r2 = keys2.nextElement();
                 Node n2 = getNode(g.getBasisGraph(), r2);
                 if (n2 == null) // new rule node
@@ -1041,11 +1042,11 @@ public class ConflictsDependenciesGraph implements ActionListener,
             AttrType attrType = nodeType.getAttrType();
             attrType.addMember(javaHandler, "String", "name");
             if (this.conflicts != null) {
-                for (Enumeration<Rule> keys1 = this.conflicts.keys(); keys1.hasMoreElements();) {
+                for (Enumeration<Rule> keys1 = Collections.enumeration(this.conflicts.keySet()); keys1.hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
-                        for (Enumeration<Rule> keys2 = table.keys(); keys2
+                        Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> table = this.conflicts.get(r1);
+                        for (Enumeration<Rule> keys2 = Collections.enumeration(table.keySet()); keys2
                                 .hasMoreElements();) {
                             Rule r2 = keys2.nextElement();
                             if (r2.isEnabled()) {
@@ -1076,12 +1077,12 @@ public class ConflictsDependenciesGraph implements ActionListener,
             }
             if (this.dependencies != null) {
                 local.clear();
-                for (Enumeration<Rule> keys1 = this.dependencies.keys(); keys1
+                for (Enumeration<Rule> keys1 = Collections.enumeration(this.dependencies.keySet()); keys1
                         .hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
-                        for (Enumeration<Rule> keys2 = table.keys(); keys2
+                        Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> table = this.dependencies.get(r1);
+                        for (Enumeration<Rule> keys2 = Collections.enumeration(table.keySet()); keys2
                                 .hasMoreElements();) {
                             Rule r2 = keys2.nextElement();
                             if (r2.isEnabled()) {

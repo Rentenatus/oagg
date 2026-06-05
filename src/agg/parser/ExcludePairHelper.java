@@ -13,10 +13,12 @@
  */
 package agg.parser;
 
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
@@ -457,7 +459,7 @@ public final class ExcludePairHelper {
             final OrdinaryMorphism nacInsideOverlapGraph,
             final List<GraphObject> changedAttributesR1,
             final List<Type> forbiddenTypesR2,
-            final Hashtable<ValueMember, Pair<String, String>> attrMember2Constant) {
+            final Map<ValueMember, Pair<String, String>> attrMember2Constant) {
         boolean result = false;
         Match match2 = (Match) overlapping.second;
         // check the NACs of the rule2
@@ -474,7 +476,7 @@ public final class ExcludePairHelper {
                         return false;
                     }
                 } else if (hasConstantInAttrOfNewObj(nac)) {
-                    Hashtable<ValueMember, String> var2const = new Hashtable<ValueMember, String>();
+                    Map<ValueMember, String> var2const = new HashMap<ValueMember, String>();
                     var2const = replaceConstantByNull(rule2, nac);
                     if (!var2const.isEmpty()) {
                         nacStar = (OrdinaryMorphism) match2.checkNAC(nac,
@@ -1008,7 +1010,7 @@ public final class ExcludePairHelper {
 
     protected static List<Type> getForbiddenTypesRule2(
             final Rule rule2,
-            final Hashtable<ValueMember, Pair<String, String>> attrMember2Constant) {
+            final Map<ValueMember, Pair<String, String>> attrMember2Constant) {
         List<Type> forbiddenTypesR2 = new Vector<>(2);
         Iterator<OrdinaryMorphism> nacsR2 = rule2.getNACs();
         while (nacsR2.hasNext()) {
@@ -1060,7 +1062,7 @@ public final class ExcludePairHelper {
     protected static Type getTypeWhenDifferentAttrValue(
             final OrdinaryMorphism morph,
             final GraphObject imageObj,
-            final Hashtable<ValueMember, Pair<String, String>> attrMember2Constant) {
+            final Map<ValueMember, Pair<String, String>> attrMember2Constant) {
         if (imageObj.getAttribute() == null) {
             return null;
         }
@@ -1329,7 +1331,7 @@ public final class ExcludePairHelper {
     private static void replaceNullByConstant(
             final Rule r,
             final OrdinaryMorphism nac,
-            final Hashtable<ValueMember, String> var2const) {
+            final Map<ValueMember, String> var2const) {
         Iterator<?> en = nac.getTarget().getNodesSet().iterator();
         while (en.hasNext()) {
             GraphObject o = (GraphObject) en.next();
@@ -1360,10 +1362,10 @@ public final class ExcludePairHelper {
         }
     }
 
-    private static Hashtable<ValueMember, String> replaceConstantByNull(
+    private static Map<ValueMember, String> replaceConstantByNull(
             final Rule r,
             final OrdinaryMorphism nac) {
-        Hashtable<ValueMember, String> var2const = new Hashtable<ValueMember, String>();
+        Map<ValueMember, String> var2const = new HashMap<ValueMember, String>();
         Iterator<?> en = nac.getTarget().getNodesSet().iterator();
         while (en.hasNext()) {
             GraphObject o = (GraphObject) en.next();
@@ -1411,7 +1413,7 @@ public final class ExcludePairHelper {
             final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping,
             final List<GraphObject> changedAttributesR1,
             final List<Type> forbiddenObjTypesR2,
-            final Hashtable<ValueMember, Pair<String, String>> attrMember2Constant) {
+            final Map<ValueMember, Pair<String, String>> attrMember2Constant) {
         boolean result = false;
         boolean nacStarFailed = false;
         while (l1Objs.hasNext()) {
@@ -1595,7 +1597,7 @@ public final class ExcludePairHelper {
 
     private static void doReplaceConstantByInputParam(
             final Rule r, OrdinaryMorphism nac,
-            final Hashtable<ValueMember, String> var2const) {
+            final Map<ValueMember, String> var2const) {
         VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
         doReplaceConstantByInputParam(vars, nac.getTarget().getNodesSet().iterator(), nac,
                 var2const);
@@ -1603,9 +1605,9 @@ public final class ExcludePairHelper {
                 var2const);
     }
 
-    protected static Hashtable<ValueMember, String> replaceConstantByInputParam(
+    protected static Map<ValueMember, String> replaceConstantByInputParam(
             final Rule r,
-            final Hashtable<ValueMember, String> var2const) {
+            final Map<ValueMember, String> var2const) {
         final List<OrdinaryMorphism> nacs = r.getNACsList();
         for (int l = 0; l < nacs.size(); l++) {
             final OrdinaryMorphism nac = nacs.get(l);
@@ -1617,7 +1619,7 @@ public final class ExcludePairHelper {
     protected static void doReplaceConstantByInputParam(
             final VarTuple vars,
             final Iterator<?> en, final OrdinaryMorphism nac,
-            final Hashtable<ValueMember, String> var2const) {
+            final Map<ValueMember, String> var2const) {
         while (en.hasNext()) {
             GraphObject o = (GraphObject) en.next();
             if (o.getAttribute() == null) {
@@ -1644,7 +1646,7 @@ public final class ExcludePairHelper {
 
     protected static void replaceInputParamByConstant(
             final Rule r,
-            final Hashtable<ValueMember, String> var2const) {
+            final Map<ValueMember, String> var2const) {
         final List<OrdinaryMorphism> nacs = r.getNACsList();
         for (int l = 0; l < nacs.size(); l++) {
             final OrdinaryMorphism nac = nacs.get(l);
@@ -1655,7 +1657,7 @@ public final class ExcludePairHelper {
     private static void doReplaceInputParamByConstant(
             final Rule r,
             final OrdinaryMorphism nac,
-            final Hashtable<ValueMember, String> var2const) {
+            final Map<ValueMember, String> var2const) {
         VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
         doReplaceInputParamByConstant(vars, nac.getTarget().getNodesSet().iterator(),
                 var2const);
@@ -1666,7 +1668,7 @@ public final class ExcludePairHelper {
     private static void doReplaceInputParamByConstant(
             final VarTuple vars,
             final Iterator<?> en,
-            final Hashtable<ValueMember, String> var2const) {
+            final Map<ValueMember, String> var2const) {
         while (en.hasNext()) {
             GraphObject o = (GraphObject) en.next();
             if (o.getAttribute() == null) {
@@ -2306,7 +2308,7 @@ public final class ExcludePairHelper {
         final Graph dCondGraph = condSrcIsom.getTarget();
         final List<GraphObject> condDom = condSrcIsom.getDomainObjects();
         final List<Object> requiredObjs = new Vector<Object>(condDom.size());
-        final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(condDom.size());
+        final Map<Object, Object> objmap = new HashMap<Object, Object>(condDom.size());
         // fill a map with objects required 
         // for the graph overlappings of dCondGraph and morph.getTarget()
         for (int j = 0; j < condDom.size(); j++) {
@@ -2683,9 +2685,9 @@ public final class ExcludePairHelper {
     }
 
     public static List<Pair<ValueMember, ValueMember>> getAttrMemberByParentType(
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> attrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> attrs,
             final AttrType attrtype) {
-        Enumeration<AttrType> keys = attrs.keys();
+        Enumeration<AttrType> keys = Collections.enumeration(attrs.keySet());
         while (keys.hasMoreElements()) {
             AttrType t = keys.nextElement();
             if (((DeclTuple) attrtype).hasChild((DeclTuple) t)) {
@@ -2696,9 +2698,9 @@ public final class ExcludePairHelper {
     }
 
     public static List<Pair<ValueMember, ValueMember>> getAttrMemberByChildType(
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> attrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> attrs,
             final AttrType attrtype) {
-        Enumeration<AttrType> keys = attrs.keys();
+        Enumeration<AttrType> keys = Collections.enumeration(attrs.keySet());
         while (keys.hasMoreElements()) {
             AttrType t = keys.nextElement();
             if (((DeclTuple) attrtype).hasParent((DeclTuple) t)) {

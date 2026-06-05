@@ -21,7 +21,7 @@ import agg.xt_basis.Graph;
 import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.List;
 //****************************************************************************+
 
@@ -103,7 +103,7 @@ public interface PairContainer extends XMLObject {
      * is not provided.
      * @return The hashtable with critical pairs.
      */
-    public Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
+    public Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>
             getContainer(int kind) throws InvalidAlgorithmException;
 
     // ****************************************************************************+

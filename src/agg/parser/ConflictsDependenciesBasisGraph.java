@@ -13,8 +13,10 @@
  */
 package agg.parser;
 
-import java.util.Hashtable;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -42,10 +44,10 @@ public class ConflictsDependenciesBasisGraph {
     ExcludePairContainer conflictCont;
     ExcludePairContainer dependCont;
     GraGra grammar;
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
+    Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
+    Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
     Graph conflictGraph, dependGraph, combiGraph;
-    Hashtable<Node, Rule> node2rule;
+    Map<Node, Rule> node2rule;
 
     public ConflictsDependenciesBasisGraph(
             ExcludePairContainer conflictsContainer,
@@ -139,7 +141,7 @@ public class ConflictsDependenciesBasisGraph {
         if (this.node2rule == null) {
             return;
         }
-        Hashtable<RuleScheme, List<Node>> map = new Hashtable<RuleScheme, List<Node>>();
+        Map<RuleScheme, List<Node>> map = new HashMap<RuleScheme, List<Node>>();
         Iterator<Node> iter = g.getNodesSet().iterator();
         while (iter.hasNext()) {
             Node n = iter.next();
@@ -290,9 +292,9 @@ public class ConflictsDependenciesBasisGraph {
         if ((this.conflicts == null) && (this.dependencies == null)) {
             return;
         }
-        Hashtable<String, Node> common = new Hashtable<String, Node>();
-        Hashtable<String, Node> local = new Hashtable<String, Node>();
-        node2rule = new Hashtable<Node, Rule>();
+        Map<String, Node> common = new HashMap<String, Node>();
+        Map<String, Node> local = new HashMap<String, Node>();
+        node2rule = new HashMap<Node, Rule>();
         TypeSet types = null;
         if (this.conflicts != null) {
             this.conflictGraph = BaseFactory.theFactory().createGraph();
@@ -329,11 +331,11 @@ public class ConflictsDependenciesBasisGraph {
             AttrType attrType = nodeType.getAttrType();
             attrType.addMember(javaHandler, "String", "name");
             if (this.conflicts != null) {
-                for (Enumeration<Rule> keys1 = this.conflicts.keys(); keys1.hasMoreElements();) {
+                for (Enumeration<Rule> keys1 = Collections.enumeration(this.conflicts.keySet()); keys1.hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
-                        for (Enumeration<Rule> keys2 = table.keys(); keys2
+                        Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
+                        for (Enumeration<Rule> keys2 = Collections.enumeration(table.keySet()); keys2
                                 .hasMoreElements();) {
                             Rule r2 = keys2.nextElement();
                             if (r2.isEnabled()) {
@@ -389,12 +391,12 @@ public class ConflictsDependenciesBasisGraph {
             }
             if (this.dependencies != null) {
                 local.clear();
-                for (Enumeration<Rule> keys1 = this.dependencies.keys(); keys1
+                for (Enumeration<Rule> keys1 = Collections.enumeration(this.dependencies.keySet()); keys1
                         .hasMoreElements();) {
                     Rule r1 = keys1.nextElement();
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
-                        for (Enumeration<Rule> keys2 = table.keys(); keys2
+                        Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
+                        for (Enumeration<Rule> keys2 = Collections.enumeration(table.keySet()); keys2
                                 .hasMoreElements();) {
                             Rule r2 = keys2.nextElement();
                             if (r2.isEnabled()) {
@@ -460,11 +462,11 @@ public class ConflictsDependenciesBasisGraph {
             return;
         }
         List<Rule> rlist = this.grammar.getRulesWithIntegratedRulesOfRuleScheme();
-        Hashtable<String, Rule> name2rule = new Hashtable<String, Rule>();
+        Map<String, Rule> name2rule = new HashMap<String, Rule>();
         for (Rule r : rlist) {
             name2rule.put(r.getQualifiedName(), r);
         }
-        node2rule = new Hashtable<Node, Rule>();
+        node2rule = new HashMap<Node, Rule>();
         TypeSet types = combiCPAGraph.getTypeSet();
         Type arcTypeConflict = types.getTypeByName("c");
         Type arcTypeDepend = types.getTypeByName("d");

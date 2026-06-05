@@ -13,9 +13,11 @@
  */
 package agg.parser;
 
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.Iterator;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
@@ -37,9 +39,9 @@ public class LayerFunction implements XMLObject {
      * The graph grammar.
      */
     protected GraGra grammar;
-    protected Hashtable<Rule, Integer> ruleLayer;
-    protected Hashtable<Type, Integer> creationLayer;
-    protected Hashtable<Type, Integer> deletionLayer;
+    protected Map<Rule, Integer> ruleLayer;
+    protected Map<Type, Integer> creationLayer;
+    protected Map<Type, Integer> deletionLayer;
     /**
      * The error message if this layer function is not valid.
      */
@@ -67,7 +69,7 @@ public class LayerFunction implements XMLObject {
     }
 
     private void initRuleLayer(GraGra gragra) {
-        this.ruleLayer = new Hashtable<Rule, Integer>();
+        this.ruleLayer = new HashMap<Rule, Integer>();
         for (int i = 0; i < gragra.getListOfRules().size(); i++) {
             Rule rule = gragra.getListOfRules().get(i);
             this.ruleLayer.put(rule, rule.getLayer());
@@ -75,7 +77,7 @@ public class LayerFunction implements XMLObject {
     }
 
     private void initCreationLayer(GraGra gragra) {
-        this.creationLayer = new Hashtable<Type, Integer>();
+        this.creationLayer = new HashMap<Type, Integer>();
         IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type type = types.next();
@@ -84,7 +86,7 @@ public class LayerFunction implements XMLObject {
     }
 
     private void initDeletionLayer(GraGra gragra) {
-        this.deletionLayer = new Hashtable<Type, Integer>();
+        this.deletionLayer = new HashMap<Type, Integer>();
         IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type type = types.next();
@@ -107,7 +109,7 @@ public class LayerFunction implements XMLObject {
 		Report.trace("starte ckeckLayer()", 2);
 		boolean result = true;
 		// 0<= cl(l)<=dl(l)<=n 
-		for (Enumeration<?> en = getDeletionLayer().keys(); en.hasMoreElements()
+		for (Enumeration<?> en = Collections.enumeration(getDeletionLayer().keySet()); en.hasMoreElements()
 				&& result;) {
 			Object key = en.nextElement();
 			Integer dl = getDeletionLayer().get(key);
@@ -130,7 +132,7 @@ public class LayerFunction implements XMLObject {
 		}
 		HashSet deletionSet = new HashSet();
 		HashSet creationSet = new HashSet();
-		Enumeration<?> rules = getRuleLayer().keys();
+		Enumeration<?> rules = Collections.enumeration(getRuleLayer().keySet());
 		while (result && rules.hasMoreElements()) {
 			deletionSet.clear();
 			creationSet.clear();
@@ -171,7 +173,7 @@ public class LayerFunction implements XMLObject {
 				break;
 			}
 			// dl(l) <= k 
-			for (Enumeration<?> en = deletionSet.elements(); en.hasMoreElements()
+			for (Enumeration<?> en = Collections.enumeration(deletionSet); en.hasMoreElements()
 					&& result;) {
 				GraphObject grob = (GraphObject) en.nextElement();
 				Type t = grob.getType();
@@ -213,7 +215,7 @@ public class LayerFunction implements XMLObject {
 			Report.println("creationSet reduziert auf " + creationSet,
 					Report.LAYER);
 			// cl > k 
-			for (Enumeration<?> en = creationSet.elements(); en.hasMoreElements()
+			for (Enumeration<?> en = Collections.enumeration(creationSet); en.hasMoreElements()
 					&& result;) {
 				GraphObject grob = (GraphObject) en.nextElement();
 				Type t = grob.getType();
@@ -259,7 +261,7 @@ public class LayerFunction implements XMLObject {
      *
      * @return The rule layer.
      */
-    public Hashtable<Rule, Integer> getRuleLayer() {
+    public Map<Rule, Integer> getRuleLayer() {
         int size = 0;
         Iterator<Rule> en = this.grammar.getListOfRules().iterator();
         while (en.hasNext()) {
@@ -286,7 +288,7 @@ public class LayerFunction implements XMLObject {
      *
      * @return The creation layer.
      */
-    public Hashtable<Type, Integer> getCreationLayer() {
+    public Map<Type, Integer> getCreationLayer() {
         int size = 0;
         IteratorWalker<Type> en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
@@ -313,7 +315,7 @@ public class LayerFunction implements XMLObject {
      *
      * @return The deletion layer.
      */
-    public Hashtable<Type, Integer> getDeletionLayer() {
+    public Map<Type, Integer> getDeletionLayer() {
         int size = 0;
         IteratorWalker<Type> en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
@@ -344,7 +346,7 @@ public class LayerFunction implements XMLObject {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
         /* RuleLayer sind fuer das Parsieren noetig */
-        for (Enumeration<?> keys = getRuleLayer().keys(); keys.hasMoreElements();) {
+        for (Enumeration<?> keys = Collections.enumeration(getRuleLayer().keySet()); keys.hasMoreElements();) {
             Object key = keys.nextElement();
             Integer layer = getRuleLayer().get(key);
             if (layer.intValue() < startLayer) {
@@ -363,9 +365,9 @@ public class LayerFunction implements XMLObject {
      * @return The inverted layer function.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Hashtable<Integer, HashSet> invertLayer(Hashtable<?, ?> layer) {
-        Hashtable<Integer, HashSet> inverted = new Hashtable<Integer, HashSet>();
-        for (Enumeration<?> keys = layer.keys(); keys.hasMoreElements();) {
+    public Map<Integer, HashSet> invertLayer(Map<?, ?> layer) {
+        Map<Integer, HashSet> inverted = new HashMap<Integer, HashSet>();
+        for (Enumeration<?> keys = Collections.enumeration(layer.keySet()); keys.hasMoreElements();) {
             Object key = keys.nextElement();
             Integer value = (Integer) layer.get(key);
             HashSet invertedValue = inverted.get(value);
@@ -395,8 +397,8 @@ public class LayerFunction implements XMLObject {
      * @param xmlObjects <CODE>this</CODE>
      * @param h A helper object.
      */
-    protected void writeHashtableToXML(Hashtable<?, ?> xmlObjects, XMLHelper h) {
-        for (Enumeration<?> keys = xmlObjects.keys(); keys.hasMoreElements();) {
+    protected void writeHashtableToXML(Map<?, ?> xmlObjects, XMLHelper h) {
+        for (Enumeration<?> keys = Collections.enumeration(xmlObjects.keySet()); keys.hasMoreElements();) {
             XMLObject r1 = (XMLObject) keys.nextElement();
             h.openSubTag("Datum");
             h.addObject("key", r1, false);

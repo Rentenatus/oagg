@@ -1431,7 +1431,7 @@ public class BaseFactory {
 
     public void replaceExprByVarInApplConds(
             final Rule r,
-            final Hashtable<ValueMember, Pair<String, String>> storeMap) {
+            final Map<ValueMember, Pair<String, String>> storeMap) {
         Iterator<OrdinaryMorphism> applConds = r.getNACs();
         while (applConds.hasNext()) {
             OrdinaryMorphism morph = applConds.next();
@@ -1468,7 +1468,7 @@ public class BaseFactory {
 
     public void replaceExprByVarInApplConds(
             final List<Rule> rules,
-            final Hashtable<ValueMember, Pair<String, String>> storeMap) {
+            final Map<ValueMember, Pair<String, String>> storeMap) {
         for (int i = 0; i < rules.size(); i++) {
             Rule r = rules.get(i);
             replaceExprByVarInApplConds(r, storeMap);
@@ -1487,7 +1487,7 @@ public class BaseFactory {
             final VarTuple vars,
             final Iterator<?> elems,
             boolean setTransient,
-            final Hashtable<ValueMember, Pair<String, String>> storeMap) {
+            final Map<ValueMember, Pair<String, String>> storeMap) {
         int nn = -1;
         String exprMsg = "";
         while (elems.hasNext()) {
@@ -1535,7 +1535,7 @@ public class BaseFactory {
 
     public void restoreExprByVarInApplConds(
             final Rule r,
-            final Hashtable<ValueMember, Pair<String, String>> storeMap) {
+            final Map<ValueMember, Pair<String, String>> storeMap) {
         Iterator<OrdinaryMorphism> applConds = r.getNACs();
         while (applConds.hasNext()) {
             OrdinaryMorphism morph = applConds.next();
@@ -1568,7 +1568,7 @@ public class BaseFactory {
 
     public void restoreExprByVarInApplConds(
             final List<Rule> rules,
-            final Hashtable<ValueMember, Pair<String, String>> storeMap) {
+            final Map<ValueMember, Pair<String, String>> storeMap) {
         if (storeMap == null || storeMap.isEmpty()) {
             return;
         }
@@ -1581,7 +1581,7 @@ public class BaseFactory {
     private void restoreAttrExpressionReplacedByVariable(
             final VarTuple vars,
             final Iterator<?> elems,
-            final Hashtable<ValueMember, Pair<String, String>> storeMap) {
+            final Map<ValueMember, Pair<String, String>> storeMap) {
         while (elems.hasNext()) {
             GraphObject grob = (GraphObject) elems.next();
 //			System.out.println("BF.replaceAttrExpressionByVariable:   inside of  "+grob.getContext().getName());

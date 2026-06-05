@@ -23,11 +23,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
-import java.util.Hashtable;
 import java.util.EventObject;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -455,7 +457,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             }
         }
         // separated frames
-        Enumeration<JFrame> en = this.separatedFrames.keys();
+        Enumeration<JFrame> en = Collections.enumeration(this.separatedFrames.keySet());
         while (en.hasMoreElements()) {
             Object key = en.nextElement();
             CriticalPairAnalysisSeparated cpas = this.separatedFrames.get(key);
@@ -703,7 +705,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         if (this.selectedGraGra != null) {
             this.selectedGraGra.setEditable(true);
         }
-        Enumeration<EdGraGra> keys = this.gragraChanged.keys();
+        Enumeration<EdGraGra> keys = Collections.enumeration(this.gragraChanged.keySet());
         while (keys.hasMoreElements()) {
             EdGraGra gra = keys.nextElement();
             if (gra.getBasisGraGra() != null) {
@@ -1856,7 +1858,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             this.graphDesktop = (GraphDesktop) e.getSource();
             if (e.getData() instanceof Graph) {
                 if (this.overlapGraphs == null) {
-                    this.overlapGraphs = new Hashtable<Graph, Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>>();
+                    this.overlapGraphs = new HashMap<Graph, Pair<List<Map<GraphObject, GraphObject>>, JButton>>();
                 }
                 this.overlapGraph = (Graph) e.getData();
                 if (this.overlapGraphs.get(this.overlapGraph) == null) {
@@ -1866,8 +1868,8 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         this.overlapGraphs = null;
                         return;
                     }
-                    Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> ht = epc.getExcludeContainerForTestGraph();
-                    List<Hashtable<GraphObject, GraphObject>> matches = ht.get(this.overlapGraph);
+                    Map<Graph, List<Map<GraphObject, GraphObject>>> ht = epc.getExcludeContainerForTestGraph();
+                    List<Map<GraphObject, GraphObject>> matches = ht.get(this.overlapGraph);
                     if (matches != null) {
                         this.hostGraphMappings = new Vector<>(
                                 matches.size());
@@ -1880,11 +1882,11 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         } else {
                             this.nextMatchAtHostGraphButton = null;
                         }
-                        Pair<List<Hashtable<GraphObject, GraphObject>>, JButton> pair = new Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>(
+                        Pair<List<Map<GraphObject, GraphObject>>, JButton> pair = new Pair<List<Map<GraphObject, GraphObject>>, JButton>(
                                 this.hostGraphMappings, this.nextMatchAtHostGraphButton);
                         this.overlapGraphs.put(this.overlapGraph, pair);
                         if (this.hostGraphMappings.size() > 0) {
-                            Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
+                            Map<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
                             showCriticalMatch(this.treeView.getCurrentGraGra()
                                     .getGraph(), this.graphDesktop
                                             .getInternalLayoutGraph(this.overlapGraph), objs);
@@ -1901,12 +1903,12 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
                         this.treeView.graphDidChange();
                     }
                 } else {
-                    Pair<List<Hashtable<GraphObject, GraphObject>>, JButton> pair = this.overlapGraphs.get(this.overlapGraph);
+                    Pair<List<Map<GraphObject, GraphObject>>, JButton> pair = this.overlapGraphs.get(this.overlapGraph);
                     this.hostGraphMappings = pair.first;
                     this.nextMatchAtHostGraphButton = pair.second;
                     if (this.hostGraphMappings != null
                             && this.hostGraphMappings.size() > 0) {
-                        Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
+                        Map<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
                         showCriticalMatch(this.treeView.getCurrentGraGra()
                                 .getGraph(), this.graphDesktop
                                         .getInternalLayoutGraph(this.overlapGraph), objs);
@@ -1922,7 +1924,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         if (e.getSource() instanceof JButton) {
             if (((JButton) e.getSource()) == this.nextMatchAtHostGraphButton) {
                 if (this.hostGraphMappings != null && this.hostGraphMappings.size() > 0) {
-                    Hashtable<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
+                    Map<GraphObject, GraphObject> objs = this.hostGraphMappings.get(0);
                     showCriticalMatch(this.treeView.getCurrentGraGra().getGraph(),
                             this.graphDesktop.getInternalLayoutGraph(this.overlapGraph),
                             objs);
@@ -2168,7 +2170,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
     }
 
     private void showCriticalMatch(EdGraph hostg, EdGraph overlapg,
-            Hashtable<GraphObject, GraphObject> map) {
+            Map<GraphObject, GraphObject> map) {
         // unset old criticals
         hostg.deselectAll();
         Iterator<?> en = hostg.getBasisGraph().getNodesSet().iterator();
@@ -2194,7 +2196,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             hostg.update();
             return;
         }
-        Enumeration<?> en1 = map.keys();
+        Enumeration<?> en1 = Collections.enumeration(map.keySet());
         while (en1.hasMoreElements()) {
             GraphObject o = (GraphObject) en1.nextElement();
             GraphObject i = map.get(o);
@@ -2527,18 +2529,18 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
     protected EdGraGra selectedGraGra;
     protected List<Rule> ruleList1, ruleList2;
     protected List<JMenu> menus;
-    protected Hashtable<EdGraGra, Boolean> gragraChanged = new Hashtable<EdGraGra, Boolean>();
+    protected Map<EdGraGra, Boolean> gragraChanged = new HashMap<EdGraGra, Boolean>();
     protected boolean isWarned = false;
     protected boolean isLocked = true, resetDone = false;
     ;
-	protected Hashtable<JFrame, CriticalPairAnalysisSeparated> separatedFrames = new Hashtable<JFrame, CriticalPairAnalysisSeparated>();
+	protected Map<JFrame, CriticalPairAnalysisSeparated> separatedFrames = new HashMap<JFrame, CriticalPairAnalysisSeparated>();
     protected CriticalPairAnalysisSeparated hostGraphCPA;
-    Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> hostGraphCPAcontainer;
+    Map<Graph, List<Map<GraphObject, GraphObject>>> hostGraphCPAcontainer;
     // CriticalPairAnalysisSeparated combinedCPA;
     protected JFrame hostGraphFrame;
-    protected Hashtable<Graph, Pair<List<Hashtable<GraphObject, GraphObject>>, JButton>> overlapGraphs;
+    protected Map<Graph, Pair<List<Map<GraphObject, GraphObject>>, JButton>> overlapGraphs;
     protected Graph overlapGraph;
-    protected List<Hashtable<GraphObject, GraphObject>> hostGraphMappings;
+    protected List<Map<GraphObject, GraphObject>> hostGraphMappings;
     protected JButton nextMatchAtHostGraphButton;
     protected GraphDesktop graphDesktop;
     protected int x = 100, y = 50;

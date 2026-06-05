@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Constructs a parallel rule based on some rules (as disjoint union).
@@ -283,11 +284,11 @@ public class ParallelRule extends Rule {
         Thread cpThread = ParserFactory.generateCriticalPairs(pc);
         while (cpThread.isAlive()) {
         }
-        final Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts = pc
+        final Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts = pc
                 .getConflictContainer();
         for (int i = 0; i < rules.size(); i++) {
             Rule r = rules.get(i);
-            final Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> ruleConflicts = conflicts
+            final Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> ruleConflicts = conflicts
                     .get(r);
             final Iterator<Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> iter = ruleConflicts
                     .values().iterator();

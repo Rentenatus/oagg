@@ -12,9 +12,11 @@
 package agg.cons;
 
 import de.jare.ndimcol.primint.ArrayMovieInt;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.List;
 import java.util.Vector;
 //import com.objectspace.jgl.HashSet;
@@ -28,7 +30,7 @@ import java.util.Vector;
  */
 public class ConstraintPriority {
 
-    Hashtable<Object, Object> constraintPriority;
+    Map<Object, Object> constraintPriority;
     Enumeration<Formula> constraints;
     Vector<Formula> constraintsVec;
 
@@ -73,7 +75,7 @@ public class ConstraintPriority {
     }
 
     private void initConstraintPriority() {
-        this.constraintPriority = new Hashtable<Object, Object>();
+        this.constraintPriority = new HashMap<Object, Object>();
         for (int i = 0; i < this.constraintsVec.size(); i++) {
             Object constraint = this.constraintsVec.elementAt(i);
             if (constraint instanceof Formula) {
@@ -91,7 +93,7 @@ public class ConstraintPriority {
      * Returns the constraint (formula) priority. The key is a constraint,
      * priority is a priority.
      */
-    public Hashtable<Object, Object> getConstraintPriority() {
+    public Map<Object, Object> getConstraintPriority() {
         return this.constraintPriority;
     }
 
@@ -101,7 +103,7 @@ public class ConstraintPriority {
     public Integer getStartPriority() {
         int startPrior = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<?> keys = this.constraintPriority.keys(); keys
+        for (Enumeration<?> keys = Collections.enumeration(this.constraintPriority.keySet()); keys
                 .hasMoreElements();) {
             Object key = keys.nextElement();
             Vector<?> prior = (Vector<?>) this.constraintPriority.get(key);
@@ -125,9 +127,9 @@ public class ConstraintPriority {
      * Inverts and returns constraint priorities so that the key is a priority
      * and the value is a set of constraints.
      */
-    public Hashtable<Integer, HashSet<Object>> invertPriority() {
-        Hashtable<Integer, HashSet<Object>> inverted = new Hashtable<Integer, HashSet<Object>>();
-        for (Enumeration<Object> keys = this.constraintPriority.keys(); keys
+    public Map<Integer, HashSet<Object>> invertPriority() {
+        Map<Integer, HashSet<Object>> inverted = new HashMap<Integer, HashSet<Object>>();
+        for (Enumeration<Object> keys = Collections.enumeration(this.constraintPriority.keySet()); keys
                 .hasMoreElements();) {
             Object key = keys.nextElement();
             Vector<?> prior = (Vector<?>) this.constraintPriority.get(key);
@@ -154,7 +156,7 @@ public class ConstraintPriority {
      */
     public String toString() {
         String resultString = "Formula:\t\tPriority:\n";
-        for (Enumeration<Object> keys = this.constraintPriority.keys(); keys
+        for (Enumeration<Object> keys = Collections.enumeration(this.constraintPriority.keySet()); keys
                 .hasMoreElements();) {
             Object key = keys.nextElement();
             resultString += ((Formula) key).getName() + "\t\t";

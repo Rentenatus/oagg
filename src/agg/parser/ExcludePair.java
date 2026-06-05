@@ -13,6 +13,7 @@
  */
 package agg.parser;
 
+import java.util.Collections;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrMapping;
@@ -54,6 +55,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -3190,7 +3192,7 @@ public class ExcludePair implements CriticalPair {
             final List<GraphObject> context,
             final List<GraphObject> boundary,
             final List<GraphObject> preserved,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrs,
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrs,
             final List<Pair<Type, Pair<Type, Type>>> neededTypes) {
 //		context.clear();
 //		boundary.clear();
@@ -3406,7 +3408,7 @@ public class ExcludePair implements CriticalPair {
     void ruleChangesAttributes(
             final Rule r,
             final List<GraphObject> preserved,
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrs) {
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrs) {
         for (Iterator<GraphObject> en = r.getDomain(); en.hasNext();) {
             GraphObject goLeft = en.next();
             if (goLeft.isNode()) {
@@ -3480,7 +3482,7 @@ public class ExcludePair implements CriticalPair {
                 vars, conds, r.getLeft().getArcsSet().iterator());
         // check attr. setting (LHS) of r against otherChangedAttrs (RHS)
         // for this part the strong-option is already checked
-        Enumeration<AttrType> keys = leftChangedAttrs.keys();
+        Enumeration<AttrType> keys = Collections.enumeration(leftChangedAttrs.keySet());
         while (keys.hasMoreElements()) {
             agg.attribute.AttrType key = keys.nextElement();
             List<Pair<ValueMember, ValueMember>> v = leftChangedAttrs.get(key);
@@ -6626,7 +6628,7 @@ public class ExcludePair implements CriticalPair {
             return null;
         }
         OrdinaryMorphism po1 = isoE.invert();
-        final Enumeration<GraphObject> keys = adjusted.keys();
+        final Enumeration<GraphObject> keys = Collections.enumeration(adjusted.keySet());
         while (keys.hasMoreElements()) {
             final GraphObject o1 = keys.nextElement();
             final GraphObject o2 = adjusted.get(o1);

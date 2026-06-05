@@ -14,10 +14,13 @@
 // This class belongs to the following package:
 package agg.parser;
 
+import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 import agg.xt_basis.BadMappingException;
@@ -82,7 +85,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
         this.correct = true;
         fireParserEvent(new ParserMessageEvent(this,
                 "Starting exclude parser ..."));
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
         try {
             fireParserEvent(new ParserMessageEvent(this,
                     "Computting conflict free pairs. Please wait ..."));
@@ -95,7 +98,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                     + iae.getMessage()));
             return false;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
         try {
             fireParserEvent(new ParserMessageEvent(this,
                     "Computting exclude pairs. Please wait ..."));
@@ -107,17 +110,17 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                     + iae.getMessage()));
             return false;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight
-                = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight
-                = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight
+                = new HashMap<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight
+                = new HashMap<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
         makeLightContainer(exclude, excludeLight);
         makeLightContainer(conflictFree, conflictFreeLight);
         /*
 		 * makeLightContainer kann nur die Elemente filtern, in denen alle teile
 		 * false liefern. Mischformen fallen durch
          */
-        for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
+        for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
                 .hasMoreElements();) {
             Object key = keys.nextElement();
             if (excludeLight.containsKey(key)) {
@@ -133,7 +136,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
         while (!this.stop && !this.graph.isIsomorphicTo(this.stopGraph) && this.correct) {
             boolean ruleApplied = false;
             /* zuerst sollen alle konfliktfreien Regeln probiert werden. */
-            for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
+            for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
                     .hasMoreElements()
                     && !ruleApplied;) {
                 Rule r = keys.nextElement();
@@ -156,7 +159,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                     }
                 }
                 m.dispose();
-            } // end for(Enumeration keys = conflictFreeLight.keys();
+            } // end for(Enumeration keys = Collections.enumeration(conflictFreeLight.keySet());
             /* Die konfliktfreien Regeln sind abgearbeitet */
  /* Die Excluderegeln muessen ueberprueft werden */
             if (!ruleApplied && !this.stop) {
@@ -168,7 +171,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
 				 * nach einem anderen Ansatz gesucht.
                  */
                 Match savedMatch = null;
-                for (Enumeration<Rule> keys = excludeLight.keys(); keys
+                for (Enumeration<Rule> keys = Collections.enumeration(excludeLight.keySet()); keys
                         .hasMoreElements()
                         && !ruleApplied && !this.stop;) {
                     Rule r = keys.nextElement();
@@ -208,7 +211,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                          */
                         BaseFactory.theFactory().destroyMatch(m);
                     }
-                } // end for(Enumeration keys = excludeLight.keys();
+                } // end for(Enumeration keys = Collections.enumeration(excludeLight.keySet());
                 /*
 				 * wenn keine Regel angewendet wurde, dann kann nur noch eine
 				 * kritische Regel angewendet werden.
@@ -300,20 +303,21 @@ public class ExcludeParser extends AbstractParser implements Runnable {
      * @param in The complete container.
      * @param out The new filtered container.
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void makeLightContainer(
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> in,
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> out) {
+            Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> in,
+            Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> out) {
         // Report.println("-------------------------------------------",Report.CONTAINER);
-        Enumeration<Rule> keys = in.keys();
+        Enumeration<Rule> keys = Collections.enumeration(in.keySet());
         while (keys.hasMoreElements()) {
             Rule key = keys.nextElement();
             if (key != null) {
                 // Report.println("erster key "+key,Report.CONTAINER);
-                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = in
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = in
                         .get(key);
                 // Report.println("erster Wert "+value,Report.CONTAINER);
                 boolean allTrue = true;
-                Enumeration<Rule> keys2 = value.keys();
+                Enumeration<Rule> keys2 = Collections.enumeration(value.keySet());
                 while (keys2.hasMoreElements() && allTrue) {
                     Rule key2 = keys2.nextElement();
                     if (key == key2) {
@@ -326,12 +330,12 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                     // allTrue = allTrue && first.booleanValue();
                     if (first.booleanValue()) {
                         if (out.containsKey(key)) {
-                            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = out
+                            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = out
                                     .get(key);
                             secondPart.put(key2, p);
                         } else {
-                            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart
-                                    = new Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>();
+                            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart
+                                    = new HashMap<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>();
                             secondPart.put(key2, p);
                             out.put(key, secondPart);
                         }

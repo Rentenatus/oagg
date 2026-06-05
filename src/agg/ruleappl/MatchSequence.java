@@ -559,7 +559,7 @@ public class MatchSequence {
 				while (tmpPreCR != null) {			
 					int i = this.rules.indexOf(tmpPreCR.getSecondSourceRule());					
 					if (i >= 0 && i < this.comatches.size()) {
-						final Enumeration<GraphObject> elems = this.comatches.get(i).elements();
+						final Enumeration<GraphObject> elems = Collections.enumeration(this.comatches.get(i).values());
 						while (elems.hasMoreElements()) {
 							final GraphObject obj = elems.nextElement();
 							if (obj.getContext() != null && !domList.contains(obj)) {
@@ -573,7 +573,7 @@ public class MatchSequence {
 				
 				int i = this.rules.indexOf(tmpCR.getFirstSourceRule());				
 				if (i >= 0 && i < this.comatches.size()) {
-					final Enumeration<GraphObject> elems = this.comatches.get(i).elements();
+					final Enumeration<GraphObject> elems = Collections.enumeration(this.comatches.get(i).values());
 					while (elems.hasMoreElements()) {
 						final GraphObject obj = elems.nextElement();
 						if (obj.getContext() != null && !domList.contains(obj)) {

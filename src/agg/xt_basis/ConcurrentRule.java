@@ -30,6 +30,7 @@ import agg.attribute.impl.VarTuple;
 import agg.ruleappl.ObjectFlow;
 import agg.util.Pair;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -201,11 +202,11 @@ public class ConcurrentRule {
 			final Rule r,
 			final List<ObjectFlow> list) {
 		
-		Hashtable<GraphObject, GraphObject> objmap = new Hashtable<GraphObject, GraphObject>();
+		Map<GraphObject, GraphObject> objmap = new HashMap<GraphObject, GraphObject>();
 		
 		for (int i=0; i<list.size(); i++) {
-			Hashtable<Object,Object> map = list.get(i).getMapping();
-			Enumeration<Object> objs1 = map.keys();
+			Map<Object,Object> map = list.get(i).getMapping();
+			Enumeration<Object> objs1 = Collections.enumeration(map.keySet());
 			while (objs1.hasMoreElements()) {
 				GraphObject obj1 = (GraphObject) objs1.nextElement();
 				GraphObject obj2 = (GraphObject) map.get(obj1); 
@@ -287,10 +288,10 @@ public class ConcurrentRule {
         return this.injective;
     }
 
-    public Hashtable<GraphObject, GraphObject> applyReflectedObjectFlowToMatchMap(
+    public Map<GraphObject, GraphObject> applyReflectedObjectFlowToMatchMap(
             final Graph graph) {
-        Hashtable<GraphObject, GraphObject> map = new Hashtable<GraphObject, GraphObject>();
-        Enumeration<GraphObject> keys = this.reflectedObjectFlowIO.keys();
+        Map<GraphObject, GraphObject> map = new HashMap<GraphObject, GraphObject>();
+        Enumeration<GraphObject> keys = Collections.enumeration(this.reflectedObjectFlowIO.keySet());
         while (keys.hasMoreElements()) {
             GraphObject input = keys.nextElement();
             GraphObject output = this.reflectedObjectFlowIO.get(input);
@@ -406,9 +407,9 @@ public class ConcurrentRule {
 	
 	
 	private GraphObject getKeyOfValue(
-			final Hashtable<GraphObject, GraphObject> map, 
+			final Map<GraphObject, GraphObject> map, 
 			final GraphObject val) {
-		final Enumeration<GraphObject> keys = map.keys();
+		final Enumeration<GraphObject> keys = Collections.enumeration(map.keySet());
 		while (keys.hasMoreElements()) {
 			GraphObject key = keys.nextElement();
 			if (map.get(key) == val)

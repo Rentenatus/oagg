@@ -27,11 +27,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseAdapter;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.SwingConstants;
@@ -104,9 +105,9 @@ public class GraphDesktop implements InternalFrameListener {
     protected ImageIcon internalFrameIcon;
     protected int nextX, nextY;
     protected EdGraGra layout;
-    protected Hashtable<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings;
-    protected Hashtable<Graph, EdGraph> internalLayoutGraphs;
-    protected Hashtable<Graph, JInternalFrame> internalGraphFrames;
+    protected Map<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings;
+    protected Map<Graph, EdGraph> internalLayoutGraphs;
+    protected Map<Graph, JInternalFrame> internalGraphFrames;
     protected Dimension internalFrameSize;
     protected ParserGUIOption option;
     protected Vector<ParserGUIListener> listener;
@@ -140,7 +141,7 @@ public class GraphDesktop implements InternalFrameListener {
     protected EdRule layoutRule1, layoutRule2;
     protected GraphPanel activeGraphPanel;
     protected GraphicsExportJPEG exportJPEG;
-    final protected Hashtable<EdGraph, VariableEqualityDialog> varEqualityDialogs;
+    final protected Map<EdGraph, VariableEqualityDialog> varEqualityDialogs;
     protected Point locationOnScreen;
 
     /**
@@ -154,10 +155,10 @@ public class GraphDesktop implements InternalFrameListener {
         setLayout(layout);
         this.parentFrame = parFrame;
         this.listener = new Vector<ParserGUIListener>();
-        this.overlappings = new Hashtable<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
-        this.internalGraphFrames = new Hashtable<Graph, JInternalFrame>();
-        this.internalLayoutGraphs = new Hashtable<Graph, EdGraph>();
-        this.varEqualityDialogs = new Hashtable<EdGraph, VariableEqualityDialog>();
+        this.overlappings = new HashMap<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
+        this.internalGraphFrames = new HashMap<Graph, JInternalFrame>();
+        this.internalLayoutGraphs = new HashMap<Graph, EdGraph>();
+        this.varEqualityDialogs = new HashMap<EdGraph, VariableEqualityDialog>();
         this.desktop = new JDesktopPane();
         this.myW = 500;
         this.myH = 500;
@@ -1024,7 +1025,7 @@ public class GraphDesktop implements InternalFrameListener {
      */
     public void removeAllGraphFrames() {
         removeVarEqualityDialogs();
-        this.overlappings = new Hashtable<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
+        this.overlappings = new HashMap<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
         for (int i = this.desktop.getAllFrames().length - 1; i >= 0; i--) {
             JInternalFrame f = this.desktop.getAllFrames()[i];
             if (f == this.cpaGraphFrame) {
@@ -1243,7 +1244,7 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
             if (!this.internalGraphFrames.isEmpty()) {
-                Enumeration<JInternalFrame> en = this.internalGraphFrames.elements();
+                Enumeration<JInternalFrame> en = Collections.enumeration(this.internalGraphFrames.values());
                 while (en.hasMoreElements()) {
                     JInternalFrame item = en.nextElement();
                     if (item != this.cpaGraphFrame) {
@@ -1773,7 +1774,7 @@ public class GraphDesktop implements InternalFrameListener {
             // get the critical graph 
             EdGraph g = this.activeGraphPanel.getGraph();
             // get attr variable names equality
-            Hashtable<String, String> varEqualName = VariableEqualityDialog.getVarNameEquality(g.getBasisGraph().getHelpInfoAboutVariableEquality());
+            Map<String, String> varEqualName = VariableEqualityDialog.getVarNameEquality(g.getBasisGraph().getHelpInfoAboutVariableEquality());
             // get critical pair
             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> cp = this.overlappings.get(g.getBasisGraph());
             boolean mapOK = true;
@@ -1873,7 +1874,7 @@ public class GraphDesktop implements InternalFrameListener {
             final OrdinaryMorphism bnac,
             final EdGraph g,
             final EdRule r,
-            final Hashtable<String, String> varEqualName,
+            final Map<String, String> varEqualName,
             boolean firstRule) {
         // make layout nac and add it to layout rule
         EdNAC nac = new EdNAC(bnac);
@@ -1918,7 +1919,7 @@ public class GraphDesktop implements InternalFrameListener {
         }
     }
 
-    private void renameEqualVar(Graph g, AttrVariableTuple attrCont, Hashtable<String, String> varEqualName, boolean firstRule) {
+    private void renameEqualVar(Graph g, AttrVariableTuple attrCont, Map<String, String> varEqualName, boolean firstRule) {
         Iterator<Node> nodes = g.getNodesCollection().iterator();
         while (nodes.hasNext()) {
             Node go = nodes.next();
@@ -1935,7 +1936,7 @@ public class GraphDesktop implements InternalFrameListener {
         }
     }
 
-    private void renameEqualVar(GraphObject go, AttrVariableTuple attrCont, Hashtable<String, String> varEqualName, boolean firstRule) {
+    private void renameEqualVar(GraphObject go, AttrVariableTuple attrCont, Map<String, String> varEqualName, boolean firstRule) {
         AttrTuple attr = go.getAttribute();
         for (int i = 0; i < attr.getNumberOfEntries(); i++) {
             ValueMember m = (ValueMember) attr.getMemberAt(i);
@@ -1946,7 +1947,7 @@ public class GraphDesktop implements InternalFrameListener {
                         String vR = vnameG.replace("r1_", "");
                         m.setExprAsText(vR);
                     } else {
-                        Enumeration<String> names1 = varEqualName.keys();
+                        Enumeration<String> names1 = Collections.enumeration(varEqualName.keySet());
                         while (names1.hasMoreElements()) {
                             String n1 = names1.nextElement().replace("[", "");
                             if (vnameG.contains(n1)) {

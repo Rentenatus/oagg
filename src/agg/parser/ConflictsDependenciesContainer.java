@@ -15,9 +15,11 @@ package agg.parser;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.List;
 import java.util.Vector;
 import agg.xt_basis.BaseFactory;
@@ -343,8 +345,8 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     + "Cannot write critical pairs! Grammar is null.");
             return;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeContainer = null;
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeContainer = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeContainer = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeContainer = null;
         Entry entry = null;
         boolean optionsWritten = false;
         if (pc1 != null) {
@@ -356,13 +358,13 @@ public class ConflictsDependenciesContainer implements XMLObject {
             h.addAttr("kind", "exclude");
             writeRuleSet(h, "RuleSet", pc1.getRules()); // columns of the table
             writeRuleSet(h, "RuleSet2", pc1.getRules2()); // rows of the table
-            for (Enumeration<Rule> keys = excludeContainer.keys(); keys
+            for (Enumeration<Rule> keys = Collections.enumeration(excludeContainer.keySet()); keys
                     .hasMoreElements();) {
                 Rule r1 = keys.nextElement();
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
-                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
-                for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
+                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
                     entry = ((ExcludePairContainer) pc1).getEntry(r1, r2);
                     h.openSubTag("Rule");
@@ -418,14 +420,14 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     .getConflictFreeContainer();
             if (conflictFreeContainer != null) {
                 h.openSubTag("conflictFreeContainer");
-                for (Enumeration<Rule> keys = excludeContainer.keys(); keys
+                for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeContainer.keySet()); keys
                         .hasMoreElements();) {
                     Rule r1 = keys.nextElement();
                     h.openSubTag("Rule");
                     h.addObject("R1", r1, false);
-                    Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
+                    Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
                             .get(r1);
-                    for (Enumeration<Rule> k2 = secondPart.keys(); k2
+                    for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2
                             .hasMoreElements();) {
                         Rule r2 = k2.nextElement();
                         entry = ((ExcludePairContainer) pc1).getEntry(r1, r2);
@@ -461,13 +463,13 @@ public class ConflictsDependenciesContainer implements XMLObject {
             h.addAttr("kind", kind);
             writeRuleSet(h, "RuleSet", pc2.getRules()); // columns of the table
             writeRuleSet(h, "RuleSet2", pc2.getRules2()); // rows of the table
-            for (Enumeration<Rule> keys = excludeContainer.keys(); keys
+            for (Enumeration<Rule> keys = Collections.enumeration(excludeContainer.keySet()); keys
                     .hasMoreElements();) {
                 Rule r1 = keys.nextElement();
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
-                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
-                for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
+                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
                     entry = ((ExcludePairContainer) pc2).getEntry(r1, r2);
                     h.openSubTag("Rule");
@@ -522,14 +524,14 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     .getConflictFreeContainer();
             if (conflictFreeContainer != null) {
                 h.openSubTag("dependencyFreeContainer");
-                for (Enumeration<Rule> keys = excludeContainer.keys(); keys
+                for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeContainer.keySet()); keys
                         .hasMoreElements();) {
                     Rule r1 = keys.nextElement();
                     h.openSubTag("Rule");
                     h.addObject("R1", r1, false);
-                    Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
+                    Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
                             .get(r1);
-                    for (Enumeration<Rule> k2 = secondPart.keys(); k2
+                    for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2
                             .hasMoreElements();) {
                         Rule r2 = k2.nextElement();
                         entry = ((ExcludePairContainer) pc2).getEntry(r1, r2);
@@ -1476,7 +1478,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
             OrdinaryMorphism morphL2PACiso = null;
             OrdinaryMorphism embedPac = null;
             OrdinaryMorphism pac = null;
-            final Hashtable<GraphObject, GraphObject> orig2copy = new Hashtable<GraphObject, GraphObject>();
+            final Map<GraphObject, GraphObject> orig2copy = new HashMap<GraphObject, GraphObject>();
             String name = h.readAttr("name");
             String source = h.readAttr("source");
             if (source.equals("LHS")) {
@@ -1717,7 +1719,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
 		Graph extLeft = isoLeft.getTarget();
 		OrdinaryMorphism isoNAC = BaseFactory.theFactory().createMorphism(
 				nac.getTarget(), extLeft);
-		Hashtable<Node, Node> tmp = new Hashtable<Node, Node>(5);
+		Map<Node, Node> tmp = new HashMap<Node, Node>(5);
 		Iterator<?> e = nac.getTarget().getNodesSet().iterator();
 		while (e.hasNext()) {
 			GraphObject o = (GraphObject) e.next();
@@ -1783,7 +1785,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
 		Graph extRight = isoRight.getTarget();
 		OrdinaryMorphism isoNAC = BaseFactory.theFactory().createMorphism(
 				nac.getTarget(), extRight);
-		Hashtable<Node, Node> tmp = new Hashtable<Node, Node>(5);
+		Map<Node, Node> tmp = new HashMap<Node, Node>(5);
 		Iterator<?> e = nac.getTarget().getNodesSet().iterator();
 		while (e.hasNext()) {
 			GraphObject o = (GraphObject) e.next();

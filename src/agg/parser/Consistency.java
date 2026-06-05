@@ -13,9 +13,11 @@
  */
 package agg.parser;
 
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
-import java.util.Hashtable;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.Rule;
@@ -54,13 +56,13 @@ public class Consistency implements Runnable {
     public void check() {
         // System.out.println("Consistency.check()");
         try {
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
+            Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
                     .getContainer(CriticalPair.EXCLUDE);
             GraGra gra = this.excludeContainer.getGrammar();
-            for (Enumeration<Rule> keys = excludeCont.keys(); keys.hasMoreElements();) {
+            for (Enumeration<Rule> keys = Collections.enumeration(excludeCont.keySet()); keys.hasMoreElements();) {
                 Rule r1 = keys.nextElement();
-                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
-                for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
+                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
                     Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
                     Boolean b = pair.first;
@@ -101,14 +103,14 @@ public class Consistency implements Runnable {
     public void checkRulePair() {
         try {
             // System.out.println("Consistency.checkRulePair()");
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
+            Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
                     .getContainer(CriticalPair.EXCLUDE);
             GraGra gra = this.excludeContainer.getGrammar();
-            for (Enumeration<Rule> keys = excludeCont.keys(); keys.hasMoreElements();) {
+            for (Enumeration<Rule> keys = Collections.enumeration(excludeCont.keySet()); keys.hasMoreElements();) {
                 Rule r1 = keys.nextElement();
                 if (r1 == this.rule1) {
-                    Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
-                    for (Enumeration<Rule> k2 = secondPart.keys(); k2
+                    Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
+                    for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2
                             .hasMoreElements();) {
                         Rule r2 = k2.nextElement();
                         if (r2 == this.rule2) {

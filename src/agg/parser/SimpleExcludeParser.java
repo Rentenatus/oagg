@@ -22,9 +22,11 @@ import agg.xt_basis.Match;
 import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 //****************************************************************************+
 
@@ -66,7 +68,7 @@ public class SimpleExcludeParser extends ExcludeParser {
         this.correct = true;
         fireParserEvent(new ParserMessageEvent(this,
                 "Starting simple exclude parser ..."));
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
         if (this.stop) {
             return false;
         }
@@ -78,7 +80,7 @@ public class SimpleExcludeParser extends ExcludeParser {
                     + iae.getMessage()));
             return false;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
         if (this.stop) {
             return false;
         }
@@ -92,10 +94,10 @@ public class SimpleExcludeParser extends ExcludeParser {
         if (this.stop) {
             return false;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = null;
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
-        excludeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
-        conflictFreeLight = new Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
+        excludeLight = new HashMap<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
+        conflictFreeLight = new HashMap<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>();
         if (this.stop) {
             return false;
         }
@@ -107,7 +109,7 @@ public class SimpleExcludeParser extends ExcludeParser {
         if (this.stop) {
             return false;
         }
-        for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
+        for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
                 .hasMoreElements();) {
             Object key = keys.nextElement();
             if (excludeLight.containsKey(key)) {
@@ -127,7 +129,7 @@ public class SimpleExcludeParser extends ExcludeParser {
         while (!this.stop && !this.graph.isIsomorphicTo(this.stopGraph) && this.correct) {
             ruleApplied = false;
             /* zuerst sollen alle konfliktfreien Regeln probiert werden. */
-            for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
+            for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
                     .hasMoreElements()
                     && !ruleApplied;) {
                 Rule r = keys.nextElement();
@@ -159,7 +161,7 @@ public class SimpleExcludeParser extends ExcludeParser {
                 /*
 				 * Zuerst wird ein beliebiger Ansatz einer Regel gesucht.
                  */
-                for (Enumeration<Rule> keys = excludeLight.keys(); keys
+                for (Enumeration<Rule> keys = Collections.enumeration(excludeLight.keySet()); keys
                         .hasMoreElements()
                         && !ruleApplied;) {
                     Rule r = keys.nextElement();
