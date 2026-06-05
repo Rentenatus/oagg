@@ -68,8 +68,8 @@ public class ConflictsDependenciesGraph implements ActionListener,
     ExcludePairContainer conflictCont;
     ExcludePairContainer dependCont;
     GraGra grammar;
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
+    Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
+    Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
     Graph cpaGraph;
     EdGraph cpaLayout;
     boolean conflictAction = true;

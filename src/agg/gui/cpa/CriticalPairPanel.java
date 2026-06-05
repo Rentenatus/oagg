@@ -54,6 +54,8 @@ import agg.parser.ParserEventListener;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.util.Pair;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 /**
  * Shows a table with a row and a column for each rule, so that each element
@@ -112,10 +114,10 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      * the PairContainer, which is displayed here
      */
     private ExcludePairContainer container;
-    private Hashtable<JButton, CriticalPairData> b2cpData = new Hashtable<JButton, CriticalPairData>();
+    private Map<JButton, CriticalPairData> b2cpData = new Hashtable<JButton, CriticalPairData>();
     private Map<Rule, Map<Rule, JButton>> buttons = new HashMap<Rule, Map<Rule, JButton>>();
-    private Hashtable<JButton, Rule> firstRules = new Hashtable<JButton, Rule>();
-    private Hashtable<JButton, Rule> secondRules = new Hashtable<JButton, Rule>();
+    private Map<JButton, Rule> firstRules = new Hashtable<JButton, Rule>();
+    private Map<JButton, Rule> secondRules = new Hashtable<JButton, Rule>();
     /**
      * the listener for selections in the array
      */
@@ -630,7 +632,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
             Rule r1 = keys.nextElement();
             if (r1 == rule1) {
                 // System.out.println("ExcludePC:: reduce: "+r1.getName());
-                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> secondPart = this.container
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.container
                         .getExcludeContainer().get(r1);
                 for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                     Rule r2 = k2.nextElement();
@@ -717,7 +719,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      */
     void addButton(Rule r1, Rule r2, JButton button) {
         // create buttons-Hashtable
-        Hashtable<Rule, JButton> hash1 = this.buttons.get(r1);
+        Map<Rule, JButton> hash1 = this.buttons.get(r1);
         if (hash1 == null) {
             hash1 = new Hashtable<Rule, JButton>();
             this.buttons.put(r1, hash1);
@@ -732,7 +734,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      * returns the button for the given rule pair (r1,r2)
      */
     JButton getButton(Rule r1, Rule r2) {
-        Hashtable<Rule, JButton> hash1 = this.buttons.get(r1);
+        Map<Rule, JButton> hash1 = this.buttons.get(r1);
         if (hash1 == null) {
             return null;
         }
