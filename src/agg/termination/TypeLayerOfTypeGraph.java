@@ -74,8 +74,7 @@ public class TypeLayerOfTypeGraph {
     public Integer getStartLayer() {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<GraphObject> keys = Collections.enumeration(getTypeLayer().keySet()); keys.hasMoreElements();) {
-            GraphObject key = keys.nextElement();
+        for (GraphObject key : getTypeLayer().keySet()) {
             Integer layer = getTypeLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -92,8 +91,7 @@ public class TypeLayerOfTypeGraph {
      */
     public Map<Integer, HashSet<Object>> invertLayer() {
         Map<Integer, HashSet<Object>> inverted = new HashMap<Integer, HashSet<Object>>();
-        for (Enumeration<GraphObject> keys = Collections.enumeration(this.typeLayer.keySet()); keys.hasMoreElements();) {
-            GraphObject key = keys.nextElement();
+        for (GraphObject key : this.typeLayer.keySet()) {
             // System.out.println("TypeLayer:: "+key);
             Integer value = this.typeLayer.get(key);
             // System.out.println("TypeLayer:: "+value);
@@ -116,8 +114,7 @@ public class TypeLayerOfTypeGraph {
      */
     public String toString() {
         String resultString = "Type:\t\tLayer:\n";
-        for (Enumeration<GraphObject> keys = Collections.enumeration(this.typeLayer.keySet()); keys.hasMoreElements();) {
-            GraphObject key = keys.nextElement();
+        for (GraphObject key : this.typeLayer.keySet()) {
             Integer value = this.typeLayer.get(key);
             resultString += key.toString() + "\t\t" + value.toString()
                     + "\n";

@@ -342,8 +342,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 	}
      */
     public void initRuleLayer(Map<?, Integer> init) {
-        for (Enumeration<?> keys = Collections.enumeration(init.keySet()); keys.hasMoreElements();) {
-            Rule rule = (Rule) keys.nextElement();
+        for (Object key : init.keySet()) {
+            Rule rule = (Rule) key;
             if (rule.isEnabled()) {
                 Integer rl = init.get(rule);
                 this.ruleLayer.put(rule, Integer.valueOf(rl.intValue()));
@@ -370,8 +370,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     }
 
     private void initCreationLayer(int init) {
-        for (Enumeration<Type> keys = Collections.enumeration(this.creationLayer.keySet()); keys.hasMoreElements();) {
-            Type t = keys.nextElement();
+        for (Type t : this.creationLayer.keySet()) {
             this.creationLayer.put(t, Integer.valueOf(init));
         }
     }
@@ -395,8 +394,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     }
 
     private void initDeletionLayer(int init) {
-        for (Enumeration<Type> keys = Collections.enumeration(this.deletionLayer.keySet()); keys.hasMoreElements();) {
-            Type t = keys.nextElement();
+        for (Type t : this.deletionLayer.keySet()) {
             this.deletionLayer.put(t, Integer.valueOf(init));
         }
     }
@@ -406,8 +404,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         this.invertedRuleLayer = layer.invertLayer();
         this.startRuleLayer = layer.getStartLayer();
         this.orderedRuleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(this.invertedRuleLayer.keySet()); en.hasMoreElements();) {
-            this.orderedRuleLayerSet.add(en.nextElement());
+        for (Integer key : this.invertedRuleLayer.keySet()) {
+            this.orderedRuleLayerSet.add(key);
         }
     }
 
@@ -416,8 +414,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         this.invertedRuleLayer = layer.invertLayer();
         this.startRuleLayer = layer.getStartLayer();
         this.orderedRuleLayerSet.clear();
-        for (Enumeration<Integer> en = Collections.enumeration(this.invertedRuleLayer.keySet()); en.hasMoreElements();) {
-            this.orderedRuleLayerSet.add(en.nextElement());
+        for (Integer key : this.invertedRuleLayer.keySet()) {
+            this.orderedRuleLayerSet.add(key);
         }
     }
 
@@ -427,9 +425,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 //		startLayer = layer.getStartLayer();
         this.invertedTypeDeletionLayer = layer.invertLayer();
         this.orderedTypeDeletionLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(this.invertedTypeDeletionLayer.keySet()); en
-                .hasMoreElements();) {
-            this.orderedTypeDeletionLayerSet.add(en.nextElement());
+        for (Integer key : this.invertedTypeDeletionLayer.keySet()) {
+            this.orderedTypeDeletionLayerSet.add(key);
         }
     }
 
@@ -439,9 +436,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 //		startLayer = layer.getStartLayer();
         this.invertedTypeCreationLayer = layer.invertLayer();
         this.orderedTypeCreationLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(this.invertedTypeCreationLayer.keySet());
-                en.hasMoreElements();) {
-            this.orderedTypeCreationLayerSet.add(en.nextElement());
+        for (Integer key : this.invertedTypeCreationLayer.keySet()) {
+            this.orderedTypeCreationLayerSet.add(key);
         }
     }
 
@@ -521,9 +517,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     private void generateCreationLayer() {
         for (Iterator<Rule> en = this.nondeletionRule.iterator(); en.hasNext();) {
             Rule r = en.next();
-            for (Enumeration<Type> types = Collections.enumeration(this.creationLayer.keySet()); types
-                    .hasMoreElements();) {
-                Type t = types.nextElement();
+            for (Type t : this.creationLayer.keySet()) {
                 setCreationLayer(r, t);
             }
         }
@@ -601,9 +595,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 	private void passCreationLayer() {
 		for (Enumeration<Rule> en = creationRule.elements(); en.hasMoreElements();) {
 			Rule r = en.nextElement();
-			for (Enumeration<Type> types = Collections.enumeration(creationLayer.keySet()); types
-					.hasMoreElements();) {
-				Type t = types.nextElement();
+			for (Type t : creationLayer.keySet()) {
 				// System.out.print("creation type: <"+t.getStringRepr()+">");
 				Integer rl = ruleLayer.get(r);
 				Integer cl = creationLayer.get(t);
@@ -631,9 +623,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         }
         for (Iterator<Rule> en = this.deletionRule.iterator(); en.hasNext();) {
             Rule r = en.next();
-            for (Enumeration<Type> types = Collections.enumeration(this.deletionLayer.keySet()); types
-                    .hasMoreElements();) {
-                Type t = types.nextElement();
+            for (Type t : this.deletionLayer.keySet()) {
                 setDeletionLayer(r, t);
             }
         }
@@ -890,9 +880,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
                                 .getTarget().getType()));
                     }
                     Pair<Type, Object> t1 = null;
-                    Enumeration<Pair<Type, Object>> e = Collections.enumeration(deletedType.keySet());
-                    while (e.hasMoreElements()) {
-                        t1 = e.nextElement();
+                    for (Pair<Type, Object> t3 : deletedType.keySet()) {
+                        t1 = t3;
                         if (t.isRelatedTo(t1.first)) {
                             if (t1.second == null && delt.second == null) {
                                 containsKey = true;
@@ -923,8 +912,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
             }
         }
         List<Type> ltypes = new Vector<>();
-        for (Enumeration<Pair<Type, Object>> en = Collections.enumeration(deletedType.keySet()); en.hasMoreElements();) {
-            Pair<Type, Object> key = en.nextElement();
+        for (Pair<Type, Object> key : deletedType.keySet()) {
             Type t = key.first;
             List<Rule> v = deletedType.get(key);
             if (v.size() == rules.size()) {
@@ -1001,10 +989,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
                     break;
                 }
                 /* 2. 0<= cl(l)<=dl(l)<=n */
-                for (Enumeration<Object> en = Collections.enumeration(getDeletionLayer().keySet()); en
-                        .hasMoreElements()
-                        && result;) {
-                    Type key = (Type) en.nextElement();
+                for (Object obj : getDeletionLayer().keySet()) {
+                    Type key = (Type) obj;
                     Integer dl = getDeletionLayer().get(key);
                     Integer cl = getCreationLayer().get(key);
                     if (!(0 <= cl.intValue())
@@ -1387,9 +1373,11 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         int n = 0;
         String str0 = "*** (Type) Deletion Layer Condition ( Deletion_1 ) ***";
         String str = "";
-        Enumeration<Integer> keys = Collections.enumeration(this.errorMsgDeletion1.keySet());
-        while (keys.hasMoreElements() && n <= maxErrors) {
-            final List<String> list = this.errorMsgDeletion1.get(keys.nextElement());
+        for (Integer key : this.errorMsgDeletion1.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgDeletion1.get(key);
             for (int i = 0; i < list.size(); i++) {
                 str = str.concat("\n");
                 str = str.concat(list.get(i));
@@ -1410,9 +1398,11 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         int n = 0;
         String str0 = "*** Deletion Layer Condition ( Deletion_2 ) ***";
         String str = "";
-        Enumeration<Integer> keys = Collections.enumeration(this.errorMsgDeletion2.keySet());
-        while (keys.hasMoreElements() && n <= maxErrors) {
-            final List<String> list = this.errorMsgDeletion2.get(keys.nextElement());
+        for (Integer key : this.errorMsgDeletion2.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgDeletion2.get(key);
             for (int i = 0; i < list.size(); i++) {
                 str = str.concat("\n");
                 str = str.concat(list.get(i));
@@ -1433,9 +1423,11 @@ public class TerminationLGTS implements TerminationLGTSInterface {
         int n = 0;
         String str0 = "*** Nondeletion Layer Condition ( Nondeletion ) ***";
         String str = "";
-        Enumeration<Integer> keys = Collections.enumeration(this.errorMsgNonDeletion.keySet());
-        while (keys.hasMoreElements() && n <= maxErrors) {
-            final List<String> list = this.errorMsgNonDeletion.get(keys.nextElement());
+        for (Integer key : this.errorMsgNonDeletion.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgNonDeletion.get(key);
             for (int i = 0; i < list.size(); i++) {
                 str = str.concat("\n");
                 str = str.concat(list.get(i));
@@ -1562,8 +1554,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     public Integer getStartLayer() {
         int startL = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.ruleLayer.keySet()) {
             Integer layer = this.ruleLayer.get(key);
             if (layer.intValue() < startL) {
                 startL = layer.intValue();
@@ -1583,8 +1574,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     public Map<Integer, HashSet<Rule>> invertLayer(
             Map<Rule, Integer> layer) {
         Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
-        for (Enumeration<Rule> keys = Collections.enumeration(layer.keySet()); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : layer.keySet()) {
             Integer value = layer.get(key);
             HashSet<Rule> invertedValue = inverted.get(value);
             if (invertedValue == null) {
@@ -1599,8 +1589,7 @@ public class TerminationLGTS implements TerminationLGTSInterface {
     }
 
     public void saveRuleLayer() {
-        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
-            Rule r = keys.nextElement();
+        for (Rule r : this.ruleLayer.keySet()) {
             Integer layer = this.ruleLayer.get(r);
             if (this.layered) {
                 r.setLayer(layer.intValue());
@@ -1632,20 +1621,17 @@ public class TerminationLGTS implements TerminationLGTSInterface {
 
     public void showLayer() {
         System.out.println(" RULE LAYER");
-        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
-            Rule r = keys.nextElement();
+        for (Rule r : this.ruleLayer.keySet()) {
             Integer layer = this.ruleLayer.get(r);
             System.out.println(layer.intValue() + " " + r.getName());
         }
         System.out.println(" CREATION LAYER");
-        for (Enumeration<Type> keys = Collections.enumeration(this.creationLayer.keySet()); keys.hasMoreElements();) {
-            Type t = keys.nextElement();
+        for (Type t : this.creationLayer.keySet()) {
             Integer layer = this.creationLayer.get(t);
             System.out.println(layer.intValue() + " " + t.getStringRepr());
         }
         System.out.println(" DELETION LAYER");
-        for (Enumeration<Type> keys = Collections.enumeration(this.deletionLayer.keySet()); keys.hasMoreElements();) {
-            Type t = keys.nextElement();
+        for (Type t : this.deletionLayer.keySet()) {
             Integer layer = this.deletionLayer.get(t);
             System.out.println(layer.intValue() + " " + t.getStringRepr());
         }
