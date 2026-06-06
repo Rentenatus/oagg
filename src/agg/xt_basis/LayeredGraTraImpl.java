@@ -237,9 +237,8 @@ public class LayeredGraTraImpl extends GraTra {
         this.startLayer = this.layer.getStartLayer();
         this.invertedRuleLayer = this.layer.invertLayer();
         this.ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
-                .hasMoreElements();) {
-            this.ruleLayer.add(en.nextElement());
+        for (Integer key : invertedRuleLayer.keySet()) {
+            this.ruleLayer.add(key);
         }
         this.startTransform = true;
         transformLayers(true);

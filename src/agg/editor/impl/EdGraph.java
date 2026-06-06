@@ -872,9 +872,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                 }
                 return;
             }
-            Enumeration<?> keys = Collections.enumeration(state.keySet());
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            for (Object key : state.keySet()) {
                 if (key instanceof EdGraph) {
                     if (((EdGraph) key) != this) {
                         try {

@@ -357,9 +357,7 @@ public class ApplRuleSequence implements XMLObject {
                 h.openSubTag("Rule");
                 h.addObject("id", rule, false);
                 if (ruleRes != null) {
-                    Enumeration<String> keys = Collections.enumeration(ruleRes.keySet());
-                    while (keys.hasMoreElements()) {
-                        String key = keys.nextElement();
+                    for (String key : ruleRes.keySet()) {
                         if (key.indexOf(String.valueOf(j).concat(ruleName)) == 0) {
                             Pair<Boolean, List<String>> resultpair = ruleRes.get(key);
                             if (resultpair != null) {

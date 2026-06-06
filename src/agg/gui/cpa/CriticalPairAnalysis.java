@@ -457,9 +457,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             }
         }
         // separated frames
-        Enumeration<JFrame> en = Collections.enumeration(this.separatedFrames.keySet());
-        while (en.hasMoreElements()) {
-            Object key = en.nextElement();
+        for (Object key : this.separatedFrames.keySet()) {
             CriticalPairAnalysisSeparated cpas = this.separatedFrames.get(key);
             ExcludePairContainer excludePC = cpas
                     .getPairContainer(CriticalPairOption.EXCLUDEONLY);
@@ -705,9 +703,7 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
         if (this.selectedGraGra != null) {
             this.selectedGraGra.setEditable(true);
         }
-        Enumeration<EdGraGra> keys = Collections.enumeration(this.gragraChanged.keySet());
-        while (keys.hasMoreElements()) {
-            EdGraGra gra = keys.nextElement();
+        for (EdGraGra gra : this.gragraChanged.keySet()) {
             if (gra.getBasisGraGra() != null) {
                 gra.setEditable(true);
                 if (this.gragraChanged.get(gra) != null) {
@@ -2196,9 +2192,8 @@ public class CriticalPairAnalysis implements TreeViewEventListener,
             hostg.update();
             return;
         }
-        Enumeration<?> en1 = Collections.enumeration(map.keySet());
-        while (en1.hasMoreElements()) {
-            GraphObject o = (GraphObject) en1.nextElement();
+        for (Object obj : map.keySet()) {
+            GraphObject o = (GraphObject) obj;
             GraphObject i = map.get(o);
             i.setCritical(true);
             EdNode no = overlapg.findNode(o);

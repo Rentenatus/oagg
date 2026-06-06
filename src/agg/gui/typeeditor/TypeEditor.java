@@ -123,9 +123,7 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         }
         // System.out.println("TypeEditor.undoManagerAddDeleteEdit...");
         final Vector<EdGraph> vec = new Vector<EdGraph>();
-        Enumeration<EdGraph> keys = Collections.enumeration(graph2typeObservers.keySet());
-        while (keys.hasMoreElements()) {
-            EdGraph g = keys.nextElement();
+        for (EdGraph g : graph2typeObservers.keySet()) {
             Vector<EdGraphObject> gos = graph2typeObservers.get(g);
             if (gos != null && !gos.isEmpty()) {
                 g.addCommonDeletedToUndo(gos);

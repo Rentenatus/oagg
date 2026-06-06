@@ -246,18 +246,14 @@ public class ALR_InheritCSP extends CSP {
     }
 
     public void enableAllVariables() {
-        Enumeration<GraphObject> keys = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject obj = keys.nextElement();
+        for (GraphObject obj : this.itsObjVarMap.keySet()) {
             Variable var = this.itsObjVarMap.get(obj);
             var.setEnabled(true);
         }
     }
 
     public boolean isDomainOfTypeEmpty(final Type t) {
-        Enumeration<GraphObject> keys = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject go = keys.nextElement();
+        for (GraphObject go : this.itsObjVarMap.keySet()) {
             if (go.isArc()) {
                 continue;
             }
@@ -272,9 +268,7 @@ public class ALR_InheritCSP extends CSP {
 
     public boolean isDomainOfTypeEmpty(final Type t, final Type src,
             final Type tar) {
-        Enumeration<GraphObject> keys = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject go = keys.nextElement();
+        for (GraphObject go : this.itsObjVarMap.keySet()) {
             if (go.isNode()) {
                 continue;
             }
@@ -391,9 +385,7 @@ public class ALR_InheritCSP extends CSP {
     }
 
     protected void resetTypeMap(final Graph g) {
-        Enumeration<GraphObject> lhsObjs = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (lhsObjs.hasMoreElements()) {
-            GraphObject lhsobj = lhsObjs.nextElement();
+        for (GraphObject lhsobj : this.itsObjVarMap.keySet()) {
             Variable var = this.itsObjVarMap.get(lhsobj);
 
             String key = lhsobj.convertToKey();
@@ -444,9 +436,7 @@ public class ALR_InheritCSP extends CSP {
     }
 
     protected void resetTypeMap(final Map<String, HashSet<GraphObject>> aTypeMap) {
-        Enumeration<GraphObject> lhsObjs = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (lhsObjs.hasMoreElements()) {
-            GraphObject obj = lhsObjs.nextElement();
+        for (GraphObject obj : this.itsObjVarMap.keySet()) {
             Variable var = this.itsObjVarMap.get(obj);
             String key = obj.convertToKey();
             HashSet<GraphObject> list = aTypeMap.get(key);
@@ -469,9 +459,7 @@ public class ALR_InheritCSP extends CSP {
     }
 
     protected void resetSolverVariables() {
-        Enumeration<GraphObject> lhsObjs = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (lhsObjs.hasMoreElements()) {
-            GraphObject obj = lhsObjs.nextElement();
+        for (GraphObject obj : this.itsObjVarMap.keySet()) {
             Variable var = this.itsObjVarMap.get(obj);
             var.setInstance(null);
         }
@@ -479,9 +467,8 @@ public class ALR_InheritCSP extends CSP {
 
     protected void resetVariableDomain(boolean resetByNull) {
         if (resetByNull) {
-            final Enumeration<Variable> cspVars = Collections.enumeration(this.itsObjVarMap.values());
-            while (cspVars.hasMoreElements()) {
-                cspVars.nextElement().setInstance(null);
+            for (Variable var : this.itsObjVarMap.values()) {
+                var.setInstance(null);
             }
         }
 
@@ -501,9 +488,7 @@ public class ALR_InheritCSP extends CSP {
     }
 
     protected void resetVariableDomain(final GraphObject go) {
-        Enumeration<GraphObject> keys = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject obj = keys.nextElement();
+        for (GraphObject obj : this.itsObjVarMap.keySet()) {
             if (obj == go) {
                 Variable var = this.itsObjVarMap.get(obj);
                 // String key = convertToKey(obj);

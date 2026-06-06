@@ -1244,9 +1244,7 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
             if (!this.internalGraphFrames.isEmpty()) {
-                Enumeration<JInternalFrame> en = Collections.enumeration(this.internalGraphFrames.values());
-                while (en.hasMoreElements()) {
-                    JInternalFrame item = en.nextElement();
+                for (JInternalFrame item : this.internalGraphFrames.values()) {
                     if (item != this.cpaGraphFrame) {
                         try {
                             item.setIcon(true);
@@ -1947,9 +1945,8 @@ public class GraphDesktop implements InternalFrameListener {
                         String vR = vnameG.replace("r1_", "");
                         m.setExprAsText(vR);
                     } else {
-                        Enumeration<String> names1 = Collections.enumeration(varEqualName.keySet());
-                        while (names1.hasMoreElements()) {
-                            String n1 = names1.nextElement().replace("[", "");
+                        for (String n1 : varEqualName.keySet()) {
+                            n1 = n1.replace("[", "");
                             if (vnameG.contains(n1)) {
                                 String vR = n1.replace("r1_", "");
                                 m.setExprAsText(vR);

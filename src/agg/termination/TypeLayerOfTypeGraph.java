@@ -1,5 +1,4 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
@@ -51,8 +50,7 @@ public class TypeLayerOfTypeGraph {
 
     private void initTypeLayer() {
         this.typeLayer = new HashMap<GraphObject, Integer>();
-        for (Enumeration<GraphObject> keys = Collections.enumeration(this.types.keySet()); keys.hasMoreElements();) {
-            GraphObject t = keys.nextElement();
+        for (GraphObject t : this.types.keySet()) { 
             this.typeLayer.put(t, this.types.get(t));
             // System.out.println("type , layer: "+t+" ," +((Integer)
             // this.typeLayer.get(t)).toString());

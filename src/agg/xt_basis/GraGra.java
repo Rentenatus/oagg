@@ -1554,9 +1554,8 @@ public class GraGra implements Disposable, XMLObject {
         Integer startPriority = priority.getStartPriority();
         Map<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
         SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(invertedRulePriority.keySet()); en
-                .hasMoreElements();) {
-            rulePrioritySet.add(en.nextElement());
+        for (Integer key : invertedRulePriority.keySet()) {
+            rulePrioritySet.add(key);
         }
         int i = 0;
         // empty vector of rules
@@ -4187,9 +4186,7 @@ public class GraGra implements Disposable, XMLObject {
                 }
                 // write object flow : rule1.RHS -> rule2.LHS			
                 if (seq.isObjFlowDefined()) {
-                    Enumeration<String> keys = Collections.enumeration(seq.getObjectFlow().keySet());
-                    while (keys.hasMoreElements()) {
-                        String key = keys.nextElement();
+                    for (String key : seq.getObjectFlow().keySet()) {
                         ObjectFlow objFlow = seq.getObjectFlow().get(key);
                         h.openSubTag("ObjectFlow");
                         h.addAttr("enabled", String.valueOf(seq.isObjFlowEnabled()));
@@ -4214,9 +4211,8 @@ public class GraGra implements Disposable, XMLObject {
                                     + "."
                                     + ((Rule) objFlow.getSourceOfInput()).getName());
                         }
-                        Enumeration<Object> elems = Collections.enumeration(objFlow.getMapping().keySet());
-                        while (elems.hasMoreElements()) {
-                            GraphObject o = (GraphObject) elems.nextElement();
+                        for (Object obj : objFlow.getMapping().keySet()) {
+                            GraphObject o = (GraphObject) obj;
                             h.openSubTag("Mapping");
                             h.addObject("orig", o, false);
                             h.addObject("image", (GraphObject) objFlow.getMapping().get(o), false);

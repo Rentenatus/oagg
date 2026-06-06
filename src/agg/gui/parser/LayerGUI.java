@@ -101,9 +101,7 @@ public class LayerGUI extends JDialog implements ActionListener {
                 addColumn(columnNames[i]);
             }
             this.table = table;
-            Enumeration<Rule> keys = Collections.enumeration(table.keySet());
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            for (Rule key : table.keySet()) {
                 Object value = table.get(key);
                 Vector<Object> tmpVector = new Vector<Object>();
                 tmpVector.addElement(key);
@@ -123,9 +121,8 @@ public class LayerGUI extends JDialog implements ActionListener {
             Integer startLayer = layer.getStartLayer();
             Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
             SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
-                    .hasMoreElements();) {
-                ruleLayerSet.add(en.nextElement());
+            for (Integer key : invertedRuleLayer.keySet()) {
+                ruleLayerSet.add(key);
             }
             int i = 0;
             Integer currentLayer = startLayer;

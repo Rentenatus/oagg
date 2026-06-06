@@ -96,9 +96,7 @@ public class RulePriority {
     public Integer getStartPriority() {
         int startPriority = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Rule> keys = Collections.enumeration(this.rulePriority.keySet()); keys
-                .hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : this.rulePriority.keySet()) {
             Integer p = this.rulePriority.get(key);
             if (p.intValue() < startPriority) {
                 startPriority = p.intValue();
@@ -116,8 +114,7 @@ public class RulePriority {
      */
     public Map<Integer, HashSet<Rule>> invertPriority() {
         Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
-        for (Enumeration<Rule> keys = Collections.enumeration(this.rulePriority.keySet()); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : this.rulePriority.keySet()) {
             Integer value = this.rulePriority.get(key);
             HashSet<Rule> invertedValue = inverted.get(value);
             if (invertedValue == null) {
@@ -138,8 +135,7 @@ public class RulePriority {
      */
     public String toString() {
         String resultString = "Rule:\t\tPriority:\n";
-        for (Enumeration<Rule> keys = Collections.enumeration(this.rulePriority.keySet()); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : this.rulePriority.keySet()) {
             Integer value = this.rulePriority.get(key);
             resultString += key.getName() + "\t\t" + value.toString()
                     + "    " + key.getPriority() + "\n";

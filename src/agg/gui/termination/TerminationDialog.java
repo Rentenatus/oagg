@@ -122,9 +122,7 @@ public class TerminationDialog extends JDialog implements ActionListener {
             }
             this.table = table;
             // iterate by layer
-            Enumeration<?> keys = Collections.enumeration(table.keySet());
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            for (Object key : table.keySet()) {
                 Object value = table.get(key);
                 Vector<Object> tmpVector = new Vector<Object>();
                 tmpVector.addElement(key);
@@ -143,9 +141,8 @@ public class TerminationDialog extends JDialog implements ActionListener {
             // this.table=layer.getRuleLayer();
             Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
             SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
-                    .hasMoreElements();) {
-                ruleLayerSet.add(en.nextElement());
+            for (Integer key : invertedRuleLayer.keySet()) {
+                ruleLayerSet.add(key);
             }
             Integer startLayer = layer.getStartLayer();
             int i = 0;
@@ -182,9 +179,8 @@ public class TerminationDialog extends JDialog implements ActionListener {
             this.table.putAll(priority.getRulePriority());
             Map<Integer, HashSet<Rule>> invertedRuleLayer = priority.invertPriority();
             SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
-                    .hasMoreElements();) {
-                ruleLayerSet.add(en.nextElement());
+            for (Integer key : invertedRuleLayer.keySet()) {
+                ruleLayerSet.add(key);
             }
             Integer startLayer = priority.getStartPriority();
             int i = 0;

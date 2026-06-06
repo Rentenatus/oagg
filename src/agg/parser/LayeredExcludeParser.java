@@ -100,8 +100,8 @@ public class LayeredExcludeParser extends ExcludeParser {
                 "Starting layered exclude parser ..."));
         Map<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer(); // layer.getRuleLayer());
         SortedSeasonSet<Integer> ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en.hasMoreElements();) {
-            ruleLayer.add(en.nextElement());
+        for (Integer key : invertedRuleLayer.keySet()) {
+            ruleLayer.add(key);
         }
         Integer currentLayer = this.layer.getStartLayer();
         int i = 0;
@@ -141,9 +141,9 @@ public class LayeredExcludeParser extends ExcludeParser {
 		 * makeLightContainer kann nur die Elemente filtern, in denen alle teile
 		 * false liefern. Mischformen fallen durch
          */
-        for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        Iterator<Rule> keys = conflictFreeLight.keySet().iterator();
+        while (keys.hasNext()) {
+            Object key = keys.next();
             if ((key != null) && excludeLight.containsKey(key)) {
                 conflictFreeLight.remove(key);
             }
@@ -218,10 +218,10 @@ public class LayeredExcludeParser extends ExcludeParser {
                     Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lExclude = layeredExcludeLight
                             .get(currentLayer);
                     Match savedMatch = null;
-                    if (lExclude != null) {
-                        Enumeration<Rule> keys = Collections.enumeration(lExclude.keySet());
-                        while (keys.hasMoreElements() && !ruleApplied) {
-                            Rule r = keys.nextElement();
+                    if (lExclude != null) { 
+                        Enumeration<Rule> keys3 = Collections.enumeration(lExclude.keySet());
+                        while (keys3.hasMoreElements() && !ruleApplied) {
+                            Rule r = keys3.nextElement();
                             List<Pair<OrdinaryMorphism, OrdinaryMorphism>> inclusions = findInclusions(r, CriticalPair.EXCLUDE);
                             fireParserEvent(new ParserMessageEvent(this,
                                     "Searching for difficult match of rule  \""

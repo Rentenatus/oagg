@@ -599,11 +599,9 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
         AttrConditionTuple condt = this.getAttrContext().getConditions();
         int num = condt.getNumberOfEntries();
         // nested ACs
-        Enumeration<OrdinaryMorphism> nested = Collections.enumeration(new ArrayList<OrdinaryMorphism>(this.itsACs));
-        if (nested.hasMoreElements()) {
+        if (!this.itsACs.isEmpty()) {
             h.openSubTag("ApplCondition");
-            while (nested.hasMoreElements()) {
-                OrdinaryMorphism m = nested.nextElement();
+            for (OrdinaryMorphism m : this.itsACs) {
                 m.getTarget().setKind(GraphKind.AC);
                 h.openSubTag("NestedAC");
                 if (!"".equals(this.formulaStr)) {

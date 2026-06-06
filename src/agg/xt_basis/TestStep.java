@@ -779,9 +779,7 @@ public final class TestStep {
                         }
                     }
                     // reset mappings of new Source/Target of Edges
-                    final Enumeration<Arc> inoutarcs = Collections.enumeration(arc2arcimg.keySet());
-                    while (inoutarcs.hasMoreElements()) {
-                        final Arc arc = inoutarcs.nextElement();
+                    for (final Arc arc : arc2arcimg.keySet()) {
                         try {
                             m.addObjectPlainMapping(arc, arc2arcimg.get(arc));
                         } catch (BadMappingException ex1) {

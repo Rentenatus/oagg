@@ -152,9 +152,8 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
     }
 
     private void acceptValues() {
-        Enumeration<?> e = Collections.enumeration(this.table.keySet());
-        while (e.hasMoreElements()) {
-            String l = (String) e.nextElement();
+        for (Object obj : this.table.keySet()) {
+            String l = (String) obj;
             if (this.table.get(l).isSelected()) {
                 this.gragra.getBasisGraGra().enableRuleLayer(
                         (Integer.valueOf(l)).intValue(), true);
@@ -193,9 +192,8 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
 
     public void setGraGra(EdGraGra gra) {
         this.gragra = gra;
-        Enumeration<?> e = Collections.enumeration(this.table.keySet());
-        while (e.hasMoreElements()) {
-            String l = (String) e.nextElement();
+        for (Object obj : this.table.keySet()) {
+            String l = (String) obj;
             if (!this.gragra.getBasisGraGra().isRuleLayerEnabled(
                     ((Integer.valueOf(l)).intValue()))) {
                 JCheckBox cb = this.table.get(l);

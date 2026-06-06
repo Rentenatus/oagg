@@ -419,9 +419,7 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     public boolean isGraphUsedInObjFlow() {
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (keyItems[0].equals("0")) {
                 return true;
@@ -735,14 +733,14 @@ public class RuleSequence implements GraTraEventListener {
         if (this.graph != null) {
             ind++;
         }
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        Iterator<String> keys = this.objectFlow.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = keys.next();
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == ind
                     || Integer.valueOf(keyItems[1]).intValue() == ind) {
                 this.objectFlow.remove(key);
-                keys = Collections.enumeration(this.objectFlow.keySet());
+                keys = this.objectFlow.keySet().iterator();
                 break;
             }
         }
@@ -775,9 +773,7 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     private void copyObjFlow(final Map<String, ObjectFlow> objFlow) {
-        Enumeration<String> keys = Collections.enumeration(objFlow.keySet());
-        while (keys.hasMoreElements()) {
-            final String k = keys.nextElement();
+        for (final String k : objFlow.keySet()) {
             final ObjectFlow flow = objFlow.get(k);
             final ObjectFlow f = new ObjectFlow(
                     flow.srcOfOutput,
@@ -1155,9 +1151,7 @@ public class RuleSequence implements GraTraEventListener {
                 && this.getCompleteConcurrency() == ruleSeq.getCompleteConcurrency()
                 && this.getCompleteCPAOfConcurrency() == ruleSeq.getCompleteCPAOfConcurrency()) {
             final Map<String, Pair<Boolean, List<String>>> table = ruleSeq.getRuleResults();
-            Enumeration<String> keys = Collections.enumeration(table.keySet());
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
+            for (String key : table.keySet()) {
                 Pair<Boolean, List<String>> p = table.get(key);
                 Pair<Boolean, List<String>> p1 = new Pair<Boolean, List<String>>(
                         Boolean.valueOf(p.first.booleanValue()),
@@ -1303,13 +1297,13 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     public void removeEmptyObjFlow() {
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        Iterator<String> keys = this.objectFlow.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = keys.next();
             ObjectFlow objFlow = this.objectFlow.get(key);
             if (objFlow.isEmpty()) {
                 this.objectFlow.remove(key);
-                keys = Collections.enumeration(this.objectFlow.keySet());
+                keys = this.objectFlow.keySet().iterator();
             }
         }
     }
@@ -1328,9 +1322,7 @@ public class RuleSequence implements GraTraEventListener {
             for (int i = 0; i < objFlowList.size(); i++) {
                 ObjectFlow objFlow = objFlowList.get(i);
                 Map<Object, Object> outInMap = objFlow.getMapping();
-                Enumeration<Object> outs = Collections.enumeration(outInMap.keySet());
-                while (outs.hasMoreElements()) {
-                    Object out = outs.nextElement();
+                for (Object out : outInMap.keySet()) {
                     if (out instanceof GraphObject
                             && preRule.getRight().isElement((GraphObject) out)) {
                         Iterator<GraphObject> inverse = preRule.getInverseImage((GraphObject) out);
@@ -1339,9 +1331,7 @@ public class RuleSequence implements GraTraEventListener {
                             for (int j = 0; j < preObjFlowList.size(); j++) {
                                 ObjectFlow preObjFlow = preObjFlowList.get(j);
                                 Map<Object, Object> preOutInMap = preObjFlow.getMapping();
-                                Enumeration<Object> preOuts = Collections.enumeration(preOutInMap.keySet());
-                                while (preOuts.hasMoreElements()) {
-                                    Object preOut = preOuts.nextElement();
+                                for (Object preOut : preOutInMap.keySet()) {
                                     if (preOut instanceof GraphObject
                                             && (prein == preObjFlow.getMapping().get(preOut))) {
                                         GraphObject inObj = (GraphObject) objFlow.getMapping().get(out);
@@ -1399,13 +1389,13 @@ public class RuleSequence implements GraTraEventListener {
     public void removeObjFlowOfGraph() {
         // remove graph outputs from object flow
         if (this.graph != null) {
-            Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
+            Iterator<String> keys = this.objectFlow.keySet().iterator();
+            while (keys.hasNext()) {
+                String key = keys.next();
                 String[] keyItems = key.split(":");
                 if (keyItems[0].equals("0")) {
                     this.objectFlow.remove(key);
-                    keys = Collections.enumeration(this.objectFlow.keySet());
+                    keys = this.objectFlow.keySet().iterator();
                 }
             }
         }
@@ -1431,9 +1421,7 @@ public class RuleSequence implements GraTraEventListener {
             i1++;
             i2++;
         }
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             ObjectFlow objFlow = this.objectFlow.get(key);
             if (objFlow.getSourceOfOutput() == r1
                     && objFlow.getIndexOfOutput() == i1
@@ -1451,9 +1439,7 @@ public class RuleSequence implements GraTraEventListener {
             return null;
         }
         i++;
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
 //			System.out.println(key);
             ObjectFlow objFlow = this.objectFlow.get(key);
             if (objFlow.getSourceOfOutput() == this.graph
@@ -1480,9 +1466,7 @@ public class RuleSequence implements GraTraEventListener {
         if (this.graph != null) {
             i++;
         }
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[1]).intValue() == i) {
                 list.add(this.objectFlow.get(key));
@@ -1494,9 +1478,7 @@ public class RuleSequence implements GraTraEventListener {
     public List<ObjectFlow> getObjFlowFromGraph() {
         final List<ObjectFlow> list = new Vector<ObjectFlow>();
         if (this.graph != null) {
-            Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
+            for (String key : this.objectFlow.keySet()) {
                 String[] keyItems = key.split(":");
                 if (Integer.valueOf(keyItems[0]).intValue() == 0) {
                     list.add(this.objectFlow.get(key));
@@ -1515,9 +1497,7 @@ public class RuleSequence implements GraTraEventListener {
         if (this.graph != null) {
             i++;
         }
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == i) {
                 list.add(this.objectFlow.get(key));
@@ -1535,9 +1515,7 @@ public class RuleSequence implements GraTraEventListener {
             i++;
         }
         int size = 0;
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[1]).intValue() == i) {
                 size = size + this.objectFlow.get(key).getSizeOfInput();
@@ -1563,9 +1541,7 @@ public class RuleSequence implements GraTraEventListener {
 			return list;
 		}
 		
-		Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-		while (keys.hasMoreElements()) {
-			String key = keys.nextElement();
+		for (String key : this.objectFlow.keySet()) {
 			String[] keyItems  = key.split(":");
 			if (Integer.valueOf(keyItems[0]).intValue() == itsIndx
 					&& this.objectFlow.get(key).getSourceOfOutput() == outputSource) {
@@ -1585,9 +1561,7 @@ public class RuleSequence implements GraTraEventListener {
         if (itsIndx < 0) {
             return list;
         }
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == itsIndx
                     && this.objectFlow.get(key).getSourceOfOutput() == outputSource) {
@@ -1606,9 +1580,7 @@ public class RuleSequence implements GraTraEventListener {
         if (itsIndx < 0) {
             return null;
         }
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == itsIndx
                     && this.objectFlow.get(key).getSourceOfOutput() == ouputSource
@@ -1626,17 +1598,13 @@ public class RuleSequence implements GraTraEventListener {
         if (itsIndx < 0) {
             return list;
         }
-        final Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == itsIndx
                     && this.objectFlow.get(key).getSourceOfOutput() == output) {
                 final ObjectFlow objFlow = this.objectFlow.get(key);
                 if (objFlow.getSourceOfOutput() == output) {
-                    final Enumeration<Object> outputs = Collections.enumeration(objFlow.getMapping().keySet());
-                    while (outputs.hasMoreElements()) {
-                        final Object obj = outputs.nextElement();
+                    for (final Object obj : objFlow.getMapping().keySet()) {
                         if (!list.contains(obj)) {
                             list.add((GraphObject) obj);
                         }
@@ -1974,9 +1942,8 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     private void tryCompleteArcsOF() {
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            ObjectFlow of = this.objectFlow.get(keys.nextElement());
+        for (String key : this.objectFlow.keySet()) {
+            ObjectFlow of = this.objectFlow.get(key);
             int indxR1 = of.getIndexOfOutput();
             if (this.graph != null) {
                 indxR1--;

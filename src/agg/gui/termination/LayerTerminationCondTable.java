@@ -352,12 +352,8 @@ public class LayerTerminationCondTable extends JDialog implements
      * force the panel to update all buttons
      */
     public void refreshView() {
-        Enumeration<Integer> en1 = Collections.enumeration(this.buttons.keySet());
-        while (en1.hasMoreElements()) {
-            Integer first = en1.nextElement();
-            Enumeration<String> en2 = Collections.enumeration(this.buttons.get(first).keySet());
-            while (en2.hasMoreElements()) {
-                String second = en2.nextElement();
+        for (Integer first : this.buttons.keySet()) {
+            for (String second : this.buttons.get(first).keySet()) {
                 refreshView(first, second);
             } // while en2.hasMoreElements
         } // while en1.hasMoreElements

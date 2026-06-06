@@ -206,9 +206,8 @@ public class ConcurrentRule {
 		
 		for (int i=0; i<list.size(); i++) {
 			Map<Object,Object> map = list.get(i).getMapping();
-			Enumeration<Object> objs1 = Collections.enumeration(map.keySet());
-			while (objs1.hasMoreElements()) {
-				GraphObject obj1 = (GraphObject) objs1.nextElement();
+			for (Object obj : map.keySet()) {
+				GraphObject obj1 = (GraphObject) obj;
 				GraphObject obj2 = (GraphObject) map.get(obj1); 
 				if (obj2.getContext() == r.getLeft()) {
 					GraphObject out = this.getRightEmbedding(obj1);
@@ -238,9 +237,8 @@ public class ConcurrentRule {
         Map<GraphObject, GraphObject> objmap = new HashMap<GraphObject, GraphObject>();
         for (int i = 0; i < list.size(); i++) {
             Map<Object, Object> map = list.get(i).getMapping();
-            Enumeration<Object> objs1 = Collections.enumeration(map.keySet());
-            while (objs1.hasMoreElements()) {
-                GraphObject obj1 = (GraphObject) objs1.nextElement();
+            for (Object obj : map.keySet()) {
+                GraphObject obj1 = (GraphObject) obj;
                 GraphObject obj2 = (GraphObject) map.get(obj1);
 //				obj1.getContext().getName();
                 if (obj1.getContext() == r.getRight()) { // output of pre rule
@@ -260,9 +258,8 @@ public class ConcurrentRule {
         Map<GraphObject, GraphObject> objmap = new HashMap<GraphObject, GraphObject>();
         for (int i = 0; i < list.size(); i++) {
             Map<Object, Object> map = list.get(i).getMapping();
-            Enumeration<Object> objs1 = Collections.enumeration(map.keySet());
-            while (objs1.hasMoreElements()) {
-                GraphObject obj1 = (GraphObject) objs1.nextElement();
+            for (Object obj : map.keySet()) {
+                GraphObject obj1 = (GraphObject) obj;
                 GraphObject obj2 = (GraphObject) map.get(obj1);
 //				obj1.getContext().getName();
                 if (obj1.getContext() == g) { // output of graph
@@ -291,9 +288,7 @@ public class ConcurrentRule {
     public Map<GraphObject, GraphObject> applyReflectedObjectFlowToMatchMap(
             final Graph graph) {
         Map<GraphObject, GraphObject> map = new HashMap<GraphObject, GraphObject>();
-        Enumeration<GraphObject> keys = Collections.enumeration(this.reflectedObjectFlowIO.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject input = keys.nextElement();
+        for (GraphObject input : this.reflectedObjectFlowIO.keySet()) {
             GraphObject output = this.reflectedObjectFlowIO.get(input);
             if (output.getContext() == graph) {
                 GraphObject ownInput1 = this.embLr1ToLcr.getImage(input);
@@ -346,9 +341,7 @@ public class ConcurrentRule {
         while (iterator.hasNext()) {
             ObjectFlow objFlow = iterator.next();
             Map<Object, Object> map = objFlow.getMapping();
-            Enumeration<Object> outputs = Collections.enumeration(map.keySet());
-            while (outputs.hasMoreElements()) {
-                Object output = outputs.nextElement();
+            for (Object output : map.keySet()) {
                 Object input = map.get(output);
                 GraphObject input_cr = null;
                 GraphObject output_cr = null;
@@ -409,9 +402,7 @@ public class ConcurrentRule {
 	private GraphObject getKeyOfValue(
 			final Map<GraphObject, GraphObject> map, 
 			final GraphObject val) {
-		final Enumeration<GraphObject> keys = Collections.enumeration(map.keySet());
-		while (keys.hasMoreElements()) {
-			GraphObject key = keys.nextElement();
+		for (GraphObject key : map.keySet()) {
 			if (map.get(key) == val)
 				return key;
 		}
@@ -659,9 +650,9 @@ public class ConcurrentRule {
         Match m = BaseFactory.theFactory().createMatch(this.concurrentRule, g);
         if (m != null) {
             this.concurrentRule.setMatch(m);
-            Enumeration<GraphObject> objs = Collections.enumeration(map.keySet());
-            while (objs.hasMoreElements()) {
-                final GraphObject obj = objs.nextElement();
+            Iterator<GraphObject> objs = map.keySet().iterator();
+            while (objs.hasNext()) {
+                final GraphObject obj = objs.next();
                 if (obj.isNode()) {
                     final GraphObject img = map.get(obj);
                     if (this.embLr1ToLcr != null
@@ -678,9 +669,9 @@ public class ConcurrentRule {
                     }
                 }
             }
-            objs = Collections.enumeration(map.keySet());
-            while (objs.hasMoreElements()) {
-                final GraphObject obj = objs.nextElement();
+            objs = map.keySet().iterator();
+            while (objs.hasNext()) {
+                final GraphObject obj = objs.next();
                 if (obj.isArc()) {
                     final GraphObject img = map.get(obj);
                     if (this.embLr1ToLcr != null

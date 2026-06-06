@@ -91,8 +91,8 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
         boolean result = true;
         Map<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer(); // layer.getRuleLayer());
         SortedSeasonSet<Integer> ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en.hasMoreElements();) {
-            ruleLayer.add(en.nextElement());
+        for (Integer key : invertedRuleLayer.keySet()) {
+            ruleLayer.add(key);
         }
         Integer currentLayer = this.layer.getStartLayer();
         int i = 0;
@@ -127,9 +127,9 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
 		 * makeLightContainer kann nur die Elemente filtern, in denen alle teile
 		 * false liefern. Mischformen fallen durch
          */
-        for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        Iterator<Rule> keys = conflictFreeLight.keySet().iterator();
+        while (keys.hasNext()) {
+            Object key = keys.next();
             if (excludeLight.containsKey(key)) {
                 conflictFreeLight.remove(key);
             }

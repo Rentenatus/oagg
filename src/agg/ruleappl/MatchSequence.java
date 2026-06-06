@@ -320,9 +320,7 @@ public class MatchSequence {
         final Map<GraphObject, GraphObject> match = new HashMap<GraphObject, GraphObject>();
         final Map<GraphObject, GraphObject> srcMatch = this.matches.get(indx);
         final Rule totalPureRule = this.imgObj2Rule.get(Integer.valueOf(indx));
-        final Enumeration<GraphObject> objs = Collections.enumeration(srcMatch.keySet());
-        while (objs.hasMoreElements()) {
-            GraphObject obj = objs.nextElement();
+        for (GraphObject obj : srcMatch.keySet()) {
             GraphObject img = srcMatch.get(obj);
             if (totalPureRule == preRule) {
                 GraphObject img2 = preRuleComatch.get(img);
@@ -454,9 +452,7 @@ public class MatchSequence {
         if (this.ruleSequence.getGraph() != null) {
             index++;
         }
-        Enumeration<String> keys = Collections.enumeration(this.objectFlow.keySet());
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             ObjectFlow objFlow = this.objectFlow.get(key);
             if (Integer.valueOf(keyItems[1]).intValue() == index
@@ -509,9 +505,7 @@ public class MatchSequence {
                     int i = tmpPreCR.getIndexOfFirstSourceRule();
                     if (i >= 0 && i < this.comatches.size()
                             && this.comatches.get(i) != null) {
-                        final Enumeration<GraphObject> elems = Collections.enumeration(this.comatches.get(i).values());
-                        while (elems.hasMoreElements()) {
-                            final GraphObject obj = elems.nextElement();
+                        for (GraphObject obj : this.comatches.get(i).values()) {
                             if (obj.getContext() != null && !domList.contains(obj)) {
                                 domList.add(obj);
                             }
@@ -523,9 +517,7 @@ public class MatchSequence {
                 int i = tmpCR.getIndexOfFirstSourceRule();
                 if (i >= 0 && i < this.comatches.size()
                         && this.comatches.get(i) != null) {
-                    final Enumeration<GraphObject> elems = Collections.enumeration(this.comatches.get(i).values());
-                    while (elems.hasMoreElements()) {
-                        final GraphObject obj = elems.nextElement();
+                    for (GraphObject obj : this.comatches.get(i).values()) {
                         if (obj.getContext() != null && !domList.contains(obj)) {
                             domList.add(obj);
                         }
@@ -559,9 +551,7 @@ public class MatchSequence {
 				while (tmpPreCR != null) {			
 					int i = this.rules.indexOf(tmpPreCR.getSecondSourceRule());					
 					if (i >= 0 && i < this.comatches.size()) {
-						final Enumeration<GraphObject> elems = Collections.enumeration(this.comatches.get(i).values());
-						while (elems.hasMoreElements()) {
-							final GraphObject obj = elems.nextElement();
+						for (GraphObject obj : this.comatches.get(i).values()) {
 							if (obj.getContext() != null && !domList.contains(obj)) {
 								domList.add(obj);
 							}						
@@ -573,9 +563,7 @@ public class MatchSequence {
 				
 				int i = this.rules.indexOf(tmpCR.getFirstSourceRule());				
 				if (i >= 0 && i < this.comatches.size()) {
-					final Enumeration<GraphObject> elems = Collections.enumeration(this.comatches.get(i).values());
-					while (elems.hasMoreElements()) {
-						final GraphObject obj = elems.nextElement();
+					for (GraphObject obj : this.comatches.get(i).values()) {
 						if (obj.getContext() != null && !domList.contains(obj)) {
 							domList.add(obj);
 						}						

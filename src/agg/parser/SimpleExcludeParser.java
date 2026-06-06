@@ -25,6 +25,7 @@ import agg.xt_basis.Rule;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -109,9 +110,9 @@ public class SimpleExcludeParser extends ExcludeParser {
         if (this.stop) {
             return false;
         }
-        for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        Iterator<Rule> keys = conflictFreeLight.keySet().iterator();
+        while (keys.hasNext()) {
+            Object key = keys.next();
             if (excludeLight.containsKey(key)) {
                 conflictFreeLight.remove(key);
             }
@@ -129,10 +130,9 @@ public class SimpleExcludeParser extends ExcludeParser {
         while (!this.stop && !this.graph.isIsomorphicTo(this.stopGraph) && this.correct) {
             ruleApplied = false;
             /* zuerst sollen alle konfliktfreien Regeln probiert werden. */
-            for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
-                    .hasMoreElements()
-                    && !ruleApplied;) {
-                Rule r = keys.nextElement();
+            Iterator<Rule> keys3 = conflictFreeLight.keySet().iterator();
+            while (keys3.hasNext() && !ruleApplied) {
+                Rule r = keys3.next();
 //				Report.println("versuche konfliktfreie Regel " + r.getName(),
 //						Report.PARSER);
                 fireParserEvent(new ParserMessageEvent(this,
@@ -161,10 +161,9 @@ public class SimpleExcludeParser extends ExcludeParser {
                 /*
 				 * Zuerst wird ein beliebiger Ansatz einer Regel gesucht.
                  */
-                for (Enumeration<Rule> keys = Collections.enumeration(excludeLight.keySet()); keys
-                        .hasMoreElements()
-                        && !ruleApplied;) {
-                    Rule r = keys.nextElement();
+                Iterator<Rule> keys5 = excludeLight.keySet().iterator();
+                while (keys5.hasNext() && !ruleApplied) {
+                    Rule r = keys5.next();
                     fireParserEvent(new ParserMessageEvent(this,
                             "Searching for difficult match"));
                     Match m = BaseFactory.theFactory().createMatch(r,

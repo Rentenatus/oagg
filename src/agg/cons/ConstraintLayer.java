@@ -104,9 +104,7 @@ public class ConstraintLayer {
     public Integer getStartLayer() {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Object> keys = Collections.enumeration(getConstraintLayer().keySet()); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : getConstraintLayer().keySet()) {
             Vector<?> layer = (Vector<?>) getConstraintLayer().get(key);
             if (layer != null) {
                 if (layer.isEmpty()) {
@@ -130,8 +128,7 @@ public class ConstraintLayer {
      */
     public Map<Integer, HashSet<Object>> invertLayer() {
         Map<Integer, HashSet<Object>> inverted = new HashMap<Integer, HashSet<Object>>();
-        for (Enumeration<Object> keys = Collections.enumeration(this.constraintLayer.keySet()); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.constraintLayer.keySet()) {
             Vector<?> layer = (Vector<?>) this.constraintLayer.get(key);
             if (layer != null) {
                 Integer l = Integer.valueOf(0);
@@ -156,8 +153,7 @@ public class ConstraintLayer {
      */
     public String toString() {
         String resultString = "Formula:\t\tLayer:\n";
-        for (Enumeration<Object> keys = Collections.enumeration(this.constraintLayer.keySet()); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.constraintLayer.keySet()) {
             resultString += ((Formula) key).getName() + "\t\t";
             Vector<?> valueVec = (Vector<?>) this.constraintLayer.get(key);
             for (int i = 0; i < valueVec.size(); i++) {

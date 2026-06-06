@@ -524,9 +524,7 @@ public class Covering {
             }
         }
         if (!owns.isEmpty()) {
-            final Enumeration<Rule> keys = Collections.enumeration(askMultiMatchData.getData().keySet());
-            while (keys.hasMoreElements()) {
-                final Rule r = keys.nextElement();
+            for (final Rule r : askMultiMatchData.getData().keySet()) {
                 final List<AmalgamationRuleData> datas = askMultiMatchData.getData().get(r);
                 for (int i = 0; i < datas.size(); i++) {
                     final OrdinaryMorphism m = datas.get(i).instMatch;
@@ -844,9 +842,7 @@ public class Covering {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
             final AmalgamationRuleData kernelData = askMatchdata.getKernelData();
             colimL.addNode(kernelData.isoCopyLeft.getImage());
-            Enumeration<Rule> keys = Collections.enumeration(askMatchdata.getData().keySet());
-            while (keys.hasMoreElements()) {
-                final Rule rule = keys.nextElement();
+            for (final Rule rule : askMatchdata.getData().keySet()) {
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
                 for (int i = 0; i < datas.size(); i++) {
                     final AmalgamationRuleData data = datas.get(i);
@@ -893,9 +889,7 @@ public class Covering {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
             final AmalgamationRuleData kernelData = askMatchdata.getKernelData();
             colimR.addNode(kernelData.isoCopyRight.getImage());
-            final Enumeration<Rule> keys = Collections.enumeration(askMatchdata.getData().keySet());
-            while (keys.hasMoreElements()) {
-                final Rule rule = keys.nextElement();
+            for (final Rule rule : askMatchdata.getData().keySet()) {
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
                 for (int i = 0; i < datas.size(); i++) {
                     final AmalgamationRuleData data = datas.get(i);
@@ -935,9 +929,7 @@ public class Covering {
         for (int j = 0; j < this.amalgamationData.size(); j++) {
             boolean stored = false;
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
-            final Enumeration<Rule> keys = Collections.enumeration(askMatchdata.getData().keySet());
-            while (keys.hasMoreElements()) {
-                final Rule rule = keys.nextElement();
+            for (final Rule rule : askMatchdata.getData().keySet()) {
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
                 for (int i = 0; i < datas.size(); i++) {
                     final AmalgamationRuleData data = datas.get(i);
@@ -1075,9 +1067,10 @@ public class Covering {
         boolean mapOK = true;
         for (int j = 0; mapOK && j < this.amalgamationData.size(); j++) {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
-            final Enumeration<Rule> keys = Collections.enumeration(askMatchdata.getData().keySet());
-            while (mapOK && keys.hasMoreElements()) {
-                final Rule rule = keys.nextElement();
+            for (final Rule rule : askMatchdata.getData().keySet()) {
+                if (!mapOK) {
+                    break;
+                }
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
                 for (int i = 0; i < datas.size() && mapOK; i++) {
                     final AmalgamationRuleData data = datas.get(i);
@@ -1248,9 +1241,10 @@ public class Covering {
             }
         }
         // glue arcs
-        final Enumeration<GraphObject> keep = Collections.enumeration(keep2glue.keySet());
-        while (keep.hasMoreElements() && result) {
-            GraphObject keepObj = keep.nextElement();
+        for (GraphObject keepObj : keep2glue.keySet()) {
+            if (!result) {
+                break;
+            }
             List<GraphObject> glue = keep2glue.get(keepObj);
             try {
                 if (!this.glueObjects(keepObj, glue)) {

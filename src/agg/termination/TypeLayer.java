@@ -1,5 +1,4 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
@@ -51,8 +50,7 @@ public class TypeLayer {
 
     private void initTypeLayer() {
         this.typeLayer = new HashMap<Type, Integer>();
-        for (Enumeration<Type> keys = Collections.enumeration(this.types.keySet()); keys.hasMoreElements();) {
-            Type t = keys.nextElement();
+        for (Type t : this.types.keySet()) { 
             this.typeLayer.put(t, this.types.get(t));
             // System.out.println("type layer: "+((Integer)
             // this.typeLayer.get(t)).toString());

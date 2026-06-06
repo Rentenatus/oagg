@@ -97,8 +97,7 @@ public class RuleLayer {
     public Integer getStartLayer() {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : this.ruleLayer.keySet()) {
             Integer layer = getRuleLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -115,8 +114,7 @@ public class RuleLayer {
      */
     public Map<Integer, HashSet<Rule>> invertLayer() {
         Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
-        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : this.ruleLayer.keySet()) {
             Integer value = this.ruleLayer.get(key);
             HashSet<Rule> invertedValue = inverted.get(value);
             if (invertedValue == null) {
@@ -137,8 +135,7 @@ public class RuleLayer {
      */
     public String toString() {
         String resultString = "Rule:\t\tLayer:\n";
-        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : this.ruleLayer.keySet()) {
             Integer value = this.ruleLayer.get(key);
             resultString += key.getName() + "\t\t" + value.toString() + "    "
                     + key.getLayer() + "\n";

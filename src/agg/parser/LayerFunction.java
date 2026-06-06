@@ -109,7 +109,7 @@ public class LayerFunction implements XMLObject {
 		Report.trace("starte ckeckLayer()", 2);
 		boolean result = true;
 		// 0<= cl(l)<=dl(l)<=n 
-		for (Enumeration<?> en = Collections.enumeration(getDeletionLayer().keySet()); en.hasMoreElements()
+		for (Object key : getDeletionLayer().keySet()) {
 				&& result;) {
 			Object key = en.nextElement();
 			Integer dl = getDeletionLayer().get(key);
@@ -132,11 +132,13 @@ public class LayerFunction implements XMLObject {
 		}
 		HashSet deletionSet = new HashSet();
 		HashSet creationSet = new HashSet();
-		Enumeration<?> rules = Collections.enumeration(getRuleLayer().keySet());
-		while (result && rules.hasMoreElements()) {
+		for (Object obj : getRuleLayer().keySet()) {
+			if (!result) {
+				break;
+			}
 			deletionSet.clear();
 			creationSet.clear();
-			Rule rule = (Rule) rules.nextElement();
+			Rule rule = (Rule) obj;
 			Integer layerRule = getRuleLayer().get(rule);
 			
 //			  gibt es keinen Layer fuer eine Regel, so ist die Layerfunktion
@@ -173,9 +175,11 @@ public class LayerFunction implements XMLObject {
 				break;
 			}
 			// dl(l) <= k 
-			for (Enumeration<?> en = Collections.enumeration(deletionSet); en.hasMoreElements()
-					&& result;) {
-				GraphObject grob = (GraphObject) en.nextElement();
+			for (Object obj : deletionSet) {
+				if (!result) {
+					break;
+				}
+				GraphObject grob = (GraphObject) obj;
 				Type t = grob.getType();
 				Integer dl = getDeletionLayer().get(t);
 				Report.println("dl(" + t + ") = " + dl + "  <=  rl(" + rule
@@ -215,9 +219,11 @@ public class LayerFunction implements XMLObject {
 			Report.println("creationSet reduziert auf " + creationSet,
 					Report.LAYER);
 			// cl > k 
-			for (Enumeration<?> en = Collections.enumeration(creationSet); en.hasMoreElements()
-					&& result;) {
-				GraphObject grob = (GraphObject) en.nextElement();
+			for (Object obj : creationSet) {
+				if (!result) {
+					break;
+				}
+				GraphObject grob = (GraphObject) obj;
 				Type t = grob.getType();
 				Integer cl = getCreationLayer().get(t);
 				Report.println("cl(" + t + ") = " + cl + "  >  rl(" + rule
@@ -346,8 +352,7 @@ public class LayerFunction implements XMLObject {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
         /* RuleLayer sind fuer das Parsieren noetig */
-        for (Enumeration<?> keys = Collections.enumeration(getRuleLayer().keySet()); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : getRuleLayer().keySet()) { 
             Integer layer = getRuleLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -367,8 +372,7 @@ public class LayerFunction implements XMLObject {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Map<Integer, HashSet> invertLayer(Map<?, ?> layer) {
         Map<Integer, HashSet> inverted = new HashMap<Integer, HashSet>();
-        for (Enumeration<?> keys = Collections.enumeration(layer.keySet()); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : layer.keySet()) { 
             Integer value = (Integer) layer.get(key);
             HashSet invertedValue = inverted.get(value);
             if (invertedValue == null) {

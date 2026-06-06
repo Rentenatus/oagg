@@ -129,9 +129,8 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         super.clear();
         this.condsTIDGchecked = false;
         if (this.itsNACstars != null) {
-            final Enumeration<OrdinaryMorphism> nacs = Collections.enumeration(this.itsNACstars.keySet());
-            while (nacs.hasMoreElements()) {
-                NACStarMorphism nacStar = this.itsNACstars.get(nacs.nextElement());
+            for (OrdinaryMorphism key : this.itsNACstars.keySet()) {
+                NACStarMorphism nacStar = this.itsNACstars.get(key);
 //				nacStar.clear();
 //				((VarTuple) nacStar.getAttrContext().getVariables())
 //											.unsetNotInputVariables();
@@ -140,9 +139,8 @@ public class Match extends OrdinaryMorphism implements XMLObject {
             this.itsNACstars.clear();
         }
         if (this.itsPACstars != null) {
-            final Enumeration<OrdinaryMorphism> pacs = Collections.enumeration(this.itsPACstars.keySet());
-            while (pacs.hasMoreElements()) {
-                PACStarMorphism pacStar = this.itsPACstars.get(pacs.nextElement());
+            for (OrdinaryMorphism key : this.itsPACstars.keySet()) {
+                PACStarMorphism pacStar = this.itsPACstars.get(key);
 //				pacStar.clear();	
 //				((VarTuple) pacStar.getAttrContext().getVariables())
 //											.unsetNotInputVariables();
@@ -159,15 +157,13 @@ public class Match extends OrdinaryMorphism implements XMLObject {
         this.itsCompleter.resetTypeMap(this.itsImag);
         this.typeObjectsMapChanged = true;
         if (this.itsNACstars != null) {
-            final Enumeration<OrdinaryMorphism> keys = Collections.enumeration(this.itsNACstars.keySet());
-            while (keys.hasMoreElements()) {
-                this.itsNACstars.get(keys.nextElement()).setTarget(this.itsImag);
+            for (OrdinaryMorphism key : this.itsNACstars.keySet()) {
+                this.itsNACstars.get(key).setTarget(this.itsImag);
             }
         }
         if (this.itsPACstars != null) {
-            final Enumeration<OrdinaryMorphism> keys = Collections.enumeration(this.itsPACstars.keySet());
-            while (keys.hasMoreElements()) {
-                this.itsPACstars.get(keys.nextElement()).setTarget(this.itsImag);
+            for (OrdinaryMorphism key : this.itsPACstars.keySet()) {
+                this.itsPACstars.get(key).setTarget(this.itsImag);
             }
         }
     }

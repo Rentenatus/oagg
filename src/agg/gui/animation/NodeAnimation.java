@@ -139,9 +139,7 @@ public class NodeAnimation {
     public void animate() {
 //		System.out.println("NodeAnimation.running   ...");
         enableNodeAnimation();
-        Enumeration<EdNode> keys = Collections.enumeration(this.node2position.keySet());
-        while (keys.hasMoreElements()) {
-            EdNode n = keys.nextElement();
+        for (EdNode n : this.node2position.keySet()) {
             Point p = this.node2position.get(n);
             n.setX(p.x);
             n.setY(p.y);

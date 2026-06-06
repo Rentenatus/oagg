@@ -76,9 +76,8 @@ public class PriorityGraTraImpl extends GraTra {
         Integer startPriority = priority.getStartPriority();
         Map<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
         SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(invertedRulePriority.keySet()); en
-                .hasMoreElements();) {
-            rulePrioritySet.add(en.nextElement());
+        for (Integer key : invertedRulePriority.keySet()) {
+            rulePrioritySet.add(key);
         }
         int i = 0;
         Integer maxPriorityInt = null;

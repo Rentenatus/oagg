@@ -3169,9 +3169,7 @@ public class EdGraGra implements XMLObject {
         for (int i = 0; i < this.typeSet.getNodeTypes().size(); i++) {
             h.addObject("", this.typeSet.getNodeTypes().get(i), true);
         }
-        Enumeration<Type> types = Collections.enumeration(this.layoutPatterns.keySet());
-        while (types.hasMoreElements()) {
-            Type t = types.nextElement();
+        for (Type t : this.layoutPatterns.keySet()) {
             // System.out.println("type name: "+t.getName());
             List<LayoutPattern> lpatternsVec = this.layoutPatterns.get(t);
             if (lpatternsVec != null && !lpatternsVec.isEmpty()) {
@@ -3499,9 +3497,7 @@ public class EdGraGra implements XMLObject {
 
     public void setLayoutPatterns(HashMap<Type, Vector<LayoutPattern>> table) {
         this.layoutPatterns.clear();
-        Enumeration<Type> keys = Collections.enumeration(table.keySet());
-        while (keys.hasMoreElements()) {
-            Type key = keys.nextElement();
+        for (Type key : table.keySet()) {
             this.layoutPatterns.put(key, table.get(key));
         }
     }

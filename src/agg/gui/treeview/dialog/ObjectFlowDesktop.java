@@ -1,5 +1,4 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
@@ -67,6 +66,7 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * @author olga
@@ -552,10 +552,7 @@ public class ObjectFlowDesktop extends JDialog
         ((ContextView) morph.getAttrContext()).changeAllowedMapping(AttrMapping.OBJECT_FLOW_MAP); //MATCH_MAP);
         if (!objFlow.getMapping().isEmpty()) {
             List<Object> list = new Vector<Object>();
-            Enumeration<Object> keys = Collections.enumeration(objFlow.getMapping().keySet());
-            // first set mapping of nodes
-            while (keys.hasMoreElements()) {
-                Object out = keys.nextElement();
+            for (Object out : objFlow.getMapping().keySet()) {
                 if (out instanceof Node) {
                     Object in = objFlow.getMapping().get(out);
                     try {
@@ -626,9 +623,7 @@ public class ObjectFlowDesktop extends JDialog
         if (this.currentFrame != null
                 && this.currentFrame.isEnabled()
                 && this.currentFrame.isSelected()) {
-            Enumeration<GraphMorphismEditor> keys = Collections.enumeration(this.internalFrames.keySet());
-            while (keys.hasMoreElements()) {
-                GraphMorphismEditor gme = keys.nextElement();
+            for (GraphMorphismEditor gme : this.internalFrames.keySet()) {
                 if (this.internalFrames.get(gme) == this.currentFrame) {
                     this.currentObjFlow = gme.getObjectFlow();
                     if (this.currentObjFlow != null) {
@@ -699,13 +694,9 @@ public class ObjectFlowDesktop extends JDialog
     }
 
     private void resetListsSelection(final JInternalFrame f) {
-        Enumeration<GraphMorphismEditor> iter1 = Collections.enumeration(this.internalFrames.keySet());
-        while (iter1.hasMoreElements()) {
-            GraphMorphismEditor gme = iter1.nextElement();
+        for (GraphMorphismEditor gme : this.internalFrames.keySet()) {
             if (this.internalFrames.get(gme) == f) {
-                Enumeration<ObjectFlow> iter2 = Collections.enumeration(this.editors.keySet());
-                while (iter2.hasMoreElements()) {
-                    ObjectFlow of = iter2.nextElement();
+                for (ObjectFlow of : this.editors.keySet()) {
                     if (this.editors.get(of) == gme) {
                         int i1 = of.getIndexOfOutput();
                         int i2 = of.getIndexOfInput();
@@ -722,11 +713,11 @@ public class ObjectFlowDesktop extends JDialog
 	 * @see javax.swing.event.InternalFrameListener#internalFrameClosed(javax.swing.event.InternalFrameEvent)
      */
     public void internalFrameClosed(InternalFrameEvent e) {
-        Enumeration<GraphMorphismEditor> keys = Collections.enumeration(this.internalFrames.keySet());
-        while (keys.hasMoreElements()) {
-            GraphMorphismEditor gme = keys.nextElement();
+        Iterator<GraphMorphismEditor> keys = this.internalFrames.keySet().iterator();
+        while (keys.hasNext()) {
+            GraphMorphismEditor gme = keys.next();
             if (this.internalFrames.get(gme) == e.getInternalFrame()) {
-                this.internalFrames.remove(gme);
+                keys.remove();
             }
         }
         this.currentFrame = null;

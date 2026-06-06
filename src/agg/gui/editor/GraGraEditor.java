@@ -5848,20 +5848,14 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
 				getGraGra().getBasisGraGra().createMatch(
 						ruleEditor.getRule().getBasisRule());
 			HashMap<GraphObject, GraphObject> table = maps.get(0);
-			Enumeration<GraphObject> en = Collections.enumeration(table.keySet());
-			while (en.hasMoreElements()) {
-				GraphObject obj = en.nextElement();
+			for (GraphObject obj : table.keySet()) {
 				GraphObject img = table.get(obj);
-				ruleEditor.getRule().getBasisRule().getMatch().addMapping(obj,
-						img);
-				if (ruleEditor.getRule().getBasisRule().getMatch()
-						.getImage(obj) != null)
+				ruleEditor.getRule().getBasisRule().getMatch().addMapping(obj, img);
+				if (ruleEditor.getRule().getBasisRule().getMatch().getImage(obj) != null)
 					System.out.println("add mapping to match - done");
 				else
 					System.out.println("add mapping to match - failed");
 			}
-		}
-	}
      */
  /*
 	 * ************************************************
@@ -5913,3 +5907,4 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
     // protected JMenu graphLayoutMenu;
     protected String graphLayoutAlgorithmName;
 }
+

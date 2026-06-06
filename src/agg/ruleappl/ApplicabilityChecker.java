@@ -1691,9 +1691,7 @@ public class ApplicabilityChecker implements Runnable {
     private boolean pureEnablingAlongObjectFlow(
             final OrdinaryMorphism morph,
             final ObjectFlow objFlow) {
-        Enumeration<Object> outs =  Collections.enumeration(objFlow.getMapping().keySet());
-        while (outs.hasMoreElements()) {
-            Object out = outs.nextElement();
+        for (Object out : objFlow.getMapping().keySet()) {
             Object in = objFlow.getMapping().get(out);
             GraphObject img = morph.getImage((GraphObject) in);
             if (img != null && img != out) {
@@ -2870,9 +2868,7 @@ public class ApplicabilityChecker implements Runnable {
         if (maxsize > 0) {
             // matchmap inverse:: keys to values, values to keys, because of inverse r1
             final Map<Object, Object> inversematchmap = new HashMap<Object, Object>();
-            Enumeration<?> keys = Collections.enumeration(objFlowMap.keySet());
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            for (Object key : objFlowMap.keySet()) {
                 inversematchmap.put(objFlowMap.get(key),
                         inverseRulePair.second.second.getImage((GraphObject) key));
             }
@@ -3092,13 +3088,10 @@ public class ApplicabilityChecker implements Runnable {
 //		while (r2_objFlow.hasNext() && ok) {
 //			ok = ok && r2LHSobjs.contains(r2_objFlow.next());
 //		}
-        Enumeration<?> outs = Collections.enumeration(objFlow.keySet());
-        while (outs.hasMoreElements()) {
-            GraphObject out = (GraphObject) outs.nextElement();
+        for (Object outObj : objFlow.keySet()) {
+            GraphObject out = (GraphObject) outObj;
             Map<GraphObject, GraphObject> map = cr.getOverlappingObjects();
-            Enumeration<GraphObject> objs = Collections.enumeration(map.keySet());
-            while (objs.hasMoreElements()) {
-                GraphObject obj_rhs1 = objs.nextElement();// == output object
+            for (GraphObject obj_rhs1 : map.keySet()) {// == output object
                 GraphObject obj_lhs2 = map.get(obj_rhs1); // == input object
                 GraphObject input = (GraphObject) objFlow.get(out);
                 if (input != obj_lhs2) {

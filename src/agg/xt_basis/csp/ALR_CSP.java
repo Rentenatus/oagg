@@ -213,7 +213,7 @@ public class ALR_CSP extends CSP {
             anObjVar.setGraphObject(anObj);
             this.itsObjVarMap.put(anObj, anObjVar);
         }
-        buildQueriesAndConstraints(Collections.enumeration(this.itsObjVarMap.keySet()));
+        buildQueriesAndConstraints(this.itsObjVarMap.keySet().iterator());
     }
 
     // This is the static part of initialization, i.e. it can be compiled
@@ -254,16 +254,16 @@ public class ALR_CSP extends CSP {
             anObjVar.setGraphObject(anObj);
             this.itsObjVarMap.put(anObj, anObjVar);
         }
-        buildQueriesAndConstraints(Collections.enumeration(this.itsObjVarMap.keySet()));
+        buildQueriesAndConstraints(this.itsObjVarMap.keySet().iterator());
     }
 
-    private void buildQueriesAndConstraints(final Enumeration<GraphObject> anEnum) {
+    private void buildQueriesAndConstraints(final Iterator<GraphObject> anIter) {
         GraphObject anObj;
         Variable anObjVar, aSrcObjVar, aTarObjVar;
         Query query;
         BinaryConstraint constraint;
-        while (anEnum.hasMoreElements()) {
-            anObj = anEnum.nextElement();
+        while (anIter.hasNext()) {
+            anObj = anIter.next();
             anObjVar = this.itsObjVarMap.get(anObj);
             // create queries for the current variable
 //			query = new Query_Type(itsTypeMap.get(anObj.convertToKey()), anObjVar);
@@ -336,18 +336,14 @@ public class ALR_CSP extends CSP {
     }
 
     public void enableAllVariables() {
-        Enumeration<GraphObject> keys = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject obj = keys.nextElement();
+        for (GraphObject obj : this.itsObjVarMap.keySet()) {
             Variable var = this.itsObjVarMap.get(obj);
             var.setEnabled(true);
         }
     }
 
     public boolean isDomainOfTypeEmpty(final Type t) {
-        Enumeration<GraphObject> keys = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject go = keys.nextElement();
+        for (GraphObject go : this.itsObjVarMap.keySet()) {
             if (go.isArc()) {
                 continue;
             }
@@ -362,9 +358,7 @@ public class ALR_CSP extends CSP {
     public boolean isDomainOfTypeEmpty(final Type t,
             final Type src,
             final Type tar) {
-        Enumeration<GraphObject> keys = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject go = keys.nextElement();
+        for (GraphObject go : this.itsObjVarMap.keySet()) {
             if (go.isNode()) {
                 continue;
             }
@@ -539,9 +533,7 @@ public class ALR_CSP extends CSP {
     }
 
     protected void resetTypeMap(final Graph g) {
-        final Enumeration<GraphObject> lhsObjs = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (lhsObjs.hasMoreElements()) {
-            final GraphObject obj = lhsObjs.nextElement();
+        for (final GraphObject obj : this.itsObjVarMap.keySet()) {
             final Variable var = this.itsObjVarMap.get(obj);
             final String key = obj.convertToKey();
             HashSet<GraphObject> list = g.getTypeObjectsMap().get(key);
@@ -556,9 +548,7 @@ public class ALR_CSP extends CSP {
 
     protected void resetTypeMap(
             final Map<String, HashSet<GraphObject>> aTypeMap) {
-        final Enumeration<GraphObject> lhsObjs = Collections.enumeration(this.itsObjVarMap.keySet());
-        while (lhsObjs.hasMoreElements()) {
-            final GraphObject obj = lhsObjs.nextElement();
+        for (final GraphObject obj : this.itsObjVarMap.keySet()) {
             final Variable var = this.itsObjVarMap.get(obj);
             final String key = obj.convertToKey();
             HashSet<GraphObject> list = aTypeMap.get(key);
@@ -581,17 +571,15 @@ public class ALR_CSP extends CSP {
     }
 
     protected void resetSolverVariables() {
-        final Enumeration<Variable> cspVars = Collections.enumeration(this.itsObjVarMap.values());
-        while (cspVars.hasMoreElements()) {
-            cspVars.nextElement().setInstance(null);
+        for (Variable var : this.itsObjVarMap.values()) {
+            var.setInstance(null);
         }
     }
 
     protected void resetVariableDomain(boolean resetByNull) {
         if (resetByNull) {
-            final Enumeration<Variable> cspVars = Collections.enumeration(this.itsObjVarMap.values());
-            while (cspVars.hasMoreElements()) {
-                cspVars.nextElement().setInstance(null);
+            for (Variable var : this.itsObjVarMap.values()) {
+                var.setInstance(null);
             }
         }
         unsetAttrContextVariable();

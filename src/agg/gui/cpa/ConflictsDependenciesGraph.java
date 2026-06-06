@@ -645,16 +645,14 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 }
             }
         }
-        for (Enumeration<Rule> keys1 = Collections.enumeration(table1.keySet()); keys1.hasMoreElements();) {
-            Rule r1 = keys1.nextElement();
+        for (Rule r1 : table1.keySet()) {
             Node n1 = getNode(g.getBasisGraph(), r1);
             if (n1 == null) {// new rule node
                 n1 = createNode(g.getBasisGraph(), "Rule", r1);
             }
             Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>
             table2 = table1.get(r1);
-            for (Enumeration<Rule  > keys2 = Collections.enumeration(table2.keySet()); keys2.hasMoreElements();) {
-                Rule r2 = keys2.nextElement();
+            for (Rule r2 : table2.keySet()) {
                 Node n2 = getNode(g.getBasisGraph(), r2);
                 if (n2 == null) // new rule node
                 {
@@ -1044,14 +1042,11 @@ public class ConflictsDependenciesGraph implements ActionListener,
             AttrType attrType = nodeType.getAttrType();
             attrType.addMember(javaHandler, "String", "name");
             if (this.conflicts != null) {
-                for (Enumeration<Rule> keys1 = Collections.enumeration(this.conflicts.keySet()); keys1.hasMoreElements();) {
-                    Rule r1 = keys1.nextElement();
+                for (Rule r1 : this.conflicts.keySet()) { 
                     if (r1.isEnabled()) {
                         Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>
                         table = this.conflicts.get(r1);
-                        for (Enumeration<Rule  > keys2 = Collections.enumeration(table.keySet()); keys2
-                                .hasMoreElements();) {
-                            Rule r2 = keys2.nextElement();
+                        for (Rule r2 : table.keySet()) {
                             if (r2.isEnabled()) {
                                 ExcludePairContainer.Entry entry = this.conflictCont.getEntry(r1, r2);
                                 Node nr1 = local.get(r1.getQualifiedName());
@@ -1080,15 +1075,11 @@ public class ConflictsDependenciesGraph implements ActionListener,
             }
             if (this.dependencies != null) {
                 local.clear();
-                for (Enumeration<Rule> keys1 = Collections.enumeration(this.dependencies.keySet()); keys1
-                        .hasMoreElements();) {
-                    Rule r1 = keys1.nextElement();
+                for (Rule r1 : this.dependencies.keySet()) { 
                     if (r1.isEnabled()) {
                         Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>
                         table = this.dependencies.get(r1);
-                        for (Enumeration<Rule  > keys2 = Collections.enumeration(table.keySet()); keys2
-                                .hasMoreElements();) {
-                            Rule r2 = keys2.nextElement();
+                        for (Rule r2 : table.keySet()) {
                             if (r2.isEnabled()) {
                                 ExcludePairContainer.Entry entry = this.dependCont.getEntry(r1, r2);
                                 Node nr1 = local.get(r1.getQualifiedName());

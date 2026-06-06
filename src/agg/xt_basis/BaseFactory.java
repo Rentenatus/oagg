@@ -5387,9 +5387,9 @@ public class BaseFactory {
         match.setCompletionStrategy(strategy, true);
         // set match mapping:  first of nodes
         boolean mappingOK = true;
-        Enumeration<Object> keys = Collections.enumeration(intersection.keySet());
-        while (keys.hasMoreElements() && mappingOK) {
-            Object thisGraph_obj = keys.nextElement();
+        Iterator<Object> keys = intersection.keySet().iterator();
+        while (keys.hasNext() && mappingOK) {
+            Object thisGraph_obj = keys.next();
             if (thisGraph_obj instanceof Node) {
                 Object g_obj = intersection.get(thisGraph_obj);
                 if (inclusion.hasInverseImage((GraphObject) thisGraph_obj)) {
@@ -5411,9 +5411,9 @@ public class BaseFactory {
             }
         }
         // set match mapping:  now of edges
-        keys = Collections.enumeration(intersection.keySet());
-        while (keys.hasMoreElements() && mappingOK) {
-            Object thisGraph_obj = keys.nextElement();
+        keys = intersection.keySet().iterator();
+        while (keys.hasNext() && mappingOK) {
+            Object thisGraph_obj = keys.next();
             if (thisGraph_obj instanceof Arc) {
                 Object g_obj = intersection.get(thisGraph_obj);
                 if (inclusion.hasInverseImage((GraphObject) thisGraph_obj)) {
@@ -6053,9 +6053,9 @@ public class BaseFactory {
                             matchMorph.removeMapping(child);
                             // reset mappings
                             matchMorph.addMapping(child, childNode);
-                            Enumeration<Arc> keys = Collections.enumeration(img2origOutArc.keySet());
-                            while (keys.hasMoreElements()) {
-                                Arc img = keys.nextElement();
+                            Iterator<Arc> keys = img2origOutArc.keySet().iterator();
+                            while (keys.hasNext()) {
+                                Arc img = keys.next();
                                 Arc orig = img2origOutArc.get(img);
                                 // ADD MULTIPLICITY CHECK ???
                                 if (img.getSource() != img.getTarget()) {
@@ -6070,9 +6070,9 @@ public class BaseFactory {
                                     }
                                 }
                             }
-                            keys = Collections.enumeration(img2origInArc.keySet());
-                            while (keys.hasMoreElements()) {
-                                Arc img = keys.nextElement();
+                            keys = img2origInArc.keySet().iterator();
+                            while (keys.hasNext()) {
+                                Arc img = keys.next();
                                 Arc orig = img2origInArc.get(img);
 //								ADD MULTIPLICITY CHECK ???
                                 if (img.getSource() == img.getTarget()) {
@@ -6091,9 +6091,9 @@ public class BaseFactory {
                             if (parent.getNumberOfInOutArcs() == 0) {
                                 // reset mappings
                                 isoMorph.addMapping(orig_rStar, childNode);
-                                keys = Collections.enumeration(orig2img_isoMorph.keySet());
-                                while (keys.hasMoreElements()) {
-                                    Arc a = keys.nextElement();
+                                keys = orig2img_isoMorph.keySet().iterator();
+                                while (keys.hasNext()) {
+                                    Arc a = keys.next();
                                     Arc img = orig2img_isoMorph.get(a);
                                     try {
                                         isoMorph.addMapping(a, img);
@@ -6223,9 +6223,9 @@ public class BaseFactory {
                             // add new mapping
                             morph1.addMapping(child, childNode);
                             // reset mapping of arcs
-                            Enumeration<Arc> keys = Collections.enumeration(img2origOutArc.keySet());
-                            while (keys.hasMoreElements()) {
-                                Arc img = keys.nextElement();
+                            Iterator<Arc> keys = img2origOutArc.keySet().iterator();
+                            while (keys.hasNext()) {
+                                Arc img = keys.next();
                                 Arc orig = img2origOutArc.get(img);
                                 // ADD MULTIPLICITY CHECK ???
                                 if (img.getSource() != img.getTarget()) {
@@ -6240,9 +6240,9 @@ public class BaseFactory {
                                     }
                                 }
                             }
-                            keys = Collections.enumeration(img2origInArc.keySet());
-                            while (keys.hasMoreElements()) {
-                                Arc img = keys.nextElement();
+                            keys = img2origInArc.keySet().iterator();
+                            while (keys.hasNext()) {
+                                Arc img = keys.next();
                                 Arc orig = img2origInArc.get(img);
 //								ADD MULTIPLICITY CHECK ???
                                 if (img.getSource() == img.getTarget()) {
@@ -6261,9 +6261,9 @@ public class BaseFactory {
                             if (parent.getNumberOfInOutArcs() == 0) {
                                 // reset mappings
                                 morph2.addMapping(orig_rStar, childNode);
-                                keys = Collections.enumeration(orig2img_isoMorph.keySet());
-                                while (keys.hasMoreElements()) {
-                                    Arc a = keys.nextElement();
+                                keys = orig2img_isoMorph.keySet().iterator();
+                                while (keys.hasNext()) {
+                                    Arc a = keys.next();
                                     Arc img = orig2img_isoMorph.get(a);
                                     try {
                                         morph2.addMapping(a, img);

@@ -1,5 +1,4 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
@@ -117,9 +116,8 @@ public class GraGraTriggerRuleOfLayerDialog extends JDialog implements
             Integer startLayer = layer.getStartLayer();
             Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
             SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
-                    .hasMoreElements();) {
-                ruleLayerSet.add(en.nextElement());
+            for (Integer key : invertedRuleLayer.keySet()) {
+                ruleLayerSet.add(key);
             }
             int i = 0;
             Integer currentLayer = startLayer;

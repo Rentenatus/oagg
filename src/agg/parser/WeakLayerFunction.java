@@ -53,9 +53,10 @@ public class WeakLayerFunction extends LayerFunction {
         Report.trace("starte ckeckLayer()", 2);
         boolean result = true;
         /* 0<= cl(l)<=dl(l)<=n */
-        for (Enumeration<?> en = Collections.enumeration(getDeletionLayer().keySet()); en.hasMoreElements()
-                && result;) {
-            Object key = en.nextElement();
+        for (Object key : getDeletionLayer().keySet()) {
+            if (!result) {
+                break;
+            }
             Integer dl = getDeletionLayer().get(key);
             Integer cl = getCreationLayer().get(key);
             /* layerfunktion muss total sein */
@@ -76,11 +77,13 @@ public class WeakLayerFunction extends LayerFunction {
         }
         HashSet<Object> deletionSet = new HashSet<Object>();
         HashSet<Object> creationSet = new HashSet<Object>();
-        Enumeration<Rule> rules = Collections.enumeration(getRuleLayer().keySet());
-        while (result && rules.hasMoreElements()) {
+        for (Object obj : getRuleLayer().keySet()) {
+            if (!result) {
+                break;
+            }
             deletionSet.clear();
             creationSet.clear();
-            Rule rule = rules.nextElement();
+            Rule rule = (Rule) obj;
             Integer layerRule = getRuleLayer().get(rule);
             /*
 			 * gibt es keinen Layer fuer eine Regel, so ist die Layerfunktion

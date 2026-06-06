@@ -93,9 +93,7 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
                 addColumn(columnNames[i]);
             }
             this.table = table;
-            Enumeration<?> keys = Collections.enumeration(this.table.keySet());
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            for (Object key : this.table.keySet()) {
                 Object value = this.table.get(key);
                 Vector<Object> tmpVector = new Vector<Object>();
                 tmpVector.addElement(key);
@@ -122,9 +120,8 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
             Integer startPriority = priority.getStartPriority();
             Map<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
             SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = Collections.enumeration(invertedRulePriority.keySet()); en
-                    .hasMoreElements();) {
-                rulePrioritySet.add(en.nextElement());
+            for (Integer key : invertedRulePriority.keySet()) {
+                rulePrioritySet.add(key);
             }
             int i = 0;
             Integer currentPriority = startPriority;
@@ -300,8 +297,7 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
 
     private boolean accept() {
         Map<Rule, Integer> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
-        for (Enumeration<Rule> e = Collections.enumeration(table.keySet()); e.hasMoreElements();) {
-            Object key = e.nextElement();
+        for (Object key : table.keySet()) {
             Integer value = table.get(key);
             if (value.intValue() <= 0) {
                 return false;

@@ -403,14 +403,10 @@ public class ColimDiagram implements COLIM_DEFS {
             return;
         }
         // compute requested colimit morphisms:
-        OrdinaryMorphism aColimMorph;
         GraphObject aSrc, aTar;
-        Enumeration<OrdinaryMorphism> aMorphIter;
         int aSrcGraph, aTarPos;
         // Loop over all colimit morphisms:
-        for (aMorphIter = Collections.enumeration(this.itsColimMorphisms); aMorphIter
-                .hasMoreElements();) {
-            aColimMorph = aMorphIter.nextElement();
+        for (OrdinaryMorphism aColimMorph : this.itsColimMorphisms) {
             aSrcGraph = this.itsGraphIndexMap.get(aColimMorph.getOriginal())
                     .intValue();
             // Loop over all GraphObjects in source graph of morphism:

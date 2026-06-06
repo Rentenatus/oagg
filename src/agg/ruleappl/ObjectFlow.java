@@ -151,9 +151,7 @@ public class ObjectFlow {
      */
     public Object getOutput(final Object input) {
         if (input != null) {
-            Enumeration<Object> keys = Collections.enumeration(this.outputInputMap.keySet());
-            while (keys.hasMoreElements()) {
-                Object out = keys.nextElement();
+            for (Object out : this.outputInputMap.keySet()) {
                 if (this.outputInputMap.get(out) == input) {
                     return out;
                 }
@@ -202,9 +200,8 @@ public class ObjectFlow {
     }
 
     public boolean isOutputObject(final Object obj) {
-        Enumeration<Object> outputs = Collections.enumeration(this.outputInputMap.keySet());
-        while (outputs.hasMoreElements()) {
-            if (outputs.nextElement() == obj) {
+        for (Object output : this.outputInputMap.keySet()) {
+            if (output == obj) {
                 return true;
             }
         }

@@ -103,9 +103,7 @@ public class ConstraintPriority {
     public Integer getStartPriority() {
         int startPrior = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<?> keys = Collections.enumeration(this.constraintPriority.keySet()); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.constraintPriority.keySet()) {
             Vector<?> prior = (Vector<?>) this.constraintPriority.get(key);
             if (prior != null) {
                 if (prior.isEmpty()) {
@@ -129,9 +127,7 @@ public class ConstraintPriority {
      */
     public Map<Integer, HashSet<Object>> invertPriority() {
         Map<Integer, HashSet<Object>> inverted = new HashMap<Integer, HashSet<Object>>();
-        for (Enumeration<Object> keys = Collections.enumeration(this.constraintPriority.keySet()); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.constraintPriority.keySet()) {
             Vector<?> prior = (Vector<?>) this.constraintPriority.get(key);
             if (prior != null) {
                 Integer p = Integer.valueOf(1);
@@ -156,9 +152,7 @@ public class ConstraintPriority {
      */
     public String toString() {
         String resultString = "Formula:\t\tPriority:\n";
-        for (Enumeration<Object> keys = Collections.enumeration(this.constraintPriority.keySet()); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.constraintPriority.keySet()) {
             resultString += ((Formula) key).getName() + "\t\t";
             Vector<?> valueVec = (Vector<?>) this.constraintPriority.get(key);
             for (int i = 0; i < valueVec.size(); i++) {

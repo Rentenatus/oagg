@@ -797,12 +797,8 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
     }
 
     private void clearView() {
-        Enumeration<Rule> en1 = Collections.enumeration(this.buttons.keySet());
-        while (en1.hasMoreElements()) {
-            Rule r1 = en1.nextElement();
-            Enumeration<Rule> en2 = Collections.enumeration(this.buttons.get(r1).keySet());
-            while (en2.hasMoreElements()) {
-                Rule r2 = en2.nextElement();
+        for (Rule r1 : this.buttons.keySet()) {
+            for (Rule r2 : this.buttons.get(r1).keySet()) {
                 JButton btn = this.getButton(r1, r2);
                 clearButtonView(r1, r2, btn);
             }
@@ -826,12 +822,8 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      */
     public void refreshView() {
         this.b2cpData.clear();
-        Enumeration<Rule> en1 = Collections.enumeration(this.buttons.keySet());
-        while (en1.hasMoreElements()) {
-            Rule r1 = en1.nextElement();
-            Enumeration<Rule> en2 = Collections.enumeration(this.buttons.get(r1).keySet());
-            while (en2.hasMoreElements()) {
-                Rule r2 = en2.nextElement();
+        for (Rule r1 : this.buttons.keySet()) {
+            for (Rule r2 : this.buttons.get(r1).keySet()) {
                 refreshView(r1, r2, getButton(r1, r2), -1);
             }
         }

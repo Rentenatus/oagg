@@ -88,9 +88,7 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
                 addColumn(columnNames[i]);
             }
             this.table = table;
-            Enumeration<?> keys = Collections.enumeration(this.table.keySet());
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            for (Object key : this.table.keySet()) {
                 Object value = this.table.get(key);
                 Vector<Object> tmpVector = new Vector<Object>();
                 tmpVector.addElement(key);
@@ -116,9 +114,8 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
             Integer startLayer = layer.getStartLayer();
             Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
             SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
-                    .hasMoreElements();) {
-                ruleLayerSet.add(en.nextElement());
+            for (Integer key : invertedRuleLayer.keySet()) {
+                ruleLayerSet.add(key);
             }
             int i = 0;
             Integer currentLayer = startLayer;
@@ -285,8 +282,7 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
 
     private void acceptValues() {
         Map<Rule, Integer> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
-        for (Enumeration<?> e = Collections.enumeration(table.keySet()); e.hasMoreElements();) {
-            Object key = e.nextElement();
+        for (Object key : table.keySet()) {
             Integer l = table.get(key);
             if (l.intValue() != ((Rule) key).getLayer()) {
                 ((Rule) key).setLayer(l.intValue());
