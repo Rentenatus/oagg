@@ -23,8 +23,6 @@ import agg.util.Link;
 import agg.util.Pair;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

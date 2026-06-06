@@ -13,13 +13,6 @@
  */
 package agg.parser;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrType;
@@ -44,6 +37,11 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeError;
 import agg.xt_basis.TypeSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author olga
@@ -1045,18 +1043,17 @@ public final class ExcludePairHelper {
      * Returns the <code>Type</code> of the <code>GraphObject imageObj</code> if
      * 1) the <code>Morphism morph</code> does not define any inverse image, or
      * 2) the <code>Morphism morph</code> defines an inverse image and an
-     * attribute member of it is in the
-     * <code>Map attrMember2Constant</code>. The
-     * <code>Map attrMember2Constant</code> contains Pairs of Strings
-     * where the first string is the name of a variable, the second string is a
+     * attribute member of it is in the <code>Map attrMember2Constant</code>.
+     * The <code>Map attrMember2Constant</code> contains Pairs of Strings where
+     * the first string is the name of a variable, the second string is a
      * constant value of the same variable.
      *
      * Otherwise, returns null.
      *
      * @param morph the OrdinaryMorphism to search
      * @param imageObj the GraphObject to check
-     * @param attrMember2Constant the <code>Map</code> of Pairs of Strings
-     * an the keys are ValuMembers.
+     * @param attrMember2Constant the <code>Map</code> of Pairs of Strings an
+     * the keys are ValuMembers.
      * @return Type the Type of the imageObj
      */
     protected static Type getTypeWhenDifferentAttrValue(
@@ -2687,9 +2684,7 @@ public final class ExcludePairHelper {
     public static List<Pair<ValueMember, ValueMember>> getAttrMemberByParentType(
             final Map<AttrType, List<Pair<ValueMember, ValueMember>>> attrs,
             final AttrType attrtype) {
-        Enumeration<AttrType> keys = Collections.enumeration(attrs.keySet());
-        while (keys.hasMoreElements()) {
-            AttrType t = keys.nextElement();
+        for (AttrType t : attrs.keySet()) {
             if (((DeclTuple) attrtype).hasChild((DeclTuple) t)) {
                 return attrs.get(t);
             }
@@ -2700,9 +2695,7 @@ public final class ExcludePairHelper {
     public static List<Pair<ValueMember, ValueMember>> getAttrMemberByChildType(
             final Map<AttrType, List<Pair<ValueMember, ValueMember>>> attrs,
             final AttrType attrtype) {
-        Enumeration<AttrType> keys = Collections.enumeration(attrs.keySet());
-        while (keys.hasMoreElements()) {
-            AttrType t = keys.nextElement();
+        for (AttrType t : attrs.keySet()) {
             if (((DeclTuple) attrtype).hasParent((DeclTuple) t)) {
                 return attrs.get(t);
             }

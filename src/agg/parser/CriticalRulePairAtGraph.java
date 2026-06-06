@@ -13,13 +13,6 @@
  */
 package agg.parser;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 import agg.attribute.AttrType;
 import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.ValueTuple;
@@ -36,7 +29,12 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TestStep;
 import agg.xt_basis.TypeException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * This class computes critical matches of two rules at a concrete graph. The
@@ -225,9 +223,7 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             for (int j = 0; j < ruleMatches2.size(); j++) {
                 Map<GraphObject, GraphObject> m2 = ruleMatches2.get(j);
                 List<GraphObject> jointlyObjs = new Vector<>();
-                Enumeration<GraphObject> keys1 = Collections.enumeration(m1.keySet());
-                while (keys1.hasMoreElements()) {
-                    GraphObject o1 = keys1.nextElement();
+                for (GraphObject o1 : m1.keySet()) {
                     GraphObject i1 = m1.get(o1);
                     Collection<GraphObject> values2 = m2.values();
                     if (values2.contains(i1)) {
@@ -248,9 +244,7 @@ public class CriticalRulePairAtGraph extends ExcludePair {
 			final OrdinaryMorphism morph, 
 			final Map<GraphObject, GraphObject> map) {
 		
-		Enumeration<GraphObject> keys = Collections.enumeration(map.keySet());
-		while (keys.hasMoreElements()) {
-			GraphObject o = keys.nextElement();
+		for (GraphObject o : map.keySet()) {
 			GraphObject i = map.get(o);
 			try {
 				if (i.isArc()) {
@@ -269,9 +263,7 @@ public class CriticalRulePairAtGraph extends ExcludePair {
             final OrdinaryMorphism morph,
             final OrdinaryMorphism isoG,
             final Map<GraphObject, GraphObject> map) {
-        Enumeration<GraphObject> keys = Collections.enumeration(map.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject o = keys.nextElement();
+        for (GraphObject o : map.keySet()) {
             GraphObject img = isoG.getImage(map.get(o));
             if (img != null) {
                 try {
@@ -303,9 +295,7 @@ public class CriticalRulePairAtGraph extends ExcludePair {
 //		System.out.println("### jointlyMatches: "+jointlyMatches.size());
         if (!this.jointlyMatches.isEmpty()) {
             List<Pair<Map<GraphObject, GraphObject>, Map<GraphObject, GraphObject>>> result = new Vector<>();
-            Enumeration<List<GraphObject>> jointly = Collections.enumeration(this.jointlyMatches.keySet());
-            while (jointly.hasMoreElements()) {
-                List<GraphObject> jointlyObjs = jointly.nextElement();
+            for (List<GraphObject> jointlyObjs : this.jointlyMatches.keySet()) {
                 Map<GraphObject, GraphObject> m1 = this.jointlyMatches.get(jointlyObjs).first;
                 Map<GraphObject, GraphObject> m2 = this.jointlyMatches.get(jointlyObjs).second;
                 for (int i = 0; i < jointlyObjs.size(); i++) {
@@ -328,9 +318,7 @@ public class CriticalRulePairAtGraph extends ExcludePair {
     }
 
     private GraphObject getOriginalOfImage(GraphObject img, Map<GraphObject, GraphObject> map) {
-        Enumeration<GraphObject> keys = Collections.enumeration(map.keySet());
-        while (keys.hasMoreElements()) {
-            GraphObject o = keys.nextElement();
+        for (GraphObject o : map.keySet()) {
             GraphObject i = map.get(o);
             if (i == img) {
                 return o;
@@ -436,9 +424,7 @@ public class CriticalRulePairAtGraph extends ExcludePair {
         }
         if (!this.jointlyMatches.isEmpty()) {
 //			System.out.println("### getChangeUseAttributeConflictAtGraph...");
-            Enumeration<List<GraphObject>> jointly = Collections.enumeration(this.jointlyMatches.keySet());
-            while (jointly.hasMoreElements()) {
-                List<GraphObject> jointlyObjs = jointly.nextElement();
+            for (List<GraphObject> jointlyObjs : this.jointlyMatches.keySet()) {
                 Map<GraphObject, GraphObject> m1Map = this.jointlyMatches.get(jointlyObjs).first;
                 if (m1Map != m1map) {
                     continue;

@@ -13,15 +13,14 @@
  */
 package agg.parser;
 
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Extends the layer function for a NAC check.

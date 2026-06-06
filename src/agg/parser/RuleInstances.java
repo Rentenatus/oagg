@@ -11,9 +11,8 @@
  */
 package agg.parser;
 
-import java.util.Vector;
-import agg.xt_basis.BaseFactory;
 import agg.xt_basis.Match;
+import java.util.Vector;
 //****************************************************************************+
 
 /**

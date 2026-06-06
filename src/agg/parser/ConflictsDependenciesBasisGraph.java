@@ -13,31 +13,28 @@
  */
 package agg.parser;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import agg.parser.ExcludePairContainer;
+import agg.attribute.AttrType;
+import agg.attribute.facade.InformationFacade;
+import agg.attribute.facade.impl.DefaultInformationFacade;
+import agg.attribute.handler.AttrHandler;
+import agg.attribute.impl.ValueTuple;
+import agg.util.Pair;
+import agg.xt_basis.Arc;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
+import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
-import agg.xt_basis.TypeSet;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeException;
-import agg.xt_basis.Node;
-import agg.xt_basis.Arc;
+import agg.xt_basis.TypeSet;
 import agg.xt_basis.agt.RuleScheme;
-import agg.attribute.facade.impl.DefaultInformationFacade;
-import agg.attribute.facade.InformationFacade;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.AttrType;
-import agg.attribute.handler.AttrHandler;
-import agg.util.Pair;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 public class ConflictsDependenciesBasisGraph {
 
@@ -331,13 +328,10 @@ public class ConflictsDependenciesBasisGraph {
             AttrType attrType = nodeType.getAttrType();
             attrType.addMember(javaHandler, "String", "name");
             if (this.conflicts != null) {
-                for (Enumeration<Rule> keys1 = Collections.enumeration(this.conflicts.keySet()); keys1.hasMoreElements();) {
-                    Rule r1 = keys1.nextElement();
+                for (Rule r1 : this.conflicts.keySet()) {
                     if (r1.isEnabled()) {
                         Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
-                        for (Enumeration<Rule> keys2 = Collections.enumeration(table.keySet()); keys2
-                                .hasMoreElements();) {
-                            Rule r2 = keys2.nextElement();
+                        for (Rule r2 : table.keySet()) {
                             if (r2.isEnabled()) {
                                 ExcludePairContainer.Entry entry = this.conflictCont.getEntry(r1, r2);
                                 Node nr1 = local.get(r1.getQualifiedName());
@@ -391,14 +385,10 @@ public class ConflictsDependenciesBasisGraph {
             }
             if (this.dependencies != null) {
                 local.clear();
-                for (Enumeration<Rule> keys1 = Collections.enumeration(this.dependencies.keySet()); keys1
-                        .hasMoreElements();) {
-                    Rule r1 = keys1.nextElement();
+                for (Rule r1 : this.dependencies.keySet()) {
                     if (r1.isEnabled()) {
                         Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
-                        for (Enumeration<Rule> keys2 = Collections.enumeration(table.keySet()); keys2
-                                .hasMoreElements();) {
-                            Rule r2 = keys2.nextElement();
+                        for (Rule r2 : table.keySet()) {
                             if (r2.isEnabled()) {
                                 ExcludePairContainer.Entry entry = this.dependCont
                                         .getEntry(r1, r2);

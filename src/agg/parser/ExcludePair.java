@@ -13,7 +13,6 @@
  */
 package agg.parser;
 
-import java.util.Collections;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrMapping;
@@ -3482,9 +3481,7 @@ public class ExcludePair implements CriticalPair {
                 vars, conds, r.getLeft().getArcsSet().iterator());
         // check attr. setting (LHS) of r against otherChangedAttrs (RHS)
         // for this part the strong-option is already checked
-        Enumeration<AttrType> keys = Collections.enumeration(leftChangedAttrs.keySet());
-        while (keys.hasMoreElements()) {
-            agg.attribute.AttrType key = keys.nextElement();
+        for (agg.attribute.AttrType key : leftChangedAttrs.keySet()) {
             List<Pair<ValueMember, ValueMember>> v = leftChangedAttrs.get(key);
             List<Pair<ValueMember, ValueMember>> otherv = otherChangedAttrs.get(key);
             if (otherv == null && r.getTypeSet().hasInheritance()) {
@@ -6628,9 +6625,7 @@ public class ExcludePair implements CriticalPair {
             return null;
         }
         OrdinaryMorphism po1 = isoE.invert();
-        final Enumeration<GraphObject> keys = Collections.enumeration(adjusted.keySet());
-        while (keys.hasMoreElements()) {
-            final GraphObject o1 = keys.nextElement();
+        for (final GraphObject o1 : adjusted.keySet()) {
             final GraphObject o2 = adjusted.get(o1);
             adjustAttrOfObjFromObjIfConstValue(o2, o1);
         }

@@ -13,12 +13,11 @@
  */
 package agg.parser;
 
-import java.util.Vector;
 import agg.cons.Formula;
 import agg.util.Pair;
+import agg.xt_basis.Graph;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
-import agg.xt_basis.Graph;
 import java.util.List;
 
 public class PriorityExcludePair extends ExcludePair {

@@ -11,14 +11,14 @@
  */
 package agg.parser;
 
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
 import agg.attribute.AttrInstance;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 //****************************************************************************+
 
 /**

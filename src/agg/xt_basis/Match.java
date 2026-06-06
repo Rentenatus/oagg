@@ -13,7 +13,6 @@
  */
 package agg.xt_basis;
 
-import java.util.Collections;
 import agg.attribute.AttrMapping;
 import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.impl.CondMember;
@@ -25,7 +24,6 @@ import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import de.jare.ndimcol.ref.ArrayMovie;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

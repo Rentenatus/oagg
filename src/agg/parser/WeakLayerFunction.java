@@ -13,15 +13,13 @@
  */
 package agg.parser;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
+import java.util.HashSet;
+import java.util.Iterator;
 //import com.objectspace.jgl.HashSet;
 
 /**

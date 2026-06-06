@@ -24,9 +24,7 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
 import de.jare.ndimcol.ref.SortedSeasonSet;
 import de.jare.ndimcol.utils.BiPredicateInteger;
-import java.util.Collections;
 import java.util.EmptyStackException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -218,10 +216,11 @@ public class LayeredExcludeParser extends ExcludeParser {
                     Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lExclude = layeredExcludeLight
                             .get(currentLayer);
                     Match savedMatch = null;
-                    if (lExclude != null) { 
-                        Enumeration<Rule> keys3 = Collections.enumeration(lExclude.keySet());
-                        while (keys3.hasMoreElements() && !ruleApplied) {
-                            Rule r = keys3.nextElement();
+                    if (lExclude != null) {
+                        for (Rule r : lExclude.keySet()) {
+                            if (ruleApplied) {
+                                break;
+                            }
                             List<Pair<OrdinaryMorphism, OrdinaryMorphism>> inclusions = findInclusions(r, CriticalPair.EXCLUDE);
                             fireParserEvent(new ParserMessageEvent(this,
                                     "Searching for difficult match of rule  \""

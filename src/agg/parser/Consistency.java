@@ -13,19 +13,14 @@
  */
 package agg.parser;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
+import agg.util.Pair;
+import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
-import agg.xt_basis.Rule;
 import agg.xt_basis.OrdinaryMorphism;
-import agg.xt_basis.BaseFactory;
-//import agg.cons.AtomConstraint;
-import agg.util.Pair;
+import agg.xt_basis.Rule;
 import java.util.List;
+import java.util.Map;
 
 public class Consistency implements Runnable {
 
@@ -59,11 +54,9 @@ public class Consistency implements Runnable {
             Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
                     .getContainer(CriticalPair.EXCLUDE);
             GraGra gra = this.excludeContainer.getGrammar();
-            for (Enumeration<Rule> keys = Collections.enumeration(excludeCont.keySet()); keys.hasMoreElements();) {
-                Rule r1 = keys.nextElement();
+            for (Rule r1 : excludeCont.keySet()) {
                 Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
-                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                    Rule r2 = k2.nextElement();
+                for (Rule r2 : secondPart.keySet()) {
                     Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
                     Boolean b = pair.first;
                     if (b.booleanValue()) {
@@ -106,13 +99,10 @@ public class Consistency implements Runnable {
             Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
                     .getContainer(CriticalPair.EXCLUDE);
             GraGra gra = this.excludeContainer.getGrammar();
-            for (Enumeration<Rule> keys = Collections.enumeration(excludeCont.keySet()); keys.hasMoreElements();) {
-                Rule r1 = keys.nextElement();
+            for (Rule r1 : excludeCont.keySet()) {
                 if (r1 == this.rule1) {
                     Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
-                    for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2
-                            .hasMoreElements();) {
-                        Rule r2 = k2.nextElement();
+                    for (Rule r2 : secondPart.keySet()) {
                         if (r2 == this.rule2) {
                             Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
                             Boolean b = pair.first;

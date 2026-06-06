@@ -21,9 +21,7 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
 import de.jare.ndimcol.ref.SortedSeasonSet;
 import de.jare.ndimcol.utils.BiPredicateInteger;
-import java.util.Collections;
 import java.util.EmptyStackException;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Stack;
@@ -88,8 +86,8 @@ public class LayeredSimpleParser extends SimpleParser {
         this.correct = true;
         Map<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer();
         SortedSeasonSet<Integer> ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en.hasMoreElements();) {
-            ruleLayer.add(en.nextElement());
+        for (Integer layer : invertedRuleLayer.keySet()) {
+            ruleLayer.add(layer);
         }
         Integer currentLayer = this.layer.getStartLayer();
         int i = 0;

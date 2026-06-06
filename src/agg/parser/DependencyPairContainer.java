@@ -13,24 +13,21 @@
  */
 package agg.parser;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
-import java.util.Vector;
+import agg.util.Pair;
+import agg.util.XMLHelper;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.ConcurrentRule;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
+import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
-import agg.xt_basis.Node;
-import agg.util.XMLHelper;
-import agg.util.Pair;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import org.w3c.dom.Element;
 // ****************************************************************************+
 
@@ -323,13 +320,11 @@ public class DependencyPairContainer extends ExcludePairContainer {
         }
         h.addAttr("kind", kind);
         // Inhalt von excludeContainer schreiben (save)
-        for (Enumeration<Rule> keys = Collections.enumeration(this.excludeContainer.keySet()); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
             Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
-            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            for (Rule r2 : secondPart.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
                 Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
@@ -380,13 +375,11 @@ public class DependencyPairContainer extends ExcludePairContainer {
         h.close();
         if (this.conflictFreeContainer != null) {
             h.openSubTag("conflictFreeContainer");
-            for (Enumeration<Rule> keys = Collections.enumeration(this.conflictFreeContainer.keySet()); keys.hasMoreElements();) {
-                Rule r1 = keys.nextElement();
+            for (Rule r1 : this.conflictFreeContainer.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
                 Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
-                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                    Rule r2 = k2.nextElement();
+                for (Rule r2 : secondPart.keySet()) {
                     h.openSubTag("Rule");
                     h.addObject("R2", r2, false);
                     Boolean b = secondPart.get(r2).first;

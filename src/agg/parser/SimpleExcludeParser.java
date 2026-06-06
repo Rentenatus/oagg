@@ -22,13 +22,10 @@ import agg.xt_basis.Match;
 import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 //****************************************************************************+
 
 /**

@@ -13,18 +13,16 @@
  */
 package agg.parser;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Iterator;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import de.jare.ndimcol.ref.IteratorWalker;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This layer function layers a set of rules of a given graph grammar.
@@ -352,7 +350,7 @@ public class LayerFunction implements XMLObject {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
         /* RuleLayer sind fuer das Parsieren noetig */
-        for (Object key : getRuleLayer().keySet()) { 
+        for (Object key : getRuleLayer().keySet()) {
             Integer layer = getRuleLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -372,7 +370,7 @@ public class LayerFunction implements XMLObject {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Map<Integer, HashSet> invertLayer(Map<?, ?> layer) {
         Map<Integer, HashSet> inverted = new HashMap<Integer, HashSet>();
-        for (Object key : layer.keySet()) { 
+        for (Object key : layer.keySet()) {
             Integer value = (Integer) layer.get(key);
             HashSet invertedValue = inverted.get(value);
             if (invertedValue == null) {
@@ -402,11 +400,11 @@ public class LayerFunction implements XMLObject {
      * @param h A helper object.
      */
     protected void writeHashtableToXML(Map<?, ?> xmlObjects, XMLHelper h) {
-        for (Enumeration<?> keys = Collections.enumeration(xmlObjects.keySet()); keys.hasMoreElements();) {
-            XMLObject r1 = (XMLObject) keys.nextElement();
+        for (Map.Entry<?, ?> entry : xmlObjects.entrySet()) {
+            XMLObject r1 = (XMLObject) entry.getKey();
             h.openSubTag("Datum");
             h.addObject("key", r1, false);
-            h.addAttr("value", "" + xmlObjects.get(r1));
+            h.addAttr("value", "" + entry.getValue());
             h.close();
         }
     }
@@ -602,4 +600,3 @@ public class LayerFunction implements XMLObject {
  * Revision 1.1.2.1 2000/12/10 14:55:48 shultzke um Layer erweitert
  * 
  */
-

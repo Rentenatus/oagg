@@ -11,8 +11,9 @@
  */
 package agg.parser;
 
+import java.util.ArrayList;
 import java.util.EventObject;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * The parser option provides some settings for the parser. So the parser
@@ -37,7 +38,7 @@ public class ParserOption {
     public static final int SIMPLEEXCLUDEPARSER = 2;
     private static final int DEFAULTPARSER = EXCLUDEPARSER;
     private int selectedParser;
-    private Vector<OptionEventListener> listener;
+    private List<OptionEventListener> listener;
     private boolean layered;
 
     /**
@@ -46,7 +47,7 @@ public class ParserOption {
     public ParserOption() {
         this.selectedParser = DEFAULTPARSER;
         this.layered = false;
-        this.listener = new Vector<OptionEventListener>(2);
+        this.listener = new ArrayList<OptionEventListener>(2);
     }
 
     /**
@@ -98,7 +99,7 @@ public class ParserOption {
      */
     public void addOptionListener(OptionEventListener l) {
         if (!this.listener.contains(l)) {
-            this.listener.addElement(l);
+            this.listener.add(l);
         }
     }
 
@@ -109,7 +110,7 @@ public class ParserOption {
      */
     public void removeOptionListener(OptionEventListener l) {
         if (this.listener.contains(l)) {
-            this.listener.removeElement(l);
+            this.listener.remove(l);
         }
     }
 
@@ -120,7 +121,7 @@ public class ParserOption {
      */
     private synchronized void fireOptionEvent(EventObject event) {
         for (int i = 0; i < this.listener.size(); i++) {
-            this.listener.elementAt(i).optionEventOccurred(event);
+            this.listener.get(i).optionEventOccurred(event);
         }
     }
 }

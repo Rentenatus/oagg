@@ -23,9 +23,7 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
 import de.jare.ndimcol.ref.SortedSeasonSet;
 import de.jare.ndimcol.utils.BiPredicateInteger;
-import java.util.Collections;
 import java.util.EmptyStackException;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -379,4 +377,3 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
  * Revision 1.1.2.1 2000/12/26 10:00:05 shultzke Layered Parser hinzugefuegt
  * 
  */
-
