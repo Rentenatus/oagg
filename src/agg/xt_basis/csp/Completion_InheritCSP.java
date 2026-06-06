@@ -10,23 +10,16 @@ package agg.xt_basis.csp;
  * </copyright>
  * *****************************************************************************
  */
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
 import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.impl.ValueMember;
+import agg.util.Pair;
 import agg.util.csp.SolutionStrategy;
 import agg.util.csp.Solution_Backjump;
 import agg.util.csp.Variable;
-import agg.util.Pair;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.Graph;
@@ -37,6 +30,13 @@ import agg.xt_basis.Morphism;
 import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Type;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of morphism completion as a Constraint Satisfaction Problem

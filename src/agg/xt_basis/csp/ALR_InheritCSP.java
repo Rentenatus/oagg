@@ -13,15 +13,6 @@
  */
 package agg.xt_basis.csp;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
 import agg.attribute.AttrContext;
 import agg.attribute.impl.AttrTupleManager;
 import agg.attribute.impl.ValueTuple;
@@ -38,7 +29,13 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
 import agg.xt_basis.Type;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A CSP whose solutions represent morphisms between two graphs.

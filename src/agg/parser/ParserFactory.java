@@ -1,5 +1,4 @@
-/**
- **
+/** 
  * ***************************************************************************
  * <copyright>
  * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.

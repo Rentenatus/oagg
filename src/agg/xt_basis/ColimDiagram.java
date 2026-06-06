@@ -10,19 +10,17 @@
  */
 package agg.xt_basis;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import agg.attribute.impl.TupleMapping;
 import agg.xt_basis.colim.ALPHA_DIAGRAM;
 import agg.xt_basis.colim.COLIM_DEFS;
 import agg.xt_basis.colim.COLIM_VECTOR;
 import agg.xt_basis.colim.INT_VECTOR;
 import agg.xt_basis.colim.SET_DIAGRAM;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class allows for representation of general diagrams of graphs and for

@@ -119,9 +119,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
 		 * makeLightContainer kann nur die Elemente filtern, in denen alle teile
 		 * false liefern. Mischformen fallen durch
          */
-        for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : conflictFreeLight.keySet()) {
             if (excludeLight.containsKey(key)) {
                 conflictFreeLight.remove(key);
             }
@@ -135,10 +133,8 @@ public class ExcludeParser extends AbstractParser implements Runnable {
         while (!this.stop && !this.graph.isIsomorphicTo(this.stopGraph) && this.correct) {
             boolean ruleApplied = false;
             /* zuerst sollen alle konfliktfreien Regeln probiert werden. */
-            for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeLight.keySet()); keys
-                    .hasMoreElements()
-                    && !ruleApplied;) {
-                Rule r = keys.nextElement();
+            for (Rule r : conflictFreeLight.keySet()) {
+                if (ruleApplied) break;
 //				System.out.println("try to apply rule: "+r.getName());
                 fireParserEvent(new ParserMessageEvent(this,
                         "Searching for simple match"));
@@ -158,7 +154,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                     }
                 }
                 m.dispose();
-            } // end for(Enumeration keys = Collections.enumeration(conflictFreeLight.keySet());
+            }
             /* Die konfliktfreien Regeln sind abgearbeitet */
  /* Die Excluderegeln muessen ueberprueft werden */
             if (!ruleApplied && !this.stop) {
@@ -223,7 +219,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
                         /*
 						 * ERI muss nicht kopiert werden, da nur an
 						 * Entscheidungsstellen der Match/die Matches gemerkt werden
-						 * mssen, die uns mÃ¯Â¿Â½licherweise auf einen Holzweg fhren. Der
+						 * mssen, die uns mÃƒÂ¯Ã‚Â¿Ã‚Â½licherweise auf einen Holzweg fhren. Der
 						 * Match in ERI ist eine Stufe tiefer (also nach
 						 * Regelanwendung, denn wir loeschen) nicht mehr verfgbar.
 						 * Dadurch kann ein neues ERI erzeugt werden. Auf dem Stack
@@ -307,9 +303,7 @@ public class ExcludeParser extends AbstractParser implements Runnable {
             Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> in,
             Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> out) {
         // Report.println("-------------------------------------------",Report.CONTAINER);
-        Enumeration<Rule> keys = Collections.enumeration(in.keySet());
-        while (keys.hasMoreElements()) {
-            Rule key = keys.nextElement();
+        for (Rule key : in.keySet()) {
             if (key != null) {
                 // Report.println("erster key "+key,Report.CONTAINER);
                 Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = in

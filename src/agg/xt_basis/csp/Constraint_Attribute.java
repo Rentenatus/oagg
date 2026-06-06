@@ -10,21 +10,20 @@
  */
 package agg.xt_basis.csp;
 
-import java.util.ArrayList;
-import java.util.List;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrException;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrManager;
 import agg.attribute.AttrMapping;
-import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.ValueMember;
-import agg.attribute.impl.VarTuple;
+import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarMember;
+import agg.attribute.impl.VarTuple;
 import agg.util.csp.BinaryConstraint;
 import agg.util.csp.InstantiationHook;
 import agg.util.csp.Variable;
 import agg.xt_basis.GraphObject;
+import java.util.List;
 
 public class Constraint_Attribute extends BinaryConstraint implements
         InstantiationHook {

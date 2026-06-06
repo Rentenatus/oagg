@@ -14,12 +14,11 @@
  */
 package agg.xt_basis.agt;
 
+import agg.xt_basis.Rule;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.List;
-import agg.xt_basis.Rule;
 
 /**
  * This class stores the data of amalgamation process for a single match of the

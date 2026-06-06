@@ -13,20 +13,18 @@
  */
 package agg.xt_basis;
 
-import java.util.BitSet;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.List;
+import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrException;
 import agg.attribute.AttrVariableTuple;
 import agg.attribute.impl.VarMember;
-import agg.attribute.AttrConditionTuple;
 import agg.cons.Formula;
 import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @version $Id: GraTra.java,v 1.59 2010/12/01 20:26:41 olga Exp $

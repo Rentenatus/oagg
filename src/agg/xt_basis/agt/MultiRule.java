@@ -13,15 +13,6 @@
  */
 package agg.xt_basis.agt;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.ArrayList;
-import java.util.List;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.TupleMapping;
 import agg.attribute.impl.ValueTuple;
@@ -43,6 +34,13 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TypeException;
 import agg.xt_basis.TypeSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Multi rule is an extending rule of an interaction rule scheme. The kernel

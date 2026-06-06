@@ -13,12 +13,6 @@
  */
 package agg.xt_basis;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 import agg.attribute.AttrContext;
 import agg.attribute.handler.AvailableHandlers;
 import agg.attribute.impl.CondMember;
@@ -29,8 +23,10 @@ import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
 import agg.ruleappl.ObjectFlow;
 import agg.util.Pair;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**

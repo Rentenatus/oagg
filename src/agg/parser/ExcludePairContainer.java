@@ -461,14 +461,10 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      */
     public List<CriticalPairData> getCriticalPairDataOfKind(String kind) {
         List<CriticalPairData> list = new Vector<CriticalPairData>();
-        Enumeration<Rule> r1Iter = Collections.enumeration(this.excludeContainer.keySet());
-        while (r1Iter.hasMoreElements()) {
-            Rule r1 = r1Iter.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
             if (secondPart != null) {
-                Enumeration<Rule> r2Iter = Collections.enumeration(secondPart.keySet());
-                while (r2Iter.hasMoreElements()) {
-                    Rule r2 = r2Iter.nextElement();
+                for (Rule r2 : secondPart.keySet()) {
                     Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
                     if (p != null
                             && p.first.booleanValue()) {
@@ -685,17 +681,13 @@ public class ExcludePairContainer implements PairContainer, Runnable {
 			Map<GraphObject, GraphObject> m1 = p.first;
 			Map<GraphObject, GraphObject> m2 = p.second;
 			
-			Enumeration<GraphObject> keys = Collections.enumeration(m1.keySet());
-			while (keys.hasMoreElements()) {
-				GraphObject o = keys.nextElement();
+			for (GraphObject o : m1.keySet()) {
 				GraphObject i = m1.get(o);
 				o.selected = true;
 				i.selected = true;
 			}
 			
-			keys = Collections.enumeration(m2.keySet());
-			while (keys.hasMoreElements()) {
-				GraphObject o = keys.nextElement();
+			for (GraphObject o : m2.keySet()) {
 				GraphObject i = m2.get(o);
 				o.selected = true;
 				i.selected = true;
@@ -1081,8 +1073,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> resultVector = new Vector<>();
         List<List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> tmpVector = new Vector<>();
         Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = container.get(rule);
-        for (Enumeration<Rule> keys = Collections.enumeration(value.keySet()); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : value.keySet()) {
             Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = value.get(key);
             if (p.first.booleanValue()) {
                 tmpVector.add(p.second);
@@ -1769,14 +1760,10 @@ public class ExcludePairContainer implements PairContainer, Runnable {
             entry.isRuleVisible = vis;
             if (context) {
                 // set Rule Context to vis
-                for (Enumeration<Rule> keys = Collections.enumeration(this.excludeContainer.keySet()); keys
-                        .hasMoreElements();) {
-                    Rule r1 = keys.nextElement();
+                for (Rule r1 : this.excludeContainer.keySet()) {
                     if (r1 == rule1) {
                         Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
-                        for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2
-                                .hasMoreElements();) {
-                            Rule r2 = k2.nextElement();
+                        for (Rule r2 : secondPart.keySet()) {
                             ExcludePairContainer.Entry entry1 = getEntry(r1, r2);
                             // if(entry.isCritical())
                             {
@@ -1792,9 +1779,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
                                 }
                             }
                         }
-                        for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2
-                                .hasMoreElements();) {
-                            Rule r2 = k2.nextElement();
+                        for (Rule r2 : secondPart.keySet()) {
                             if (r2 != rule1) {
                                 ExcludePairContainer.Entry entry1 = getEntry(
                                         r2, r1);
@@ -1839,12 +1824,10 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     public boolean reduceCriticalPairs() {
         // System.out.println("reduceCriticalPairs... ");
         boolean reduced = false;
-        for (Enumeration<Rule> keys = Collections.enumeration(this.excludeContainer.keySet()); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             // System.out.println("ExcludePC:: reduce: "+r1.getName());
             Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
-            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            for (Rule r2 : secondPart.keySet()) {
                 // System.out.println("ExcludePC:: reduce: "+r2.getName());
                 Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair
                         = secondPart.get(r2);
@@ -1964,12 +1947,10 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         // System.out.println("ExcludePairContainer.checkConsistency()");
         boolean inconsistent = false;
         boolean cpExists = false;
-        for (Enumeration<Rule> keys = Collections.enumeration(this.excludeContainer.keySet()); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer
                     .get(r1);
-            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            for (Rule r2 : secondPart.keySet()) {
                 Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
                 Boolean b = pair.first;
                 if (b.booleanValue()) {
@@ -2374,15 +2355,11 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     /**
      * Clears the rule pair containers.
      */
-    public void clear() {
-        Rule r1 = null;
-        for (Enumeration<Rule> keys1 = Collections.enumeration(this.excludeContainer.keySet()); keys1
-                .hasMoreElements();) {
-            r1 = keys1.nextElement();
+    public void clear() { 
+        for (Rule r1 : this.excludeContainer.keySet()) {
             // System.out.println(r1.getName());
             Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table2 = this.excludeContainer.get(r1);
-            for (Enumeration<Rule> keys2 = Collections.enumeration(table2.keySet()); keys2.hasMoreElements();) {
-                Rule r2 = keys2.nextElement();
+            for (Rule r2 : table2.keySet()) {
                 // System.out.println(r1.getName()+" "+r2.getName());
                 // firePairEvent(new CriticalPairEvent(this, r1, r2,
                 // CriticalPairEvent.REMOVE_RELATION_ENTRY));
@@ -2674,13 +2651,11 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         h.openSubTag("conflictsContainer");
         h.addAttr("kind", "exclude");
         // Inhalt von excludeContainer schreiben (save)
-        for (Enumeration<Rule> keys = Collections.enumeration(this.excludeContainer.keySet()); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
             Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
-            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            for (Rule r2 : secondPart.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
                 Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
@@ -2726,13 +2701,11 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         }
         h.close();
         h.openSubTag("conflictFreeContainer");
-        for (Enumeration<Rule> keys = Collections.enumeration(this.conflictFreeContainer.keySet()); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.conflictFreeContainer.keySet()) {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
             Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
-            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            for (Rule r2 : secondPart.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
                 Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);

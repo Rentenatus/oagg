@@ -13,22 +13,13 @@
  */
 package agg.xt_basis.csp;
 
-import java.util.BitSet;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Stack;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Iterator;
-import agg.attribute.impl.VarTuple;
-import agg.attribute.impl.VarMember;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.impl.ValueMember;
-import agg.attribute.impl.CondTuple;
-import agg.attribute.impl.CondMember;
 import agg.attribute.AttrVariableTuple;
+import agg.attribute.impl.CondMember;
+import agg.attribute.impl.CondTuple;
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
+import agg.attribute.impl.VarMember;
+import agg.attribute.impl.VarTuple;
 import agg.util.Pair;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
@@ -37,6 +28,14 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.NACStarMorphism;
 import agg.xt_basis.OrdinaryMorphism;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 //import com.objectspace.jgl.Deque;
 
 /**

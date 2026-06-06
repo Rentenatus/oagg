@@ -1,7 +1,5 @@
 package agg.xt_basis.csp;
 
-import java.util.Collection;
-import java.util.List;
 import agg.attribute.AttrContext;
 import agg.util.csp.Solution_Backjump_PartialInj;
 import agg.xt_basis.Arc;
@@ -10,6 +8,8 @@ import agg.xt_basis.Match;
 import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.ParallelRule;
+import java.util.Collection;
+import java.util.List;
 
 /**
  **

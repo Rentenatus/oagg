@@ -13,18 +13,17 @@
  */
 package agg.xt_basis;
 
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import agg.attribute.impl.VarTuple;
 import agg.attribute.AttrContext;
+import agg.attribute.impl.VarTuple;
 import agg.util.csp.Variable;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A decorator class which adds support for negative application conditions

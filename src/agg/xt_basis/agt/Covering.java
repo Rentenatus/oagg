@@ -1,9 +1,9 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
- * reserved. This program and the accompanying materials are made available
- * under the terms of the Eclipse Public License v1.0 which accompanies this
- * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
  * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
  * materials are made available under the terms of the Eclipse Public License
@@ -13,14 +13,6 @@
  */
 package agg.xt_basis.agt;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.List;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrMapping;
 import agg.attribute.handler.AttrHandlerException;
@@ -61,6 +53,11 @@ import agg.xt_basis.TypeException;
 import agg.xt_basis.TypeSet;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.xt_basis.csp.Completion_CSP;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class computes an amalgamated rule and amalgamated match based on an
@@ -1258,9 +1255,7 @@ public class Covering {
         }
         // restore mapping
         if (result) {
-            final Enumeration<GraphObject> lhs = Collections.enumeration(l2r.keySet());
-            while (lhs.hasMoreElements()) {
-                GraphObject l = lhs.nextElement();
+            for (GraphObject l : l2r.keySet()) {
                 if (l.isNode()) {
                     GraphObject r = l2r.get(l);
                     if (amalgamRule.getImage(l) == null) {
@@ -1273,9 +1268,6 @@ public class Covering {
                         }
                     }
                 }
-            }
-            while (lhs.hasMoreElements()) {
-                GraphObject l = lhs.nextElement();
                 if (l.isArc()) {
                     GraphObject r = l2r.get(l);
                     if (amalgamRule.getImage(l) == null) {

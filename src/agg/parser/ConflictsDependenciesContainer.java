@@ -358,14 +358,11 @@ public class ConflictsDependenciesContainer implements XMLObject {
             h.addAttr("kind", "exclude");
             writeRuleSet(h, "RuleSet", pc1.getRules()); // columns of the table
             writeRuleSet(h, "RuleSet2", pc1.getRules2()); // rows of the table
-            for (Enumeration<Rule> keys = Collections.enumeration(excludeContainer.keySet()); keys
-                    .hasMoreElements();) {
-                Rule r1 = keys.nextElement();
+            for (Rule r1 : excludeContainer.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
                 Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
-                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                    Rule r2 = k2.nextElement();
+                for (Rule r2 : secondPart.keySet()) {
                     entry = ((ExcludePairContainer) pc1).getEntry(r1, r2);
                     h.openSubTag("Rule");
                     h.addObject("R2", r2, false);
@@ -420,16 +417,12 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     .getConflictFreeContainer();
             if (conflictFreeContainer != null) {
                 h.openSubTag("conflictFreeContainer");
-                for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeContainer.keySet()); keys
-                        .hasMoreElements();) {
-                    Rule r1 = keys.nextElement();
+                for (Rule r1 : conflictFreeContainer.keySet()) {
                     h.openSubTag("Rule");
                     h.addObject("R1", r1, false);
                     Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
                             .get(r1);
-                    for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2
-                            .hasMoreElements();) {
-                        Rule r2 = k2.nextElement();
+                    for (Rule r2 : secondPart.keySet()) { 
                         entry = ((ExcludePairContainer) pc1).getEntry(r1, r2);
                         h.openSubTag("Rule");
                         h.addObject("R2", r2, false);
@@ -463,14 +456,11 @@ public class ConflictsDependenciesContainer implements XMLObject {
             h.addAttr("kind", kind);
             writeRuleSet(h, "RuleSet", pc2.getRules()); // columns of the table
             writeRuleSet(h, "RuleSet2", pc2.getRules2()); // rows of the table
-            for (Enumeration<Rule> keys = Collections.enumeration(excludeContainer.keySet()); keys
-                    .hasMoreElements();) {
-                Rule r1 = keys.nextElement();
+            for (Rule r1 : excludeContainer.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R1", r1, false);
                 Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeContainer.get(r1);
-                for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
-                    Rule r2 = k2.nextElement();
+                for (Rule r2 : secondPart.keySet()) {
                     entry = ((ExcludePairContainer) pc2).getEntry(r1, r2);
                     h.openSubTag("Rule");
                     h.addObject("R2", r2, false);
@@ -524,16 +514,12 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     .getConflictFreeContainer();
             if (conflictFreeContainer != null) {
                 h.openSubTag("dependencyFreeContainer");
-                for (Enumeration<Rule> keys = Collections.enumeration(conflictFreeContainer.keySet()); keys
-                        .hasMoreElements();) {
-                    Rule r1 = keys.nextElement();
+                for (Rule r1 : conflictFreeContainer.keySet()) {
                     h.openSubTag("Rule");
                     h.addObject("R1", r1, false);
                     Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
                             .get(r1);
-                    for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2
-                            .hasMoreElements();) {
-                        Rule r2 = k2.nextElement();
+                    for (Rule r2 : secondPart.keySet()) { 
                         entry = ((ExcludePairContainer) pc2).getEntry(r1, r2);
                         h.openSubTag("Rule");
                         h.addObject("R2", r2, false);

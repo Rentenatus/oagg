@@ -13,10 +13,6 @@
  */
 package agg.xt_basis.agt;
 
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.List;
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.ValueMember;
 import agg.attribute.impl.ValueTuple;
@@ -28,6 +24,7 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TypeSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**

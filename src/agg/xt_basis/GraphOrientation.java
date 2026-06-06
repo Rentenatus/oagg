@@ -8,16 +8,9 @@
  */
 package agg.xt_basis;
 
-import agg.xt_basis.Arc;
-import agg.xt_basis.Graph;
-import agg.xt_basis.Node;
-import agg.xt_basis.Type;
-import agg.xt_basis.TypeError;
-import agg.xt_basis.TypeSet;
-
 /**
  *
- * @author jRent
+ * @author Janusch Rentenatus
  */
 public interface GraphOrientation {
 
