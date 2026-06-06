@@ -28,7 +28,6 @@ import java.util.EmptyStackException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +141,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
         /*
 		 * es gibt ein set von rules fuer einen bestimmten layer ausserdem gibt
 		 * es set von confliktfreien regeln aller layer synchronisieren beider
-		 * sets. Hashtable Integer layer -> gefilterten confliktfreien Hashtable
+		 * sets. Map Integer layer -> gefilterten confliktfreien Map
          */
         Iterator<Integer> iter = ruleLayer.iterator();
         while (iter.hasNext() && !this.stop) {
@@ -380,3 +379,4 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
  * Revision 1.1.2.1 2000/12/26 10:00:05 shultzke Layered Parser hinzugefuegt
  * 
  */
+

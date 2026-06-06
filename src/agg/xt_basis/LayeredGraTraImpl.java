@@ -20,12 +20,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class LayeredGraTraImpl extends GraTra {
@@ -44,7 +46,7 @@ public class LayeredGraTraImpl extends GraTra {
     private boolean layeredLoop, resetGraphBeforeLoop;
     private Integer startLayer;
     private RuleLayer layer;
-    private Hashtable<Integer, HashSet<Rule>> invertedRuleLayer;
+    private Map<Integer, HashSet<Rule>> invertedRuleLayer;
     private SortedSeasonSet<Integer> ruleLayer;
     private Integer currentLayer;
     private boolean startTransform;
@@ -235,7 +237,7 @@ public class LayeredGraTraImpl extends GraTra {
         this.startLayer = this.layer.getStartLayer();
         this.invertedRuleLayer = this.layer.invertLayer();
         this.ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
+        for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
                 .hasMoreElements();) {
             this.ruleLayer.add(en.nextElement());
         }

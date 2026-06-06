@@ -15,16 +15,19 @@ package agg.layout.evolutionary;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.util.List;
-import java.util.Vector;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
+import java.util.Vector;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
 import agg.editor.impl.EdArc;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Type;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author Dennis
@@ -47,8 +50,8 @@ public class EvolutionaryGraphLayout {
     private int iters, nodeIntersctnIters,
             edgeIntersctnIters;
     private int overlapscnt;
-    private final Hashtable<Type, List<LayoutPattern>> layoutPatterns;
-    private final Hashtable<LayoutNode, Type> layoutNode2Type;
+    private final HashMap<Type, List<LayoutPattern>> layoutPatterns;
+    private final HashMap<LayoutNode, Type> layoutNode2Type;
 //	private boolean freezingOldNode, freezingOldEdge;
     private final Random random = new Random();
 
@@ -76,8 +79,8 @@ public class EvolutionaryGraphLayout {
         this.edgeIntersctnIters = 50;
         this.overlapscnt = 0;
         this.gnrlEdgeLngth = 200;
-        this.layoutPatterns = new Hashtable<Type, List<LayoutPattern>>();
-        this.layoutNode2Type = new Hashtable<LayoutNode, Type>();
+        this.layoutPatterns = new HashMap<Type, List<LayoutPattern>>();
+        this.layoutNode2Type = new HashMap<LayoutNode, Type>();
     }
 
     public void setEnabled(final boolean b) {
@@ -1377,7 +1380,7 @@ public class EvolutionaryGraphLayout {
     }
 
     public void removeLayoutPattern(final Type type) {
-        if (this.layoutPatterns.contains(type)) {
+        if (this.layoutPatterns.containsKey(type)) {
             this.layoutPatterns.remove(type);
         }
     }
@@ -1399,7 +1402,7 @@ public class EvolutionaryGraphLayout {
         // name: "+patternName+" count:"+v.size());
     }
 
-    public Hashtable<Type, List<LayoutPattern>> getLayoutPatterns() {
+    public  Map<Type, List<LayoutPattern>> getLayoutPatterns() {
         return this.layoutPatterns;
     }
 
@@ -1431,9 +1434,9 @@ public class EvolutionaryGraphLayout {
         return null;
     }
 
-    public void setLayoutPatterns(final Hashtable<Type, List<LayoutPattern>> table) {
+    public void setLayoutPatterns(final HashMap<Type, List<LayoutPattern>> table) {
         this.layoutPatterns.clear();
-        final Enumeration<Type> keys = table.keys();
+        final Enumeration<Type> keys = Collections.enumeration(table.keySet());
         while (keys.hasMoreElements()) {
             final Type key = keys.nextElement();
             this.layoutPatterns.put(key, table.get(key));

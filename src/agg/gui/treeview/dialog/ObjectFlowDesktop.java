@@ -27,8 +27,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.DefaultCellEditor;
@@ -83,8 +84,8 @@ public class ObjectFlowDesktop extends JDialog
     protected int nextX, nextY;
     protected int myW, myH;
     protected JButton connect, disconnect, refresh, close;
-    protected Hashtable<GraphMorphismEditor, JInternalFrame> internalFrames;
-    protected Hashtable<ObjectFlow, GraphMorphismEditor> editors;
+    protected HashMap<GraphMorphismEditor, JInternalFrame> internalFrames;
+    protected HashMap<ObjectFlow, GraphMorphismEditor> editors;
     protected Dimension internalFrameSize;
     protected EdGraGra gragra;
     protected final RuleSequence ruleSequence;
@@ -459,8 +460,8 @@ public class ObjectFlowDesktop extends JDialog
         this.myW = 500;
         this.myH = 500;
         this.desktop.setPreferredSize(new Dimension(this.myW, this.myH));
-        this.editors = new Hashtable<ObjectFlow, GraphMorphismEditor>();
-        this.internalFrames = new Hashtable<GraphMorphismEditor, JInternalFrame>();
+        this.editors = new HashMap<ObjectFlow, GraphMorphismEditor>();
+        this.internalFrames = new HashMap<GraphMorphismEditor, JInternalFrame>();
         this.internalFrameIcon = null; //IconResource.getIconFromURL(IconResource.getURLOverlapGraph());
         this.internalFrameSize = new Dimension(500, 200);
         this.nextX = 0;
@@ -625,7 +626,7 @@ public class ObjectFlowDesktop extends JDialog
         if (this.currentFrame != null
                 && this.currentFrame.isEnabled()
                 && this.currentFrame.isSelected()) {
-            Enumeration<GraphMorphismEditor> keys = this.internalFrames.keys();
+            Enumeration<GraphMorphismEditor> keys = Collections.enumeration(this.internalFrames.keySet());
             while (keys.hasMoreElements()) {
                 GraphMorphismEditor gme = keys.nextElement();
                 if (this.internalFrames.get(gme) == this.currentFrame) {
@@ -698,11 +699,11 @@ public class ObjectFlowDesktop extends JDialog
     }
 
     private void resetListsSelection(final JInternalFrame f) {
-        Enumeration<GraphMorphismEditor> iter1 = this.internalFrames.keys();
+        Enumeration<GraphMorphismEditor> iter1 = Collections.enumeration(this.internalFrames.keySet());
         while (iter1.hasMoreElements()) {
             GraphMorphismEditor gme = iter1.nextElement();
             if (this.internalFrames.get(gme) == f) {
-                Enumeration<ObjectFlow> iter2 = this.editors.keys();
+                Enumeration<ObjectFlow> iter2 = Collections.enumeration(this.editors.keySet());
                 while (iter2.hasMoreElements()) {
                     ObjectFlow of = iter2.nextElement();
                     if (this.editors.get(of) == gme) {
@@ -721,7 +722,7 @@ public class ObjectFlowDesktop extends JDialog
 	 * @see javax.swing.event.InternalFrameListener#internalFrameClosed(javax.swing.event.InternalFrameEvent)
      */
     public void internalFrameClosed(InternalFrameEvent e) {
-        Enumeration<GraphMorphismEditor> keys = this.internalFrames.keys();
+        Enumeration<GraphMorphismEditor> keys = Collections.enumeration(this.internalFrames.keySet());
         while (keys.hasMoreElements()) {
             GraphMorphismEditor gme = keys.nextElement();
             if (this.internalFrames.get(gme) == e.getInternalFrame()) {

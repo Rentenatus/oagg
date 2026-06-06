@@ -18,13 +18,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.WeakHashMap;
-import java.util.Hashtable;
 import javax.swing.undo.UndoManager;
 import agg.cons.AtomConstraint;
 import agg.cons.Evaluable;
@@ -121,7 +122,7 @@ public class EdGraGra implements XMLObject {
      */
     private String fileName = "";
     private boolean isChanged = false;
-    private Hashtable<Type, List<LayoutPattern>> layoutPatterns = new Hashtable<>();
+    private HashMap<Type, List<LayoutPattern>> layoutPatterns = new HashMap<>();
     private EditUndoManager undoManager;
     private boolean undoEnabled = true;
     protected boolean animated;
@@ -1532,7 +1533,7 @@ public class EdGraGra implements XMLObject {
             }
         }
         // storage table
-        Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+        HashMap<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
         // copy LHS and RHS
         this.copyGraph(r.getLeft(), ruleClone.getLeft(), table);
         this.copyGraph(r.getRight(), ruleClone.getRight(), table);
@@ -1580,7 +1581,7 @@ public class EdGraGra implements XMLObject {
     }
 
     private void copyGraph(EdGraph from, EdGraph to,
-            Hashtable<GraphObject, GraphObject> table) {
+            HashMap<GraphObject, GraphObject> table) {
         // copy nodes
         Iterator<Node> nodes = from.getBasisGraph().getNodesSet().iterator();
         while (nodes.hasNext()) {
@@ -1634,7 +1635,7 @@ public class EdGraGra implements XMLObject {
     }
 
     private void copyMorph(OrdinaryMorphism from, OrdinaryMorphism to,
-            Hashtable<GraphObject, GraphObject> table) {
+            HashMap<GraphObject, GraphObject> table) {
         Iterator<GraphObject> dom = from.getDomainObjects().iterator();
         while (dom.hasNext()) {
             GraphObject lgo = dom.next();
@@ -3168,7 +3169,7 @@ public class EdGraGra implements XMLObject {
         for (int i = 0; i < this.typeSet.getNodeTypes().size(); i++) {
             h.addObject("", this.typeSet.getNodeTypes().get(i), true);
         }
-        Enumeration<Type> types = this.layoutPatterns.keys();
+        Enumeration<Type> types = Collections.enumeration(this.layoutPatterns.keySet());
         while (types.hasMoreElements()) {
             Type t = types.nextElement();
             // System.out.println("type name: "+t.getName());
@@ -3465,7 +3466,7 @@ public class EdGraGra implements XMLObject {
         // "+this.layoutPatterns.size());
     }
 
-    public Hashtable<Type, List<LayoutPattern>> getLayoutPatterns() {
+    public HashMap<Type, List<LayoutPattern>> getLayoutPatterns() {
         return this.layoutPatterns;
     }
 
@@ -3496,9 +3497,9 @@ public class EdGraGra implements XMLObject {
         return null;
     }
 
-    public void setLayoutPatterns(Hashtable<Type, Vector<LayoutPattern>> table) {
+    public void setLayoutPatterns(HashMap<Type, Vector<LayoutPattern>> table) {
         this.layoutPatterns.clear();
-        Enumeration<Type> keys = table.keys();
+        Enumeration<Type> keys = Collections.enumeration(table.keySet());
         while (keys.hasMoreElements()) {
             Type key = keys.nextElement();
             this.layoutPatterns.put(key, table.get(key));

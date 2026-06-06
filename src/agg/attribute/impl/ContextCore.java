@@ -12,8 +12,9 @@
 package agg.attribute.impl;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.HandlerExpr;
@@ -47,7 +48,7 @@ public class ContextCore extends ManagedObject implements Serializable,
      * Table of mappings. (Hashtable of Vectors of TupleMapping, key is the
      * target object)
      */
-    protected Hashtable<ValueTuple, Vector<TupleMapping>> mappings = new Hashtable<ValueTuple, Vector<TupleMapping>>();
+    protected HashMap<ValueTuple, Vector<TupleMapping>> mappings = new HashMap<ValueTuple, Vector<TupleMapping>>();
     /**
      * Conditions of this context.
      */
@@ -263,7 +264,7 @@ public class ContextCore extends ManagedObject implements Serializable,
     /**
      * returns all mappings
      */
-    protected Hashtable<ValueTuple, Vector<TupleMapping>> getMapping() {
+    protected HashMap<ValueTuple, Vector<TupleMapping>> getMapping() {
         return this.mappings;
     }
 
@@ -299,7 +300,7 @@ public class ContextCore extends ManagedObject implements Serializable,
     }
 
     public void removeAllMappings() {
-        final Enumeration<ValueTuple> keys = this.mappings.keys();
+        final Enumeration<ValueTuple> keys = Collections.enumeration(this.mappings.keySet());
         while (keys.hasMoreElements()) {
             ValueTuple key = keys.nextElement();
             Vector<TupleMapping> mappingsToTarget = this.mappings.get(key);

@@ -51,8 +51,8 @@ import agg.xt_basis.TypeSet;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.xt_basis.csp.Completion_InheritCSP;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -99,13 +99,13 @@ public class ExcludePair implements CriticalPair {
     protected boolean consistCheck, withNACsCheck, withPACsCheck;
     protected boolean directStrctCnfl, directStrctCnflUpToIso;
     private OrdinaryMorphism nacInsideOverlapGraph;
-    private Hashtable<ValueMember, Pair<String, String>> attrMember2Expr;
+    private Map<ValueMember, Pair<String, String>> attrMember2Expr;
     protected boolean withInheritance;
     protected boolean equalVariableNameOfAttrMapping;
     protected boolean danglEdge;
     protected boolean namedObjectOnly;
     protected int inclCount, inclProgress;
-    protected Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> ac2leftExtended; //NAC | PAC
+    protected Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> ac2leftExtended; //NAC | PAC
     protected int duIndx, pfIndx = -1, caIndx;
     protected String duIndxStr, pfIndxStr, caIndxStr;
     long freeM, usedM;
@@ -129,7 +129,7 @@ public class ExcludePair implements CriticalPair {
         this.produce = new Vector<>(5);
         this.preservedChanged = new Vector<>(5);
         this.danglingEdges = new Vector<>(5);
-        this.attrMember2Expr = new Hashtable<>(2);
+        this.attrMember2Expr = new HashMap<>(2);
         this.duIndx = -1;
         this.pfIndx = -1;
         this.caIndx = -1;
@@ -440,7 +440,7 @@ public class ExcludePair implements CriticalPair {
             this.preservedChanged.clear();
             this.contextC1_L1.clear();
             this.boundB1_L1.clear();
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1 = new Hashtable<>();
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1 = new HashMap<>();
             // fill this.preservedChanged vector
             ruleChangesAttributes(this.preservedChanged, r1, r2, this.contextC1_L1, this.boundB1_L1,
                     this.preservedK1_L1, changedAttrsL1, this.typesTG_L2);
@@ -452,7 +452,7 @@ public class ExcludePair implements CriticalPair {
                 ruleChangesAttributes(this.preservedChanged, r1, r2, this.contextC1_L1, this.boundB1_L1,
                         this.preservedK1_L1, changedAttrsL1, this.typesTG_PAC2);
             }
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2 = new Hashtable<>();
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2 = new HashMap<>();
             // changedAttrsL2 will be filled in ruleRestrictsAttributes(...)
             if (this.preservedChanged.isEmpty()
                     || !ruleRestrictsAttributes(this.strongAttrCheck, r2, changedAttrsL2, changedAttrsL1)) {
@@ -782,7 +782,7 @@ public class ExcludePair implements CriticalPair {
      */
     protected boolean needMoreCheckDueToDelConstAttr(final Rule r1, final Rule r2) {
         final List<GraphObject> delObjsLHS1 = r1.getElementsToDelete();
-        final Hashtable<Type, List<GraphObject>> table = new Hashtable<>();
+        final Map<Type, List<GraphObject>> table = new HashMap<>();
         for (int i = 0; i < delObjsLHS1.size(); i++) {
             GraphObject goLHS1 = delObjsLHS1.get(i);
             if (this.canMapLeftObjDueToConstAttr(goLHS1, r1, r2, table)) {
@@ -797,7 +797,7 @@ public class ExcludePair implements CriticalPair {
     private boolean canMapLeftObjDueToConstAttr(
             final GraphObject goLHS1,
             final Rule r1, final Rule r2,
-            final Hashtable<Type, List<GraphObject>> table) {
+            final Map<Type, List<GraphObject>> table) {
         if (goLHS1.getAttribute() == null
                 || goLHS1.getAttribute().getNumberOfEntries() == 0) {
             return true;
@@ -859,7 +859,7 @@ public class ExcludePair implements CriticalPair {
 		boolean needMoreCheck = true;
 		int needMoreCheckCount = 0;
 		List<GraphObject> prodObjsRHS1 = r1.getElementsToCreate();
-		final Hashtable<Type, List<GraphObject>> table = new Hashtable<Type, List<GraphObject>>();
+		final Map<Type, List<GraphObject>> table = new HashMap<Type, List<GraphObject>>();
 		for (int i = 0; i < prodObjsRHS1.size(); i++) {
 			GraphObject goRHS1 = prodObjsRHS1.get(i);
 			List<GraphObject> vec2 = nac2.getTarget()
@@ -917,7 +917,7 @@ public class ExcludePair implements CriticalPair {
 	}
 	private boolean needMoreCheckWhenProduceCostantAttribute(
 			List<GraphObject> prodObjsRHS1,
-			Hashtable<Type, List<GraphObject>> type2gosNAC2) {
+			Map<Type, List<GraphObject>> type2gosNAC2) {
 		// System.out.println("ExcludePair.needMoreCheckWhenProduceCostantAttribute
 		// ");
 		boolean needMoreCheck = true;
@@ -1105,7 +1105,7 @@ public class ExcludePair implements CriticalPair {
         this.duIndx = this.getDUIndx();
         String duNameIndx = this.duIndxStr.contains(":PAC") ? this.getDUNameIndx() : "";
         if (this.ac2leftExtended == null) {
-            this.ac2leftExtended = new Hashtable<>();
+            this.ac2leftExtended = new HashMap<>();
         }
         final Graph g = r1.getLeft();
         int maxSize = r2.getLeft().getSize();
@@ -1671,7 +1671,7 @@ public class ExcludePair implements CriticalPair {
         // NOTE: r1 deletes node, r2 used node and produce an edge at it
         // 
         final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps = new Vector<>();
-        // generate critical inclusions as Hashtable:
+        // generate critical inclusions as Map:
         // - key is Integer(size) of inclusion,
         // - object is List with GraphObjects;
         // each inclusion should contain at least one graph object to be deleted
@@ -1920,7 +1920,7 @@ public class ExcludePair implements CriticalPair {
             if (!nac.isEnabled()) {
                 continue;
             }
-            Hashtable<Type, List<GraphObject>> type2gosNAC2 = new Hashtable<>();
+            Map<Type, List<GraphObject>> type2gosNAC2 = new HashMap<>();
             boolean nacMaybeCritical = false;
             boolean attrTest = false;
             boolean nacAttrSet = false;
@@ -2158,10 +2158,10 @@ public class ExcludePair implements CriticalPair {
         String pfNameIndx = this.getPFNameIndx();
         int pfIndxPCI = this.getPFIndx2();
         if (this.ac2leftExtended == null) {
-            this.ac2leftExtended = new Hashtable<>();
+            this.ac2leftExtended = new HashMap<>();
         }
         final Graph g = r1.getRight();
-        // generate critical inclusions as Hashtable:
+        // generate critical inclusions as Map:
         // - key is Integer(size) of inclusion,
         // - object is List with its GraphObjects;
         // each inclusion should contain at least one graph object to be produced
@@ -2466,7 +2466,7 @@ public class ExcludePair implements CriticalPair {
             // make loop over NACs
             final Iterator<OrdinaryMorphism> nacs = potentialCriticalNACsOfR2.iterator();
             if (nacs.hasNext() && this.ac2leftExtended == null) {
-                this.ac2leftExtended = new Hashtable<>();
+                this.ac2leftExtended = new HashMap<>();
             }
             while (!this.stop && nacs.hasNext()) {
                 OrdinaryMorphism nac = nacs.next();
@@ -2896,8 +2896,8 @@ public class ExcludePair implements CriticalPair {
                     final Graph g,
                     final List<List<GraphObject>> contextCombis,
                     final List<List<GraphObject>> preservedCombis,
-                    final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1,
-                    final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2) {
+                    final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1,
+                    final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2) {
         // second part: check attr conflicts over NACs 
         final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps = new Vector<>();
         List<List<GraphObject>> inclusions = null;
@@ -3034,8 +3034,8 @@ public class ExcludePair implements CriticalPair {
             getChangeAttributeConflicts(
                     final Rule r1,
                     final Rule r2,
-                    final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1,
-                    final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2) {
+                    final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1,
+                    final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2) {
         System.out.println("    ExcludePair.getChangeAttributeConflicts::  [ "
                 + r1.getName() + ", " + r2.getName() + " ] ... ");
         List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps = new Vector<>();
@@ -4213,7 +4213,7 @@ public class ExcludePair implements CriticalPair {
         Graph extLeft = isoLeft.getTarget();
         OrdinaryMorphism isoNAC = BaseFactory.theFactory().createMorphism(
                 nac.getTarget(), extLeft);
-        Hashtable<Node, Node> tmp = new Hashtable<Node, Node>(5);
+        Map<Node, Node> tmp = new HashMap<Node, Node>(5);
         // first iterate over nodes
         Iterator<?> e = nac.getTarget().getNodesSet().iterator();
         while (e.hasNext()) {
@@ -4309,7 +4309,7 @@ public class ExcludePair implements CriticalPair {
         Graph extLeft = isoLeft.getTarget();
         OrdinaryMorphism embedPAC = BaseFactory.theFactory().createMorphism(
                 pac.getTarget(), extLeft);
-        final Hashtable<Node, Node> tmp = new Hashtable<Node, Node>(5);
+        final Map<Node, Node> tmp = new HashMap<Node, Node>(5);
         Iterator<?> e = pac.getTarget().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
@@ -4386,7 +4386,7 @@ public class ExcludePair implements CriticalPair {
         boolean failed = false;
         OrdinaryMorphism iso = overlap.getTarget().isoCopy();
         Graph extLeft = iso.getTarget();
-        final Hashtable<Node, Node> tmp = new Hashtable<Node, Node>(5);
+        final Map<Node, Node> tmp = new HashMap<Node, Node>(5);
         Iterator<OrdinaryMorphism> pacs = r.getPACs();
         while (!failed && pacs.hasNext()) {
             OrdinaryMorphism pac = pacs.next();
@@ -6605,7 +6605,7 @@ public class ExcludePair implements CriticalPair {
             m1t = null;
             return null;
         }
-        final Hashtable<GraphObject, GraphObject> adjusted = new Hashtable<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> adjusted = new HashMap<GraphObject, GraphObject>();
         final OrdinaryMorphism mo1 = BaseFactory.theFactory().createMorphism(
                 m1t.getSource(), isoE.getSource());
         final Iterator<GraphObject> e = m1t.getDomain();

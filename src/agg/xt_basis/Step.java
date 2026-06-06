@@ -21,8 +21,9 @@ import agg.attribute.impl.VarTuple;
 import agg.util.Change;
 import agg.util.Link;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -257,7 +258,7 @@ public class Step {
         if (!m.isTotal()) {
             return null;
         }
-        final Hashtable<GraphObject, Link> hashMap = new Hashtable<GraphObject, Link>();
+        final HashMap<GraphObject, Link> hashMap = new HashMap<GraphObject, Link>();
         final Graph L = r.getOriginal();
         final Graph G = m.getTarget();
         boolean sameType = (G.getTypeSet() == r.getTarget().getTypeSet());
@@ -379,7 +380,7 @@ public class Step {
         if (!m.isTotal()) {
             return null;
         }
-        final Hashtable<GraphObject, Link> hashMap = new Hashtable<GraphObject, Link>();
+        final HashMap<GraphObject, Link> hashMap = new HashMap<GraphObject, Link>();
         final Graph L = r.getOriginal();
         final Graph G = m.getTarget();
         boolean sameType = (G.getTypeSet() == r.getTarget().getTypeSet());
@@ -565,7 +566,7 @@ public class Step {
     }
 
     private void fillHashMap(
-            final Hashtable<GraphObject, Link> hashMap,
+            final HashMap<GraphObject, Link> hashMap,
             final OrdinaryMorphism r,
             final OrdinaryMorphism m,
             final Graph left) {
@@ -612,7 +613,7 @@ public class Step {
     }
 
     private void createNodeOfNonInjectiveMatch(
-            final Hashtable<GraphObject, Link> hashMap,
+            final HashMap<GraphObject, Link> hashMap,
             final Node n,
             final Graph g,
             final OrdinaryMorphism r,
@@ -682,7 +683,7 @@ public class Step {
     }
 
     private void createArcOfNonInjectiveMatch(
-            final Hashtable<GraphObject, Link> hashMap,
+            final HashMap<GraphObject, Link> hashMap,
             final Arc a,
             final Graph g,
             final OrdinaryMorphism r,
@@ -722,7 +723,7 @@ public class Step {
         boolean glued = false;
         final List<GraphObject> origs = r.getInverseImageList(n);
         if (!origs.isEmpty()) {
-            final Hashtable<Arc, Arc> arc2arcimg = new Hashtable<Arc, Arc>();
+            final HashMap<Arc, Arc> arc2arcimg = new HashMap<Arc, Arc>();
             final GraphObject ol1 = origs.get(0);
             final GraphObject og1 = m.getImage(ol1);
             if (og1 != null) {
@@ -775,7 +776,7 @@ public class Step {
                         }
                     }
                     // reset mappings of new Source/Target of Edges
-                    final Enumeration<Arc> inoutarcs = arc2arcimg.keys();
+                    final Enumeration<Arc> inoutarcs = Collections.enumeration(arc2arcimg.keySet());
                     while (inoutarcs.hasMoreElements()) {
                         final Arc arc = inoutarcs.nextElement();
                         try {

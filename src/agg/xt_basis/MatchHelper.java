@@ -33,8 +33,8 @@ import agg.xt_basis.csp.CompletionPropertyBits;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -577,7 +577,7 @@ public final class MatchHelper {
             final List<Arc> arcstocreate, // RHS objects
             final List<GraphObject> nodestoglue,
             int tgchecklevel) {
-        final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();
+        final Map<String, List<Arc>> type2newarcs = new HashMap<String, List<Arc>>();
         // type2newarcs contains RHS arcs
         // sorted by Arc.convertToKey() string which contains
         // name of source and target type, too
@@ -596,8 +596,8 @@ public final class MatchHelper {
                 list.add(a);
             }
         }
-        final Map<String, List<Arc>> type2delarcs = new Hashtable<String, List<Arc>>();
-        final Map<String, List<Arc>> type2delarcs2 = new Hashtable<String, List<Arc>>();
+        final Map<String, List<Arc>> type2delarcs = new HashMap<String, List<Arc>>();
+        final Map<String, List<Arc>> type2delarcs2 = new HashMap<String, List<Arc>>();
         // type2delarcs will contain edges of the HostGraph
         // sorted by type.convertToKey()  which contains
         // name of source and target type, too
@@ -895,7 +895,7 @@ public final class MatchHelper {
         final List<Triple<Node, Type, Type>> srcNodes = new ArrayList<Triple<Node, Type, Type>>();
         final ArraySeasonInt nnew = new ArraySeasonInt();
         final ArraySeasonInt tarMax = new ArraySeasonInt();
-        final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();	// RHS objects
+        final Map<String, List<Arc>> type2newarcs = new HashMap<String, List<Arc>>();	// RHS objects
         // type2newarcs contains arcs sorted by type.convertToKey() string which contains
         // name of source and target type, too
         for (int i = 0; i < arcstocreate.size(); i++) {
@@ -998,7 +998,7 @@ public final class MatchHelper {
         final List<Triple<Node, Type, Type>> tarNodes = new ArrayList<Triple<Node, Type, Type>>();
         final ArraySeasonInt nnew = new ArraySeasonInt();
         final ArraySeasonInt srcMax = new ArraySeasonInt();
-        final Map<String, List<Arc>> type2newarcs = new Hashtable<String, List<Arc>>();	// RHS objects
+        final Map<String, List<Arc>> type2newarcs = new HashMap<String, List<Arc>>();	// RHS objects
         // type2newarcs will contain arcs  by type.convertToKey() string 
         // with name of source and target type, too
         // arcs of arcstocreate are arcs of the RHS of a rule
@@ -2948,3 +2948,4 @@ public final class MatchHelper {
         }
     }
 }
+

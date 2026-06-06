@@ -22,13 +22,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Hashtable;
+import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import agg.editor.impl.EdGraph;
+import java.util.Map;
 
 /**
  * @author olga
@@ -89,9 +90,9 @@ public class VariableEqualityDialog extends JDialog {
         return this.graph;
     }
 
-    public static Hashtable<String, String> getVarNameEquality(String varsEquality) {
+    public static Map<String, String> getVarNameEquality(String varsEquality) {
         String[] array = varsEquality.split(",");
-        Hashtable<String, String> map = new Hashtable<String, String>(array.length);
+        HashMap<String, String> map = new HashMap<String, String>(array.length);
         for (int i = 0; i < array.length; i++) {
             String s = array[i];
             String[] vars = s.split("=");

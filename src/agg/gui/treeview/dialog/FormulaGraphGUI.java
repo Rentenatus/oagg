@@ -37,7 +37,6 @@ import java.awt.event.MouseListener;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -102,8 +101,8 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     final EdGraph fgraph;
     final List<EdNode> subNodes = new Vector<EdNode>(5, 1);
     final List<EdType> op2type = new Vector<EdType>();
-    final Hashtable<JMenuItem, EdType> oprnd2type = new Hashtable<JMenuItem, EdType>(5, 0.3f);
-    final Hashtable<EdType, Object> type2obj = new Hashtable<EdType, Object>(5, 0.3f);
+    final HashMap<JMenuItem, EdType> oprnd2type = new HashMap<JMenuItem, EdType>(5, 0.3f);
+    final HashMap<EdType, Object> type2obj = new HashMap<EdType, Object>(5, 0.3f);
     final JPopupMenu commonMenu = new JPopupMenu("");
     final JPopupMenu oprndMenu = new JPopupMenu("");
     final JPopupMenu delMenu = new JPopupMenu("");
@@ -348,7 +347,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
         // create an edge type to connect nodes
         refGraph.getTypeSet().createArcType("", EditorConstants.SOLID, Color.BLACK);
         this.formula2graph(form, refGraph);
-        Hashtable<EdGraphObject, EdGraphObject> go2go = new Hashtable<EdGraphObject, EdGraphObject>();
+        HashMap<EdGraphObject, EdGraphObject> go2go = new HashMap<EdGraphObject, EdGraphObject>();
         int x = refNode.getX();
         int y = refNode.getY() + 40;
         List<EdNode> v = refGraph.getNodes();

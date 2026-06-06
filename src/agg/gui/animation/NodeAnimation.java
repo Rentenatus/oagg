@@ -16,8 +16,9 @@ package agg.gui.animation;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -45,8 +46,8 @@ public class NodeAnimation {
     public final static int COMBI_CROSS = 31;
     private ImageIcon image; //, inverseImage;	
     protected String imageFileName = "";
-    private final Hashtable<EdType, ImageIcon> type2icon;
-    private final Hashtable<String, ImageIcon> name2icon;
+    private final HashMap<EdType, ImageIcon> type2icon;
+    private final HashMap<String, ImageIcon> name2icon;
     protected int kind;
     protected boolean stop;
     protected int x1, y1, x2, y2, plus;
@@ -54,7 +55,7 @@ public class NodeAnimation {
     private int step, delay;
     protected EdRule r;
     protected EdGraph g;
-    protected Hashtable<EdNode, Point> node2position;
+    protected HashMap<EdNode, Point> node2position;
     protected Graphics2D grs;
     protected boolean needGraphicsToMove;
     protected boolean left, right, top, down;
@@ -62,9 +63,9 @@ public class NodeAnimation {
     private boolean ddone;
 
     public NodeAnimation() {
-        this.type2icon = new Hashtable<EdType, ImageIcon>();
-        this.name2icon = new Hashtable<String, ImageIcon>();
-        this.node2position = new Hashtable<EdNode, Point>();
+        this.type2icon = new HashMap<EdType, ImageIcon>();
+        this.name2icon = new HashMap<String, ImageIcon>();
+        this.node2position = new HashMap<EdNode, Point>();
     }
 
     public void dispose() {
@@ -138,7 +139,7 @@ public class NodeAnimation {
     public void animate() {
 //		System.out.println("NodeAnimation.running   ...");
         enableNodeAnimation();
-        Enumeration<EdNode> keys = this.node2position.keys();
+        Enumeration<EdNode> keys = Collections.enumeration(this.node2position.keySet());
         while (keys.hasMoreElements()) {
             EdNode n = keys.nextElement();
             Point p = this.node2position.get(n);

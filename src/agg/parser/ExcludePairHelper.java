@@ -1046,8 +1046,8 @@ public final class ExcludePairHelper {
      * 1) the <code>Morphism morph</code> does not define any inverse image, or
      * 2) the <code>Morphism morph</code> defines an inverse image and an
      * attribute member of it is in the
-     * <code>Hashtable attrMember2Constant</code>. The
-     * <code>Hashtable attrMember2Constant</code> contains Pairs of Strings
+     * <code>Map attrMember2Constant</code>. The
+     * <code>Map attrMember2Constant</code> contains Pairs of Strings
      * where the first string is the name of a variable, the second string is a
      * constant value of the same variable.
      *
@@ -1055,7 +1055,7 @@ public final class ExcludePairHelper {
      *
      * @param morph the OrdinaryMorphism to search
      * @param imageObj the GraphObject to check
-     * @param attrMember2Constant the <code>Hashtable</code> of Pairs of Strings
+     * @param attrMember2Constant the <code>Map</code> of Pairs of Strings
      * an the keys are ValuMembers.
      * @return Type the Type of the imageObj
      */
@@ -2372,7 +2372,7 @@ public final class ExcludePairHelper {
         Pair<OrdinaryMorphism, OrdinaryMorphism> cp2 = p.second;
         OrdinaryMorphism o1 = cp1.first;
         OrdinaryMorphism o2 = cp1.second;
-//		Hashtable<String,String> 
+//		Map<String,String> 
 //		varEqualName = VariableEqualityDialog.getVarNameEquality(
 //							criticalGraph.getHelpInfoAboutVariableEquality());
         ////		System.out.println(varEqualName);

@@ -15,7 +15,7 @@ package agg.editor.impl;
 
 import java.awt.Color;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -34,6 +34,8 @@ import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.DeclMember;
 import de.jare.ndimcol.ref.ArrayMovie;
 import de.jare.ndimcol.ref.IteratorWalker;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * This class EdTypeSet specifies a set of layout types for typing nodes and
@@ -49,15 +51,15 @@ import de.jare.ndimcol.ref.IteratorWalker;
  * @author $Author: olga $
  * @version $Id: EdTypeSet.java,v 1.49 2010/10/16 22:43:42 olga Exp $
  */
-public class EdTypeSet {
+public class EdTypeSet { 
 
     private final Vector<EdType> nodeTypes = new Vector<EdType>();
     private final Vector<EdType> arcTypes = new Vector<EdType>();
-    private final Hashtable<EdType, List<EdGraphObject>> nodeTypeUsers = new Hashtable<EdType, List<EdGraphObject>>();
-    private final Hashtable<EdType, List<EdGraphObject>> arcTypeUsers = new Hashtable<EdType, List<EdGraphObject>>();
-    private final Hashtable<EdType, List<EdGraphObject>> typeGraphNodeUsers = new Hashtable<EdType, List<EdGraphObject>>();
-    private final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> typeGraphArcUsers = new Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>>();
-    private EdType selectedNodeType;
+    private final HashMap<EdType, List<EdGraphObject>> nodeTypeUsers = new HashMap<EdType, List<EdGraphObject>>();
+    private final HashMap<EdType, List<EdGraphObject>> arcTypeUsers = new HashMap<EdType, List<EdGraphObject>>();
+    private final HashMap<EdType, List<EdGraphObject>> typeGraphNodeUsers = new HashMap<EdType, List<EdGraphObject>>();
+    private final HashMap<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> typeGraphArcUsers = new HashMap<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>>();
+    private EdType selectedNodeType; 
     private EdType selectedArcType;
     private EdType defaultNodeType;
     private EdType defaultArcType;
@@ -1487,14 +1489,14 @@ public class EdTypeSet {
         } else if (t.isArcType()) {
             addTypeUserToTypeContainer(t, go, this.arcTypeUsers);
             if (!go.isElementOfTypeGraph()) {
-                addTypeUserToTypeGraphArcContainer(t, go, this.typeGraphArcUsers);
+                addTypeUserToTypeGraphArcContainer(t, go, new HashMap(this.typeGraphArcUsers));
             }
         }
     }
 
     private void addTypeUserToTypeContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, List<EdGraphObject>> container) {
+            final Map<EdType, List<EdGraphObject>> container) {
         List<EdGraphObject> list = container.get(t);
         if (list == null) {
             list = new Vector<EdGraphObject>();
@@ -1505,7 +1507,7 @@ public class EdTypeSet {
 
     private void addTypeUserToTypeGraphNodeContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, List<EdGraphObject>> container) {
+            final Map<EdType, List<EdGraphObject>> container) {
         if (t.getBasisType().getTypeGraphNode() != null) {
             List<EdGraphObject> list = container.get(t);
             if (list == null) {
@@ -1518,7 +1520,7 @@ public class EdTypeSet {
 
     private void addTypeUserToTypeGraphArcContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
+            final Map<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
         TypeGraphArc tga = this.getTypeGraphArc(
                 t.getBasisType(),
                 ((Arc) go.getBasisObject()).getSourceType(),
@@ -1567,7 +1569,7 @@ public class EdTypeSet {
 
     private void removeTypeUserFromTypeContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, List<EdGraphObject>> container) {
+            final Map<EdType, List<EdGraphObject>> container) {
         List<EdGraphObject> list = container.get(t);
         if (list != null) {
             list.remove(go);
@@ -1579,7 +1581,7 @@ public class EdTypeSet {
 
     private void removeTypeUserFromTypeGraphNodeContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, List<EdGraphObject>> container) {
+            final Map<EdType, List<EdGraphObject>> container) {
         if (t.getBasisType().getTypeGraphNode() != null) {
             List<EdGraphObject> list = container.get(t);
             if (list != null) {
@@ -1594,7 +1596,7 @@ public class EdTypeSet {
     private void removeTypeUserFromTypeGraphArcContainer(
             final EdType t,
             final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
+            final Map<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
 //		if (t.getBasisType().hasTypeGraphArc(((EdArc)go).getSource().getBasisObject().getType(), 
 //				((EdArc)go).getTarget().getBasisObject().getType())) 
         if (this.edTypeGraph != null) {
@@ -1620,7 +1622,7 @@ public class EdTypeSet {
     private void removeTypeUserFromTypeGraphArcContainer(
             final EdType t,
             final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container,
+            final Map<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container,
             final EdType nType) {
         Type srcT = (((EdArc) go).getSource().getBasisObject() == null
                 || ((EdArc) go).getSource().getBasisObject().getType() == null)
@@ -1772,7 +1774,7 @@ public class EdTypeSet {
         if (t.isArcType() && this.edTypeGraph != null) {
             TypeGraphArc tga = this.getTypeGraphArc(t.getBasisType(), src.getBasisType(), tar.getBasisType());
             if (tga != null) {
-                Hashtable<TypeGraphArc, List<EdGraphObject>> tCntnr = this.typeGraphArcUsers.get(t);
+                 Map<TypeGraphArc, List<EdGraphObject>> tCntnr = this.typeGraphArcUsers.get(t);
                 if (tCntnr != null) {
                     List<EdGraphObject> list = tCntnr.get(tga);
                     if (list != null && !list.isEmpty()) {

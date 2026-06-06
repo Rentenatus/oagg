@@ -18,6 +18,7 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Vector;
-import java.util.Hashtable;
 import javax.swing.undo.*;
 import agg.attribute.AttrMapping;
 import agg.attribute.impl.ValueTuple;
@@ -53,6 +53,7 @@ import agg.layout.evolutionary.EvolutionaryGraphLayout;
 import agg.util.Pair;
 import de.jare.ndimcol.ref.IteratorWalker;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -71,7 +72,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     protected EdTypeSet typeSet;
     protected List<EdNode> nodes;
     protected List<EdArc> arcs;
-    private Hashtable<Node, EdNode> basisNode2node;
+    private HashMap<Node, EdNode> basisNode2node;
     protected List<EdNode> visibleNodes;
     protected List<EdArc> visibleArcs;
     protected List<EdNode> selectedNodes;
@@ -179,7 +180,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
     private void init() {
         nodes = new Vector<EdNode>();
         arcs = new Vector<EdArc>();
-        basisNode2node = new Hashtable<Node, EdNode>();
+        basisNode2node = new HashMap<Node, EdNode>();
         itsLayouter = new EvolutionaryGraphLayout(100, null);
         editable = true;
         criticalStyle = 0;
@@ -871,7 +872,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                 }
                 return;
             }
-            Enumeration<?> keys = state.keys();
+            Enumeration<?> keys = Collections.enumeration(state.keySet());
             while (keys.hasMoreElements()) {
                 Object key = keys.nextElement();
                 if (key instanceof EdGraph) {
@@ -3071,7 +3072,7 @@ public class EdGraph implements XMLObject, Observer, StateEditable {
                     agg.attribute.impl.AttrTupleManager.getDefaultManager()
                             .newRightContext(aGraphContext));
         }
-        Hashtable<EdNode, EdNode> table = new Hashtable<EdNode, EdNode>();
+        HashMap<EdNode, EdNode> table = new HashMap<EdNode, EdNode>();
         // copy nodes
         for (int i = 0; i < this.nodes.size(); i++) {
             EdNode node = this.nodes.get(i);

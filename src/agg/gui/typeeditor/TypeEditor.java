@@ -14,10 +14,12 @@
 package agg.gui.typeeditor;
 
 import java.awt.Color;
-import java.util.List;
-import java.util.Vector;
-import java.util.Hashtable;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,6 +41,7 @@ import agg.gui.editor.GraGraEditor;
 import agg.gui.event.TypeEvent;
 import agg.gui.event.TypeEventListener;
 import agg.util.Pair;
+import java.util.Hashtable;
 
 /**
  * A TypeEditor defines an editor for the editing the node and edge types.
@@ -113,14 +116,14 @@ public class TypeEditor implements TypeEventListener, StateEditable {
     }
 
     private void undoManagerAddDeleteEdit(
-            final Hashtable<EdGraph, Vector<EdGraphObject>> graph2typeObservers,
+            final HashMap<EdGraph, Vector<EdGraphObject>> graph2typeObservers,
             final String undoKind) {
         if (this.undoManager == null || !this.undoManager.isEnabled()) {
             return;
         }
         // System.out.println("TypeEditor.undoManagerAddDeleteEdit...");
         final Vector<EdGraph> vec = new Vector<EdGraph>();
-        Enumeration<EdGraph> keys = graph2typeObservers.keys();
+        Enumeration<EdGraph> keys = Collections.enumeration(graph2typeObservers.keySet());
         while (keys.hasMoreElements()) {
             EdGraph g = keys.nextElement();
             Vector<EdGraphObject> gos = graph2typeObservers.get(g);
@@ -526,9 +529,9 @@ public class TypeEditor implements TypeEventListener, StateEditable {
         return true;
     }
 
-    private Hashtable<EdGraph, Vector<EdGraphObject>> getTypeContext(EdType et,
+    private HashMap<EdGraph, Vector<EdGraphObject>> getTypeContext(EdType et,
             boolean alsoFromTypeGraph) {
-        Hashtable<EdGraph, Vector<EdGraphObject>> table = new Hashtable<EdGraph, Vector<EdGraphObject>>();
+        HashMap<EdGraph, Vector<EdGraphObject>> table = new HashMap<EdGraph, Vector<EdGraphObject>>();
         Vector<EdGraphObject> vec = null;
         Vector<EdGraphObject> gos = this.gragra.getGraphObjectsOfType(et,
                 alsoFromTypeGraph);
@@ -574,7 +577,7 @@ public class TypeEditor implements TypeEventListener, StateEditable {
 
     protected boolean deleteType(EdType et, int index, JComponent source,
             boolean undoable) {
-        final Hashtable<EdGraph, Vector<EdGraphObject>> graph2typeObservers = getTypeContext(et, true);
+        final HashMap<EdGraph, Vector<EdGraphObject>> graph2typeObservers = getTypeContext(et, true);
         EdTypeSet typeSet = this.gragra.getTypeSet();
         int answer = JOptionPane.NO_OPTION;
         boolean used = false;

@@ -12,7 +12,8 @@
 package agg.attribute.view.impl;
 
 import java.lang.ref.WeakReference;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrObserver;
@@ -35,7 +36,7 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     /**
      * Table of tuple formats for (type) tuples.
      */
-    protected Hashtable<DeclTuple, TupleFormat> formatTab;
+    protected Map<DeclTuple, TupleFormat> formatTab;
     protected MaskedViewSetting maskedView;
     protected int lastOpenDeletedSlot0 = -1;
     protected int lastOpenDeletedSlot1 = -1;
@@ -46,7 +47,7 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     public OpenViewSetting(AttrTupleManager m) {
         super(m);
         this.maskedView = new MaskedViewSetting(this);
-        this.formatTab = new Hashtable<DeclTuple, TupleFormat>(50);
+        this.formatTab = new HashMap<DeclTuple, TupleFormat>(50);
     }
 
     /**
@@ -259,7 +260,7 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     /*
 	private Hashtable<DeclMember, Vector<Integer>> getIndexOfSameMember(AttrTuple attr) {
 		DeclTuple type = ((TupleObject) attr).getTupleType();
-		Hashtable<DeclMember, Vector<Integer>> t = new Hashtable<DeclMember, Vector<Integer>>();
+		Map<DeclMember, Vector<Integer>> t = new HashMap<DeclMember, Vector<Integer>>();
 		int length = type.getNumberOfEntries();
 		for (int i = 0; i < length; i++) {
 			DeclMember mi = (DeclMember) type.getMemberAt(i);

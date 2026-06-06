@@ -22,9 +22,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Dictionary;
 import java.util.EventObject;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
@@ -51,6 +51,7 @@ import agg.parser.CriticalPairOption;
 import agg.parser.OptionEventListener;
 import agg.parser.ParserOption;
 import agg.parser.ExcludePairContainer;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -240,7 +241,7 @@ public class CriticalPairOptionGUI extends AbstractOptionGUI implements
         slider.setPaintTrack(true);
         slider.setMajorTickSpacing(slider.getMinorTickSpacing() * 5);
         slider.setSnapToTicks(true);
-        Dictionary<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
         for (int i = slider.getMinimum(); i < slider.getMaximum(); i++) {
             if (i % 5 == 0) {
                 labelTable.put(Integer.valueOf(i), new JLabel("" + i));

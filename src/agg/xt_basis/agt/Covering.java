@@ -13,11 +13,13 @@
  */
 package agg.xt_basis.agt;
 
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.List;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrMapping;
@@ -89,8 +91,8 @@ public class Covering {
      */
     final private MorphCompletionStrategy strategy = new Completion_InjCSP();
     final private List<AmalgamationDataOfSingleKernelMatch> amalgamationData;
-    final private Hashtable<GraphObject, GraphObject> amalgamLHS2kernelLHS;
-    final private Hashtable<GraphObject, GraphObject> amalgamRHS2kernelRHS;
+    final private Map<GraphObject, GraphObject> amalgamLHS2kernelLHS;
+    final private Map<GraphObject, GraphObject> amalgamRHS2kernelRHS;
     /**
      * left graph of the amalgamated rule (the graph of colim diagram)
      */
@@ -153,8 +155,8 @@ public class Covering {
         }
         this.amalgamationData = new ArrayList<AmalgamationDataOfSingleKernelMatch>();
         this.disjointObjects = new ArrayList<List<GraphObject>>();
-        this.amalgamRHS2kernelRHS = new Hashtable<GraphObject, GraphObject>();
-        this.amalgamLHS2kernelLHS = new Hashtable<GraphObject, GraphObject>();
+        this.amalgamRHS2kernelRHS = new HashMap<GraphObject, GraphObject>();
+        this.amalgamLHS2kernelLHS = new HashMap<GraphObject, GraphObject>();
     }
 
     /**
@@ -522,7 +524,7 @@ public class Covering {
             }
         }
         if (!owns.isEmpty()) {
-            final Enumeration<Rule> keys = askMultiMatchData.getData().keys();
+            final Enumeration<Rule> keys = Collections.enumeration(askMultiMatchData.getData().keySet());
             while (keys.hasMoreElements()) {
                 final Rule r = keys.nextElement();
                 final List<AmalgamationRuleData> datas = askMultiMatchData.getData().get(r);
@@ -687,7 +689,7 @@ public class Covering {
                 if (dataOfSKM.isEmpty(rule)) {
                     continue;
                 }
-                Hashtable<Rule, List<AmalgamationRuleData>> amalgamationRuleData = dataOfSKM.getData();
+                Map<Rule, List<AmalgamationRuleData>> amalgamationRuleData = dataOfSKM.getData();
                 final List<AmalgamationRuleData> datas = amalgamationRuleData.get(rule);
                 if (datas.isEmpty()) {
                     continue;
@@ -842,7 +844,7 @@ public class Covering {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
             final AmalgamationRuleData kernelData = askMatchdata.getKernelData();
             colimL.addNode(kernelData.isoCopyLeft.getImage());
-            Enumeration<Rule> keys = askMatchdata.getData().keys();
+            Enumeration<Rule> keys = Collections.enumeration(askMatchdata.getData().keySet());
             while (keys.hasMoreElements()) {
                 final Rule rule = keys.nextElement();
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
@@ -891,7 +893,7 @@ public class Covering {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
             final AmalgamationRuleData kernelData = askMatchdata.getKernelData();
             colimR.addNode(kernelData.isoCopyRight.getImage());
-            final Enumeration<Rule> keys = askMatchdata.getData().keys();
+            final Enumeration<Rule> keys = Collections.enumeration(askMatchdata.getData().keySet());
             while (keys.hasMoreElements()) {
                 final Rule rule = keys.nextElement();
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
@@ -933,7 +935,7 @@ public class Covering {
         for (int j = 0; j < this.amalgamationData.size(); j++) {
             boolean stored = false;
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
-            final Enumeration<Rule> keys = askMatchdata.getData().keys();
+            final Enumeration<Rule> keys = Collections.enumeration(askMatchdata.getData().keySet());
             while (keys.hasMoreElements()) {
                 final Rule rule = keys.nextElement();
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
@@ -1052,15 +1054,15 @@ public class Covering {
     /**
      * @deprecated replaced by getRHSMappingAmalgamToKernelRule()
      */
-    public Hashtable<GraphObject, GraphObject> getMappingAmalgamToKernelRule() {
+    public Map<GraphObject, GraphObject> getMappingAmalgamToKernelRule() {
         return this.amalgamRHS2kernelRHS;
     }
 
-    public Hashtable<GraphObject, GraphObject> getLHSMappingAmalgamToKernelRule() {
+    public Map<GraphObject, GraphObject> getLHSMappingAmalgamToKernelRule() {
         return this.amalgamLHS2kernelLHS;
     }
 
-    public Hashtable<GraphObject, GraphObject> getRHSMappingAmalgamToKernelRule() {
+    public Map<GraphObject, GraphObject> getRHSMappingAmalgamToKernelRule() {
         return this.amalgamRHS2kernelRHS;
     }
 
@@ -1073,7 +1075,7 @@ public class Covering {
         boolean mapOK = true;
         for (int j = 0; mapOK && j < this.amalgamationData.size(); j++) {
             final AmalgamationDataOfSingleKernelMatch askMatchdata = this.amalgamationData.get(j);
-            final Enumeration<Rule> keys = askMatchdata.getData().keys();
+            final Enumeration<Rule> keys = Collections.enumeration(askMatchdata.getData().keySet());
             while (mapOK && keys.hasMoreElements()) {
                 final Rule rule = keys.nextElement();
                 final List<AmalgamationRuleData> datas = askMatchdata.getData().get(rule);
@@ -1166,8 +1168,8 @@ public class Covering {
     private boolean glueObjectsOfAmalgamatedRule(final Rule amalgamRule, final Match m) {
         int tgCheckLevel = m.getTarget().getTypeSet().getLevelOfTypeGraphCheck();
         m.getTarget().getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
-        final Hashtable<GraphObject, GraphObject> l2r = new Hashtable<GraphObject, GraphObject>();
-        final Hashtable<GraphObject, List<GraphObject>> keep2glue = new Hashtable<GraphObject, List<GraphObject>>();
+        final Map<GraphObject, GraphObject> l2r = new HashMap<GraphObject, GraphObject>();
+        final Map<GraphObject, List<GraphObject>> keep2glue = new HashMap<GraphObject, List<GraphObject>>();
         final List<GraphObject> toDelete = new ArrayList<GraphObject>();
         Iterator<GraphObject> matchCodom = m.getCodomain();
         while (matchCodom.hasNext()) {
@@ -1246,7 +1248,7 @@ public class Covering {
             }
         }
         // glue arcs
-        final Enumeration<GraphObject> keep = keep2glue.keys();
+        final Enumeration<GraphObject> keep = Collections.enumeration(keep2glue.keySet());
         while (keep.hasMoreElements() && result) {
             GraphObject keepObj = keep.nextElement();
             List<GraphObject> glue = keep2glue.get(keepObj);
@@ -1262,7 +1264,7 @@ public class Covering {
         }
         // restore mapping
         if (result) {
-            final Enumeration<GraphObject> lhs = l2r.keys();
+            final Enumeration<GraphObject> lhs = Collections.enumeration(l2r.keySet());
             while (lhs.hasMoreElements()) {
                 GraphObject l = lhs.nextElement();
                 if (l.isNode()) {

@@ -20,10 +20,12 @@ import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarTuple;
 import agg.util.Link;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements a direct graph transformation (test)step in the single
@@ -228,7 +230,7 @@ public final class TestStep {
         if (!m.isTotal()) {
             return null;
         }
-        final Hashtable<GraphObject, Link> hashMap = new Hashtable<GraphObject, Link>();
+        final Map<GraphObject, Link> hashMap = new HashMap<GraphObject, Link>();
         final Graph L = r.getOriginal();
         final Graph G = m.getTarget();
         boolean sameType = (G.getTypeSet() == r.getTarget().getTypeSet());
@@ -358,7 +360,7 @@ public final class TestStep {
         if (!m.isTotal()) {
             return null;
         }
-        final Hashtable<GraphObject, Link> hashMap = new Hashtable<GraphObject, Link>();
+        final Map<GraphObject, Link> hashMap = new HashMap<GraphObject, Link>();
         final Graph L = r.getOriginal();
         final Graph G = m.getTarget();
         boolean sameType = (G.getTypeSet() == r.getTarget().getTypeSet());
@@ -547,7 +549,7 @@ public final class TestStep {
     }
 
     private static void fillHashMap(
-            final Hashtable<GraphObject, Link> hashMap,
+            final Map<GraphObject, Link> hashMap,
             final OrdinaryMorphism r,
             final OrdinaryMorphism m,
             final Graph left) {
@@ -594,7 +596,7 @@ public final class TestStep {
     }
 
     private static void createNodeOfNonInjectiveMatch(
-            final Hashtable<GraphObject, Link> hashMap,
+            final Map<GraphObject, Link> hashMap,
             final Node n,
             final Graph g,
             final OrdinaryMorphism r,
@@ -676,7 +678,7 @@ public final class TestStep {
     }
 
     private static void createArcOfNonInjectiveMatch(
-            final Hashtable<GraphObject, Link> hashMap,
+            final Map<GraphObject, Link> hashMap,
             final Arc a,
             final Graph g,
             final OrdinaryMorphism r,
@@ -724,7 +726,7 @@ public final class TestStep {
         boolean glued = false;
         final List<GraphObject> origs = r.getInverseImageList(n);
         if (!origs.isEmpty()) {
-            final Hashtable<Arc, Arc> arc2arcimg = new Hashtable<Arc, Arc>();
+            final Map<Arc, Arc> arc2arcimg = new HashMap<Arc, Arc>();
             final GraphObject ol1 = origs.get(0);
             final GraphObject og1 = m.getImage(ol1);
             if (og1 != null) {
@@ -777,7 +779,7 @@ public final class TestStep {
                         }
                     }
                     // reset mappings of new Source/Target of Edges
-                    final Enumeration<Arc> inoutarcs = arc2arcimg.keys();
+                    final Enumeration<Arc> inoutarcs = Collections.enumeration(arc2arcimg.keySet());
                     while (inoutarcs.hasMoreElements()) {
                         final Arc arc = inoutarcs.nextElement();
                         try {

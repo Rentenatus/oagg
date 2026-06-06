@@ -22,8 +22,10 @@ import agg.xt_basis.TypeException;
 import agg.xt_basis.TypeGraph;
 import agg.xt_basis.TypeSet;
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.undo.*;
 
@@ -34,7 +36,7 @@ public class NodeReprData implements StateEditable {
     protected Vector<String> parents; // names of direct parents only
     protected Vector<String> children; // names of its own children only
     protected boolean elemOfTG;
-    protected Hashtable<String, Pair<String, String>> attributes;
+    protected HashMap<String, Pair<String, String>> attributes;
     protected Point location;
     protected String nodeHC;
     protected int nodeHashCode;
@@ -83,7 +85,7 @@ public class NodeReprData implements StateEditable {
                     + n.getContextUsage();
         }
         // System.out.println("NodeReprData:: nodeHC = "+nodeHC);
-        this.attributes = new Hashtable<String, Pair<String, String>>();
+        this.attributes = new HashMap<String, Pair<String, String>>();
         if (n.getBasisObject().getAttribute() != null) {
             ValueTuple vt = (ValueTuple) n.getBasisObject().getAttribute();
             for (int i = 0; i < vt.getNumberOfEntries(); i++) {
@@ -138,7 +140,7 @@ public class NodeReprData implements StateEditable {
         }
         if (!this.attributes.isEmpty()) {
             if (n.getBasisObject().getAttribute() != null) {
-                Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
+                HashMap<String, Pair<String, String>> attrs = new HashMap<String, Pair<String, String>>();
                 attrs.putAll(this.attributes);
                 restoreAttributes(attrs, n);
             }
@@ -303,13 +305,13 @@ public class NodeReprData implements StateEditable {
             if (n.getBasisObject().getAttribute() == null) {
                 n.getBasisObject().createAttributeInstance();
             }
-            Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
+            HashMap<String, Pair<String, String>> attrs = new HashMap<String, Pair<String, String>>();
             attrs.putAll(this.attributes);
             restoreAttributes(attrs, n);
         }
     }
 
-    private void restoreAttributes(Hashtable<String, Pair<String, String>> attrs,
+    private void restoreAttributes(Map<String, Pair<String, String>> attrs,
             EdNode n) {
         ValueTuple vt = (ValueTuple) n.getBasisObject().getAttribute();
         for (int i = 0; i < vt.getNumberOfEntries(); i++) {

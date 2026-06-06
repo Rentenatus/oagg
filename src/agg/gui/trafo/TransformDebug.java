@@ -13,6 +13,7 @@
  */
 package agg.gui.trafo;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JOptionPane;
@@ -520,7 +521,7 @@ public class TransformDebug implements GraTraEventListener, EditEventListener {
 	private void refineAbstractNodesOfRHSToCreate() {		
 		Vector<EdNode> abstractNodes = rule.getAbstractNodesOfRHSToCreate();
 		if (!abstractNodes.isEmpty()) {
-			Hashtable<Node, Type> abstract2child = new Hashtable<Node, Type>();
+			HashMap<Node, Type> abstract2child = new HashMap<Node, Type>();
 			for (int i=0; i<abstractNodes.size(); i++) {
 				EdNode node = abstractNodes.get(i);
 //				rule.getRight().deselectAll();

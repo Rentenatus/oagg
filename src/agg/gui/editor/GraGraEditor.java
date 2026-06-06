@@ -30,10 +30,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-import java.util.Hashtable;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -158,7 +159,7 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
             100, null);
     private final GraphLayouterOptionGUI evolutionaryLayouterOptionGUI = new GraphLayouterOptionGUI(
             this.evolutionaryLayouter);
-    private final Hashtable<Object, Integer> dividerLocationSet = new Hashtable<Object, Integer>();
+    private final HashMap<Object, Integer> dividerLocationSet = new HashMap<Object, Integer>();
     private final TwoMorphs pacMorphs = new TwoMorphs();
     private final ModePopupMenu modePopupMenu = new ModePopupMenu();
     private final EditPopupMenu editPopupMenu = new EditPopupMenu();
@@ -5846,8 +5847,8 @@ public class GraGraEditor extends JPanel implements TreeModelListener,
 			if (ruleEditor.getRule().getBasisRule().getMatch() == null)
 				getGraGra().getBasisGraGra().createMatch(
 						ruleEditor.getRule().getBasisRule());
-			Hashtable<GraphObject, GraphObject> table = maps.get(0);
-			Enumeration<GraphObject> en = table.keys();
+			HashMap<GraphObject, GraphObject> table = maps.get(0);
+			Enumeration<GraphObject> en = Collections.enumeration(table.keySet());
 			while (en.hasMoreElements()) {
 				GraphObject obj = en.nextElement();
 				GraphObject img = table.get(obj);

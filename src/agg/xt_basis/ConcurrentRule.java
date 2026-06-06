@@ -14,11 +14,11 @@
 package agg.xt_basis;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 import agg.attribute.AttrContext;
 import agg.attribute.handler.AvailableHandlers;
 import agg.attribute.impl.CondMember;
@@ -65,14 +65,14 @@ public class ConcurrentRule {
     protected int depth;
     protected boolean enableEqualVariableNameOfAttrMapping;
     protected boolean disjoint;
-//	protected final Hashtable<GraphObject, GraphObject> 
-//	reflectedObjectFlow = new Hashtable<GraphObject, GraphObject>(); // output -> input
-    protected final Hashtable<GraphObject, GraphObject> reflectedObjectFlowOI = new Hashtable<GraphObject, GraphObject>(); // source output -> other input
-    protected final Hashtable<GraphObject, GraphObject> reflectedObjectFlowIO = new Hashtable<GraphObject, GraphObject>(); // source input -> other output ->
+//	protected final Map<GraphObject, GraphObject> 
+//	reflectedObjectFlow = new HashMap<GraphObject, GraphObject>(); // output -> input
+    protected final Map<GraphObject, GraphObject> reflectedObjectFlowOI = new HashMap<GraphObject, GraphObject>(); // source output -> other input
+    protected final Map<GraphObject, GraphObject> reflectedObjectFlowIO = new HashMap<GraphObject, GraphObject>(); // source input -> other output ->
     // (otherRule, ObjectFlow)| ObjectFlow: otherRule.RHS.GraphObject -> this.rule.LHS.GraphObject
-    protected final Hashtable<Object, ObjectFlow> inputObjectFlow = new Hashtable<Object, ObjectFlow>(4);
+    protected final Map<Object, ObjectFlow> inputObjectFlow = new HashMap<Object, ObjectFlow>(4);
     // (otherRule, ObjectFlow)| ObjectFlow: this.rule.RHS.GraphObject -> otherRule.LHS.GraphObject
-    protected final Hashtable<Object, ObjectFlow> outputObjectFlow = new Hashtable<Object, ObjectFlow>(4);
+    protected final Map<Object, ObjectFlow> outputObjectFlow = new HashMap<Object, ObjectFlow>(4);
     protected int sizeOfInputObjectFlow;
     protected boolean injective = true;
     private final List<OrdinaryMorphism> failedApplConds = new ArrayList<OrdinaryMorphism>();
@@ -198,7 +198,7 @@ public class ConcurrentRule {
     }
 
     /*
-	private Hashtable<GraphObject, GraphObject> getReflectedObjectFlowToRule(
+	private Map<GraphObject, GraphObject> getReflectedObjectFlowToRule(
 			final Rule r,
 			final List<ObjectFlow> list) {
 		
@@ -232,10 +232,10 @@ public class ConcurrentRule {
      * @param list
      * @return map of collected output-input object pairs
      */
-    public Hashtable<GraphObject, GraphObject> getReflectedInputObjectFlowFromRule(
+    public Map<GraphObject, GraphObject> getReflectedInputObjectFlowFromRule(
             final Rule r,
             final List<ObjectFlow> list) {
-        Hashtable<GraphObject, GraphObject> objmap = new Hashtable<GraphObject, GraphObject>();
+        Map<GraphObject, GraphObject> objmap = new HashMap<GraphObject, GraphObject>();
         for (int i = 0; i < list.size(); i++) {
             Map<Object, Object> map = list.get(i).getMapping();
             Enumeration<Object> objs1 = Collections.enumeration(map.keySet());
@@ -254,10 +254,10 @@ public class ConcurrentRule {
         return objmap;
     }
 
-    public Hashtable<GraphObject, GraphObject> getReflectedInputObjectFlowFromGraph(
+    public Map<GraphObject, GraphObject> getReflectedInputObjectFlowFromGraph(
             final Graph g,
             final List<ObjectFlow> list) {
-        Hashtable<GraphObject, GraphObject> objmap = new Hashtable<GraphObject, GraphObject>();
+        Map<GraphObject, GraphObject> objmap = new HashMap<GraphObject, GraphObject>();
         for (int i = 0; i < list.size(); i++) {
             Map<Object, Object> map = list.get(i).getMapping();
             Enumeration<Object> objs1 = Collections.enumeration(map.keySet());
@@ -544,11 +544,11 @@ public class ConcurrentRule {
     /**
      * Returns a map with overlapping pair (RHS1 object, LHS2 object)
      */
-    public Hashtable<GraphObject, GraphObject> getOverlappingObjects() {
+    public Map<GraphObject, GraphObject> getOverlappingObjects() {
         if (this.overlap1 == null || this.overlap2 == null) {
             return null;
         }
-        Hashtable<GraphObject, GraphObject> map = new Hashtable<GraphObject, GraphObject>();
+        Map<GraphObject, GraphObject> map = new HashMap<GraphObject, GraphObject>();
         Iterator<?> elems = this.overlap1.getTarget().getNodesSet().iterator();
         while (elems.hasNext()) {
             GraphObject go = (GraphObject) elems.next();
@@ -1177,7 +1177,7 @@ public class ConcurrentRule {
             OrdinaryMorphism pacGraph2concurRuleLHS = this.extendTargetGraph(leftRuleToLeftCR, pac, concurRule);
             // extend right graph of concurrent rule,
             // add morphism mapping
-            Hashtable<Node, Node> tmp = new Hashtable<Node, Node>(5);
+            Map<Node, Node> tmp = new HashMap<Node, Node>(5);
             final Iterator<Node> en = pac.getTarget().getNodesSet().iterator();
             while (en.hasNext() && ok) {
                 GraphObject o = en.next();
@@ -1844,7 +1844,7 @@ public class ConcurrentRule {
         final Graph dCondGraph = condSrcIsom.getTarget();
         final List<GraphObject> condDom = condSrcIsom.getDomainObjects();
         final List<Object> requiredObjs = new ArrayList<Object>(condDom.size());
-        final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
+        final Map<Object, Object> objmap = new HashMap<Object, Object>(
                 condDom.size());
         // fill a map with objects required
         // for the graph overlappings of dCondGraph and morph.getTarget()
@@ -1898,7 +1898,7 @@ public class ConcurrentRule {
         final OrdinaryMorphism leftToCond = cond.compose(condIsom);
         final List<GraphObject> condDom = cond.getDomainObjects();
         final List<Object> requiredObjs = new ArrayList<Object>(condDom.size());
-        final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(condDom.size());
+        final Map<Object, Object> objmap = new HashMap<Object, Object>(condDom.size());
         for (int j = 0; j < condDom.size(); j++) {
             GraphObject go = condDom.get(j);
             GraphObject go1 = leftToCond.getImage(go);
@@ -2055,7 +2055,7 @@ public class ConcurrentRule {
         Graph extTarget = isom.getTarget();
         OrdinaryMorphism morph = BaseFactory.theFactory().createMorphism(
                 cond.getTarget(), extTarget);
-        Hashtable<Node, Node> tmp = new Hashtable<Node, Node>(5);
+        Map<Node, Node> tmp = new HashMap<Node, Node>(5);
         final Iterator<Node> en = cond.getTarget().getNodesSet().iterator();
         while (en.hasNext()) {
             GraphObject o = en.next();
@@ -2489,8 +2489,8 @@ public class ConcurrentRule {
     }
 
     private void setInputParameterIfNeeded(final Rule concurRule) {
-//		final Hashtable<Graph, List<String>> 
-//		graph2Varnames = new Hashtable<Graph, List<String>>();
+//		final Map<Graph, List<String>> 
+//		graph2Varnames = new HashMap<Graph, List<String>>();
         VarTuple vars = (VarTuple) concurRule.getAttrContext().getVariables();
         List<String> varNamesRHS = concurRule.getTarget().getVariableNamesOfAttributes();
         List<String> varNamesLHS = concurRule.getSource().getVariableNamesOfAttributes();

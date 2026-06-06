@@ -12,7 +12,7 @@
 package agg.attribute.parser;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 
 public class Scanner {
@@ -25,7 +25,7 @@ public class Scanner {
     public static final int EXIST = 4;
     /**
      */
-    protected Hashtable<String, Integer> fgKeys = new Hashtable<String, Integer>();
+    protected HashMap<String, Integer> fgKeys = new HashMap<String, Integer>();
     /**
      */
     protected StringBuffer fBuffer = new StringBuffer();

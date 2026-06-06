@@ -14,8 +14,10 @@
 package agg.editor.impl;
 //import java.util.Enumeration;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
-import java.util.Hashtable;
 import java.awt.Point;
 import javax.swing.undo.*;
 import agg.util.Pair;
@@ -26,6 +28,7 @@ import agg.xt_basis.Type;
 import agg.xt_basis.TypeException;
 import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.ValueMember;
+import java.util.Hashtable;
 import java.util.List;
 
 public class ArcReprData implements StateEditable {
@@ -34,7 +37,7 @@ public class ArcReprData implements StateEditable {
     protected int typeHashCode;
     protected boolean elemOfTG;
     protected TypeReprData typeRepresentation;
-    protected Hashtable<String, Pair<String, String>> attributes = new Hashtable<String, Pair<String, String>>();
+    protected HashMap<String, Pair<String, String>> attributes = new HashMap<String, Pair<String, String>>();
     protected Point textOffset = new Point(0, 0);
     protected boolean hasAnchor;
     protected Point location;
@@ -110,7 +113,7 @@ public class ArcReprData implements StateEditable {
                 this.toHC = String.valueOf(kernObj.hashCode());
             }
         }
-        this.attributes = new Hashtable<String, Pair<String, String>>();
+        this.attributes = new HashMap<String, Pair<String, String>>();
         if (a.getBasisObject().getAttribute() != null) {
             ValueTuple vt = (ValueTuple) a.getBasisObject().getAttribute();
             for (int i = 0; i < vt.getNumberOfEntries(); i++) {
@@ -154,7 +157,7 @@ public class ArcReprData implements StateEditable {
         }
         if (!this.attributes.isEmpty()) {
             if (a.getBasisObject().getAttribute() != null) {
-                Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
+                HashMap<String, Pair<String, String>> attrs = new HashMap<String, Pair<String, String>>();
                 attrs.putAll(this.attributes);
                 restoreAttributes(attrs, a);
             }
@@ -290,7 +293,7 @@ public class ArcReprData implements StateEditable {
             if (a.getBasisObject().getAttribute() == null) {
                 a.getBasisObject().createAttributeInstance();
             }
-            Hashtable<String, Pair<String, String>> attrs = new Hashtable<String, Pair<String, String>>();
+            HashMap<String, Pair<String, String>> attrs = new HashMap<String, Pair<String, String>>();
             attrs.putAll(this.attributes);
             restoreAttributes(attrs, a);
         }
@@ -317,7 +320,7 @@ public class ArcReprData implements StateEditable {
         t.setTargetMax(srct, tart, typedata.tarMaxMultiplicity);
     }
 
-    private void restoreAttributes(Hashtable<String, Pair<String, String>> attrs,
+    private void restoreAttributes(Map<String, Pair<String, String>> attrs,
             EdArc a) {
         ValueTuple vt = (ValueTuple) a.getBasisObject().getAttribute();
         for (int i = 0; i < vt.getNumberOfEntries(); i++) {

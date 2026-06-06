@@ -18,10 +18,10 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Stack;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Hashtable;
 import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.ValueTuple;
@@ -122,7 +122,7 @@ public class Completion_SimpleBT extends MorphCompletionStrategy {
         refreshStack();
     }
 
-    public void resetTypeMap(Hashtable<String, HashSet<GraphObject>> typeMap) {
+    public void resetTypeMap(Map<String, HashSet<GraphObject>> typeMap) {
         refreshStack();
     }
 

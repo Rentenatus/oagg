@@ -11,7 +11,8 @@
  */
 package agg.xt_basis;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import agg.util.Pair;
 
 public class InverseRuleConstructData {
@@ -22,15 +23,15 @@ public class InverseRuleConstructData {
     // key: NAC, value: Pair
     // Pair.first: L -> Lcopy+NAC, 
     // Pair.second: NAC -> Lcopy+NAC
-    private Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftNAC2extLeft;
+    private Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftNAC2extLeft;
     // key: PAC, value: Pair
     // Pair.first: L -> Lcopy+PAC, 
     // Pair.second: PAC -> Lcopy+PAC
-    private Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftPAC2extLeft;
+    private Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftPAC2extLeft;
     // key: PAC, value: Pair
     // Pair.first: L -> Lcopy+PAC, 
     // Pair.second: PAC -> Lcopy+PAC
-    private Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftAC2extLeft;
+    private Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftAC2extLeft;
 
     public InverseRuleConstructData(final Rule r) {
         Pair<Pair<Rule, Boolean>, Pair<OrdinaryMorphism, OrdinaryMorphism>> invConstruct = BaseFactory.theFactory().makeAbstractInverseRule(r);
@@ -66,26 +67,26 @@ public class InverseRuleConstructData {
         return this.r2lInv;
     }
 
-    public Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
+    public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getNACsStore() {
         if (this.leftNAC2extLeft == null) {
-            this.leftNAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftNAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
         }
         return this.leftNAC2extLeft;
     }
 
-    public Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
+    public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getPACsStore() {
         if (this.leftPAC2extLeft == null) {
-            this.leftPAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftPAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
         }
         return this.leftPAC2extLeft;
     }
 
-    public Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
+    public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getACsStor() {
         if (this.leftAC2extLeft == null) {
-            this.leftAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
         }
         return this.leftAC2extLeft;
     }

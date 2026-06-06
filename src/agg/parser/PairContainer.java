@@ -95,7 +95,7 @@ public interface PairContainer extends XMLObject {
 
     // ****************************************************************************+
     /**
-     * This container is a <code>Hashtable</code> with a rule as key. The value
+     * This container is a <code>Map</code> with a rule as key. The value
      * will be a set of rules.
      *
      * @param kind The kind of algorithm

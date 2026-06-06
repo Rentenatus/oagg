@@ -29,7 +29,6 @@ import agg.util.Pair;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -311,7 +310,7 @@ public class ParallelRule extends Rule {
             this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
         }
         // rename variables where needed
-        Hashtable<String, String> varNames = new Hashtable<String, String>();
+        Map<String, String> varNames = new HashMap<String, String>();
         final VarTuple vars = (VarTuple) this.sources.get(0).getAttrContext().getVariables();
         for (int j = 0; j < vars.getNumberOfEntries(); j++) {
             VarMember var = vars.getVarMemberAt(j);
@@ -346,7 +345,7 @@ public class ParallelRule extends Rule {
     }
 
     private void renameVarsWhereNeeded(int i, final Rule r,
-            final Hashtable<String, String> varNames) {
+            final Map<String, String> varNames) {
         final VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
         if (varNames.isEmpty()) {
             for (int j = 0; j < vars.getNumberOfEntries(); j++) {
@@ -397,7 +396,7 @@ public class ParallelRule extends Rule {
         }
     }
 
-    private void replaceRenamedVars(final Hashtable<String, String> varNames) {
+    private void replaceRenamedVars(final Map<String, String> varNames) {
         for (int i = 1; i < this.sources.size(); i++) {
             final Rule r = this.sources.get(i);
             final AttrContext ac = r.getAttrContext();
@@ -910,7 +909,7 @@ public class ParallelRule extends Rule {
         final OrdinaryMorphism leftToCond = cond.compose(condIsom);
         final List<GraphObject> condDom = cond.getDomainObjects();
         final List<Object> requiredObjs = new ArrayList<Object>(condDom.size());
-        final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
+        final Map<Object, Object> objmap = new HashMap<Object, Object>(
                 condDom.size());
         for (int j = 0; j < condDom.size(); j++) {
             GraphObject go = condDom.get(j);
@@ -1275,7 +1274,7 @@ public class ParallelRule extends Rule {
         // shift GACs and its formulas
         boolean result = true;
         if (r.getNestedACs().hasNext()) {
-            Hashtable<String, List<NestedApplCond>> cond2shift = new Hashtable<String, List<NestedApplCond>>();
+            Map<String, List<NestedApplCond>> cond2shift = new HashMap<String, List<NestedApplCond>>();
             final Iterator<OrdinaryMorphism> conds = r.getNestedACs();
             while (conds.hasNext()) {
                 NestedApplCond cond = (NestedApplCond) conds.next();
@@ -1333,7 +1332,7 @@ public class ParallelRule extends Rule {
 //			int indx, final Rule r,
 //			final NestedApplCond cond, 
 //			final OrdinaryMorphism morph,
-//			final Hashtable<String, List<NestedApplCond>> cond2shift) {
+//			final Map<String, List<NestedApplCond>> cond2shift) {
 //
 //		// shift left condition over left embedding
 //		List<NestedApplCond> l = shiftGenCondAlongEmbMorph(indx, r, cond, morph, cond2shift);
@@ -1417,7 +1416,7 @@ public class ParallelRule extends Rule {
         final Graph dCondGraph = condSrcIsom.getTarget();
         final List<GraphObject> condDom = condSrcIsom.getDomainObjects();
         final List<Object> requiredObjs = new ArrayList<Object>(condDom.size());
-        final Hashtable<Object, Object> objmap = new Hashtable<Object, Object>(
+        final Map<Object, Object> objmap = new HashMap<Object, Object>(
                 condDom.size());
         // fill a map with objects required
         // for the graph overlappings of dCondGraph and morph.getTarget()
@@ -1684,7 +1683,7 @@ public class ParallelRule extends Rule {
             final Rule r,
             final NestedApplCond cond,
             final OrdinaryMorphism morph,
-            final Hashtable<String, List<NestedApplCond>> cond2shift) {
+            final Map<String, List<NestedApplCond>> cond2shift) {
         // shift condition over morphism mo
         List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverEmbMorph(cond, morph);
         if (shift != null && shift.size() > 0) {
@@ -1752,7 +1751,7 @@ public class ParallelRule extends Rule {
             final OrdinaryMorphism morph,
             final OrdinaryMorphism left,
             final OrdinaryMorphism embMorph,
-            final Hashtable<String, List<NestedApplCond>> cond2shift) {
+            final Map<String, List<NestedApplCond>> cond2shift) {
         // shift condition over morph
         List<Pair<OrdinaryMorphism, OrdinaryMorphism>> shift = shiftCondOverMorph(r, cond, morph);
         if (shift != null && shift.size() > 0) {
@@ -2031,7 +2030,7 @@ public class ParallelRule extends Rule {
     }
 
     private void setInputParameterIfNeeded(final Rule r) {
-//		final Hashtable<Graph, List<String>> graph2Varnames = new Hashtable<Graph, List<String>>();
+//		final Map<Graph, List<String>> graph2Varnames = new HashMap<Graph, List<String>>();
         final VarTuple vars = (VarTuple) r.getAttrContext().getVariables();
         final List<String> varNamesRHS = r.getTarget()
                 .getVariableNamesOfAttributes();

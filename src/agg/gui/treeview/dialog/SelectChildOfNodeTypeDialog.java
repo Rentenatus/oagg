@@ -24,7 +24,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -48,7 +48,7 @@ public class SelectChildOfNodeTypeDialog extends JDialog implements ActionListen
     final DefaultTreeModel treeModel;
     final EdTypeSet typeSet;
     final EdType nodeType;
-    final Hashtable<DefaultMutableTreeNode, EdType> treeNode2NodeType = new Hashtable<DefaultMutableTreeNode, EdType>();
+    final HashMap<DefaultMutableTreeNode, EdType> treeNode2NodeType = new HashMap<DefaultMutableTreeNode, EdType>();
     final JButton Ok, cancel;
     final JPanel dialogPanel;
     JFrame f;

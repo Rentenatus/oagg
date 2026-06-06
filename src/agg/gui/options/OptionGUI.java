@@ -19,7 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -31,6 +31,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 //import agg.gui.parser.event.StatusMessageEvent;
 import agg.gui.parser.event.StatusMessageListener;
+import java.util.Hashtable;
 
 /**
  * This is the main class for all option. This class holds a tabbed pane to

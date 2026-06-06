@@ -19,8 +19,8 @@ import agg.attribute.impl.VarMember;
 import agg.util.Change;
 import agg.util.Pair;
 import agg.util.XMLHelper;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -149,7 +149,7 @@ public final class TypeGraph extends Graph {
             if (g instanceof TypeGraph) {
                 boolean failed = false;
                 if (this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
-                    final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(g
+                    final Map<Node, Node> memo1 = new HashMap<Node, Node>(g
                             .getSize());
                     Iterator<Node> vtxList = g.getNodesSet().iterator();
                     while (vtxList.hasNext()) {
@@ -284,7 +284,7 @@ public final class TypeGraph extends Graph {
     public boolean makeFromPlainGraph(final Graph g) {
         boolean failed = false;
         if (this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
-            final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(g
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(g
                     .getSize());
             Iterator<Node> vtxList = g.getNodesSet().iterator();
             while (vtxList.hasNext()) {
@@ -421,7 +421,7 @@ public final class TypeGraph extends Graph {
 //			int tglevel = 
             typeSet.getLevelOfTypeGraphCheck();
             boolean failed = false;
-            final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(this
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(this
                     .getSize());
             // Use the same orientation as this type graph, but respect the type set's directed setting
             GraphOrientation copyOrientation = typeSet.isArcDirected() ? this.getOrientation() : GraphOrientationUndirected.INSTANCE;
@@ -523,7 +523,7 @@ public final class TypeGraph extends Graph {
             // Use the same orientation as this type graph, but respect the type set's directed setting
             GraphOrientation copyOrientation = typeSet.isArcDirected() ? this.getOrientation() : GraphOrientationUndirected.INSTANCE;
             TypeGraph theCopy = new TypeGraph(copyOrientation, typeSet);
-            final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(this
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(this
                     .getSize());
             while (vtxList.hasNext() && !failed) {
                 Node vtxOrig = vtxList.next();
@@ -589,7 +589,7 @@ public final class TypeGraph extends Graph {
      * copied node or edge of the graph copy.
      * @return a copy of this graph or null if an error occured
      */
-    public Graph copy(final Hashtable<GraphObject, GraphObject> orig2copy) {
+    public Graph copy(final Map<GraphObject, GraphObject> orig2copy) {
         return graphcopy(orig2copy);
     }
 
@@ -602,7 +602,7 @@ public final class TypeGraph extends Graph {
      * @return a copy of this graph or null if an error occured
      */
     protected Graph graphcopy(
-            final Hashtable<GraphObject, GraphObject> orig2copy) {
+            final Map<GraphObject, GraphObject> orig2copy) {
         synchronized (this) {
             boolean failed = false;
             TypeGraph theCopy = new TypeGraph(getTypeSet());
@@ -668,7 +668,7 @@ public final class TypeGraph extends Graph {
     public Graph graphcopy() {
         synchronized (this) {
             boolean failed = false;
-            final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(this
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(this
                     .getSize());
             TypeGraph theCopy = new TypeGraph(getTypeSet());
             Iterator<?> iter = this.itsNodes.iterator();
@@ -1158,7 +1158,7 @@ public final class TypeGraph extends Graph {
             result = true;
         } else {
             if (this.getSize() >= g.getSize()) {
-                final Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+                final Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
                 boolean found = true;
                 Iterator<?> iterG = g.getArcsSet().iterator();
                 while (found && iterG.hasNext()) {

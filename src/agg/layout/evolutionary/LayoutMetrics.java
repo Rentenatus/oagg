@@ -18,9 +18,9 @@ package agg.layout.evolutionary;
 import java.awt.geom.Line2D;
 //import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-import java.util.Hashtable;
 import de.jare.ndimcol.primint.ArrayMovieInt;
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraGra;
@@ -140,7 +140,7 @@ public class LayoutMetrics {
      * @return Anzahl der Knotenueberschneidungen.
      */
     public int getNodeIntersect(final List<EdNode> nodes, boolean mark) {
-        final Hashtable<EdNode, EdNode> intersect = new Hashtable<EdNode, EdNode>();
+        final HashMap<EdNode, EdNode> intersect = new HashMap<EdNode, EdNode>();
         int ret = 0;
         EdNode node1, node2;
 //		Rectangle2D rect1, rect2;

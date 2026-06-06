@@ -128,9 +128,9 @@
 //  advantages of BJ which should be optimized away here)
 package agg.util.csp;
 
-import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.csp.Query_Type;
@@ -144,11 +144,11 @@ public class Solution_Backtrack implements SolutionStrategy {
     private boolean parallel;
     private boolean startParallelbyFirst;
     private Vector<Query> itsQueries = new Vector<Query>();
-    final private Dictionary<Variable, Integer> itsVarIndexMap = new Hashtable<Variable, Integer>();
-    final private Dictionary<Object, Variable> itsInstanceVarMap = new Hashtable<Object, Variable>();
+    final private Map<Variable, Integer> itsVarIndexMap = new HashMap<Variable, Integer>();
+    final private Map<Object, Variable> itsInstanceVarMap = new HashMap<Object, Variable>();
     private boolean itsInjectiveFlag;
     // the map of other solution solver
-    private Dictionary<Object, Variable> otherInstanceVarMap;
+    private Map<Object, Variable> otherInstanceVarMap;
     private SearchStrategy itsSearcher = new Search_BreadthFirst();
     /**
      * Elements are of type <code>Variable</code>.
@@ -195,16 +195,16 @@ public class Solution_Backtrack implements SolutionStrategy {
 
     public void clear() {
         this.itsQueries.clear();
-        ((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
-        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
+        this.itsVarIndexMap.clear();
+        this.itsInstanceVarMap.clear();
     }
 
     public void setRelatedInstanceVarMap(
-            Dictionary<Object, Variable> relatedVarIndexMap) {
+            Map<Object, Variable> relatedVarIndexMap) {
         this.otherInstanceVarMap = relatedVarIndexMap;
     }
 
-    public Dictionary<Object, Variable> getInstanceVarMap() {
+    public Map<Object, Variable> getInstanceVarMap() {
         return this.itsInstanceVarMap;
     }
 
@@ -245,8 +245,8 @@ public class Solution_Backtrack implements SolutionStrategy {
             this.itsQueries = this.itsSearcher.execute(this.itsCSP);
             this.itsQueries.trimToSize();
         }
-        ((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
-        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
+        this.itsVarIndexMap.clear();
+        this.itsInstanceVarMap.clear();
         for (int i = 0; i < this.itsQueries.size(); i++) {
             Query q = this.itsQueries.elementAt(i);
             this.itsVarIndexMap.put(q.getTarget(), Integer.valueOf(i));
@@ -446,7 +446,7 @@ public class Solution_Backtrack implements SolutionStrategy {
                 ((Query_Type) q).removeObject((GraphObject) q.getTarget().getInstance());
             }
         }
-        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
+        this.itsInstanceVarMap.clear();
 //		itsBackjumpTargets.clear();	
     }
 

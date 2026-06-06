@@ -11,7 +11,7 @@
  */
 package agg.gui.treeview.dialog;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -84,7 +84,7 @@ public class RuleSequenceDialog extends JDialog implements TableModelListener,
     protected JDialog dialog;
     protected HtmlBrowser helpBrowser;
     final protected String title = "Transformation by Rule Sequence";
-    final protected Hashtable<RuleSequence, ObjectFlowDesktop> objFlowDesktopList = new Hashtable<RuleSequence, ObjectFlowDesktop>();
+    final protected HashMap<RuleSequence, ObjectFlowDesktop> objFlowDesktopList = new HashMap<RuleSequence, ObjectFlowDesktop>();
     protected ObjectFlowDesktop objFlowDesktop;
 
     public RuleSequenceDialog(final JFrame frame, final Point location) {

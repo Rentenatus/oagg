@@ -11,7 +11,7 @@
 package agg.attribute.parser.javaExpr;
 
 import java.lang.reflect.Array;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 
 /**
@@ -21,7 +21,7 @@ import java.util.Vector;
 public class ClassResolver implements java.io.Serializable {
 
     protected Vector<String> packages = new Vector<String>(16);
-    final static protected Hashtable<String, Object> primitives = new Hashtable<String, Object>(
+    final static protected HashMap<String, Object> primitives = new HashMap<String, Object>(
             16);
     public static final long serialVersionUID = 5146841301451537847L;
 

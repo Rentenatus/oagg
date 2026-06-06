@@ -20,12 +20,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class PriorityGraTraImpl extends GraTra {
@@ -72,9 +74,9 @@ public class PriorityGraTraImpl extends GraTra {
     private void sortByPriority(List<Rule> rules) {
         RulePriority priority = new RulePriority(rules);
         Integer startPriority = priority.getStartPriority();
-        Hashtable<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
+        Map<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
         SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-        for (Enumeration<Integer> en = invertedRulePriority.keys(); en
+        for (Enumeration<Integer> en = Collections.enumeration(invertedRulePriority.keySet()); en
                 .hasMoreElements();) {
             rulePrioritySet.add(en.nextElement());
         }

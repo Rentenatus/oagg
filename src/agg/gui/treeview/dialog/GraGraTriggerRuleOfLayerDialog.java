@@ -29,10 +29,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -80,7 +82,7 @@ public class GraGraTriggerRuleOfLayerDialog extends JDialog implements
      */
     public class HashTableModel extends DefaultTableModel {
 
-        Hashtable<Rule, Pair<Integer, String>> table;
+        HashMap<Rule, Pair<Integer, String>> table;
         RuleLayer ruleLayer;
 
         // Hashtable triggerTable;
@@ -97,11 +99,11 @@ public class GraGraTriggerRuleOfLayerDialog extends JDialog implements
             for (int i = 0; i < columnNames.length; i++) {
                 addColumn(columnNames[i]);
             }
-            Hashtable<Rule, Integer> layerTable = layer.getRuleLayer();
-            this.table = new Hashtable<Rule, Pair<Integer, String>>(layerTable
+            Map<Rule, Integer> layerTable = layer.getRuleLayer();
+            this.table = new HashMap<Rule, Pair<Integer, String>>(layerTable
                     .size());
             // triggerTable = new Hashtable(layerTable.size());
-            for (Enumeration<Rule> e = layerTable.keys(); e.hasMoreElements();) {
+            for (Enumeration<Rule> e = Collections.enumeration(layerTable.keySet()); e.hasMoreElements();) {
                 Rule key = e.nextElement();
                 String trigger = "";
                 if (key.isTriggerOfLayer()) {
@@ -113,9 +115,9 @@ public class GraGraTriggerRuleOfLayerDialog extends JDialog implements
             }
             this.ruleLayer = layer;
             Integer startLayer = layer.getStartLayer();
-            Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
+            Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
             SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
+            for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
                     .hasMoreElements();) {
                 ruleLayerSet.add(en.nextElement());
             }
@@ -224,7 +226,7 @@ public class GraGraTriggerRuleOfLayerDialog extends JDialog implements
         public void refreshTriggerEntries(Object value, int row) {
             Rule rule = (Rule) super.getValueAt(row, 0);
 //			System.out.println("refresh... after "+rule.getName());
-            for (Enumeration<Rule> e = this.table.keys(); e.hasMoreElements();) {
+            for (Enumeration<Rule> e = Collections.enumeration(this.table.keySet()); e.hasMoreElements();) {
                 Rule key = e.nextElement();
 //				System.out.println(key);
                 if (!key.equals(rule)) {
@@ -251,12 +253,12 @@ public class GraGraTriggerRuleOfLayerDialog extends JDialog implements
             }
         }
 
-        public Hashtable<Rule, Pair<Integer, String>> getTable() {
+        public HashMap<Rule, Pair<Integer, String>> getTable() {
             return this.table;
         }
 
         public Rule getRule(String name) {
-            for (Enumeration<Rule> e = this.table.keys(); e.hasMoreElements();) {
+            for (Enumeration<Rule> e = Collections.enumeration(this.table.keySet()); e.hasMoreElements();) {
                 Rule key = e.nextElement();
                 if (key.getName().equals(name)) {
                     return key;
@@ -469,8 +471,8 @@ public class GraGraTriggerRuleOfLayerDialog extends JDialog implements
 
     @SuppressWarnings("rawtypes")
     private void acceptValues() {
-        Hashtable<Rule, Pair<Integer, String>> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
-        for (Enumeration<Rule> e = table.keys(); e.hasMoreElements();) {
+        HashMap<Rule, Pair<Integer, String>> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
+        for (Enumeration<Rule> e = Collections.enumeration(table.keySet()); e.hasMoreElements();) {
             Rule key = e.nextElement();
             Integer l = (Integer) ((Pair) table.get(key)).first;
             key.setLayer(l.intValue());

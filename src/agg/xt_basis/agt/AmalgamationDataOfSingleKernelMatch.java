@@ -14,9 +14,10 @@
  */
 package agg.xt_basis.agt;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.List;
 import agg.xt_basis.Rule;
 
@@ -37,7 +38,7 @@ public class AmalgamationDataOfSingleKernelMatch {
     /**
      * Store object of the amalgamation help morphisms of multi rules.
      */
-    final public Hashtable<Rule, List<AmalgamationRuleData>> instMultiData;
+    final public Map<Rule, List<AmalgamationRuleData>> instMultiData;
 
     /**
      * Creates a store object of help morphisms data of multi rules for only one
@@ -49,7 +50,7 @@ public class AmalgamationDataOfSingleKernelMatch {
      */
     public AmalgamationDataOfSingleKernelMatch(final AmalgamationRuleData kernelData) {
         this.kernelInstData = kernelData;
-        this.instMultiData = new Hashtable<Rule, List<AmalgamationRuleData>>();
+        this.instMultiData = new HashMap<Rule, List<AmalgamationRuleData>>();
     }
 
     /**
@@ -68,7 +69,7 @@ public class AmalgamationDataOfSingleKernelMatch {
     /**
      * Returns computed amalgamation data lists of rules.
      */
-    public Hashtable<Rule, List<AmalgamationRuleData>> getData() {
+    public Map<Rule, List<AmalgamationRuleData>> getData() {
         return this.instMultiData;
     }
 

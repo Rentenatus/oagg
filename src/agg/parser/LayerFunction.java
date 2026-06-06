@@ -458,7 +458,7 @@ public class LayerFunction implements XMLObject {
             /*
 			 * if(v.equals("true")){ this.valid = true; if
 			 * (h.readSubTag("ruleLayer")) { if(ruleLayer == null) ruleLayer =
-			 * new Hashtable(); Enumeration data = h.getEnumeration("", null,
+			 * new HashMap(); Enumeration data = h.getEnumeration("", null,
 			 * true, "Datum"); while(data.hasMoreElements()){
 			 * h.peekElement(data.nextElement()); Rule r2 =
 			 * (Rule)h.getObject("key",null,false); Integer i = new
@@ -466,7 +466,7 @@ public class LayerFunction implements XMLObject {
 			 * getRuleLayer().put(r2,i); r2.setLayer(i.intValue()); } h.close(); }
 			 * h.close(); //System.out.println("LayerFunction: ruleLayer
 			 * gelesen"); } if (h.readSubTag("deletionLayer")){ if(deletionLayer ==
-			 * null) deletionLayer = new Hashtable(); Enumeration data =
+			 * null) deletionLayer = new HashMap(); Enumeration data =
 			 * h.getEnumeration("", null, true, "Datum");
 			 * while(data.hasMoreElements()){ h.peekElement(data.nextElement());
 			 * Type t = (Type)h.getObject("key",null,false); Integer i = new
@@ -474,7 +474,7 @@ public class LayerFunction implements XMLObject {
 			 * getDeletionLayer().put(t,i); h.close(); } h.close();
 			 * //System.out.println("LayerFunction: deletionLayer gelesen"); }
 			 * if (h.readSubTag("creationLayer")){ if(creationLayer == null)
-			 * creationLayer = new Hashtable(); Enumeration data =
+			 * creationLayer = new HashMap(); Enumeration data =
 			 * h.getEnumeration("", null, true, "Datum");
 			 * while(data.hasMoreElements()){ h.peekElement(data.nextElement());
 			 * Type t = (Type)h.getObject("key",null,false); Integer i = new

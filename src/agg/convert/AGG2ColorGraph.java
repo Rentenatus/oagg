@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -103,7 +103,7 @@ public class AGG2ColorGraph {
         if (outFileName.endsWith(".col")) {
             boolean NODE_TYPE = false;
             boolean EDGE_TYPE = false;
-            final Hashtable<GraphObject, GraphObject> map = new Hashtable<GraphObject, GraphObject>();
+            final HashMap<GraphObject, GraphObject> map = new HashMap<GraphObject, GraphObject>();
             final List<Arc> edges = new Vector<Arc>();
             edges.addAll(graph.getArcsSet());
             final List<Node> nodes = new Vector<Node>();

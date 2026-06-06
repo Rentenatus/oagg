@@ -78,7 +78,7 @@
 //
 package agg.util.csp;
 
-import java.util.Dictionary;
+import java.util.Map;
 
 /**
  * An interface for solution strategies for Constraint Satisfaction Problems.
@@ -132,9 +132,9 @@ public interface SolutionStrategy {
     public boolean hasSolution();
 
     public void setRelatedInstanceVarMap(
-            Dictionary<Object, Variable> relatedVarMap);
+            Map<Object, Variable> relatedVarMap);
 
-    public Dictionary<Object, Variable> getInstanceVarMap();
+    public Map<Object, Variable> getInstanceVarMap();
 
     public boolean parallelSearch();
 

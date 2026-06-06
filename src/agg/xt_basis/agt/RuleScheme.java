@@ -34,9 +34,10 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.xt_basis.TypeSet;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,8 +72,8 @@ public class RuleScheme extends Rule //implements Observer
     private KernelRule kernelRule;
     private final List<Rule> multiRules = new ArrayList<Rule>();
     private AmalgamatedRule amalgamRule;
-    private Hashtable<GraphObject, GraphObject> amalgamLHS2kernelLHS;
-    private Hashtable<GraphObject, GraphObject> amalgamRHS2kernelRHS;
+    private Map<GraphObject, GraphObject> amalgamLHS2kernelLHS;
+    private Map<GraphObject, GraphObject> amalgamRHS2kernelRHS;
     private boolean parallelKernel;
     private boolean disjointMultis = true;
     private boolean checkDeleteUseConflict = true;

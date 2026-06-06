@@ -1150,6 +1150,6 @@ public class EdRuleScheme extends EdRule {
 	 * @see javax.swing.undo.StateEditable#storeState(java.util.Hashtable)
      */
     public void storeState(Hashtable<Object, Object> state) {
-        super.restoreState(state);
+        super.storeState(state);
     }
 }

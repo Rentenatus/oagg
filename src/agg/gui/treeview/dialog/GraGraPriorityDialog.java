@@ -27,10 +27,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -74,7 +76,7 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
      */
     public class HashTableModel extends DefaultTableModel {
 
-        Hashtable<Rule, Integer> table;
+        Map<Rule, Integer> table;
         RulePriority rulePriority;
 
         /**
@@ -84,14 +86,14 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
          * @param table The hashtable for the modle.
          * @param columnNames The array with the column names.
          */
-        public HashTableModel(Hashtable<Rule, Integer> table,
+        public HashTableModel(HashMap<Rule, Integer> table,
                 String[] columnNames) {
             super();
             for (int i = 0; i < columnNames.length; i++) {
                 addColumn(columnNames[i]);
             }
             this.table = table;
-            Enumeration<?> keys = this.table.keys();
+            Enumeration<?> keys = Collections.enumeration(this.table.keySet());
             while (keys.hasMoreElements()) {
                 Object key = keys.nextElement();
                 Object value = this.table.get(key);
@@ -118,9 +120,9 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
             this.table = priority.getRulePriority();
             this.rulePriority = priority;
             Integer startPriority = priority.getStartPriority();
-            Hashtable<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
+            Map<Integer, HashSet<Rule>> invertedRulePriority = priority.invertPriority();
             SortedSeasonSet<Integer> rulePrioritySet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = invertedRulePriority.keys(); en
+            for (Enumeration<Integer> en = Collections.enumeration(invertedRulePriority.keySet()); en
                     .hasMoreElements();) {
                 rulePrioritySet.add(en.nextElement());
             }
@@ -194,7 +196,7 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
             }
         }
 
-        public Hashtable<Rule, Integer> getTable() {
+        public Map<Rule, Integer> getTable() {
             return this.table;
         }
     }
@@ -297,8 +299,8 @@ public class GraGraPriorityDialog extends JDialog implements ActionListener {
     }
 
     private boolean accept() {
-        Hashtable<Rule, Integer> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
-        for (Enumeration<Rule> e = table.keys(); e.hasMoreElements();) {
+        Map<Rule, Integer> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
+        for (Enumeration<Rule> e = Collections.enumeration(table.keySet()); e.hasMoreElements();) {
             Object key = e.nextElement();
             Integer value = table.get(key);
             if (value.intValue() <= 0) {

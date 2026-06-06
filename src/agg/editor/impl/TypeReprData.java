@@ -12,8 +12,9 @@
 package agg.editor.impl;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
-import java.util.Hashtable;
 import agg.xt_basis.Type;
 import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.DeclMember;
@@ -182,7 +183,7 @@ public class TypeReprData {
                                                 .self().getJavaHandler(), tn, n);
                     }
                 } else {
-                    Hashtable<String, Vector<String>> hc2dmvec = new Hashtable<String, Vector<String>>();
+                    HashMap<String, Vector<String>> hc2dmvec = new HashMap<String, Vector<String>>();
                     for (int j = 0; j < attrs.size(); j++) {
                         Vector<String> v = attrs.get(j);
                         String hashCode = v.get(2);

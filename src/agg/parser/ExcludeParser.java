@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;

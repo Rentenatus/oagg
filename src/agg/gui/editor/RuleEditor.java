@@ -23,11 +23,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.Insets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -127,7 +127,7 @@ public class RuleEditor extends JPanel {
         this.splitPane.setOneTouchExpandable(true);
         this.splitPane.setDividerSize(0);
         this.acDividerLocation = 150;
-        this.dividerLocationSet = new Hashtable<Object, Integer>(0);
+        this.dividerLocationSet = new HashMap<Object, Integer>(0);
         add(this.splitPane, BorderLayout.CENTER);
         this.gragraEditor = anEditor;
         if (this.gragraEditor != null) {
@@ -3323,7 +3323,7 @@ public class RuleEditor extends JPanel {
     private final JSplitPane ruleSplitPane;
     private int ruleDividerLocation, acDividerLocation;
 //				pacDividerLocation, nacDividerLocation;
-    private final Hashtable<Object, Integer> dividerLocationSet;
+    private final Map<Object, Integer> dividerLocationSet;
     private final GraphPanel leftPanel;
     private final GraphPanel rightPanel;
     private final GraphPanel leftCondPanel;

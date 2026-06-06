@@ -17,8 +17,9 @@ import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class is just a workaround for lacking AttrContext functionality. In
@@ -33,7 +34,7 @@ public class PACStarMorphism extends OrdinaryMorphism {
     AttrContext itsRelatedMorphContext;
     OrdinaryMorphism itsRelatedMorph;
     OrdinaryMorphism itsPAC;
-    final Hashtable<String, String> valMembeHashcode2Expr = new Hashtable<String, String>();
+    final Map<String, String> valMembeHashcode2Expr = new HashMap<String, String>();
 
     public PACStarMorphism(final Graph orig, final Graph imag, final AttrContext ac) {
         super(orig, imag, ac);

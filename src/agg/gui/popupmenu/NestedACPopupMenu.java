@@ -17,7 +17,7 @@ package agg.gui.popupmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.JCheckBoxMenuItem;
@@ -260,7 +260,7 @@ public class NestedACPopupMenu extends JPopupMenu {
                     BaseFactory.theFactory().createGraph(cond.getMorphism().getSource().getTypeSet()),
                     attrContxt);
             ac.getImage().setAttrContext(attrContxt);
-            Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+            HashMap<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
             Iterator<GraphObject> gos = cond.getMorphism().getSource().iteratorOfElems();
             while (gos.hasNext()) {
                 GraphObject go = gos.next();

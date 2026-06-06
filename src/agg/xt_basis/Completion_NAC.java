@@ -19,8 +19,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Hashtable;
-import java.util.Dictionary;
+import java.util.Map;
 import agg.attribute.impl.VarTuple;
 import agg.attribute.AttrContext;
 import agg.util.csp.Variable;
@@ -137,7 +136,7 @@ public class Completion_NAC extends MorphCompletionStrategy {
         this.itsStrategy.removeFromTypeObjectsMap(anObj);
     }
 
-    public void resetTypeMap(Hashtable<String, HashSet<GraphObject>> typeMap) {
+    public void resetTypeMap(Map<String, HashSet<GraphObject>> typeMap) {
         this.itsStrategy.resetTypeMap(typeMap);
     }
 
@@ -166,11 +165,11 @@ public class Completion_NAC extends MorphCompletionStrategy {
     }
 
     public void setRelatedInstanceVarMap(
-            Dictionary<Object, Variable> relatedVarMap) {
+            Map<Object, Variable> relatedVarMap) {
         this.itsStrategy.setRelatedInstanceVarMap(relatedVarMap);
     }
 
-    public Dictionary<Object, Variable> getInstanceVarMap() {
+    public Map<Object, Variable> getInstanceVarMap() {
         return this.itsStrategy.getInstanceVarMap();
     }
 

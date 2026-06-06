@@ -153,7 +153,7 @@ public class LayeredExcludeParser extends ExcludeParser {
         /*
                  * es gibt ein set von rules fuer einen bestimmten layer ausserdem gibt
                  * es set von confliktfreien regeln aller layer synchronisieren beider
-                 * sets. Hashtable Integer layer -> gefilterten confliktfreien Hashtable
+                 * sets. Map Integer layer -> gefilterten confliktfreien Map
          */
         Iterator<Integer> iter = ruleLayer.iterator();
         while (iter.hasNext() && !this.stop) {

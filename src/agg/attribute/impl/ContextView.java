@@ -20,6 +20,7 @@ import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.HandlerExpr;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.handler.SymbolTable;
+import java.util.Map;
 
 /**
  * This is a view onto an underlying ContextCore class object; By this
@@ -350,7 +351,7 @@ public class ContextView extends ManagedObject implements AttrContext,
     /**
      * returns all Mappings
      */
-    public Hashtable<ValueTuple, Vector<TupleMapping>> getMapping() {
+    public Map<ValueTuple, Vector<TupleMapping>> getMapping() {
         return this.core.getMapping();
     }
 

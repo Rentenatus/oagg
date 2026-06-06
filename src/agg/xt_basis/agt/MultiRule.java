@@ -14,9 +14,10 @@
 package agg.xt_basis.agt;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ArrayList;
@@ -74,8 +75,8 @@ public class MultiRule extends Rule implements Observer {
      * embedded morphism right
      */
     private OrdinaryMorphism embeddingRight;
-    private final Hashtable<GraphObject, GraphObject> kernel2objects = new Hashtable<GraphObject, GraphObject>();
-    private final Hashtable<GraphObject, GraphObject> objects2kernel = new Hashtable<GraphObject, GraphObject>();
+    private final Map<GraphObject, GraphObject> kernel2objects = new HashMap<GraphObject, GraphObject>();
+    private final Map<GraphObject, GraphObject> objects2kernel = new HashMap<GraphObject, GraphObject>();
     private List<OrdinaryMorphism> shiftedApplConds = new ArrayList<OrdinaryMorphism>();
 
     // private boolean isChanged = false;

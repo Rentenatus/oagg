@@ -26,9 +26,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 import de.jare.ndimcol.primint.ArrayMovieInt;
@@ -48,7 +49,9 @@ import agg.termination.TerminationLGTS;
 import agg.termination.TerminationLGTSInterface;
 import agg.termination.TerminationLGTSTypedByTypeGraph;
 import agg.util.Pair;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Shows a table with a row for a layer and a column for a termination
@@ -69,16 +72,16 @@ public class LayerTerminationCondTable extends JDialog implements
     /**
      * the Buttons for the entries. Hashtable[Integer, Vector[Rule]]
      */
-    private Hashtable<Integer, Hashtable<String, JButton>> buttons = new Hashtable<Integer, Hashtable<String, JButton>>();
+    private HashMap<Integer, HashMap<String, JButton>> buttons = new HashMap<Integer, HashMap<String, JButton>>();
     private TerminationLGTSInterface termination;
     /**
      * the layer for a Button.
      */
-    private Hashtable<JButton, Integer> firstLayers = new Hashtable<JButton, Integer>();
+    private HashMap<JButton, Integer> firstLayers = new HashMap<JButton, Integer>();
     /**
      * the condition for a Button.
      */
-    private Hashtable<JButton, String> secondConds = new Hashtable<JButton, String>();
+    private HashMap<JButton, String> secondConds = new HashMap<JButton, String>();
     private JPanel panel;
     private JPanel tablePanel;
     private JScrollPane scrLayer;
@@ -323,9 +326,9 @@ public class LayerTerminationCondTable extends JDialog implements
      */
     void addButton(int layer, String condName, JButton button) {
         // create buttons-Hashtable
-        Hashtable<String, JButton> hash1 = this.buttons.get(layer);
+        HashMap<String, JButton> hash1 = this.buttons.get(layer);
         if (hash1 == null) {
-            hash1 = new Hashtable<String, JButton>();
+            hash1 = new HashMap<String, JButton>();
             this.buttons.put(layer, hash1);
         }
         hash1.put(condName, button);
@@ -338,7 +341,7 @@ public class LayerTerminationCondTable extends JDialog implements
      * returns the button for the given rule pair (r1,r2)
      */
     JButton getButton(int layer, String condName) {
-        Hashtable<String, JButton> hash1 = this.buttons.get(layer);
+        HashMap<String, JButton> hash1 = this.buttons.get(layer);
         if (hash1 == null) {
             return null;
         }
@@ -349,10 +352,10 @@ public class LayerTerminationCondTable extends JDialog implements
      * force the panel to update all buttons
      */
     public void refreshView() {
-        Enumeration<Integer> en1 = this.buttons.keys();
+        Enumeration<Integer> en1 = Collections.enumeration(this.buttons.keySet());
         while (en1.hasMoreElements()) {
             Integer first = en1.nextElement();
-            Enumeration<String> en2 = this.buttons.get(first).keys();
+            Enumeration<String> en2 = Collections.enumeration(this.buttons.get(first).keySet());
             while (en2.hasMoreElements()) {
                 String second = en2.nextElement();
                 refreshView(first, second);

@@ -12,7 +12,8 @@
 package agg.gui.typeeditor;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.awt.Color;
 import java.awt.Point;
@@ -47,6 +48,7 @@ import agg.editor.impl.TypeReprData;
 import agg.gui.editor.EditorConstants;
 import agg.gui.event.TypeEvent;
 import agg.util.Pair;
+import java.util.Hashtable;
 
 @SuppressWarnings("serial")
 public class ArcTypePropertyEditor extends JPanel implements ChangeListener,

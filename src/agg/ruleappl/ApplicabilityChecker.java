@@ -3004,7 +3004,7 @@ public class ApplicabilityChecker implements Runnable {
     /*
 	private boolean checkIntersectionOfConcurrentRuleDuetoObjectFlow(
 			final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping,
-			final Hashtable<?, ?> objFlow) {
+			final Map<?, ?> objFlow) {
 				
 		boolean ok = true;
 		if (objFlow != null) {

@@ -15,9 +15,10 @@ package agg.parser;
 
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import agg.attribute.AttrType;
 import agg.attribute.impl.CondMember;
@@ -72,11 +73,11 @@ public class DependencyPair extends ExcludePair {
     // key: NAC, value: Pair
     // Pair.first: L -> Lcopy+NAC, 
     // Pair.second: NAC -> Lcopy+NAC
-    protected Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftNAC2extLeft;
+    protected Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftNAC2extLeft;
     // key: PAC, value: Pair
     // Pair.first: L -> Lcopy+PAC, 
     // Pair.second: PAC -> Lcopy+PAC
-    protected Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftPAC2extLeft;
+    protected Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftPAC2extLeft;
 
     /**
      * Creates a new object to compute critical pairs.
@@ -558,8 +559,8 @@ public class DependencyPair extends ExcludePair {
 		CondTuple condsOfInverseR = (CondTuple) inverseR.getAttrContext().getConditions();		
 		VarTuple varsOfInverseR = (VarTuple) inverseR.getAttrContext().getVariables();
 		
-		Hashtable<VarMember, Boolean>
-		varLeftRight = new Hashtable<VarMember, Boolean>();
+		Map<VarMember, Boolean>
+		varLeftRight = new HashMap<VarMember, Boolean>();
 		for (int i=0; i<vars.getNumberOfEntries(); i++) {
 			VarMember var = vars.getVarMemberAt(i);
 			if (var.getMark() == VarMember.LHS) {
@@ -896,7 +897,7 @@ public class DependencyPair extends ExcludePair {
             this.preservedChanged.clear();
             this.contextC1_L1.clear();
             this.boundB1_L1.clear();
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1 = new Hashtable<>();
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL1 = new HashMap<>();
             // fill preservedChanged vector		
 //			if (this.withNACs) {
 //				ruleChangesAttributes(this.preservedChanged, r1, r2, this.contextC1_L1, this.boundB1_L1,
@@ -912,7 +913,7 @@ public class DependencyPair extends ExcludePair {
                         this.preservedK1_L1, changedAttrsL1, this.typesTG_L2);
             }
 //			final List<GraphObject> preservedL2_K2 = new Vector<GraphObject>(5);
-            final Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2 = new Hashtable<AttrType, List<Pair<ValueMember, ValueMember>>>();
+            final Map<AttrType, List<Pair<ValueMember, ValueMember>>> changedAttrsL2 = new HashMap<AttrType, List<Pair<ValueMember, ValueMember>>>();
             if (this.preservedChanged.isEmpty()
                     || !ruleRestrictsAttributes(this.strongAttrCheck, r2, changedAttrsL2, changedAttrsL1)) {
                 // here do nothing!
@@ -978,8 +979,8 @@ public class DependencyPair extends ExcludePair {
             final Rule inverseR,
             final OrdinaryMorphism isoRHS) {
 //		System.out.println("inverse Rule : "+inverseR1.getName()+"  mappings: "+inverseR1.getSize());
-//		this.leftNAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> ();
-//		this.leftPAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> ();
+//		this.leftNAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> ();
+//		this.leftPAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> ();
 //		extend inverse r1 by converting of PACs from LHS to RHS
         if (!this.convertPACsLeft2Right(r, inverseR, isoRHS)) {
             return false;
@@ -1556,7 +1557,7 @@ public class DependencyPair extends ExcludePair {
             if (!nac.isEnabled()) {
                 continue;
             }
-            Hashtable<Type, List<GraphObject>> type2gosNAC2 = new Hashtable<>();
+            Map<Type, List<GraphObject>> type2gosNAC2 = new HashMap<>();
             boolean nacMaybeCritical = false;
             boolean nacAttrConst = false;
             boolean attrConst = false;

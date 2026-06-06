@@ -11,10 +11,11 @@
  */
 package agg.gui.saveload;
 
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-import java.util.Enumeration;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
@@ -58,28 +59,28 @@ public class GraGraElementsStore implements MouseListener {
     // value: Vector with elements:
     // EdGraph for "TG", EdGraph for "GRAPH", EdRule for "RULE",
     // EdAtomic for "ATOMIC", EdConstraint for "FORMULA"
-    protected final Hashtable<EdGraGra, Hashtable<String, Vector<Object>>> storeGraGra;
+    protected final HashMap<EdGraGra, HashMap<String, Vector<Object>>> storeGraGra;
     // key: EdRuleScheme,
     // value: Vector with elements of EdRule 
-    protected final Hashtable<EdRuleScheme, Vector<Object>> storeRuleScheme;
+    protected final HashMap<EdRuleScheme, Vector<Object>> storeRuleScheme;
     // key: EdRule,
     // value: Vector with 3 Vectors:
     // (0): Vector with elements of EdNAC
     // (1): Vector with elements of EdPAC
     // (2): Vector with elements of EdNestedApplCond
-    protected final Hashtable<EdRule, Vector<Vector<Object>>> storeRule;
+    protected final HashMap<EdRule, Vector<Vector<Object>>> storeRule;
     // key: EdNestedApplCond,
     // value: Vector with elements of EdNestedApplCond
-    protected final Hashtable<EdNestedApplCond, Vector<Object>> storeNestedAC;
+    protected final HashMap<EdNestedApplCond, Vector<Object>> storeNestedAC;
     // key: EdAtomic,
     // value: Vector with elements of EdAtomic
-    protected final Hashtable<EdAtomic, Vector<Object>> storeAtomConstraint;
+    protected final HashMap<EdAtomic, Vector<Object>> storeAtomConstraint;
     protected JPanel palette;
     private JScrollPane scrollPane;
     protected final Vector<JPanel> paletteElems;
     private JPanel panel;
-    private final Hashtable<Object, JPanel> obj2panel;
-    private final Hashtable<JLabel, Object> buttons;
+    private final HashMap<Object, JPanel> obj2panel;
+    private final HashMap<JLabel, Object> buttons;
     private JLabel label;
     private Object current;
     private boolean currentValid = false;
@@ -94,15 +95,15 @@ public class GraGraElementsStore implements MouseListener {
     public GraGraElementsStore(GraGraTreeView tree) {
         super();
         this.treeView = tree;
-        this.storeGraGra = new Hashtable<EdGraGra, Hashtable<String, Vector<Object>>>(
+        this.storeGraGra = new HashMap<EdGraGra, HashMap<String, Vector<Object>>>(
                 5);
-        this.storeRuleScheme = new Hashtable<EdRuleScheme, Vector<Object>>(5, 2);
-        this.storeRule = new Hashtable<EdRule, Vector<Vector<Object>>>(5, 2);
-        this.storeNestedAC = new Hashtable<EdNestedApplCond, Vector<Object>>(5, 2);
-        this.storeAtomConstraint = new Hashtable<EdAtomic, Vector<Object>>(5, 2);
+        this.storeRuleScheme = new HashMap<EdRuleScheme, Vector<Object>>(5, 2);
+        this.storeRule = new HashMap<EdRule, Vector<Vector<Object>>>(5, 2);
+        this.storeNestedAC = new HashMap<EdNestedApplCond, Vector<Object>>(5, 2);
+        this.storeAtomConstraint = new HashMap<EdAtomic, Vector<Object>>(5, 2);
         this.paletteElems = new Vector<JPanel>(5);
-        this.buttons = new Hashtable<JLabel, Object>(5);
-        this.obj2panel = new Hashtable<Object, JPanel>(5);
+        this.buttons = new HashMap<JLabel, Object>(5);
+        this.obj2panel = new HashMap<Object, JPanel>(5);
     }
 
     public void setTrash(JButton aTrash) {
@@ -118,9 +119,9 @@ public class GraGraElementsStore implements MouseListener {
 
     public void storeGraph(EdGraGra parent, EdGraph g) {
         // System.out.println("store.Graph...");
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht == null) {
-            ht = new Hashtable<String, Vector<Object>>(5);
+            ht = new HashMap<String, Vector<Object>>(5);
         }
         Vector<Object> v = ht.get("GRAPH");
         if (v == null) {
@@ -146,9 +147,9 @@ public class GraGraElementsStore implements MouseListener {
     }
 
     public void storeTypeGraph(EdGraGra parent, EdGraph g) {
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht == null) {
-            ht = new Hashtable<String, Vector<Object>>(5);
+            ht = new HashMap<String, Vector<Object>>(5);
         }
         Vector<Object> v = ht.get("TG");
         if (v == null) {
@@ -174,9 +175,9 @@ public class GraGraElementsStore implements MouseListener {
     }
 
     public void storeRuleScheme(EdGraGra parent, EdRuleScheme rs) {
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht == null) {
-            ht = new Hashtable<String, Vector<Object>>(5);
+            ht = new HashMap<String, Vector<Object>>(5);
         }
         Vector<Object> v = ht.get("RULESCHEME");
         if (v == null) {
@@ -225,9 +226,9 @@ public class GraGraElementsStore implements MouseListener {
     }
 
     public void storeRule(EdGraGra parent, EdRule r) {
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht == null) {
-            ht = new Hashtable<String, Vector<Object>>(5);
+            ht = new HashMap<String, Vector<Object>>(5);
         }
         Vector<Object> v = ht.get("RULE");
         if (v == null) {
@@ -253,9 +254,9 @@ public class GraGraElementsStore implements MouseListener {
     }
 
     public void storeAtomConstraint(EdGraGra parent, EdAtomic c) {
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht == null) {
-            ht = new Hashtable<String, Vector<Object>>(5);
+            ht = new HashMap<String, Vector<Object>>(5);
         }
         Vector<Object> v = ht.get("ATOMIC");
         if (v == null) {
@@ -281,9 +282,9 @@ public class GraGraElementsStore implements MouseListener {
     }
 
     public void storeConstraint(EdGraGra parent, EdConstraint c) {
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht == null) {
-            ht = new Hashtable<String, Vector<Object>>(5);
+            ht = new HashMap<String, Vector<Object>>(5);
         }
         Vector<Object> v = ht.get("FORMULA");
         if (v == null) {
@@ -440,7 +441,7 @@ public class GraGraElementsStore implements MouseListener {
 
     public EdGraph getTypeGraph(EdGraGra parent) {
         EdGraph g = null;
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht != null) {
             Vector<Object> v = ht.get("TG");
             if (v != null && !v.isEmpty()) {
@@ -462,7 +463,7 @@ public class GraGraElementsStore implements MouseListener {
     public EdGraph getGraph(EdGraGra parent) {
         // System.out.println("store.getGraph...");
         EdGraph g = null;
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht != null) {
             Vector<Object> v = ht.get("GRAPH");
             if (v != null && !v.isEmpty()) {
@@ -485,7 +486,7 @@ public class GraGraElementsStore implements MouseListener {
 
     public EdRule getRule(EdGraGra parent) {
         EdRule r = null;
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht != null) {
             Vector<Object> v = ht.get("RULE");
             if (v != null && !v.isEmpty()) {
@@ -505,7 +506,7 @@ public class GraGraElementsStore implements MouseListener {
 
     public EdRuleScheme getRuleScheme(EdGraGra parent) {
         EdRuleScheme r = null;
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht != null) {
             Vector<Object> v = ht.get("RULESCHEME");
             if (v != null && !v.isEmpty()) {
@@ -590,7 +591,7 @@ public class GraGraElementsStore implements MouseListener {
 
     public EdAtomic getAtomConstraint(EdGraGra parent) {
         EdAtomic a = null;
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht != null) {
             Vector<Object> v = ht.get("ATOMIC");
             if (v != null && !v.isEmpty()) {
@@ -624,7 +625,7 @@ public class GraGraElementsStore implements MouseListener {
 
     public EdConstraint getConstraint(EdGraGra parent) {
         EdConstraint c = null;
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(parent);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(parent);
         if (ht != null) {
             Vector<Object> v = ht.get("FORMULA");
             if (v != null && !v.isEmpty()) {
@@ -643,7 +644,7 @@ public class GraGraElementsStore implements MouseListener {
     }
 
     public void removeGraGra(EdGraGra gra) {
-        Enumeration<?> e = this.storeRule.keys();
+        Enumeration<?> e = Collections.enumeration(this.storeRule.keySet());
         while (e.hasMoreElements()) {
             EdRule r = (EdRule) e.nextElement();
             if (r.getGraGra() == gra) {
@@ -666,10 +667,10 @@ public class GraGraElementsStore implements MouseListener {
                 }
                 v.clear();
                 this.storeRule.remove(r);
-                e = this.storeRule.keys();
+                e = Collections.enumeration(this.storeRule.keySet());
             }
         }
-        e = this.storeAtomConstraint.keys();
+        e = Collections.enumeration(this.storeAtomConstraint.keySet());
         while (e.hasMoreElements()) {
             EdAtomic c = (EdAtomic) e.nextElement();
             if (c.getGraGra() == gra) {
@@ -685,10 +686,10 @@ public class GraGraElementsStore implements MouseListener {
                 }
                 v.clear();
                 this.storeAtomConstraint.remove(c);
-                e = this.storeAtomConstraint.keys();
+                e = Collections.enumeration(this.storeAtomConstraint.keySet());
             }
         }
-        Hashtable<String, Vector<Object>> ht = this.storeGraGra.get(gra);
+        HashMap<String, Vector<Object>> ht = this.storeGraGra.get(gra);
         if (ht != null) {
             Vector<Object> v = ht.get("GRAPH");
             if (v != null) {

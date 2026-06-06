@@ -26,6 +26,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -114,10 +115,10 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
      * the PairContainer, which is displayed here
      */
     private ExcludePairContainer container;
-    private Map<JButton, CriticalPairData> b2cpData = new Hashtable<JButton, CriticalPairData>();
+    private Map<JButton, CriticalPairData> b2cpData = new HashMap<JButton, CriticalPairData>();
     private Map<Rule, Map<Rule, JButton>> buttons = new HashMap<Rule, Map<Rule, JButton>>();
-    private Map<JButton, Rule> firstRules = new Hashtable<JButton, Rule>();
-    private Map<JButton, Rule> secondRules = new Hashtable<JButton, Rule>();
+    private Map<JButton, Rule> firstRules = new HashMap<JButton, Rule>();
+    private Map<JButton, Rule> secondRules = new HashMap<JButton, Rule>();
     /**
      * the listener for selections in the array
      */
@@ -721,7 +722,7 @@ public class CriticalPairPanel extends JPanel implements ActionListener,
         // create buttons-Hashtable
         Map<Rule, JButton> hash1 = this.buttons.get(r1);
         if (hash1 == null) {
-            hash1 = new Hashtable<Rule, JButton>();
+            hash1 = new HashMap<Rule, JButton>();
             this.buttons.put(r1, hash1);
         }
         hash1.put(r2, button);

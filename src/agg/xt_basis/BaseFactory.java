@@ -57,7 +57,6 @@ import agg.xt_basis.agt.KernelRule;
 import agg.xt_basis.agt.MultiRule;
 import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.Completion_InheritCSP;
-import java.util.Hashtable;
 
 /**
  * A factory class for Graphs, Morphisms, Rules, Matches.
@@ -1255,7 +1254,7 @@ public class BaseFactory {
     private boolean reverseMorphismInto(
             final OrdinaryMorphism srcMorph,
             OrdinaryMorphism tarMorph,
-            final Hashtable<GraphObject, GraphObject> table) {
+            final Map<GraphObject, GraphObject> table) {
         if (!srcMorph.isInjective()) {
             return false;
         }
@@ -1845,7 +1844,7 @@ public class BaseFactory {
                         Rule rj = rs.getRule(j);
                         List<ObjectFlow> rjObjFlow = rs.getObjFlowFromRule(rj, j);
                         if (!rjObjFlow.isEmpty()) {
-                            Hashtable<Object, Object> rjOutIn = new Hashtable<Object, Object>(cr.getReflectedInputObjectFlowFromRule(rj, rjObjFlow));
+                            Map<Object, Object> rjOutIn = new HashMap<Object, Object>(cr.getReflectedInputObjectFlowFromRule(rj, rjObjFlow));
                             if (!rjOutIn.isEmpty()) {
                                 int indx1 = j;
                                 int indx2 = i1;
@@ -1861,7 +1860,7 @@ public class BaseFactory {
                     }
                     List<ObjectFlow> gObjFlow = rs.getObjFlowFromGraph();
                     if (!gObjFlow.isEmpty()) {
-                        Hashtable<Object, Object> gOutIn = new Hashtable<Object, Object>(cr.getReflectedInputObjectFlowFromGraph(rs.getGraph(), gObjFlow));
+                        Map<Object, Object> gOutIn = new HashMap<Object, Object>(cr.getReflectedInputObjectFlowFromGraph(rs.getGraph(), gObjFlow));
                         if (!gOutIn.isEmpty()) {
                             int indx2 = i1;
                             if (rs.getGraph() != null) {
@@ -2077,8 +2076,8 @@ public class BaseFactory {
 		CondTuple condsOfInverseR = (CondTuple) inverseR.getAttrContext().getConditions();		
 		VarTuple varsOfInverseR = (VarTuple) inverseR.getAttrContext().getVariables();
 		
-		Hashtable<VarMember, Boolean>
-		varLeftRight = new Hashtable<VarMember, Boolean>();
+		Map<VarMember, Boolean>
+		varLeftRight = new HashMap<VarMember, Boolean>();
 		for (int i=0; i<vars.getNumberOfEntries(); i++) {
 			VarMember var = vars.getVarMemberAt(i);
 			if (var.getMark() == VarMember.LHS) {
@@ -2254,7 +2253,7 @@ public class BaseFactory {
     private boolean convertNACsLeft2Right(
             final Rule r,
             final Rule inverseRule,
-            final Hashtable<GraphObject, GraphObject> isoRight) {
+            final Map<GraphObject, GraphObject> isoRight) {
         final List<OrdinaryMorphism> acs = r.getNACsList();
         for (int i = 0; i < acs.size(); i++) {
             OrdinaryMorphism acL = acs.get(i);
@@ -2372,7 +2371,7 @@ public class BaseFactory {
     private boolean convertGACsLeft2Right(
             final Rule r,
             final Rule inverseRule,
-            final Hashtable<GraphObject, GraphObject> isoRight) {
+            final Map<GraphObject, GraphObject> isoRight) {
         boolean failed = false;
 //		List<OrdinaryMorphism> racs = new ArrayList<OrdinaryMorphism>();
         final List<OrdinaryMorphism> acs = r.getNestedACsList();
@@ -2540,7 +2539,7 @@ public class BaseFactory {
     private boolean convertPACsLeft2Right(
             final Rule r,
             final Rule inverseRule,
-            final Hashtable<GraphObject, GraphObject> isoRight) {
+            final Map<GraphObject, GraphObject> isoRight) {
         final List<OrdinaryMorphism> acs = r.getPACsList();
         for (int i = 0; i < acs.size(); i++) {
             OrdinaryMorphism acL = acs.get(i);
@@ -2926,7 +2925,7 @@ public class BaseFactory {
         OrdinaryMorphism morph = BaseFactory.theFactory().createMorphism(
                 morph2.getTarget(), extLeft);
         ((ContextView) morph.getAttrContext()).changeAllowedMapping(AttrMapping.MATCH_MAP);
-        Hashtable<Node, Node> tmp = new Hashtable<Node, Node>(5);
+        Map<Node, Node> tmp = new HashMap<Node, Node>(5);
         Iterator<?> e = morph2.getTarget().getNodesSet().iterator();
         while (e.hasNext()) {
             GraphObject o = (GraphObject) e.next();
@@ -3084,7 +3083,7 @@ public class BaseFactory {
     private KernelRule copyKernelRule(
             final Rule rule,
             final TypeSet types,
-            final Hashtable<GraphObject, GraphObject> table) {
+            final Map<GraphObject, GraphObject> table) {
         KernelRule kr = new KernelRule(types);
         copyRule(rule, kr, table, true);
         kr.setName(rule.getName());
@@ -3102,7 +3101,7 @@ public class BaseFactory {
      * Returns a clone of the rule scheme.
      */
     public RuleScheme cloneRuleScheme(RuleScheme ruleScheme, TypeSet types) {
-        final Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
         RuleScheme rs = new RuleScheme(ruleScheme.getName(),
                 copyKernelRule(ruleScheme.getKernelRule(), types, table));
         for (int i = 0; i < ruleScheme.getMultiRules().size(); i++) {
@@ -3142,7 +3141,7 @@ public class BaseFactory {
 
     private KernelRule reverseKernelRule(
             final KernelRule kern,
-            final Hashtable<GraphObject, GraphObject> table) {
+            final Map<GraphObject, GraphObject> table) {
         KernelRule invKern = new KernelRule(kern.getTypeSet());
         this.reverseMorphismInto(kern, invKern, table);
         this.reflectInputParameter(kern, invKern);
@@ -3165,8 +3164,8 @@ public class BaseFactory {
      * Returns an inverse rule scheme of the specified rule scheme.
      */
     public RuleScheme reverseRuleScheme(RuleScheme ruleScheme) {
-        Hashtable<GraphObject, GraphObject> kernTable = new Hashtable<GraphObject, GraphObject>();
-        Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+        Map<GraphObject, GraphObject> kernTable = new HashMap<GraphObject, GraphObject>();
+        Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
         // reverte the kernel rule
         KernelRule invKern = this.reverseKernelRule((KernelRule) ruleScheme.getKernelRule(), kernTable);
         // new rule scheme	
@@ -3222,7 +3221,7 @@ public class BaseFactory {
      */
     public Rule makeMinimalOfRule(Rule r) {
         Rule minRule = new Rule(r.getOriginal().getTypeSet());
-        final Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
         copyRule(r, minRule, table, false);
         minRule.setLayer(r.getLayer());
         minRule.setPriority(r.getPriority());
@@ -3302,7 +3301,7 @@ public class BaseFactory {
      */
     public Rule cloneRule(final Rule rule) {
         Rule ruleClone = new Rule(rule.getOriginal().getTypeSet());
-        final Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
         copyRule(rule, ruleClone, table, true);
         ruleClone.setLayer(rule.getLayer());
         ruleClone.setPriority(rule.getPriority());
@@ -3314,7 +3313,7 @@ public class BaseFactory {
      * Returns a clone of the rule.
      */
     public boolean cloneRule(final Rule from, final Rule to) {
-        final Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
         copyRule(from, to, table, true);
         table.clear();
         return true;
@@ -3325,9 +3324,9 @@ public class BaseFactory {
      */
     public Rule cloneRule(Rule rule, TypeSet types, boolean withApplConds) {
         Rule ruleClone = new Rule(types);
-        final Hashtable<GraphObject, GraphObject> ltable = new Hashtable<GraphObject, GraphObject>();
-        final Hashtable<GraphObject, GraphObject> rtable = new Hashtable<GraphObject, GraphObject>();
-        final Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> ltable = new HashMap<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> rtable = new HashMap<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
         copyRule(rule, ruleClone, table, withApplConds);
         ruleClone.setLayer(rule.getLayer());
         ruleClone.setPriority(rule.getPriority());
@@ -3343,7 +3342,7 @@ public class BaseFactory {
     private Rule copyRule(
             final Rule rule,
             final Rule ruleClone,
-            final Hashtable<GraphObject, GraphObject> table,
+            final Map<GraphObject, GraphObject> table,
             boolean withApplConds) {
         ruleClone.setName(rule.getName());
         copyAttrContextFromTo(rule.getAttrContext(), ruleClone.getAttrContext());
@@ -3391,7 +3390,7 @@ public class BaseFactory {
     }
 
     public void copyGraph(Graph from, Graph to,
-            Hashtable<GraphObject, GraphObject> table) {
+            Map<GraphObject, GraphObject> table) {
         // copy nodes
         Iterator<Node> nodes = from.getNodesSet().iterator();
         while (nodes.hasNext()) {
@@ -3424,7 +3423,7 @@ public class BaseFactory {
     }
 
     public void copyMorph(OrdinaryMorphism from, OrdinaryMorphism to,
-            Hashtable<GraphObject, GraphObject> table) {
+            Map<GraphObject, GraphObject> table) {
         Iterator<GraphObject> dom = from.getDomainObjects().iterator();
         while (dom.hasNext()) {
             GraphObject lgo = dom.next();
@@ -3442,7 +3441,7 @@ public class BaseFactory {
     public AtomConstraint cloneAtomConstraint(
             final AtomConstraint ac,
             final TypeSet types) {
-        final Hashtable<GraphObject, GraphObject> commonTable = new Hashtable<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> commonTable = new HashMap<GraphObject, GraphObject>();
         Graph g1 = BaseFactory.theFactory().createGraph(types);
         g1.setKind(GraphKind.PREMISE);
         Graph g2 = BaseFactory.theFactory().createGraph(types);
@@ -3471,7 +3470,7 @@ public class BaseFactory {
     public void copyNestedAC(
             final NestedApplCond from,
             final NestedApplCond to,
-            final Hashtable<GraphObject, GraphObject> table) {
+            final Map<GraphObject, GraphObject> table) {
         for (int i = 0; i < from.getNestedACs().size(); i++) {
             NestedApplCond ac = from.getNestedACs().get(i);
             NestedApplCond acClone = to.createNestedAC();
@@ -3492,7 +3491,7 @@ public class BaseFactory {
     private MultiRule copyMultiRule(
             final MultiRule rule,
             final MultiRule ruleClone,
-            final Hashtable<GraphObject, GraphObject> table) {
+            final Map<GraphObject, GraphObject> table) {
         ruleClone.setName(rule.getName());
         copyAttrContextFromTo(rule.getAttrContext(), ruleClone.getAttrContext());
         Graph lgraph = rule.getLeft();
@@ -3635,7 +3634,7 @@ public class BaseFactory {
     private boolean reverseMultiRule(
             final MultiRule rule,
             final MultiRule invRule,
-            final Hashtable<GraphObject, GraphObject> table) {
+            final Map<GraphObject, GraphObject> table) {
         copyAttrContextFromTo(rule.getAttrContext(), invRule.getAttrContext());
         Graph left = rule.getLeft();
         Graph right = rule.getRight();
@@ -6293,3 +6292,5 @@ public class BaseFactory {
         return true;
     }
 }
+
+

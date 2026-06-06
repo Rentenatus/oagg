@@ -11,9 +11,11 @@
 package agg.xt_basis;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.List;
 
 /**
@@ -25,7 +27,7 @@ import java.util.List;
  */
 public class RuleLayer {
 
-    private Hashtable<Rule, Integer> ruleLayer;
+    private Map<Rule, Integer> ruleLayer;
 //	private Enumeration<Rule> rules;
     private List<Rule> rulesVec;
 
@@ -67,7 +69,7 @@ public class RuleLayer {
     }
 
     private void initRuleLayer() {
-        this.ruleLayer = new Hashtable<Rule, Integer>();
+        this.ruleLayer = new HashMap<Rule, Integer>();
         for (int i = 0; i < this.rulesVec.size(); i++) {
             Rule rule = this.rulesVec.get(i);
             this.ruleLayer.put(rule, Integer.valueOf(rule.getLayer()));
@@ -83,7 +85,7 @@ public class RuleLayer {
      *
      * @return The rule layer.
      */
-    public Hashtable<Rule, Integer> getRuleLayer() {
+    public Map<Rule, Integer> getRuleLayer() {
         return this.ruleLayer;
     }
 
@@ -95,8 +97,8 @@ public class RuleLayer {
     public Integer getStartLayer() {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
+            Rule key = keys.nextElement();
             Integer layer = getRuleLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -111,9 +113,9 @@ public class RuleLayer {
      *
      * @return The inverted layer function.
      */
-    public Hashtable<Integer, HashSet<Rule>> invertLayer() {
-        Hashtable<Integer, HashSet<Rule>> inverted = new Hashtable<Integer, HashSet<Rule>>();
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
+    public Map<Integer, HashSet<Rule>> invertLayer() {
+        Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
+        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
             Rule key = keys.nextElement();
             Integer value = this.ruleLayer.get(key);
             HashSet<Rule> invertedValue = inverted.get(value);
@@ -135,7 +137,7 @@ public class RuleLayer {
      */
     public String toString() {
         String resultString = "Rule:\t\tLayer:\n";
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
+        for (Enumeration<Rule> keys = Collections.enumeration(this.ruleLayer.keySet()); keys.hasMoreElements();) {
             Rule key = keys.nextElement();
             Integer value = this.ruleLayer.get(key);
             resultString += key.getName() + "\t\t" + value.toString() + "    "

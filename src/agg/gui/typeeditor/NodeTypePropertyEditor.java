@@ -13,7 +13,8 @@
 package agg.gui.typeeditor;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.awt.Color;
 import java.awt.Point;
@@ -52,6 +53,7 @@ import agg.gui.saveload.AGGFileFilter;
 import agg.util.Pair;
 import agg.gui.animation.AnimationParam;
 import agg.gui.animation.AnimationParamDialog;
+import java.util.Hashtable;
 
 @SuppressWarnings("serial")
 public class NodeTypePropertyEditor extends JPanel implements ChangeListener,

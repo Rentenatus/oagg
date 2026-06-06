@@ -28,8 +28,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -76,7 +77,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
      */
     public class HashTableModel extends DefaultTableModel {
 
-        Hashtable<Object, List<Object>> table;
+        HashMap<Object, List<Object>> table;
 
         /**
          * Creates a new model with hashtable and the title for the columns of
@@ -88,7 +89,7 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             for (int i = 0; i < layers.size(); i++) {
                 addColumn(layers.get(i));
             }
-            this.table = new Hashtable<Object, List<Object>>(constraints.size());
+            this.table = new HashMap<Object, List<Object>>(constraints.size());
             for (int i = 0; i < constraints.size(); i++) {
                 Formula f = constraints.get(i);
                 ArrayMovieInt flayers = f.getLayer();
@@ -178,12 +179,12 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
             }
         }
 
-        public Hashtable<Object, List<Object>> getTable() {
+        public HashMap<Object, List<Object>> getTable() {
             return this.table;
         }
 
         public Formula getConstraint(String name) {
-            for (Enumeration<?> e = this.table.keys(); e.hasMoreElements();) {
+            for (Enumeration<?> e = Collections.enumeration(this.table.keySet()); e.hasMoreElements();) {
                 Formula key = (Formula) e.nextElement();
                 if (key.getName().equals(name)) {
                     return key;
@@ -401,9 +402,9 @@ public class GraGraConstraintLayerDialog extends JDialog implements ActionListen
     }
 
     private void acceptValues() {
-        Hashtable<Object, List<Object>> table = ((HashTableModel) this.constraintTable
+        HashMap<Object, List<Object>> table = ((HashTableModel) this.constraintTable
                 .getModel()).getTable();
-        for (Enumeration<?> e = table.keys(); e.hasMoreElements();) {
+        for (Enumeration<?> e = Collections.enumeration(table.keySet()); e.hasMoreElements();) {
             Object key = e.nextElement();
             // System.out.println(key);
             List<Object> l = table.get(key);

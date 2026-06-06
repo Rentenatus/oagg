@@ -598,10 +598,10 @@ public class ExcludePairContainer implements PairContainer, Runnable {
      * @param r2 The second part of a critical pair
      * @param g The graph on which these two rules should be checked
      * @return The critical object
-     * <code>Hashtable<Graph,List<Hashtable<GraphObject,GraphObject>>></code>,
+     * <code>Map<Graph,List<Map<GraphObject,GraphObject>>></code>,
      * where a Graph is an overlapping graph and is a key, a
-     * List<Hashtable<GraphObject,GraphObject>> contains found critical matches
-     * and is a value. Furthermore, a Hashtable<GraphObject,GraphObject> defines
+     * List<Map<GraphObject,GraphObject>> contains found critical matches
+     * and is a value. Furthermore, a Map<GraphObject,GraphObject> defines
      * a critical match of a key-Graph into the specified Graph g. Here a
      * key-GraphObject belongs to a key-Graph which is an overlapping graph, a
      * value-GraphObject belongs to the specified Graph g.
@@ -680,10 +680,10 @@ public class ExcludePairContainer implements PairContainer, Runnable {
         // select match graph objects
         /*
 		if (result != null && !result.isEmpty()) {
-			Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>
+			Pair<Map<GraphObject, GraphObject>, Map<GraphObject, GraphObject>>
 			p = result.get(0);
-			Hashtable<GraphObject, GraphObject> m1 = p.first;
-			Hashtable<GraphObject, GraphObject> m2 = p.second;
+			Map<GraphObject, GraphObject> m1 = p.first;
+			Map<GraphObject, GraphObject> m2 = p.second;
 			
 			Enumeration<GraphObject> keys = Collections.enumeration(m1.keySet());
 			while (keys.hasMoreElements()) {
@@ -988,7 +988,7 @@ public class ExcludePairContainer implements PairContainer, Runnable {
     }
 
     /**
-     * This container is a <code>Hashtable</code> with a rule as key. The value
+     * This container is a <code>Map</code> with a rule as key. The value
      * will be a set of rules.
      *
      * @param kind The desired algorithm: <code>CriticalPair.CONFLICT</code>,

@@ -14,8 +14,7 @@ package agg.xt_basis;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Dictionary;
+import java.util.Map;
 import agg.util.StrategyProperties;
 import agg.util.csp.Variable;
 import agg.xt_basis.csp.CompletionPropertyBits;
@@ -251,7 +250,7 @@ public class MorphCompletionStrategy implements StrategyProperties,
     public void resetTypeMap(Graph g) {
     }
 
-    public void resetTypeMap(Hashtable<String, HashSet<GraphObject>> typemap) {
+    public void resetTypeMap(Map<String, HashSet<GraphObject>> typemap) {
     }
 
     public void resetVariableDomain(boolean instanceNull) {
@@ -275,14 +274,14 @@ public class MorphCompletionStrategy implements StrategyProperties,
     }
 
     public void setRelatedInstanceVarMap(
-            Dictionary<Object, Variable> relatedVarMap) {
+            Map<Object, Variable> relatedVarMap) {
     }
 
     public boolean hasRelatedInstanceVarMap() {
         return false;
     }
 
-    public Dictionary<Object, Variable> getInstanceVarMap() {
+    public Map<Object, Variable> getInstanceVarMap() {
         return null;
     }
 //	public void resetSolverVariablesFromIndex(int startIndx) {

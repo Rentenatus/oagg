@@ -13,11 +13,10 @@ package agg.xt_basis.csp;
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Dictionary;
 import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.VarMember;
@@ -51,7 +50,7 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
 
     private ALR_InheritCSP itsCSP;
     private Morphism itsMorph;
-    private Dictionary<Object, Variable> relatedVarMap;
+    private Map<Object, Variable> relatedVarMap;
     // private boolean allowRestrictedDomain;
     private HashMap<String, String> mapInputParameter = new HashMap<String, String>(1);
     private String errorMsg;
@@ -198,7 +197,7 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
     }
 
     public void setRelatedInstanceVarMap(
-            Dictionary<Object, Variable> relVarMap) {
+            Map<Object, Variable> relVarMap) {
         this.relatedVarMap = relVarMap;
     }
 
@@ -209,14 +208,14 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
         return false;
     }
 
-    public Dictionary<Object, Variable> getInstanceVarMap() {
+    public Map<Object, Variable> getInstanceVarMap() {
         if (this.itsCSP != null) {
             return this.itsCSP.getInstanceVarMap();
         }
         return null;
     }
 
-    public void resetTypeMap(Hashtable<String, HashSet<GraphObject>> typeMap) {
+    public void resetTypeMap(Map<String, HashSet<GraphObject>> typeMap) {
         if (this.itsCSP != null) {
             this.itsCSP.resetTypeMap(typeMap);
         }

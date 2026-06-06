@@ -37,10 +37,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -103,7 +106,7 @@ public class TerminationDialog extends JDialog implements ActionListener {
      */
     public class HashTableModel extends DefaultTableModel {
 
-        Hashtable<Object, Integer> table;
+        Map<Object, Integer> table;
 
         /**
          * Creates a new model.
@@ -119,7 +122,7 @@ public class TerminationDialog extends JDialog implements ActionListener {
             }
             this.table = table;
             // iterate by layer
-            Enumeration<?> keys = table.keys();
+            Enumeration<?> keys = Collections.enumeration(table.keySet());
             while (keys.hasMoreElements()) {
                 Object key = keys.nextElement();
                 Object value = table.get(key);
@@ -135,12 +138,12 @@ public class TerminationDialog extends JDialog implements ActionListener {
             for (int i = 0; i < columnNames.length; i++) {
                 addColumn(columnNames[i]);
             }
-            this.table = new Hashtable<Object, Integer>();
+            this.table = new HashMap<Object, Integer>();
             this.table.putAll(layer.getRuleLayer());
             // this.table=layer.getRuleLayer();
-            Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
+            Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
             SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
+            for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
                     .hasMoreElements();) {
                 ruleLayerSet.add(en.nextElement());
             }
@@ -175,11 +178,11 @@ public class TerminationDialog extends JDialog implements ActionListener {
             for (int i = 0; i < columnNames.length; i++) {
                 addColumn(columnNames[i]);
             }
-            this.table = new Hashtable<Object, Integer>();
+            this.table = new HashMap<Object, Integer>();
             this.table.putAll(priority.getRulePriority());
-            Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = priority.invertPriority();
+            Map<Integer, HashSet<Rule>> invertedRuleLayer = priority.invertPriority();
             SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
-            for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
+            for (Enumeration<Integer> en = Collections.enumeration(invertedRuleLayer.keySet()); en
                     .hasMoreElements();) {
                 ruleLayerSet.add(en.nextElement());
             }
@@ -212,7 +215,7 @@ public class TerminationDialog extends JDialog implements ActionListener {
         /**
          * Returns the table.
          */
-        public Hashtable<Object, Integer> getTable() {
+        public Map<Object, Integer> getTable() {
             return this.table;
         }
 

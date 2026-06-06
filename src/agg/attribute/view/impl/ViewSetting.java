@@ -13,7 +13,7 @@ package agg.attribute.view.impl;
 
 import java.lang.ref.WeakReference;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrTuple;
@@ -40,7 +40,7 @@ public abstract class ViewSetting extends ManagedObject implements
     /**
      * Table of observers for tuples.
      */
-    transient protected Hashtable<AttrTuple, Vector<WeakReference<AttrViewObserver>>> observerTab = new Hashtable<AttrTuple, Vector<WeakReference<AttrViewObserver>>>();
+    transient protected HashMap<AttrTuple, Vector<WeakReference<AttrViewObserver>>> observerTab = new HashMap<AttrTuple, Vector<WeakReference<AttrViewObserver>>>();
     Object obsvs;
 
     public ViewSetting(AttrTupleManager m) {
@@ -71,7 +71,7 @@ public abstract class ViewSetting extends ManagedObject implements
     protected Vector<WeakReference<AttrViewObserver>> getObserversForTuple(
             AttrTuple attr) {
         if (this.observerTab == null) {
-            this.observerTab = new Hashtable<AttrTuple, Vector<WeakReference<AttrViewObserver>>>();
+            this.observerTab = new HashMap<AttrTuple, Vector<WeakReference<AttrViewObserver>>>();
         }
         return this.observerTab.get(attr);
     }
