@@ -1,40 +1,40 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.termination;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Hashtable;
-
+import java.util.HashMap;
+import java.util.Map;
 import agg.xt_basis.GraphObject;
 
 /**
- * Type layer is a set of type layers of a given layered graph grammar. A type means to be an object (Node resp. Edge)
- * of a type graph.
+ * Type layer is a set of type layers of a given layered graph grammar. A type
+ * means to be an object (Node resp. Edge) of a type graph.
  *
  * @author $Author: olga $
  * @version $ID
  */
 public class TypeLayerOfTypeGraph {
 
-    private Hashtable<GraphObject, Integer> typeLayer;
-
-    private Hashtable<GraphObject, Integer> types;
+    private Map<GraphObject, Integer> typeLayer;
+    private Map<GraphObject, Integer> types;
 
     /**
      * Creates a new set of type layers for a given layered graph grammar.
      *
      * @param types The types of a graph grammar.
      */
-    public TypeLayerOfTypeGraph(Hashtable<GraphObject, Integer> types) {
+    public TypeLayerOfTypeGraph(Map<GraphObject, Integer> types) {
         this.types = types;
         initTypeLayer();
     }
@@ -46,13 +46,11 @@ public class TypeLayerOfTypeGraph {
         this.typeLayer.put(type, Integer.valueOf(layer));
         // System.out.println("type layer: "+((Integer)
         // this.typeLayer.get(type)).toString());
-
     }
 
     private void initTypeLayer() {
-        this.typeLayer = new Hashtable<GraphObject, Integer>();
-        for (Enumeration<GraphObject> keys = this.types.keys(); keys.hasMoreElements();) {
-            GraphObject t = keys.nextElement();
+        this.typeLayer = new HashMap<GraphObject, Integer>();
+        for (GraphObject t : this.types.keySet()) { 
             this.typeLayer.put(t, this.types.get(t));
             // System.out.println("type , layer: "+t+" ," +((Integer)
             // this.typeLayer.get(t)).toString());
@@ -64,7 +62,7 @@ public class TypeLayerOfTypeGraph {
      *
      * @return The type layer.
      */
-    public Hashtable<GraphObject, Integer> getTypeLayer() {
+    public Map<GraphObject, Integer> getTypeLayer() {
         return this.typeLayer;
     }
 
@@ -76,8 +74,7 @@ public class TypeLayerOfTypeGraph {
     public Integer getStartLayer() {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<GraphObject> keys = getTypeLayer().keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (GraphObject key : getTypeLayer().keySet()) {
             Integer layer = getTypeLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -92,10 +89,9 @@ public class TypeLayerOfTypeGraph {
      *
      * @return The inverted layer function.
      */
-    public Hashtable<Integer, HashSet<Object>> invertLayer() {
-        Hashtable<Integer, HashSet<Object>> inverted = new Hashtable<Integer, HashSet<Object>>();
-        for (Enumeration<GraphObject> keys = this.typeLayer.keys(); keys.hasMoreElements();) {
-            GraphObject key = keys.nextElement();
+    public Map<Integer, HashSet<Object>> invertLayer() {
+        Map<Integer, HashSet<Object>> inverted = new HashMap<Integer, HashSet<Object>>();
+        for (GraphObject key : this.typeLayer.keySet()) {
             // System.out.println("TypeLayer:: "+key);
             Integer value = this.typeLayer.get(key);
             // System.out.println("TypeLayer:: "+value);
@@ -118,8 +114,7 @@ public class TypeLayerOfTypeGraph {
      */
     public String toString() {
         String resultString = "Type:\t\tLayer:\n";
-        for (Enumeration<GraphObject> keys = this.typeLayer.keys(); keys.hasMoreElements();) {
-            GraphObject key = keys.nextElement();
+        for (GraphObject key : this.typeLayer.keySet()) {
             Integer value = this.typeLayer.get(key);
             resultString += key.toString() + "\t\t" + value.toString()
                     + "\n";

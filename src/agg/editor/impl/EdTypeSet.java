@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -13,11 +15,10 @@ package agg.editor.impl;
 
 import java.awt.Color;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import agg.gui.editor.EditorConstants;
 import agg.gui.event.TypeEvent;
 import agg.gui.event.TypeEventListener;
@@ -31,57 +32,49 @@ import agg.xt_basis.TypeGraph;
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.impl.DeclTuple;
 import agg.attribute.impl.DeclMember;
+import de.jare.ndimcol.ref.ArrayMovie;
+import de.jare.ndimcol.ref.IteratorWalker;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
- * This class EdTypeSet specifies a set of layout types for typing nodes and edges of graphs. The type is defined by a
- * combination of name, shape and color. The name is a <code>String</code>. The color is a <code>Color</code>. The shape
- * of the node cann be specified by the constants: EditorConstans.RECT EditorConstans.CIRCLE EditorConstans.OVAL
- * EditorConstans.ROUNDRECT. The shape of the edges cann be specified by the constants: EditorConstans.SOLID
- * EditorConstans.DASH EditorConstans.DOT. The default node type is the combination: (unnamed, EditorConstans.RECT,
- * Color.black). The default edge type is the combination: (unnamed, EditorConstans.SOLID, Color.black).
+ * This class EdTypeSet specifies a set of layout types for typing nodes and
+ * edges of graphs. The type is defined by a combination of name, shape and
+ * color. The name is a <code>String</code>. The color is a <code>Color</code>.
+ * The shape of the node cann be specified by the constants: EditorConstans.RECT
+ * EditorConstans.CIRCLE EditorConstans.OVAL EditorConstans.ROUNDRECT. The shape
+ * of the edges cann be specified by the constants: EditorConstans.SOLID
+ * EditorConstans.DASH EditorConstans.DOT. The default node type is the
+ * combination: (unnamed, EditorConstans.RECT, Color.black). The default edge
+ * type is the combination: (unnamed, EditorConstans.SOLID, Color.black).
  *
  * @author $Author: olga $
  * @version $Id: EdTypeSet.java,v 1.49 2010/10/16 22:43:42 olga Exp $
  */
-public class EdTypeSet {
+public class EdTypeSet { 
 
     private final Vector<EdType> nodeTypes = new Vector<EdType>();
-
     private final Vector<EdType> arcTypes = new Vector<EdType>();
-
-    private final Hashtable<EdType, List<EdGraphObject>> nodeTypeUsers = new Hashtable<EdType, List<EdGraphObject>>();
-
-    private final Hashtable<EdType, List<EdGraphObject>> arcTypeUsers = new Hashtable<EdType, List<EdGraphObject>>();
-
-    private final Hashtable<EdType, List<EdGraphObject>> typeGraphNodeUsers = new Hashtable<EdType, List<EdGraphObject>>();
-
-    private final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> typeGraphArcUsers = new Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>>();
-
-    private EdType selectedNodeType;
-
+    private final HashMap<EdType, List<EdGraphObject>> nodeTypeUsers = new HashMap<EdType, List<EdGraphObject>>();
+    private final HashMap<EdType, List<EdGraphObject>> arcTypeUsers = new HashMap<EdType, List<EdGraphObject>>();
+    private final HashMap<EdType, List<EdGraphObject>> typeGraphNodeUsers = new HashMap<EdType, List<EdGraphObject>>();
+    private final HashMap<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> typeGraphArcUsers = new HashMap<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>>();
+    private EdType selectedNodeType; 
     private EdType selectedArcType;
-
     private EdType defaultNodeType;
-
     private EdType defaultArcType;
-
     private boolean iconable;
-
     private String resourcesPath = System.getProperty("user.dir");
-
     private boolean typeKeyChanged;
-
     private final Vector<TypeEventListener> typeEventListeners = new Vector<TypeEventListener>();
-
     /**
-     * this EdGraph holds the layout for the type graph used here. If no type graph is defined in the underlaying
-     * TypeSet, this will also be null.
+     * this EdGraph holds the layout for the type graph used here. If no type
+     * graph is defined in the underlaying TypeSet, this will also be null.
      */
     private EdGraph edTypeGraph;
-
     /**
-     * this object manages the types in basical layer. It will be used here to create new Types and to manage the type
-     * graph
+     * this object manages the types in basical layer. It will be used here to
+     * create new Types and to manage the type graph
      */
     private TypeSet bTypeSet;
 
@@ -111,22 +104,18 @@ public class EdTypeSet {
 
     public void dispose() {
         this.typeEventListeners.clear();
-
         this.defaultNodeType = null;
         this.defaultArcType = null;
         this.selectedNodeType = null;
         this.selectedArcType = null;
-
         if (this.edTypeGraph != null) {
             this.edTypeGraph.dispose();
             this.edTypeGraph = null;
         }
-
         this.arcTypeUsers.clear();
         this.nodeTypeUsers.clear();
         this.typeGraphArcUsers.clear();
         this.typeGraphNodeUsers.clear();
-
         while (!this.nodeTypes.isEmpty()) {
             this.nodeTypes.get(0).dispose();
             this.nodeTypes.remove(0);
@@ -135,23 +124,21 @@ public class EdTypeSet {
             this.arcTypes.get(0).dispose();
             this.arcTypes.remove(0);
         }
-
         this.bTypeSet = null;
     }
 
-    public void finalize() {
-    }
-
     /**
-     * Returns the type manager used in the theoretical layer for the types herein
+     * Returns the type manager used in the theoretical layer for the types
+     * herein
      */
     public TypeSet getBasisTypeSet() {
         return this.bTypeSet;
     }
 
     /**
-     * force this class to use the give type manager. All old types will be removed and the types of the new type
-     * manager will get the default layout (or the last used layout as defined in the additional string of the type
+     * force this class to use the give type manager. All old types will be
+     * removed and the types of the new type manager will get the default layout
+     * (or the last used layout as defined in the additional string of the type
      * object).
      */
     public void setBasisTypeSet(TypeSet typeSet) {
@@ -160,7 +147,8 @@ public class EdTypeSet {
     }
 
     /**
-     * Returns the formated type graph. The returned object contains the layout and a link to the basic type graph.
+     * Returns the formated type graph. The returned object contains the layout
+     * and a link to the basic type graph.
      */
     public EdGraph getTypeGraph() {
         return this.edTypeGraph;
@@ -170,8 +158,8 @@ public class EdTypeSet {
         if (typeGraphLayout != null) {
             if (this.bTypeSet.compareTo(typeGraphLayout.getTypeSet()
                     .getBasisTypeSet())) {
-                List<Type> v = typeGraphLayout.getBasisGraph().getUsedTypes();
-                this.bTypeSet.adaptTypes(v.iterator(), false);
+                ArrayMovie<Type> v = typeGraphLayout.getBasisGraph().getUsedTypes();
+                this.bTypeSet.adaptTypes(v.softWalker(), false);
                 refreshTypes();
                 this.edTypeGraph = typeGraphLayout;
                 this.bTypeSet.setTypeGraph(this.edTypeGraph.getBasisGraph());
@@ -184,10 +172,12 @@ public class EdTypeSet {
     }
 
     /**
-     * Creates an empty type graph, if this EdTypeSet haven't got one before. A type graph in the theoretical layer and
-     * an EdGraph for the layout will be created.
+     * Creates an empty type graph, if this EdTypeSet haven't got one before. A
+     * type graph in the theoretical layer and an EdGraph for the layout will be
+     * created.
      *
-     * Returns the created EdGraph with the layout informations and a link to the basic type graph
+     * Returns the created EdGraph with the layout informations and a link to
+     * the basic type graph
      */
     public EdGraph createTypeGraph() {
         // calls TypeSet to create a basic type graph
@@ -196,7 +186,6 @@ public class EdTypeSet {
         if (typeGraph == null) {
             typeGraph = this.bTypeSet.createTypeGraph();
         }
-
         // we must send a reference to this otherwise we get an endless
         // recursion
         this.edTypeGraph = new EdGraph(typeGraph, this);
@@ -230,17 +219,14 @@ public class EdTypeSet {
                     //					":RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:");
                     ":RECT:java.awt.Color[r=0,g=0,b=0]:[NODE]:");
         }
-
         /* get additional representation */
         Vector<String> v = this.getAdditionalReprOfBasisType(baseType);
 //		System.out.println(baseType.getStringRepr()+"   "+v);
-
         String shapeStr = v.elementAt(0);
         String colorStr = v.elementAt(1);
         String filledStr = v.elementAt(2);
         String imageFileNameStr = v.elementAt(3);
         String markStr = v.elementAt(4);
-
         /* shape is an integer */
         int shape = -1;
         if (shapeStr.equals("RECT")) {
@@ -260,7 +246,6 @@ public class EdTypeSet {
         } else {
             shape = EditorConstants.RECT;
         }
-
         /* color is a Color */
         String r_str = colorStr.substring(colorStr.indexOf("r=") + 2, colorStr
                 .indexOf(",g="));
@@ -270,15 +255,11 @@ public class EdTypeSet {
                 .indexOf("]"));
         Color color = new Color((Integer.valueOf(r_str)).intValue(), (Integer.valueOf(
                 g_str)).intValue(), (Integer.valueOf(b_str)).intValue());
-
         boolean filled = filledStr.equals("FILLED") || filledStr.equals("BOLD");
-
         /* create a new type */
         EdType eType = new EdType(baseType, shape, color, filled, imageFileNameStr);
-
         eType.setResourcesPath(this.resourcesPath);
 //		eType.setImageFileName(imageFileNameStr);
-
         /* add a type to the node types or arc types */
         if (markStr.equals("[NODE]")) {
             eType.setIconable(this.iconable);
@@ -288,18 +269,19 @@ public class EdTypeSet {
             addAlphabeticalSorted(eType, this.arcTypes);
             fireTypeEvent(new TypeEvent(this, eType, TypeEvent.ARC_CREATED));
         }
-
         return eType;
     }
 
     /**
-     * Creates and adds a new node type to this type set only when any node type with the specified graphical features
-     * does not exist, otherwise returns null.
+     * Creates and adds a new node type to this type set only when any node type
+     * with the specified graphical features does not exist, otherwise returns
+     * null.
      *
      * If the base type set exists a new base type is created, too.
      *
      * @param name the name of a new node type
-     * @param shape a key for the shape of node types as defined in EditorConstants
+     * @param shape a key for the shape of node types as defined in
+     * EditorConstants
      * @param color the color of a new node type
      * @return a new node EdType or null
      * @see EditorConstants
@@ -307,7 +289,6 @@ public class EdTypeSet {
     public EdType createNodeType(String name, int shape, Color color) {
         Type bType = null;
         EdType eType = null;
-
         // if type is undeclared
         if (isNewType(this.nodeTypes, name, shape, color)) {
             if (this.bTypeSet != null) {
@@ -321,9 +302,7 @@ public class EdTypeSet {
                 // create without basis type
                 eType = new EdType(name, shape, color, "");
             }
-
             eType.setIconable(this.iconable);
-
             addAlphabeticalSorted(eType, this.nodeTypes);
             fireTypeEvent(new TypeEvent(this, eType, TypeEvent.NODE_CREATED));
         }
@@ -332,15 +311,15 @@ public class EdTypeSet {
     }
 
     /**
-     * Creates and adds a new node type to this type set only when any node type with the specified graphical features
-     * does not exist, otherwise returns null.
+     * Creates and adds a new node type to this type set only when any node type
+     * with the specified graphical features does not exist, otherwise returns
+     * null.
      *
      * If the base type set exists a new base type is created, too.
      */
     public EdType createNodeType(String name, int shape, Color color, String iconFileName) {
         Type bType = null;
         EdType eType = null;
-
         // if type is undeclared
         if (isNewType(this.nodeTypes, name, shape, color)) {
             if (this.bTypeSet != null) {
@@ -354,9 +333,7 @@ public class EdTypeSet {
                 // create without basis type
                 eType = new EdType(name, shape, color, iconFileName);
             }
-
             eType.setIconable(this.iconable);
-
             addAlphabeticalSorted(eType, this.nodeTypes);
             fireTypeEvent(new TypeEvent(this, eType, TypeEvent.NODE_CREATED));
         }
@@ -365,15 +342,15 @@ public class EdTypeSet {
     }
 
     /**
-     * Creates and adds a new node type to this type set only when any node type with the specified graphical features
-     * does not exist, otherwise returns null.
+     * Creates and adds a new node type to this type set only when any node type
+     * with the specified graphical features does not exist, otherwise returns
+     * null.
      *
      * If the base type set exists a new base type is created, too.
      */
     public EdType createNodeType(String name, int shape, Color color, boolean filledShape, String iconFileName) {
         Type bType = null;
         EdType eType = null;
-
         // if type is undeclared
         if (isNewType(this.nodeTypes, name, shape, color, filledShape)) {
             if (this.bTypeSet != null) {
@@ -387,9 +364,7 @@ public class EdTypeSet {
                 // create without basis type
                 eType = new EdType(name, shape, color, filledShape, iconFileName);
             }
-
             eType.setIconable(this.iconable);
-
             addAlphabeticalSorted(eType, this.nodeTypes);
             fireTypeEvent(new TypeEvent(this, eType, TypeEvent.NODE_CREATED));
         }
@@ -407,23 +382,19 @@ public class EdTypeSet {
         if (baseType.getAdditionalRepr().equals("")) {
             return createDefaultNodeType(baseType);
         }
-
         /* shape as String */
         String shapeStr = "";
         /* color as String */
         String colorStr = "";
         String filledStr = "";
         String imageFileNameStr = "";
-
         /* shape as int */
         int shape = -1;
-
         Vector<String> v = getAdditionalReprOfBasisType(baseType);
         shapeStr = v.elementAt(0);
         colorStr = v.elementAt(1);
         filledStr = v.elementAt(2);
         imageFileNameStr = v.elementAt(3);
-
         if (shapeStr.equals("RECT")) {
             shape = EditorConstants.RECT;
         } else if (shapeStr.equals("ROUNDRECT")) {
@@ -444,7 +415,6 @@ public class EdTypeSet {
                 .indexOf("]"));
         Color color = new Color((Integer.valueOf(r_str)).intValue(), (Integer.valueOf(
                 g_str)).intValue(), (Integer.valueOf(b_str)).intValue());
-
         boolean filled = filledStr.equals("FILLED");
         EdType eType = new EdType(baseType, shape, color, filled, imageFileNameStr);
         eType.setResourcesPath(this.resourcesPath);
@@ -469,7 +439,6 @@ public class EdTypeSet {
         if (baseType == null) {
             return this.defaultNodeType;
         }
-
         EdType eType = null;
         if (isNewType(this.nodeTypes, baseType.getStringRepr(),
                 EditorConstants.RECT, Color.black)) {
@@ -633,25 +602,20 @@ public class EdTypeSet {
         if (baseType == null) {
             return null;
         }
-
         if (baseType.getAdditionalRepr().equals("")) {
             return createDefaultArcType(baseType);
         }
-
         /* shape as String */
         String shapeStr = "";
         /* color as String */
         String colorStr = "";
         String filledStr = "";
-
         /* shape as int */
         int shape = -1;
-
         Vector<String> v = getAdditionalReprOfBasisType(baseType);
         shapeStr = v.elementAt(0);
         colorStr = v.elementAt(1);
         filledStr = v.elementAt(2);
-
         if (shapeStr.equals("SOLID_LINE")) {
             shape = EditorConstants.SOLID;
         } else if (shapeStr.equals("DASH_LINE")) {
@@ -664,23 +628,16 @@ public class EdTypeSet {
         /* color */
         String r_str = colorStr.substring(colorStr.indexOf("r=") + 2, colorStr
                 .indexOf(",g="));
-
         String g_str = colorStr.substring(colorStr.indexOf("g=") + 2, colorStr
                 .indexOf(",b="));
-
         String b_str = colorStr.substring(colorStr.indexOf("b=") + 2, colorStr
                 .indexOf("]"));
-
         Color color = new Color((Integer.valueOf(r_str)).intValue(), (Integer.valueOf(
                 g_str)).intValue(), (Integer.valueOf(b_str)).intValue());
-
         boolean filled = filledStr.equals("BOLD");
-
         EdType eType = new EdType(baseType, shape, color, filled, "");
-
         addAlphabeticalSorted(eType, this.arcTypes);
 //		fireTypeEvent(new TypeEvent(this, eType, TypeEvent.ARC_CREATED));
-
         return eType;
     }
 
@@ -698,7 +655,6 @@ public class EdTypeSet {
         if (baseType == null) {
             return this.defaultArcType;
         }
-
         EdType eType = null;
         if (isNewType(this.arcTypes, baseType.getStringRepr(),
                 EditorConstants.SOLID, Color.black)) {
@@ -736,7 +692,6 @@ public class EdTypeSet {
             return eType;
         }
         return null;
-
     }
 
     /**
@@ -744,7 +699,6 @@ public class EdTypeSet {
      */
     public void addArcType(EdType t) {
         addAlphabeticalSorted(t, this.arcTypes);
-
         fireTypeEvent(new TypeEvent(this, t, TypeEvent.ARC_CREATED));
     }
 
@@ -816,7 +770,6 @@ public class EdTypeSet {
                 types.add(type);
             }
         }
-
         indx = types.indexOf(type);
         return indx;
     }
@@ -871,7 +824,8 @@ public class EdTypeSet {
     }
 
     /**
-     * Returns currently selected node type. The selected type will be used for the typing of nodes.
+     * Returns currently selected node type. The selected type will be used for
+     * the typing of nodes.
      */
     public EdType getSelectedNodeType() {
         return this.selectedNodeType;
@@ -885,7 +839,8 @@ public class EdTypeSet {
     }
 
     /**
-     * Returns currently selected edge type. The selected type will be used for the typing of edges.
+     * Returns currently selected edge type. The selected type will be used for
+     * the typing of edges.
      */
     public EdType getSelectedArcType() {
         return this.selectedArcType;
@@ -931,7 +886,6 @@ public class EdTypeSet {
             this.typeKeyChanged = aType.hasTypeKeyChanged();
             return true;
         }
-
         return false;
     }
 
@@ -963,10 +917,8 @@ public class EdTypeSet {
         }
         try {
             this.bTypeSet.destroyType(aType.getBasisType());
-
             this.nodeTypes.removeElement(aType);
             this.removeNodeTypeUsers(aType);
-
         } catch (TypeException ex) {
             throw ex;
         }
@@ -981,26 +933,24 @@ public class EdTypeSet {
                     "Cannot delete this type from the edge type list! \nThe type:  <"
                     + aType.getName() + ">  is not an edge type!");
         }
-
         try {
             this.bTypeSet.destroyType(aType.getBasisType());
-
             this.removeArcTypeUsers(aType);
             this.arcTypes.removeElement(aType);
-
         } catch (TypeException ex) {
             throw ex;
         }
     }
 
     /**
-     * internal method to initialize types from a new type set. The types from the type manager will get here the
-     * default layout. If a type graph is defined it will also wraped with a layout.
+     * internal method to initialize types from a new type set. The types from
+     * the type manager will get here the default layout. If a type graph is
+     * defined it will also wraped with a layout.
      */
     private void initTypesFromTypeSet() {
         this.nodeTypes.clear();
         this.arcTypes.clear();
-        Iterator<Type> types = this.bTypeSet.getTypes();
+        IteratorWalker<Type> types = this.bTypeSet.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             if (t.getStringRepr().equals("")
@@ -1015,7 +965,6 @@ public class EdTypeSet {
                 this.createType(t);
             }
         }
-
         // check type graph
         Graph typeGraph = this.bTypeSet.getTypeGraph();
         if ((typeGraph != null)
@@ -1126,7 +1075,7 @@ public class EdTypeSet {
 
     public void refreshTypes() {
         boolean hasChanged = false;
-        Iterator<Type> types = this.bTypeSet.getTypes();
+        IteratorWalker<Type> types = this.bTypeSet.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             if (getType(t) == null) {
@@ -1146,7 +1095,7 @@ public class EdTypeSet {
 
     public void refreshTypes(boolean byNameOnly) {
         boolean hasChanged = false;
-        Iterator<Type> types = this.bTypeSet.getTypes();
+        IteratorWalker<Type> types = this.bTypeSet.getTypeWalker();
         while (types.hasNext()) {
             Type t = types.next();
             EdType type = getType(t);
@@ -1169,8 +1118,9 @@ public class EdTypeSet {
     }
 
     /**
-     * Checks whether a combination specified by : String name, int shape, Color color provides a new layout type under
-     * types specified by the Vector types.
+     * Checks whether a combination specified by : String name, int shape, Color
+     * color provides a new layout type under types specified by the Vector
+     * types.
      */
     public boolean isNewType(Vector<EdType> types, String name, int shape, Color color) {
         boolean result = true;
@@ -1202,14 +1152,14 @@ public class EdTypeSet {
     }
 
     /**
-     * Checks whether a combination specified by : String name, int shape, Color color provides a new layout type among
-     * types specified by the Vector types.
+     * Checks whether a combination specified by : String name, int shape, Color
+     * color provides a new layout type among types specified by the Vector
+     * types.
      */
     public boolean isNewType(Vector<EdType> types, EdType t) {
         if (t == null) {
             return false;
         }
-
         boolean result = true;
         for (int i = 0; i < types.size(); i++) {
             EdType et = types.elementAt(i);
@@ -1224,7 +1174,8 @@ public class EdTypeSet {
     }
 
     /**
-     * Sets the additional layout representation: "shape:color" of the base type if it is not set
+     * Sets the additional layout representation: "shape:color" of the base type
+     * if it is not set
      */
     public void setAdditionalReprOfBasisType() {
         for (int i = 0; i < this.nodeTypes.size(); i++) {
@@ -1252,7 +1203,8 @@ public class EdTypeSet {
     }
 
     /**
-     * Checks the settings of the layout in the base types. Returns FALSE if an error on the additional layout.
+     * Checks the settings of the layout in the base types. Returns FALSE if an
+     * error on the additional layout.
      */
     public boolean basisTypeReprComplete() {
         for (int i = 0; i < this.nodeTypes.size(); i++) {
@@ -1275,10 +1227,11 @@ public class EdTypeSet {
     }
 
     /**
-     * Checks whether a layout type specified by name, shape, color is under types specified by the Vector types and
-     * returns this type
+     * Checks whether a layout type specified by name, shape, color is under
+     * types specified by the Vector types and returns this type
      *
-     * @deprecated replaced by getType(Vector<EdType> types, String name, int shape, Color color, boolean filledShape)
+     * @deprecated replaced by getType(Vector<EdType> types, String name, int
+     * shape, Color color, boolean filledShape)
      */
     public EdType getType(Vector<EdType> types, String name, int shape, Color color) {
         for (int i = 0; i < types.size(); i++) {
@@ -1293,8 +1246,9 @@ public class EdTypeSet {
     }
 
     /**
-     * Checks whether a layout type specified by name, shape, color and filledShape is under types specified by the
-     * Vector types and returns this type
+     * Checks whether a layout type specified by name, shape, color and
+     * filledShape is under types specified by the Vector types and returns this
+     * type
      */
     public EdType getType(Vector<EdType> types, String name, int shape, Color color, boolean filledShape) {
         for (int i = 0; i < types.size(); i++) {
@@ -1398,24 +1352,23 @@ public class EdTypeSet {
     }
 
     /**
-     * Returns additional representation of a base type as a vector with elements of the String type. First element is a
-     * shape string, second - a color string, third - a marking string, wich can be "[NODE]", "[EDGE]" or "[]".
+     * Returns additional representation of a base type as a vector with
+     * elements of the String type. First element is a shape string, second - a
+     * color string, third - a marking string, wich can be "[NODE]", "[EDGE]" or
+     * "[]".
      */
     public Vector<String> getAdditionalReprOfBasisType(Type baseType) {
         Vector<String> v = new Vector<String>();
         String addRepr = baseType.getAdditionalRepr();
-
         String shapeStr = "";
         String colorStr = "";
         String filledStr = "";
         String imageFileNameStr = "";
-
         String markStr = "[]";
         if (addRepr.equals("[NODE]") || addRepr.equals("[EDGE]")) {
             markStr = addRepr.toString();
             addRepr = "";
         }
-
         String[] test = addRepr.split(":");
         for (int i = 0; i < test.length; i++) {
             String testStr = test[i];
@@ -1442,7 +1395,6 @@ public class EdTypeSet {
                 markStr = testStr;
             }
         }
-
         if (shapeStr.equals("")) {
             if (markStr.equals("[NODE]")) {
                 shapeStr = "RECT";
@@ -1453,20 +1405,18 @@ public class EdTypeSet {
         if (colorStr.equals("")) {
             colorStr = "java.awt.Color[r=0,g=0,b=0]";
         }
-
         imageFileNameStr = baseType.getImageFilename();
-
         v.add(shapeStr);
         v.add(colorStr);
         v.add(filledStr);
         v.add(imageFileNameStr);
         v.add(markStr);
-
         return v;
     }
 
     /**
-     * Allows to show nodes like icons, if the node type has an icon representation.
+     * Allows to show nodes like icons, if the node type has an icon
+     * representation.
      */
     public void setNodeIconable(boolean iconableNode) {
         this.iconable = iconableNode; // true;
@@ -1523,7 +1473,6 @@ public class EdTypeSet {
 
     public void setAttrTypeChanged(final Type t, boolean b) {
         this.getType(t).setAttrTypeChanged(b);
-
         List<Type> list = t.getChildren();
         for (int i = 0; i < list.size(); i++) {
             Type ch = list.get(i);
@@ -1540,15 +1489,14 @@ public class EdTypeSet {
         } else if (t.isArcType()) {
             addTypeUserToTypeContainer(t, go, this.arcTypeUsers);
             if (!go.isElementOfTypeGraph()) {
-                addTypeUserToTypeGraphArcContainer(t, go, this.typeGraphArcUsers);
+                addTypeUserToTypeGraphArcContainer(t, go, new HashMap(this.typeGraphArcUsers));
             }
         }
     }
 
     private void addTypeUserToTypeContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, List<EdGraphObject>> container) {
-
+            final Map<EdType, List<EdGraphObject>> container) {
         List<EdGraphObject> list = container.get(t);
         if (list == null) {
             list = new Vector<EdGraphObject>();
@@ -1559,8 +1507,7 @@ public class EdTypeSet {
 
     private void addTypeUserToTypeGraphNodeContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, List<EdGraphObject>> container) {
-
+            final Map<EdType, List<EdGraphObject>> container) {
         if (t.getBasisType().getTypeGraphNode() != null) {
             List<EdGraphObject> list = container.get(t);
             if (list == null) {
@@ -1573,13 +1520,11 @@ public class EdTypeSet {
 
     private void addTypeUserToTypeGraphArcContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
-
+            final Map<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
         TypeGraphArc tga = this.getTypeGraphArc(
                 t.getBasisType(),
                 ((Arc) go.getBasisObject()).getSourceType(),
                 ((Arc) go.getBasisObject()).getTargetType());
-
         if (tga != null) {
             Hashtable<TypeGraphArc, List<EdGraphObject>> tCntnr = container.get(t);
             if (tCntnr == null) {
@@ -1624,8 +1569,7 @@ public class EdTypeSet {
 
     private void removeTypeUserFromTypeContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, List<EdGraphObject>> container) {
-
+            final Map<EdType, List<EdGraphObject>> container) {
         List<EdGraphObject> list = container.get(t);
         if (list != null) {
             list.remove(go);
@@ -1637,8 +1581,7 @@ public class EdTypeSet {
 
     private void removeTypeUserFromTypeGraphNodeContainer(
             final EdType t, final EdGraphObject go,
-            final Hashtable<EdType, List<EdGraphObject>> container) {
-
+            final Map<EdType, List<EdGraphObject>> container) {
         if (t.getBasisType().getTypeGraphNode() != null) {
             List<EdGraphObject> list = container.get(t);
             if (list != null) {
@@ -1653,8 +1596,7 @@ public class EdTypeSet {
     private void removeTypeUserFromTypeGraphArcContainer(
             final EdType t,
             final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
-
+            final Map<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container) {
 //		if (t.getBasisType().hasTypeGraphArc(((EdArc)go).getSource().getBasisObject().getType(), 
 //				((EdArc)go).getTarget().getBasisObject().getType())) 
         if (this.edTypeGraph != null) {
@@ -1662,7 +1604,6 @@ public class EdTypeSet {
                     t.getBasisType(),
                     ((EdArc) go).getSource().getBasisObject().getType(),
                     ((EdArc) go).getTarget().getBasisObject().getType());
-
             if (tga != null) {
                 Hashtable<TypeGraphArc, List<EdGraphObject>> tCntnr = container.get(t);
                 if (tCntnr != null) {
@@ -1681,16 +1622,14 @@ public class EdTypeSet {
     private void removeTypeUserFromTypeGraphArcContainer(
             final EdType t,
             final EdGraphObject go,
-            final Hashtable<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container,
+            final Map<EdType, Hashtable<TypeGraphArc, List<EdGraphObject>>> container,
             final EdType nType) {
-
         Type srcT = (((EdArc) go).getSource().getBasisObject() == null
                 || ((EdArc) go).getSource().getBasisObject().getType() == null)
                 ? nType.getBasisType() : ((EdArc) go).getSource().getBasisObject().getType();
         Type tarT = (((EdArc) go).getTarget().getBasisObject() == null
                 || ((EdArc) go).getTarget().getBasisObject().getType() == null) ? nType.getBasisType()
                 : ((EdArc) go).getTarget().getBasisObject().getType();
-
 //		if (t.getBasisType().hasTypeGraphArc(srcT, tarT)) 
         if (this.edTypeGraph != null) {
             TypeGraphArc tga = this.getTypeGraphArc(t.getBasisType(), srcT, tarT);
@@ -1734,14 +1673,15 @@ public class EdTypeSet {
     }
 
     /**
-     * Search for the outgoing edges of the parent type and checks whether they are in use or not.
+     * Search for the outgoing edges of the parent type and checks whether they
+     * are in use or not.
      *
      * @param parentType
      * @return a set with used types of inherit edges or an empty set
      */
-    public Vector<Type> getTypeOfInheritedArcsInUse(final Type childType, final Type parentType) {
-        Vector<Type> result = new Vector<Type>();
-        Vector<Arc> inhArcs = this.bTypeSet.getInheritedArcs(parentType);
+    public List<Type> getTypeOfInheritedArcsInUse(final Type childType, final Type parentType) {
+        List<Type> result = new Vector<Type>();
+        List<Arc> inhArcs = this.bTypeSet.getInheritedArcs(parentType);
         for (int i = 0; i < inhArcs.size(); i++) {
             Type arcType = inhArcs.get(i).getType();
             EdType t = this.getArcType(arcType);
@@ -1758,9 +1698,9 @@ public class EdTypeSet {
         return result;
     }
 
-    public Vector<EdArc> getTypeArcOfInheritedArcsInUse(final Type childType, final Type parentType) {
-        Vector<EdArc> result = new Vector<EdArc>();
-        Vector<Arc> inhArcs = this.bTypeSet.getInheritedArcs(parentType);
+    public List<EdArc> getTypeArcOfInheritedArcsInUse(final Type childType, final Type parentType) {
+        List<EdArc> result = new Vector<EdArc>();
+        List<Arc> inhArcs = this.bTypeSet.getInheritedArcs(parentType);
         for (int i = 0; i < inhArcs.size(); i++) {
             Type arcType = inhArcs.get(i).getType();
             EdType t = this.getArcType(arcType);
@@ -1788,7 +1728,7 @@ public class EdTypeSet {
     }
 
     private boolean isChildTypeUsed(final EdType t) {
-        Vector<Type> allChildren = t.getBasisType().getAllChildren();
+        List<Type> allChildren = t.getBasisType().getAllChildren();
         if (!allChildren.isEmpty()) {
             for (int i = 1; i < allChildren.size(); i++) {
                 Type ch = allChildren.get(i);
@@ -1817,7 +1757,7 @@ public class EdTypeSet {
     }
 
     public boolean isChildTypeGraphNodeUsed(final EdType t) {
-        Vector<Type> allChildren = t.getBasisType().getAllChildren();
+        List<Type> allChildren = t.getBasisType().getAllChildren();
         if (!allChildren.isEmpty()) {
             for (int i = 1; i < allChildren.size(); i++) {
                 Type ch = allChildren.get(i);
@@ -1834,7 +1774,7 @@ public class EdTypeSet {
         if (t.isArcType() && this.edTypeGraph != null) {
             TypeGraphArc tga = this.getTypeGraphArc(t.getBasisType(), src.getBasisType(), tar.getBasisType());
             if (tga != null) {
-                Hashtable<TypeGraphArc, List<EdGraphObject>> tCntnr = this.typeGraphArcUsers.get(t);
+                 Map<TypeGraphArc, List<EdGraphObject>> tCntnr = this.typeGraphArcUsers.get(t);
                 if (tCntnr != null) {
                     List<EdGraphObject> list = tCntnr.get(tga);
                     if (list != null && !list.isEmpty()) {

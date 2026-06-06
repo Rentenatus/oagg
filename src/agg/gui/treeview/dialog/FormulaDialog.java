@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -17,7 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -26,7 +26,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-
 import agg.editor.impl.EdAtomic;
 
 /*
@@ -37,17 +36,11 @@ public class FormulaDialog extends JDialog implements ActionListener {
 
     @SuppressWarnings("rawtypes")
     final JList jList1;
-
     final JTextField jTextField1;
-
     final JButton Ok, Cancel;
-
     final JPanel dialogPanel;
-
     JFrame f;
-
     String formula;
-
     boolean changed, canceled;
 
     @SuppressWarnings("rawtypes")
@@ -65,13 +58,11 @@ public class FormulaDialog extends JDialog implements ActionListener {
         JPanel below = new JPanel(new BorderLayout());
         below.add(this.jTextField1, BorderLayout.NORTH);
         below.add(buttons, BorderLayout.SOUTH);
-
         this.dialogPanel = new JPanel(new BorderLayout());
         this.dialogPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         this.dialogPanel.add(new JScrollPane(this.jList1), BorderLayout.CENTER);
         this.dialogPanel.add(below, BorderLayout.SOUTH);
         this.dialogPanel.setPreferredSize(new Dimension(300, 200));
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(this.dialogPanel, BorderLayout.CENTER);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -93,7 +84,6 @@ public class FormulaDialog extends JDialog implements ActionListener {
         } else if (e.getActionCommand().equals("Cancel")) {
             this.canceled = true;
         }
-
     }
 
     public String getFormula() {

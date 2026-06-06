@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.csp;
 
@@ -29,9 +30,10 @@ public class Constraint_Type extends BinaryConstraint {
     }
 
     /**
-     * Return true iff the current instance of <code>obj</code> is type compatible with the GraphObject that has been
-     * passed to my constructor. In this case, "type" means an element of the cartesian product of <code>Type</code> x
-     * {Node,Arc}.
+     * Return true iff the current instance of <code>obj</code> is type
+     * compatible with the GraphObject that has been passed to my constructor.
+     * In this case, "type" means an element of the cartesian product of
+     * <code>Type</code> x {Node,Arc}.
      * <p>
      * Pre: (1) obj.getInstance() instanceof GraphObject.
      */
@@ -40,7 +42,6 @@ public class Constraint_Type extends BinaryConstraint {
         if (this.itsGraphObj.getType().isParentOf(((GraphObject) getVar1().getInstance()).getType())) {
             return true;
         }
-
         return false;
     }
 

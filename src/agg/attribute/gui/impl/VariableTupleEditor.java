@@ -2,21 +2,20 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
-
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-
 import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrEditorManager;
 
@@ -35,8 +34,9 @@ public class VariableTupleEditor extends TabMesTool_TupleEditor {
     //
     // Overriding...
     /**
-     * The heart of the matter. Columns are: [ IS_INPUT_PARAMETER, IS_OUTPUT_PARAMETER, HANDLER, TYPE, NAME, VALUE,
-     * CORRECTNESS ] Extensible: true. Titles: default. Editable: Only EXPR.
+     * The heart of the matter. Columns are: [ IS_INPUT_PARAMETER,
+     * IS_OUTPUT_PARAMETER, HANDLER, TYPE, NAME, VALUE, CORRECTNESS ]
+     * Extensible: true. Titles: default. Editable: Only EXPR.
      */
     protected TupleTableModel createTableModel() {
         int columns[] = {IS_INPUT_PARAMETER, IS_OUTPUT_PARAMETER, HANDLER,
@@ -50,17 +50,14 @@ public class VariableTupleEditor extends TabMesTool_TupleEditor {
     protected void createToolBar() {
         JLabel label1 = new JLabel("Tuple:");
         JLabel label2 = new JLabel("Member:");
-
         JToolBar toolBar1 = new JToolBar();
         toolBar1.setFloatable(false);
         toolBar1.add(getResetAction());
-
         JToolBar toolBar2 = new JToolBar();
         toolBar2.setFloatable(false);
         toolBar2.add(getDeleteAction());
         toolBar2.addSeparator();
         toolBar2.add(getEvaluateAction());
-
         Box hBox = Box.createHorizontalBox();
         hBox.add(label1);
         hBox.add(toolBar1);

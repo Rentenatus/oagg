@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
@@ -15,10 +16,8 @@ import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.beans.PropertyEditorSupport;
-
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-
 import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrEditor;
 import agg.attribute.gui.AttrEditorManager;
@@ -34,9 +33,7 @@ public abstract class AbstractEditor extends PropertyEditorSupport implements
         AttrEditor, ComponentListener {
 
     protected AttrManager attrManager;
-
     protected AttrEditorManager editorManager;
-
     protected JPanel mainPanel;
 
     public AbstractEditor(AttrManager m, AttrEditorManager em) {
@@ -92,8 +89,9 @@ public abstract class AbstractEditor extends PropertyEditorSupport implements
     }
 
     /**
-     * Implemented: returns always 'mainPanel'. As long as extending classes have their component hierarchy placed in
-     * this 'mainPanel', they don't have to redefine this method.
+     * Implemented: returns always 'mainPanel'. As long as extending classes
+     * have their component hierarchy placed in this 'mainPanel', they don't
+     * have to redefine this method.
      */
     public Component getComponent() {
         arrangeMainPanel();
@@ -147,7 +145,6 @@ public abstract class AbstractEditor extends PropertyEditorSupport implements
     public void componentHidden(ComponentEvent e) {
     }
 }
-
 /*
  * $Log: AbstractEditor.java,v $
  * Revision 1.3  2007/11/05 09:18:19  olga

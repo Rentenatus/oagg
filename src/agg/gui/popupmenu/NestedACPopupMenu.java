@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -15,17 +17,15 @@ package agg.gui.popupmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.attribute.AttrContext;
 import agg.editor.impl.EdNAC;
 import agg.editor.impl.EdNestedApplCond;
@@ -50,7 +50,6 @@ public class NestedACPopupMenu extends JPopupMenu {
     public NestedACPopupMenu(GraGraTreeView tree) {
         super("General Application Condition");
         this.treeView = tree;
-
         miRHS = add(new JMenuItem("Make due to RHS"));
         miRHS.setEnabled(false);
         miRHS.setActionCommand("makeFromRHS");
@@ -61,11 +60,9 @@ public class NestedACPopupMenu extends JPopupMenu {
             }
         });
         addSeparator();
-
         JMenuItem mi = add(new JMenuItem("New GAC"));
         mi.setActionCommand("newNestedAC");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         mi = new JMenuItem("Set Formula above GACs");
         this.add(mi);
         mi.setActionCommand("setFormulaAboveACs");
@@ -74,9 +71,7 @@ public class NestedACPopupMenu extends JPopupMenu {
                 setFormula();
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Copy           "));
         mi.setActionCommand("copyGAC");
 //		mi.addActionListener(this.treeView.getActionAdapter());
@@ -85,9 +80,7 @@ public class NestedACPopupMenu extends JPopupMenu {
                 copy();
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Convert to NAC"));
         mi.setActionCommand("convertToNAC");
 //		mi.addActionListener(this.treeView.getActionAdapter());
@@ -104,15 +97,11 @@ public class NestedACPopupMenu extends JPopupMenu {
                 convertToPAC();
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Delete           Delete"));
         mi.setActionCommand("deleteNestedAC");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         addSeparator();
-
         this.miDisable = add(new JCheckBoxMenuItem("disabled"));
         this.miDisable.setActionCommand("disableNestedAC");
         this.miDisable.addActionListener(new ActionListener() {
@@ -144,13 +133,10 @@ public class NestedACPopupMenu extends JPopupMenu {
                 NestedACPopupMenu.this.treeView.getTree().treeDidChange();
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Textual Comments"));
         mi.setActionCommand("commentNestedAC");
         mi.addActionListener(this.treeView.getActionAdapter());
-
         pack();
         setBorderPainted(true);
     }
@@ -163,10 +149,8 @@ public class NestedACPopupMenu extends JPopupMenu {
             this.path = this.treeView.getTree().getPathForLocation(x, y);
             this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
             this.data = (GraGraTreeNodeData) this.node.getUserObject();
-
             if (this.data != null && this.data.isNestedAC()) {
                 GrammarTreeNode.expand(this.treeView, this.node, this.path);
-
                 this.parData = (GraGraTreeNodeData) ((DefaultMutableTreeNode) this.node.getParent()).getUserObject();
                 if (this.parData.isRule()) {
                     this.rule = this.parData.getRule();
@@ -180,7 +164,6 @@ public class NestedACPopupMenu extends JPopupMenu {
                 if (firstChildData.isApplFormula()) {
                     this.formula = firstChildData;
                 }
-
                 this.posX = x;
                 this.posY = y;
                 this.cond = this.data.getNestedAC();
@@ -202,7 +185,6 @@ public class NestedACPopupMenu extends JPopupMenu {
                 " An empty graph is the case where all nodes are connected by AND.",
                 true);
         d.setExportJPEG(this.treeView.getGraphicsExportJPEG());
-
         String oldformula = ((NestedApplCond) this.cond.getMorphism()).getFormulaText();
 //		List<String> allVars = ((NestedApplCond)this.cond.getMorphism()).getNameOfEnabledACs();
         List<EdNestedApplCond> allNestedACs = this.cond.getEnabledACs();
@@ -273,14 +255,12 @@ public class NestedACPopupMenu extends JPopupMenu {
             if (cond.getParent() != null) {
                 attrContxt = cond.getMorphism().getImage().getAttrContext();
             }
-
             NestedApplCond ac = new NestedApplCond(
                     cond.getMorphism().getSource(),
                     BaseFactory.theFactory().createGraph(cond.getMorphism().getSource().getTypeSet()),
                     attrContxt);
             ac.getImage().setAttrContext(attrContxt);
-
-            Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+            HashMap<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
             Iterator<GraphObject> gos = cond.getMorphism().getSource().iteratorOfElems();
             while (gos.hasNext()) {
                 GraphObject go = gos.next();
@@ -289,9 +269,7 @@ public class NestedACPopupMenu extends JPopupMenu {
             BaseFactory.theFactory().copyGraph(cond.getBasisGraph(), ac.getImage(), table);
             BaseFactory.theFactory().copyMorph(cond.getMorphism(), ac, table);
             BaseFactory.theFactory().copyNestedAC(cond.getNestedMorphism(), ac, table);
-
             ac.setName(cond.getName() + "_clone");
-
             if (cond.getParent() == null) {
                 EdNestedApplCond cp = (EdNestedApplCond) cond.getRule().createNestedAC(ac);
                 cond.getRule().getNestedACs().remove(cp);
@@ -330,14 +308,11 @@ public class NestedACPopupMenu extends JPopupMenu {
                 ac.setName(cond.getName());
                 ac.getImage().setAttrContext(ac.getAttrContext());
                 ac.getImage().setKind(GraphKind.NAC);
-
                 cond.getRule().getBasisRule().addNAC(ac);
                 EdNAC cn = cond.getRule().createNAC(ac);
                 cn.setLayoutByIndex(cond, true);
-
                 DefaultMutableTreeNode rn = this.treeView.getTreeNodeOfGrammarElement(
                         cond.getRule());
-
                 int indx = cond.getRule().getNestedACs().size()
                         + cond.getRule().getNACs().size() - 1;
                 if (rn.getChildCount() > 0) {
@@ -363,14 +338,11 @@ public class NestedACPopupMenu extends JPopupMenu {
                 ac.setName(cond.getName());
                 ac.getImage().setAttrContext(ac.getAttrContext());
                 ac.getImage().setKind(GraphKind.PAC);
-
                 cond.getRule().getBasisRule().addPAC(ac);
                 EdPAC cn = cond.getRule().createPAC(ac);
                 cn.setLayoutByIndex(cond, true);
-
                 DefaultMutableTreeNode rn = this.treeView.getTreeNodeOfGrammarElement(
                         cond.getRule());
-
                 int indx = cond.getRule().getNestedACs().size()
                         + cond.getRule().getNACs().size()
                         + cond.getRule().getPACs().size() - 1;
@@ -393,14 +365,12 @@ public class NestedACPopupMenu extends JPopupMenu {
             }
         }
     }
-
     GraGraTreeView treeView;
     TreePath path;
     DefaultMutableTreeNode node;
     GraGraTreeNodeData data, parData, formula;
     EdNestedApplCond cond, parCond;
     EdRule rule;
-
     int posX, posY;
     private JMenuItem miDisable, miRHS;
 }

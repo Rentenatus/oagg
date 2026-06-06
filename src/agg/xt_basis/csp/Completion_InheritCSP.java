@@ -1,33 +1,25 @@
 package agg.xt_basis.csp;
 
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Dictionary;
-
 import agg.attribute.AttrContext;
 import agg.attribute.impl.ContextView;
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.impl.ValueMember;
+import agg.util.Pair;
 import agg.util.csp.SolutionStrategy;
 import agg.util.csp.Solution_Backjump;
 import agg.util.csp.Variable;
-import agg.util.Pair;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.Graph;
@@ -38,26 +30,30 @@ import agg.xt_basis.Morphism;
 import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Type;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
- * An implementation of morphism completion as a Constraint Satisfaction Problem (CSP).
+ * An implementation of morphism completion as a Constraint Satisfaction Problem
+ * (CSP).
  *
- * Please note: This class is only for internal use of the critical pair analysis for grammars with node type
- * inheritance. Do not use it for any kind of implementations.
+ * Please note: This class is only for internal use of the critical pair
+ * analysis for grammars with node type inheritance. Do not use it for any kind
+ * of implementations.
  */
 public class Completion_InheritCSP extends MorphCompletionStrategy {
 
     private ALR_InheritCSP itsCSP;
-
     private Morphism itsMorph;
-
-    private Dictionary<Object, Variable> relatedVarMap;
-
+    private Map<Object, Variable> relatedVarMap;
     // private boolean allowRestrictedDomain;
     private HashMap<String, String> mapInputParameter = new HashMap<String, String>(1);
-
     private String errorMsg;
-
     private static final BitSet itsSupportedProperties = new BitSet(6);
 
     static {
@@ -87,21 +83,18 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
     }
 
     /**
-     * Initialize the CSP by the specified morphism. The CSP variables are created for each node and edge of the source
-     * graph of this morphism.
+     * Initialize the CSP by the specified morphism. The CSP variables are
+     * created for each node and edge of the source graph of this morphism.
      */
     public final void initialize(OrdinaryMorphism morph)
             throws BadMappingException {
         this.itsMorph = morph;
         AttrContext aContext = initializeAttrContext(morph);
-
         // create CSP
         this.itsCSP = new ALR_InheritCSP(morph.getOriginal(), aContext);
-
         if (morph.getImage().getTypeObjectsMap().isEmpty()) {
             morph.getImage().fillTypeObjectsMap();
         }
-
         this.itsCSP.setRequester(morph);
         this.itsCSP.setDomain(morph.getImage());
     }
@@ -113,8 +106,8 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
                     ((Match) morph).getRule().getAttrContext());
             c.setIgnoreOfConstContext(((ContextView) morph.getAttrContext()).isIgnoreConstContext());
             return c;
-
 //			return morph.getAttrManager().newContext(
+
         
         ////					agg.attribute.AttrMapping.MATCH_MAP,
 //					((ContextView)morph.getAttrContext()).getAllowedMapping(),
@@ -128,11 +121,11 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
 	private void unsetUsedVariable(GraphObject go, OrdinaryMorphism morph) {
 		if (go.getAttribute() == null)
 			return;
-		Vector<String> attrVars = ((ValueTuple) go.getAttribute())
+		List<String> attrVars = ((ValueTuple) go.getAttribute())
 				.getAllVariableNames();
 		VarTuple varTup = (VarTuple) morph.getAttrContext().getVariables();
 		for (int i = 0; i < attrVars.size(); i++) {
-			String name = attrVars.elementAt(i);
+			String name = attrVars.get(i);
 			VarMember vm = varTup.getVarMemberAt(name);
 			if (vm != null)
 				vm.setExpr(null);
@@ -140,7 +133,8 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
 	}
      */
     /**
-     * Template method to enable creation of CSPs with varying solution strategies by subclasses.
+     * Template method to enable creation of CSPs with varying solution
+     * strategies by subclasses.
      */
     protected SolutionStrategy createSolutionStrategy() {
         return new Solution_Backjump(getProperties().get(CompletionPropertyBits.INJECTIVE));
@@ -203,7 +197,7 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
     }
 
     public void setRelatedInstanceVarMap(
-            Dictionary<Object, Variable> relVarMap) {
+            Map<Object, Variable> relVarMap) {
         this.relatedVarMap = relVarMap;
     }
 
@@ -211,19 +205,17 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
         if (this.relatedVarMap != null) {
             return true;
         }
-
         return false;
     }
 
-    public Dictionary<Object, Variable> getInstanceVarMap() {
+    public Map<Object, Variable> getInstanceVarMap() {
         if (this.itsCSP != null) {
             return this.itsCSP.getInstanceVarMap();
         }
-
         return null;
     }
 
-    public void resetTypeMap(Hashtable<String, HashSet<GraphObject>> typeMap) {
+    public void resetTypeMap(Map<String, HashSet<GraphObject>> typeMap) {
         if (this.itsCSP != null) {
             this.itsCSP.resetTypeMap(typeMap);
         }
@@ -259,7 +251,6 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
                 return false;
             }
         }
-
         return doNext((OrdinaryMorphism) this.itsMorph);
     }
 
@@ -267,12 +258,10 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
         this.itsCSP.setRelatedInstanceVarMap(this.relatedVarMap);
         boolean flag = false;
         this.errorMsg = "";
-
         if (morph.getAttrContext() != null) {
             ((VarTuple) morph.getAttrContext().getVariables())
                     .unsetNotInputVariables();
         }
-
         while (this.itsCSP.nextSolution()) {
             flag = true;
             this.errorMsg = "";
@@ -317,11 +306,9 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
             if (!flag) {
                 continue;
             }
-
             if (morph.getAttrContext() != null) {
                 flag = flag && checkObjectsWithSameVariable(morph);
             }
-
             if (flag) {
                 break;
             }
@@ -334,7 +321,7 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
         VarTuple variables = (VarTuple) morph.getAttrContext().getVariables();
         for (int i = 0; i < variables.getSize(); i++) {
             VarMember var = variables.getVarMemberAt(i);
-            Vector<Pair<GraphObject, String>> v = new Vector<Pair<GraphObject, String>>();
+            List<Pair<GraphObject, String>> v = new ArrayList<Pair<GraphObject, String>>();
             Iterator<?> iter = morph.getOriginal().getNodesSet().iterator();
             while (iter.hasNext()) {
                 GraphObject orig = (GraphObject) iter.next();
@@ -373,9 +360,8 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
                     }
                 }
             }
-
             if (v.size() > 1) {
-                Pair<GraphObject, String> p = v.elementAt(0);
+                Pair<GraphObject, String> p = v.get(0);
                 GraphObject img = morph.getImage(p.first);
 //				if (img == null) {
 //					System.out.println(img+"   "+p.first.getType().getName());
@@ -383,7 +369,7 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
                 ValueTuple val = (ValueTuple) img.getAttribute();
                 ValueMember mem = val.getValueMemberAt(p.second);
                 for (int j = 1; j < v.size(); j++) {
-                    Pair<GraphObject, String> pj = v.elementAt(j);
+                    Pair<GraphObject, String> pj = v.get(j);
                     GraphObject imgj = morph.getImage(pj.first);
                     ValueTuple valj = (ValueTuple) imgj.getAttribute();
                     ValueMember memj = valj.getValueMemberAt(pj.second);
@@ -413,15 +399,17 @@ public class Completion_InheritCSP extends MorphCompletionStrategy {
     }
 
     /**
-     * An additional object name constraint will be added for the CSP variable of the given GraphObject anObj. This
-     * constraint requires equality of the object names.<br>
+     * An additional object name constraint will be added for the CSP variable
+     * of the given GraphObject anObj. This constraint requires equality of the
+     * object names.<br>
      */
     public void addObjectNameConstraint(GraphObject anObj) {
         this.itsCSP.addObjectNameConstraint(anObj);
     }
 
     /**
-     * Removes the object name constraint for the CSP variable of the given GraphObject anObj.
+     * Removes the object name constraint for the CSP variable of the given
+     * GraphObject anObj.
      */
     public void removeObjectNameConstraint(GraphObject anObj) {
         this.itsCSP.removeObjectNameConstraint(anObj);

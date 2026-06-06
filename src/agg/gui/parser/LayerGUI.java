@@ -2,14 +2,19 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.parser;
 
+import agg.xt_basis.Rule;
+import agg.xt_basis.RuleLayer;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -18,12 +23,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -33,13 +39,9 @@ import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.xt_basis.Rule;
-import agg.xt_basis.RuleLayer;
-
 /**
- * This class provides a window for a user dialog. This dialog is necessary to enter the rule layers.
+ * This class provides a window for a user dialog. This dialog is necessary to
+ * enter the rule layers.
  *
  * @author $Author: olga $
  * @version $Id: LayerGUI.java,v 1.7 2010/09/23 08:20:54 olga Exp $
@@ -51,34 +53,27 @@ public class LayerGUI extends JDialog implements ActionListener {
      * @serial This attribute is serializable.
      */
     private JPanel rulePanel;
-
     /**
      * @serial This attribute is serializable.
      */
     private JScrollPane ruleScrollPane;
-
     /**
      * @serial This attribute is serializable.
      */
     private JTable ruleTable;
-
     /**
      * @serial This attribute is serializable.
      */
     private JButton closeButton;
-
     /**
      * @serial This attribute is serializable.
      */
     private JButton cancelButton;
-
     private boolean isCncld;
-
     /**
      * @serial This attribute is serializable.
      */
     private JPanel contentPane;
-
     private RuleLayer layer;
 
     /**
@@ -89,26 +84,24 @@ public class LayerGUI extends JDialog implements ActionListener {
         /**
          * @serial This attribute is serializable.
          */
-        Hashtable<Rule, Integer> table;
-
+        Map<Rule, Integer> table;
         RuleLayer ruleLayer;
 
         /**
-         * Creates a new model with hashtable and the titlen for the column of the table.
+         * Creates a new model with hashtable and the titlen for the column of
+         * the table.
          *
          * @param table The hashtable for the modle.
          * @param columnNames The array with the column names.
          */
-        public HashTableModel(Hashtable<Rule, Integer> table,
+        public HashTableModel(Map<Rule, Integer> table,
                 String[] columnNames) {
             super();
             for (int i = 0; i < columnNames.length; i++) {
                 addColumn(columnNames[i]);
             }
             this.table = table;
-            Enumeration<Rule> keys = table.keys();
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            for (Rule key : table.keySet()) {
                 Object value = table.get(key);
                 Vector<Object> tmpVector = new Vector<Object>();
                 tmpVector.addElement(key);
@@ -126,15 +119,12 @@ public class LayerGUI extends JDialog implements ActionListener {
             this.table = layer.getRuleLayer();
             this.ruleLayer = layer;
             Integer startLayer = layer.getStartLayer();
-            Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
-
-            OrderedSet<Integer> ruleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
-            for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
-                    .hasMoreElements();) {
-                ruleLayerSet.add(en.nextElement());
+            Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
+            SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+            for (Integer key : invertedRuleLayer.keySet()) {
+                ruleLayerSet.add(key);
             }
             int i = 0;
-
             Integer currentLayer = startLayer;
             boolean nextLayerExists = true;
             while (nextLayerExists && (currentLayer != null)) {
@@ -145,7 +135,7 @@ public class LayerGUI extends JDialog implements ActionListener {
                     Rule rule = (Rule) en.next();
                     Vector<Object> tmpVector = new Vector<Object>();
                     tmpVector.addElement(rule);
-                    tmpVector.addElement(new Integer(rule.getLayer()));
+                    tmpVector.addElement(rule.getLayer());
                     addRow(tmpVector);
                 }
                 // set next Layer
@@ -163,8 +153,8 @@ public class LayerGUI extends JDialog implements ActionListener {
          *
          * @param rowIndex The index of the row of the cell.
          * @param columnIndex The index of the column of the cell.
-         * @return The layer function can only entered in the second column. So for any other column <CODE>false</CODE>
-         * is returned.
+         * @return The layer function can only entered in the second column. So
+         * for any other column <CODE>false</CODE> is returned.
          */
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return columnIndex == 1;
@@ -201,7 +191,7 @@ public class LayerGUI extends JDialog implements ActionListener {
         public void setValueAt(Object aValue, int row, int column) {
             Object key = super.getValueAt(row, 0);
             try {
-                Integer i = new Integer((String) aValue);
+                Integer i = Integer.valueOf((String) aValue);
                 super.setValueAt(i, row, column);
                 if (key instanceof Rule) {
                     this.table.put((Rule) key, i);
@@ -215,10 +205,8 @@ public class LayerGUI extends JDialog implements ActionListener {
             if (result instanceof Rule) {
                 return result;
             }
-
             return null;
         }
-
     }
 
     /**
@@ -247,23 +235,21 @@ public class LayerGUI extends JDialog implements ActionListener {
     }
 
     /**
-     * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The
-     * content of this method is always regenerated by the FormEditor.
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the FormEditor.
      */
     private void initComponents() {
         this.contentPane = new JPanel(new BorderLayout());
         this.contentPane.setBackground(Color.lightGray);
-
         JPanel rcdPanel = new JPanel(new BorderLayout());
         JPanel rcdPanel0 = new JPanel(new GridLayout(0, 1));
         this.rulePanel = new JPanel();
         this.rulePanel.setBackground(Color.orange);
         this.ruleScrollPane = new JScrollPane();
         this.ruleTable = new JTable();
-
         this.closeButton = new JButton();
         this.cancelButton = new JButton();
-
         this.rulePanel.setLayout(new BorderLayout());
         this.rulePanel.setBorder(new TitledBorder("Rule Layer"));
         this.ruleTable.setModel(new HashTableModel(this.layer, new String[]{
@@ -273,28 +259,20 @@ public class LayerGUI extends JDialog implements ActionListener {
         this.ruleScrollPane.setViewportView(this.ruleTable);
         this.ruleScrollPane.setPreferredSize(new Dimension(200, hght));
         this.rulePanel.add(this.ruleScrollPane);
-
         rcdPanel0.add(this.rulePanel);
         rcdPanel.add(rcdPanel0);
-
         JPanel buttonPanel = new JPanel(new GridLayout(0, 2, 5, 5));
-
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
         this.closeButton.addActionListener(this);
-
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.addActionListener(this);
-
         buttonPanel.add(this.closeButton);
         buttonPanel.add(this.cancelButton);
-
         this.contentPane.add(buttonPanel, BorderLayout.SOUTH);
         this.contentPane.add(rcdPanel);
-
         this.contentPane.revalidate();
-
         setContentPane(this.contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -355,7 +333,6 @@ public class LayerGUI extends JDialog implements ActionListener {
         }
         return h;
     }
-
 }
 /*
  * $Log: LayerGUI.java,v $

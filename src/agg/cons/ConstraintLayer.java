@@ -2,33 +2,36 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.cons;
 
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.List;
 import java.util.Vector;
-
 //import com.objectspace.jgl.HashSet;
+
 /**
- * Constraint layer is a set of layer of a given layered graph grammar. The set is backed by a hash table.
+ * Constraint layer is a set of layer of a given layered graph grammar. The set
+ * is backed by a hash table.
  *
  * @author $Author: olga $
  * @version $ID
  */
 public class ConstraintLayer {
 
-    private Hashtable<Object, Object> constraintLayer;
-
+    private Map<Object, Object> constraintLayer;
     private Enumeration<Formula> constraints;
-
     private Vector<Formula> constraintsVec;
 
     /**
@@ -68,15 +71,14 @@ public class ConstraintLayer {
         this.constraintLayer.put(constraint, constraint.getLayer());
         // System.out.println("constraint layer: "
         // +((Integer)this.constraintLayer.get(rule)).toString());
-
     }
 
     private void initConstraintLayer() {
-        this.constraintLayer = new Hashtable<Object, Object>();
+        this.constraintLayer = new HashMap<Object, Object>();
         for (int i = 0; i < this.constraintsVec.size(); i++) {
             Object constraint = this.constraintsVec.elementAt(i);
             if (constraint instanceof Formula) {
-                Vector<Integer> layer = ((Formula) constraint).getLayer();
+                ArrayMovieInt layer = ((Formula) constraint).getLayer();
                 if (layer != null) {
                     this.constraintLayer.put(constraint, layer);
                 }
@@ -87,9 +89,10 @@ public class ConstraintLayer {
     }
 
     /**
-     * Returns the constraint (formula) layer. A constraint is a key, a layer is a value.
+     * Returns the constraint (formula) layer. A constraint is a key, a layer is
+     * a value.
      */
-    public Hashtable<Object, Object> getConstraintLayer() {
+    public Map<Object, Object> getConstraintLayer() {
         return this.constraintLayer;
     }
 
@@ -101,9 +104,7 @@ public class ConstraintLayer {
     public Integer getStartLayer() {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Object> keys = getConstraintLayer().keys(); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : getConstraintLayer().keySet()) {
             Vector<?> layer = (Vector<?>) getConstraintLayer().get(key);
             if (layer != null) {
                 if (layer.isEmpty()) {
@@ -122,12 +123,12 @@ public class ConstraintLayer {
     }
 
     /**
-     * Inverts and returns constraint layers so that a layer is a key and a set is a value.
+     * Inverts and returns constraint layers so that a layer is a key and a set
+     * is a value.
      */
-    public Hashtable<Integer, HashSet<Object>> invertLayer() {
-        Hashtable<Integer, HashSet<Object>> inverted = new Hashtable<Integer, HashSet<Object>>();
-        for (Enumeration<Object> keys = this.constraintLayer.keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+    public Map<Integer, HashSet<Object>> invertLayer() {
+        Map<Integer, HashSet<Object>> inverted = new HashMap<Integer, HashSet<Object>>();
+        for (Object key : this.constraintLayer.keySet()) {
             Vector<?> layer = (Vector<?>) this.constraintLayer.get(key);
             if (layer != null) {
                 Integer l = Integer.valueOf(0);
@@ -152,8 +153,7 @@ public class ConstraintLayer {
      */
     public String toString() {
         String resultString = "Formula:\t\tLayer:\n";
-        for (Enumeration<Object> keys = this.constraintLayer.keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.constraintLayer.keySet()) {
             resultString += ((Formula) key).getName() + "\t\t";
             Vector<?> valueVec = (Vector<?>) this.constraintLayer.get(key);
             for (int i = 0; i < valueVec.size(); i++) {

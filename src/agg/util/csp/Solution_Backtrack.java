@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: Solution_Backtrack.java,v 1.18 2010/09/23 08:26:53 olga Exp $
 // $Log: Solution_Backtrack.java,v $
@@ -128,11 +128,10 @@
 //  advantages of BJ which should be optimized away here)
 package agg.util.csp;
 
-import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
-
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.csp.Query_Type;
 
@@ -142,70 +141,48 @@ import agg.xt_basis.csp.Query_Type;
 public class Solution_Backtrack implements SolutionStrategy {
 
     private CSP itsCSP;
-
     private boolean parallel;
-
     private boolean startParallelbyFirst;
-
     private Vector<Query> itsQueries = new Vector<Query>();
-
-    final private Dictionary<Variable, Integer> itsVarIndexMap = new Hashtable<Variable, Integer>();
-
-    final private Dictionary<Object, Variable> itsInstanceVarMap = new Hashtable<Object, Variable>();
-
+    final private Map<Variable, Integer> itsVarIndexMap = new HashMap<Variable, Integer>();
+    final private Map<Object, Variable> itsInstanceVarMap = new HashMap<Object, Variable>();
     private boolean itsInjectiveFlag;
-
     // the map of other solution solver
-    private Dictionary<Object, Variable> otherInstanceVarMap;
-
+    private Map<Object, Variable> otherInstanceVarMap;
     private SearchStrategy itsSearcher = new Search_BreadthFirst();
-
     /**
-     * Vector elements are of type <code>OrderedSet</code> of <code>Variable</code>. Elements are of type
-     * <code>Variable</code>.
+     * Elements are of type <code>Variable</code>.
      */
 //	final private HashSet itsBackjumpTargets = new HashSet();
     /**
-     * Value is either <code>NEXT</code> or <code>BACK</code> according to the recent traversal direction of the search
-     * tree.
+     * Value is either <code>NEXT</code> or <code>BACK</code> according to the
+     * recent traversal direction of the search tree.
      */
 //	private int itsDirection;
     /**
      * Index into <code>itsVariables</code>.
      */
     private int itsCurrentIndex;
-
     /**
-     * Index into <code>itsVariables</code>. Variables below this index are considered to be pre-instantiated and will
-     * not be touched by the solution algorithm.
+     * Index into <code>itsVariables</code>. Variables below this index are
+     * considered to be pre-instantiated and will not be touched by the solution
+     * algorithm.
      */
     private Variable itsCurrentVar;
-
     private Query itsCurrentQuery;
-
     private int itsState;
-
     @SuppressWarnings("unused")
     private int itsInstantiationCounter;
-
     @SuppressWarnings("unused")
     private int itsBackstepCounter;
-
     private boolean solutionFound;
-
     // constants for csp solution state machine:
     private final static int START = 1;
-
     private final static int NEXT = 2;
-
     private final static int INSTANTIATE = 3;
-
     private final static int BACK = 4;
-
     private final static int SUCCESS = 5;
-
     private final static int NO_MORE_SOLUTIONS = 6;
-
     private final static int BACKJUMP = 7;
 
     public Solution_Backtrack() {
@@ -218,35 +195,35 @@ public class Solution_Backtrack implements SolutionStrategy {
 
     public void clear() {
         this.itsQueries.clear();
-        ((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
-        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
+        this.itsVarIndexMap.clear();
+        this.itsInstanceVarMap.clear();
     }
 
     public void setRelatedInstanceVarMap(
-            Dictionary<Object, Variable> relatedVarIndexMap) {
+            Map<Object, Variable> relatedVarIndexMap) {
         this.otherInstanceVarMap = relatedVarIndexMap;
     }
 
-    public Dictionary<Object, Variable> getInstanceVarMap() {
+    public Map<Object, Variable> getInstanceVarMap() {
         return this.itsInstanceVarMap;
     }
 
     /**
-     * Compute the search plan (variable order) and do some other initialization stuff.
+     * Compute the search plan (variable order) and do some other initialization
+     * stuff.
      *
-     * @return <code>false</code> iff some pre-instantiated variables are violating some constraint.
+     * @return <code>false</code> iff some pre-instantiated variables are
+     * violating some constraint.
      */
     private final boolean initialize(CSP csp) {
         this.itsCSP = csp;
         this.itsQueries.removeAllElements();
         this.itsQueries = this.itsSearcher.execute(this.itsCSP);
         this.itsQueries.trimToSize();
-
         for (int i = 0; i < this.itsQueries.size(); i++) {
             this.itsVarIndexMap.put(this.itsQueries.elementAt(i).getTarget(),
                     Integer.valueOf(i));
         }
-
         Enumeration<Variable> anEnum = this.itsCSP.getVariables();
         Variable aVar;
         while (anEnum.hasMoreElements()) {
@@ -268,10 +245,8 @@ public class Solution_Backtrack implements SolutionStrategy {
             this.itsQueries = this.itsSearcher.execute(this.itsCSP);
             this.itsQueries.trimToSize();
         }
-
-        ((Hashtable<Variable, Integer>) this.itsVarIndexMap).clear();
-        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
-
+        this.itsVarIndexMap.clear();
+        this.itsInstanceVarMap.clear();
         for (int i = 0; i < this.itsQueries.size(); i++) {
             Query q = this.itsQueries.elementAt(i);
             this.itsVarIndexMap.put(q.getTarget(), Integer.valueOf(i));
@@ -279,7 +254,6 @@ public class Solution_Backtrack implements SolutionStrategy {
                 ((Query_Type) q).resetObjects();
             }
         }
-
         Enumeration<Variable> anEnum = this.itsCSP.getVariables();
         while (anEnum.hasMoreElements()) {
             Variable aVar = anEnum.nextElement();
@@ -291,7 +265,6 @@ public class Solution_Backtrack implements SolutionStrategy {
                 this.itsInstanceVarMap.put(aVar.getInstance(), aVar);
             }
         }
-
         this.itsState = START;
         return true;
     }
@@ -319,7 +292,6 @@ public class Solution_Backtrack implements SolutionStrategy {
             q = var.getTypeQuery();
             if (q != null) {
                 this.itsQueries.add(0, q);
-
                 for (int i = 0; i < this.itsQueries.size(); i++) {
                     q = this.itsQueries.elementAt(i);
                     Variable v = this.itsQueries.elementAt(i).getTarget();
@@ -343,23 +315,19 @@ public class Solution_Backtrack implements SolutionStrategy {
     }
 
     public synchronized final boolean next(CSP csp) {
-
         this.solutionFound = false;
-
         if (!csp.equals(this.itsCSP)) {
             if (!initialize(csp)) {
                 return false;
             }
             this.itsState = START;
         }
-
         if (this.itsState == SUCCESS) {
             this.itsState = BACK;
             // we want to continue where we left off, instead of actually
             // making a back step:
             this.itsCurrentIndex++;
         }
-
         while (true) {
             switch (this.itsState) {
                 case START:
@@ -368,16 +336,13 @@ public class Solution_Backtrack implements SolutionStrategy {
                     this.itsCurrentIndex = -1;
                     this.itsState = NEXT;
                     break;
-
                 case NEXT:
                     if (this.itsCurrentIndex >= this.itsQueries.size() - 1) {
                         this.itsState = SUCCESS;
                     } else {
 //					itsBackjumpTargets.clear();
-
                         this.itsCurrentQuery = this.itsQueries.elementAt(++this.itsCurrentIndex);
                         this.itsCurrentVar = this.itsCurrentQuery.getTarget();
-
                         if (this.itsCurrentQuery.isApplicable()) {
                             this.itsCurrentVar.setDomainEnum(this.itsCurrentQuery.execute());
 //						addToBackjumpTargets(itsCurrentQuery.getSources());
@@ -388,18 +353,14 @@ public class Solution_Backtrack implements SolutionStrategy {
                     }
 //				itsDirection = NEXT;
                     break;
-
                 case INSTANTIATE:
                     // HACK to never use backjumping at all:
                     this.itsState = BACK;
-
                     // deactivate correspondent constraint before checking // pablo
                     this.itsCurrentQuery.deactivateCorrespondent();
-
                     while (this.itsCurrentVar.hasNext()) {
                         this.itsInstantiationCounter++;
                         this.itsCurrentVar.setInstance(this.itsCurrentVar.getNext());
-
                         Variable aConflictVar = checkInjection(this.itsCurrentVar);
                         if (aConflictVar != null) {
                             this.itsCurrentVar.setInstance(null);
@@ -407,7 +368,6 @@ public class Solution_Backtrack implements SolutionStrategy {
 //							itsBackjumpTargets.add(aConflictVar);
                             continue;
                         }
-
                         Enumeration<?> allConflictVars = this.itsCurrentVar.checkConstraints();
                         if (!allConflictVars.hasMoreElements()) {
                             this.itsState = NEXT;
@@ -419,12 +379,9 @@ public class Solution_Backtrack implements SolutionStrategy {
 //							itsBackjumpTargets.add(getFirstOf(allConflictVars));
 //					}
                     }
-
                     // re-activate correspondent constraint after checking // pablo
                     this.itsCurrentQuery.activateCorrespondent();
-
                     break;
-
                 case BACK:
                     this.itsBackstepCounter++;
                     if (this.itsCurrentIndex == 0) {
@@ -460,9 +417,7 @@ public class Solution_Backtrack implements SolutionStrategy {
                         this.itsCurrentVar = this.itsQueries.elementAt(--this.itsCurrentIndex)
                                 .getTarget();
                         removeInjection(this.itsCurrentVar);
-
                         this.itsState = INSTANTIATE;
-
 //					if (!itsBackjumpTargets.find(itsCurrentVar).equals(
 //							itsBackjumpTargets.end())) {
 //						break;
@@ -470,19 +425,14 @@ public class Solution_Backtrack implements SolutionStrategy {
                     }
 //				itsDirection = BACK;
                     break;
-
                 case SUCCESS:
                     if (this.parallel && this.startParallelbyFirst) {
                         removeUsedObjectFromDomain();
                     }
-
                     this.solutionFound = true;
-
                     return true;
-
                 case NO_MORE_SOLUTIONS:
                     return false;
-
                 default:
                     System.out.println("Should have never come here..." + this.itsState);
             }
@@ -496,8 +446,7 @@ public class Solution_Backtrack implements SolutionStrategy {
                 ((Query_Type) q).removeObject((GraphObject) q.getTarget().getInstance());
             }
         }
-
-        ((Hashtable<Object, Variable>) this.itsInstanceVarMap).clear();
+        this.itsInstanceVarMap.clear();
 //		itsBackjumpTargets.clear();	
     }
 
@@ -555,16 +504,15 @@ public class Solution_Backtrack implements SolutionStrategy {
             if (this.itsInjectiveFlag) {
                 return this.itsInstanceVarMap.get(var.getInstance());
             }
-
             return null;
         }
         return null;
     }
-
 //	private final void addToBackjumpTargets(Enumeration<?> en) {
 //		while (en.hasMoreElements())
 //			itsBackjumpTargets.add(en.nextElement());
 //	}
+
     /**
      * @see agg.util.csp.SolutionStrategy#parallelSearch()
      */

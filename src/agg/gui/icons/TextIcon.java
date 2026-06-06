@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.icons;
 
@@ -14,7 +15,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-
 import javax.swing.Icon;
 
 public class TextIcon implements Icon {
@@ -22,7 +22,6 @@ public class TextIcon implements Icon {
     String name = "";
     double rotate = 0;
     boolean isEnabled;
-
     Color col;
 
     public TextIcon(String name, boolean enabled) {
@@ -40,7 +39,6 @@ public class TextIcon implements Icon {
         if (comp == null || grs == null) {
             return;
         }
-
         if (this.isEnabled) {
             if (this.col == null) {
                 grs.setColor(Color.black);
@@ -52,9 +50,7 @@ public class TextIcon implements Icon {
         }
         // g.setFont(new Font("Helvetica-Bold", Font.ITALIC, 14));
         // Font: [family=dialog.bold,name=Dialog,style=bold,size=12]
-
         grs.drawString(this.name, xp, yp + 13);
-
         if (this.rotate != 0) {
             ((Graphics2D) grs).rotate(this.rotate);
         }

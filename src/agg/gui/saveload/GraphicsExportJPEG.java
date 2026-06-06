@@ -2,10 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * </copyright>
+ * *****************************************************************************
  */
 package agg.gui.saveload;
 
@@ -15,24 +17,19 @@ import javax.swing.JComponent;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Component;
-
 import javax.imageio.ImageIO;
 
 /**
- * GraphExportJPG save a graph image into JPEG data stream and writes the JPEG stream into a file.
+ * GraphExportJPG save a graph image into JPEG data stream and writes the JPEG
+ * stream into a file.
  */
 public class GraphicsExportJPEG {
 
     private JFileChooser folderchooser;
-
     private ExtensionFileFilter filterJPG;
-
     private String jpgPath = "";
-
     private Component parent;
-
     private float quality = 1.0f;
-
     private boolean cancelled = false;
 
     public GraphicsExportJPEG(Component parent) {
@@ -102,16 +99,13 @@ public class GraphicsExportJPEG {
             this.jpgPath = null;
             return false;
         }
-
         if (this.jpgPath.equals("")) {
             this.jpgPath = ".";
         }
-
         String filename = this.folderchooser.getSelectedFile().getName();
         if (!filename.endsWith(".jpg")) {
             filename = filename.concat(".jpg");
         }
-
         // System.out.println("file name: "+this.jpgPath+File.separator+filename );
         String name = this.jpgPath + File.separator + filename;
         // File testFile = new File(name);
@@ -129,7 +123,6 @@ public class GraphicsExportJPEG {
         // }
         // }
         // else
-
         return paintToJpg(graphPanel, name);
     }
 
@@ -137,7 +130,6 @@ public class GraphicsExportJPEG {
         if (!filename.endsWith(".jpg")) {
             return paintToJpg(graphPanel, filename.concat(".jpg"));
         }
-
         return paintToJpg(graphPanel, filename);
     }
 
@@ -151,7 +143,6 @@ public class GraphicsExportJPEG {
         graphpanel.paint(imageg);
         // write the BufferedImage into JPEG stream
         try {
-
             File outputfile = new File(filename);
             ImageIO.write(image, "jpg", outputfile);
         } catch (Exception ex) {
@@ -159,5 +150,4 @@ public class GraphicsExportJPEG {
         }
         return false;
     }
-
 }

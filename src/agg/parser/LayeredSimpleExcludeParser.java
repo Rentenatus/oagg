@@ -1,23 +1,19 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.parser;
 
-import java.util.EmptyStackException;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
+import agg.util.Pair;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.Match;
@@ -25,20 +21,26 @@ import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.util.Pair;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import java.util.EmptyStackException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
-
+import java.util.Map;
 // ---------------------------------------------------------------------------+
+
 /**
- * This class provides a parser which needs critical pair analysis. This critical pair must be
- * <CODE>LayeredExcludePair</CODE>. So objects has to be instantiated with <CODE>LayeredExcludePairContainer</CODE>.
- * Additionally there is a layer function for more optimization.
+ * This class provides a parser which needs critical pair analysis. This
+ * critical pair must be <CODE>LayeredExcludePair</CODE>. So objects has to be
+ * instantiated with <CODE>LayeredExcludePairContainer</CODE>. Additionally
+ * there is a layer function for more optimization.
  *
  * @see ParserFactory#createParser createParser(...)
  * @author $Author: olga $ Parser Group
- * @version $Id: LayeredSimpleExcludeParser.java,v 1.6 2007/06/13 08:32:56 olga Exp $
+ * @version $Id: LayeredSimpleExcludeParser.java,v 1.6 2007/06/13 08:32:56 olga
+ * Exp $
  */
 public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
 
@@ -84,22 +86,19 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
 //		System.out.println("Starting layered simple exclude parser ...");
         fireParserEvent(new ParserMessageEvent(this,
                 "Starting layered simple exclude parser ..."));
-
         boolean result = true;
-        Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer(); // layer.getRuleLayer());
-        OrderedSet<Integer> ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
-        for (Enumeration<Integer> en = invertedRuleLayer.keys(); en.hasMoreElements();) {
-            ruleLayer.add(en.nextElement());
+        Map<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer(); // layer.getRuleLayer());
+        SortedSeasonSet<Integer> ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        for (Integer key : invertedRuleLayer.keySet()) {
+            ruleLayer.add(key);
         }
-
         Integer currentLayer = this.layer.getStartLayer();
         int i = 0;
-
         /* haelt alle Matche, die kritisch sind, damit nicht an einer Stelle
 		 * immer wieder angesetzt wird
          */
         RuleInstances eri = new RuleInstances();
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFree = null;
         try {
             conflictFree = this.pairContainer
                     .getContainer(CriticalPair.CONFLICTFREE);
@@ -108,7 +107,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                     + iae.getMessage()));
             return false;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> exclude = null;
         try {
             exclude = this.pairContainer.getContainer(CriticalPair.EXCLUDE);
         } catch (InvalidAlgorithmException iae) {
@@ -116,31 +115,31 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                     + iae.getMessage()));
             return false;
         }
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = null;
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
-        excludeLight = new Hashtable<>();
-        conflictFreeLight = new Hashtable<>();
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflictFreeLight = null;
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeLight = null;
+        excludeLight = new HashMap<>();
+        conflictFreeLight = new HashMap<>();
         makeLightContainer(exclude, excludeLight);
         makeLightContainer(conflictFree, conflictFreeLight);
         /*
 		 * makeLightContainer kann nur die Elemente filtern, in denen alle teile
 		 * false liefern. Mischformen fallen durch
          */
-        for (Enumeration<Rule> keys = conflictFreeLight.keys(); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        Iterator<Rule> keys = conflictFreeLight.keySet().iterator();
+        while (keys.hasNext()) {
+            Object key = keys.next();
             if (excludeLight.containsKey(key)) {
                 conflictFreeLight.remove(key);
             }
         }
-        Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredExcludeLight
-                = new Hashtable<>();
-        Hashtable<Integer, Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredConflictFreeLight
-                = new Hashtable<>();
+        Map<Integer, Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredExcludeLight
+                = new HashMap<>();
+        Map<Integer, Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>>> layeredConflictFreeLight
+                = new HashMap<>();
         /*
 		 * es gibt ein set von rules fuer einen bestimmten layer ausserdem gibt
 		 * es set von confliktfreien regeln aller layer synchronisieren beider
-		 * sets. Hashtable Integer layer -> gefilterten confliktfreien Hashtable
+		 * sets. Map Integer layer -> gefilterten confliktfreien Map
          */
         Iterator<Integer> iter = ruleLayer.iterator();
         while (iter.hasNext() && !this.stop) {
@@ -149,43 +148,42 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
             /* fuer alle regeln eines Layeres */
             for (Iterator<?> en2 = lRules.iterator(); en2.hasNext() && !this.stop;) {
                 Rule r = (Rule) en2.next();
-                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = conflictFreeLight
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> value = conflictFreeLight
                         .get(r);
                 /* falls die Regel im conflictFreeLight ist */
                 if (value != null) {
-                    /* neue Hashtable aufbauen */
-                    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredConflictFreeLight
+                    /* neue Map aufbauen */
+                    Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> map = layeredConflictFreeLight
                             .get(l);
-                    if (hashtable == null) {
-                        hashtable = new Hashtable< >();
-                        layeredConflictFreeLight.put(l, hashtable);
+                    if (map == null) {
+                        map = new HashMap<>();
+                        layeredConflictFreeLight.put(l, map);
                     }
-                    hashtable.put(r, value);
+                    map.put(r, value);
                 } else {
                     /* ansosten muss die Regel ja in exclude sein */
                     value = excludeLight.get(r);
                     /* vertrauen ist gut, kontrolle ist besser */
                     if (value != null) {
-                        /* neue Hashtable aufbauen */
-                        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> hashtable = layeredExcludeLight
+                        /* neue Map aufbauen */
+                        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> map = layeredExcludeLight
                                 .get(l);
-                        if (hashtable == null) {
-                            hashtable = new Hashtable< >();
-                            layeredExcludeLight.put(l, hashtable);
+                        if (map == null) {
+                            map = new HashMap<>();
+                            layeredExcludeLight.put(l, map);
                         }
-                        hashtable.put(r, value);
+                        map.put(r, value);
                     }
                 }
             }
         }
-
         fireParserEvent(new ParserMessageEvent(this,
                 "Layered simple parser initialized"));
         boolean ruleApplied = false;
         while (!this.stop && !getHostGraph().isIsomorphicTo(this.stopGraph) && result
                 && (currentLayer != null)) {
             ruleApplied = false;
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lFree = layeredConflictFreeLight
+            Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lFree = layeredConflictFreeLight
                     .get(currentLayer);
             Match m = null;
             if (lFree != null) {
@@ -201,7 +199,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                 }
             }
             if (!ruleApplied) {
-                Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lExclude = layeredExcludeLight.get(currentLayer);
+                Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> lExclude = layeredExcludeLight.get(currentLayer);
                 Match savedMatch = null;
                 if (lExclude != null) {
                     fireParserEvent(new ParserMessageEvent(this,
@@ -224,7 +222,7 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                         /*
 						 * ERI muss nicht kopiert werden, da nur an
 						 * Entscheidungsstellen der Match/die Matches gemerkt werden
-						 * mssen, die uns m�licherweise auf einen Holzweg fhren. Der
+						 * mssen, die uns mÃ¯Â¿Â½licherweise auf einen Holzweg fhren. Der
 						 * Match in ERI ist eine Stufe tiefer (also nach
 						 * Regelanwendung, denn wir l&ouml;schen) nicht mehr
 						 * verfgbar. Dadurch kann ein neues ERI erzeugt werden. Auf
@@ -244,7 +242,6 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
                         Match n = tmpMorph.makeMatch(savedMatch.getRule());
                         n.setCompletionStrategy((MorphCompletionStrategy) this.grammar
                                 .getMorphismCompletionStrategy().clone(), true);
-
                         boolean notFound = false;
                         while (!n.isValid() && !notFound) {
                             if (!n.nextCompletion()) {
@@ -300,12 +297,9 @@ public class LayeredSimpleExcludeParser extends LayeredExcludeParser {
         this.correct = result;
         fireParserEvent(new ParserMessageEvent(this,
                 "Stopping parser. Result is " + result + "."));
-
         return result;
     }
-
 }
-
 /*
  * End of Parser.java
  * ----------------------------------------------------------------------------

@@ -2,22 +2,15 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
-import java.util.EmptyStackException;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Stack;
-
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
@@ -26,11 +19,18 @@ import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
-
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import java.util.EmptyStackException;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Stack;
 // ---------------------------------------------------------------------------+
+
 /**
- * This class provides a parser which works without critical pair analysis. So a simple backtracking algorithm is
- * implemented. The only optimization can made by the layer function.
+ * This class provides a parser which works without critical pair analysis. So a
+ * simple backtracking algorithm is implemented. The only optimization can made
+ * by the layer function.
  *
  * @see ParserFactory#createParser createParser(...)
  * @author $Author: olga $ Parser Group
@@ -82,19 +82,15 @@ public class LayeredSimpleParser extends SimpleParser {
 //		System.out.println("### Starting layered simple parser ...");
         fireParserEvent(new ParserMessageEvent(this,
                 "Starting layered simple parser ..."));
-
         Stack<TripleData> stack = new Stack<TripleData>();
         this.correct = true;
-
-        Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer();
-        OrderedSet<Integer> ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
-        for (Enumeration<Integer> en = invertedRuleLayer.keys(); en.hasMoreElements();) {
-            ruleLayer.add(en.nextElement());
+        Map<Integer, HashSet<Rule>> invertedRuleLayer = this.layer.invertLayer();
+        SortedSeasonSet<Integer> ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        for (Integer layer : invertedRuleLayer.keySet()) {
+            ruleLayer.add(layer);
         }
-
         Integer currentLayer = this.layer.getStartLayer();
         int i = 0;
-
         /*
 		 * haelt alle Matche, die kritisch sind, damit nicht an einer Stelle
 		 * immer wieder angesetzt wird
@@ -107,7 +103,6 @@ public class LayeredSimpleParser extends SimpleParser {
             fireParserEvent(new ParserMessageEvent(this, "Searching for match"));
             HashSet rulesForLayer = invertedRuleLayer.get(currentLayer);
             Match m = findMatch(getHostGraph(), rulesForLayer.iterator(), eri);
-
             if (m != null) {
                 /* auf Stack pushen */
                 OrdinaryMorphism copyMorph = getHostGraph().isomorphicCopy();
@@ -135,14 +130,12 @@ public class LayeredSimpleParser extends SimpleParser {
                     Match n = tmpMorph.makeMatch(m.getRule());
                     n.setCompletionStrategy((MorphCompletionStrategy) this.grammar
                             .getMorphismCompletionStrategy().clone(), true);
-
                     boolean found = true;
                     while (!this.stop && !n.isValid() && found) {
                         if (!n.nextCompletion()) {
                             found = false;
                         }
                     }
-
                     if (found) {
                         if (applyRule(n)) {
                             ruleApplied = true;
@@ -162,7 +155,6 @@ public class LayeredSimpleParser extends SimpleParser {
                 } else {
                     nextLayerExists = false;
                 }
-
                 /* backtracking*/
                 if (!nextLayerExists) {
                     try {
@@ -196,9 +188,7 @@ public class LayeredSimpleParser extends SimpleParser {
                         + this.correct + ".");
         return this.correct;
     }
-
 }
-
 /*
  * End of Parser.java
  * ----------------------------------------------------------------------------

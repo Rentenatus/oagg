@@ -2,24 +2,25 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import java.io.Serializable;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrDistributionBroker;
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrType;
 
 /**
- * Mediator class for distribution purposes. Provides services for creating and maintaining of interface/local-relations
- * between attribute tuples and contexts.
+ * Mediator class for distribution purposes. Provides services for creating and
+ * maintaining of interface/local-relations between attribute tuples and
+ * contexts.
  */
 public class DistributionBroker extends AttrObject implements
         AttrDistributionBroker, Serializable {
@@ -69,7 +70,6 @@ public class DistributionBroker extends AttrObject implements
             AttrContext localContext) {
     }
 }
-
 /*
  * $Log: DistributionBroker.java,v $
  * Revision 1.2  2007/09/10 13:05:19  olga

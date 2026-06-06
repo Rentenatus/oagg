@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -21,11 +23,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.Insets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,7 +37,6 @@ import javax.swing.JButton;
 import javax.swing.ImageIcon;
 import javax.swing.border.TitledBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.attribute.gui.AttrTopEditor;
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdAtomic;
@@ -70,7 +71,8 @@ import agg.xt_basis.agt.MultiRule;
 import agg.xt_basis.agt.RuleScheme;
 
 /**
- * The class RuleEditor specifies a rule editor for editing a rule of the class EdRule.
+ * The class RuleEditor specifies a rule editor for editing a rule of the class
+ * EdRule.
  *
  * @author $Author: olga $
  */
@@ -81,25 +83,22 @@ public class RuleEditor extends JPanel {
     private final RuleEditorMouseMotionAdapter mouseMotionAdapter;
 
     /**
-     * Creates a rule editor. The main editor is specified by the GraGraEditor anEditor or NULL
+     * Creates a rule editor. The main editor is specified by the GraGraEditor
+     * anEditor or NULL
      */
     public RuleEditor(GraGraEditor anEditor) {
         super(new BorderLayout());
         this.mainPanel = this;
-
         this.mouseAdapter = new RuleEditorMouseAdapter(this);
         this.mouseMotionAdapter = new RuleEditorMouseMotionAdapter(this);
-
         this.leftPanel = new GraphPanel(this);
         final JPanel lPanel = new JPanel(new BorderLayout());
         lPanel.setPreferredSize(new Dimension(250, 150));
         lPanel.add(this.leftPanel, BorderLayout.CENTER);
-
         this.rightPanel = new GraphPanel(this);
         final JPanel rPanel = new JPanel(new BorderLayout());
         rPanel.setPreferredSize(new Dimension(250, 150));
         rPanel.add(this.rightPanel, BorderLayout.CENTER);
-
         this.ruleSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, lPanel,
                 rPanel);
         this.ruleSplitPane.setBackground(Color.WHITE);
@@ -108,11 +107,9 @@ public class RuleEditor extends JPanel {
         this.ruleSplitPane.setOneTouchExpandable(true);
         this.ruleDividerLocation = 250;
         this.ruleSplitPane.setDividerLocation(this.ruleDividerLocation);
-
         final JPanel panelRule = new JPanel(new BorderLayout());
         panelRule.setPreferredSize(new Dimension(500, 150));
         this.title = new JLabel("  ");
-
         // title.setIcon(ruleExportJPEG.getIcon());
         this.exportJPEGButton = createExportJPEGButton();
         final JPanel rtitlePanel = new JPanel(new BorderLayout());
@@ -121,23 +118,17 @@ public class RuleEditor extends JPanel {
             rtitlePanel.add(this.exportJPEGButton, BorderLayout.EAST);
         }
         panelRule.add(rtitlePanel, BorderLayout.NORTH);
-
         panelRule.add(this.ruleSplitPane, BorderLayout.CENTER);
-
         this.leftCondPanel = new GraphPanel(this);
         this.titleAC = new JLabel("  ");
         this.leftCondPanel.add(this.titleAC, BorderLayout.NORTH);
-
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, null, panelRule);
         this.splitPane.setContinuousLayout(true);
         this.splitPane.setOneTouchExpandable(true);
         this.splitPane.setDividerSize(0);
         this.acDividerLocation = 150;
-
-        this.dividerLocationSet = new Hashtable<Object, Integer>(0);
-
+        this.dividerLocationSet = new HashMap<Object, Integer>(0);
         add(this.splitPane, BorderLayout.CENTER);
-
         this.gragraEditor = anEditor;
         if (this.gragraEditor != null) {
             this.applFrame = anEditor.getParentFrame();
@@ -147,11 +138,9 @@ public class RuleEditor extends JPanel {
         } else {
             this.applFrame = null;
         }
-
         this.leftPanel.getCanvas().addMouseListener(this.mouseAdapter);
         this.rightPanel.getCanvas().addMouseListener(this.mouseAdapter);
         this.leftCondPanel.getCanvas().addMouseListener(this.mouseAdapter);
-
         this.leftPanel.getCanvas().addMouseMotionListener(this.mouseMotionAdapter);
         this.rightPanel.getCanvas().addMouseMotionListener(this.mouseMotionAdapter);
         this.leftCondPanel.getCanvas().addMouseMotionListener(this.mouseMotionAdapter);
@@ -228,7 +217,6 @@ public class RuleEditor extends JPanel {
         if (leftgo == null || rightgo == null) {
             return false;
         }
-
         if (this.eRule.getBasisRule() instanceof MultiRule) {
             if (((MultiRule) this.eRule.getBasisRule())
                     .isTargetOfEmbeddingLeft(leftgo.getBasisObject())
@@ -254,17 +242,14 @@ public class RuleEditor extends JPanel {
                 }
             }
         }
-
         this.eRule.addCreatedMappingToUndo(leftgo, rightgo);
         this.eRule.interactRule(leftgo, rightgo);
         this.eRule.propagateAddRuleMappingToMultiRule(leftgo, rightgo);
-
         this.leftPanel.updateGraphics();
         this.rightPanel.updateGraphics();
         if (this.eRule.isBadMapping()) {
             this.eRule.undoManagerLastEditDie();
             this.msg = this.eRule.getMsg();
-
             if (leftgo.isArc()) {
                 javax.swing.JOptionPane
                         .showMessageDialog(
@@ -272,14 +257,12 @@ public class RuleEditor extends JPanel {
                                 this.msg,
                                 "Mapping Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
-
             return false;
         }
         this.eRule.undoManagerEndEdit();
         if (this.gragraEditor != null) {
             this.gragraEditor.updateUndoButton();
         }
-
         // if (this.applFrame != null)
         // this.applFrame.setCursor(this.rightPanel.getEditCursor());
         return true;
@@ -289,13 +272,11 @@ public class RuleEditor extends JPanel {
         if (go == null) {
             return false;
         }
-
         if (ruleLHS && go.getContext() == this.eRule.getLeft()) {
             if (this.eRule.getBasisRule() instanceof MultiRule) {
                 if (!go.getMorphismMark().isEmpty()
                         && ((MultiRule) this.eRule.getBasisRule())
                                 .isTargetOfEmbeddingLeft(go.getBasisObject())) {
-
                     JOptionPane.showMessageDialog(this.applFrame,
                             "Cannot remove this mapping. It should be removed from the kernel rule.",
                             "Remove Rule Object Mapping",
@@ -303,7 +284,6 @@ public class RuleEditor extends JPanel {
                     return false;
                 }
             }
-
             EdGraphObject rgo = null;
             if (this.eRule instanceof EdAtomic) {
                 rgo = this.eRule.getRight().findGraphObject(
@@ -311,26 +291,21 @@ public class RuleEditor extends JPanel {
                                 go.getBasisObject()));
             } else {
                 this.eRule.propagateRemoveRuleMappingToMultiRule(go);
-
                 rgo = this.eRule.getRight().findGraphObject(
                         this.eRule.getBasisRule().getImage(go.getBasisObject()));
             }
-
             if (rgo != null) {
                 this.eRule.addDeletedMappingToUndo(go, rgo);
                 this.eRule.removeRuleMapping(go);
                 this.eRule.undoManagerEndEdit();
-
                 if (this.gragraEditor != null) {
                     this.gragraEditor.updateUndoButton();
                     this.gragraEditor.getGraGra().setChanged(true);
                 }
-
                 return true;
             }
             return false;
         }
-
         // ruleRHS
         if (go.getContext() == this.eRule.getRight()) {
             if (this.eRule.getBasisRule() instanceof MultiRule) {
@@ -344,7 +319,6 @@ public class RuleEditor extends JPanel {
                     return false;
                 }
             }
-
             List<EdGraphObject> vec = this.eRule.getOriginal(go);
             boolean result = false;
             for (int i = 0; i < vec.size(); i++) {
@@ -354,7 +328,6 @@ public class RuleEditor extends JPanel {
             if (result && this.gragraEditor != null) {
                 this.gragraEditor.getGraGra().setChanged(true);
             }
-
             return result;
         }
         return false;
@@ -375,7 +348,6 @@ public class RuleEditor extends JPanel {
             this.getLeftPanel().updateGraphics(); // wegen weak selected										
         }
         this.setObjMapping(false);
-
         if (this.isEditPopupMenuShown()
                 && this.getEditPopupMenu().isMapping()
                 && !this.isObjMapping()) {
@@ -432,7 +404,6 @@ public class RuleEditor extends JPanel {
             this.getLeftPanel().updateGraphics(); // wegen weak selected
         }
         this.setObjMapping(false);
-
         if (this.isEditPopupMenuShown()
                 && this.getEditPopupMenu().isMapping()
                 && !this.isObjMapping()) {
@@ -459,14 +430,12 @@ public class RuleEditor extends JPanel {
                     done = true;
                 }
             }
-
             if (done) {
                 this.getLeftPanel().updateGraphics();
                 this.getLeftCondPanel().updateGraphics();
             }
         }
         this.setObjMapping(false);
-
         if (this.isEditPopupMenuShown()
                 && this.getEditPopupMenu().isMapping()
                 && !this.isObjMapping()) {
@@ -489,7 +458,6 @@ public class RuleEditor extends JPanel {
             this.getLeftPanel().updateGraphics(); // wegen weak selected
         }
         this.setObjMapping(false);
-
         if (this.isEditPopupMenuShown()
                 && this.getEditPopupMenu().isMapping()
                 && !this.isObjMapping()) {
@@ -515,7 +483,6 @@ public class RuleEditor extends JPanel {
             }
         }
         this.setObjMapping(false);
-
         if (this.isEditPopupMenuShown()
                 && this.getEditPopupMenu().isMapping()
                 && !this.isObjMapping()) {
@@ -527,7 +494,6 @@ public class RuleEditor extends JPanel {
         if (obj == null) {
             return;
         }
-
         boolean unmapdone = false;
         List<EdGraphObject> l = new Vector<EdGraphObject>(1);
         EdGraphObject lgo = null;
@@ -573,7 +539,6 @@ public class RuleEditor extends JPanel {
         if (obj == null) {
             return;
         }
-
         List<EdGraphObject> vec = null;
         boolean unmapdone = false;
         EdGraphObject imageObj = null;
@@ -703,10 +668,8 @@ public class RuleEditor extends JPanel {
         if (leftgo == null || nacgo == null) {
             return false;
         }
-
         this.eRule.addCreatedNACMappingToUndo(leftgo, nacgo);
         this.eRule.interactNAC(leftgo, nacgo, this.eNAC.getMorphism());
-
         if (!this.eRule.getBasisRule()
                 .compareConstantAttributeValue(leftgo.getBasisObject(), nacgo.getBasisObject())) {
             JOptionPane.showMessageDialog(
@@ -719,7 +682,6 @@ public class RuleEditor extends JPanel {
                     "Attribute value changed",
                     JOptionPane.ERROR_MESSAGE);
         }
-
         this.leftPanel.updateGraphics();
         this.leftCondPanel.updateGraphics();
         if (this.eRule.isBadMapping()) {
@@ -739,13 +701,13 @@ public class RuleEditor extends JPanel {
             this.gragraEditor.updateUndoButton();
             this.gragraEditor.getGraGra().setChanged(true);
         }
-
         return true;
     }
 
     /**
-     * Removes morphism mapping of the given object. The given object must to belong to the LHS of a rule when left is
-     * true, otherwise it is an object of the current NAC.
+     * Removes morphism mapping of the given object. The given object must to
+     * belong to the LHS of a rule when left is true, otherwise it is an object
+     * of the current NAC.
      *
      * @return true if remove was successful, otherwise - false
      */
@@ -768,7 +730,6 @@ public class RuleEditor extends JPanel {
             }
             return false;
         }
-
         boolean res = false;
         List<EdGraphObject> vec = this.eNAC.getOriginal(go);
         for (int i = 0; i < vec.size(); i++) {
@@ -779,7 +740,8 @@ public class RuleEditor extends JPanel {
     }
 
     /**
-     * Removes morphism mapping from the given object of the LHS of a rule to the image objects of all its NACs.
+     * Removes morphism mapping from the given object of the LHS of a rule to
+     * the image objects of all its NACs.
      *
      * @return true if remove was successful, otherwise - false
      */
@@ -810,10 +772,8 @@ public class RuleEditor extends JPanel {
         if (leftgo == null || pacgo == null) {
             return false;
         }
-
         this.eRule.addCreatedACMappingToUndo(leftgo, pacgo);
         this.eRule.interactPAC(leftgo, pacgo, this.ePAC.getMorphism());
-
         if (!this.eRule.getBasisRule()
                 .compareConstantAttributeValue(leftgo.getBasisObject(), pacgo.getBasisObject())) {
             JOptionPane.showMessageDialog(
@@ -826,7 +786,6 @@ public class RuleEditor extends JPanel {
                     "Attribute value changed",
                     JOptionPane.ERROR_MESSAGE);
         }
-
         this.leftPanel.updateGraphics();
         this.leftCondPanel.updateGraphics();
         if (this.eRule.isBadMapping()) {
@@ -846,13 +805,13 @@ public class RuleEditor extends JPanel {
             this.gragraEditor.updateUndoButton();
             this.gragraEditor.getGraGra().setChanged(true);
         }
-
         return true;
     }
 
     /**
-     * Removes morphism mapping of the given object. The given object must to belong to the LHS of a rule when left is
-     * true, otherwise it is an object of the current PAC.
+     * Removes morphism mapping of the given object. The given object must to
+     * belong to the LHS of a rule when left is true, otherwise it is an object
+     * of the current PAC.
      *
      * @return true if remove was successful, otherwise - false
      */
@@ -885,7 +844,8 @@ public class RuleEditor extends JPanel {
     }
 
     /**
-     * Removes morphism mapping from the given object of the LHS of a rule to the image objects of all its PACs.
+     * Removes morphism mapping from the given object of the LHS of a rule to
+     * the image objects of all its PACs.
      *
      * @return true if remove was successful, otherwise - false
      */
@@ -916,10 +876,8 @@ public class RuleEditor extends JPanel {
         if (leftgo == null || acgo == null) {
             return false;
         }
-
         this.eRule.addCreatedACMappingToUndo(leftgo, acgo);
         this.eRule.interactNestedAC(leftgo, acgo, this.eGAC.getNestedMorphism());
-
         this.eRule.updateNestedAC(this.eGAC);
         this.leftPanel.updateGraphics();
         this.leftCondPanel.updateGraphics();
@@ -940,13 +898,13 @@ public class RuleEditor extends JPanel {
             this.gragraEditor.updateUndoButton();
             this.gragraEditor.getGraGra().setChanged(true);
         }
-
         return true;
     }
 
     /**
-     * Removes morphism mapping of the given object. The given object must to belong to the LHS of a rule when left is
-     * true, otherwise it is an object of the current AC.
+     * Removes morphism mapping of the given object. The given object must to
+     * belong to the LHS of a rule when left is true, otherwise it is an object
+     * of the current AC.
      *
      * @return true if remove was successful, otherwise - false
      */
@@ -988,7 +946,8 @@ public class RuleEditor extends JPanel {
     }
 
     /**
-     * Removes morphism mapping from the given object of the LHS of a rule to the image objects of all its nested ACs.
+     * Removes morphism mapping from the given object of the LHS of a rule to
+     * the image objects of all its nested ACs.
      */
     public boolean removeNestedACMapping(final EdGraphObject left) {
         if (left == null) {
@@ -1014,8 +973,9 @@ public class RuleEditor extends JPanel {
     }
 
     /**
-     * Removes morphism mapping of the given object. The given object must to belong to the LHS of a rule. The image
-     * objects can be objects of the ACs of the given list.
+     * Removes morphism mapping of the given object. The given object must to
+     * belong to the LHS of a rule. The image objects can be objects of the ACs
+     * of the given list.
      *
      * @return true if remove was successful, otherwise - false
      */
@@ -1050,7 +1010,6 @@ public class RuleEditor extends JPanel {
         if (leftgo == null || graphgo == null) {
             return false;
         }
-
         if (this.eRule.getBasisRule().getMatch() == null) {
             this.eRule.getGraGra().getBasisGraGra()
                     .createMatch(this.eRule.getBasisRule());
@@ -1058,19 +1017,16 @@ public class RuleEditor extends JPanel {
         this.eRule.getBasisRule().getMatch().setCompletionStrategy(
                 this.eRule.getGraGra().getBasisGraGra()
                         .getMorphismCompletionStrategy());
-
         this.eRule.addCreatedMatchMappingToUndo(leftgo, graphgo);
         this.eRule.interactMatch(leftgo, graphgo);
         if (this.eRule.isBadMapping()) {
             this.eRule.undoManagerLastEditDie();
             this.msg = this.eRule.getMsg();
-
             javax.swing.JOptionPane
                     .showMessageDialog(
                             this.applFrame,
                             this.msg,
                             "Mapping Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-
             return false;
         }
         this.eRule.undoManagerEndEdit();
@@ -1080,7 +1036,6 @@ public class RuleEditor extends JPanel {
         if (this.graphEditor != null) {
             this.graphEditor.getGraph().update();
         }
-
         return true;
     }
 
@@ -1088,7 +1043,6 @@ public class RuleEditor extends JPanel {
         if (go == null || this.eRule.getMatch() == null) {
             return false;
         }
-
         if (left && this.graphEditor != null) {
             EdGraphObject ggo = this.graphEditor.getGraph().findGraphObject(
                     this.eRule.getMatch().getImage(go.getBasisObject()));
@@ -1099,13 +1053,11 @@ public class RuleEditor extends JPanel {
                 if (this.gragraEditor != null) {
                     this.gragraEditor.updateUndoButton();
                 }
-
                 this.graphEditor.getGraph().update();
                 return true;
             }
             return false;
         }
-
         boolean res = false;
         Iterator<GraphObject> inverse = this.eRule.getMatch().getInverseImage(
                 go.getBasisObject());
@@ -1121,7 +1073,8 @@ public class RuleEditor extends JPanel {
      * **** End of the implementing interface MouseMotionListener ******
      */
     /**
-     * Enables or disables synchronized moving of mapped nodes and edges of the current rule.
+     * Enables or disables synchronized moving of mapped nodes and edges of the
+     * current rule.
      */
     public void enableSynchronMoveOfMappedObjects(boolean b) {
         this.synchrMoveOfMapObjs = b;
@@ -1166,10 +1119,8 @@ public class RuleEditor extends JPanel {
                 if (obj == null) {
                     continue;
                 }
-
                 if (img instanceof Node) {
                     res.add(obj);
-
                     Iterator<Arc> e = ((Node) img).getIncomingArcsSet().iterator();
                     while (e.hasNext()) {
                         Arc a = e.next();
@@ -1192,7 +1143,6 @@ public class RuleEditor extends JPanel {
                             }
                         }
                     }
-
                 } else if (!res.contains(obj)) {
                     // System.out.println(obj);
                     res.add(obj);
@@ -1215,10 +1165,8 @@ public class RuleEditor extends JPanel {
                     if (obj == null) {
                         continue;
                     }
-
                     if (img instanceof Node) {
                         res.add(obj);
-
                         Iterator<Arc> e = ((Node) img).getIncomingArcsSet().iterator();
                         while (e.hasNext()) {
                             Arc a = e.next();
@@ -1241,7 +1189,6 @@ public class RuleEditor extends JPanel {
                                 }
                             }
                         }
-
                     } else if (!res.contains(obj)) {
                         // System.out.println(obj);
                         res.add(obj);
@@ -1281,7 +1228,6 @@ public class RuleEditor extends JPanel {
         if (this.leftPanel.getEditMode() == EditorConstants.VIEW) {
             return;
         }
-
         Object source = e.getSource();
         int keyCode = e.getKeyCode();
         if (source == this.leftPanel.getCanvas()) {
@@ -1369,8 +1315,9 @@ public class RuleEditor extends JPanel {
     }
 
     /**
-     * Sets my title. The String str1 specifies the first part of title (may be graph name or empty), the String str2
-     * specifies the second part of title (may be gragra name or empty)
+     * Sets my title. The String str1 specifies the first part of title (may be
+     * graph name or empty), the String str2 specifies the second part of title
+     * (may be gragra name or empty)
      */
     public void setRuleTitle(String str1, String str2) {
         if (!str1.equals("") && !str2.equals("")) {
@@ -1389,8 +1336,9 @@ public class RuleEditor extends JPanel {
     }
 
     /**
-     * Sets my title. The String str1 specifies the first part of title (may be conclusion name or empty), the String
-     * str2 specifies the second part of title (may be atomic name or empty)
+     * Sets my title. The String str1 specifies the first part of title (may be
+     * conclusion name or empty), the String str2 specifies the second part of
+     * title (may be atomic name or empty)
      */
     public void setAtomicTitle(String str1, String str2) {
         if (!str1.equals("") && !str2.equals("")) {
@@ -1606,7 +1554,6 @@ public class RuleEditor extends JPanel {
         if (this.eRule != null) {
             return true;
         }
-
         return false;
     }
 
@@ -1659,7 +1606,6 @@ public class RuleEditor extends JPanel {
         }
         this.eRule = er;
         this.titleKind = " ";
-
         if (this.eRule == null) {
             this.ruleDividerLocation = this.ruleSplitPane.getDividerLocation();
             setTitle("    ");
@@ -1676,26 +1622,19 @@ public class RuleEditor extends JPanel {
             }
             return;
         }
-
         this.eGra = this.eRule.getGraGra();
-
         if (this.eRule.getBasisRule() instanceof RuleScheme) {
             this.eRule = ((EdRuleScheme) this.eRule).getKernelRule();
         }
         makeRuleTitle();
-
         setBorder(this.leftPanel.canvas, "  LHS  ");
         setBorder(this.rightPanel.canvas, "  RHS  ");
-
         this.eRule.updateRule();
         this.leftPanel.setGraph(this.eRule.getLeft(), true);
         this.rightPanel.setGraph(this.eRule.getRight(), true);
-
         this.showRightPanel();
-
         if (this.attrEditor != null) {
             this.attrEditor.setContext(this.eRule.getBasisRule().getAttrContext());
-
         }
         if (this.dividerLocationSet.get(this.eRule) != null) {
             this.ruleSplitPane.setDividerLocation((this.dividerLocationSet.get(this.eRule))
@@ -1719,7 +1658,6 @@ public class RuleEditor extends JPanel {
     public void adjustLeftRightBorderTitle() {
         setBorder(this.leftPanel.canvas, "  LHS  ");
         setBorder(this.rightPanel.canvas, "  RHS  ");
-
     }
 
     /**
@@ -1728,23 +1666,18 @@ public class RuleEditor extends JPanel {
     public void resetRule() {
         if (this.eRule != null) {
             this.showRightPanel();
-
             setNAC(null);
             setPAC(null);
             setNestedAC(null);
-
             if (this.eRule.getBasisRule() instanceof RuleScheme) {
                 this.eRule = ((EdRuleScheme) this.eRule).getKernelRule();
             }
             makeRuleTitle();
-
             setBorder(this.leftPanel.canvas, "  LHS  ");
             setBorder(this.rightPanel.canvas, "  RHS  ");
-
             this.eRule.updateRule();
             this.leftPanel.setGraph(this.eRule.getLeft(), true);
             this.rightPanel.setGraph(this.eRule.getRight(), true);
-
             if (this.attrEditor != null) {
                 this.attrEditor.setContext(this.eRule.getBasisRule().getAttrContext());
             }
@@ -1754,7 +1687,7 @@ public class RuleEditor extends JPanel {
             } else {
                 this.ruleDividerLocation = this.ruleSplitPane.getDividerLocation();
                 this.ruleSplitPane.setDividerLocation(this.ruleDividerLocation);
-                this.dividerLocationSet.put(this.eRule, new Integer(this.ruleDividerLocation));
+                this.dividerLocationSet.put(this.eRule, this.ruleDividerLocation);
             }
             if (this.exportJPEGButton != null
                     && this.exportJPEG != null) {
@@ -1783,14 +1716,12 @@ public class RuleEditor extends JPanel {
         } else {
             titleStr = this.eRule.getBasisRule().getName();
         }
-
         if (this.eGra != null) {
             setRuleTitle(titleStr, this.eGra.getName());
         } else {
             setRuleTitle(titleStr, "");
         }
     }
-
 //	public int getRuleDividerLocation() {
 //		return this.ruleDividerLocation;
 //	}
@@ -1801,6 +1732,7 @@ public class RuleEditor extends JPanel {
 //	public int getPACDividerLocation() {
 //		return pacDividerLocation;
 //	}
+
     public void setDividerLocation(int indx, int i) {
         if (indx == 0) {
             this.splitPane.setDividerLocation(i);
@@ -1819,7 +1751,6 @@ public class RuleEditor extends JPanel {
         }
         this.eRule = a;
         this.titleKind = "  ";
-
         if (this.eRule == null) {
             this.ruleDividerLocation = this.ruleSplitPane.getDividerLocation();
             setTitle("    ");
@@ -1834,36 +1765,27 @@ public class RuleEditor extends JPanel {
             if (this.exportJPEGButton != null) {
                 this.exportJPEGButton.setEnabled(false);
             }
-
             return;
         }
-
         setNAC(null);
         setPAC(null);
         setNestedAC(null);
-
         this.eGra = this.eRule.getGraGra();
-
         String s = a.getBasisAtomic().getAtomicName();
         setAtomicTitle(this.eRule.getMorphism().getName(), s);
-
         setBorder(this.leftPanel.canvas, "  P  ");
         setBorder(this.rightPanel.canvas, "  C  ");
-
         this.leftPanel.setGraph(this.eRule.getLeft());
         this.rightPanel.setGraph(this.eRule.getRight());
-
         if (this.attrEditor != null) {
             this.attrEditor.setContext(a.getBasisAtomic().getAttrContext());
         }
-
         if (this.dividerLocationSet.get(this.eRule) != null) {
             this.ruleSplitPane.setDividerLocation(this.dividerLocationSet.get(this.eRule)
                     .intValue());
         } else {
             this.ruleSplitPane.setDividerLocation(this.ruleDividerLocation);
         }
-
         if (this.exportJPEGButton != null
                 && this.exportJPEG != null) {
             this.exportJPEGButton.setEnabled(true);
@@ -1875,7 +1797,6 @@ public class RuleEditor extends JPanel {
      */
     public void setNAC(EdNAC enac) {
         this.showRightPanel();
-
         if (this.eNAC != null) {
             this.acDividerLocation = this.splitPane.getDividerLocation();
             this.dividerLocationSet.put(this.eNAC, Integer.valueOf(this.acDividerLocation));
@@ -1884,30 +1805,24 @@ public class RuleEditor extends JPanel {
         } else if (this.eGAC != null) {
             this.dividerLocationSet.put(this.eGAC, Integer.valueOf(this.splitPane.getDividerLocation()));
         }
-
         this.eNAC = enac;
         this.titleKindAC = "  ";
-
         if (this.eNAC == null) {
             this.leftCondPanel.setGraph(null);
             setNACTitle("");
             hideLeftApplCond();
             return;
         }
-
         this.ePAC = null;
         this.eGAC = null;
-
         makeRuleTitle();
         setBorder(this.leftPanel.canvas, "  LHS  ");
         setBorder(this.rightPanel.canvas, "  RHS  ");
-
         setBorder(this.leftCondPanel.canvas, "  NAC  ");
         setNACTitle(this.eNAC.getBasisGraph().getName());
         this.eRule.updateRule();
         this.eRule.updateNAC(this.eNAC);
         this.leftCondPanel.setGraph(this.eNAC, true);
-
         setDividerLocationOfLeftApplCond(this.eNAC);
         if (this.dividerLocationSet.get(this.eRule) != null) {
             this.ruleDividerLocation = (this.dividerLocationSet.get(this.eRule)).intValue();
@@ -1924,7 +1839,6 @@ public class RuleEditor extends JPanel {
      */
     public void setPAC(EdPAC epac) {
         this.showRightPanel();
-
         if (this.ePAC != null) {
             this.acDividerLocation = this.splitPane.getDividerLocation();
             this.dividerLocationSet.put(this.ePAC, Integer.valueOf(this.acDividerLocation));
@@ -1933,10 +1847,8 @@ public class RuleEditor extends JPanel {
         } else if (this.eGAC != null) {
             this.dividerLocationSet.put(this.eGAC, Integer.valueOf(this.splitPane.getDividerLocation()));
         }
-
         this.ePAC = epac;
         this.titleKindAC = "  ";
-
         if (this.ePAC == null) {
             this.leftCondPanel.setGraph(null);
             this.leftCondPanel.updateGraphics();
@@ -1944,20 +1856,16 @@ public class RuleEditor extends JPanel {
             hideLeftApplCond();
             return;
         }
-
         this.eNAC = null;
         this.eGAC = null;
-
         makeRuleTitle();
         setBorder(this.leftPanel.canvas, "  LHS  ");
         setBorder(this.rightPanel.canvas, "  RHS  ");
-
         setBorder(this.leftCondPanel.canvas, "  PAC  ");
         setPACTitle(this.ePAC.getBasisGraph().getName());
         this.eRule.updateRule();
         this.eRule.updatePAC(this.ePAC);
         this.leftCondPanel.setGraph(this.ePAC, true);
-
         setDividerLocationOfLeftApplCond(this.ePAC);
         if (this.dividerLocationSet.get(this.eRule) != null) {
             this.ruleDividerLocation = (this.dividerLocationSet.get(this.eRule)).intValue();
@@ -1991,7 +1899,6 @@ public class RuleEditor extends JPanel {
      * Sets my nested AC specified by the EdNestedApplCond ac
      */
     public void setNestedAC(EdNestedApplCond ac) {
-
         if (this.eGAC != null) {
             this.acDividerLocation = this.splitPane.getDividerLocation();
             this.dividerLocationSet.put(this.eGAC, Integer.valueOf(this.acDividerLocation));
@@ -2000,10 +1907,8 @@ public class RuleEditor extends JPanel {
         } else if (this.ePAC != null) {
             this.dividerLocationSet.put(this.ePAC, Integer.valueOf(this.splitPane.getDividerLocation()));
         }
-
         this.eGAC = ac;
         this.titleKindAC = "  ";
-
         if (this.eGAC == null) {
             this.leftCondPanel.setGraph(null);
             this.leftCondPanel.updateGraphics();
@@ -2011,10 +1916,8 @@ public class RuleEditor extends JPanel {
             hideLeftApplCond();
             return;
         }
-
         this.eNAC = null;
         this.ePAC = null;
-
         setBorder(this.leftCondPanel.canvas, "  GAC  ");
         this.updateNestedAC(this.eGAC);
         if (this.eGAC.getParent() == null) {
@@ -2029,13 +1932,10 @@ public class RuleEditor extends JPanel {
             this.eRule.updateNestedAC(parAC);
             this.leftPanel.setGraph(parAC);
         }
-
         setLeftApplCondTitle(this.eGAC.getBasisGraph().getName());
         this.eRule.updateNestedAC(this.eGAC);
         this.leftCondPanel.setGraph(this.eGAC, true);
-
         setDividerLocationOfLeftApplCond(this.eGAC);
-
         if (this.eGAC.getParent() != null) {
             this.hideRightPanel();
         } else if (!this.isRightPanelVisible()) {
@@ -2054,7 +1954,6 @@ public class RuleEditor extends JPanel {
 
     protected void hideRightPanel() {
 //		this.ruleSplitPane.setDividerLocation(this.ruleSplitPane.getWidth());
-
         this.ruleSplitPane.setRightComponent(null);
     }
 
@@ -2296,12 +2195,10 @@ public class RuleEditor extends JPanel {
      * Sets my current mode.
      */
     public void setEditMode(int mode) {
-
         handleMouseListenerFromGraphEditor(mode);
         if (mode != EditorConstants.INTERACT_MATCH) {
             resetEditModeAfterInteractMatch();
         }
-
         switch (mode) {
             case EditorConstants.DRAW:
                 drawModeProc();
@@ -2407,7 +2304,6 @@ public class RuleEditor extends JPanel {
                 || this.leftPanel.getEditMode() != EditorConstants.INTERACT_MATCH) {
             return;
         }
-
         // this.leftPanel.getCanvas().removeKeyListener(this);
         // System.out.println(">>> this.leftPanel removeKeyListener");
         if (this.graphEditor != null) {
@@ -2506,7 +2402,6 @@ public class RuleEditor extends JPanel {
         if (this.eRule == null || this.graphEditor == null) {
             return;
         }
-
         setLastEditModeBeforMatch(this.leftPanel);
         setPanelEditMode(EditorConstants.INTERACT_MATCH);
         setEditCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -2514,10 +2409,8 @@ public class RuleEditor extends JPanel {
             this.applFrame.setCursor(new Cursor(Cursor.HAND_CURSOR));
         }
         // this.leftPanel.getCanvas().addKeyListener(this);
-
         this.graphEditor.setEditMode(EditorConstants.INTERACT_MATCH);
         this.graphEditor.setEditCursor(new Cursor(Cursor.HAND_CURSOR));
-
         this.leftObj = null;
         this.graphObj = null;
         this.msg = "Click on a source object and a target object to get a mapping pair.";
@@ -2548,7 +2441,6 @@ public class RuleEditor extends JPanel {
         if (this.leftPanel.getEditMode() == EditorConstants.MAPSEL) {
             return;
         }
-
         setLastEditModeBeforMapping(this.leftPanel);
         setPanelEditMode(EditorConstants.MAPSEL);
         setEditCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -2563,7 +2455,6 @@ public class RuleEditor extends JPanel {
         if (this.leftPanel.getEditMode() == EditorConstants.UNMAPSEL) {
             return;
         }
-
         setLastEditModeBeforMapping(this.leftPanel);
         setPanelEditMode(EditorConstants.UNMAPSEL);
         setEditCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -2599,10 +2490,8 @@ public class RuleEditor extends JPanel {
     private void saveLastEditMode() {
         this.leftPanel.setLastEditMode(this.leftPanel.getEditMode());
         this.leftPanel.setLastEditCursor(this.leftPanel.getEditCursor());
-
         this.rightPanel.setLastEditMode(this.rightPanel.getEditMode());
         this.rightPanel.setLastEditCursor(this.rightPanel.getEditCursor());
-
         if (this.leftCondPanel.getGraph() != null) {
             this.leftCondPanel.setLastEditMode(this.leftCondPanel.getEditMode());
             this.leftCondPanel.setLastEditCursor(this.leftCondPanel.getEditCursor());
@@ -2663,7 +2552,6 @@ public class RuleEditor extends JPanel {
             } else if (getNestedAC() != null) {
                 unmapSelectedGraphObjects(this.leftCondPanel, "AC", true);
             }
-
             this.leftCondPanel.deleteSelected();
             result = true;
         }
@@ -2736,7 +2624,6 @@ public class RuleEditor extends JPanel {
                 this.removeRuleMapping(selObjs.get(i), false);
             }
         }
-
         if (this.gragraEditor != null) {
             this.gragraEditor.updateUndoButton();
         }
@@ -2849,11 +2736,9 @@ public class RuleEditor extends JPanel {
                 || (this.rightPanel.getEditMode() == EditorConstants.VIEW)) {
             return;
         }
-
         if (this.eRule.getBasisRule() instanceof MultiRule
                 && !((MultiRule) this.eRule.getBasisRule())
                         .getRuleScheme().getKernelRule().getSource().isEmpty()) {
-
             this.msg = "It is not possible to make identical multi rule\n because of non-empty kernel rule.";
             JOptionPane.showMessageDialog(
                     this.applFrame,
@@ -2862,7 +2747,6 @@ public class RuleEditor extends JPanel {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         // remove rule morphism mappings
         removeMapppingBeforeIdenticRule(this.eRule.getLeft().getNodes(),
                 this.eRule.getLeft().getArcs());
@@ -2870,16 +2754,13 @@ public class RuleEditor extends JPanel {
         removeObjectsOfGraph(false, this.eRule.getRight(),
                 this.eRule.getRight().getNodes(),
                 this.eRule.getRight().getArcs());
-
         // copy LHS graph objects to RHS and add morphism mappings
         this.eRule.identicRule();
         this.msg = this.eRule.getMsg();
-
         if (this.msg.equals("")) {
             if (this.gragraEditor != null) {
                 this.gragraEditor.updateUndoButton();
             }
-
             this.leftPanel.updateGraphics();
             this.rightPanel.updateGraphics(true);
         }
@@ -2902,7 +2783,6 @@ public class RuleEditor extends JPanel {
             final EdGraph g,
             final List<EdNode> nodesList,
             final List<EdArc> arcsList) {
-
         final GraphCanvas canvas = left ? this.leftPanel.getCanvas() : this.rightPanel.getCanvas();
         Iterator<EdArc> arcs = arcsList.iterator();
         while (arcs.hasNext()) {
@@ -2927,10 +2807,8 @@ public class RuleEditor extends JPanel {
                 || (this.rightPanel.getEditMode() == EditorConstants.VIEW)) {
             return;
         }
-
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView()
                 .getSelectedPath().getLastPathComponent();
-
         if (this.eNAC != null && this.eNAC.getRule() == this.eRule
                 && treeNode.getUserObject() instanceof NACTreeNodeData
                 && ((NACTreeNodeData) treeNode.getUserObject()).getNAC() == this.eNAC) {
@@ -2943,7 +2821,6 @@ public class RuleEditor extends JPanel {
                 for (int i = 0; i < elems.size(); i++) {
                     removeNacMapping((EdGraphObject) elems.get(i), true);
                 }
-
                 List<EdGraphObject> vec = new Vector<EdGraphObject>();
                 vec.addAll(this.eNAC.getNodes());
                 vec.addAll(this.eNAC.getArcs());
@@ -2954,15 +2831,12 @@ public class RuleEditor extends JPanel {
             ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView().selectPath(
                     ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView().getTreePathOfGrammarElement(enac));
         }
-
         this.eRule.identicNAC(this.eNAC);
         this.msg = this.eRule.getMsg();
-
         if (this.msg.equals("")) {
             if (this.gragraEditor != null) {
                 this.gragraEditor.updateUndoButton();
             }
-
             this.leftPanel.updateGraphics();
             this.leftCondPanel.updateGraphics(true);
         }
@@ -2977,10 +2851,8 @@ public class RuleEditor extends JPanel {
                 || (this.rightPanel.getEditMode() == EditorConstants.VIEW)) {
             return;
         }
-
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView()
                 .getSelectedPath().getLastPathComponent();
-
         if (this.ePAC != null && this.ePAC.getRule() == this.eRule
                 && treeNode.getUserObject() instanceof PACTreeNodeData
                 && ((PACTreeNodeData) treeNode.getUserObject()).getPAC() == this.ePAC) {
@@ -2993,7 +2865,6 @@ public class RuleEditor extends JPanel {
                 for (int i = 0; i < elems.size(); i++) {
                     removePacMapping((EdGraphObject) elems.get(i), true);
                 }
-
                 List<EdGraphObject> vec = new Vector<EdGraphObject>();
                 vec.addAll(this.ePAC.getNodes());
                 vec.addAll(this.ePAC.getArcs());
@@ -3005,15 +2876,12 @@ public class RuleEditor extends JPanel {
             ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView().selectPath(
                     ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView().getTreePathOfGrammarElement(epac));
         }
-
         this.eRule.identicPAC(this.ePAC);
         this.msg = this.eRule.getMsg();
-
         if (this.msg.equals("")) {
             if (this.gragraEditor != null) {
                 this.gragraEditor.updateUndoButton();
             }
-
             this.leftPanel.updateGraphics();
             this.leftCondPanel.updateGraphics(true);
         }
@@ -3025,10 +2893,8 @@ public class RuleEditor extends JPanel {
                 || (this.rightPanel.getEditMode() == EditorConstants.VIEW)) {
             return;
         }
-
         DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView()
                 .getSelectedPath().getLastPathComponent();
-
         if (this.eGAC != null && treeNode.getUserObject() instanceof NestedACTreeNodeData
                 && ((NestedACTreeNodeData) treeNode.getUserObject()).getNestedAC() == this.eGAC) {
             if (!this.eGAC.getBasisGraph().isEmpty()) {
@@ -3041,7 +2907,6 @@ public class RuleEditor extends JPanel {
                 for (int i = 0; i < elems.size(); i++) {
                     removeNestedACMapping((EdGraphObject) elems.get(i), true);
                 }
-
                 List<EdGraphObject> vec = new Vector<EdGraphObject>();
                 vec.addAll(this.eGAC.getNodes());
                 vec.addAll(this.eGAC.getArcs());
@@ -3052,15 +2917,12 @@ public class RuleEditor extends JPanel {
             ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView().selectPath(
                     ((AGGAppl) this.getGraGraEditor().getParentFrame()).getGraGraTreeView().getTreePathOfGrammarElement(egac));
         }
-
         this.eRule.identicNestedAC(this.eGAC);
         this.msg = this.eRule.getMsg();
-
         if (this.msg.equals("")) {
             if (this.gragraEditor != null) {
                 this.gragraEditor.updateUndoButton();
             }
-
             this.leftPanel.updateGraphics();
             this.leftCondPanel.updateGraphics(true);
         }
@@ -3075,7 +2937,6 @@ public class RuleEditor extends JPanel {
                 || (this.rightPanel.getEditMode() == EditorConstants.VIEW)) {
             return;
         }
-
         if (!this.eGAC.getBasisGraph().isEmpty()) {
             EdGraph srcGraph = this.eGAC.getSource() == null ? this.eRule.getLeft() : this.eGAC.getSource();
             List<?> elems = srcGraph.getArcs();
@@ -3086,21 +2947,17 @@ public class RuleEditor extends JPanel {
             for (int i = 0; i < elems.size(); i++) {
                 removeNestedACMapping((EdGraphObject) elems.get(i), true);
             }
-
             List<EdGraphObject> vec = new Vector<EdGraphObject>();
             vec.addAll(this.eGAC.getNodes());
             vec.addAll(this.eGAC.getArcs());
             this.eGAC.addDeletedToUndo(vec);
         }
-
         this.eRule.makeGACDuetoRHS(this.eGAC);
         this.msg = this.eRule.getMsg();
-
         if (this.msg.equals("")) {
             if (this.gragraEditor != null) {
                 this.gragraEditor.updateUndoButton();
             }
-
             this.leftPanel.updateGraphics();
             this.leftCondPanel.updateGraphics(true);
         }
@@ -3115,7 +2972,6 @@ public class RuleEditor extends JPanel {
                 || (this.rightPanel.getEditMode() == EditorConstants.VIEW)) {
             return;
         }
-
         if (!this.eNAC.getBasisGraph().isEmpty()) {
             List<?> elems = this.eRule.getLeft().getArcs();
             for (int i = 0; i < elems.size(); i++) {
@@ -3125,21 +2981,17 @@ public class RuleEditor extends JPanel {
             for (int i = 0; i < elems.size(); i++) {
                 removeNacMapping((EdGraphObject) elems.get(i), true);
             }
-
             List<EdGraphObject> vec = new Vector<EdGraphObject>();
             vec.addAll(this.eNAC.getNodes());
             vec.addAll(this.eNAC.getArcs());
             this.eNAC.addDeletedToUndo(vec);
         }
-
         this.eRule.makeNACDuetoRHS(this.eNAC);
         this.msg = this.eRule.getMsg();
-
         if (this.msg.equals("")) {
             if (this.gragraEditor != null) {
                 this.gragraEditor.updateUndoButton();
             }
-
             this.leftPanel.updateGraphics();
             this.leftCondPanel.updateGraphics(true);
         }
@@ -3333,7 +3185,6 @@ public class RuleEditor extends JPanel {
         if (this.gragraEditor != null) {
             this.gragraEditor.setMsg(getMsg());
         }
-
     }
 
     public void setExportJPEG(GraphicsExportJPEG jpg) {
@@ -3369,7 +3220,6 @@ public class RuleEditor extends JPanel {
 				|| gp.getEditMode() == EditorConstants.MAPSEL)
 			; // gp.getCanvas().removeKeyListener(this);
 	}
-
 	private void addKeyListenerBeforMapping(GraphPanel gp) {
 		if (gp.getEditMode() == EditorConstants.INTERACT_RULE
 				|| gp.getEditMode() == EditorConstants.INTERACT_NAC
@@ -3386,14 +3236,12 @@ public class RuleEditor extends JPanel {
         } else {
             this.activePanel = null;
         }
-
         return this.activePanel;
     }
 
     public void showPopupMenu(MouseEvent e) {
         if (this.activePanel != null
                 && (e.getX() > 0 && e.getY() > 0)) {
-
             if (this.editPopupMenu != null) {
                 this.editPopupMenu.setEditor(this);
                 this.editPopupMenu.setParentFrame(this.applFrame);
@@ -3402,7 +3250,6 @@ public class RuleEditor extends JPanel {
                 this.editSelPopupMenu.setEditor(this);
                 this.editSelPopupMenu.setParentFrame(this.applFrame);
             }
-
             this.isEditPopupMenu = false;
             this.isEditSelPopupMenu = false;
             if (this.activePanel == this.leftPanel) {
@@ -3460,98 +3307,53 @@ public class RuleEditor extends JPanel {
         this.rightPanel.setEditMode(mode);
         this.leftCondPanel.setEditMode(mode);
     }
-
     protected final JFrame applFrame;
-
     private final GraGraEditor gragraEditor;
-
     private GraphEditor graphEditor;
-
     private AttrTopEditor attrEditor;
-
     private final JLabel title;
-
     private String titleKind = " ";
-
     private final JLabel titleAC;
-
     private String titleKindAC = " ";
-
     private String ruleName;
-
     private String gragraName;
-
     private String conclusionName;
-
     private String atomicName;
-
     private final JSplitPane splitPane;
-
     private final JSplitPane ruleSplitPane;
-
     private int ruleDividerLocation, acDividerLocation;
 //				pacDividerLocation, nacDividerLocation;
-
-    private final Hashtable<Object, Integer> dividerLocationSet;
-
+    private final Map<Object, Integer> dividerLocationSet;
     private final GraphPanel leftPanel;
-
     private final GraphPanel rightPanel;
-
     private final GraphPanel leftCondPanel;
-
     private GraphPanel activePanel;
-
 //	private String lastText;
     private String msg = "";
-
     private EdGraGra eGra;
-
     private EdRule eRule;
-
     private EdNAC eNAC;
-
     private EdPAC ePAC;
-
     private EdNestedApplCond eGAC;
-
     private EdGraph sourceOfCopy;
-
 //	private boolean isPopupTrigger = false;
     private ModePopupMenu modePopupMenu;
-
     private EditPopupMenu editPopupMenu;
-
     private EditSelPopupMenu editSelPopupMenu;
-
     private boolean isEditPopupMenu = false;
-
     private boolean isEditSelPopupMenu = false;
-
     private boolean doNotShowPopupMenu;
-
     private EdGraphObject leftObj;
-
     private EdGraphObject rightObj;
-
     private EdGraphObject leftCondObj;
-
     private EdGraphObject graphObj;
-
 //	private int lastEditMode = 0;
 //	private Cursor lastEditModeCursor;
     private boolean synchrMoveOfMapObjs = false;
-
     private boolean draggingL = false, draggingR = false, draggingC = false;
-
     private boolean mapping = false;
-
     private boolean mouseListenerFromGraphEditorAdded = false;
-
     GraphicsExportJPEG exportJPEG;
-
     private final JButton exportJPEGButton;
-
     final JPanel mainPanel;
-
 }

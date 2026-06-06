@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui;
 
@@ -16,16 +17,15 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Observable;
 import java.util.Observer;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-
 import agg.gui.saveload.LoadSaveStatus;
 
 /**
- * This progress bar shows a little window which displays the load / save process.
+ * This progress bar shows a little window which displays the load / save
+ * process.
  *
  * @author $Author: olga $
  * @version $Id: ProgressBar.java,v 1.4 2010/09/23 08:16:05 olga Exp $
@@ -36,42 +36,34 @@ public class ProgressBar extends Thread implements Observer {
      * default tool tip text
      */
     private final static String TOOLTIPTEXT = "Load / Save Status";
-
     /**
      * the frame which shows the progress bar
      */
     private JFrame statusFrame;
-
     /**
      * the content pane of the main frame
      */
     private JPanel contentPanel;
-
     /**
      * the label over the progress bar
      */
     private JLabel label;
-
     /**
      * the little bar which grows
      */
     private JProgressBar statusbar;
-
     /**
      * displayed in the title and in the label
      */
     private String statusname;
-
     /**
      * should the at the end of the process appended at the title or not
      */
     private boolean finishAppend;
-
     /**
      * the text which is shown at the end. By default it is empty
      */
     private String finishText;
-
     private double oldPercentage = 0.0;
 
     /**
@@ -79,13 +71,11 @@ public class ProgressBar extends Thread implements Observer {
      */
     public ProgressBar(String name) {
         super(name);
-
         this.contentPanel = new JPanel();
         this.contentPanel.setName("JFrameContentPane");
         this.contentPanel.setToolTipText(TOOLTIPTEXT);
         this.contentPanel.setPreferredSize(new Dimension(600, 50));
         this.contentPanel.setLayout(new BorderLayout());
-
         this.statusbar = new JProgressBar();
         this.statusbar.setName("ProgressBar");
         this.statusbar.setToolTipText(TOOLTIPTEXT);
@@ -93,23 +83,18 @@ public class ProgressBar extends Thread implements Observer {
         this.statusbar.setBounds(1, 1, 600, 14);
         this.statusbar.setForeground(new Color(0, 255, 127));
         this.statusbar.setBorderPainted(true);
-
         this.label = new JLabel();
         this.label.setName("Statusname");
         this.label.setToolTipText(TOOLTIPTEXT);
         this.label.setText(this.statusname);
         this.label.setBounds(160, 10, 100, 15);
         this.label.setForeground(new Color(0, 0, 0));
-
         this.contentPanel.add(new JLabel("Please wait ...   "), BorderLayout.NORTH);
         this.contentPanel.add(this.statusbar, BorderLayout.CENTER);
         this.contentPanel.add(new JLabel("   "), BorderLayout.SOUTH);
-
         this.finishAppend = true;
         this.finishText = "";
-
         this.oldPercentage = 0.0;
-
         LoadSaveStatus.addObserver(this);
     }
 
@@ -209,7 +194,6 @@ public class ProgressBar extends Thread implements Observer {
     public void setFrame(JFrame f) {
         this.statusFrame = f;
     }
-
 }
 // ======================================================================
 // $Log: ProgressBar.java,v $
@@ -255,3 +239,4 @@ public class ProgressBar extends Thread implements Observer {
 // Progressbalken fuer das Laden und Speichern
 // integriert.
 //
+

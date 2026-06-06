@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
-
 
 /* JJT: 0.2.2 */
 /**
@@ -31,14 +30,12 @@ public class ASTDivNode extends NUMxNUMtoNUMnode {
     public void interpret() {
         jjtGetChild(0).interpret();
         jjtGetChild(1).interpret();
-
         Object op1Result = stack.get(top - 1);
         Object op2Result = stack.get(top);
         Object result;
-
         if (typeCode() <= typeCode(Integer.TYPE)) {
-            result = new Integer(((Number) op1Result).intValue()
-                    / ((Number) op2Result).intValue());
+            result = ((Number) op1Result).intValue()
+                    / ((Number) op2Result).intValue();
         } else {
             result = new Float(((Number) op1Result).floatValue()
                     / ((Number) op2Result).floatValue());

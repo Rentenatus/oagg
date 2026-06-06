@@ -2,21 +2,22 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui;
 
 import java.net.URL;
-
 import javax.swing.ImageIcon;
 
 /**
- * This class supplies access to various icons and other pictures. Please look at method description which icon can be
- * accessed. It must be checked if you get back a valid URL.
+ * This class supplies access to various icons and other pictures. Please look
+ * at method description which icon can be accessed. It must be checked if you
+ * get back a valid URL.
  *
  * @author $Author: olga $
  * @version $Id: IconResource.java,v 1.7 2010/06/09 11:07:13 olga Exp $
@@ -24,71 +25,38 @@ import javax.swing.ImageIcon;
 public class IconResource {
 
     private final static String LIBPATH = "agg/lib/";
-
     private final static String ICONPATH = LIBPATH + "icons/";
-
     private final static String GRAGRAICONFILE = "gragra.gif";
-
     private final static String GRAGRAEXPORTICONFILE = "gragraExport.gif";
-
     private final static String GRAGRAIMPORTICONFILE = "gragraImport.gif";
-
     private final static String CONTROLFLOWICONFILE = "controlFlow.gif";
-
     private final static String GRAPHICONFILE = "graph.gif";
-
     private final static String TYPEGRAPHICONFILE = "typegraph.gif";
-
     private final static String GRAPHEXPORTICONFILE = "graphExport.gif";
-
     private final static String GRAPHIMPORTICONFILE = "graphImport.gif";
-
     private final static String NACICONFILE = "nac.gif";
-
     private final static String PACICONFILE = "pac.jpg";
-
     private final static String ACICONFILE = "nestedApplCond.gif";
-
     private final static String RULEICONFILE = "rule.gif";
-
     private final static String RULESCHEMEICONFILE = "ruleScheme.gif";
-
     private final static String RULEEXPORTICONFILE = "ruleExport.gif";
-
     private final static String RULEIMPORTICONFILE = "ruleImport.gif";
-
     private final static String ATOMICCONSTRICONFILE = "atomic.gif";
-
     private final static String FORMULACONSTRICONFILE = "formula.gif";
-
     private final static String POSTCONSTRICONFILE = "post.gif";
-
     private final static String CONSTRAINTICONFILE = "constr.gif";
-
     private final static String ATOMCONSTRICONFILE = "atomconstr.gif";
-
     private final static String OVERLAPINGGRAPHICONFILE = "overlapingGraph.gif";
-
     private final static String STOPICONFILE = "stop.gif";
-
     private final static String VERSIONID = "Version.id";
-
     private final static String AGGLOGO = "AGG_LOGO.gif";
-
     private final static String AGGICON = "AGG_ICON64.gif";
-
     private final static String OK = "ok2.gif";
-
     private final static String WRONG = "answer_bad2.gif";
-
     private final static String OPTION = "OptionIcon.gif";
-
     private final static String SMALL_STOP = "stop_small.gif";
-
     private final static String CONSTRUCTION = "Baustelle_anim2.gif";
-
     private final static String WORKER = "Baustelle.gif";
-
     private final static String ATTRCONDITIONICONFILE = "attrCondition.gif";
 
     private IconResource() {
@@ -100,7 +68,8 @@ public class IconResource {
     }
 
     /**
-     * The location for the gragra icon which is displayed at top of a gragra in the tree.
+     * The location for the gragra icon which is displayed at top of a gragra in
+     * the tree.
      */
     public final static URL getURLGraGra() {
         return makeURL(ICONPATH + GRAGRAICONFILE);
@@ -135,7 +104,8 @@ public class IconResource {
     }
 
     /**
-     * The location for the graph icon which is displayed in the tree.for the type graph
+     * The location for the graph icon which is displayed in the tree.for the
+     * type graph
      */
     public final static URL getURLTypeGraph() {
         return makeURL(ICONPATH + TYPEGRAPHICONFILE);
@@ -156,7 +126,8 @@ public class IconResource {
     }
 
     /**
-     * The location for the negative application condition icon which is displayed in the tree.
+     * The location for the negative application condition icon which is
+     * displayed in the tree.
      */
     public final static URL getURLNAC() {
         return makeURL(ICONPATH + NACICONFILE);
@@ -220,7 +191,8 @@ public class IconResource {
     }
 
     /**
-     * The location for the overlaping graph icon which is displayed at the title bar.
+     * The location for the overlaping graph icon which is displayed at the
+     * title bar.
      */
     public final static URL getURLOverlapGraph() {
         return makeURL(ICONPATH + OVERLAPINGGRAPHICONFILE);
@@ -234,14 +206,13 @@ public class IconResource {
     }
 
     /**
-     * The icon is returned which is specified. param url The location where to find the icon. Use the
-     * <code>getURL...</code> methods from this class.
+     * The icon is returned which is specified. param url The location where to
+     * find the icon. Use the <code>getURL...</code> methods from this class.
      */
     public final static ImageIcon getIconFromURL(URL url) {
         if (url != null) {
             return new ImageIcon(url);
         }
-
         return new ImageIcon();
     }
 
@@ -280,7 +251,6 @@ public class IconResource {
     public final static URL getWorkerIcon() {
         return makeURL(ICONPATH + WORKER);
     }
-
 }
 /*
  * $Log: IconResource.java,v $

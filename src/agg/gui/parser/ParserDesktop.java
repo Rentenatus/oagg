@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.parser;
 
@@ -22,7 +23,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Vector;
-
 //import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
@@ -30,7 +30,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
@@ -48,12 +47,13 @@ import agg.parser.ParserEventListener;
 import agg.parser.ParserMessageEvent;
 import agg.xt_basis.Graph;
 import agg.xt_basis.OrdinaryMorphism;
-
 //****************************************************************************+
+
 /**
- * This desktop provides a view into the parsing process. There are two windows available. One shows the host graph, the
- * second shows the stop graph for compare how close the host graph is. Attention, please check the option to be sure
- * that the parsing process is set visible.
+ * This desktop provides a view into the parsing process. There are two windows
+ * available. One shows the host graph, the second shows the stop graph for
+ * compare how close the host graph is. Attention, please check the option to be
+ * sure that the parsing process is set visible.
  *
  * @author $Author: olga $
  * @version $Id: ParserDesktop.java,v 1.22 2010/09/23 08:20:53 olga Exp $
@@ -62,16 +62,12 @@ public class ParserDesktop implements InternalFrameListener,
         ParserEventListener {
 
     private static final int STOP_GRAPH = 1;
-
     private static final int HOST_GRAPH = 2;
-
     private AGGParser aggparser;
-
     /**
      * main desktop
      */
     final JDesktopPane desktop = new JDesktopPane();
-
     /**
      * the frame icon for the host graph
      */
@@ -84,40 +80,25 @@ public class ParserDesktop implements InternalFrameListener,
      * layout of the two graphs
      */
     private EdGraGra layout;
-
     /**
      * size of the two graph windows
      */
     private Dimension internalFrameSize;
-
     private ParserGUIOption option;
-
     private Parser parser;
-
     protected JInternalFrame hostFrame;
-
     private GraphEditor hostGraphEditor;
-
     private EdGraph hostGraphLayout;
-
 //	private Graph hostGraph;
     protected JInternalFrame stopFrame;
-
     private GraphEditor stopGraphEditor;
-
     private EdGraph stopGraphLayout;
-
 //	private Graph stopGraph;
     private boolean graphFramesExist;
-
     private Vector<StatusMessageListener> listener;
-
     private KeyAdapter keyAdapter;
-
     private String typedKey;
-
     private MouseListener ml;
-
     protected JPopupMenu graphMenu = new JPopupMenu("Graph");
     protected JMenuItem miLayoutGraph = new JMenuItem("Layout Graph");
     protected GraphPanel activeGraphPanel;
@@ -132,8 +113,9 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * Creates a new desktop. This desktop shows the host and stop graph as it is configured in the option. The layout
-     * for the graphs is given by the graph grammar.
+     * Creates a new desktop. This desktop shows the host and stop graph as it
+     * is configured in the option. The layout for the graphs is given by the
+     * graph grammar.
      *
      * @param aggparser the parser instance
      * @param option the option to configure the desktop
@@ -146,23 +128,18 @@ public class ParserDesktop implements InternalFrameListener,
             final EdGraGra aLayout,
             final Graph aHostGraph,
             final Graph aStopGraph) {
-
         this.desktop.setBackground(Color.white);
         this.desktop.setForeground(Color.white);
-
         this.aggparser = aggparser;
         this.option = option;
         setInternalFrameSize(new Dimension(200, 200));
-
         this.keyAdapter = new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 performShortKeyEvent(e);
             }
         };
         this.desktop.addKeyListener(this.keyAdapter);
-
         makeGraphMenu();
-
         this.ml = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (e.isPopupTrigger()) {
@@ -185,21 +162,16 @@ public class ParserDesktop implements InternalFrameListener,
             }
 
             public void mouseClicked(MouseEvent e) {
-
             }
 
             public void mouseEntered(MouseEvent e) {
                 ParserDesktop.this.desktop.requestFocusInWindow();
             }
         };
-
         this.desktop.addMouseListener(this.ml);
-
         this.listener = new Vector<StatusMessageListener>();
-
         if (aHostGraph != null && aStopGraph != null) {
             this.makeGraphFrames();
-
             setLayout(aLayout);
             setStopGraph(aStopGraph);
             setHostGraph(aHostGraph);
@@ -220,7 +192,6 @@ public class ParserDesktop implements InternalFrameListener,
             this.stopGraphEditor.getGraphPanel().setName("");
             this.stopGraphEditor.removeTitlePanel();
             this.stopGraphEditor.getGraphPanel().getCanvas().addMouseListener(this.ml);
-
             this.stopFrame = new JInternalFrame("Stop Graph", true, false, true, true);
             this.stopFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
                     .getStopIcon()));
@@ -233,7 +204,6 @@ public class ParserDesktop implements InternalFrameListener,
             this.stopFrame.setSize(this.internalFrameSize);
             this.stopFrame.getContentPane().add(this.stopGraphEditor);
             this.stopFrame.pack();
-
             this.desktop.add(this.stopFrame, Integer.valueOf(STOP_GRAPH));
         }
     }
@@ -246,7 +216,6 @@ public class ParserDesktop implements InternalFrameListener,
             this.hostGraphEditor.removeTitlePanel();
             this.hostGraphEditor.getGraphPanel().setName("");
             this.hostGraphEditor.getGraphPanel().getCanvas().addMouseListener(this.ml);
-
             this.hostFrame = new JInternalFrame("Host Graph", true, false, true, true);
             this.hostFrame.setFrameIcon(IconResource.getIconFromURL(IconResource
                     .getWorkerIcon()));
@@ -258,10 +227,8 @@ public class ParserDesktop implements InternalFrameListener,
             this.hostFrame.setVisible(false);
             this.hostFrame.setPreferredSize(new Dimension(600, 400));
             this.hostFrame.setLocation(200, 0);
-
             this.hostFrame.getContentPane().add(this.hostGraphEditor);
             this.hostFrame.pack();
-
             this.desktop.add(this.hostFrame, Integer.valueOf(HOST_GRAPH));
         }
     }
@@ -292,7 +259,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * Returns the component of the graph desktop. This component can be displayed in a frame or panel.
+     * Returns the component of the graph desktop. This component can be
+     * displayed in a frame or panel.
      *
      * @return This component is a JDesktopPane.
      */
@@ -311,7 +279,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * Sets the new layout for the host and stop graph. The layout is taken from the graph grammar.
+     * Sets the new layout for the host and stop graph. The layout is taken from
+     * the graph grammar.
      *
      * @param layout The graph grammar with layout.
      */
@@ -337,13 +306,11 @@ public class ParserDesktop implements InternalFrameListener,
         if (graphType != HOST_GRAPH && graphType != STOP_GRAPH) {
             return;
         }
-
         switch (graphType) {
             case STOP_GRAPH:
                 if (this.stopGraphEditor.getGraph() != null) {
                     this.stopGraphEditor.setGraph(null);
                 }
-
                 EdGraph eg = null;
                 if (this.stopGraphLayout != null) {
                     if (this.stopGraphLayout.getBasisGraph() == graph) {
@@ -356,40 +323,33 @@ public class ParserDesktop implements InternalFrameListener,
                     eg = new EdGraph(graph, this.layout.getTypeSet());
                     eg.doDefaultEvolutionaryGraphLayout(20);
                 }
-
                 if (eg != null && this.stopGraphLayout != null) {
                     eg.setLayoutByBasisObject(this.stopGraphLayout);
                 }
-
                 if (this.option.getParserDisplay() == ParserGUIOption.SHOWHOSTGRAPH
                         + ParserGUIOption.SHOWSTOPGRAPH) {
                     this.stopFrame.setVisible(true);
                 } else {
                     this.stopFrame.setVisible(false);
                 }
-
 //			this.stopGraphLayout.setEditable(false);
                 this.stopGraphEditor.setGraph(this.stopGraphLayout);
                 // stopgege.getGraphPanel().updateGraphics();
                 break;
-
             case HOST_GRAPH:
                 if (this.hostGraphEditor.getGraph() != null) {
                     this.hostGraphEditor.setGraph(null);
                 }
-
                 if (this.hostGraphLayout == null && graph != null) {
                     this.hostGraphLayout = new EdGraph(graph, this.layout.getTypeSet());
                     this.hostGraphLayout.setTransformChangeEnabled(true);
                     this.hostGraphLayout.setLayoutByIndex(this.layout.getGraph(), false);
                 }
-
                 if (this.option.getParserDisplay() >= ParserGUIOption.SHOWHOSTGRAPH) {
                     this.hostFrame.setVisible(true);
                 } else {
                     this.hostFrame.setVisible(false);
                 }
-
 //			hostGraphLayout.setEditable(false);
                 if (this.hostGraphEditor.getGraph() == null) {
                     this.hostGraphEditor.setGraph(this.hostGraphLayout);
@@ -406,15 +366,14 @@ public class ParserDesktop implements InternalFrameListener,
     /**
      * Updates a internal frame with a new graph.
      *
-     * @param om The morphism holds the new graph. The morphism is necessary to get the layout information from the old
-     * graph.
+     * @param om The morphism holds the new graph. The morphism is necessary to
+     * get the layout information from the old graph.
      * @param graphType The graph type distinguish which graph will be updated.
      */
     protected void updateFrame(OrdinaryMorphism om, int graphType) {
         if (graphType != HOST_GRAPH) {
             return;
         }
-
         if (this.hostGraphLayout.getBasisGraph() != om.getImage()) {
             EdGraph oldLayout = this.hostGraphLayout;
             this.hostGraphLayout = new EdGraph(om.getImage(), this.layout.getTypeSet());
@@ -441,11 +400,11 @@ public class ParserDesktop implements InternalFrameListener,
         } else if (theFrame == this.stopFrame) {
             this.stopGraphEditor.getGraphPanel().setGraph(graphLayout, false);
         }
-
     }
 
     /**
-     * Updates an internal frame with a new graph. The internal frame is selected by the graph type.
+     * Updates an internal frame with a new graph. The internal frame is
+     * selected by the graph type.
      *
      * @param graph The new graph for the internal frame.
      * @param graphType The graph type distinguishes the kind of graph.
@@ -467,7 +426,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * The new host graph is set. A parser creates new graphs if a certain graph must be copied.
+     * The new host graph is set. A parser creates new graphs if a certain graph
+     * must be copied.
      *
      * @param graph The new graph.
      */
@@ -487,8 +447,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * Sets a new parser for the display. All important information like host graph and so one are taken from the
-     * parser.
+     * Sets a new parser for the display. All important information like host
+     * graph and so one are taken from the parser.
      *
      * @param parser The parser to display.
      */
@@ -496,17 +456,15 @@ public class ParserDesktop implements InternalFrameListener,
         if (!this.graphFramesExist) {
             this.makeGraphFrames();
         }
-
         this.parser = parser;
         this.parser.addParserEventListener(this);
-
         setStopGraph(parser.getStopGraph());
         setHostGraph(parser.getHostGraph());
     }
 
     /**
-     * Sets a new parser for the display. All important information like host graph and so one are taken from the
-     * parser.
+     * Sets a new parser for the display. All important information like host
+     * graph and so one are taken from the parser.
      *
      * @param parser The parser to display.
      * @param om The morphism holds the copy of the original host graph.
@@ -515,10 +473,8 @@ public class ParserDesktop implements InternalFrameListener,
         if (!this.graphFramesExist) {
             this.makeGraphFrames();
         }
-
         this.parser = parser;
         this.parser.addParserEventListener(this);
-
         setStopGraph(parser.getStopGraph());
         setHostGraph(om.getOriginal());
     }
@@ -529,7 +485,8 @@ public class ParserDesktop implements InternalFrameListener,
 	 * ======================================================================
      */
     /**
-     * This method is inherited from the InternalFrameListener. But it is not used.
+     * This method is inherited from the InternalFrameListener. But it is not
+     * used.
      *
      * @param e The event from the listener.
      */
@@ -542,7 +499,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * This method is inherited from the InternalFrameListener. But it is not used.
+     * This method is inherited from the InternalFrameListener. But it is not
+     * used.
      *
      * @param e The event from the listener.
      */
@@ -551,7 +509,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * This method is inherited from the InternalFrameListener. But it is not used.
+     * This method is inherited from the InternalFrameListener. But it is not
+     * used.
      *
      * @param e The event from the listener.
      */
@@ -560,7 +519,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * This method is inherited from the InternalFrameListener. But it is not used.
+     * This method is inherited from the InternalFrameListener. But it is not
+     * used.
      *
      * @param e The event from the listener.
      */
@@ -568,7 +528,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * This method is inherited from the InternalFrameListener. But it is not used.
+     * This method is inherited from the InternalFrameListener. But it is not
+     * used.
      *
      * @param e The event from the listener.
      */
@@ -577,7 +538,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * This method is inherited from the InternalFrameListener. But it is not used.
+     * This method is inherited from the InternalFrameListener. But it is not
+     * used.
      *
      * @param e The event from the listener.
      */
@@ -586,7 +548,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * This method is inherited from the InternalFrameListener. But it is not used.
+     * This method is inherited from the InternalFrameListener. But it is not
+     * used.
      *
      * @param e The event from the listener.
      */
@@ -595,8 +558,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * This method is called if the parser fires events. In this case it is important after every derivation from the
-     * parser to update the gui.
+     * This method is called if the parser fires events. In this case it is
+     * important after every derivation from the parser to update the gui.
      *
      * @param p The event from the parser.
      */
@@ -608,7 +571,6 @@ public class ParserDesktop implements InternalFrameListener,
                     || message.indexOf("IsoCopy") != -1) {
                 fireStatusMessageEvent(new StatusMessageEvent(this, "", message));
                 // System.out.println("parserEventOccured: "+message);
-
                 if (source instanceof Parser) {
                     updateFrame(((Parser) source).getHostGraph(), HOST_GRAPH);
                 } else if (source instanceof OrdinaryMorphism) {
@@ -638,7 +600,8 @@ public class ParserDesktop implements InternalFrameListener,
     }
 
     /**
-     * Here register all listener to receive status messages. The AGG has to register the status bar here.
+     * Here register all listener to receive status messages. The AGG has to
+     * register the status bar here.
      *
      * @param l The listener, e.g. the status bar.
      */
@@ -677,7 +640,6 @@ public class ParserDesktop implements InternalFrameListener,
     protected void makeLayout(EdGraph g, Dimension d) {
         g.updateVisibility();
         final List<EdNode> visiblenodes = g.getVisibleNodes();
-
         g.setCurrentLayoutToDefault(false);
         g.getDefaultGraphLayouter().setEnabled(true);
         Dimension dim = g.getDefaultGraphLayouter().getNeededPanelSize(visiblenodes);
@@ -699,9 +661,7 @@ public class ParserDesktop implements InternalFrameListener,
         g.doDefaultEvolutionaryGraphLayout(
                 g.getDefaultGraphLayouter(), 100, 10);
     }
-
 }
-
 // End of ParserDesktop.java
 /*
  * $Log: ParserDesktop.java,v $

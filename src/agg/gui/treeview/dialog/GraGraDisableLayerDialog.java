@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -23,8 +24,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -33,35 +36,26 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.JCheckBox;
-
 import agg.editor.impl.EdGraGra;
+import java.util.List;
 
 /**
- * This class provides a window for a user dialog. This dialog allows to enable or disable the grammar layers.
+ * This class provides a window for a user dialog. This dialog allows to enable
+ * or disable the grammar layers.
  */
 @SuppressWarnings("serial")
 public class GraGraDisableLayerDialog extends JDialog implements ActionListener {
 
     private JPanel contentPane;
-
     private JPanel panel;
-
     private JPanel buttonPanel;
-
     private JScrollPane scrollPane;
-
     private JButton closeButton;
-
     private JButton cancelButton;
-
     private boolean isCancelled;
-
     private Vector<String> layers;
-
-    private Hashtable<String, JCheckBox> table;
-
+    private HashMap<String, JCheckBox> table;
     private EdGraGra gragra;
-
     private boolean changed = false;
 
     /**
@@ -70,17 +64,19 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
      * @param parent The parent frame of this gui.
      * @param layers The layers of a grammar.
      */
-    public GraGraDisableLayerDialog(JFrame parent, Vector<String> layers) {
+    public GraGraDisableLayerDialog(JFrame parent, List<String> layers) {
         super(parent, true);
-
         setTitle("Layer");
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 exitForm(evt);
             }
         });
-        this.layers = layers;
-        this.table = new Hashtable<String, JCheckBox>(layers.size());
+
+        this.layers = new Vector<>();
+        this.layers.addAll(layers);
+
+        this.table = new HashMap<String, JCheckBox>(layers.size());
         if (parent != null) {
             setLocationRelativeTo(parent);
         } else {
@@ -90,12 +86,12 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
     }
 
     /**
-     * This method is called from within the constructor to initialize the dialog.
+     * This method is called from within the constructor to initialize the
+     * dialog.
      */
     private void initComponents() {
         this.contentPane = new JPanel(new BorderLayout());
         this.contentPane.setBackground(Color.lightGray);
-
         this.panel = new JPanel(new BorderLayout());
         this.panel.setBackground(Color.orange);
         this.panel.setBorder(new TitledBorder("Disable / enable Rule Layer"));
@@ -112,21 +108,18 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
         this.scrollPane = new JScrollPane(layerPanel);
         this.scrollPane.setPreferredSize(new Dimension(200, hght));
         this.panel.add(this.scrollPane);
-
         this.buttonPanel = new JPanel(new GridBagLayout());
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
         this.closeButton.setToolTipText("Accept entries and close dialog.");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.isCancelled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.setToolTipText("Reject entries and close dialog.");
         this.cancelButton.addActionListener(this);
-
         constrainBuild(this.buttonPanel, this.closeButton, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 10, 10, 5);
@@ -136,7 +129,6 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
         this.contentPane.add(this.panel, BorderLayout.CENTER);
         this.contentPane.add(this.buttonPanel, BorderLayout.SOUTH);
         this.contentPane.revalidate();
-
         setContentPane(this.contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -160,9 +152,8 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
     }
 
     private void acceptValues() {
-        Enumeration<?> e = this.table.keys();
-        while (e.hasMoreElements()) {
-            String l = (String) e.nextElement();
+        for (Object obj : this.table.keySet()) {
+            String l = (String) obj;
             if (this.table.get(l).isSelected()) {
                 this.gragra.getBasisGraGra().enableRuleLayer(
                         (Integer.valueOf(l)).intValue(), true);
@@ -201,9 +192,8 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
 
     public void setGraGra(EdGraGra gra) {
         this.gragra = gra;
-        Enumeration<?> e = this.table.keys();
-        while (e.hasMoreElements()) {
-            String l = (String) e.nextElement();
+        for (Object obj : this.table.keySet()) {
+            String l = (String) obj;
             if (!this.gragra.getBasisGraGra().isRuleLayerEnabled(
                     ((Integer.valueOf(l)).intValue()))) {
                 JCheckBox cb = this.table.get(l);
@@ -243,5 +233,4 @@ public class GraGraDisableLayerDialog extends JDialog implements ActionListener 
         ((GridBagLayout) container.getLayout()).setConstraints(component, c);
         container.add(component);
     }
-
 }

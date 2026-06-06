@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
@@ -14,7 +15,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -23,7 +23,6 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
-
 import agg.attribute.AttrContext;
 import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrContextEditor;
@@ -39,17 +38,11 @@ public class ContextEditor extends AbstractEditor implements AttrContextEditor,
         ScrollPaneConstants {
 
     protected AttrContext attrContext;
-
     protected JPanel condPanel, varPanel;
-
     protected JSplitPane varAndCondSplitPane;
-
     protected JTextArea outputTextArea;
-
     protected JScrollPane outputScrollPane;
-
     protected ConditionTupleEditor conditionEditor;
-
     protected VariableTupleEditor variableEditor;
 
     public ContextEditor(AttrManager m, AttrEditorManager em) {
@@ -60,7 +53,6 @@ public class ContextEditor extends AbstractEditor implements AttrContextEditor,
      * Creates all subviews.
      */
     protected void genericCreateAllViews() {
-
         // Variables
         this.variableEditor = new VariableTupleEditor(getAttrManager(),
                 getEditorManager());
@@ -72,7 +64,6 @@ public class ContextEditor extends AbstractEditor implements AttrContextEditor,
                 BevelBorder.RAISED), "Parameters and Variables",
                 TitledBorder.CENTER, TitledBorder.TOP));
         // varPanel.setPreferredSize( new Dimension( 300, 300 ));
-
         // Conditions
         this.conditionEditor = new ConditionTupleEditor(getAttrManager(),
                 getEditorManager());
@@ -84,7 +75,6 @@ public class ContextEditor extends AbstractEditor implements AttrContextEditor,
                 BevelBorder.RAISED), "Conditions", TitledBorder.CENTER,
                 TitledBorder.TOP));
         // condPanel.setPreferredSize( new Dimension( 100, 300 ));
-
         // Context mappings information.
         createOutputTextArea();
     }
@@ -100,7 +90,6 @@ public class ContextEditor extends AbstractEditor implements AttrContextEditor,
                 this.varPanel, this.condPanel);
         // Box mappingBox = Box.createHorizontalBox();
         // mappingBox.add( outputScrollPane );
-
         this.mainPanel = new JPanel(new BorderLayout());
         this.mainPanel.add(this.varAndCondSplitPane, BorderLayout.CENTER);
         // mainPanel.add( mappingBox, BorderLayout.SOUTH );

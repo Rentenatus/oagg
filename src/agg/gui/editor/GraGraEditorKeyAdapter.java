@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -15,7 +16,6 @@ package agg.gui.editor;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 import agg.gui.event.EditEvent;
 
 /**
@@ -39,11 +39,11 @@ public class GraGraEditorKeyAdapter extends KeyAdapter {
             propagateShortKeyToTreeView(e);
         }
     }
-
 //	public void keyReleased(KeyEvent e) {
 //		if (!performShortKeyEvent(e, true))
 //			propagateShortKeyToTreeView(e);
 //	}
+
     public boolean performShortKeyEvent(KeyEvent e, boolean editorowner) {
         int keyCode = e.getKeyCode();
         if (this.editor.isTransformationRunning()) {
@@ -58,7 +58,6 @@ public class GraGraEditorKeyAdapter extends KeyAdapter {
             }
             return true;
         }
-
         if (e.isControlDown()) {
             final String typedKey = KeyEvent.getKeyText(keyCode);
             if (e.isAltDown()) {
@@ -183,5 +182,4 @@ public class GraGraEditorKeyAdapter extends KeyAdapter {
     void propagateShortKeyToTreeView(KeyEvent e) {
         this.editor.fireEditEvent(new EditEvent(this, EditEvent.TRANSFER_SHORTKEY, e));
     }
-
 }

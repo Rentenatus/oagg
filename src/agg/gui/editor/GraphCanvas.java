@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -29,12 +31,10 @@ import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-
 import agg.xt_basis.TypeError;
 import agg.xt_basis.TypeException;
 import agg.xt_basis.Type;
@@ -42,8 +42,7 @@ import agg.xt_basis.Node;
 import agg.xt_basis.Arc;
 import agg.xt_basis.TypeGraph;
 import agg.xt_basis.TypeSet;
-import agg.xt_basis.UndirectedGraph;
-import agg.xt_basis.UndirectedTypeGraph;
+
 import agg.attribute.impl.ValueTuple;
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraGra;
@@ -66,59 +65,48 @@ import java.util.ArrayList;
 public class GraphCanvas extends JPanel {
 
     public static final int MAX_XWIDTH = 700;
-
     public static final int MAX_YHEIGHT = 600;
-
     private static final int DEPEND_ON_LAST_OBJECT = 0;
-
 //	private static final int DEPEND_ON_MOVED_SCROLLBAR = 1;
 //	private static final int DEPEND_ON_MOVED_OBJECT = 2;
 //	private final GraphCanvasMouseAdapter mouseAdapter;	
 //	private final GraphCanvasMouseMotionAdapter mouseMotionAdapter;
+
     public GraphCanvas() {
         super(new BorderLayout(), true);
-
         this.canvas = this;
         this.showAnchor = true;
-
 //		ToolTipManager.sharedInstance().setReshowDelay(0);
 //		ToolTipManager.sharedInstance().setInitialDelay(0);
         //mouseAdapter = 
         new GraphCanvasMouseAdapter(this);
         //mouseMotionAdapter = 
         new GraphCanvasMouseMotionAdapter(this);
-
         this.setOpaque(false);
-
         this.setBackground(Color.WHITE);
         this.setForeground(Color.WHITE);
-
         setFont(new Font(this.fontName, this.fontStyle, this.fontSize));
         this.vsbValue = 0;
         this.hsbValue = 0;
         this.scrollbarValueSaved = false;
-
         if (ClassLoader.getSystemResource("agg/lib/icons/sad.png") != null) {
             this.errorImage = new ImageIcon(ClassLoader.getSystemClassLoader()
                     .getResource("agg/lib/icons/sad.png"));
         } else {
             this.errorImage = new ImageIcon();
         }
-
         if (ClassLoader.getSystemResource("agg/lib/icons/good.png") != null) {
             this.okImage = new ImageIcon(ClassLoader.getSystemClassLoader()
                     .getResource("agg/lib/icons/good.png"));
         } else {
             this.okImage = new ImageIcon();
         }
-
         if (ClassLoader.getSystemResource("agg/lib/icons/smile.png") != null) {
             this.smileImage = new ImageIcon(ClassLoader
                     .getSystemResource("agg/lib/icons/smile.png"));
         } else {
             this.smileImage = new ImageIcon();
         }
-
         if (ClassLoader.getSystemResource("agg/lib/icons/scroll.png") != null) {
             this.scrollImage = new ImageIcon(ClassLoader
                     .getSystemResource("agg/lib/icons/scroll.png"));
@@ -162,7 +150,6 @@ public class GraphCanvas extends JPanel {
             return;
         }
         this.eGraph.applyScale(this.scale);
-
         this.setName(this.eGraph.getName());
     }
 
@@ -209,7 +196,6 @@ public class GraphCanvas extends JPanel {
         } else {
             setFont(new Font(this.fontName, this.fontStyle, (int) (this.fontSize * this.scale)));
         }
-
         if (this.eGraph != null) {
             this.eGraph.applyScale(this.scale);
         }
@@ -236,7 +222,6 @@ public class GraphCanvas extends JPanel {
             this.pickedObj.setWeakselected(false);
             this.repaint();
         }
-
         switch (mode) {
             case EditorConstants.VIEW:
                 this.mode = mode;
@@ -351,11 +336,11 @@ public class GraphCanvas extends JPanel {
     public boolean hasChanged() {
         return this.changed;
     }
-
 //	public void setSize(Dimension dim) {
 //		super.setSize(dim);
 //		Thread.dumpStack();
 //	}
+
     protected void paintComponent(Graphics grs) {
         if (grs == null) {
             return;
@@ -369,12 +354,10 @@ public class GraphCanvas extends JPanel {
             } else {
                 grs.setFont(getFont());
                 Graphics2D graphics2D = (Graphics2D) grs;
-
                 /* get real graph dimension and clear graphics */
                 Dimension graphDim = getGraphDimension();
                 this.realWidth = graphDim.width;
                 this.realHeight = graphDim.height;
-
                 graphics2D.setColor(getBackground());
                 graphics2D.fillRect(0, 0, getWidth(), getHeight());
                 /* reset graph panel size if needed */
@@ -394,24 +377,20 @@ public class GraphCanvas extends JPanel {
                         this.realWidth = this.viewport.getWidth() - this.vsb.getWidth() - 3;
                         this.realHeight = this.viewport.getHeight() - this.hsb.getHeight() - 3;
                     }
-
                     resetValueOfScrollbar(DEPEND_ON_LAST_OBJECT);
                     this.needResizeAfterStep = false;
                 }
-
                 /* update and draw visible graph objects */
                 if (this.eGraph.isCPAgraph()) {
                     this.eGraph.forceVisibilityUpdate();
                 } else {
                     this.eGraph.updateVisibility();
                 }
-
                 this.eGraph.drawGraphics(graphics2D,
                         this.eGraph.getVisibleNodes(),
                         this.eGraph.getVisibleArcs(),
                         true,
                         this.attrVisible);
-
                 // when possible
                 drawSelectBox(graphics2D, Color.GREEN);
             }
@@ -515,7 +494,6 @@ public class GraphCanvas extends JPanel {
             this.canCreateNode = false;
             return false;
         }
-
         if (t.isAbstract()) {
             if (this.eGraph.getTypeSet().getBasisTypeSet().getClan(t).size() == 1) {
                 if (//!this.eGraph.isTypeGraph()
@@ -568,7 +546,6 @@ public class GraphCanvas extends JPanel {
                 return false;
             }
         }
-
         this.canCreateNode = true;
         return true;
     }
@@ -593,7 +570,6 @@ public class GraphCanvas extends JPanel {
 //						"Type Graph Error", JOptionPane.ERROR_MESSAGE);
 //			return null;
 //		}
-
         try {
             int X = (int) (x / this.scale);
             int Y = (int) (y / this.scale);
@@ -607,21 +583,15 @@ public class GraphCanvas extends JPanel {
                 ((ValueTuple) en.getBasisNode().getAttribute()).getValueMemberAt("thisY")
                         .setExprAsObject(en.getY());
             }
-
             en.getLNode().setFrozenByDefault(true);
-
             this.eGraph.addCreatedToUndo(en);
             this.eGraph.undoManagerEndEdit();
-
             en.drawGraphic(getGraphics());
-
             this.changed = true;
             if (this.eGraph.getGraGra() != null) {
                 this.eGraph.getGraGra().setChanged(true);
             }
-
             this.addToGraphEmbedding(en);
-
             return en;
         } catch (TypeException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(),
@@ -645,7 +615,6 @@ public class GraphCanvas extends JPanel {
 //						"Type Graph Error", JOptionPane.ERROR_MESSAGE);
 //			return null;
 //		}
-
         try {
             int X = (int) (x / this.scale);
             int Y = (int) (y / this.scale);
@@ -660,19 +629,14 @@ public class GraphCanvas extends JPanel {
                 ((ValueTuple) en.getBasisNode().getAttribute()).getValueMemberAt("thisY")
                         .setExprAsObject(en.getY());
             }
-
             en.getLNode().setFrozenByDefault(true);
-
             this.eGraph.addCreatedToUndo(en);
             this.eGraph.undoManagerEndEdit();
-
             this.changed = true;
             if (this.eGraph.getGraGra() != null) {
                 this.eGraph.getGraGra().setChanged(true);
             }
-
             this.addToGraphEmbedding(en);
-
             return en;
         } catch (TypeException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(),
@@ -712,9 +676,7 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return null;
         }
-        boolean directed = !(this.eGraph.getBasisGraph() instanceof UndirectedGraph
-                || this.eGraph.getBasisGraph() instanceof UndirectedTypeGraph);
-
+        boolean directed = this.eGraph.getBasisGraph().isDirected();
         boolean doAddArc = (!this.eGraph.isTypeGraph()
                 || addSimilarParentArc(this.eGraph.getTypeSet().getSelectedArcType().getBasisType(),
                         s.getType().getBasisType(),
@@ -731,19 +693,14 @@ public class GraphCanvas extends JPanel {
                 if (anch != null) {
                     ea.getLArc().setFrozenByDefault(true);
                 }
-
                 this.eGraph.addCreatedToUndo(ea);
                 this.eGraph.undoManagerEndEdit();
-
                 this.changed = true;
                 if (this.eGraph.getGraGra() != null) {
                     this.eGraph.getGraGra().setChanged(true);
                 }
-
                 this.addToGraphEmbedding(ea);
-
                 return ea;
-
             } catch (TypeException e) {
                 // possible errors: type failed, no parallel edges
                 // see Graph.checkConnectValid(Type, Node, Node)
@@ -775,13 +732,13 @@ public class GraphCanvas extends JPanel {
     }
 
     /**
-     * Deletes an object on the position specified by the int x, int y Undo-Redo is not supported.
+     * Deletes an object on the position specified by the int x, int y Undo-Redo
+     * is not supported.
      */
     public boolean deleteObj(int x, int y) {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return false;
         }
-
         // hier noch testen wegen undo!!!
         try {
             if (this.eGraph.deleteObj(x, y)) {
@@ -795,13 +752,13 @@ public class GraphCanvas extends JPanel {
     }
 
     /**
-     * Deletes an layout object specified by the EdGraphObject ego Undo-Redo is supported.
+     * Deletes an layout object specified by the EdGraphObject ego Undo-Redo is
+     * supported.
      */
     public void deleteObj(EdGraphObject go) {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
-
         if (this.eGraph.getBasisGraph().isTypeGraph()) {
             deleteTypeGraphObject(go, new Vector<EdGraphObject>(), true);
         } else if (this.eGraph.isTargetObjOfGraphEmbedding(go)) {
@@ -835,14 +792,12 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph.isTargetObjOfGraphEmbedding(go)) {
             return;
         }
-
         try {
             TypeError typeError = null;
             // handle incoming arcs
             List<EdArc> vIn = this.eGraph.getIncomingArcs(go);
             for (int i = 0; i < vIn.size(); i++) {
                 EdArc a = vIn.get(i);
-
                 if (this.getViewport().getParentEditor() instanceof GraphEditor) {
                     typeError = this.eGraph.getTypeSet().getBasisTypeSet().checkIfRemovable(a.getBasisArc(), false, true);
                     if (typeError != null) {
@@ -850,14 +805,12 @@ public class GraphCanvas extends JPanel {
                         return;
                     }
                 }
-
                 this.eGraph.addDeletedToUndo(a);
             }
             // handle outgoing arcs	
             List<EdArc> vOut = this.eGraph.getOutgoingArcs(go);
             for (int i = 0; i < vOut.size(); i++) {
                 EdArc a = vOut.get(i);
-
                 if (this.getViewport().getParentEditor() instanceof GraphEditor) {
                     typeError = this.eGraph.getTypeSet().getBasisTypeSet().checkIfRemovable(a.getBasisArc(), true, false);
                     if (typeError != null) {
@@ -865,21 +818,15 @@ public class GraphCanvas extends JPanel {
                         return;
                     }
                 }
-
                 if (!vIn.contains(a)) {
                     this.eGraph.addDeletedToUndo(a);
                 }
             }
-
             this.eGraph.addDeletedToUndo(go);
-
             this.removeFromGraphEmbedding(go);
-
             this.eGraph.deleteObj(go, false);
-
             this.eGraph.undoManagerEndEdit();
             updateUndoButton();
-
             this.changed = true;
             if (this.eGraph.getGraGra() != null) {
                 this.eGraph.getGraGra().setChanged(true);
@@ -896,7 +843,6 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph.isTargetObjOfGraphEmbedding(go)) {
             return;
         }
-
         boolean forceRemoveArc = false;
         if (this.getViewport().getParentEditor() instanceof GraphEditor) {
             TypeError typeError = this.eGraph.getTypeSet().getBasisTypeSet().checkIfRemovable(
@@ -907,17 +853,12 @@ public class GraphCanvas extends JPanel {
             }
             forceRemoveArc = true;
         }
-
         try {
             this.eGraph.addDeletedToUndo(go);
-
             this.removeFromGraphEmbedding(go);
-
             this.eGraph.delSelectedArc(go, (deleteSrc && deleteTar) || forceRemoveArc);
-
             this.eGraph.undoManagerEndEdit();
             updateUndoButton();
-
             this.changed = true;
             if (this.eGraph.getGraGra() != null) {
                 this.eGraph.getGraGra().setChanged(true);
@@ -942,15 +883,14 @@ public class GraphCanvas extends JPanel {
     }
 
     /**
-     * Deletes an arc layout for the used object specified by the Arc bArc. The used object will be deleted, too.
-     * Undo-Redo is not supported.
+     * Deletes an arc layout for the used object specified by the Arc bArc. The
+     * used object will be deleted, too. Undo-Redo is not supported.
      */
     public void delArc(Arc bArc) {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
         try {
-
 //			this.removeFromGraphEmbedding(sourceObject);
             this.eGraph.delArc(bArc);
             this.changed = true;
@@ -963,16 +903,14 @@ public class GraphCanvas extends JPanel {
     }
 
     /**
-     * Deletes a node layout for the used object specified by the Node bNode. The used object will be deleted, too.
-     * Undo-Redo is not supported.
+     * Deletes a node layout for the used object specified by the Node bNode.
+     * The used object will be deleted, too. Undo-Redo is not supported.
      */
     public void delNode(Node bNode) {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
-
         try {
-
             this.eGraph.delNode(bNode);
             this.changed = true;
             if (this.eGraph.getGraGra() != null) {
@@ -984,14 +922,13 @@ public class GraphCanvas extends JPanel {
     }
 
     /**
-     * Deletes a node layout specified by the EdNode eNode. The used object will be deleted, too. Undo-Redo is not
-     * supported.
+     * Deletes a node layout specified by the EdNode eNode. The used object will
+     * be deleted, too. Undo-Redo is not supported.
      */
     public void delSelectedNode(EdNode eNode) {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
-
         try {
             this.eGraph.delSelectedNode(eNode);
             this.changed = true;
@@ -1004,13 +941,13 @@ public class GraphCanvas extends JPanel {
     }
 
     /**
-     * Deletes an arc layout specified by the EdArc eArc. The used object will be deleted, too.
+     * Deletes an arc layout specified by the EdArc eArc. The used object will
+     * be deleted, too.
      */
     public void delSelectedArc(EdArc eArc) {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
-
         try {
             this.eGraph.delSelectedArc(eArc);
             this.changed = true;
@@ -1029,7 +966,6 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
-
         if (this.eGraph.getBasisGraph().isTypeGraph()) {
             deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
         } else {
@@ -1052,7 +988,6 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
-
         if (this.eGraph.getBasisGraph().isTypeGraph()) {
             deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
         } else {
@@ -1075,17 +1010,14 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
-
         if (this.eGraph.getBasisGraph().isTypeGraph()) {
             deleteTypeGraphObject(new ArrayList<>(this.eGraph.getSelectedObjs()));
-
         } else {
             List<?> list = new ArrayList<>(this.eGraph.getSelectedArcs());
             for (int i = 0; i < list.size(); i++) {
                 final EdArc obj = (EdArc) list.get(i);
                 this.deleteArcObject(obj, obj.getSource().isSelected(), obj.getTarget().isSelected());
             }
-
             list = new ArrayList<>(this.eGraph.getSelectedNodes());
             for (int i = 0; i < list.size(); i++) {
                 final EdNode obj = (EdNode) list.get(i);
@@ -1102,7 +1034,6 @@ public class GraphCanvas extends JPanel {
             if (go.isNode()) {
                 continue;
             }
-
             // first delete edges
             deleteTypeGraphObject(go, deletedObjs, !showWarning);
         }
@@ -1120,12 +1051,10 @@ public class GraphCanvas extends JPanel {
     private void deleteTypeGraphObject(
             final EdGraphObject go,
             final List<EdGraphObject> deletedObjs, boolean showWarning) {
-
         if (deletedObjs.contains(go)) {
             // is already deleted
             return;
         }
-
         boolean canDelete = false;
         boolean used = true;
         String objstr = "";
@@ -1181,12 +1110,10 @@ public class GraphCanvas extends JPanel {
         } else {
             canDelete = true;
         }
-
         if (canDelete) {
             List<EdGraphObject> objs = new Vector<EdGraphObject>();
             objs.add(go);
             deletedObjs.add(go);
-
             if (go.isNode()) {
                 // // inheritance : TEST!
                 // List<EdNode> parents = this.eGraph.getParentsOf((EdNode) go);
@@ -1197,7 +1124,6 @@ public class GraphCanvas extends JPanel {
                 // EdNode ch = (EdNode) childrens.get(j);
                 // this.eGraph.addChangedParentToUndo(ch);
                 // }
-
                 List<EdArc> vIn = this.eGraph.getIncomingArcs((EdNode) go);
                 for (int i = 0; i < vIn.size(); i++) {
                     EdArc a = vIn.get(i);
@@ -1216,7 +1142,6 @@ public class GraphCanvas extends JPanel {
                 }
             }
             this.eGraph.addDeletedToUndo(objs);
-
 //			boolean canRemoveTypeGraphObject = false;
 //			if (go.isNode())
 //				canRemoveTypeGraphObject = this.eGraph.getTypeSet().getBasisTypeSet().canRemoveTypeGraphNode((Node)go.getBasisObject());
@@ -1225,11 +1150,9 @@ public class GraphCanvas extends JPanel {
 //			if (canRemoveTypeGraphObject) {
             try {
 //					this.eGraph.deleteObj(go);
-
                 this.eGraph.forceDeleteObj(go);
                 this.eGraph.undoManagerEndEdit();
                 updateUndoButton();
-
                 this.eGraph.refreshInheritanceArcs();
                 this.changed = true;
                 if (this.eGraph.getGraGra() != null) {
@@ -1237,13 +1160,11 @@ public class GraphCanvas extends JPanel {
                 }
             } catch (TypeException e) {
                 cannotDeleteErrorMessage("Type Graph", " this object", e.getMessage());
-
                 if (this.eGraph.getUndoManager() != null) {
                     this.eGraph.getUndoManager().undo();
                     this.eGraph.getUndoManager().redo();
                 }
             }
-
         }
 //		}
     }
@@ -1284,16 +1205,13 @@ public class GraphCanvas extends JPanel {
         if ((srcNode != null)
                 && (this.eGraph.getTypeSet().getBasisTypeSet().getLevelOfTypeGraphCheck() <= TypeSet.DISABLED
                 || !this.eGraph.getTypeSet().isTypeUsed(srcNode.getType()))) {
-
             List<EdNode> parents = this.eGraph.getParentsOf(srcNode);
             if (!parents.isEmpty()) {
                 EdNode tarNode = parents.get(0);
-
                 boolean canRemoveIR = !this.eGraph.getTypeSet().hasTypeUser(srcNode.getType());
                 if (!canRemoveIR) {
                     List<EdArc> usedArcTypes = this.eGraph.getTypeSet().
                             getTypeArcOfInheritedArcsInUse(srcNode.getType().getBasisType(), tarNode.getType().getBasisType());
-
                     if (!usedArcTypes.isEmpty()) {
                         List<String> names = new Vector<String>(usedArcTypes.size());
                         for (int i = 0; i < usedArcTypes.size(); i++) {
@@ -1328,18 +1246,15 @@ public class GraphCanvas extends JPanel {
                         } else {
                             return;
                         }
-
                         canRemoveIR = true;
                     } else {
                         canRemoveIR = true;
                     }
                 }
-
                 if (canRemoveIR) {
                     this.eGraph.addChangedParentToUndo(srcNode);
                     if (this.eGraph.deleteInheritanceRelation(srcNode, tarNode)) {
                         this.eGraph.undoManagerEndEdit();
-
                         this.eGraph.update();
                         this.canvas.repaint();
                         this.changed = true;
@@ -1357,7 +1272,6 @@ public class GraphCanvas extends JPanel {
                                         JOptionPane.ERROR_MESSAGE);
                     }
                 }
-
             } else {
                 // in case when a parent node type exists
                 // but any inheritance arc does not exist 
@@ -1375,12 +1289,10 @@ public class GraphCanvas extends JPanel {
         if ((srcNode != null)
                 && (this.eGraph.getTypeSet().getBasisTypeSet().getLevelOfTypeGraphCheck() <= TypeSet.DISABLED
                 || !this.eGraph.getTypeSet().isTypeUsed(srcNode.getType()))) {
-
             boolean canRemoveIR = !this.eGraph.getTypeSet().hasTypeUser(srcNode.getType());
             if (!canRemoveIR) {
                 List<EdArc> usedArcTypes = this.eGraph.getTypeSet().
                         getTypeArcOfInheritedArcsInUse(srcNode.getType().getBasisType(), tarNode.getType().getBasisType());
-
                 if (!usedArcTypes.isEmpty()) {
                     List<String> names = new Vector<String>(usedArcTypes.size());
                     for (int i = 0; i < usedArcTypes.size(); i++) {
@@ -1415,18 +1327,15 @@ public class GraphCanvas extends JPanel {
                     } else {
                         return;
                     }
-
                     canRemoveIR = true;
                 } else {
                     canRemoveIR = true;
                 }
             }
-
             if (canRemoveIR) {
                 this.eGraph.addChangedParentToUndo(srcNode);
                 if (this.eGraph.deleteInheritanceRelation(srcNode, tarNode)) {
                     this.eGraph.undoManagerEndEdit();
-
                     this.eGraph.update();
                     this.canvas.repaint();
                     this.changed = true;
@@ -1444,7 +1353,6 @@ public class GraphCanvas extends JPanel {
                                     JOptionPane.ERROR_MESSAGE);
                 }
             }
-
         }
     }
 
@@ -1453,13 +1361,11 @@ public class GraphCanvas extends JPanel {
         if (go != null) {
 //			this.eGraph.addSelectedToUndo(go);
 //			this.eGraph.undoManagerEndEdit();
-
             if (go.isNode()) {
                 this.eGraph.drawNode(getGraphics(), (EdNode) go);
             } else {
                 this.eGraph.drawArc(getGraphics(), (EdArc) go);
             }
-
 //			this.updateUndoButton();
             return true;
         }
@@ -1469,7 +1375,6 @@ public class GraphCanvas extends JPanel {
     public void makeSelectionAt(EdGraphObject go) {
         if (go != null) {
             this.eGraph.select(go);
-
 //			this.eGraph.addSelectedToUndo(go);
 //			this.eGraph.undoManagerEndEdit();
             if (go.isNode()) {
@@ -1477,7 +1382,6 @@ public class GraphCanvas extends JPanel {
             } else {
                 this.eGraph.drawArc(getGraphics(), (EdArc) go);
             }
-
 //			this.updateUndoButton();
         }
     }
@@ -1487,7 +1391,6 @@ public class GraphCanvas extends JPanel {
                 ) {
             return null;
         }
-
         int X = (int) (x / this.scale);
         int Y = (int) (y / this.scale);
         EdGraphObject go = this.eGraph.select(X, Y);
@@ -1505,22 +1408,16 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null || !this.eGraph.isEditable()) {
             return;
         }
-
         EdType selNT = this.eGraph.getTypeSet().getSelectedNodeType();
         EdType selAT = this.eGraph.getTypeSet().getSelectedArcType();
-
         int X = (int) ((x + 10) / this.scale);
         int Y = (int) ((y + 10) / this.scale);
-
         List<EdGraphObject> res = this.eGraph.copySelected(X, Y);
-
         if (res != null && !res.isEmpty()) {
             List<EdGraphObject> vec = new Vector<EdGraphObject>(res);
             this.eGraph.addCreatedToUndo(vec);
             this.eGraph.undoManagerEndEdit();
-
             this.updateUndoButton();
-
             this.changed = true;
             if (this.eGraph.getGraGra() != null) {
                 this.eGraph.getGraGra().setChanged(true);
@@ -1542,22 +1439,17 @@ public class GraphCanvas extends JPanel {
                 || targetGraph == null) {
             return;
         }
-
         EdType selNT = this.eGraph.getTypeSet().getSelectedNodeType();
         EdType selAT = this.eGraph.getTypeSet().getSelectedArcType();
-
         int X = (int) ((x + 10) / this.scale);
         int Y = (int) ((y + 10) / this.scale);
-
         targetGraph.setGraphToCopy(this.eGraph.getSelectedAsGraph());
         List<EdGraphObject> res = targetGraph.copySelected(X, Y);
         if (res != null && !res.isEmpty()) {
             List<EdGraphObject> vec = new Vector<EdGraphObject>(res);
             targetGraph.addCreatedToUndo(vec);
             targetGraph.undoManagerEndEdit();
-
             this.updateUndoButton();
-
             this.changed = true;
             if (this.eGraph.getGraGra() != null) {
                 this.eGraph.getGraGra().setChanged(true);
@@ -1575,7 +1467,6 @@ public class GraphCanvas extends JPanel {
         if (!this.eGraph.isEditable()) {
             return;
         }
-
         this.canvas.setMsg("");
         this.getGraph().eraseSelected(this.getGraphics(), true);
         this.copySelected(x0, y0);
@@ -1597,7 +1488,6 @@ public class GraphCanvas extends JPanel {
         this.repaint();
         this.unsetPicked();
         this.setChanged(true);
-
 //		AGGAppl.getInstance().getGraGraEditor().setEditMode(EditorConstants.SELECT);
 //		AGGAppl.getInstance().getGraGraEditor().forwardModeCommand(EditorConstants.getModeOfID(EditorConstants.SELECT));
     }
@@ -1618,7 +1508,6 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph == null) {
             return;
         }
-
 //		this.eGraph.addDeselectedToUndo();
         this.eGraph.deselect(ego);
 //		this.eGraph.undoManagerEndEdit();
@@ -1642,7 +1531,6 @@ public class GraphCanvas extends JPanel {
                 ) {
             return true;
         }
-
         return false;
     }
 
@@ -1669,7 +1557,6 @@ public class GraphCanvas extends JPanel {
         if (hasSelection) {
             return true;
         }
-
         return false;
     }
 
@@ -1696,7 +1583,6 @@ public class GraphCanvas extends JPanel {
         if (hasSelection) {
             return true;
         }
-
         return false;
     }
 
@@ -1774,25 +1660,21 @@ public class GraphCanvas extends JPanel {
         this.pickedNode = null;
         this.pickedArc = null;
         this.pickedTextOfArc = null;
-
         this.pickedNode = this.eGraph.getPickedNode(X, Y);
         if (this.pickedNode != null) {
             this.pickedObj = this.pickedNode;
             return this.pickedNode;
         }
-
         this.pickedTextOfArc = this.eGraph.getPickedTextOfArc(X, Y, Fm);
         if (this.pickedTextOfArc != null) {
             this.pickedObj = this.pickedTextOfArc;
             return this.pickedTextOfArc;
         }
-
         this.pickedArc = this.eGraph.getPickedArc(X, Y);
         if (this.pickedArc != null) {
             this.pickedObj = this.pickedArc;
             return this.pickedArc;
         }
-
 //		this.pickedTextOfArc = this.eGraph.getPickedTextOfArc(X, Y, Fm);
 //		if (this.pickedTextOfArc != null) {
 //			this.pickedObj = this.pickedTextOfArc;
@@ -1864,9 +1746,7 @@ public class GraphCanvas extends JPanel {
             this.eGraph.undoManagerEndEdit();
             this.updateUndoButton();
         }
-
         updateAfterDraggingOfObject();
-
         if (this.eGraph.getGraGra() != null) {
             this.eGraph.getGraGra().setChanged(true);
         }
@@ -1881,7 +1761,6 @@ public class GraphCanvas extends JPanel {
         if ((graphDim.width != this.getWidth()) || (graphDim.height != this.getHeight())) {
             this.setSize(graphDim);
         }
-
         if (this.viewport.getParentEditor() instanceof RuleEditor
                 && ((RuleEditor) this.viewport.getParentEditor())
                         .isSynchronMoveOfMappedObjectsEnabled()) {
@@ -1911,7 +1790,6 @@ public class GraphCanvas extends JPanel {
         if (this.dragged) {
             return this.pickedObj;
         }
-
         return null;
     }
 
@@ -1919,7 +1797,6 @@ public class GraphCanvas extends JPanel {
         if (this.dragged) {
             return new Dimension(this.dx, this.dy);
         }
-
         return new Dimension(0, 0);
     }
 
@@ -1964,7 +1841,6 @@ public class GraphCanvas extends JPanel {
         if (this.eGraph != null) {
             return this.eGraph.getGraphDimension();
         }
-
         return new Dimension(0, 0);
     }
 
@@ -2026,11 +1902,9 @@ public class GraphCanvas extends JPanel {
             g.setPaint(Color.GREEN);
             g.setStroke(new BasicStroke(2.0f));
             g.draw(new Line2D.Double(x, y, x, y));
-
             if (!checkSourceOfMagicArc((EdNode) this.src, this.src.getX(), this.src.getY())) {
                 drawErrorImage(this.src.getX(), this.src.getY());
             }
-
             EdNode to = getPickedNode(x, y);
             if (to != null) {
                 if (checkTargetOfMagicArc(from, to)) {
@@ -2201,16 +2075,13 @@ public class GraphCanvas extends JPanel {
             if (arcType != null) {
                 List<Type> v = arcType.getBasisType()
                         .getTargetsOfArc(this.src.getType().getBasisType());
-
                 if (checkTargetOfMagicArc(this.src.getType(), this.eGraph.getTypeSet()
                         .getSelectedNodeType())) {
-
                     EdType nodeType = this.eGraph.getTypeSet()
                             .getSelectedNodeType();
                     if (v.size() == 1) {
                         nodeType = this.eGraph.getTypeSet().getNodeType(v.get(0));
                     }
-
                     if (this.canCreateNodeOfType(nodeType.getBasisType(),
                             arcType.getBasisType(), this.src.getType().getBasisType())) {
                         this.tar = addNode(nodeType, X, Y);
@@ -2219,7 +2090,6 @@ public class GraphCanvas extends JPanel {
                     if (!this.eGraph.isTypeGraph()) {
                         if (v.size() == 1) {
                             EdType nodeType = this.eGraph.getTypeSet().getNodeType(v.get(0));
-
                             if (this.canCreateNodeOfType(nodeType.getBasisType(),
                                     arcType.getBasisType(), this.src.getType().getBasisType())) {
                                 this.tar = addNode(nodeType, X, Y);
@@ -2258,11 +2128,9 @@ public class GraphCanvas extends JPanel {
                 } catch (TypeException ex) {
                 }
             }
-
             ((EdNode) this.src).applyScale(this.scale);
             ((EdNode) this.src).getLNode().setFrozenByDefault(true);
             ((EdNode) this.src).drawGraphic(getGraphics());
-
             ((EdNode) this.tar).applyScale(this.scale);
             ((EdNode) this.tar).getLNode().setFrozenByDefault(true);
             ((EdNode) this.tar).drawGraphic(getGraphics());
@@ -2282,13 +2150,10 @@ public class GraphCanvas extends JPanel {
             } else if (this.src != null) {
                 List<Type> v = arcType.getBasisType()
                         .getTargetsOfArc(this.src.getType().getBasisType());
-
                 if (checkTargetOfMagicArc(this.src.getType(), this.eGraph.getTypeSet()
                         .getSelectedNodeType())) {
-
                     if (v.size() == 1) {
                         EdType nodeType = this.eGraph.getTypeSet().getNodeType(v.get(0));
-
                         if (this.canCreateNodeOfType(nodeType.getBasisType(),
                                 arcType.getBasisType(), this.src.getType().getBasisType())) {
                             this.tar = addNode(nodeType, X, Y);
@@ -2301,7 +2166,6 @@ public class GraphCanvas extends JPanel {
                     } else {
                         EdType nodeType = this.eGraph.getTypeSet()
                                 .getSelectedNodeType();
-
                         if (this.canCreateNodeOfType(nodeType.getBasisType(),
                                 arcType.getBasisType(), this.src.getType().getBasisType())) {
                             this.tar = addNode(nodeType, X, Y);
@@ -2316,7 +2180,6 @@ public class GraphCanvas extends JPanel {
                     if (!this.eGraph.isTypeGraph()) {
                         if (v.size() == 1) {
                             EdType nodeType = this.eGraph.getTypeSet().getNodeType(v.get(0));
-
                             if (this.canCreateNodeOfType(nodeType.getBasisType(),
                                     arcType.getBasisType(), this.src.getType().getBasisType())) {
                                 this.tar = addNode(nodeType, X, Y);
@@ -2446,7 +2309,6 @@ public class GraphCanvas extends JPanel {
     public void scrollGraph(int X0, int Y0, int X, int Y) {
         int dX = X - X0;
         int dY = Y - Y0;
-
         if (dX > 0) {
             if (this.hsb.getValue() < (this.hsb.getMaximum() - this.hsb.getVisibleAmount())) {
                 this.hsb.setValue(this.hsb.getValue() + dX);
@@ -2456,7 +2318,6 @@ public class GraphCanvas extends JPanel {
                 this.hsb.setValue(this.hsb.getValue() + dX);
             }
         }
-
         if (dY > 0) {
             if (this.vsb.getValue() < (this.vsb.getMaximum() - this.vsb.getVisibleAmount())) {
                 this.vsb.setValue(this.vsb.getValue() + dY);
@@ -2488,7 +2349,6 @@ public class GraphCanvas extends JPanel {
         if (k == -1) {
             return;
         }
-
         for (int i = k; i < this.eGraph.getNodes().size(); i++) {
             EdNode n = this.eGraph.getNodes().get(i);
             if (rect.contains(n.getX(), n.getY())) {
@@ -2513,7 +2373,6 @@ public class GraphCanvas extends JPanel {
 //			for (int i=selSet.size()-1; i>=0; i--) 
 //				selSet.get(i).drawGraphic(this.getGraphics());
 //		}
-
         this.closeSelectBox();
     }
 
@@ -2530,7 +2389,6 @@ public class GraphCanvas extends JPanel {
                         .setExprAsObject(en.getY());
             }
         }
-
         for (int i = 0; i < this.eGraph.getArcs().size(); i++) {
             EdArc ea = this.eGraph.getArcs().get(i);
             if (ea.isLine() && ea.hasAnchor()) {
@@ -2556,7 +2414,6 @@ public class GraphCanvas extends JPanel {
             }
         }
     }
-
 
     /* reset value of scroll bar */
     private void resetValueOfScrollbar(int dependOn) {
@@ -2588,7 +2445,6 @@ public class GraphCanvas extends JPanel {
         String str = "<html><body>Cannot create " + what + ".<br>" + mesg; // + "</body></html>";
         JOptionPane.showMessageDialog(null, str, title, JOptionPane.ERROR_MESSAGE);
     }
-
     private Toolkit tk;
 
     private void errSound() {
@@ -2597,84 +2453,46 @@ public class GraphCanvas extends JPanel {
         this.tk = ((Window) f).getToolkit();
         this.tk.beep();
     }
-
     /**
      * *************************************************************
      */
     protected GraphCanvas canvas;
-
     private boolean leftPressed, rightPressed;
-
     private EdGraph eGraph;
-
     private boolean visible = true;
-
     private int mode = EditorConstants.DRAW;
-
     private int lastMode = EditorConstants.DRAW;
-
     private String fontName = EditorConstants.FONT_NAME;
-
     private int fontStyle = EditorConstants.FONT_STYLE;
-
     private int fontSize = EditorConstants.FONT_SIZE;
-
     private double scale = 1.0;
-
     private JScrollBar hsb, vsb;
-
     private int hsbValue;
-
     private int vsbValue;
-
     private boolean scrollbarValueSaved;
-
     private GraphPanel viewport;
-
 //	private JFrame applFrame;
     private int realWidth = 100;
-
     private int realHeight = 100;
-
     private boolean needResizeAfterMove = false;
-
     private boolean needResizeAfterStep = false;
-
     private boolean attrVisible = true;
-
     private EdNode pickedNode;
-
     private EdArc pickedArc;
-
     private EdArc pickedTextOfArc;
-
     private EdGraphObject pickedObj;
-
     private EdGraphObject src;
-
     private EdGraphObject tar;
-
     private Point anchor;
-
     private int x0 = 0, y0 = 0, dx = 0, dy = 0;
-
     private final static Rectangle selBox = new Rectangle(0, 0, 0, 0);
-
     private boolean selBoxOpen, changed, dragged, startDragging;
-
     boolean canCreateNode;
-
     private String msg;
-
     private Point magicArcStart;
-
     private boolean isMagicArc, showAnchor;
-
     private boolean magicArcEnabled = true;
-
     private boolean arcError;
-
     private boolean scrolling, scrollingByDragging;
-
     final private ImageIcon errorImage, okImage, smileImage, scrollImage;
 }

@@ -2,25 +2,24 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.cpa;
 
 import java.awt.Component;
-
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
-
 import agg.gui.IconResource;
 
 /**
- * The renderer supports some user friendly items for a tree. So this class tells a rule tree to display the AGG typical
- * items.
+ * The renderer supports some user friendly items for a tree. So this class
+ * tells a rule tree to display the AGG typical items.
  *
  * @version $Id: RuleTreeCellRenderer.java,v 1.4 2010/09/23 08:18:49 olga Exp $
  * @author $Author: olga $
@@ -56,7 +55,6 @@ public class RuleTreeCellRenderer extends DefaultTreeCellRenderer {
             boolean focus) {
         super.getTreeCellRendererComponent(tree, value, sel, expanded,
                 leaf, row, focus);
-
         if (isRoot(value)) {
             setIcon(this.gragra);
         } else if (isRule(value)) {
@@ -71,7 +69,6 @@ public class RuleTreeCellRenderer extends DefaultTreeCellRenderer {
         if (o instanceof RuleModel.TreeData) {
             return ((RuleModel.TreeData) o).isRoot();
         }
-
         return false;
     }
 
@@ -79,7 +76,6 @@ public class RuleTreeCellRenderer extends DefaultTreeCellRenderer {
         if (o instanceof RuleModel.TreeData) {
             return ((RuleModel.TreeData) o).isRule();
         }
-
         return false;
     }
 
@@ -87,10 +83,8 @@ public class RuleTreeCellRenderer extends DefaultTreeCellRenderer {
         if (o instanceof RuleModel.TreeData) {
             return ((RuleModel.TreeData) o).isNAC();
         }
-
         return false;
     }
-
 }
 /*
  * $Log: RuleTreeCellRenderer.java,v $

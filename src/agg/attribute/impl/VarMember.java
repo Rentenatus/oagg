@@ -2,24 +2,24 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import java.util.Observable;
-
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrVariableMember;
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerExpr;
 
 /**
- * Class for members of attribute instance tuples that are used as variables in a context. This is an extension of
- * ValueMember; it adds reference counting.
+ * Class for members of attribute instance tuples that are used as variables in
+ * a context. This is an extension of ValueMember; it adds reference counting.
  *
  * @author Boris Melamed
  * @version $Id: VarMember.java,v 1.17 2010/11/28 22:11:36 olga Exp $
@@ -30,37 +30,27 @@ public class VarMember extends ValueMember implements AttrVariableMember {
      * Marking left hand side (LHS) of a rule
      */
     public static final int LHS = 0;
-
     /**
      * Marking right hand side (RHS) of a rule
      */
     public static final int RHS = 1;
-
     /**
      * Marking NAC variable of a rule
      */
     public static final int NAC = 2;
-
     /**
      * Marking PAC variable of a rule
      */
     public static final int PAC = 3;
-
     /**
      * Marking GAC variable of a rule
      */
     public static final int GAC = 4;
-
     protected int refCnt = 0;
-
     protected boolean isIn;
-
     protected boolean isOut;
-
     private int mark; // LHS | RHS | NAC | PAC |GAC
-
     private boolean enabled = true;
-
     public static final long serialVersionUID = 3905403576345689583L;
 
     /**
@@ -121,7 +111,6 @@ public class VarMember extends ValueMember implements AttrVariableMember {
         if (isEmpty() || getExpr().equals(srcExpr)) {
             return true;
         }
-
         this.errorMsg = getExpr() + "  is not unifiable with  " + srcExpr;
         return false;
     }
@@ -130,7 +119,6 @@ public class VarMember extends ValueMember implements AttrVariableMember {
         if (!isUnifiableWith(srcExpr)) {
             return false;
         }
-
         if (isEmpty()) {
             if (srcExpr != null) {
                 this.setExpr(srcExpr.getCopy());
@@ -208,7 +196,8 @@ public class VarMember extends ValueMember implements AttrVariableMember {
     }
 
     /**
-     * The mark m defines a graph context of this variable . The graph context can be LHS, RHS, PAC, NAC.
+     * The mark m defines a graph context of this variable . The graph context
+     * can be LHS, RHS, PAC, NAC.
      */
     public void setMark(int m) {
         this.mark = m;

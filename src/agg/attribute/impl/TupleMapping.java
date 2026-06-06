@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import java.util.Vector;
-
 import agg.attribute.AttrMapping;
 
 /**
@@ -24,31 +24,27 @@ public class TupleMapping extends AttrObject implements AttrMapping,
         AttrMsgCode {
 
     static final long serialVersionUID = 5592548875776404533L;
-
     /**
      * The source and target objects of this mapping.
      */
     protected ValueTuple source, target;
-
     /**
      * The context this mapping is contained in.
      */
     protected ContextView context;
-
     /**
      * References to value settings done due to this mapping. (Vector of Object)
      */
     protected String assignedVariables[];
 
     /**
-     * All or nothing: tries to create a mapping right away, with matching if it's in a match context. If it fails, an
-     * 'AttrImplException' is thrown.
+     * All or nothing: tries to create a mapping right away, with matching if
+     * it's in a match context. If it fails, an 'AttrImplException' is thrown.
      */
     public TupleMapping(ContextView mappingContext, ValueTuple src,
             ValueTuple tar) {
 //		logPrintln(VerboseControl.logTrace, "TupleMapping:\n->new TupleMapping");
         boolean child2parentMapping = false;
-
         if (mappingContext.getAllowedMapping() == AttrMapping.PLAIN_MAP) {
 //			logPrintln(VerboseControl.logMapping,
 //					"creating TupleMapping for a plain mapping");
@@ -72,10 +68,8 @@ public class TupleMapping extends AttrObject implements AttrMapping,
                 }
             }
         }
-
         String variables[] = null;
         this.context = mappingContext;
-
         // logPrintln( VerboseControl.logContextOfInstances,
         // "mappingContext = " +
         // getAllowedMappingAsString( mappingContext ) +
@@ -91,7 +85,6 @@ public class TupleMapping extends AttrObject implements AttrMapping,
         if (this.context == null) {
             this.context = src.getContextView();
         }
-
         try {
             if (this.context.getAllowedMapping() == AttrMapping.MATCH_MAP) {
                 if (child2parentMapping) {
@@ -180,16 +173,18 @@ public class TupleMapping extends AttrObject implements AttrMapping,
     }
 
     /**
-     * Implementation of agg.attribute.AttrMapping#remove(). Called by a client. Discards mapping; Actually only telling
-     * the context that this mapping shall be removed; The context chooses when exactly this occurs and then calls
-     * #removeNow .
+     * Implementation of agg.attribute.AttrMapping#remove(). Called by a client.
+     * Discards mapping; Actually only telling the context that this mapping
+     * shall be removed; The context chooses when exactly this occurs and then
+     * calls #removeNow .
      */
     public void remove() {
         this.context.removeMapping(this);
     }
 
     /**
-     * Called from this mapping's context; Discard mapping; Removes assignments made by it from its context.
+     * Called from this mapping's context; Discard mapping; Removes assignments
+     * made by it from its context.
      */
     public void removeNow() {
         if (this.assignedVariables != null) {
@@ -224,7 +219,6 @@ public class TupleMapping extends AttrObject implements AttrMapping,
                 : " (plain)";
     }
 }
-
 /*
  * $Log: TupleMapping.java,v $
  * Revision 1.8  2010/09/23 08:14:08  olga

@@ -1,23 +1,17 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * </copyright>
+ * *****************************************************************************
  */
 /**
  *
  */
 package agg.ruleappl;
-
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 import agg.attribute.impl.CondTuple;
 import agg.attribute.impl.ContextView;
@@ -43,12 +37,20 @@ import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Match;
 import agg.xt_basis.MorphCompletionStrategy;
-//import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
 import agg.xt_basis.csp.CompletionPropertyBits;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author olga
@@ -57,39 +59,28 @@ import java.util.Map;
 public class ApplicabilityChecker implements Runnable {
 
     private GraGra gragra;
-
     private final Completion_InjCSP strategy = new Completion_InjCSP();
-
     private MorphCompletionStrategy gragraStrategy;
-
     private CriticalPairOption cpOption;
-
     private RuleSequence ruleSequence;
-
     private final List<Rule> nonApplicableRules = new Vector<Rule>();
-
     private final List<ConcurrentRule> concurrentRules = new Vector<ConcurrentRule>();
-
     private final List<ConcurrentRule> applicableConcurrentRules = new Vector<ConcurrentRule>();
-
 //	private boolean checked, 
 //					applicabilityChecked, 
 //					nonApplicabilityChecked;
     private String info = "";
-
     private int depth = -1;
     private boolean completeConcurrency;
     private boolean completeCPA;
     private boolean consistentConcurrency;
     private boolean completeConcurRuleBackward = true;
     private boolean ignoreDanglingEdgeOfDelNode;
-
     private boolean mainResult;
 
     public ApplicabilityChecker(
             final RuleSequence sequence,
             final GraGra grammar) {
-
         this.ruleSequence = sequence;
         this.gragra = grammar;
         this.cpOption = sequence.getCriticalPairOption();
@@ -106,14 +97,12 @@ public class ApplicabilityChecker implements Runnable {
             final RuleSequence sequence,
             final GraGra grammar,
             final CriticalPairOption option) {
-
         this.ruleSequence = sequence;
         this.gragra = grammar;
         this.cpOption = option;
         this.completeConcurRuleBackward = true;
         this.gragraStrategy = this.gragra.getMorphismCompletionStrategy();
     }
-
 //	public ApplicabilityChecker(
 //			final RuleSequence sequence,
 //			MorphCompletionStrategy strat) {
@@ -124,6 +113,7 @@ public class ApplicabilityChecker implements Runnable {
 //		if (strat != null)
 //			this.gragraStrategy = strat;
 //	}
+
     public void setCriticalPairOption(final CriticalPairOption option) {
         this.cpOption = option;
     }
@@ -145,8 +135,9 @@ public class ApplicabilityChecker implements Runnable {
     }
 
     /**
-     * If the specified parameter is false, only maximal intersection of rhs and lhs of base rules is taken into account
-     * for building a concurrent rule, otherwise all possible intersections are used.
+     * If the specified parameter is false, only maximal intersection of rhs and
+     * lhs of base rules is taken into account for building a concurrent rule,
+     * otherwise all possible intersections are used.
      */
     public void setCompleteConcurrency(boolean b) {
         this.completeConcurrency = b;
@@ -157,8 +148,9 @@ public class ApplicabilityChecker implements Runnable {
     }
 
     /**
-     * Set the value of the local variable for checking concurrent rules. If the specified parameter is true, created
-     * concurrent rules will be checked by critical pair analysis (CPA), otherwise only its building rules.
+     * Set the value of the local variable for checking concurrent rules. If the
+     * specified parameter is true, created concurrent rules will be checked by
+     * critical pair analysis (CPA), otherwise only its building rules.
      */
     public void setCompleteCPAOfConcurrency(boolean b) {
         this.completeCPA = b;
@@ -178,10 +170,10 @@ public class ApplicabilityChecker implements Runnable {
     public boolean getConsistentConcurrency() {
         return this.consistentConcurrency;
     }
-
 //	private void setCompletionConcurrentRuleBackward(boolean b) {
 //		this.completeConcurrentRuleBackward = b;
 //	}
+
     public boolean isCompletionConcurrentRuleForward() {
         return !this.completeConcurRuleBackward;
     }
@@ -191,14 +183,16 @@ public class ApplicabilityChecker implements Runnable {
     }
 
     /**
-     * Set the value of the local variable for checking the dangling edge condition when a rule is node-deleting.
+     * Set the value of the local variable for checking the dangling edge
+     * condition when a rule is node-deleting.
      */
     public void setIgnoreDanglingEdgeOfDelNode(boolean b) {
         this.ignoreDanglingEdgeOfDelNode = b;
     }
 
     /**
-     * Returns the value of the local variable for checking the dangling edge condition when a rule is node-deleting.
+     * Returns the value of the local variable for checking the dangling edge
+     * condition when a rule is node-deleting.
      */
     public boolean getIgnoreDanglingEdgeOfDelNode() {
         return this.ignoreDanglingEdgeOfDelNode;
@@ -217,33 +211,28 @@ public class ApplicabilityChecker implements Runnable {
         this.applicableConcurrentRules.clear();
         this.concurrentRules.clear();
     }
-
 //	private void clearHelpContainerOfSequence() {
 //		this.nonApplicableRules.clear();
 //		this.applicableConcurrentRules.clear();
 //		this.concurrentRules.clear();
 //	}
+
     public RuleSequence getRuleSequence() {
         return this.ruleSequence;
     }
 
     public boolean check() {
         this.mainResult = false;
-
         if (this.ruleSequence != null) {
-
             if (this.ruleSequence.getGraph() == null) {
                 this.mainResult = checkWithoutGraph();
             } else {
                 this.mainResult = checkAtGraph();
             }
-
             this.ruleSequence.checked = true;
-
             // save created concurrent rules
 //			this.ruleSequence.saveConcurrentRules();
         }
-
         return this.mainResult;
     }
 
@@ -251,12 +240,10 @@ public class ApplicabilityChecker implements Runnable {
         System.out.println("\n*** ApplicabilityChecker.checkAtGraph    "
                 + this.ruleSequence.getGraph().getName()
                 + "   start at: " + this.ruleSequence.getStartIndexOfCheck() + "   " + this.ruleSequence.getStartRule().getName());
-
         this.clear();
         if (this.ruleSequence.checked) {
             this.ruleSequence.reinit();
         }
-
         if (this.ruleSequence.getStartIndexOfCheck() > 0) {
             int preIndx = this.ruleSequence.getStartIndexOfCheck() - 1;
             Rule preRule = this.ruleSequence.getRule(preIndx);
@@ -267,23 +254,19 @@ public class ApplicabilityChecker implements Runnable {
                 return false;
             }
         }
-
         boolean result1 = this.initializationRule(this.ruleSequence.getRules(), this.ruleSequence.getGraph());
         if (!result1) {
 //			this.checked = true;
 //			this.applicabilityChecked = true;
             return result1;
         }
-
         boolean result2 = this.noNodeDeletingRules(this.ruleSequence.getRules());
         if (!result2 && !this.ruleSequence.getIgnoreDanglingEdgeOfDelNode()) {
 //			this.checked = true;
 //			this.applicabilityChecked = true;
             return result2;
         }
-
         boolean result3 = this.noImpedingPredecessors(this.ruleSequence.getRules());
-
         boolean result4 = true;
         if (this.completeConcurrency) {
             // all dependency overlapping will be consider
@@ -298,7 +281,6 @@ public class ApplicabilityChecker implements Runnable {
                     this.ruleSequence.getRules(),
                     this.ruleSequence.getGraph());
         }
-
 //		this.checked = true;
 //		this.applicabilityChecked = true;
         return result1 && result2 && result3 && result4;
@@ -309,7 +291,6 @@ public class ApplicabilityChecker implements Runnable {
         if (this.ruleSequence.checked) {
             this.ruleSequence.reinit();
         }
-
         if (this.ruleSequence.getStartIndexOfCheck() > 0) {
             int preIndx = this.ruleSequence.getStartIndexOfCheck() - 1;
             Rule preRule = this.ruleSequence.getRule(preIndx);
@@ -320,25 +301,20 @@ public class ApplicabilityChecker implements Runnable {
                 return false;
             }
         }
-
         boolean result1 = this.initializationRule(this.ruleSequence.getRules(), null);
         if (!result1) {
 //			this.checked = true;
 //			this.applicabilityChecked = true;
             return result1;
         }
-
         boolean result2 = this.noNodeDeletingRules(this.ruleSequence.getRules());
         if (!result2) {
 //			this.checked = true;
 //			this.applicabilityChecked = true;
             return result2;
         }
-
         boolean result3 = this.noImpedingPredecessors(this.ruleSequence.getRules());
-
         boolean result4 = true;
-
         if (this.completeConcurrency) {
             // all dependency overlapping will be consider
             result4 = this.enablingPredecessorApplicablePureConcurrent(
@@ -350,7 +326,6 @@ public class ApplicabilityChecker implements Runnable {
                     this.ruleSequence.getStartIndexOfCheck(),
                     this.ruleSequence.getRules());
         }
-
 //		this.checked = true;
 //		this.applicabilityChecked = true;
         return result1 && result2 && result3 && result4;
@@ -372,13 +347,11 @@ public class ApplicabilityChecker implements Runnable {
     private boolean initializationRule(
             final List<Rule> sequence,
             final Graph g) {
-
         boolean result = sequence.isEmpty();
         if (result) {
             setApplicabilityResult(true, ApplicabilityConstants.INITIALIZATION);
         } else {
             final Rule r = sequence.get(0);
-
             final Pair<Boolean, List<String>> ruleRes = this.ruleSequence.getRuleResult(0, r.getName(), ApplicabilityConstants.INITIALIZATION);
             if (ruleRes != null) {
                 result = ruleRes.first.booleanValue();
@@ -389,18 +362,15 @@ public class ApplicabilityChecker implements Runnable {
                     result = true;  // TODO: implementation			
                 }
             }
-
             if (result) {
                 System.out.println("=== >>>  ApplicabilityChecker.initialization:  rule: " + r.getName() + "   applicable");
                 setApplicabilityResult(true, ApplicabilityConstants.INITIALIZATION);
                 setNonApplicabilityResult(false, ApplicabilityConstants.INITIALIZATION_ERROR);
-
                 setRuleResult(0, r.getName(), true, ApplicabilityConstants.INITIALIZATION, "");
                 setRuleResult(0, r.getName(), false, ApplicabilityConstants.INITIALIZATION_ERROR, "");
             } else {
                 setApplicabilityResult(false, ApplicabilityConstants.INITIALIZATION);
                 setNonApplicabilityResult(true, ApplicabilityConstants.INITIALIZATION_ERROR);
-
                 setRuleResult(0, r.getName(), false, ApplicabilityConstants.INITIALIZATION, "");
                 setRuleResult(0, r.getName(), true, ApplicabilityConstants.INITIALIZATION_ERROR, "");
             }
@@ -452,25 +422,21 @@ public class ApplicabilityChecker implements Runnable {
         return result;
     }
 
-    private Hashtable<GraphObject, GraphObject> makeMatchMapByObjectFlow(
+    private Map<GraphObject, GraphObject> makeMatchMapByObjectFlow(
             int indx,
             final Rule r,
             final Graph g) {
-
         int sizeOfObjectFlow = this.ruleSequence.getSizeOfObjFlowForRule(r, indx);
         if (sizeOfObjectFlow == 0) {
             return null;
         }
-
         final List<ObjectFlow> objFlowList = this.ruleSequence.getObjFlowForRule(r, indx);
-
-        Hashtable<GraphObject, GraphObject> matchmap = this.ruleSequence.getMatchSequence().makeMatchMapByObjectFlow(r, objFlowList);
-
+        Map<GraphObject, GraphObject> matchmap = this.ruleSequence.getMatchSequence().makeMatchMapByObjectFlow(r, objFlowList);
         boolean result = (matchmap.size() == sizeOfObjectFlow);
         if (!result) {
             Rule ri = r;
             int i = indx;
-            final Hashtable<GraphObject, GraphObject> inputToPostInput = new Hashtable<GraphObject, GraphObject>();
+            final Map<GraphObject, GraphObject> inputToPostInput = new HashMap<GraphObject, GraphObject>();
             while (ri != null) {
                 matchmap.putAll(this.ruleSequence.getInput2outputMapIntoGraphAbovePreRule(
                         r, indx, objFlowList,
@@ -493,7 +459,6 @@ public class ApplicabilityChecker implements Runnable {
         if (g == null) {
             return true;
         }
-
         boolean result = false;
         Match m = BaseFactory.theFactory().createMatch(r, g);
         if (m != null) {
@@ -501,7 +466,7 @@ public class ApplicabilityChecker implements Runnable {
             m.enableInputParameter(false);
             // try to use object flow
             if (!r.getLeft().isEmpty() && this.ruleSequence.isObjFlowActive()) {
-                Hashtable<GraphObject, GraphObject> matchmap = makeMatchMapByObjectFlow(indx, r, g);
+                Map<GraphObject, GraphObject> matchmap = makeMatchMapByObjectFlow(indx, r, g);
                 if (matchmap != null && !matchmap.isEmpty()) {
                     try {
                         m.addMapping(matchmap);
@@ -543,28 +508,24 @@ public class ApplicabilityChecker implements Runnable {
                 || !checkIfRuleReadyToTransform) {
             return this.initializationCheck(indx, r, g);
         }
-
         return false;
     }
 
-    private Hashtable<GraphObject, GraphObject> makeMatchMapByObjectFlow(
+    private Map<GraphObject, GraphObject> makeMatchMapByObjectFlow(
             final ConcurrentRule cr,
             int indx,
             final Graph g) {
-
         int sizeOfObjectFlow = cr.getSizeOfReflectedInputObjectFlow();
         if (sizeOfObjectFlow == 0) {
             return null;
         }
-
-        Hashtable<GraphObject, GraphObject> matchmap = cr.applyReflectedObjectFlowToMatchMap(g);
-
+        Map<GraphObject, GraphObject> matchmap = cr.applyReflectedObjectFlowToMatchMap(g);
         boolean result = (matchmap.size() == sizeOfObjectFlow);
         if (!result) {
             final List<ObjectFlow> objFlowList = this.ruleSequence.getObjFlowForRule(cr.getLastSecondSourceRule(), indx + cr.getDepth());
             Rule ri = cr.getLastSecondSourceRule();
             int i = indx + cr.getDepth();
-            final Hashtable<GraphObject, GraphObject> inputToPostInput = new Hashtable<GraphObject, GraphObject>();
+            final Map<GraphObject, GraphObject> inputToPostInput = new HashMap<GraphObject, GraphObject>();
             while (ri != null) {
                 matchmap.putAll(this.ruleSequence.getReflectedObjectFlowOfGraphAndPreRule(
                         cr,
@@ -589,29 +550,24 @@ public class ApplicabilityChecker implements Runnable {
             final ConcurrentRule cr,
             final Graph g,
             boolean checkIfRuleReadyToTransform) {
-
         if (cr.getRule().isNotApplicable()) {
             return false;
         }
-
 //		boolean failed = false;
         boolean result = false;
         boolean crReady = cr.isReadyToTransform();
 //		((VarTuple)cr.getRule().getAttrContext().getVariables()).showVariables();
         if (checkIfRuleReadyToTransform && crReady
                 || !checkIfRuleReadyToTransform) {
-
             Match m = cr.getRule().getMatch();
             if (m == null) {
                 m = BaseFactory.theFactory().createMatch(cr.getRule(), g);
             }
-
             if (m != null) {
 //				System.out.println("##########   "+m.getRule().getName());
                 setMatchCompletionStrategy(m, this.gragraStrategy, true); // injective	
 //				m.getCompletionStrategy().showProperties();
                 m.enableInputParameter(false);
-
                 boolean withOF = false;
                 // LHS of CR is empty
                 if (cr.getRule().getLeft().isEmpty()) {
@@ -626,18 +582,16 @@ public class ApplicabilityChecker implements Runnable {
                 else if (this.ruleSequence.isObjFlowActive()) {
                     withOF = true;
                     if (cr.getSizeOfReflectedInputObjectFlow() > 0) {
-                        Hashtable<GraphObject, GraphObject> matchmap = makeMatchMapByObjectFlow(
+                        Map<GraphObject, GraphObject> matchmap = makeMatchMapByObjectFlow(
                                 cr,
                                 this.ruleSequence.getIndexOf(cr.getFirstSourceRule()),
                                 this.ruleSequence.getGraph());
-
                         if ((matchmap == null) //							|| (cr.getSizeOfReflectedInputObjectFlow() != matchmap.size())
                                 ) {
                             // break because usage of object flow failed
                             m.dispose();
                             return false;
                         }
-
                         try {
                             m.addMapping(matchmap);
                             m.setPartialMorphismCompletion(true);
@@ -681,7 +635,6 @@ public class ApplicabilityChecker implements Runnable {
                             return false;
                         }
                     }
-
                 }
                 // do more if needed 
                 if (!result || !withOF) {
@@ -704,13 +657,11 @@ public class ApplicabilityChecker implements Runnable {
                             break;
                         }
                     }
-
                     if (!result) {
                         // try non-injective match	
                         m.getCompletionStrategy().getProperties().clear(CompletionPropertyBits.INJECTIVE);
                         //					m.getCompletionStrategy().showProperties();
                         m.getCompletionStrategy().initialize(m);
-
                         while (m.nextCompletion()) {
                             if (!m.isAttrConditionSatisfied()) {
                                 if (this.usingAttrConditionAndInputParameter(m.getRule(), m)) {
@@ -783,7 +734,6 @@ public class ApplicabilityChecker implements Runnable {
         return result;
     }
 
-
     /* 
 	 * Check 3. criterion of applicability :
 	 * for all (r_i,r_j) in sequence with 1<=j<i<=n, r_i is asymmetrically parallel
@@ -792,7 +742,6 @@ public class ApplicabilityChecker implements Runnable {
      */
     private boolean noImpedingPredecessors(
             final List<Rule> sequence) {
-
         boolean result = true;
         for (int i = 1; i < sequence.size(); i++) {
             Rule ri = sequence.get(i);
@@ -820,7 +769,6 @@ public class ApplicabilityChecker implements Runnable {
                 result = false;
             }
         }
-
         if (!result) {
             setApplicabilityResult(false, ApplicabilityConstants.NO_IMPEDING_PREDECESSORS);
         }
@@ -882,7 +830,6 @@ public class ApplicabilityChecker implements Runnable {
                 this.cpOption.namedObjectEnabled());
         ((DependencyPairContainer) pc).enableMaxBoundOfCriticKind(
                 this.cpOption.getMaxBoundOfCriticKind());
-
         return (DependencyPairContainer) pc;
     }
 
@@ -1007,41 +954,36 @@ public class ApplicabilityChecker implements Runnable {
             }
         } catch (Exception ex) {
         }
-
         return result;
     }
 
     /*
 	private boolean asymParallelIndependentByCPA(final Rule r1, final Rule r2, final Graph graph) {		
 		final CriticalRulePairAtGraph crp = new CriticalRulePairAtGraph(r1, r2, graph);
-//		final List<Pair<Hashtable<GraphObject, GraphObject>, Hashtable<GraphObject, GraphObject>>> 
+//		final List<Pair<Map<GraphObject, GraphObject>, Map<GraphObject, GraphObject>>> 
 //		crpResult = crp.isCriticalAtGraph(); 
 		return (crp.isCriticalAtGraph() == null);
 	}
      */
     /**
-     * Check 4a. criterion of applicability : for all r_i without NACs in sequence with 1<i<=n which are no applicable
-     * on graph g via an injective match there exists a rule r_j in sequence with 1<=j<i<=n and r_i is purely sequential
-     * dependent on r_j (pure enabling predecessor)
+     * Check 4a. criterion of applicability : for all r_i without NACs in
+     * sequence with 1<i<=n which are no applicable on graph g via an injective
+     * match there exists a rule r_j in sequence with 1<=j<i<=n and r_i is
+     * purely sequential dependent on r_j (pure enabling predecessor)
      */
     private boolean pureEnablingPredecessor(
             final Rule ri,
             final int i,
             final List<Rule> sequence,
             final Graph g) {
-
         boolean result = false;
-
         for (int j = 0; j < i; j++) {
             final Rule rj = sequence.get(j);
-
             if ((g != null && !checkForbiddenObjects(ri.getNACs(), rj, g))
                     || (g == null && !checkForbiddenObjects(ri.getNACs(), rj))) {
-
                 if (purelySequentialDependent(rj, j, ri, i, g)) {
                     result = true;
                     System.out.println("=== >>>  ApplicabilityChecker.pureEnablingPredecessor  of  rule: " + ri.getName() + "  is  rule: " + rj.getName());
-
 //					setRuleResult( i, ri.getName(), true, ApplicabilityConstants.PURE_ENABLING_PREDECESSOR, rj.getName());	
                     setRuleResult(i, ri.getName(), false, ApplicabilityConstants.NO_ENABLING_PREDECESSOR, "pure");
                     break;
@@ -1055,7 +997,6 @@ public class ApplicabilityChecker implements Runnable {
             final Rule ri,
             final int i,
             final List<Rule> sequence) {
-
         boolean result = false;
         for (int j = 0; j < i; j++) {
             final Rule rj = sequence.get(j);
@@ -1063,7 +1004,6 @@ public class ApplicabilityChecker implements Runnable {
                 if (purelySequentialDependent(rj, j, ri, i, null)) {
                     result = true;
                     System.out.println("=== >>>  ApplicabilityChecker.pureEnablingPredecessor  of  rule: " + ri.getName() + "  is  rule: " + rj.getName());
-
                     setRuleResult(i, ri.getName(), true, ApplicabilityConstants.PURE_ENABLING_PREDECESSOR, rj.getName());
                     setRuleResult(i, ri.getName(), false, ApplicabilityConstants.NO_ENABLING_PREDECESSOR, "pure");
                     break;
@@ -1078,40 +1018,30 @@ public class ApplicabilityChecker implements Runnable {
             int startIndx,
             final List<Rule> sequence,
             final Graph graph) {
-
         System.out.println("=== >>>  ApplicabilityChecker.enablingPredecessorApplicablePureConcurrent");
-
         DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
-
         String criterion = "";
         boolean result = true;
         boolean noEnablingPredecessor = false;
-
         int start = (startIndx > 1) ? startIndx : 1;
-
         for (int i = start; i < sequence.size(); i++) {
             Rule ri = sequence.get(i);
             Rule ri_1 = sequence.get(i - 1);
-
             criterion = ApplicabilityConstants.PREDECESSOR_NOT_NEEDED;
             result = this.isPredecessorNotNeeded(ri, i, graph);
             if (!result) {
                 this.nonApplicableRules.add(ri);
                 setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PREDECESSOR_NOT_NEEDED, "");
-
                 noEnablingPredecessor = noEnablingPredecessor(sequence, i, ri, dependencyContainer);
                 if (!noEnablingPredecessor) {
-
                     criterion = ApplicabilityConstants.PURE_ENABLING_PREDECESSOR;
                     result = this.pureEnablingPredecessor(ri, i, sequence, graph);
                     if (!result) {
                         setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PURE_ENABLING_PREDECESSOR, "");
-
                         criterion = ApplicabilityConstants.PARTIAL_ENABLING_PREDECESSOR;
                         result = this.partialEnablingPredecessor(ri, i, sequence, graph);
                         if (!result) {
                             setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PARTIAL_ENABLING_PREDECESSOR, "");
-
                             criterion = ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR;
                             result = this.directEnablingPredecessor(i, ri, sequence, graph);
                             if (!result) {
@@ -1121,14 +1051,11 @@ public class ApplicabilityChecker implements Runnable {
                     }
                 }
             }
-
             setApplicabilityResult(result, ApplicabilityConstants.ENABLING_PREDECESSOR);
             setNonApplicabilityResult(noEnablingPredecessor, ApplicabilityConstants.NO_ENABLING_PREDECESSOR);
         }
-
         dependencyContainer.clear();
         dependencyContainer.refreshOptions(cpOption);
-
         return result;
     }
 
@@ -1136,40 +1063,30 @@ public class ApplicabilityChecker implements Runnable {
     private boolean enablingPredecessorApplicablePureConcurrent(
             int startIndx,
             final List<Rule> sequence) {
-
         System.out.println("=== >>>  ApplicabilityChecker.enablingPredecessorApplicablePureConcurrent");
-
         DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
-
         String criterion = "";
         boolean result = true;
         boolean noEnablingPredecessor = false;
-
         int start = (startIndx > 1) ? startIndx : 1;
-
         for (int i = start; i < sequence.size(); i++) {
             Rule ri = sequence.get(i);
             Rule ri_1 = sequence.get(i - 1);
-
             criterion = ApplicabilityConstants.PREDECESSOR_NOT_NEEDED;
             result = this.isPredecessorNotNeeded(ri, i, null);
             if (!result) {
                 this.nonApplicableRules.add(ri);
                 setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PREDECESSOR_NOT_NEEDED, "");
-
                 noEnablingPredecessor = noEnablingPredecessor(sequence, i, ri, dependencyContainer);
                 if (!noEnablingPredecessor) {
-
                     criterion = ApplicabilityConstants.PURE_ENABLING_PREDECESSOR;
                     result = this.pureEnablingPredecessor(ri, i, sequence);
                     if (!result) {
                         setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PURE_ENABLING_PREDECESSOR, "");
-
                         criterion = ApplicabilityConstants.PARTIAL_ENABLING_PREDECESSOR;
                         result = this.partialEnablingPredecessor(ri, i, sequence, null);
                         if (!result) {
                             setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PARTIAL_ENABLING_PREDECESSOR, "");
-
                             criterion = ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR;
                             result = this.directEnablingPredecessor(i, ri, sequence, null);
                             if (!result) {
@@ -1179,14 +1096,11 @@ public class ApplicabilityChecker implements Runnable {
                     }
                 }
             }
-
             setApplicabilityResult(result, ApplicabilityConstants.ENABLING_PREDECESSOR);
             setNonApplicabilityResult(noEnablingPredecessor, ApplicabilityConstants.NO_ENABLING_PREDECESSOR);
         }
-
         dependencyContainer.clear();
         dependencyContainer.refreshOptions(cpOption);
-
         return result;
     }
 
@@ -1229,20 +1143,15 @@ public class ApplicabilityChecker implements Runnable {
             int startIndx,
             final List<Rule> sequence,
             final Graph graph) {
-
         DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
-
         boolean result = true;
         String criterion = "";
         boolean noEnablingPredecessor = false;
-
         int start = (startIndx > 1) ? startIndx : 1;
-
         for (int i = start; i < sequence.size(); i++) {
             Rule ri = sequence.get(i);
             Rule ri_1 = sequence.get(i - 1);
             System.out.println("=== >>>ApplicabilityChecker.enablingPredecessorPureConcurrentApplicable:  check rule: " + ri.getName());
-
             // extra case when LHS of the rule is empty
             criterion = ApplicabilityConstants.PREDECESSOR_NOT_NEEDED;
             result = isRuleWithEmptyLHSApplicableAtGraph(ri, i, graph);
@@ -1251,35 +1160,29 @@ public class ApplicabilityChecker implements Runnable {
                 if (this.isNonApplicableRule(ri, graph)) {
                     noEnablingPredecessor = noEnablingPredecessor(sequence, i, ri, dependencyContainer);
                 }
-
                 if (!noEnablingPredecessor) {
                     criterion = ApplicabilityConstants.PURE_ENABLING_PREDECESSOR;
                     result = this.pureEnablingPredecessor(ri, i, sequence, graph);
                     if (!result) {
                         setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PURE_ENABLING_PREDECESSOR, "");
-
                         criterion = ApplicabilityConstants.PARTIAL_ENABLING_PREDECESSOR;
                         result = this.partialEnablingPredecessor(ri, i, sequence, graph);
                         if (!result) {
                             setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PARTIAL_ENABLING_PREDECESSOR, "");
-
                             criterion = ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR;
                             result = this.directEnablingPredecessor(i, ri, sequence, graph);
                             if (!result) {
                                 setRuleResult(i, ri.getName(), false, ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR, "");
-
                                 criterion = ApplicabilityConstants.PREDECESSOR_NOT_NEEDED;
                                 result = this.isPredecessorNotNeeded(ri, i, graph);
                                 if (!result) {
                                     this.nonApplicableRules.add(ri);
                                     setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PREDECESSOR_NOT_NEEDED, "");
-
                                     // rule ri is not applicable
                                     // and there are no enabling predecessors -
                                     // - this implies that sequence is not applicable!
                                     noEnablingPredecessor = true;
                                     setRuleResult(i, ri.getName(), true, ApplicabilityConstants.NO_ENABLING_PREDECESSOR, "");
-
                                     //								setNonApplicabilityResult(noEnablingPredecessor, ApplicabilityConstants.NO_ENABLING_PREDECESSOR); 
                                 }
                             }
@@ -1297,7 +1200,6 @@ public class ApplicabilityChecker implements Runnable {
                     if (!result) {
                         this.nonApplicableRules.add(ri);
                         setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PREDECESSOR_NOT_NEEDED, "");
-
                         // rule ri is not applicable
                         // and there are no enabling predecessors -
                         // - this implies that sequence is not applicable!
@@ -1306,20 +1208,16 @@ public class ApplicabilityChecker implements Runnable {
                     }
                 }
             }
-
             setApplicabilityResult(result, ApplicabilityConstants.ENABLING_PREDECESSOR);
             setNonApplicabilityResult(noEnablingPredecessor, ApplicabilityConstants.NO_ENABLING_PREDECESSOR);
-
             if (noEnablingPredecessor) {
                 if (this.ruleSequence.getNonApplicabilityResult().first.booleanValue()) {
                     break;
                 }
             }
         }
-
         dependencyContainer.clear();
         dependencyContainer.refreshOptions(cpOption);
-
         return result;
     }
 
@@ -1327,54 +1225,43 @@ public class ApplicabilityChecker implements Runnable {
     private boolean enablingPredecessorPureConcurrentApplicable(
             int startIndx,
             final List<Rule> sequence) {
-
         DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
-
         boolean result = true;
         String criterion = "";
         boolean noEnablingPredecessor = false;
-
         int start = (startIndx > 1) ? startIndx : 1;
-
         for (int i = start; i < sequence.size(); i++) {
             Rule ri = sequence.get(i);
             Rule ri_1 = sequence.get(i - 1);
             System.out.println("=== >>>ApplicabilityChecker.enablingPredecessorPureConcurrentApplicable:  check rule: " + ri.getName());
-
             // extra case when LHS of the rule is empty
             criterion = ApplicabilityConstants.PREDECESSOR_NOT_NEEDED;
             result = isRuleWithEmptyLHSApplicableAtGraph(ri, i, null);
             if (!result) {
                 noEnablingPredecessor = noEnablingPredecessor(sequence, i, ri, dependencyContainer);
-
                 if (!noEnablingPredecessor) {
                     criterion = ApplicabilityConstants.PURE_ENABLING_PREDECESSOR;
                     result = this.pureEnablingPredecessor(ri, i, sequence, null);
                     if (!result) {
                         setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PURE_ENABLING_PREDECESSOR, "");
-
                         criterion = ApplicabilityConstants.PARTIAL_ENABLING_PREDECESSOR;
                         result = this.partialEnablingPredecessor(ri, i, sequence, null);
                         if (!result) {
                             setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PARTIAL_ENABLING_PREDECESSOR, "");
-
                             criterion = ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR;
                             result = this.directEnablingPredecessor(i, ri, sequence, null);
                             if (!result) {
                                 setRuleResult(i, ri.getName(), false, ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR, "");
-
                                 criterion = ApplicabilityConstants.PREDECESSOR_NOT_NEEDED;
                                 result = this.isPredecessorNotNeeded(ri, i, null);
                                 if (!result) {
                                     this.nonApplicableRules.add(ri);
                                     setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PREDECESSOR_NOT_NEEDED, "");
-
                                     // rule ri is not applicable
                                     // and there are no enabling predecessors -
                                     // - this implies that sequence is not applicable!
                                     noEnablingPredecessor = true;
                                     setRuleResult(i, ri.getName(), true, ApplicabilityConstants.NO_ENABLING_PREDECESSOR, "");
-
 //									setNonApplicabilityResult(noEnablingPredecessor, ApplicabilityConstants.NO_ENABLING_PREDECESSOR); 
                                 }
                             }
@@ -1386,7 +1273,6 @@ public class ApplicabilityChecker implements Runnable {
                     if (!result) {
                         this.nonApplicableRules.add(ri);
                         setRuleResult(i, ri.getName(), false, ApplicabilityConstants.PREDECESSOR_NOT_NEEDED, "");
-
                         // rule ri is not applicable
                         // and there are no enabling predecessors -
                         // - this implies that sequence is not applicable!
@@ -1395,20 +1281,16 @@ public class ApplicabilityChecker implements Runnable {
                     }
                 }
             }
-
             setApplicabilityResult(result, ApplicabilityConstants.ENABLING_PREDECESSOR);
             setNonApplicabilityResult(noEnablingPredecessor, ApplicabilityConstants.NO_ENABLING_PREDECESSOR);
-
             if (noEnablingPredecessor) {
                 if (this.ruleSequence.getNonApplicabilityResult().first.booleanValue()) {
                     break;
                 }
             }
         }
-
         dependencyContainer.clear();
         dependencyContainer.refreshOptions(cpOption);
-
         return result;
     }
 
@@ -1417,7 +1299,6 @@ public class ApplicabilityChecker implements Runnable {
                 || BaseFactory.theFactory().checkApplCondsOfRules(seq) != null) {
             return null;
         }
-
         List<ConcurrentRule> crs = new Vector<>(1);
         for (int i = 1; i < seq.size(); i++) {
             Rule ri = seq.get(i);
@@ -1443,7 +1324,6 @@ public class ApplicabilityChecker implements Runnable {
                     concurRuleListsOfRule.add(list);
                 }
             }
-
             if (list != null && !list.isEmpty()) {
                 crs.clear();
                 crs.addAll(list);
@@ -1487,7 +1367,6 @@ public class ApplicabilityChecker implements Runnable {
 					criterion = ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR;
 					setRuleResult(i, ri.getName(), result, ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR, "");		
 				}
-
 				noEnablingPredecessor = noEnablingPredecessor(sequence, i, ri, dependencyContainer);
 			} 								
 						
@@ -1500,7 +1379,6 @@ public class ApplicabilityChecker implements Runnable {
 		
 		return result;
 	}
-
 
 	private List<Rule> getPotentialEnablingPredecessor(
 			final List<Rule> sequence,
@@ -1528,7 +1406,6 @@ public class ApplicabilityChecker implements Runnable {
 		
 		return list;
 	}
-
 	
 	private boolean anyEnablingPredecessor(
 			final List<Rule> sequence,
@@ -1559,10 +1436,8 @@ public class ApplicabilityChecker implements Runnable {
             final int i,
             final Rule ri,
             final DependencyPairContainer dependencyContainer) {
-
         dependencyContainer.enableProduceConcurrentRule(false);
         dependencyContainer.enableComplete(false);
-
         Rule r = null;
         for (int j = 0; j < i; j++) {
             Rule rj = sequence.get(j);
@@ -1576,7 +1451,6 @@ public class ApplicabilityChecker implements Runnable {
             }
         }
         dependencyContainer.enableComplete(true);
-
         return r;
     }
 
@@ -1608,12 +1482,9 @@ public class ApplicabilityChecker implements Runnable {
             final int i,
             final Rule ri,
             final DependencyPairContainer dependencyContainer) {
-
         boolean result = false;
         this.info = "";
-
         Rule enablingRule = this.getFirstEnablingPredecessor(sequence, i, ri, dependencyContainer);
-
         if (enablingRule != null) {
 //			info = enablingRule.getName();		
             setRuleResult(i, ri.getName(), false, ApplicabilityConstants.NO_ENABLING_PREDECESSOR, this.info);
@@ -1622,7 +1493,6 @@ public class ApplicabilityChecker implements Runnable {
             setNonApplicabilityResult(true, ApplicabilityConstants.NO_ENABLING_PREDECESSOR);
             setRuleResult(i, ri.getName(), true, ApplicabilityConstants.NO_ENABLING_PREDECESSOR, "");
         }
-
         return result;
     }
 
@@ -1632,7 +1502,6 @@ public class ApplicabilityChecker implements Runnable {
             final Rule r2,
             int indx_r2,
             Graph g) {
-
 //		r1.getRight().setNotificationRequired(false);  // zu testen!!!
         final Match embedding = BaseFactory.theFactory().createMatch(r2, r1.getRight());
         embedding.setCompletionStrategy(this.strategy, true);
@@ -1645,7 +1514,6 @@ public class ApplicabilityChecker implements Runnable {
                 // rule r1 produce at least one object which is used in LHS of r2
                 if (!r1.hasInverseImage(obj)) {
                     result = true;
-
                     if (this.ruleSequence.isObjFlowActive()) {
                         final ObjectFlow objFlow = this.ruleSequence.getObjFlowForRules(r1, indx_r1, r2, indx_r2);
                         if (objFlow != null && !objFlow.isEmpty()) {
@@ -1656,20 +1524,17 @@ public class ApplicabilityChecker implements Runnable {
                     if (result) {
                         this.ruleSequence.getMatchSequence().addTotalPureEnablingSourceMatch(r2, r1, embedding, indx_r2, indx_r1);
                     }
-
                     break;
                 }
             }
             if (result) {
                 boolean attrCondUsesIP = attrConditionUsesInputParameterRight(r2, r1, embedding);
-
                 if (attrCondUsesIP) {
                     setRuleResult(indx_r2, r2.getName(), false, ApplicabilityConstants.PURE_ENABLING_PREDECESSOR, r1.getName());
                 } else {
                     setRuleResult(indx_r2, r2.getName(), true, ApplicabilityConstants.PURE_ENABLING_PREDECESSOR, r1.getName());
                 }
             }
-
             // TODO: apply r1, then r2 along the comatch of r2 to check NACs of r2
 //			result = isPurelyEnabledRuleApplicable(r1, r2, embedding, g);
 //			if (result) {
@@ -1677,11 +1542,9 @@ public class ApplicabilityChecker implements Runnable {
 //				this.ruleSequence.getMatchSequence().addTotalPureEnablingSourceOfMatch(r2, r1, embedding, indx_r2, indx_r1);
 //			}
         }
-
         embedding.dispose();
         BaseFactory.theFactory().unsetAllTransientAttrValuesOfRule(r1);
 //		r1.getRight().setNotificationRequired(true);
-
         return result;
     }
 
@@ -1689,22 +1552,16 @@ public class ApplicabilityChecker implements Runnable {
             final Rule ruleAC,
             final Rule preRuleIP,
             final Match ruleLHS2preRuleRHS) {
-
         if (ruleAC.getAttrContext().getConditions().getNumberOfEntries() > 0
                 && ((VarTuple) preRuleIP.getAttrContext().getVariables()).hasInputParameter()) {
-
             List<String> inputParams = preRuleIP.getInputParameterNames();
-
             // find object with IP in the RHS of preRuleWithInputParam
             List<GraphObject> goIP = preRuleIP.getInputParameterObjectsRight(inputParams);
-
             // collect objects with variable of the conditions of ruleAC
             List<String> varsAC = ((CondTuple) ruleAC.getAttrContext().getConditions()).getAllVariables();
             List<GraphObject> goAC = new Vector<>();
-
             // find LHS object with variable of the conditions of ruleAC
             addObjsWithVarOfCond(ruleAC.getLeft(), varsAC, null, goAC);
-
             // find PAC object with variable in the conditions of ruleAC
             Iterator<OrdinaryMorphism> morphs = ruleAC.getPACs();
             while (morphs.hasNext()) {
@@ -1717,7 +1574,6 @@ public class ApplicabilityChecker implements Runnable {
                 OrdinaryMorphism morph = morphs.next();
                 addObjsWithVarOfCond(morph.getTarget(), varsAC, morph, goAC);
             }
-
             Iterator<GraphObject> dom = ruleLHS2preRuleRHS.getDomain();
             while (dom.hasNext()) {
                 GraphObject go_ac = dom.next();
@@ -1727,7 +1583,6 @@ public class ApplicabilityChecker implements Runnable {
                 }
             }
         }
-
         return false;
     }
 
@@ -1748,7 +1603,6 @@ public class ApplicabilityChecker implements Runnable {
 			
 			// find LHS object with variable of conditions of rule
 			addObjsWithVarOfCond(rule.getLeft(), varsAC, null, goAC);
-
 			// find PAC object with variable in conditions of rule
 			Enumeration<OrdinaryMorphism> morphs = rule.getPACs();
 			while (morphs.hasMoreElements()) {
@@ -1794,7 +1648,6 @@ public class ApplicabilityChecker implements Runnable {
                 && ((VarTuple) rule.getAttrContext().getVariables()).hasInputParameter()) {
             return true;
         }
-
         return false;
     }
 
@@ -1810,7 +1663,6 @@ public class ApplicabilityChecker implements Runnable {
             final List<String> vars,
             final OrdinaryMorphism morph,
             final List<GraphObject> list) {
-
         while (iter.hasNext()) {
             GraphObject go = (GraphObject) iter.next();
             if (go.getAttribute() != null) {
@@ -1839,10 +1691,7 @@ public class ApplicabilityChecker implements Runnable {
     private boolean pureEnablingAlongObjectFlow(
             final OrdinaryMorphism morph,
             final ObjectFlow objFlow) {
-
-        Enumeration<Object> outs = objFlow.getMapping().keys();
-        while (outs.hasMoreElements()) {
-            Object out = outs.nextElement();
+        for (Object out : objFlow.getMapping().keySet()) {
             Object in = objFlow.getMapping().get(out);
             GraphObject img = morph.getImage((GraphObject) in);
             if (img != null && img != out) {
@@ -1871,7 +1720,6 @@ public class ApplicabilityChecker implements Runnable {
 			while (nacs.hasMoreElements() && noObj) {
 				OrdinaryMorphism nac = nacs.nextElement();
 				
-
 				noObj = doCheckForbiddenObjs(nac, toCreate, nac.getTarget().getNodesSet().iterator())
 						|| doCheckForbiddenObjs(nac, toCreate, nac.getTarget().getArcsSet().iterator());				
 			}
@@ -1899,7 +1747,6 @@ public class ApplicabilityChecker implements Runnable {
 		boolean noObj = true;
 		while (elems.hasNext() && noObj) {
 			GraphObject elem = (GraphObject) elems.next();
-
 			if (elem.isNode()) {							
 				String key = ((Node) elem).convertToKey();
 				if (g.getTypeObjectsMap().get(key) != null
@@ -1920,21 +1767,19 @@ public class ApplicabilityChecker implements Runnable {
 	}
      */
     /**
-     * Returns true if the specified rule r produces an object which is forbidden from the specified Negative
-     * Application Conditions nacs of an other rule or it is already preserved in the specified graph g. Otherwise
+     * Returns true if the specified rule r produces an object which is
+     * forbidden from the specified Negative Application Conditions nacs of an
+     * other rule or it is already preserved in the specified graph g. Otherwise
      * false.
      */
     private boolean checkForbiddenObjects(
             final Iterator<OrdinaryMorphism> nacs,
             final Rule r,
             final Graph g) {
-
         final List<GraphObject> toCreate = r.getElementsToCreate();
         boolean found = false;
-
         while (nacs.hasNext() && !found) {
             OrdinaryMorphism nac = nacs.next();
-
             found = checkForbiddenObjs(nac,
                     g,
                     nac.getTarget().getNodesSet().iterator(),
@@ -1949,17 +1794,16 @@ public class ApplicabilityChecker implements Runnable {
     }
 
     /**
-     * Returns true if the specified graph object to create which is forbidden from the specified Negative Application
-     * Condition nac of an other rule or it is already preserved in the specified graph g. Otherwise false.
+     * Returns true if the specified graph object to create which is forbidden
+     * from the specified Negative Application Condition nac of an other rule or
+     * it is already preserved in the specified graph g. Otherwise false.
      */
     private boolean checkForbiddenObjs(
             final OrdinaryMorphism nac,
             final Graph g,
             final Iterator<?> iter,
             final List<GraphObject> toCreate) {
-
         boolean found = false;
-
         while (iter.hasNext()) {
             GraphObject elem = (GraphObject) iter.next();
             if (!nac.hasInverseImage(elem)) {
@@ -2004,19 +1848,17 @@ public class ApplicabilityChecker implements Runnable {
     }
 
     /**
-     * Returns true if the specified rule r produces an object which is forbidden from the specified Negative
-     * Application Conditions nacs of an other rule. Otherwise false.
+     * Returns true if the specified rule r produces an object which is
+     * forbidden from the specified Negative Application Conditions nacs of an
+     * other rule. Otherwise false.
      */
     private boolean checkForbiddenObjects(
             final Iterator<OrdinaryMorphism> nacs,
             final Rule r) {
-
         final List<GraphObject> toCreate = r.getElementsToCreate();
         boolean found = false;
-
         while (nacs.hasNext() && !found) {
             OrdinaryMorphism nac = nacs.next();
-
             found = doCheckForbiddenObjs(nac, toCreate, nac.getTarget().getNodesSet().iterator())
                     || doCheckForbiddenObjs(nac, toCreate, nac.getTarget().getArcsSet().iterator());
         }
@@ -2027,7 +1869,6 @@ public class ApplicabilityChecker implements Runnable {
             final OrdinaryMorphism nac,
             final List<GraphObject> toCreate,
             final Iterator<?> elems) {
-
         boolean noObj = !toCreate.isEmpty();
         while (elems.hasNext()) {
             GraphObject elem = (GraphObject) elems.next();
@@ -2110,16 +1951,17 @@ public class ApplicabilityChecker implements Runnable {
 	}
      */
     /**
-     * Check 4c. (direct enabling predecessor) criterion of applicability : there exists a concurrent rule r_c of r_i-1
-     * and r_i such that r_c is applicable via an injective match on graph g and r_c is asymmetrically parallel
-     * independent on r_j for all j<(i-1) and r_j is asymmetrically parallel independent on r_c for all i<j<=n.
+     * Check 4c. (direct enabling predecessor) criterion of applicability :
+     * there exists a concurrent rule r_c of r_i-1 and r_i such that r_c is
+     * applicable via an injective match on graph g and r_c is asymmetrically
+     * parallel independent on r_j for all j<(i-1) and r_j is asymmetrically
+     * parallel independent on r_c for all i<j<=n.
      */
     private boolean directEnablingPredecessor(
             final int i,
             final Rule ri,
             final List<Rule> sequence,
             final Graph g) {
-
         boolean result = false;
         Rule ri_1 = sequence.get(i - 1);
         if (ri_1 != null) {
@@ -2131,7 +1973,6 @@ public class ApplicabilityChecker implements Runnable {
                 concurRuleLists = new Vector<>();
                 this.ruleSequence.putListsOfConcurrentRules(ri, i, concurRuleLists);
             }
-
             //test
             this.completeConcurRuleBackward = this.ruleSequence.isObjFlowActive();
 //	System.out.println(ri.getName()+"      completeConcurRuleBackward: "+completeConcurRuleBackward);		
@@ -2143,23 +1984,21 @@ public class ApplicabilityChecker implements Runnable {
 //					result = this.buildPlainConcurrentRule(sequence, g);
 //				}
             }
-
         }
         if (result) {
             System.out.println("=== >>>  ApplicabilityChecker.directEnablingPredecessor:  of  rule: " + ri.getName() + "  is  rule: " + this.info);
-
             setRuleResult(i, ri.getName(), true, ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR, this.info);
             setRuleResult(i, ri.getName(), false, ApplicabilityConstants.NO_ENABLING_PREDECESSOR, "(direct)");
         }
-
         return result;
     }
 
     /**
-     * Check 4b. (partial enabling predecessor) criterion of applicability : there exists a concurrent rule r_c of a not
-     * necessarily direct predecessor rule r and r_i such that r_c is applicable to graph g and all predecessors of r_c
-     * do not cause a conflict with r_c. Moreover, r is self-enabled such that its match can be forwarded to the match
-     * of r_c.
+     * Check 4b. (partial enabling predecessor) criterion of applicability :
+     * there exists a concurrent rule r_c of a not necessarily direct
+     * predecessor rule r and r_i such that r_c is applicable to graph g and all
+     * predecessors of r_c do not cause a conflict with r_c. Moreover, r is
+     * self-enabled such that its match can be forwarded to the match of r_c.
      */
     private boolean partialEnablingPredecessor(
             final Rule ri,
@@ -2167,22 +2006,17 @@ public class ApplicabilityChecker implements Runnable {
             final List<Rule> sequence,
             final Graph g) {
 //		System.out.println("\n=== >>>  ApplicabilityChecker.partialEnablingPredecessor ...  of  "+ri.getName());
-
         boolean result = false;
-
         for (int j = i - 1; j >= 0; j--) {
             Rule rj = sequence.get(j);
             this.info = rj.getName();
-
             Pair<Boolean, List<String>> pair = this.ruleSequence.getRuleResult(j, rj.getName(), ApplicabilityConstants.PREDECESSOR_NOT_NEEDED);
             if (pair == null) {
                 pair = this.ruleSequence.getRuleResult(j, rj.getName(), ApplicabilityConstants.INITIALIZATION);
             }
-
             if (pair != null && pair.first.booleanValue()) {
 //				System.out.println("=== >>>  ApplicabilityChecker.partialEnablingPredecessor ::  applicable: "+rj.getName());
                 // rule rj is applicable to graph g
-
                 // get new list of concurrent rules of the current rule ri
                 List<List<ConcurrentRule>> concurRuleLists = this.ruleSequence.getListsOfConcurrentRules(ri, i);
                 if (concurRuleLists == null) {
@@ -2191,13 +2025,11 @@ public class ApplicabilityChecker implements Runnable {
                 }
                 // make concurrent rule(s) due to dependency pair overlapping
                 List<ConcurrentRule> list = this.makeJointlyConcurrentRule(rj, j, ri, i);
-
                 if (list != null && !list.isEmpty()) {
                     concurRuleLists.add(list);
                     int d = 1;
-
                     // set match of concurrent rule,  (check due to ObjectFlow?)
-                    final Hashtable<GraphObject, GraphObject> rjMatch = this.ruleSequence.getMatchSequence().getDirectMatch(j, rj);
+                    final Map<GraphObject, GraphObject> rjMatch = this.ruleSequence.getMatchSequence().getDirectMatch(j, rj);
                     if (rjMatch != null) {
                         for (int c = 0; c < list.size(); c++) {
                             final ConcurrentRule cr = list.get(c);
@@ -2229,10 +2061,8 @@ public class ApplicabilityChecker implements Runnable {
 //			setRuleResult(i, ri.getName(), true, ApplicabilityConstants.DIRECT_ENABLING_PREDECESSOR, "");
             setRuleResult(i, ri.getName(), false, ApplicabilityConstants.NO_ENABLING_PREDECESSOR, "(partial)");
         }
-
         return result;
     }
-
 //	private boolean isConcurrentRuleApplicableWithoutConflicts(
 //			final int i,
 //			final Rule ri,
@@ -2262,6 +2092,7 @@ public class ApplicabilityChecker implements Runnable {
 //					excludePair = this.makeExcludePair();
 //					if(!asymParallelIndependentByCPA(excludePair, rj, cr)) {
 //						result = false;		
+
     ////						info = cr.getName();
 //						System.out.println("---> Concurrent rule: "+cr.getName()+"  has conflicts!");
 //						break;
@@ -2301,8 +2132,6 @@ public class ApplicabilityChecker implements Runnable {
 //		return result;
 //	}
 
-
-
 	/**
 	 * Checks applicability of an concurrent rule at given Graph g.
 	 * Additionaly, for an applicable concurrent rule check 
@@ -2318,7 +2147,6 @@ public class ApplicabilityChecker implements Runnable {
             final ConcurrentRule cr,
             final int concurdepth,
             String criterion) {
-
         boolean result = false;
         if (g == null
                 || this.isRuleApplicable(ri, cr, g, false)) {
@@ -2344,23 +2172,19 @@ public class ApplicabilityChecker implements Runnable {
             final List<Rule> sequence,
             final int concurdepth,
             String criterion) {
-
 //		System.out.println("\n=== >>>  concurrentRuleAsymParallelIndependent: check conflicts of its base rules...  cr.depth: "+
 //				cr.getRule().getName()+"   depth: "+cr.getDepth());
         boolean result = true;
         int concurrrentRuleDepth = cr.getDepth();
-
         List<Rule> remainList = new Vector<>();
         for (int l = i + 1; l < sequence.size(); l++) {
             remainList.add(sequence.get(l));
         }
-
         List<Rule> crSourceList = new Vector<>();
         int start = i - concurrrentRuleDepth;
         for (int l = start; l <= i; l++) {
             crSourceList.add(sequence.get(l));
         }
-
         // find conflicts of concurrent rule with rules before
         for (int l = 0; l < crSourceList.size(); l++) {
             Rule r = crSourceList.get(l);
@@ -2394,10 +2218,8 @@ public class ApplicabilityChecker implements Runnable {
         }
         this.info = this.getConcurrentRuleNameInfo(cr.getRule(), ri);
         setRuleResult(i, ri.getName(), result, criterion, this.info);
-
         remainList.clear();
         crSourceList.clear();
-
         return result;
     }
 
@@ -2409,7 +2231,6 @@ public class ApplicabilityChecker implements Runnable {
             final int concurdepth,
             String criterion) {
 //		System.out.println("=== >>>  concurrentRuleAsymParallelIndependentByCPA: check conflicts of concurrent rule...");
-
         boolean result = true;
         List<Rule> tmp = new Vector<>();
         tmp.addAll(sequence);
@@ -2424,7 +2245,6 @@ public class ApplicabilityChecker implements Runnable {
             tmp.add(i - n, cr.getRule());
         }
         int c = tmp.indexOf(cr.getRule());
-
         // find conflicts of concurrent rule with rules before
         for (int j = 0; j < c; j++) {
             final Rule rj = tmp.get(j);
@@ -2449,13 +2269,10 @@ public class ApplicabilityChecker implements Runnable {
                 excludePair.dispose();
             }
         }
-
         this.info = this.getConcurrentRuleNameInfo(cr.getRule(), ri);
         setRuleResult(i, ri.getName(), result, criterion, this.info);
 //		System.out.println("=== >>>  Concurrent rule: "+cr.getRule().getName()+"  is applicable without conflicts!");
-
         tmp.clear();
-
         return result;
     }
 
@@ -2466,7 +2283,6 @@ public class ApplicabilityChecker implements Runnable {
 			final List<Rule> sequence, 
 			final Graph g) {
 		System.out.println("---> ApplicabilityChecker.directEnablingPredecessor ...  of  "+concurrentRule.getName());
-
 		ExcludePair excludePair = null;
 		boolean result = true;
 		
@@ -2527,7 +2343,6 @@ public class ApplicabilityChecker implements Runnable {
 							applicableConcurrentRules.add(cr);
 							break;
 						}
-
 					}
 					tmp.clear();
 				} else {
@@ -2542,7 +2357,6 @@ public class ApplicabilityChecker implements Runnable {
 		}
 		return result;
 	}
-
 	private boolean checkConcurrentRuleAsPredecessor(
 			final int i,
 			final Rule ri,
@@ -2591,9 +2405,8 @@ public class ApplicabilityChecker implements Runnable {
             final int rIndx,
             final List<List<ConcurrentRule>> crsOfRule,
             final int listIndx,
-            final Hashtable<?, ?> matchmap) {
+            final Map<?, ?> matchmap) {
 //		System.out.println("=== >>>  ApplicabilityChecker.completeConcurrentRules:  of "+r.getName());
-
         boolean res = false;
         if (listIndx >= crsOfRule.size()) {
             int x = listIndx;
@@ -2613,7 +2426,6 @@ public class ApplicabilityChecker implements Runnable {
                     // get the (x-1) list
                     crListOfPreRule = this.getConcurrentRulesOfRule(preRule, preIndx, x - 1);
                 }
-
                 if (crListOfPreRule != null) {
                     final List<ConcurrentRule> list = new Vector<>();
                     for (int c = 0; c < crListOfPreRule.size(); c++) {
@@ -2651,11 +2463,8 @@ public class ApplicabilityChecker implements Runnable {
             final Rule ri, final int i,
             final Graph g) {
         System.out.println("=== >>>  ApplicabilityChecker.buildConcurrentRulesForwards:: " + ri_1.getName() + "  &  " + ri.getName());
-
         boolean result = false;
-
         final List<List<ConcurrentRule>> crListsOfRuleI = this.getListsOfConcurrentRulesOfRule(ri, i);
-
         final List<List<ConcurrentRule>> crListsOfRuleI_1 = this.getListsOfConcurrentRulesOfRule(ri_1, i_1);
         if (crListsOfRuleI_1 != null && !crListsOfRuleI_1.isEmpty()) {
             for (int l = 0; l < crListsOfRuleI_1.size() && !result; l++) {
@@ -2697,16 +2506,13 @@ public class ApplicabilityChecker implements Runnable {
                     List<ConcurrentRule> listOfPreRule = this.getConcurrentRulesOfRule(r, k, k - 1);
                     if (listOfPreRule == null || listOfPreRule.isEmpty()) {
                         final List<List<ConcurrentRule>> crListsOfPreRule = this.getListsOfConcurrentRulesOfRule(r, k);
-
                         this.completeConcurrentRules(r, k, crListsOfPreRule, k - 1, null);
-
                         listOfPreRule = this.getConcurrentRulesOfRule(r, k, k - 1);
                         if (listOfPreRule == null || listOfPreRule.isEmpty()) {
                             result = false;
                             break;
                         }
                     }
-
                     list = new Vector<>();
                     for (int c = 0; c < listOfPreRule.size(); c++) {
                         final ConcurrentRule cr = listOfPreRule.get(c);
@@ -2714,7 +2520,6 @@ public class ApplicabilityChecker implements Runnable {
                     }
                     crListsOfRuleI.add(list);
                 }
-
                 if (!list.isEmpty()) {
                     int d = crListsOfRuleI.size();
                     for (int c = 0; c < list.size(); c++) {
@@ -2738,7 +2543,6 @@ public class ApplicabilityChecker implements Runnable {
 // 		System.out.println("---> ApplicabilityChecker.buildConcurrentRulesForward::  result: "+result);
         return result;
     }
-
 // 	private void showObjectFlow() {
 // 		Enumeration<String> keys = this.ruleSequence.getObjectFlow().keys();
 // 		while (keys.hasMoreElements()) {
@@ -2748,8 +2552,10 @@ public class ApplicabilityChecker implements Runnable {
 // 					+"  ::  "+of.getMapping().size());
 // 		}
 // 	}
+
     /**
-     * Creates concurrent rule backwards: Exmpl.: CR(1,2,3) 1) CR(2,3) = r2 + r3; 2) CR(1,2,3) = r1 + CR(2,3);
+     * Creates concurrent rule backwards: Exmpl.: CR(1,2,3) 1) CR(2,3) = r2 +
+     * r3; 2) CR(1,2,3) = r1 + CR(2,3);
      *
      * @param ri_1 the direct predecessor rule
      * @param i_1	index of the direct predecessor rule
@@ -2757,30 +2563,28 @@ public class ApplicabilityChecker implements Runnable {
      * @param i	index of the current rule
      * @param g	a graph to apply the rule
      *
-     * @return	true, when at least one rule of created concurrent rules is applicable, otherwise false
+     * @return	true, when at least one rule of created concurrent rules is
+     * applicable, otherwise false
      */
     private boolean buildConcurrentRulesBackward(
             final Rule ri_1, final int i_1,
             final Rule ri, final int i,
             final Graph g) {
         System.out.println("=== >>>  ApplicabilityChecker.buildConcurrentRulesBackwards:: " + ri_1.getName() + "  &  " + ri.getName());
-
         boolean result = false;
         int size = i;
         final List<List<ConcurrentRule>> concurrentRuleListsOfRule = this.getListsOfConcurrentRulesOfRule(ri, i);
-
 // 		showObjectFlow();
         List<ConcurrentRule> list = null;
         for (int m = size - 1; m >= 0; m--) {
             if (m == size - 1) {
                 // try to use object flow
                 if (this.ruleSequence.isObjFlowActive()) {
-
                     final ObjectFlow objFlow = this.ruleSequence.getObjFlowForRules(ri_1, i_1, ri, i);
                     if (objFlow != null && !objFlow.isEmpty()) {
                         // test:: reset depth when using ObjectFlow  
 //  					this.depth = 1; 
-                        final Hashtable<Object, Object> objFlowMap = objFlow.getMapping();
+                        final Map<Object, Object> objFlowMap = objFlow.getMapping();
                         System.out.println("=== >>>  ApplicabilityChecker.buildConcurrentRulesBackwards::  USE   ObjectFlow ");
                         list = this.makeConcurrentRules(ri_1, i_1, ri, i, objFlowMap);
                     } else {
@@ -2791,19 +2595,14 @@ public class ApplicabilityChecker implements Runnable {
                     System.out.println("=== >>>  ApplicabilityChecker.buildConcurrentRulesBackwards::  WITHOUT   ObjectFlow ");
                     list = this.makeConcurrentRules(ri_1, i_1, ri, i);
                 }
-
                 concurrentRuleListsOfRule.add(list);
-
             } else if (this.depth == -1 || m < this.depth) {
 // 				System.out.println("=== >>>  ApplicabilityChecker.buildConcurrentRulesBackwards::  CR = (r, cr)");
-
                 Rule r = this.ruleSequence.getRule(m);
                 list = this.makeConcurrentRules(r, m, list, m + 1);
-
 // 				list = this.makeConcurrentRulesDuetoDependency(r, m,  list, m+1, null);
                 concurrentRuleListsOfRule.add(list);
             }
-
             // check applicability of concurrent rules
             if (list != null && !list.isEmpty()) {
                 int d = concurrentRuleListsOfRule.size();
@@ -2821,7 +2620,6 @@ public class ApplicabilityChecker implements Runnable {
                 }
             }
         }
-
         return result;
     }
 
@@ -2830,12 +2628,10 @@ public class ApplicabilityChecker implements Runnable {
             int indx_r1,
             final Rule r2,
             int indx_r2) {
-
         final DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
         dependencyContainer.enableProduceConcurrentRule(true);
         // here all overlappings will be considered
         dependencyContainer.setCompleteConcurrency(true); //this.completeConcurrency);
-
         List<ConcurrentRule> list = null;
         try {
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
@@ -2843,12 +2639,10 @@ public class ApplicabilityChecker implements Runnable {
                 list = dependencyContainer.getConcurrentRules();
                 // check overlappings against ObjectFlow
                 reduceConcurrentRulesDuetoObjectFlow(r1, indx_r1, r2, indx_r2, list);
-
                 extendRuleNameByIndex(list);
             }
         } catch (Exception ex) {
         }
-
         return list;
     }
 
@@ -2858,7 +2652,7 @@ public class ApplicabilityChecker implements Runnable {
  			int indx_r1,
  			final List<ConcurrentRule> crules,
  			int indx_cr,
-			final Hashtable<?, ?> matchmap) {
+			final Map<?, ?> matchmap) {
  		
  		final List<ConcurrentRule> reslist = new Vector<ConcurrentRule>();
  		for (int i=0; i<crules.size(); i++) {
@@ -2877,14 +2671,12 @@ public class ApplicabilityChecker implements Runnable {
             int indx_r1,
             final Rule r2,
             int indx_r2,
-            final Hashtable<?, ?> matchmap) {
-
+            final Map<?, ?> matchmap) {
         final DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
         dependencyContainer.enableProduceConcurrentRule(true);
         // if this.completeConcurrency Is false, only max overlapping above nodes will be considered
         // otherwise use all overlappings to create concurrent rules
         dependencyContainer.setCompleteConcurrency(this.completeConcurrency);
-
         List<ConcurrentRule> list = null;
         try {
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(r1, r2, CriticalPair.EXCLUDE, true);
@@ -2893,7 +2685,6 @@ public class ApplicabilityChecker implements Runnable {
             }
         } catch (Exception ex) {
         }
-
         if (list == null) {
             list = new Vector<>(1);
         } else {
@@ -2911,12 +2702,10 @@ public class ApplicabilityChecker implements Runnable {
                 list.add(cr);
             }
         }
-
         // try to use object flow			
         if (!list.isEmpty()) {
             reduceConcurrentRulesDuetoObjectFlow(r1, indx_r1, r2, indx_r2, list);
         }
-
         extendRuleNameByIndex(list);
 //		System.out.println("---> ApplicabilityChecker.makeConcurrentRulesDuetoDependency:  count: "+list.size());
         return list;
@@ -2925,15 +2714,13 @@ public class ApplicabilityChecker implements Runnable {
     private List<ConcurrentRule> makeConcurrentRulesDuetoDependency(
             final ConcurrentRule cr1,
             final Rule r2,
-            final Hashtable<?, ?> matchmap) {
-
+            final Map<?, ?> matchmap) {
 //		System.out.println("---> ApplicabilityChecker.makeConcurrentRulesDuetoDependency(ConcurrentRule r1, final Rule r2 ");
         final DependencyPairContainer dependencyContainer = this.makeDependencyPairContainer();
         dependencyContainer.enableProduceConcurrentRule(true);
         // if this.completeConcurrency Is false, only max overlapping above nodes will be considered
         // otherwise use all overlappings to create concurrent rules
         dependencyContainer.setCompleteConcurrency(this.completeConcurrency);
-
         List<ConcurrentRule> list = null;
         try {
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> criticalPairs = dependencyContainer.getCriticalPair(cr1.getRule(), r2, CriticalPair.EXCLUDE, true);
@@ -2942,11 +2729,9 @@ public class ApplicabilityChecker implements Runnable {
             }
         } catch (Exception ex) {
         }
-
         if (list == null) {
             list = new Vector<>(1);
         }
-
         if (this.completeConcurrency) {
             // make concurrent rule with disjoint (RHS1+LHS2) of (r1, r2)	
             final ConcurrentRule cr = new ConcurrentRule(cr1, r2);
@@ -2954,7 +2739,6 @@ public class ApplicabilityChecker implements Runnable {
                 list.add(cr);
             }
         }
-
         for (int c = 0; c < list.size(); c++) {
             if (this.completeConcurRuleBackward) {
                 list.get(c).setSecondSourceConcurrentRule(cr1);
@@ -2962,20 +2746,17 @@ public class ApplicabilityChecker implements Runnable {
                 list.get(c).setFirstSourceConcurrentRule(cr1);
             }
         }
-
         extendRuleNameByIndex(list);
 //		System.out.println("---> ApplicabilityChecker.makeConcurrentRulessDuetoDependency:  count: "+list.size());
         return list;
     }
 
-    private Hashtable<Object, Object> getObjectFlowForRules(
+    private Map<Object, Object> getObjectFlowForRules(
             final Rule r1,
             int indx_r1,
             final ConcurrentRule cr,
             int indx_cr) {
-
-        Hashtable<Object, Object> map = new Hashtable<Object, Object>();
-
+        Map<Object, Object> map = new HashMap<Object, Object>();
 //		Rule r2 = cr.getFirstSourceRule();	
         map.putAll(cr.getReflectedInputObjectFlowFromRule(
                 r1,
@@ -2988,7 +2769,6 @@ public class ApplicabilityChecker implements Runnable {
             int indx_r1,
             final List<ConcurrentRule> crules,
             int indx_cr) {
-
         final List<ConcurrentRule> reslist = new Vector<>();
         if (this.completeConcurRuleBackward) {
             for (int i = 0; i < crules.size(); i++) {
@@ -3000,9 +2780,8 @@ public class ApplicabilityChecker implements Runnable {
 //					if (objFlow != null && !objFlow.isEmpty()) {
 //						System.out.println("=== >>>  try to forward the object flow to concurrent rule along embedding");
 //		 	 			final Hashtable<Object, Object> matchmap12 = objFlow.getMapping(); 
-
                     // output --> input		 	 			
-                    final Hashtable<Object, Object> matchmap = getObjectFlowForRules(r1, indx_r1, cr, indx_cr);
+                    final Map<Object, Object> matchmap = getObjectFlowForRules(r1, indx_r1, cr, indx_cr);
                     if (!matchmap.isEmpty()) {
                         // make shifting object flow along embedding
 //				 		final Hashtable<Object, Object> matchmap = new Hashtable<Object, Object>();
@@ -3024,9 +2803,7 @@ public class ApplicabilityChecker implements Runnable {
                                 for (int j = 0; j < list.size(); j++) {
                                     ConcurrentRule concrule = list.get(j);
                                     concrule.setSecondSourceConcurrentRule(cr);
-
                                     reflectObjectFlows(concrule, indx_r1, (indx_r1 + concrule.getDepth()));
-
 //				 					if (cr.reflectObjectFlow(this.ruleSequence.getObjectFlowForRule(r1, indx_r1))
 //				 							&& cr.reflectObjectFlow(this.ruleSequence.getObjectFlowForRule(r2, cr.getIndexOfSecondSourceRule()))) {													 						
 //				 					}
@@ -3072,63 +2849,46 @@ public class ApplicabilityChecker implements Runnable {
             int indx_r1,
             final Rule r2,
             int indx_r2,
-            final Hashtable<?, ?> objFlowMap) {
-
+            final Map<?, ?> objFlowMap) {
         if (objFlowMap == null || objFlowMap.isEmpty()) {
             return makeConcurrentRules(r1, indx_r1, r2, indx_r2);
         }
-
         System.out.println("=== >>>  ApplicabilityChecker.makeConcurrentRules::  " + r1.getName() + "   " + r2.getName() + "  by  Object Flow: ");
-
         // rename similar variables of rule1
-        final Hashtable<String, String> storeNewName2OldName = new Hashtable<String, String>();
+        final Map<String, String> storeNewName2OldName = new HashMap<String, String>();
         if (r1 != r2) {
             BaseFactory.theFactory().renameSimilarVariable(r2, r1, "r1_", storeNewName2OldName);
 //			((VarTuple) r1.getAttrContext().getVariables()).showVariables();
 //			((CondTuple) r1.getAttrContext().getConditions()).showConditions();
         }
-
         final List<ConcurrentRule> list = new Vector<>();
-
         Pair<Pair<Rule, Boolean>, Pair<OrdinaryMorphism, OrdinaryMorphism>> inverseRulePair = BaseFactory.theFactory().reverseRule(r1);
         Rule inverseRule1 = inverseRulePair.first.first;
-
         int maxsize = objFlowMap.size();
-
         if (maxsize > 0) {
             // matchmap inverse:: keys to values, values to keys, because of inverse r1
-            final Hashtable<Object, Object> inversematchmap = new Hashtable<Object, Object>();
-            Enumeration<?> keys = objFlowMap.keys();
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            final Map<Object, Object> inversematchmap = new HashMap<Object, Object>();
+            for (Object key : objFlowMap.keySet()) {
                 inversematchmap.put(objFlowMap.get(key),
                         inverseRulePair.second.second.getImage((GraphObject) key));
             }
-
             Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> enums = BaseFactory.theFactory().getOverlappingByPredefinedIntersection(
                     r2.getLeft(), inverseRule1.getLeft(), inversematchmap);
-
             if (enums != null && enums.hasMoreElements()) {
                 while (enums.hasMoreElements()) {
                     final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping = enums.nextElement();
-
                     if (this.checkIntersectionDuetoObjectFlow(overlapping, objFlowMap)) {
-
                         ConcurrentRule cr = new ConcurrentRule(r1, inverseRulePair.first.first, r2,
                                 inverseRulePair.second.first,
                                 inverseRulePair.second.second,
                                 overlapping.second,
                                 overlapping.first);
-
                         if (cr.getRule() != null) {
                             cr.setIndexOfFirstSourceRule(indx_r1);
                             cr.setIndexOfSecondSourceRule(indx_r2);
-
                             cr.reflectObjectFlow(this.ruleSequence.getObjFlowForRule(r1, indx_r1));
                             cr.reflectObjectFlow(this.ruleSequence.getObjFlowForRule(r2, indx_r2));
-
                             list.add(0, cr);
-
                             System.out.println("=== >>>  Concurrent rule: "
                                     + cr.getRule().getName()
                                     + "  has NACs: " + cr.getRule().getNACs().hasNext()
@@ -3139,14 +2899,11 @@ public class ApplicabilityChecker implements Runnable {
                 }
             }
         }
-
         extendRuleNameByIndex(list);
         System.out.println("=== >>> ApplicabilityChecker.makeConcurrentRules::  count: " + list.size());
-
         if (!storeNewName2OldName.isEmpty()) {
             BaseFactory.theFactory().restoreVariableNameOfRule(r1, storeNewName2OldName);
         }
-
         return list;
     }
 
@@ -3155,18 +2912,14 @@ public class ApplicabilityChecker implements Runnable {
             int indx_r1,
             final Rule r2,
             int indx_r2) {
-
         System.out.println("=== >>>  ApplicabilityChecker.makeConcurrentRules::  of  " + r1.getName() + "   " + r2.getName());
-
         // rename similar variables of rule1
-        final Hashtable<String, String> storeNewName2OldName = new Hashtable<String, String>();
+        final Map<String, String> storeNewName2OldName = new HashMap<String, String>();
         if (r1 != r2) {
             BaseFactory.theFactory().renameSimilarVariable(r2, r1, "r1_", storeNewName2OldName);
 //			((VarTuple) rule1.getAttrContext().getVariables()).showVariables();
         }
-
         final List<ConcurrentRule> list = new Vector<>();
-
 //		final Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>> 
 //			inverseRulePair = BaseFactory.theFactory().makeInverseRule(r1);
 //		Rule inverseRule1 = inverseRulePair.first;			
@@ -3174,17 +2927,13 @@ public class ApplicabilityChecker implements Runnable {
         // make disjoint concurrent rule
         ConcurrentRule cr = new ConcurrentRule(r1, r2);
         if (cr.getRule() != null) {
-
             if (this.isOverlappingGraphValid(r1, null, r2,
                     cr.getFirstLeftEmbedding(),
                     cr.getSecondLeftEmbedding())) {
-
                 cr.setIndexOfFirstSourceRule(indx_r1);
                 cr.setIndexOfSecondSourceRule(indx_r2);
-
                 cr.reflectObjectFlow(this.ruleSequence.getObjFlowForRule(r1, indx_r1));
                 cr.reflectObjectFlow(this.ruleSequence.getObjFlowForRule(r2, indx_r2));
-
                 System.out.println("=== >>>  ApplicabilityChecker.makeConcurrentRules::  DISJOINT  CR: "
                         + cr.getRule().getName()
                         + "  has NACs: " + cr.getRule().getNACs().hasNext()
@@ -3192,15 +2941,12 @@ public class ApplicabilityChecker implements Runnable {
                 list.add(cr);
             }
         }
-
 //		}
         extendRuleNameByIndex(list);
         System.out.println("=== >>>  ApplicabilityChecker.makeConcurrentRules::  count: " + list.size());
-
         if (!storeNewName2OldName.isEmpty()) {
             BaseFactory.theFactory().restoreVariableNameOfRule(r1, storeNewName2OldName);
         }
-
         return list;
     }
 
@@ -3210,7 +2956,6 @@ public class ApplicabilityChecker implements Runnable {
             final Rule r2,
             final OrdinaryMorphism morph1,
             final OrdinaryMorphism morph2) {
-
         boolean valid = true;
         // make match of r1
         ((ContextView) morph1.getAttrContext()).setVariableContext(true);
@@ -3236,7 +2981,6 @@ public class ApplicabilityChecker implements Runnable {
                 return false;
             }
         }
-
         // make match of r2
         ((ContextView) morph2.getAttrContext()).setVariableContext(true);
         Match m2 = BaseFactory.theFactory().makeMatch(r2, morph2);
@@ -3250,14 +2994,13 @@ public class ApplicabilityChecker implements Runnable {
         } else {
             return false;
         }
-
         return valid;
     }
 
     /*
 	private boolean checkIntersectionOfConcurrentRuleDuetoObjectFlow(
 			final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping,
-			final Hashtable<?, ?> objFlow) {
+			final Map<?, ?> objFlow) {
 				
 		boolean ok = true;
 		if (objFlow != null) {
@@ -3297,12 +3040,10 @@ public class ApplicabilityChecker implements Runnable {
      */
     private boolean checkIntersectionDuetoObjectFlow(
             final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping,
-            final Hashtable<?, ?> objFlow) {
-
+            final Map<?, ?> objFlow) {
         boolean ok = true;
         if (objFlow != null) {
             List<GraphObject> r2LHSobjs = getOverlappingObjectsOfFirstMorphism(overlapping);
-
             Iterator<?> r2_objFlow = objFlow.values().iterator();
             while (r2_objFlow.hasNext() && ok) {
                 ok = ok && r2LHSobjs.contains(r2_objFlow.next());
@@ -3313,7 +3054,6 @@ public class ApplicabilityChecker implements Runnable {
 
     private List<GraphObject> getOverlappingObjectsOfFirstMorphism(
             final Pair<OrdinaryMorphism, OrdinaryMorphism> overlapping) {
-
         List<GraphObject> list = new Vector<>();
         Iterator<?> elems = overlapping.first.getTarget().getNodesSet().iterator();
         while (elems.hasNext()) {
@@ -3336,13 +3076,11 @@ public class ApplicabilityChecker implements Runnable {
 
     private boolean checkConcurrentRuleDuetoObjectFlow(
             final ConcurrentRule cr,
-            final Hashtable<?, ?> objFlow) {
-
+            final Map<?, ?> objFlow) {
         if (objFlow == null || objFlow.isEmpty()
                 || cr.getOverlappingObjectsOfSecondRule() == null) {
             return true;
         }
-
         boolean ok = true;
         boolean inside = false;
 //		List<GraphObject> r2LHSobjs = cr.getOverlappingObjectsOfSecondRule();		
@@ -3350,14 +3088,10 @@ public class ApplicabilityChecker implements Runnable {
 //		while (r2_objFlow.hasNext() && ok) {
 //			ok = ok && r2LHSobjs.contains(r2_objFlow.next());
 //		}
-
-        Enumeration<?> outs = objFlow.keys();
-        while (outs.hasMoreElements()) {
-            GraphObject out = (GraphObject) outs.nextElement();
-            Hashtable<GraphObject, GraphObject> map = cr.getOverlappingObjects();
-            Enumeration<GraphObject> objs = map.keys();
-            while (objs.hasMoreElements()) {
-                GraphObject obj_rhs1 = objs.nextElement();// == output object
+        for (Object outObj : objFlow.keySet()) {
+            GraphObject out = (GraphObject) outObj;
+            Map<GraphObject, GraphObject> map = cr.getOverlappingObjects();
+            for (GraphObject obj_rhs1 : map.keySet()) {// == output object
                 GraphObject obj_lhs2 = map.get(obj_rhs1); // == input object
                 GraphObject input = (GraphObject) objFlow.get(out);
                 if (input != obj_lhs2) {
@@ -3371,7 +3105,6 @@ public class ApplicabilityChecker implements Runnable {
         if (!inside) {
             return true;
         }
-
         return ok;
     }
 
@@ -3383,14 +3116,12 @@ public class ApplicabilityChecker implements Runnable {
             final List<ConcurrentRule> list) {
         // try to use object flow
         if (this.ruleSequence.isObjFlowActive()) {
-
             final ObjectFlow objFlow = this.ruleSequence.getObjFlowForRules(r1, indx_r1, r2, indx_r2);
             if (objFlow != null && !objFlow.isEmpty()) {
-                Hashtable<Object, Object> map = objFlow.getMapping();
+                Map<Object, Object> map = objFlow.getMapping();
                 // remove overlappings without object flow
                 for (int c = 0; c < list.size(); c++) {
                     ConcurrentRule cr = list.get(c);
-
                     if (!checkConcurrentRuleDuetoObjectFlow(cr, map)) {
                         list.remove(c);
                         c--;
@@ -3455,22 +3186,18 @@ public class ApplicabilityChecker implements Runnable {
             final boolean result,
             final String criterion,
             final String otherRuleName) {
-
         this.ruleSequence.setRuleResult(indx, ruleName, result, criterion, otherRuleName);
     }
 
     private void setApplicabilityResult(
             final boolean result,
             final String criterion) {
-
         this.ruleSequence.setApplicabilityResult(result, criterion);
     }
 
     private void setNonApplicabilityResult(
             final boolean result,
             final String criterion) {
-
         this.ruleSequence.setNonApplicabilityResult(result, criterion);
     }
-
 }

@@ -2,18 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.view.impl;
 
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import agg.attribute.impl.AttrObject;
 import agg.util.Disposable;
 
@@ -24,9 +24,7 @@ import agg.util.Disposable;
 public class SlotSequence extends AttrObject implements Disposable {
 
     protected Vector<Slot> slots = new Vector<Slot>(10, 10);
-
     static final long serialVersionUID = 3923744045591286915L;
-
     @SuppressWarnings("unused")
     private static transient int COUNTER = 0;
 
@@ -34,11 +32,6 @@ public class SlotSequence extends AttrObject implements Disposable {
         super();
         COUNTER++;
         // System.out.println("SlotSequence: Erzeuge Sequence #"+COUNTER);
-    }
-
-    protected void finalize() {
-        COUNTER--;
-        // System.out.println("SlotSequence: Loesche Sequence #"+COUNTER);
     }
 
     public void dispose() {
@@ -80,7 +73,6 @@ public class SlotSequence extends AttrObject implements Disposable {
     public void incrementAllGreaterThan(int index) {
         int in;
         Slot slot;
-
         for (Enumeration<Slot> en = this.slots.elements(); en.hasMoreElements();) {
             slot = en.nextElement();
             in = slot.getIndex();
@@ -101,7 +93,6 @@ public class SlotSequence extends AttrObject implements Disposable {
     public void decrementAllGreaterThan(int index) {
         int in;
         Slot slot;
-
         for (Enumeration<Slot> en = this.slots.elements(); en.hasMoreElements();) {
             slot = en.nextElement();
             in = slot.getIndex();
@@ -124,7 +115,6 @@ public class SlotSequence extends AttrObject implements Disposable {
         }
         int sSlot = srcSlot;
         Slot slotObj = this.slots.elementAt(sSlot);
-
         if (destSlot >= getSize()) {
             this.slots.addElement(slotObj);
         } else {
@@ -163,7 +153,6 @@ public class SlotSequence extends AttrObject implements Disposable {
     class Slot implements Serializable {
 
         protected int index;
-
         static final long serialVersionUID = -6821223290051933180L;
 
         public Slot(int index) {
@@ -178,7 +167,6 @@ public class SlotSequence extends AttrObject implements Disposable {
             this.index = index;
             ;
         }
-
         /*
 		 * private void readObject(ObjectInputStream in) throws IOException,
 		 * ClassNotFoundException {

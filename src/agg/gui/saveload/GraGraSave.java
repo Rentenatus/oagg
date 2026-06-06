@@ -2,21 +2,20 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.saveload;
 
 import java.io.File;
 import java.util.Vector;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.ProgressBar;
 import agg.gui.event.SaveEvent;
@@ -39,20 +38,17 @@ public class GraGraSave {
         this.applFrame = fr;
         this.dirName = dname;
         this.fileName = fname;
-
         /* create a file chooser */
         if (!this.dirName.equals("")) {
             this.chooser = new JFileChooser(this.dirName);
         } else {
             this.chooser = new JFileChooser(System.getProperty("user.dir"));
         }
-
         /* create file filters */
         this.filterXML = new AGGFileFilter("ggx", "AGG Files XML (.ggx)");
         this.chooser.addChoosableFileFilter(this.filterXML);
         /* set file filter */
         this.chooser.setFileFilter(this.filterXML);
-
         /* create a progress bar */
         this.bar = createProgressBar();
     }
@@ -92,7 +88,6 @@ public class GraGraSave {
             fireSave(new SaveEvent(this, -1, "GraGra object is null"));
             return false;
         }
-
         fireSave(new SaveEvent(this, SaveEvent.SAVE, ""));
         if (this.dirName.equals("")) {
             this.dirName = System.getProperty("user.dir");
@@ -113,17 +108,15 @@ public class GraGraSave {
             // this.fileName = XMLHelper.replaceGermanSpecialCh(this.fileName);
             xmlh.addTopObject(this.gra);
             if (xmlh.save_to_xml(this.dirName + this.fileName)) {
-
                 this.gra.setDirName(this.dirName);
                 this.gra.setFileName(this.fileName);
                 this.gra.getTypeSet().setResourcesPath(this.dirName);
                 this.gra.setChanged(false);
-
                 fireSave(new SaveEvent(this, SaveEvent.SAVED, this.dirName
                         + this.fileName));
             } else {
                 fireSave(new SaveEvent(this, SaveEvent.IO_ERROR, "Write file Error!",
-                         this.dirName + this.fileName));
+                        this.dirName + this.fileName));
                 JOptionPane
                         .showMessageDialog(this.applFrame,
                                 "Write file exception for the folder: " + this.dirName,
@@ -137,7 +130,6 @@ public class GraGraSave {
     public boolean saveAsBase() {
         // System.out.println(">>> GraGraSave.saveAsBase ");
         fireSave(new SaveEvent(this, SaveEvent.SAVE, ""));
-
         int returnVal = this.chooser.showSaveDialog(this.applFrame);
         this.dirName = this.chooser.getCurrentDirectory().toString();
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -158,14 +150,12 @@ public class GraGraSave {
         if (this.basis == null) {
             return false;
         }
-
         if (this.dirName.equals("")) {
             this.dirName = System.getProperty("user.dir");
         }
         if (!this.dirName.endsWith(File.separator)) {
             this.dirName += File.separator;
         }
-
         if (this.fileName.equals("")) {
             return saveAsBase();
         } else {
@@ -185,7 +175,7 @@ public class GraGraSave {
                     return true;
                 } else {
                     fireSave(new SaveEvent(this, SaveEvent.IO_ERROR, "Write file Error!",
-                             this.dirName + this.fileName));
+                            this.dirName + this.fileName));
                     JOptionPane
                             .showMessageDialog(this.applFrame,
                                     "Write file exception for the folder: " + this.dirName,
@@ -194,7 +184,6 @@ public class GraGraSave {
                 }
             }
 //			} // if XML
-
 //			else if (this.chooser.getFileFilter() == filterAGG) {
 //				// System.out.println("GraGraSave.save "+this.dirName+" "+this.fileName);
 //				if (!this.fileName.endsWith(".agg"))
@@ -204,11 +193,9 @@ public class GraGraSave {
 			fireSave(new SaveEvent(this, SaveEvent.PROGRESS_BEGIN, this.bar
 					.getContentPanel(), ""));
 			this.bar.start();
-
 			File f = new File(this.dirName + this.fileName);
 			FileOutputStream fos = null;
 			ObjectOutputStream oos = null;
-
 			int key = -1;
 			try {
 				fos = new FileOutputStream(f);
@@ -223,7 +210,6 @@ public class GraGraSave {
 					addMsg = iox.getLocalizedMessage();
 				}
 			}
-
 			finally {
 				if (fos != null) {
 					addMsg = "";
@@ -334,27 +320,17 @@ public class GraGraSave {
         LoadSaveStatus.setMaximum(1000);
         return pbar;
     }
-
     private ProgressBar bar;
-
     private Vector<SaveEventListener> saveListeners;
-
     private JFrame applFrame;
-
     private JFileChooser chooser;
-
     private ExtensionFileFilter filterXML;
-
 //	private ExtensionFileFilter filterAGG;
 //	private String addMsg;
     private EdGraGra gra;
-
     private GraGra basis;
-
     private String dirName = "";
-
     private String fileName = "";
-
 }
 // $Log: GraGraSave.java,v $
 // Revision 1.5  2010/09/23 08:22:04  olga
@@ -480,3 +456,4 @@ public class GraGraSave {
 // Progressbalken fuer das Laden und Speichern
 // integriert.
 //
+

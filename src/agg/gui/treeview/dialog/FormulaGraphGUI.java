@@ -1,16 +1,18 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- * 
- * 
- * Title:        AGG<p>
+ *
+ *
+ * Title: AGG<p>
  * Description:
  * <p>
  * Company: TU Berlin<p>
@@ -35,11 +37,9 @@ import java.awt.event.MouseListener;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -48,7 +48,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-
 import agg.cons.AtomConstraint;
 import agg.cons.Evaluable;
 import agg.cons.Formula;
@@ -89,7 +88,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     static final int OPRND = 1;
     static final int TRUE = 2;
     static final int FALSE = TRUE;
-
     final JButton apply, cancel, clear, layout;
     final JPanel dialogPanel;
     JScrollPane scrollPane;
@@ -103,8 +101,8 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     final EdGraph fgraph;
     final List<EdNode> subNodes = new Vector<EdNode>(5, 1);
     final List<EdType> op2type = new Vector<EdType>();
-    final Hashtable<JMenuItem, EdType> oprnd2type = new Hashtable<JMenuItem, EdType>(5, 0.3f);
-    final Hashtable<EdType, Object> type2obj = new Hashtable<EdType, Object>(5, 0.3f);
+    final HashMap<JMenuItem, EdType> oprnd2type = new HashMap<JMenuItem, EdType>(5, 0.3f);
+    final HashMap<EdType, Object> type2obj = new HashMap<EdType, Object>(5, 0.3f);
     final JPopupMenu commonMenu = new JPopupMenu("");
     final JPopupMenu oprndMenu = new JPopupMenu("");
     final JPopupMenu delMenu = new JPopupMenu("");
@@ -122,11 +120,9 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
             String helpStr,
             boolean modal) {
         super(parent, title, modal);
-
         this.parFrame = parent;
         this.formula = "";
         this.f = "";
-
         // make info panel
         JPanel info = new JPanel(new GridLayout(3, 0));
         if (nameOfOwner != null && !"".equals(nameOfOwner)) {
@@ -138,7 +134,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
         info.add(l2);
         JLabel l3 = new JLabel(helpStr);
         info.add(l3);
-
         // make a graph editor to edit a formula graph
         this.gege = new GraphEditor();
 //		this.gege.setPreferredSize(new Dimension(300,300));
@@ -150,9 +145,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
         this.fgraph.getBasisGraph().setName("    ");
         createOpTypes(this.fgraph.getTypeSet());
         createEdgeTypes(this.fgraph.getTypeSet());
-
         this.miDel = this.addDelete(this.delMenu);
-
         // make buttons panel
         JPanel buttons = new JPanel(new GridBagLayout());
         this.layout = new JButton("Layout");
@@ -172,18 +165,15 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 15, 5, 15);
         constrainBuild(buttons, this.cancel, 3, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 15, 5, 10);
-
         // make common dialog panel
         this.dialogPanel = new JPanel(new GridBagLayout());
         this.dialogPanel.setPreferredSize(new Dimension(200, 200));
-
         constrainBuild(this.dialogPanel, info, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(this.dialogPanel, this.gege, 0, 1, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 1.0, 5, 5, 5, 5);
         constrainBuild(this.dialogPanel, buttons, 0, 2, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         getContentPane().setLayout(new BorderLayout());
         scrollPane = new JScrollPane(this.dialogPanel);
         scrollPane.setPreferredSize(new Dimension(500, 500));
@@ -206,7 +196,8 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * Implements actions of buttons: Layout, Clear, Apply, Cancel and of operation buttons.
+     * Implements actions of buttons: Layout, Clear, Apply, Cancel and of
+     * operation buttons.
      */
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Clear")) {
@@ -225,8 +216,9 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * Return the formula string with indexes of GACs ( not the names!). This formula string is then used to create a
-     * new Formula instance for the given list of GACs.
+     * Return the formula string with indexes of GACs ( not the names!). This
+     * formula string is then used to create a new Formula instance for the
+     * given list of GACs.
      */
     public String getFormula() {
         if ("".equals(this.f)) {
@@ -249,43 +241,36 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * Set the lists of evaluable objects to be used as variables of the specified formula string. All needed internal
-     * structures will be rebuild.
+     * Set the lists of evaluable objects to be used as variables of the
+     * specified formula string. All needed internal structures will be rebuild.
      */
     public void setVars(List<String> vars, List<Evaluable> varObjs, String formulaStr) {
         this.commonMenu.removeAll();
         this.oprndMenu.removeAll();
-
         Vector<String> s = new Vector<String>();
         for (int i = 0; i < vars.size(); i++) {
             String name = vars.get(i);
-
             s.add(name);
             this.objs.add(name);
-
             EdType t = this.createOprndNodeType(this.fgraph.getTypeSet(), name);
             addOprndNodeType(this.commonMenu, t, i + 1);
             addOprndNodeType(this.oprndMenu, t, i + 1);
             this.name2indx.put(t.getTypeName(), Integer.valueOf(i + 1));
         }
-
         this.commonMenu.addSeparator();
         this.commonMenu.addSeparator();
         this.addOpNodeTypes(this.commonMenu);
         this.commonMenu.addSeparator();
         this.commonMenu.addSeparator();
         this.addDelete(this.commonMenu);
-
         this.oprndMenu.addSeparator();
         this.oprndMenu.addSeparator();
         this.addDelete(this.oprndMenu);
-
         if (s.isEmpty()) {
             clear();
         } else {
             this.formula = formulaStr;
             fillFromString(formulaStr);
-
             Formula form = new Formula(varObjs, this.f);
             formula2graph(form, this.fgraph);
         }
@@ -293,14 +278,14 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * Set the list of GACs to be used as variables of the specified formula string. All needed internal structures will
-     * be rebuild. Note: The elements of the objList can be of the type <code>EdNestedApplCond</code> or
-     * <code>EdAtomic</code> only.
+     * Set the list of GACs to be used as variables of the specified formula
+     * string. All needed internal structures will be rebuild. Note: The
+     * elements of the objList can be of the type <code>EdNestedApplCond</code>
+     * or <code>EdAtomic</code> only.
      */
     public void setVarsAsObjs(List<?> objList, String formulaStr) {
         this.commonMenu.removeAll();
         this.oprndMenu.removeAll();
-
         boolean allowRefGraph = false;
         Vector<Evaluable> vec = new Vector<Evaluable>();
         Vector<String> s = new Vector<String>();
@@ -308,11 +293,9 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
             if (objList.get(i) instanceof EdNestedApplCond) {
                 allowRefGraph = true;
                 EdNestedApplCond obj = (EdNestedApplCond) objList.get(i);
-
                 vec.add(obj.getNestedMorphism());
                 s.add(obj.getNestedMorphism().getName());
                 this.objs.add(obj.getNestedMorphism());
-
                 EdType t = this.createOprndNodeType(this.fgraph.getTypeSet(), obj.getNestedMorphism().getName());
                 if (t != null) {
                     addOprndNodeType(this.commonMenu, t, i + 1);
@@ -322,11 +305,9 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 }
             } else if (objList.get(i) instanceof EdAtomic) {
                 EdAtomic obj = (EdAtomic) objList.get(i);
-
                 vec.add(obj.getBasisAtomic());
                 s.add(obj.getBasisAtomic().getAtomicName());
                 this.objs.add(obj.getBasisAtomic());
-
                 EdType t = this.createOprndNodeType(this.fgraph.getTypeSet(), obj.getBasisAtomic().getAtomicName());
                 if (t != null) {
                     addOprndNodeType(this.commonMenu, t, i + 1);
@@ -336,30 +317,23 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 }
             }
         }
-
         this.commonMenu.addSeparator();
         this.commonMenu.addSeparator();
-
         this.addOpNodeTypes(this.commonMenu);
-
         this.commonMenu.addSeparator();
         this.commonMenu.addSeparator();
         this.addDelete(this.commonMenu);
-
         this.oprndMenu.addSeparator();
         this.oprndMenu.addSeparator();
         this.addDelete(this.oprndMenu);
-
         if (allowRefGraph) {
             this.miRefGraph(this.delMenu);
         }
-
         if (s.isEmpty()) {
             clear();
         } else {
             this.formula = formulaStr;
             fillFromString(formulaStr);
-
             Formula form = new Formula(vec, this.f);
             formula2graph(form, this.fgraph);
         }
@@ -368,15 +342,12 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
 
     private List<EdNode> addRefGraphOf(final Formula form, final EdNode refNode) {
         List<EdNode> list = new Vector<EdNode>(5, 1);
-
         EdGraph refGraph = new EdGraph(new Graph());
         this.createOpTypes(refGraph.getTypeSet());
         // create an edge type to connect nodes
         refGraph.getTypeSet().createArcType("", EditorConstants.SOLID, Color.BLACK);
-
         this.formula2graph(form, refGraph);
-
-        Hashtable<EdGraphObject, EdGraphObject> go2go = new Hashtable<EdGraphObject, EdGraphObject>();
+        HashMap<EdGraphObject, EdGraphObject> go2go = new HashMap<EdGraphObject, EdGraphObject>();
         int x = refNode.getX();
         int y = refNode.getY() + 40;
         List<EdNode> v = refGraph.getNodes();
@@ -393,7 +364,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 if (this.type2obj.get(go.getType()) != null) {
                     this.type2obj.put(t, this.type2obj.get(go.getType()));
                 }
-
                 if (go.getInArcsCount() == 0) { // top of refinement formula graph
                     EdArc ref = this.fgraph.addArc(this.refEdgeType, refNode, n1, null, true);
                     ref.getBasisArc().setContextUsage(-1);
@@ -419,7 +389,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
             } catch (TypeException ex) {
             }
         }
-
         return list;
     }
 
@@ -444,7 +413,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                             this.objs.add(form.getFirst());
                             this.type2obj.put(t, form.getFirst());
                         }
-
                         n = addNode(graph, t, OPRND);
                         this.type2obj.put(t, form.getFirst());
                     } else if (form.getFirst() instanceof AtomConstraint) {
@@ -465,7 +433,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                     n = addNode(graph, t, OP);
                     if (n != null) {
                         this.node = n;
-
                         if (form.getFirst() instanceof Formula) {
                             formula2graph((Formula) form.getFirst(), graph);
                         } else if (form.getFirst() instanceof NestedApplCond) {
@@ -491,7 +458,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 n = addNode(graph, t, OP);
                 if (n != null) {
                     this.node = n;
-
                     if (form.getFirst() != null) {
                         if (form.getFirst() instanceof Formula) {
                             formula2graph((Formula) form.getFirst(), graph);
@@ -538,7 +504,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 n = addNode(graph, t, OP);
                 if (n != null) {
                     this.node = n;
-
                     if (form.getFirst() != null) {
                         if (form.getFirst() instanceof Formula) {
                             formula2graph((Formula) form.getFirst(), graph);
@@ -587,7 +552,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                     if (n != null) {
                         this.node = n;
                     }
-
                     if (form.getFirst() instanceof Formula) {
                         formula2graph((Formula) form.getFirst(), graph);
                     } else if (form.getFirst() instanceof NestedApplCond) {
@@ -627,7 +591,8 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * Extend working formula string. If i=-1, then concatenate s, otherwise - i.
+     * Extend working formula string. If i=-1, then concatenate s, otherwise -
+     * i.
      */
     private void add2formula(String s, int i) {
         if (i == -1) {
@@ -646,7 +611,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
             this.gege.updateGraphics();
         } catch (TypeException ex) {
         }
-
         this.f = "";
         this.formula = "";
         this.topNode = null;
@@ -664,7 +628,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
             s2 = s3;
         }
         s = s2;
-
         StringCharacterIterator i = new StringCharacterIterator(s);
         char c = i.current();
         while (c != CharacterIterator.DONE) {
@@ -675,7 +638,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                     || c == ' ' || c == ','
                     || c == '(' || c == ')') {
                 add2formula(String.valueOf(c), -1);
-
                 i.next();
             } else if (c >= '0' && c <= '9') {
                 String cs = "";
@@ -689,7 +651,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 if (v < 0 /*|| v >= list.getModel().getSize()*/) {
                     return;
                 }
-
                 int num = Integer.valueOf(cs).intValue();
                 if (this.objs.size() > 0 && ((num - 1) < this.objs.size())) {
                     Object obj = this.objs.get(num - 1);
@@ -741,13 +702,10 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
         // create node types which represent operators of a formula
         EdType t = types.createNodeType("NOT", EditorConstants.ROUNDRECT, Color.RED);
         this.op2type.add(t);
-
         t = types.createNodeType("AND", EditorConstants.ROUNDRECT, Color.BLACK);
         this.op2type.add(t);
-
         t = types.createNodeType("OR", EditorConstants.ROUNDRECT, Color.BLACK);
         this.op2type.add(t);
-
         t = types.createNodeType("FORALL", EditorConstants.ROUNDRECT, Color.BLACK);
         this.op2type.add(t);
     }
@@ -769,7 +727,8 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * Create a new type with the specified name which corresponds to the name of the appropriate GAC.
+     * Create a new type with the specified name which corresponds to the name
+     * of the appropriate GAC.
      */
     private EdType createOprndNodeType(final EdTypeSet types, String name) {
         EdType t = types.createNodeType(name, EditorConstants.RECT, Color.BLUE);
@@ -777,8 +736,8 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * Add a new <code>GAC</code> menu item to the specified pop-up menu. The name of the specified type is the name of
-     * an appropriate GAC.
+     * Add a new <code>GAC</code> menu item to the specified pop-up menu. The
+     * name of the specified type is the name of an appropriate GAC.
      */
     private JMenuItem addOprndNodeType(final JPopupMenu m, final EdType t, int indx) {
         JMenuItem mi = m.add(new JMenuItem(t.getName()));
@@ -792,18 +751,15 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 }
             }
         });
-
         if ("FORALL".equals(t.getName())) {
             this.miForall = mi;
         }
-
         if (indx == -1) {
             mi.setActionCommand(" ");
         } else {
             mi.setActionCommand(String.valueOf(indx));
         }
         this.oprnd2type.put(mi, t);
-
         return mi;
     }
 
@@ -818,17 +774,16 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * Add <code>Show/Hide</code> menu item to the specified pop-up menu. It allows to show/hide the formula graph tree
-     * of a node which represents an application condition.
+     * Add <code>Show/Hide</code> menu item to the specified pop-up menu. It
+     * allows to show/hide the formula graph tree of a node which represents an
+     * application condition.
      */
     private void miRefGraph(final JPopupMenu m) {
         this.miRefGraph = new JMenuItem("Show View of Refinement Formula Graph");
         this.miRefGraph.setActionCommand("show");
-
         m.addSeparator();
         m.addSeparator();
         m.add(this.miRefGraph);
-
         this.miRefGraph.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (FormulaGraphGUI.this.node != null) {
@@ -837,13 +792,11 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                             && obj instanceof NestedApplCond
                             && ((NestedApplCond) obj).getName().equals(FormulaGraphGUI.this.node.getTypeName())) {
                         FormulaGraphGUI.this.tmpF = ((NestedApplCond) obj).getFormula();
-
                         if ("show".equals(FormulaGraphGUI.this.miRefGraph.getActionCommand())) {
 //							addRefGraphOf(tmpF, node);
                             doRefine(FormulaGraphGUI.this.tmpF, FormulaGraphGUI.this.node);
                             FormulaGraphGUI.this.gege.updateGraphics(true);
 //							doZestTreeLayout(this.fgraph);
-
                             FormulaGraphGUI.this.miRefGraph.setText("Hide View of Refinement Formula Graph");
                             FormulaGraphGUI.this.miRefGraph.setActionCommand("hide");
                         } else if ("hide".equals(FormulaGraphGUI.this.miRefGraph.getActionCommand())) {
@@ -853,7 +806,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                                 if (go != null) {
                                     deleteNode((EdNode) go);
                                     FormulaGraphGUI.this.gege.updateGraphics(true);
-
                                     FormulaGraphGUI.this.miRefGraph.setText("Show View of Refinement Formula Graph");
                                     FormulaGraphGUI.this.miRefGraph.setActionCommand("show");
                                 }
@@ -884,7 +836,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
         if (this.miRefGraph == null) {
             return;
         }
-
         this.miRefGraph.setEnabled(enable);
         if ("show".equals(action)) {
             this.miRefGraph.setText("Show View of Refinement Formula Graph");
@@ -909,12 +860,12 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 }
             }
         });
-
         return mi;
     }
 
     /**
-     * Delete the specified node from the formula-graph. All edges and nodes of its subtree will be deleted, too.
+     * Delete the specified node from the formula-graph. All edges and nodes of
+     * its subtree will be deleted, too.
      */
     private void deleteNode(final EdNode n) {
         if (n.getInArcsCount() == 1) {
@@ -923,13 +874,11 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
             } catch (TypeException ex) {
             }
         }
-
         List<EdArc> outs = this.fgraph.getOutgoingArcs(n);
         for (int i = 0; i < outs.size(); i++) {
             EdNode n1 = (EdNode) outs.get(i).getTarget();
             deleteNode(n1);
         }
-
         try {
             this.subNodes.remove(n);
             this.fgraph.delSelectedNode(n);
@@ -965,7 +914,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 res = true;
             }
         }
-
         return res;
     }
 
@@ -1002,7 +950,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                 } else {
                     return null;
                 }
-
                 EdNode n = graph.addNode(x, y, t, true);
                 n.getBasisNode().setContextUsage(kind);
                 // add edge 
@@ -1021,7 +968,8 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     }
 
     /**
-     * If formula-graph is empty, add and return the top node, otherwise return null.
+     * If formula-graph is empty, add and return the top node, otherwise return
+     * null.
      *
      * @param t	type of the node
      * @param kind	0 is for an operation node, 1 - for a GAC node
@@ -1081,14 +1029,11 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
         } else {
             this.node = null;
         }
-
         if (this.fgraph.isEmpty()
                 || e.isPopupTrigger()) {
-
             if (this.fgraph.hasSelection()) {
                 this.fgraph.deselectAll();
             }
-
             if (e.getX() > this.getSize().width - 50
                     || e.getY() > this.getSize().height) {
                 showPopupMenu(this.node, this.getSize().width / 3, this.getSize().height / 2);
@@ -1104,11 +1049,9 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
     public void mouseReleased(MouseEvent e) {
         if (this.fgraph.isEmpty()
                 || e.isPopupTrigger()) {
-
             if (this.fgraph.hasSelection()) {
                 this.fgraph.deselectAll();
             }
-
             if (e.getX() > this.getSize().width - 50
                     || e.getY() > this.getSize().height) {
                 showPopupMenu(this.node, this.getSize().width / 3, this.getSize().height / 4);
@@ -1126,7 +1069,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
         if (this.miForall != null) {
             this.miForall.setEnabled(!this.forallDisabled);
         }
-
         if (this.fgraph.isEmpty()) {
             this.commonMenu.show(this.gege.getGraphPanel(), x, y);
         } else if (n == null) {
@@ -1140,7 +1082,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                     } else {
                         this.miDel.setEnabled(true);
                     }
-
                     if (n.getBasisNode().getContextUsage() == OP) {
                         if (n.getTypeName().equals("FORALL")) {
                             this.oprndMenu.show(this.gege.getGraphPanel(), x + 5, y + 5);
@@ -1153,7 +1094,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                         } else {
                             enableRefGraph(false, "show");
                         }
-
                         this.delMenu.show(this.gege.getGraphPanel(), x + 5, y + 5);
                     } else if (n.getBasisNode().getContextUsage() == TRUE) {
                         enableRefGraph(false, "");
@@ -1167,7 +1107,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                     if (this.subNodes.contains(n)) {
                         return;
                     }
-
                     if (n.getBasisNode().getContextUsage() == OPRND) {
 //					if (n.getBasisNode().getOutgoingArcs().next().getContextUsage() == -1) {
                         if (n.getBasisNode().getOutgoingArcs().next().getType() == this.refEdgeType.getBasisType()) {
@@ -1178,9 +1117,7 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                     } else {
                         enableRefGraph(false, "show");
                     }
-
                     this.miDel.setEnabled(true);
-
                     if (n.getTypeName().equals("AND")
                             || n.getTypeName().equals("OR")) {
                         this.commonMenu.show(this.gege.getGraphPanel(), x + 5, y + 5);
@@ -1192,7 +1129,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                     if (this.subNodes.contains(n)) {
                         return;
                     }
-
                     enableRefGraph(false, "show");
                     this.miDel.setEnabled(true);
                     this.delMenu.show(this.gege.getGraphPanel(), x + 5, y + 5);
@@ -1218,8 +1154,8 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
 
     /**
      * Convert recursively the formula-graph to a new formula-string.<br>
-     * Result pair of strings contains two representations: the first string shows the names, the second string - the
-     * indexes of the GACs.
+     * Result pair of strings contains two representations: the first string
+     * shows the names, the second string - the indexes of the GACs.
      */
     private Pair<String, String> graph2text(final Node n) {
         Node n1 = null;
@@ -1251,7 +1187,6 @@ public class FormulaGraphGUI extends JDialog implements ActionListener, MouseLis
                     }
                     break;
                 }
-
                 n1 = (Node) n.getOutgoingArcs().next().getTarget();
                 if (n.getType().getName().equals("NOT")) {
                     Pair<String, String> p = graph2text(n1);

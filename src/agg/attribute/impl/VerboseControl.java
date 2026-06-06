@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
@@ -21,78 +22,63 @@ public class VerboseControl {
     //
     // Additional Views
     public static boolean logShowLogWindow = false;
-
     public static boolean logShowContextView = false;
-
     //
     // Log topics (filtering of GUI log messages).
     /**
      * Errors and Warnings - should always be set!
      */
     public static boolean logWarning = true;
-
     //
     // For The Developer (temporary debugging issues)
     /**
      * Serialization of objects.
      */
     public static boolean logFileIO = false;
-
     /**
      * Each creation of any subclass of AttrObject
      */
     public static boolean logCreation = false;
-
     /**
      * Context of AttrInstance (impl by ValueTuple)
      */
     public static boolean logContextOfInstances = false;
-
     /**
      * Mapping in an AttrContext (impl by ContextView / ContextCore )
      */
     public static boolean logMapping = false;
-
     /**
      * Handling of AttrContext (impl by ContextView / ContextCore )
      */
     public static boolean logContext = false;
-
     /**
      * Context (rule) conditions AttrCond (impl by CondTuple)
      */
     public static boolean logCond = false;
-
     /**
      * Context (rule) variables AttrVar (impl by VarTuple)
      */
     public static boolean logVar = false;
-
     /**
      * Setting of variables.
      */
     public static boolean logSetValue = false;
-
     /**
      * Removing of variables
      */
     public static boolean logRemoveValue = false;
-
     /**
      * Events
      */
     public static boolean logEvent = false;
-
     /**
      * Syntax trees of Java expressions.
      */
     public static boolean logParseTree = false;
-
     /**
      * Java expression parser calls
      */
     public static boolean logJexParser = false;
-
     /**
      * Traces method calls
      */

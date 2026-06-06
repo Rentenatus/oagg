@@ -1,8 +1,5 @@
 package agg.xt_basis.csp;
 
-import java.util.Collection;
-import java.util.List;
-
 import agg.attribute.AttrContext;
 import agg.util.csp.Solution_Backjump_PartialInj;
 import agg.xt_basis.Arc;
@@ -11,20 +8,23 @@ import agg.xt_basis.Match;
 import agg.xt_basis.Node;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.ParallelRule;
+import java.util.Collection;
+import java.util.List;
 
 /**
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
- * An implementation of morphism completion as a Constraint Satisfaction Problem (CSP), considering partial injective
- * solutions.
+ * An implementation of morphism completion as a Constraint Satisfaction Problem
+ * (CSP), considering partial injective solutions.
  */
 public class Completion_PartialInjCSP extends Completion_CSP {
 
@@ -45,34 +45,29 @@ public class Completion_PartialInjCSP extends Completion_CSP {
     }
 
     /**
-     * Initialize the CSP by the specified morphism. The CSP variables are created for each node and edge of the source
-     * graph of the given morphism. Initialize the CSP variables (partially) according mappings of the given morphism.
+     * Initialize the CSP by the specified morphism. The CSP variables are
+     * created for each node and edge of the source graph of the given morphism.
+     * Initialize the CSP variables (partially) according mappings of the given
+     * morphism.
      */
     public final void initialize(OrdinaryMorphism morph)
             throws BadMappingException {
         this.itsMorph = morph;
-
         final AttrContext aContext = initializeAttrContext(morph);
-
         final Solution_Backjump_PartialInj itsSolution = new Solution_Backjump_PartialInj(getProperties().get(INJECTIVE));
-
         // create CSP
         this.itsCSP = new ALR_CSP(
                 morph.getOriginal(),
                 aContext,
                 itsSolution,
                 this.randomDomain);
-
         if (morph.getImage().getTypeObjectsMap().isEmpty()) {
             morph.getImage().fillTypeObjectsMap();
         }
-
         this.itsCSP.setRequester(morph);
         this.itsCSP.setDomain(morph.getImage());
-
         if (morph instanceof Match
                 && ((Match) morph).getRule() instanceof ParallelRule) {
-
             final List<OrdinaryMorphism> list = ((ParallelRule) ((Match) morph).getRule()).getLeftEmbedding();
             if (list != null) {
                 for (int i = 0; i < list.size(); i++) {
@@ -83,20 +78,19 @@ public class Completion_PartialInjCSP extends Completion_CSP {
                 }
             }
         }
-
         this.inputParameterMap.clear();
         this.disabledInputParameter.clear();
-
         this.itsCSP.getSolutionSolver().enableParallelSearch(this.parallel);
         this.itsCSP.getSolutionSolver().setStartParallelSearchByFirst(this.startParallelMatchByFirstCSPVar);
-
         // initialize CSP variables (partially) according mappings of the morphism 
         setPartialMorphism(morph);
     }
 
     /**
-     * Initialize the CSP by the specified morphism. The CSP variables are created for nodes and edge of the specified
-     * sets of nodes and edges, only. Initialize the CSP variables (partially) according mappings of the given morphism.
+     * Initialize the CSP by the specified morphism. The CSP variables are
+     * created for nodes and edge of the specified sets of nodes and edges,
+     * only. Initialize the CSP variables (partially) according mappings of the
+     * given morphism.
      */
     public final void initialize(final OrdinaryMorphism morph,
             final Collection<Node> nodes,
@@ -104,9 +98,7 @@ public class Completion_PartialInjCSP extends Completion_CSP {
             throws BadMappingException {
         this.itsMorph = morph;
         final AttrContext aContext = initializeAttrContext(morph);
-
         final Solution_Backjump_PartialInj itsSolution = new Solution_Backjump_PartialInj(getProperties().get(INJECTIVE));
-
         // create CSP
         if (nodes != null && edges != null) {
 //			 new : only injective mapping allowed
@@ -118,17 +110,13 @@ public class Completion_PartialInjCSP extends Completion_CSP {
                     itsSolution,
                     this.randomDomain);
         }
-
         if (morph.getImage().getTypeObjectsMap().isEmpty()) {
             morph.getImage().fillTypeObjectsMap();
         }
-
         this.itsCSP.setRequester(morph);
         this.itsCSP.setDomain(morph.getImage());
-
         if (morph instanceof Match
                 && ((Match) morph).getRule() instanceof ParallelRule) {
-
             final List<OrdinaryMorphism> list = ((ParallelRule) ((Match) morph).getRule()).getLeftEmbedding();
             if (list != null) {
                 for (int i = 0; i < list.size(); i++) {
@@ -139,15 +127,11 @@ public class Completion_PartialInjCSP extends Completion_CSP {
                 }
             }
         }
-
         this.inputParameterMap.clear();
         this.disabledInputParameter.clear();
-
         this.itsCSP.getSolutionSolver().enableParallelSearch(this.parallel);
         this.itsCSP.getSolutionSolver().setStartParallelSearchByFirst(this.startParallelMatchByFirstCSPVar);
-
         // represent the mappings of a partial morphism in the CSP:
         setPartialMorphism(morph);
     }
-
 }

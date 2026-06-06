@@ -2,21 +2,22 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
-
 // ---------------------------------------------------------------------------+
+
 /**
- * This parser eats graphs which are created by AGG. A parser needs a host graph and a stop graph. The graph grammar for
- * parsing must contain reducing rules.
+ * This parser eats graphs which are created by AGG. A parser needs a host graph
+ * and a stop graph. The graph grammar for parsing must contain reducing rules.
  *
  * @see ParserFactory#createParser createParser(...)
  * @author $Author: olga $ Parser Group
@@ -46,14 +47,16 @@ public interface Parser {
     public void setCriticalPairs(PairContainer pairs);
 
     /**
-     * Sets the grammar for the parser. This grammar must contain reducing rules.
+     * Sets the grammar for the parser. This grammar must contain reducing
+     * rules.
      *
      * @param grammar The grammar for the parser.
      */
     public void setGrammar(GraGra grammar);
 
     /**
-     * Returns the host graph from the parser. This method is important to get the current state of parsing process.
+     * Returns the host graph from the parser. This method is important to get
+     * the current state of parsing process.
      *
      * @return The current host graph.
      */
@@ -75,7 +78,8 @@ public interface Parser {
     public boolean parse();
 
     /**
-     * Returns the host graph from the parser. This method is important to get the current state of parsing process.
+     * Returns the host graph from the parser. This method is important to get
+     * the current state of parsing process.
      *
      * @return The current host graph.
      */
@@ -99,7 +103,6 @@ public interface Parser {
 
     public void setDelayAfterApplyRule(int miliseconds);
 }
-
 /*
  * End of Parser.java
  * ----------------------------------------------------------------------------

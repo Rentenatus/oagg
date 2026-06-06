@@ -1,59 +1,54 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis;
 
-import java.util.Hashtable;
-import java.util.Vector;
-
 import agg.attribute.AttrContext;
-//import agg.attribute.AttrMapping;
 import agg.attribute.impl.ContextView;
-import agg.attribute.impl.VarTuple;
 import agg.attribute.impl.VarMember;
+import agg.attribute.impl.VarTuple;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * This class is just a workaround for lacking AttrContext functionality. In class Completion_CSP, we need a purified
- * copy of a morphism's AttrContext. At the moment, we can only create a new one, immitating the way the morphism's
- * original AttrContext was created. Therefore, we need the parent context which was used for the context's creation;
- * this is what getRelatedMatchContext() provides for the special case of a pacstar morphism.
+ * This class is just a workaround for lacking AttrContext functionality. In
+ * class Completion_CSP, we need a purified copy of a morphism's AttrContext. At
+ * the moment, we can only create a new one, immitating the way the morphism's
+ * original AttrContext was created. Therefore, we need the parent context which
+ * was used for the context's creation; this is what getRelatedMatchContext()
+ * provides for the special case of a pacstar morphism.
  */
 public class PACStarMorphism extends OrdinaryMorphism {
 
     AttrContext itsRelatedMorphContext;
-
     OrdinaryMorphism itsRelatedMorph;
-
     OrdinaryMorphism itsPAC;
-
-    final Hashtable<String, String> valMembeHashcode2Expr = new Hashtable<String, String>();
+    final Map<String, String> valMembeHashcode2Expr = new HashMap<String, String>();
 
     public PACStarMorphism(final Graph orig, final Graph imag, final AttrContext ac) {
         super(orig, imag, ac);
-
         this.itsRelatedMorphContext = ac;
         this.typeObjectsMapChanged = true;
-
         propagateValueFromParentAsInputParameter((VarTuple) this.itsRelatedMorphContext.getVariables(), true);
     }
 
     public PACStarMorphism(final Graph orig, final Graph imag, final AttrContext ac,
             final OrdinaryMorphism relatedMorph) {
         super(orig, imag, ac);
-
         this.itsRelatedMorphContext = ac;
         this.itsRelatedMorph = relatedMorph;
         this.typeObjectsMapChanged = true;
-
         propagateValueFromParentAsInputParameter((VarTuple) this.itsRelatedMorphContext.getVariables(), true);
     }
 
@@ -132,21 +127,15 @@ public class PACStarMorphism extends OrdinaryMorphism {
 
     public void clear() {
         removeAttrMappings();
-
 //		unset its own variables only
         unsetVariablesOfPAC();
-
         this.itsDomObjects.clear();
         this.itsCodomObjects.clear();
-
         this.itsTouchedFlag = true;
         this.itsInteractiveFlag = true;
-
         clearErrorMsg();
 //		this.errors.clear();
-
         this.partialMorphCompletion = false;
-
         this.itsCompleter.resetVariableDomain(true);
         this.itsCompleter.reinitializeSolver(false);
     }
@@ -156,7 +145,6 @@ public class PACStarMorphism extends OrdinaryMorphism {
         this.itsRelatedMorphContext = ac;
 //		reinitAttrVars();  //test!!
         this.typeObjectsMapChanged = true;
-
         propagateValueFromParentAsInputParameter((VarTuple) this.itsRelatedMorphContext.getVariables(), true);
     }
 
@@ -165,7 +153,7 @@ public class PACStarMorphism extends OrdinaryMorphism {
 //		((VarTuple) this.itsRelatedMatchContext.getVariables()).showVariables();
 //		((VarTuple) this.getAttrContext().getVariables()).showVariables();
 		
-		final Vector<String> nacVars = this.itsOrig.getVariableNamesOfAttributes();
+		final List<String> nacVars = this.itsOrig.getVariableNamesOfAttributes();
 		final VarTuple vt = (VarTuple) itsRelatedMatchContext.getVariables();
 		for (int i = 0; i < vt.getNumberOfEntries(); i++) {
 			final VarMember vm = (VarMember) vt.getEntryAt(i);
@@ -194,5 +182,4 @@ public class PACStarMorphism extends OrdinaryMorphism {
             }
         }
     }
-
 }

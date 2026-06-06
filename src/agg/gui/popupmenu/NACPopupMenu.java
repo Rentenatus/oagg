@@ -2,24 +2,23 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: NACPopupMenu.java,v 1.5 2010/09/23 08:21:33 olga Exp $
 package agg.gui.popupmenu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdNAC;
 import agg.editor.impl.EdNestedApplCond;
 import agg.gui.AGGAppl;
@@ -35,7 +34,6 @@ public class NACPopupMenu extends JPopupMenu {
     public NACPopupMenu(GraGraTreeView tree) {
         super("NAC");
         this.treeView = tree;
-
         JMenuItem mi = add(new JMenuItem("Make due to RHS "));
         mi.setActionCommand("makeFromRHS");
 //		mi.addActionListener(this.treeView.getActionAdapter());
@@ -45,7 +43,6 @@ public class NACPopupMenu extends JPopupMenu {
             }
         });
         addSeparator();
-
         mi = add(new JMenuItem("Copy           "));
         mi.setActionCommand("copyNAC");
 //		mi.addActionListener(this.treeView.getActionAdapter());
@@ -54,7 +51,6 @@ public class NACPopupMenu extends JPopupMenu {
                 copy();
             }
         });
-
         mi = add(new JMenuItem("Convert to GAC"));
         mi.setActionCommand("copyToGAC");
 //		mi.addActionListener(this.treeView.getActionAdapter());
@@ -63,29 +59,22 @@ public class NACPopupMenu extends JPopupMenu {
                 convertToGAC();
             }
         });
-
         addSeparator();
-
         mi = add(new JMenuItem("Delete           Delete"));
         mi.setActionCommand("deleteNAC");
         mi.addActionListener(this.treeView.getActionAdapter());
         // mi.setMnemonic('D');
-
         addSeparator();
-
         this.disable = new JCheckBoxMenuItem("disabled");
         this.disable.setActionCommand("disableNAC");
         this.disable.addActionListener(this.treeView.getActionAdapter());
         add(this.disable);
-
         addSeparator();
-
         mi = add(new JMenuItem("Textual Comments"));
         // mi = new JMenuItem("Textual Comments");
         mi.setActionCommand("commentNAC");
         mi.addActionListener(this.treeView.getActionAdapter());
         // mi.setMnemonic('T');
-
         pack();
         setBorderPainted(true);
     }
@@ -118,7 +107,6 @@ public class NACPopupMenu extends JPopupMenu {
             final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
 //			GraGraTreeNodeData data = (GraGraTreeNodeData) node.getUserObject();
 //			TreePath rulePath = this.path.getParentPath();
-
             OrdinaryMorphism iso = nac.getMorphism().getTarget().isoCopy();
             OrdinaryMorphism ac = new OrdinaryMorphism(
                     nac.getMorphism().getSource(),
@@ -128,7 +116,6 @@ public class NACPopupMenu extends JPopupMenu {
                 ac.setName(nac.getName() + "_clone");
                 ac.getImage().setAttrContext(ac.getAttrContext());
                 ac.getImage().setKind(GraphKind.NAC);
-
                 EdNAC cn = nac.getRule().createNAC(ac);
                 nac.getRule().getNACs().remove(cn);
                 cn.setLayoutByIndex(nac, true);
@@ -136,7 +123,6 @@ public class NACPopupMenu extends JPopupMenu {
                 if (indx >= 0) {
                     nac.getRule().getBasisRule().addNAC(indx, ac);
                     nac.getRule().getNACs().add(indx, cn);
-
                     treeView.putNACIntoTree(cn, (DefaultMutableTreeNode) node.getParent(),
                             ((DefaultMutableTreeNode) node.getParent()).getIndex(node) + 1);
                 }
@@ -155,7 +141,6 @@ public class NACPopupMenu extends JPopupMenu {
     void convertToGAC() {
         if (nac != null) {
             final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
-
             OrdinaryMorphism iso = nac.getMorphism().getTarget().isoCopy();
             NestedApplCond ac = new NestedApplCond(
                     nac.getMorphism().getSource(),
@@ -165,11 +150,9 @@ public class NACPopupMenu extends JPopupMenu {
                 ac.setName(nac.getName());
                 ac.getImage().setAttrContext(ac.getAttrContext());
                 ac.getImage().setKind(GraphKind.AC);
-
                 nac.getRule().getBasisRule().addNestedAC(ac);
                 EdNestedApplCond cn = (EdNestedApplCond) nac.getRule().createNestedAC(ac);
                 cn.setLayoutByIndex(nac, true);
-
                 if (nac.getRule().getBasisRule().getNestedACsList().size() == 1) {
                     treeView.putNestedACIntoTree(cn, (DefaultMutableTreeNode) node.getParent(), 0);
                 } else {
@@ -181,7 +164,6 @@ public class NACPopupMenu extends JPopupMenu {
             }
         }
     }
-
     GraGraTreeView treeView;
     TreePath path;
     EdNAC nac;

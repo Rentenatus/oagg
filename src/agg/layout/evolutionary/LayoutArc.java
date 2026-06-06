@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -14,38 +15,31 @@
 package agg.layout.evolutionary;
 
 import java.awt.Point;
-
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdNode;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 
 /**
- * This class contains information about an edge (connection), such as actual and preferred length, atractive force and
- * some more, that are used by Springembedder Layout.
+ * This class contains information about an edge (connection), such as actual
+ * and preferred length, atractive force and some more, that are used by
+ * Springembedder Layout.
  */
 public class LayoutArc implements XMLObject {
 
     private EdArc eArc;
-
     private int prefLngth;
-
     private int aktLngth;
-
     private int xlngth, ylngth;
-
     private int force;
-
     private Point srcpos, tarpos;
-
     private int used;
-
     private boolean frozen;
-
     private boolean frozenAsDefault;
 
     /**
-     * Initialize the layout information of the specified EdArc by default values.
+     * Initialize the layout information of the specified EdArc by default
+     * values.
      */
     public LayoutArc(EdArc e) {
         this.eArc = e;
@@ -56,7 +50,8 @@ public class LayoutArc implements XMLObject {
     }
 
     /**
-     * Initialize the layout information of the specified EdArc by specified parameters.
+     * Initialize the layout information of the specified EdArc by specified
+     * parameters.
      *
      * @param e edge which will get this layout
      * @param prefL preferred length
@@ -189,7 +184,6 @@ public class LayoutArc implements XMLObject {
             h.close();
             h.close();
         }
-
     }
 
     public void XreadObject(XMLHelper h) {

@@ -2,34 +2,38 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // This class belongs to the following package:
 package agg.parser;
-
 //****************************************************************************+
+
 /**
- * This exception should be thrown by the <code>isCritical()</code> method of an object that implements a concrete
- * stategy of a critical pair.
+ * This exception should be thrown by the <code>isCritical()</code> method of an
+ * object that implements a concrete stategy of a critical pair.
  *
  * @author $Author: olga $
- * @version $Id: InvalidAlgorithmException.java,v 1.1 2005/08/25 11:56:57 enrico Exp $
+ * @version $Id: InvalidAlgorithmException.java,v 1.1 2005/08/25 11:56:57 enrico
+ * Exp $
  */
 @SuppressWarnings("serial")
 public class InvalidAlgorithmException extends Exception {
 
     /**
-     * kindOfAlgorithm specifies for which kind of algorithm the exception is thrown
+     * kindOfAlgorithm specifies for which kind of algorithm the exception is
+     * thrown
      */
     private int kindOfAlgorithm;
 
     // ****************************************************************************+
     /**
-     * InvalidAlgorithmException default constructor with a standard message and the standard kind of algorithm
+     * InvalidAlgorithmException default constructor with a standard message and
+     * the standard kind of algorithm
      */
     public InvalidAlgorithmException() {
         this("Algorithm is not supported.");
@@ -37,7 +41,8 @@ public class InvalidAlgorithmException extends Exception {
 
     // ****************************************************************************+
     /**
-     * InvalidAlgorithmException creates a exception with a specified message and the standard kind of algorithm
+     * InvalidAlgorithmException creates a exception with a specified message
+     * and the standard kind of algorithm
      *
      * @param message The message.
      */
@@ -47,8 +52,8 @@ public class InvalidAlgorithmException extends Exception {
 
     // ****************************************************************************+
     /**
-     * InvalidAlgorithmException creates a exception with a specified message and the kind of algorithm which causes the
-     * error.
+     * InvalidAlgorithmException creates a exception with a specified message
+     * and the kind of algorithm which causes the error.
      *
      * @param message the message for exception
      * @param algorithm The algorithm causes the exception.
@@ -60,16 +65,15 @@ public class InvalidAlgorithmException extends Exception {
 
     // ****************************************************************************+
     /**
-     * getKindOfInvalidAlgorithm returns the kind of algorithm which causes the exception
+     * getKindOfInvalidAlgorithm returns the kind of algorithm which causes the
+     * exception
      *
      * @return The algorithm.
      */
     public int getKindOfInvalidAlgorithm() {
         return this.kindOfAlgorithm;
     }
-
 }
-
 // End of InvalidAlgorithmException.java
 /*
  * $Log: InvalidAlgorithmException.java,v $

@@ -1,11 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * </copyright>
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -16,7 +17,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Vector;
-
 import agg.attribute.handler.SymbolTable;
 import agg.attribute.impl.AttrSession;
 import agg.attribute.impl.VerboseControl;
@@ -30,15 +30,10 @@ import java.util.List;
 public class SimpleNode implements Node {
 
     static final long serialVersionUID = 1L;
-
     protected Node parent;
-
     protected java.util.List<Node> children;
-
     protected String identifier;
-
     protected Object info;
-
     private String error;
 
     public SimpleNode(String id) {
@@ -54,7 +49,7 @@ public class SimpleNode implements Node {
     public void jjtOpen() {
     }
 
-    public void jjtClose() { 
+    public void jjtClose() {
     }
 
     public void jjtSetParent(Node n) {
@@ -100,12 +95,10 @@ public class SimpleNode implements Node {
      */
     public String toString() {
         Class<?> c = getNodeClass();
-
         if (c == null) {
             return this.identifier;
         }
         return this.identifier + " [" + c.toString() + "]";
-
     }
 
     public String toString(String prefix) {
@@ -126,7 +119,6 @@ public class SimpleNode implements Node {
             }
         }
     }
-
     /**
      * *********************** Added by Sreeni. ******************
      */
@@ -135,7 +127,6 @@ public class SimpleNode implements Node {
      */
 //	protected static Object[] stack = new Object[2048]; //[1024];	
     protected static ArrayList<Object> stack = new ArrayList<Object>();
-
     protected static int top = -1;
 
     /**
@@ -149,7 +140,6 @@ public class SimpleNode implements Node {
     public String getError() {
         return this.error;
     }
-
     /**
      * *********************** Added by BM. ******************
      */
@@ -157,17 +147,14 @@ public class SimpleNode implements Node {
      * Initialization flag
      */
     static protected boolean neverCalled = true;
-
     /**
      * Symbol table
      */
     static protected SymbolTable symtab = null;
-
     /**
      * Widening order for numeric types
      */
     protected static java.util.Hashtable<Class<?>, Integer> numberTypes = new java.util.Hashtable<Class<?>, Integer>();
-
 //	/** Constructors */
 //	protected static java.util.Hashtable constructors = new java.util.Hashtable();
 //	/** Referencing methods for Operands */
@@ -176,7 +163,6 @@ public class SimpleNode implements Node {
      * String class handle for frequent comparison
      */
     static protected Class<?> stringClass;
-
     /**
      * Object class handle for frequent comparison
      */
@@ -186,15 +172,13 @@ public class SimpleNode implements Node {
         if (neverCalled) {
             neverCalled = false;
             int codeNr = 0;
-
             codeNr = 0;
-            numberTypes.put(Byte.TYPE, new Integer(codeNr++));
-            numberTypes.put(Short.TYPE, new Integer(codeNr++));
-            numberTypes.put(Long.TYPE, new Integer(codeNr++));
-            numberTypes.put(Integer.TYPE, new Integer(codeNr++));
-            numberTypes.put(Float.TYPE, new Integer(codeNr++));
-            numberTypes.put(Double.TYPE, new Integer(codeNr++));
-
+            numberTypes.put(Byte.TYPE, codeNr++);
+            numberTypes.put(Short.TYPE, codeNr++);
+            numberTypes.put(Long.TYPE, codeNr++);
+            numberTypes.put(Integer.TYPE, codeNr++);
+            numberTypes.put(Float.TYPE, codeNr++);
+            numberTypes.put(Double.TYPE, codeNr++);
             try {
                 stringClass = Class.forName("java.lang.String");
                 objectClass = Class.forName("java.lang.Object");
@@ -203,7 +187,6 @@ public class SimpleNode implements Node {
             }
         }
     }
-
     /**
      * The class handle
      */
@@ -287,14 +270,12 @@ public class SimpleNode implements Node {
     protected Class<?> commonNumberType(SimpleNode n1, SimpleNode n2) {
         int numType1 = numberTypes.get(n1.getNodeClass()).intValue();
         int numType2 = numberTypes.get(n2.getNodeClass()).intValue();
-
         return (numType1 > numType2 ? n1.getNodeClass() : n2.getNodeClass());
     }
 
     protected boolean isConstantExpr() {
         int nChildren = jjtGetNumChildren();
         SimpleNode child;
-
         for (int i = 0; i < nChildren; i++) {
             child = (SimpleNode) jjtGetChild(i);
             if (!child.isConstantExpr()) {
@@ -306,7 +287,8 @@ public class SimpleNode implements Node {
 
     /**
      * *************************************************************************
-     * Public Methods ************************************************************************
+     * Public Methods
+     * ************************************************************************
      */
     /**
      * Obtaining the node type and checking for consistency.
@@ -324,7 +306,6 @@ public class SimpleNode implements Node {
     static public SymbolTable getSymbolTable() {
         return symtab;
     }
-
     static protected ClassResolver classResolver = null;
 
     static public void setClassResolver(ClassResolver cr) {
@@ -337,14 +318,16 @@ public class SimpleNode implements Node {
     }
 
     /**
-     * returns this node as a string with all children. Subclasses must override this.
+     * returns this node as a string with all children. Subclasses must override
+     * this.
      */
     public String getString() {
         return toString();
     }
 
     /**
-     * Rewrites all children. This method must be overridden if any special handling is needed.
+     * Rewrites all children. This method must be overridden if any special
+     * handling is needed.
      *
      * @see ASTId#rewrite special rewriting at class ASTId
      */
@@ -353,15 +336,12 @@ public class SimpleNode implements Node {
             this.error = "";
             try {
                 jjtGetChild(i).interpret();
-
                 if (jjtGetChild(i).getError().length() != 0) {
-
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
 //							" SimpleNode.rewrite  : interpret  FAILED!");
                     this.error = jjtGetChild(i).getError();
                     break;
                 }
-
             } catch (ASTMissingValueException amve) {
                 jjtGetChild(i).rewrite();
             }
@@ -373,12 +353,13 @@ public class SimpleNode implements Node {
      */
     public void replaceChild(Node oldChild, Node newChild) {
         int pos = this.children.indexOf(oldChild);
-        this.children.add(pos,newChild);
-        this.children.remove (oldChild);
+        this.children.add(pos, newChild);
+        this.children.remove(oldChild);
     }
 
     /**
-     * fills the vector with the names of all variables which occur in this abstract syntax tree
+     * fills the vector with the names of all variables which occur in this
+     * abstract syntax tree
      */
     public void getAllVariablesinExpression(List<String> v) {
         for (int i = 0; i < jjtGetNumChildren(); i++) {
@@ -417,7 +398,6 @@ public class SimpleNode implements Node {
 			 * copy.jjtAddChild(childCopy); childCopy.jjtSetParent(copy); }
          */
         try {
-
             /*
 			 * Diese Copy-Methode sei Yang Xiang <xiang@uni-hamburg.de>
 			 * gewidmet, der unerschrocken ueber meine Anfrage in
@@ -439,7 +419,6 @@ public class SimpleNode implements Node {
         return copy;
     }
 }
-
 /*
  * $Log: SimpleNode.java,v $
  * Revision 1.10  2010/09/23 08:15:01  olga

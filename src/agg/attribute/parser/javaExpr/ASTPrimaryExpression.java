@@ -1,11 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * </copyright>
+ * *****************************************************************************
  */
 /* JJT: 0.2.2 */
 package agg.attribute.parser.javaExpr;
@@ -44,7 +45,6 @@ public class ASTPrimaryExpression extends SimpleNode {
     public void checkContext() throws ASTWrongTypeException {
         int nChildren = jjtGetNumChildren();
         Node prefix, suffix = null;
-
         try {
             prefix = jjtGetChild(0);
             prefix.checkContext();
@@ -72,11 +72,9 @@ public class ASTPrimaryExpression extends SimpleNode {
     public void interpret() {
         int nChildren = jjtGetNumChildren();
         Node prefix, suffix;
-
         try {
             prefix = jjtGetChild(0);
             prefix.interpret();
-
             for (int i = 1; i < nChildren; i++) {
                 suffix = jjtGetChild(i);
                 if (((SimpleNode) suffix).isMember()) {

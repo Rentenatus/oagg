@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -21,7 +21,6 @@ import java.util.Vector;
 public class ObjectConstNode extends SimpleNode {
 
     static final long serialVersionUID = 1L;
-
     protected Object obj;
 
     public ObjectConstNode(String id) {

@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import java.util.Hashtable;
 import java.util.Vector;
-
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrVariableTuple;
@@ -20,11 +20,14 @@ import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.HandlerExpr;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.handler.SymbolTable;
+import java.util.Map;
 
 /**
- * This is a view onto an underlying ContextCore class object; By this delegation, views with different access rights
- * can share the same context; At this stage, just two access modes are implemented: "LeftRuleSide" and "RightRuleSide";
- * "RightRuleSide" access does not allow adding or removing of variable declarations;
+ * This is a view onto an underlying ContextCore class object; By this
+ * delegation, views with different access rights can share the same context; At
+ * this stage, just two access modes are implemented: "LeftRuleSide" and
+ * "RightRuleSide"; "RightRuleSide" access does not allow adding or removing of
+ * variable declarations;
  *
  * @see ContextCore
  * @author $Author: olga $
@@ -34,27 +37,22 @@ public class ContextView extends ManagedObject implements AttrContext,
         SymbolTable {
 
     static final long serialVersionUID = 6106321395444330038L;
-
     /**
      * Handle to the actual context core.
      */
     protected ContextCore core;
-
     /**
      * Describes the access mode.
      */
     protected boolean canDeclareVar = true;
-
     /**
      * Describes the access mode.
      */
     protected boolean canUseComplexExpr = true;
-
     /**
      * Describes the access mode.
      */
     protected boolean canHaveEmptyValues = true;
-
     /**
      * Describes the access mode.
      */
@@ -64,7 +62,8 @@ public class ContextView extends ManagedObject implements AttrContext,
      * Creates a new root context and returns a full access view for it;
      *
      * @param manager The calling Attribute Manager
-     * @param mapStyle The kind of mapping that is allowed within this context; it is one of:
+     * @param mapStyle The kind of mapping that is allowed within this context;
+     * it is one of:
      * <dl>
      * <dt> -
      * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule mapping
@@ -80,14 +79,16 @@ public class ContextView extends ManagedObject implements AttrContext,
      * Creates a new child context and returns a full access view for it;
      *
      * @param manager The calling Attribute Manager
-     * @param mapStyle The kind of mapping that is allowed within this context; it is one of:
+     * @param mapStyle The kind of mapping that is allowed within this context;
+     * it is one of:
      * <dl>
      * <dt> -
      * <dd> 'AttrMapping.PLAIN_MAP': In Graph Transform.: rule mapping
      * <dt> -
      * <dd> 'AttrMapping.MATCH_MAP': In Graph Transformation: matching
      * </dl>
-     * @param parent The view whose context is to be the parent for this view's context
+     * @param parent The view whose context is to be the parent for this view's
+     * context
      */
     public ContextView(AttrTupleManager manager, int mapStyle,
             AttrContext parent) {
@@ -96,16 +97,17 @@ public class ContextView extends ManagedObject implements AttrContext,
         if (parent != null) {
             parentCore = ((ContextView) parent).core;
         }
-
         this.core = new ContextCore(manager, mapStyle, parentCore);
     }
 
     /**
-     * Returns a new view which shares another view's context and has the specified access mode;
+     * Returns a new view which shares another view's context and has the
+     * specified access mode;
      *
      * @param manager The calling Attribute Manager
      * @param source The view to share the context with
-     * @param leftRuleSide Convenience parameter, sets access control appropriately.
+     * @param leftRuleSide Convenience parameter, sets access control
+     * appropriately.
      */
     public ContextView(AttrTupleManager manager, AttrContext source,
             boolean leftRuleSide) {
@@ -139,18 +141,17 @@ public class ContextView extends ManagedObject implements AttrContext,
         this.core = null;
     }
 
-    protected final void finalize() {
-    }
-
     /**
-     * Creates a new VarTuple instance and rewrites the already existing VarTuple instance.
+     * Creates a new VarTuple instance and rewrites the already existing
+     * VarTuple instance.
      */
     public void resetVariableTuple() {
         this.core.resetVariableTuple();
     }
 
     /**
-     * Creates a new CondTuple instance and rewrites the already existing CondTuple instance.
+     * Creates a new CondTuple instance and rewrites the already existing
+     * CondTuple instance.
      */
     public void resetConditionTuple() {
         this.core.resetConditionTuple();
@@ -169,10 +170,12 @@ public class ContextView extends ManagedObject implements AttrContext,
     }
 
     /**
-     * A variable context mins that mainly variables will be used as values of the graph objects of a graph, so if a
-     * rule / match attribute context has an attribute condition, it cannot be evaluated and will get TRUE as result.
-     * This feature is mainly used for critical pair analysis, where the attribute conditions will be handled
-     * especially. Do not use this setting for common transformation.
+     * A variable context mins that mainly variables will be used as values of
+     * the graph objects of a graph, so if a rule / match attribute context has
+     * an attribute condition, it cannot be evaluated and will get TRUE as
+     * result. This feature is mainly used for critical pair analysis, where the
+     * attribute conditions will be handled especially. Do not use this setting
+     * for common transformation.
      */
     public void setVariableContext(boolean b) {
         this.core.setVariableContext(b);
@@ -271,7 +274,6 @@ public class ContextView extends ManagedObject implements AttrContext,
     public void copyAttrContext(AttrContext context) {
         ContextView cv = (ContextView) context;
         this.core.makeCopyOf(((ContextView) context).core);
-
         this.canDeclareVar = cv.canDeclareVar;
         this.canUseComplexExpr = cv.canUseComplexExpr;
         this.canHaveEmptyValues = cv.canHaveEmptyValues;
@@ -279,7 +281,8 @@ public class ContextView extends ManagedObject implements AttrContext,
     }
 
     /**
-     * Switching on of the freeze mode; mapping removals are deferred until 'defreeze()' is called.
+     * Switching on of the freeze mode; mapping removals are deferred until
+     * 'defreeze()' is called.
      */
     public void freeze() {
         this.core.freeze();
@@ -326,7 +329,8 @@ public class ContextView extends ManagedObject implements AttrContext,
     // Wrapping methods
     /**
      * Getting the mapping style:<br>
-     * AttrMapping.PLAIN_MAP, AttrMapping.MATCH_MAP AttrMapping.GRAPH_MAP, AttrMapping.OBJECT_FLOW_MAP
+     * AttrMapping.PLAIN_MAP, AttrMapping.MATCH_MAP AttrMapping.GRAPH_MAP,
+     * AttrMapping.OBJECT_FLOW_MAP
      *
      */
     public int getAllowedMapping() {
@@ -347,7 +351,7 @@ public class ContextView extends ManagedObject implements AttrContext,
     /**
      * returns all Mappings
      */
-    public Hashtable<ValueTuple, Vector<TupleMapping>> getMapping() {
+    public Map<ValueTuple, Vector<TupleMapping>> getMapping() {
         return this.core.getMapping();
     }
 
@@ -367,7 +371,8 @@ public class ContextView extends ManagedObject implements AttrContext,
     }
 
     /**
-     * Tests if a variable has already been declared in this context or in any of its parents;
+     * Tests if a variable has already been declared in this context or in any
+     * of its parents;
      *
      * @param name The name of the variable
      * @return 'true' if "name" is declared, 'false' otherwise
@@ -377,8 +382,9 @@ public class ContextView extends ManagedObject implements AttrContext,
     }
 
     /**
-     * Adding a new declaration; "name" is a key and must not have been previously used for a declaration in this
-     * context or any of its parents before;
+     * Adding a new declaration; "name" is a key and must not have been
+     * previously used for a declaration in this context or any of its parents
+     * before;
      *
      * @param name The name of the variable to declare
      * @param type The type of the variable
@@ -400,8 +406,8 @@ public class ContextView extends ManagedObject implements AttrContext,
     }
 
     /**
-     * Removing a declaration from this context; Parent contextes are NOT considered; Does nothing if the variable
-     * "name" is not declared;
+     * Removing a declaration from this context; Parent contextes are NOT
+     * considered; Does nothing if the variable "name" is not declared;
      *
      * @param name The name of the variable to remove
      * @exception ContextRestrictedException If this view is restricted
@@ -414,8 +420,9 @@ public class ContextView extends ManagedObject implements AttrContext,
     }
 
     /**
-     * Checking if a variable can be set to a given value without violating the application conditions. Note: if the
-     * conditions are violated already, this method returns 'true' for any 'value', unless 'value' contradicts a
+     * Checking if a variable can be set to a given value without violating the
+     * application conditions. Note: if the conditions are violated already,
+     * this method returns 'true' for any 'value', unless 'value' contradicts a
      * previously set non-null value for the variable.
      */
     public boolean canSetValue(String name, ValueMember value) {
@@ -423,8 +430,8 @@ public class ContextView extends ManagedObject implements AttrContext,
     }
 
     /**
-     * Appending a value to a variable; This will be the current value until a new value will be appended or this one
-     * removed
+     * Appending a value to a variable; This will be the current value until a
+     * new value will be appended or this one removed
      *
      * @param name The name of the variable
      * @param value The value to append to the variable
@@ -440,12 +447,12 @@ public class ContextView extends ManagedObject implements AttrContext,
      *
      * @param name The name of the variable
      * @exception NoSuchVariableException If no variable 'name' is declared
-     * @exception WrongContextException If the value was not assigned in this context
+     * @exception WrongContextException If the value was not assigned in this
+     * context
      */
     public void removeValue(String name) throws NoSuchVariableException {
         this.core.removeValue(name);
     }
-
 }
 /*
  * $Log: ContextView.java,v $

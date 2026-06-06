@@ -1,23 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
-
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
-import java.util.Date;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
 
 import agg.attribute.AttrException;
 import agg.attribute.impl.VarTuple;
@@ -25,31 +16,28 @@ import agg.cons.AtomConstraint;
 import agg.ruleappl.RuleSequence;
 import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class RuleSequencesGraTraImpl extends GraTra {
 
     protected boolean appliedOnce, eachRuleToApply;
-
     protected boolean trafoSequenceBroken;
-
     protected boolean allRulesEnabled = false;
-
     protected int indx = -1;
-
     protected RuleSequence ruleSequence;
-
     protected List<Pair<List<Pair<Rule, String>>, String>> ruleSubsequences;
-
     protected List<String> ruleNameSequences;
-
     protected File f;
-
     protected FileOutputStream os;
-
     protected String protocolFileName = "";
-
     protected boolean grammarChecked;
-
     protected long time;
 
     public RuleSequencesGraTraImpl() {
@@ -80,7 +68,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
         if (this.ruleSequence != null) {
             this.addGraTraListener(this.ruleSequence);
         }
-
         Pair<List<Pair<Rule, String>>, String> p;
         for (int i = 0; i < this.ruleSubsequences.size() && !this.stopping; i++) {
             String rs = (i + 1) + ". subsequence: "
@@ -91,22 +78,17 @@ public class RuleSequencesGraTraImpl extends GraTra {
             if (this.os != null) {
                 writeTransformProtocol(rs);
             }
-
             p = this.ruleSubsequences.get(i);
-
             apply(p.first, p.second);
-
 //			System.out.println((i + 1) + ". subsequence applied");
 //			System.out.println();
             if (this.os != null) {
                 writeTransformProtocol(rs + "\t applied");
             }
         }
-
         if (this.ruleSequence != null) {
             this.removeGraTraListener(this.ruleSequence);
         }
-
         return this.appliedOnce;
     }
 
@@ -117,13 +99,12 @@ public class RuleSequencesGraTraImpl extends GraTra {
 
     protected void setRuleSequence(
             final List<Pair<List<Pair<String, String>>, String>> sequence) {
-
-        this.ruleSubsequences = new Vector<Pair<List<Pair<Rule, String>>, String>>(
+        this.ruleSubsequences = new ArrayList<Pair<List<Pair<Rule, String>>, String>>(
                 sequence.size());
         for (int i = 0; i < sequence.size(); i++) {
             Pair<List<Pair<String, String>>, String> pi = sequence.get(i);
             List<Pair<String, String>> v = pi.first;
-            List<Pair<Rule, String>> vec = new Vector<Pair<Rule, String>>(v
+            List<Pair<Rule, String>> vec = new ArrayList<Pair<Rule, String>>(v
                     .size());
             for (int j = 0; j < v.size(); j++) {
                 Pair<String, String> pj = v.get(j);
@@ -154,11 +135,9 @@ public class RuleSequencesGraTraImpl extends GraTra {
 //			System.out.println("\nrule: " + r.getName()+ "\t*  times");
             int i = 0;
             while (ruleapplied && !this.stopping) {
-
                 if (this.options.hasOption(GraTraOptions.WAIT_AFTER_STEP)) {
                     fireGraTra(new GraTraEvent(this, GraTraEvent.RULE, r));
                 }
-
                 if (this.ruleSequence.isTrafoByObjFlow()
                         && !this.ruleSequence.getObjectFlow().isEmpty()) {
                     if (this.ruleSequence.getRule(this.indx) != r
@@ -168,25 +147,20 @@ public class RuleSequencesGraTraImpl extends GraTra {
                     }
                     propagateObjFlowOfRule(this.indx, r);
                 }
-
                 if (this.currentRule.getRuleScheme() != null) {
                     ruleapplied = apply((RuleScheme) this.currentRule);
                 } else {
                     ruleapplied = apply(r);
                 }
-
                 if (ruleapplied) {
                     i++;
                     this.appliedOnce = true;
                 }
-
                 System.out.println(r.getName() + " \t applied:  " + ruleapplied);
-
                 if (this.os != null) {
                     writeTransformProtocol(r.getName() + " \t applied:  "
                             + ruleapplied);
                 }
-
                 if ((i == 0 && !ruleapplied && this.eachRuleToApply)
                         || !isGraphConsistent()) {
                     this.stopping = true;
@@ -196,11 +170,9 @@ public class RuleSequencesGraTraImpl extends GraTra {
         } else {
             long N = (new Long(iters)).longValue();
             for (long i = 0; i < N && !this.stopping; i++) {
-
                 if (this.options.hasOption(GraTraOptions.WAIT_AFTER_STEP)) {
                     fireGraTra(new GraTraEvent(this, GraTraEvent.RULE, r));
                 }
-
                 if (this.ruleSequence.isTrafoByObjFlow()
                         && !this.ruleSequence.getObjectFlow().isEmpty()) {
                     this.indx++;
@@ -212,26 +184,20 @@ public class RuleSequencesGraTraImpl extends GraTra {
 					this.ruleSequence.getMatchSequence().setTrafoIndex(this.indx);
                     propagateObjFlowOfRule(this.indx, r);
                 }
-
                 if (!this.stopping) {
-
                     if (this.currentRule.getRuleScheme() != null) {
                         ruleapplied = apply((RuleScheme) this.currentRule);
                     } else {
                         ruleapplied = apply(r);
                     }
-
                     if (ruleapplied) {
                         this.appliedOnce = true;
                     }
-
                     System.out.println(r.getName() + " \t applied:  " + ruleapplied);
-
                     if (this.os != null) {
                         writeTransformProtocol(r.getName() + " \t applied:  "
                                 + ruleapplied);
                     }
-
                     if ((i == 0 && !ruleapplied && this.eachRuleToApply)
                             || !isGraphConsistent()) {
                         this.stopping = true;
@@ -245,8 +211,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
     private void propagateObjFlowOfRule(
             int ind,
             final Rule r) {
-
-        Hashtable<GraphObject, GraphObject> matchMap = (r.getRuleScheme() == null)
+        Map<GraphObject, GraphObject> matchMap = (r.getRuleScheme() == null)
                 ? this.ruleSequence.getMatchSequence().getMatch(ind, r)
                 : this.ruleSequence.getMatchSequence().getMatch(ind, r.getRuleScheme().getKernelRule());
         if (r.getMatch() == null) {
@@ -288,12 +253,10 @@ public class RuleSequencesGraTraImpl extends GraTra {
                     if (p.first == null) {
                         continue;
                     }
-
                     this.currentRule = p.first;
                     if (this.currentRule.isEnabled()) {
                         apply(this.currentRule, p.second);
                     }
-
                 }
                 this.time = this.time + (System.currentTimeMillis() - time0);
                 System.out.println("used time: " + time + "ms");
@@ -302,20 +265,16 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 }
             }
         } else {
-
             long N = (new Long(iters)).longValue();
 //			if (N > 1)
 //				System.out.println("\n	apply  " + N + "  time(s)");
             for (long i = 0; i < N && !this.stopping; i++) {
-
                 long time0 = System.currentTimeMillis();
-
                 for (int j = 0; j < group.size() && !this.stopping; j++) {
                     Pair<Rule, String> p = group.get(j);
                     if (p.first == null) {
                         continue;
                     }
-
                     this.currentRule = p.first;
                     if (this.currentRule.isEnabled()) {
                         apply(this.currentRule, p.second);
@@ -328,21 +287,17 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 }
             }
         }
-
         if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
             this.checkGraphConsistency();
         }
-
         return this.appliedOnce;
     }
 
     public boolean apply(Rule r) {
 //		System.out.println("RuleSequenceGraTra.apply(Rule) : "+r.getName()+"   "+updateTypeObjectsMapAfterStep);
-
         this.stoppingRule = false;
         boolean result = false;
         boolean valid = false;
-
         this.currentMatch = r.getMatch();
         if (this.currentMatch == null) {
             this.currentMatch = this.grammar.createMatch(r);
@@ -352,28 +307,22 @@ public class RuleSequencesGraTraImpl extends GraTra {
         } else if (this.updateTypeObjectsMapAfterStep) {
             this.currentMatch.setTypeObjectsMapChanged(true);
         }
-
         boolean parallelApply = true;
         boolean is_applied = false;
 //		int matchCompletions = 0;
-
 //		long time0 = System.currentTimeMillis();
         while (parallelApply) {
-
             if (!isInputParameterSet(r.getLeft(), true, this.currentMatch)) {
                 fireGraTra(
                         new GraTraEvent(this, GraTraEvent.INPUT_PARAMETER_NOT_SET, this.currentMatch));
             }
-
             if (this.stopping || this.stoppingRule) {
                 this.currentMatch.clear();
                 return false;
             }
-
             if (this.pauseRule) {
                 return false;
             }
-
             valid = false;
             while (!valid) {
                 if (this.ruleSequence.isTrafoByObjFlow()) {
@@ -388,7 +337,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
                         break;
                     }
                 }
-
                 if (this.currentMatch.nextCompletion()) {
                     if (this.currentMatch.isValid()) {
                         valid = true;
@@ -412,16 +360,13 @@ public class RuleSequencesGraTraImpl extends GraTra {
                     break;
                 }
             }
-
             if (valid) {
                 fireGraTra(new GraTraEvent(this, GraTraEvent.MATCH_VALID,
                         this.currentMatch));
-
                 if (!isInputParameterSet(r.getRight(), false, this.currentMatch)) {
                     fireGraTra(new GraTraEvent(this,
                             GraTraEvent.INPUT_PARAMETER_NOT_SET, this.currentMatch));
                 }
-
                 try { // check attr context: variables only
                     boolean checkVarsOnly = true;
                     this.currentMatch.getAttrContext().getVariables()
@@ -433,7 +378,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
                             GraTraEvent.NOT_READY_TO_TRANSFORM, r.getName()));
                     return false;
                 }
-
                 Morphism coMatch = apply(this.currentMatch);
                 if (coMatch != null) {
                     result = true;
@@ -455,7 +399,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
                         this.currentMatch, this.currentMatch.getErrorMsg()));
                 this.currentMatch.clear();
             }
-
             //
             if (r.isParallelApplyEnabled()) {
                 if (!valid) {
@@ -466,14 +409,12 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 if (is_applied) {
                     result = true;
                 }
-
             } else {
                 parallelApply = false;
                 break;
             }
             //   	      
         }
-
         return result;
     }
 
@@ -487,17 +428,13 @@ public class RuleSequencesGraTraImpl extends GraTra {
 
     public void transform() {
         System.out.println("GraTra   by  " + this.getClass().getName() + "  running");
-
         this.stopping = false;
-
         if (!this.grammar.getListOfRules().isEmpty() && this.currentRuleSet.isEmpty()) {
             setRuleSet();
         }
-
         String ruleSequencesAsText = getRuleSequenceAsText();
         String s2 = "rule sequence: " + ruleSequencesAsText;
         System.out.println(s2);
-
         if (this.writeLogFile) {
             String dirName = this.grammar.getDirName();
             String fileName = this.grammar.getFileName();
@@ -514,7 +451,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
             writeTransformProtocol(s1);
             writeTransformProtocol(s2);
         }
-
         // first check the rules, the graph
         if (!this.grammarChecked) {
             Pair<Object, String> checkpair = this.grammar.isReadyToTransform(true);
@@ -522,7 +458,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 Object test = checkpair.first;
                 if (test != null) {
                     String s = checkpair.second + "\nTransformation is stopped.";
-
                     if (test instanceof Type) {
                         ((GraTra) this).fireGraTra(new GraTraEvent(this,
                                 GraTraEvent.ATTR_TYPE_FAILED, s));
@@ -556,22 +491,17 @@ public class RuleSequencesGraTraImpl extends GraTra {
             }
             this.grammarChecked = true;
         }
-
         // stop start time
         long startTime = System.currentTimeMillis();
-
         transform(this.grammar.getListOfRules());
-
         if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
             this.checkGraphConsistency();
         }
-
         if (this.writeLogFile) {
             writeUsedTimeToProtocol("Used time for graph transformation: ", startTime);
             writeTransformProtocol("Graph transformation finished");
             closeTransformProtocol();
         }
-
         fireGraTra(new GraTraEvent(this, GraTraEvent.TRANSFORM_FINISHED,
                 this.errorMsg));
     }
@@ -580,11 +510,11 @@ public class RuleSequencesGraTraImpl extends GraTra {
         return this.trafoSequenceBroken;
     }
 
-    protected Vector<Rule> getEnabledRules(Vector<Rule> ruleSet) {
-        Vector<Rule> vec = new Vector<Rule>(ruleSet.size());
+    protected List<Rule> getEnabledRules(List<Rule> ruleSet) {
+        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
-            if (ruleSet.elementAt(j).isEnabled()) {
-                vec.add(ruleSet.elementAt(j));
+            if (ruleSet.get(j).isEnabled()) {
+                vec.add(ruleSet.get(j));
             }
         }
         return vec;
@@ -609,17 +539,17 @@ public class RuleSequencesGraTraImpl extends GraTra {
         return this.protocolFileName;
     }
 
-    protected String getRuleNames(Vector<Rule> rules) {
+    protected String getRuleNames(List<Rule> rules) {
         String names = "[  ";
         for (int j = 0; j < rules.size(); j++) {
-            Rule r = rules.elementAt(j);
+            Rule r = rules.get(j);
             names = names + r.getName() + "  ";
         }
         names = names + "]";
         return names;
     }
 
-    protected String getRuleNamesOfSubsequence(Vector<Pair<Rule, String>> rules) {
+    protected String getRuleNamesOfSubsequence(List<Pair<Rule, String>> rules) {
         String names = "Rule subsequence: ( ";
         for (int j = 0; j < rules.size(); j++) {
             Pair<Rule, String> p = rules.get(j);
@@ -669,14 +599,12 @@ public class RuleSequencesGraTraImpl extends GraTra {
         } else {
             this.f = new File(fName);
         }
-
         try {
             this.os = new FileOutputStream(this.f);
             this.protocolFileName = this.f.getName();
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
-
         writeTransformProtocol((new Date()).toString());
     }
 
@@ -687,7 +615,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
         if (!this.os.getChannel().isOpen()) {
             return;
         }
-
         try {
             if (!s.equals("\n")) {
                 this.os.write(s.getBytes());
@@ -721,7 +648,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
     }
 
     public String getRuleSequenceAsText() {
-        this.ruleNameSequences = new Vector<String>(this.ruleSubsequences.size());
+        this.ruleNameSequences = new ArrayList<String>(this.ruleSubsequences.size());
         String s = "";
         for (int i = 0; i < this.ruleSubsequences.size(); i++) {
             Pair<List<Pair<Rule, String>>, String> grp = this.ruleSubsequences.get(i);
@@ -761,7 +688,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
             } else if (grpRules.size() > 1 || grpIters > 1) {
                 grpStr = grpStr + ")";
             }
-
             if (grpRules.size() > 0) {
                 if (grpItersStr.equals("*")) {
                     grpStr = grpStr + "{" + grpItersStr + "}";
@@ -771,11 +697,8 @@ public class RuleSequencesGraTraImpl extends GraTra {
             } else {
                 grpStr = "()";
             }
-
             this.ruleNameSequences.add(grpStr);
-
             grpStr = grpStr + "\n";
-
             s = s + grpStr;
         }
         return s;
@@ -785,7 +708,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
             final Graph g,
             boolean left,
             final Match match) {
-
 //		((VarTuple)match.getAttrContext().getVariables()).showVariables();
         if (match != null
                 && left
@@ -794,8 +716,6 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 && ((VarTuple) match.getAttrContext().getVariables()).areInputParametersSet()) {
             return true;
         }
-
         return super.isInputParameterSet(g, left, match);
     }
-
 }

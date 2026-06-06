@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview;
 
@@ -14,10 +15,8 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.gui.treeview.nodedata.GraGraTreeNodeData;
 
 public class GraGraTreeViewMouseAdapter extends MouseAdapter {
@@ -38,7 +37,6 @@ public class GraGraTreeViewMouseAdapter extends MouseAdapter {
                 this.treeView.selPath = this.treeView.tree.getPathForLocation(e.getX(), e.getY());
                 this.treeView.setFlagForNew();
             }
-
             if (e.isPopupTrigger()) {
                 this.treeView.popupLocation = new Point(e.getX(), e.getY());
                 if (this.treeView.tree.getRowForLocation(e.getX(), e.getY()) == -1) {
@@ -134,7 +132,6 @@ public class GraGraTreeViewMouseAdapter extends MouseAdapter {
                     } else {
                         this.treeView.isSelected = false;
                     }
-
                     DefaultMutableTreeNode aNode = (DefaultMutableTreeNode) this.treeView.selPath
                             .getLastPathComponent();
                     GraGraTreeNodeData sd = (GraGraTreeNodeData) aNode
@@ -308,7 +305,6 @@ public class GraGraTreeViewMouseAdapter extends MouseAdapter {
                                     .add((DefaultMutableTreeNode) this.treeView.movedNode
                                             .getChildAt(i));
                         }
-
                         this.treeView.treeModel.insertNodeInto(movedCopy,
                                 (DefaultMutableTreeNode) aNode
                                         .getParent(),
@@ -316,14 +312,11 @@ public class GraGraTreeViewMouseAdapter extends MouseAdapter {
                                         .getParent()).getIndex(aNode));
                         int newIndx = this.treeView.treeModel.getIndexOfChild(
                                 this.treeView.movedNode.getParent(), movedCopy);
-
                         if ((this.treeView.tmpSelNode != null)
                                 && this.treeView.movedNode.equals(this.treeView.tmpSelNode)) {
                             this.treeView.isSelected = true;
                         }
-
                         this.treeView.treeModel.removeNodeFromParent(this.treeView.movedNode);
-
                         if (this.treeView.isSelected) {
                             if (newIndx < oldIndx) {
                                 this.treeView.tree.setSelectionRow(this.treeView.tree
@@ -375,5 +368,4 @@ public class GraGraTreeViewMouseAdapter extends MouseAdapter {
     public void mouseEntered(MouseEvent e) {
         this.treeView.requestFocusInWindow();
     }
-
 }

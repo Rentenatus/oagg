@@ -2,20 +2,19 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdRule;
 import agg.editor.impl.EdRuleScheme;
@@ -48,15 +47,14 @@ public class GraGraTreeViewKeyAdapter extends KeyAdapter {
             propagateShortKeyToEditor(e);
         }
     }
-
 //	public void keyReleased(KeyEvent e) {
 //		System.out.println("released:::   "+e.getKeyCode()+"    "+KeyEvent.getKeyText(e.getKeyCode()));
 //		if (!performShortKeyEvent(e, true))
 //			propagateShortKeyToEditor(e);
 //	}
+
     protected boolean performShortKeyEvent(KeyEvent e, boolean treeviewowner) {
         final int keyCode = e.getKeyCode();
-
         if (e.isControlDown()) {
             final String typedKey = KeyEvent.getKeyText(keyCode);
             if (e.isAltDown()) {
@@ -155,7 +153,6 @@ public class GraGraTreeViewKeyAdapter extends KeyAdapter {
         } else {
             return false;
         }
-
         return true;
     }
 
@@ -187,7 +184,6 @@ public class GraGraTreeViewKeyAdapter extends KeyAdapter {
                             r.setName(rd.getRuleScheme().getBasisRuleScheme().getName() + "_clone");
                             this.ruleCopy = new EdRuleScheme(r, rd.getRuleScheme().getTypeSet());
                             ((EdRuleScheme) this.ruleCopy).setLayoutByIndexFrom(rd.getRuleScheme());
-
                             this.indx = this.graNode.getIndex(rnode) + 1;
                             this.copyRule = true;
                             this.gragra = graData.getGraGra();
@@ -211,7 +207,6 @@ public class GraGraTreeViewKeyAdapter extends KeyAdapter {
                             r.setName(rd.getRule().getBasisRule().getName() + "_clone");
                             this.ruleCopy = new EdRule(r, rd.getRule().getTypeSet());
                             this.ruleCopy.setLayoutByIndexFrom(rd.getRule(), false);
-
                             this.indx = this.graNode.getIndex(rnode) + 1;
                             this.copyRule = true;
                             this.gragra = graData.getGraGra();
@@ -249,7 +244,6 @@ public class GraGraTreeViewKeyAdapter extends KeyAdapter {
                                     this.treeView.putRuleSchemeIntoTree((EdRuleScheme) this.ruleCopy, this.graNode, this.indx);
                                     TreePath tp = this.treeView.getTreePathOfGrammarElement((EdRuleScheme) this.ruleCopy);
                                     this.treeView.selectPath(tp);
-
                                     this.treeView.fireTreeViewEvent(new TreeViewEvent(this,
                                             TreeViewEvent.RULE_ADDED, tp)); //this.selPath));
                                     this.treeView.fireTreeViewEvent(new TreeViewEvent(this,
@@ -263,7 +257,6 @@ public class GraGraTreeViewKeyAdapter extends KeyAdapter {
                                     this.treeView.putRuleIntoTree(this.ruleCopy, this.graNode, this.indx);
                                     TreePath tp = this.treeView.getTreePathOfGrammarElement(this.ruleCopy);
                                     this.treeView.selectPath(tp);
-
                                     this.treeView.fireTreeViewEvent(new TreeViewEvent(this,
                                             TreeViewEvent.RULE_ADDED, tp)); //this.selPath));
                                     this.treeView.fireTreeViewEvent(new TreeViewEvent(this,
@@ -278,5 +271,4 @@ public class GraGraTreeViewKeyAdapter extends KeyAdapter {
             }
         }
     }
-
 }

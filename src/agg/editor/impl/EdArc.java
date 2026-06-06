@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -25,7 +27,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.Vector;
 import java.util.Hashtable;
 import javax.swing.undo.*;
-
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrInstance;
 import agg.attribute.view.AttrViewEvent;
@@ -59,55 +60,35 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         XMLObject, StateEditable {
 
     private Arc bArc;
-
     private EdGraphObject from;
-
     private EdGraphObject to;
-
     private boolean directed = true;
-
     private Point anchor;
-
     transient private int anchorID = 0; // only for loop
-
     transient private boolean hasDefaultAnchor;
-
     transient private Point arrowPoint;
     transient private Point tailPoint;
-
     transient private Point textLocation;
-
     protected Point textOffset, origTextOffset;
-
     transient private Dimension textSize;
-
     transient private Point srcMultiplicityLocation;
-
     transient private Dimension srcMultiplicitySize;
-
     transient private Point srcMultiplicityOffset;
-
     transient private Point trgMultiplicityLocation;
-
     transient private Dimension trgMultiplicitySize;
-
     transient private Point trgMultiplicityOffset;
-
     transient private int partOfText; // 0 attrText, 1/2 src/trg
-
     private LayoutArc lArc;
 
     /**
-     * Creates an arc layout specified by the EdType eType for an used object specified by the Arc bArc, EdGraphObject
-     * from, EdGraphObject to
+     * Creates an arc layout specified by the EdType eType for an used object
+     * specified by the Arc bArc, EdGraphObject from, EdGraphObject to
      */
     public EdArc(Arc bArc, EdType eType, EdGraphObject from, EdGraphObject to) throws TypeException {
         super(eType);
-
         if (bArc == null || bArc.getSource() == null || bArc.getTarget() == null) {
             throw new TypeException("Basic node is null");
         }
-
         this.bArc = bArc;
         this.from = from;
         this.to = to;
@@ -121,20 +102,19 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         this.textOffset = new Point(0, -22);
         this.textLocation = new Point();
         this.textSize = new Dimension();
-
         if (this.bArc != null) {
             this.contextUsage = String.valueOf(this.hashCode());
             if (this.bArc.getAttribute() != null) {
                 addToAttributeViewObserver();
             }
         }
-
         this.lArc = new LayoutArc(this);
     }
 
     /**
-     * Creates an arc layout specified by the EdType eType, EdGraphObject from, EdGraphObject to for an used object of
-     * the class agg.xt_basis.Arc that would be created from the graph specified by the Graph bGraph
+     * Creates an arc layout specified by the EdType eType, EdGraphObject from,
+     * EdGraphObject to for an used object of the class agg.xt_basis.Arc that
+     * would be created from the graph specified by the Graph bGraph
      */
     public EdArc(Graph bGraph, EdType eType, EdGraphObject from,
             EdGraphObject to) throws TypeException {
@@ -142,13 +122,13 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Creates an arc layout specified by the EdType eType, EdGraphObject from, EdGraphObject to, Point anchor ( bend )
-     * for an used object of the class agg.xt_basis.Arc that would be created from the graph specified by the Graph
-     * bGraph
+     * Creates an arc layout specified by the EdType eType, EdGraphObject from,
+     * EdGraphObject to, Point anchor ( bend ) for an used object of the class
+     * agg.xt_basis.Arc that would be created from the graph specified by the
+     * Graph bGraph
      */
     public EdArc(Graph bGraph, EdType eType, EdGraphObject from,
             EdGraphObject to, Point anchor) throws TypeException {
-
         this((bGraph != null) ? bGraph.createArc(eType.bType, (Node) from
                 .getBasisObject(), (Node) to.getBasisObject()) : null, eType,
                 from, to);
@@ -206,9 +186,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         this.myGraphPanel = null;
     }
 
-    public void finalize() {
-    }
-
     public void storeState(Hashtable<Object, Object> state) {
         ArcReprData data = new ArcReprData(this);
         state.put(Integer.valueOf(this.hashCode()), data);
@@ -218,7 +195,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
 
     public void restoreState(Hashtable<?, ?> state) {
 //		System.out.println("EdArc.restoreState:: "+state.get(Integer.valueOf(this.hashCode()))+"   "+state.get(this.itsUndoReprDataHC));
-
         ArcReprData data = (ArcReprData) state.get(Integer.valueOf(this.hashCode()));
         if (data == null) {
             data = (ArcReprData) state.get(this.itsUndoReprDataHC);
@@ -231,7 +207,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
 
     public void restoreState(Hashtable<?, ?> state, String hashCode) {
 //		System.out.println("### EdArc.restoreState:: "+state.get(Integer.valueOf(hashCode))+"   "+state.get(this.itsUndoReprDataHC));
-
         ArcReprData data = (ArcReprData) state.get(Integer.valueOf(hashCode));
         if (data == null) {
             data = (ArcReprData) state.get(this.itsUndoReprDataHC);
@@ -239,7 +214,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         if (data == null) {
             data = (ArcReprData) state.get(Integer.valueOf(this.hashCode()));
         }
-
         if (data != null) {
             data.restoreArcFromArcRepr(this);
             this.attrChanged = false;
@@ -258,7 +232,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         if (!this.init || this.view == null) {
             this.view = ((AttrTupleManager) AttrTupleManager.getDefaultManager()).getDefaultOpenView();
             this.view.setAllVisible(this.bArc.getAttribute(), true);
-
             this.init = true;
         }
         return this.view;
@@ -360,8 +333,9 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * States how to draw critical objects of CPA critical overlapping graphs: <code>EdGraphObject.CRITICAL_GREEN</code>
-     * or <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
+     * States how to draw critical objects of CPA critical overlapping graphs:
+     * <code>EdGraphObject.CRITICAL_GREEN</code> or
+     * <code>EdGraphObject.CRITICAL_BLACK_BOLD</code>.
      */
     public void setDrawingStyleOfCriticalObject(int criticalStyle) {
         this.criticalStyle = criticalStyle;
@@ -374,7 +348,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         if (!this.from.equals(this.to)) {
             return true;
         }
-
         return false;
     }
 
@@ -395,7 +368,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         if (isLine()) {
             return new Point(getX(), getY());
         }
-
         return null;
     }
 
@@ -428,13 +400,11 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             this.directed = this.bArc.isDirected();
         }
         return this.directed;
-
     }
 
     public boolean isVisible() {
         if (this.bArc != null) {
             this.visible = this.bArc.isVisible() && this.from.isVisible() && this.to.isVisible();
-
             if (this.getContext().getBasisGraph().isCompleteGraph()) {
                 this.visible = this.visible
                         && this.getType().getBasisType().isObjectOfTypeGraphArcVisible(
@@ -453,10 +423,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         List<List<String>> attrs = new Vector<>();
         if (this.bArc != null && this.bArc.getAttribute() != null) {
             AttrInstance attributes = this.bArc.getAttribute();
-
             if (attributes != null && getView() != null) {
                 AttrViewSetting mvs = this.view.getMaskedView();
-
                 int number = mvs.getSize(attributes);
                 for (int i = 0; i < number; i++) {
                     List<String> tmpAttrVector = new Vector<String>();
@@ -484,7 +452,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         if (bArc.getAttribute() == null) {
             return attrs;
         }
-
         int nattrs = bArc.getAttribute().getNumberOfEntries();
         if (nattrs != 0) {
             for (int i = 0; i < nattrs; i++) {
@@ -551,7 +518,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Sets my bend (I am a line) to the position specified by the Point newAnchor
+     * Sets my bend (I am a line) to the position specified by the Point
+     * newAnchor
      */
     public void setAnchor(Point newAnchor) {
         this.anchor = newAnchor;
@@ -566,7 +534,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Sets my bend (I am a loop) specified by the int id to the position specified by the Point newAnchor
+     * Sets my bend (I am a loop) specified by the int id to the position
+     * specified by the Point newAnchor
      */
     public void setAnchor(int id, Point newAnchor) {
         this.anchor = newAnchor;
@@ -656,8 +625,9 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Translates offset of an edge text to a new value specified by the dx and dy, if the text will be moved. The text
-     * can be an attribute text or a source multiplicity text or a target multiplicity text.
+     * Translates offset of an edge text to a new value specified by the dx and
+     * dy, if the text will be moved. The text can be an attribute text or a
+     * source multiplicity text or a target multiplicity text.
      */
     public void translateTextOffset(int dx, int dy) {
         if (this.partOfText == 0) {
@@ -668,9 +638,9 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             this.trgMultiplicityOffset.translate(dx, dy);
         }
     }
-
     /**
-     * Returns TRUE if the point specified by the int X, int Y is inside of myself
+     * Returns TRUE if the point specified by the int X, int Y is inside of
+     * myself
      */
     int in_offset = 10;
 
@@ -689,7 +659,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             if (this.anchor != null) {
                 p = this.anchor;
             }
-
             if (this.arrowPoint != null) {
                 if (Line.inside(X, Y, p, this.arrowPoint, this.w + (in_offset * 2))) {
                     return true;
@@ -700,10 +669,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                     return true;
                 }
             }
-
             return false;
         }
-
         /* Loop */
         Loop loop = toLoop();
         if (loop.contains(new Point(X, Y))) {
@@ -717,7 +684,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Returns TRUE if the point specified by the int X, int Y is inside of my text part
+     * Returns TRUE if the point specified by the int X, int Y is inside of my
+     * text part
      */
     public boolean insideTextOfArc(int X, int Y, FontMetrics fm) {
         Rectangle r = getTextRectangle(fm);
@@ -769,7 +737,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Returns TRUE if the point specified by the int X, int Y is inside of my source or target multiplicity part
+     * Returns TRUE if the point specified by the int X, int Y is inside of my
+     * source or target multiplicity part
      */
     private boolean insideTextOfMultiplicity(int X, int Y, String key) {
         if (key.equals("target")) {
@@ -822,12 +791,10 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             Graphics2D g = (Graphics2D) grs;
             // save color, font style
             Color lastColor = g.getColor();
-
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g.setPaint(Color.LIGHT_GRAY);
             g.setStroke(EditorConstants.defaultStroke);
-
             if (this.isLine()) {
                 g.draw(new Rectangle2D.Double(this.anchor.x - 10, this.anchor.y - 10, 20, 20));
             } else {
@@ -845,13 +812,11 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             // save color, font style
             Color lastColor = g.getColor();
             int fontstyle = g.getFont().getStyle();
-
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
             g.setPaint(Color.LIGHT_GRAY);
             g.setStroke(EditorConstants.defaultStroke);
             g.draw(new Rectangle2D.Double(px - 10, py - 10, 20, 20));
-
             // reset font style, color
             g.setFont(new Font("Dialog", fontstyle, g.getFont().getSize()));
             g.setPaint(lastColor);
@@ -867,9 +832,7 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             if (!this.visible) {
                 return;
             }
-
             this.criticalStyle = this.eGraph.criticalStyle;
-
             Graphics2D g = (Graphics2D) grs;
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
@@ -878,10 +841,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             } else {
                 g.setStroke(EditorConstants.defaultStroke);
             }
-
             // save the old color
             Color lastColor = g.getColor();
-
             if (this.backgroundColor != null && this.backgroundColor != Color.white) {
                 g.setPaint(this.backgroundColor);
                 if (this.from != this.to) {
@@ -890,12 +851,10 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                     drawBackgroundLoop(g);
                 }
             }
-
             boolean hiddenObjOfType = this.eGraph.isTypeGraph()
                     && !this.eType.getBasisType().isObjectOfTypeGraphArcVisible(
                             this.from.getType().getBasisType(),
                             this.to.getType().getBasisType());
-
             if (selected) {
                 g.setPaint(EditorConstants.selectColor);
             } else if (hiddenObjOfType) {
@@ -912,13 +871,11 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             } else {
                 g.setPaint(this.getColor());
             }
-
             if (this.from != this.to) {
                 drawArcAsLine(g, true);
             } else {
                 drawArcAsLoop(g, true);
             }
-
             if (this.errorMode) {
                 showErrorAnchor(g);
             }
@@ -1007,7 +964,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         if (getWidth() == 0) {
             return Loop.DEFAULT_SIZE;
         }
-
         return getWidth();
     }
 
@@ -1018,7 +974,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         if (getHeight() == 0) {
             return Loop.DEFAULT_SIZE;
         }
-
         return getHeight();
     }
 
@@ -1045,7 +1000,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Implements the AttrViewObserver. Makes update graphics if the attributes of my used object are changed.
+     * Implements the AttrViewObserver. Makes update graphics if the attributes
+     * of my used object are changed.
      */
     public void attributeChanged(AttrViewEvent ev) {
         if (ev.getID() == AttrEvent.GENERAL_CHANGE // 0
@@ -1055,14 +1011,11 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                 || ev.getID() == AttrEvent.MEMBER_RENAMED // 50
                 || ev.getID() == AttrViewEvent.MEMBER_VISIBILITY // 220
                 || ev.getID() == AttrViewEvent.MEMBER_MOVED) { // 210
-
             if (ev.getSource().getTupleType().isValid()) {
                 this.attrChanged = true;
             }
-
         } else if (ev.getID() == AttrEvent.MEMBER_VALUE_CORRECTNESS // 70
                 || ev.getID() == AttrEvent.MEMBER_VALUE_MODIFIED) { // 80
-
             if (ev.getSource().isValid()) {
                 this.attrChanged = true;
                 if (this.myGraphPanel != null) {
@@ -1080,7 +1033,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                                 if (var == null) {
                                     return;
                                 }
-
                                 if (this.bArc.getContext().isNacGraph()) {
                                     var.setMark(VarMember.NAC);
                                 } else if (this.bArc.getContext().isPacGraph()) {
@@ -1116,12 +1068,10 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         Graphics2D g = (Graphics2D) grs;
         Color lastColor = g.getColor();
         g.setPaint(Line.MOVE_ANCHOR_COLOR);
-
         g.fillRect(this.x - Line.MOVE_ANCHOR_OFFSET,
                 this.y - Line.MOVE_ANCHOR_OFFSET,
                 Line.MOVE_ANCHOR_SIZE,
                 Line.MOVE_ANCHOR_SIZE);
-
 //		g.fillOval(this.x - Line.MOVE_ANCHOR_SIZE/2, 
 //					this.y - Line.MOVE_ANCHOR_SIZE/2, 
 //					Line.MOVE_ANCHOR_SIZE,
@@ -1135,7 +1085,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
-     * Draws a sign to mark wrong arcs. If {@link EdGraphObject#errorMode} is true, a green box will be shown.
+     * Draws a sign to mark wrong arcs. If {@link EdGraphObject#errorMode} is
+     * true, a green box will be shown.
      */
     protected void showErrorAnchor(Graphics g) {
         if (!this.from.equals(this.to)) {
@@ -1146,8 +1097,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }// showErrorAnchor
 
     /**
-     * Draws a sign to mark wrong arcs between different nodes. If {@link EdGraphObject#errorMode} is true, a green box
-     * will be shown.
+     * Draws a sign to mark wrong arcs between different nodes. If
+     * {@link EdGraphObject#errorMode} is true, a green box will be shown.
      */
     private void showErrorAnchorOfLine(Graphics grs) {
         Graphics2D g = (Graphics2D) grs;
@@ -1158,8 +1109,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }// showErrorAnchorOfLine
 
     /**
-     * Draws a sign to mark wrong arcs between the same node. If {@link EdGraphObject#errorMode} is true, a green box
-     * will be shown.
+     * Draws a sign to mark wrong arcs between the same node. If
+     * {@link EdGraphObject#errorMode} is true, a green box will be shown.
      */
     private void showErrorAnchorOfLoop(Graphics grs) {
         Graphics2D g = (Graphics2D) grs;
@@ -1205,7 +1156,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         int srcH = this.to.getHeight();
         int tarW = this.from.getWidth();
         int tarH = this.from.getHeight();
-
         Line line = this.toLine();
         if (this.anchor != null) {
             line.setAnchor(new Point(this.anchor.x, this.anchor.y));
@@ -1218,7 +1168,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             setWidth(14);
             setHeight(14);
         }
-
         /* show arc */
         line.setColor(g.getColor());
         int sh = getShape();
@@ -1235,12 +1184,10 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             default:
                 break;
         }
-
         if (weakselected) {
             line.drawWeakselectedLine(g);
             g.setColor(this.getColor());
         }
-
         if (this.elemOfTG) {
             // Edges arrow and Multiplicity of edge target
             // Head of edge
@@ -1253,7 +1200,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             } else if (this.directed) {
                 arrow.draw(g);
             }
-
             Arrow backArrow = new Arrow(this.itsScale,
                     line.getAnchor().x, line.getAnchor().y,
                     x1, y1, tarW, tarH, 0);
@@ -1268,7 +1214,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                     setXY(anchX, anchY);
                 }
             }
-
             if (!this.bArc.isInheritance()) {
                 Point p = new Point();
                 // draw target multiplicity
@@ -1285,7 +1230,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                         this.eType.getBasisType().getTargetMax(
                                 this.bArc.getSource().getType(),
                                 this.bArc.getTarget().getType()));
-
                 // draw source multiplicity
                 if ((backArrow.getRightEnd() != null)
                         && (y1 > line.getAnchor().y)) {
@@ -1309,7 +1253,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                         x2, y2, srcW, srcH, headsize);
                 this.arrowPoint = arrow.getHeadEnd();
                 arrow.draw(g);
-
                 if (needAnchorTuning) {
                     Arrow backArrow = new Arrow(this.itsScale, line.getAnchor().x, line
                             .getAnchor().y, x1, y1, tarW, tarH, headsize);
@@ -1325,11 +1268,9 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                 }
             }
         }
-
         /* Text */
         if (withText) {
             g.setStroke(EditorConstants.defaultStroke);
-
             this.textLocation.x = getX() + this.textOffset.x;
             this.textLocation.y = getY() + this.textOffset.y;
             drawText(g, this.textLocation.x, this.textLocation.y);
@@ -1392,12 +1333,10 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
 
     private void drawArcAsLoop(Graphics grs, boolean withText) {
         Graphics2D g = (Graphics2D) grs;
-
         int fromX = this.from.getX();
         int fromY = this.from.getY();
         int fromW = this.from.getWidth();
         int fromH = this.from.getHeight();
-
         // rechne width und height um, wenn source node ist CIRCLE
         if (((EdNode) this.from).getShape() == EditorConstants.CIRCLE) {
             fromW = (int) (Math.acos(1 / 2) * (this.from.getWidth() / 2));
@@ -1484,7 +1423,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             default:
                 break;
         }
-
         if (weakselected) {
             loop.drawWeakselectedLoop(g);
             g.setColor(this.getColor());
@@ -1533,11 +1471,9 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                 arrow.draw(g);
             }
         }
-
         /* Attribute Text */
         if (withText) {
             g.setStroke(EditorConstants.defaultStroke);
-
             this.textLocation.x = x1 + this.textOffset.x;
             this.textLocation.y = y1 + this.textOffset.y;
             drawText(g, this.textLocation.x, this.textLocation.y);
@@ -1586,7 +1522,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             boolean underlined = false;
             int tx = X;
             int ty = Y;
-
             //		if (tx <= 0) tx = 2;
             //		if (ty <= 0) ty = 2;
             FontMetrics fm = g.getFontMetrics();
@@ -1595,12 +1530,10 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             String typeStr = getTypeString();
             int ty1 = ty + fm.getAscent();
             g.drawString(typeStr, tx, ty1);
-
             if ((g.getFont().getSize() < 8)
                     || !this.attrVisible) {
                 return;
             }
-
             /* Attribute anzeigen */
             List<List<String>> attrs = getAttributes();
             if (attrs != null && !attrs.isEmpty()) {
@@ -1695,7 +1628,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                     this.trgMultiplicityLocation.x + this.trgMultiplicityOffset.x,
                     this.trgMultiplicityLocation.y + this.trgMultiplicityOffset.y);
         }
-
     }
 
     public void drawNameAttrOnly(Graphics grs) {
@@ -1703,11 +1635,8 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         if (!this.visible) {
             return;
         }
-
         this.criticalStyle = this.eGraph.criticalStyle;
-
         Graphics2D g = (Graphics2D) grs;
-
         if (this.eType.filled) {
             g.setStroke(EditorConstants.boldStroke);
         } else {
@@ -1743,7 +1672,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
 			 * line.setColor(dependencyColor);
              */
             line.setColor(this.getColor());
-
             int sh = getShape();
             switch (sh) {
                 case EditorConstants.SOLID:
@@ -1765,7 +1693,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             if (isDirected()) {
                 arrow.draw(g);
             }
-
             Arrow tmpBackArrow = new Arrow(this.itsScale, line.getAnchor().x, line
                     .getAnchor().y, x1, y1, this.from.getWidth(), this.from.getHeight(), headsize);
             if (needAnchorTuning) {
@@ -1779,7 +1706,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                     setXY(anchX, anchY);
                 }
             }
-
             // g.setPaint(this.getColor());
             this.textLocation.x = getX() + this.textOffset.x;
             this.textLocation.y = getY() + this.textOffset.y;
@@ -1865,7 +1791,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                 default:
                     break;
             }
-
             /* Head of edge */
             int headsize = (isCritical() && (this.criticalStyle == 1)) ? 17 : 0;
             Arrow arrow = new Arrow(this.itsScale, loop.anch4.x, loop.anch4.y,
@@ -1874,7 +1799,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                     (loop.anch3.y - (this.from.getY() - fromHeight / 2)) * 2,
                     headsize);
             arrow.draw(g);
-
             // g.setPaint(this.getColor());
             this.textLocation.x = x1 + this.textOffset.x;
             this.textLocation.y = y1 + this.textOffset.y;
@@ -1910,7 +1834,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                         return;
                     }
                 }
-
             }
         }
     }
@@ -1920,7 +1843,6 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         // was ist mit Loop???
         if (xmlh.openObject(this.bArc, this)) {
             xmlh.openSubTag("EdgeLayout");
-
             int outX = (int) (this.textOffset.x / this.itsScale);
             int outY = (int) (this.textOffset.y / this.itsScale);
             xmlh.addAttr("textOffsetX", outX);
@@ -1955,13 +1877,11 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
                 xmlh.addAttr("targetMultiplicityOffsetX", outX);
                 xmlh.addAttr("targetMultiplicityOffsetY", outY);
             }
-
             xmlh.close();
             // LayoutArc speichern:
             if (this.lArc != null) {
                 xmlh.addObject("", this.lArc, true);
             }
-
             xmlh.close();
         }
     }
@@ -1976,21 +1896,19 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
             if (s.length() == 0) {
                 this.textOffset.x = 0;
             } else {
-                this.textOffset.x = (new Integer(s)).intValue();
+                this.textOffset.x = Integer.parseInt(s);
             }
-
             s = xmlh.readAttr("textOffsetY");
             if (s.length() == 0) {
                 this.textOffset.y = 0;
             } else {
-                this.textOffset.y = (new Integer(s)).intValue();
+                this.textOffset.y = Integer.parseInt(s);
             }
-
             s = xmlh.readAttr("bendX");
             if ((s.length() == 0) || (s.equals("0"))) {
                 this.x = 0;
             } else {
-                this.x = (new Integer(s)).intValue();
+                this.x = Integer.parseInt(s);
                 if (this.x < 0) {
                     this.x = 0;
                 }
@@ -1998,12 +1916,11 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
 //					x = (int) (Math.random()*1000);
 //				} 
             }
-
             s = xmlh.readAttr("bendY");
             if ((s.length() == 0) || (s.equals("0"))) {
                 this.y = 0;
             } else {
-                this.y = (new Integer(s)).intValue();
+                this.y = Integer.parseInt(s);
                 if (this.y < 0) {
                     this.y = 0;
                 }
@@ -2011,56 +1928,48 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
 //					y = (int) (Math.random()*1000);
 //				} 
             }
-
             if (!isLine()) { // is Loop
                 s = xmlh.readAttr("loopW");
                 if (s.length() == 0) {
                     loopW = 0;
                 } else {
-                    loopW = (new Integer(s)).intValue();
+                    loopW = Integer.parseInt(s);
                 }
-
                 s = xmlh.readAttr("loopH");
                 if (s.length() == 0) {
                     loopH = 0;
                 } else {
-                    loopH = (new Integer(s)).intValue();
+                    loopH = Integer.parseInt(s);
                 }
             }
-
             if (this.elemOfTG) {
                 createMultiplicityVars();
                 s = xmlh.readAttr("sourceMultiplicityOffsetX");
                 if (s.length() == 0) {
                     this.srcMultiplicityOffset.x = 0;
                 } else {
-                    this.srcMultiplicityOffset.x = (new Integer(s)).intValue();
+                    this.srcMultiplicityOffset.x = Integer.parseInt(s);
                 }
-
                 s = xmlh.readAttr("sourceMultiplicityOffsetY");
                 if (s.length() == 0) {
                     this.srcMultiplicityOffset.y = 0;
                 } else {
-                    this.srcMultiplicityOffset.y = (new Integer(s)).intValue();
+                    this.srcMultiplicityOffset.y = Integer.parseInt(s);
                 }
-
                 s = xmlh.readAttr("targetMultiplicityOffsetX");
                 if (s.length() == 0) {
                     this.trgMultiplicityOffset.x = 0;
                 } else {
-                    this.trgMultiplicityOffset.x = (new Integer(s)).intValue();
+                    this.trgMultiplicityOffset.x = Integer.parseInt(s);
                 }
-
                 s = xmlh.readAttr("targetMultiplicityOffsetY");
                 if (s.length() == 0) {
                     this.trgMultiplicityOffset.y = 0;
                 } else {
-                    this.trgMultiplicityOffset.y = (new Integer(s)).intValue();
+                    this.trgMultiplicityOffset.y = Integer.parseInt(s);
                 }
             }
-
             xmlh.close();
-
             // set anchor of edge
             if (isLine()) {
                 Line line = toLine();
@@ -2094,13 +2003,10 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
         }
         // layoutArc einlesen:
         xmlh.enrichObject(this.lArc);
-
         xmlh.close();
-
         this.attrVisible = true;
         this.attrChanged = false;
     }
-
 }
 // $Log: EdArc.java,v $
 // Revision 1.60  2010/11/14 12:59:11  olga
@@ -2545,3 +2451,4 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
 // Views koennen zwar benutzt werden. Sie werden
 // aber noch nicht nach dem Laden rekonstruiert.
 //
+

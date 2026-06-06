@@ -1,26 +1,27 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- ******************************************************************************
- */
-/**
  *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ * </copyright>
  */
 package agg.util;
 
 /**
  * @author olga
+ * @param <E>
+ * @param <F>
  *
  */
 public class Pair<E, F> {
 
     public E first;
-
     public F second;
 
     public Pair(E firstE, F secondF) {
@@ -29,12 +30,8 @@ public class Pair<E, F> {
     }
 
     public boolean equals(final Pair<E, F> p) {
-        if (this.first.equals(p.first)
-                && this.second.equals(p.second)) {
-            return true;
-        }
-
-        return false;
+        return this.first.equals(p.first)
+                && this.second.equals(p.second);
     }
 
     public boolean isEmpty() {

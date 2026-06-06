@@ -2,37 +2,41 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.cons;
 
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
 import java.util.List;
 import java.util.Vector;
-
 //import com.objectspace.jgl.HashSet;
+
 /**
- * Constraint priority is a set of priorities of a given graph grammar. The set is backed by a hash table.
+ * Constraint priority is a set of priorities of a given graph grammar. The set
+ * is backed by a hash table.
  *
  * @author $Author: olga $
  * @version $ID
  */
 public class ConstraintPriority {
 
-    Hashtable<Object, Object> constraintPriority;
-
+    Map<Object, Object> constraintPriority;
     Enumeration<Formula> constraints;
-
     Vector<Formula> constraintsVec;
 
     /**
-     * Creates a new set of constraint priorities for a given priority graph grammar.
+     * Creates a new set of constraint priorities for a given priority graph
+     * grammar.
      *
      * @param constraints The constraints of a graph grammar.
      */
@@ -68,15 +72,14 @@ public class ConstraintPriority {
         this.constraintPriority.put(constraint, constraint.getPriority());
         // System.out.println("constraint prior: "+((Integer)
         // this.constraintPriority.get(rule)).toString());
-
     }
 
     private void initConstraintPriority() {
-        this.constraintPriority = new Hashtable<Object, Object>();
+        this.constraintPriority = new HashMap<Object, Object>();
         for (int i = 0; i < this.constraintsVec.size(); i++) {
             Object constraint = this.constraintsVec.elementAt(i);
             if (constraint instanceof Formula) {
-                Vector<Integer> prior = ((Formula) constraint).getPriority();
+                ArrayMovieInt prior = ((Formula) constraint).getPriority();
                 if (prior != null) {
                     this.constraintPriority.put(constraint, prior);
                 }
@@ -87,9 +90,10 @@ public class ConstraintPriority {
     }
 
     /**
-     * Returns the constraint (formula) priority. The key is a constraint, priority is a priority.
+     * Returns the constraint (formula) priority. The key is a constraint,
+     * priority is a priority.
      */
-    public Hashtable<Object, Object> getConstraintPriority() {
+    public Map<Object, Object> getConstraintPriority() {
         return this.constraintPriority;
     }
 
@@ -99,9 +103,7 @@ public class ConstraintPriority {
     public Integer getStartPriority() {
         int startPrior = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<?> keys = this.constraintPriority.keys(); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.constraintPriority.keySet()) {
             Vector<?> prior = (Vector<?>) this.constraintPriority.get(key);
             if (prior != null) {
                 if (prior.isEmpty()) {
@@ -120,13 +122,12 @@ public class ConstraintPriority {
     }
 
     /**
-     * Inverts and returns constraint priorities so that the key is a priority and the value is a set of constraints.
+     * Inverts and returns constraint priorities so that the key is a priority
+     * and the value is a set of constraints.
      */
-    public Hashtable<Integer, HashSet<Object>> invertPriority() {
-        Hashtable<Integer, HashSet<Object>> inverted = new Hashtable<Integer, HashSet<Object>>();
-        for (Enumeration<Object> keys = this.constraintPriority.keys(); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+    public Map<Integer, HashSet<Object>> invertPriority() {
+        Map<Integer, HashSet<Object>> inverted = new HashMap<Integer, HashSet<Object>>();
+        for (Object key : this.constraintPriority.keySet()) {
             Vector<?> prior = (Vector<?>) this.constraintPriority.get(key);
             if (prior != null) {
                 Integer p = Integer.valueOf(1);
@@ -151,9 +152,7 @@ public class ConstraintPriority {
      */
     public String toString() {
         String resultString = "Formula:\t\tPriority:\n";
-        for (Enumeration<Object> keys = this.constraintPriority.keys(); keys
-                .hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.constraintPriority.keySet()) {
             resultString += ((Formula) key).getName() + "\t\t";
             Vector<?> valueVec = (Vector<?>) this.constraintPriority.get(key);
             for (int i = 0; i < valueVec.size(); i++) {

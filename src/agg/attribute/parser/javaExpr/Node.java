@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -25,8 +25,8 @@ public interface Node extends Serializable {
     static final long serialVersionUID = 1L;
 
     /**
-     * This method is called after the node has been made the current node. It indicates that child nodes can now be
-     * added to it.
+     * This method is called after the node has been made the current node. It
+     * indicates that child nodes can now be added to it.
      */
     public void jjtOpen();
 
@@ -43,12 +43,14 @@ public interface Node extends Serializable {
     public Node jjtGetParent();
 
     /**
-     * This method tells the node to add its argument to the node's list of children.
+     * This method tells the node to add its argument to the node's list of
+     * children.
      */
     public void jjtAddChild(Node n);
 
     /**
-     * This method returns a child node. The children are numbered from zero, left to right.
+     * This method returns a child node. The children are numbered from zero,
+     * left to right.
      */
     public Node jjtGetChild(int i);
 
@@ -92,7 +94,8 @@ public interface Node extends Serializable {
     public String getString();
 
     /**
-     * fills the vector with the names of all variables which occur in this abstract syntax tree
+     * fills the vector with the names of all variables which occur in this
+     * abstract syntax tree
      */
     public void getAllVariablesinExpression(List<String> v);
 

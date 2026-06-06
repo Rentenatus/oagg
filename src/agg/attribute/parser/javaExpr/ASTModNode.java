@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
-
 
 /* JJT: 0.2.2 */
 /**
@@ -31,10 +30,8 @@ public class ASTModNode extends SimpleNode {
     public void checkContext() throws ASTWrongTypeException {
         Node child1 = jjtGetChild(0);
         Node child2 = jjtGetChild(1);
-
         child1.checkContext();
         child2.checkContext();
-
         if (((SimpleNode) child1).hasNumberType()
                 && ((SimpleNode) child2).hasNumberType()) {
             setNodeClass(commonNumberType((SimpleNode) child1, (SimpleNode) child2));
@@ -49,9 +46,8 @@ public class ASTModNode extends SimpleNode {
     public void interpret() {
         jjtGetChild(0).interpret();
         jjtGetChild(1).interpret();
-
-        stack.set(--top, new Integer(((Integer) stack.get(top)).intValue()
-                % ((Integer) stack.get(top + 1)).intValue()));
+        stack.set(--top, ((Integer) stack.get(top)).intValue()
+                % ((Integer) stack.get(top + 1)).intValue());
     }
 
     public String getString() {

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -14,7 +16,6 @@ package agg.editor.impl;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
@@ -28,7 +29,6 @@ import agg.util.Pair;
 public class EdMorphism {
 
     HashMap<GraphObject, Integer> source;
-
     HashMap<GraphObject, Integer> target1, target2;
 
     public EdMorphism(OrdinaryMorphism o) {
@@ -45,8 +45,8 @@ public class EdMorphism {
         int i = 1;
         while (graphObjects.hasNext()) {
             GraphObject go = graphObjects.next();
-            this.source.put(go, new Integer(i));
-            this.target1.put(o.getImage(go), new Integer(i));
+            this.source.put(go, i);
+            this.target1.put(o.getImage(go), i);
             i++;
         }
     }
@@ -58,9 +58,8 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
-
             Iterator<GraphObject> inverse = o1.getInverseImage(go);
             while (inverse.hasNext()) {
                 GraphObject inv1 = inverse.next();
@@ -82,9 +81,8 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
-
             if (o2.getSource() == r2.getLeft()) {
                 Iterator<GraphObject> inverse = o2.getInverseImage(go);
                 while (inverse.hasNext()) {
@@ -96,7 +94,6 @@ public class EdMorphism {
                 while (inverse.hasNext()) {
                     GraphObject inv = inverse.next();
                     this.target2.put(inv, this.source.get(go));
-
                     Iterator<GraphObject> inverse1 = r2.getInverseImage(inv);
                     while (inverse1.hasNext()) {
                         GraphObject inv2 = inverse1.next();
@@ -105,29 +102,24 @@ public class EdMorphism {
                 }
             }
         }
-
         // now set morphism mark of the rest objects of Rule r1
         i = completeMorphismMarks(r1, this.target1, i);
-
         // now set morphism mark of the rest objects of Rule r2
         i = completeMorphismMarks(r2, this.target2, i);
-
         return i;
     }
 
     public int makeVDiagram_NAC(Rule r1, Rule r2, OrdinaryMorphism o1,
             OrdinaryMorphism o2, Pair<OrdinaryMorphism, OrdinaryMorphism> morphsNAC2,
             int lastIndx) {
-
         int i = lastIndx;
         Iterator<GraphObject> graphObjects = o1.getCodomain();
         while (graphObjects.hasNext()) {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
-
             Iterator<GraphObject> inverse = o1.getInverseImage(go);
             while (inverse.hasNext()) {
                 GraphObject inv1 = inverse.next();
@@ -149,9 +141,8 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
-
             if (o2.getSource() == r2.getLeft()) {
                 Iterator<GraphObject> inverse = o2.getInverseImage(go);
                 while (inverse.hasNext()) {
@@ -163,7 +154,6 @@ public class EdMorphism {
                 while (inverse.hasNext()) {
                     GraphObject inv = inverse.next();
                     this.target2.put(inv, this.source.get(go));
-
                     Iterator<GraphObject> inverse1 = r2.getInverseImage(inv);
                     while (inverse1.hasNext()) {
                         GraphObject inv2 = inverse1.next();
@@ -172,7 +162,6 @@ public class EdMorphism {
                 }
             }
         }
-
         if (morphsNAC2 != null) {
             OrdinaryMorphism morphL2N2 = morphsNAC2.first;
             OrdinaryMorphism morphNac2N2 = morphsNAC2.second;
@@ -183,9 +172,8 @@ public class EdMorphism {
                 GraphObject go = graphObjects.next();
                 if (this.source.get(go) == null) {
                     i++;
-                    this.source.put(go, new Integer(i));
+                    this.source.put(go, i);
                 }
-
                 Iterator<GraphObject> inverse = o2.getInverseImage(go);
                 if (inverse.hasNext()) {
                     GraphObject go2 = inverse.next();
@@ -203,13 +191,10 @@ public class EdMorphism {
                 }
             }
         }
-
         // now set morphism mark of the rest objects of Rule r1
         i = completeMorphismMarks(r1, this.target1, i);
-
         // now set morphism mark of the rest objects of Rule r2
         i = completeMorphismMarks(r2, this.target2, i);
-
         if (morphsNAC2 != null) {
             // now set morphism mark of the rest objects of a NAC of r2
             OrdinaryMorphism nac = r2.getNAC(morphsNAC2.second.getSource());
@@ -217,7 +202,6 @@ public class EdMorphism {
                 i = completeMorphismMarks(nac, this.target2, i);
             }
         }
-
         return i;
     }
 
@@ -244,16 +228,14 @@ public class EdMorphism {
             OrdinaryMorphism o1, OrdinaryMorphism o2,
             Pair<OrdinaryMorphism, OrdinaryMorphism> morphsPAC2, OrdinaryMorphism pac2,
             int lastIndx) {
-
         int i = lastIndx;
         Iterator<GraphObject> graphObjects = o1.getCodomain();
         while (graphObjects.hasNext()) {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
-
             Iterator<GraphObject> inverse = o1.getInverseImage(go);
             while (inverse.hasNext()) {
                 GraphObject inv1 = inverse.next();
@@ -275,9 +257,8 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
-
             if (o2.getSource() == r2.getLeft()) {
                 Iterator<GraphObject> inverse = o2.getInverseImage(go);
                 while (inverse.hasNext()) {
@@ -297,7 +278,6 @@ public class EdMorphism {
                 }
             }
         }
-
         if (morphsPAC2 != null) {
             OrdinaryMorphism morphPac2G = morphsPAC2.first.compose(morphsPAC2.second);
             BaseFactory.theFactory().unsetAllTransientAttrValues(morphPac2G);
@@ -306,9 +286,8 @@ public class EdMorphism {
                 GraphObject go = graphObjects.next();
                 if (this.source.get(go) == null) {
                     i++;
-                    this.source.put(go, new Integer(i));
+                    this.source.put(go, i);
                 }
-
                 Iterator<GraphObject> inverse1 = morphPac2G.getInverseImage(go);
                 if (inverse1.hasNext()) {
                     GraphObject go1 = inverse1.next();
@@ -322,13 +301,10 @@ public class EdMorphism {
                 }
             }
         }
-
         // now set morphism mark of the rest objects of Rule r1
         i = completeMorphismMarks(r1, this.target1, i);
-
         // now set morphism mark of the rest objects of Rule r2
         i = completeMorphismMarks(r2, this.target2, i);
-
         if (morphsPAC2 != null) {
             // now set morphism mark of the rest objects of a PAC of r2
             OrdinaryMorphism pac = r2.getPAC(morphsPAC2.first.getSource());
@@ -346,9 +322,8 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
-
             Iterator<GraphObject> inverse = o1.getInverseImage(go);
             while (inverse.hasNext()) {
                 GraphObject inv = inverse.next();
@@ -360,7 +335,7 @@ public class EdMorphism {
             GraphObject go = graphObjects.next();
             if (this.source.get(go) == null) {
                 i++;
-                this.source.put(go, new Integer(i));
+                this.source.put(go, i);
             }
             Iterator<GraphObject> inverse = o2.getInverseImage(go);
             while (inverse.hasNext()) {
@@ -418,7 +393,6 @@ public class EdMorphism {
             return convertToStringHashMap(this.target1);
         }
     }
-
 }
 /*
  * $Log: EdMorphism.java,v $

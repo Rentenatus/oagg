@@ -2,29 +2,29 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ComponentEvent;
-
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-
 import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrEditorManager;
 
 /**
- * Abstract editor, providing a general layout: From top to bottom: 1. The table view. 2. Message text area. 3. Button
- * panel.
+ * Abstract editor, providing a general layout: From top to bottom: 1. The table
+ * view. 2. Message text area. 3. Button panel.
  *
- * @version $Id: TabMesTool_TupleEditor.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
+ * @version $Id: TabMesTool_TupleEditor.java,v 1.1 2005/08/25 11:56:58 enrico
+ * Exp $
  * @author $Author: olga $
  */
 public abstract class TabMesTool_TupleEditor extends ExtendedTupleEditorSupport {
@@ -42,8 +42,8 @@ public abstract class TabMesTool_TupleEditor extends ExtendedTupleEditorSupport 
     }
 
     /**
-     * From top to bottom: 1. The table view with the whole tuple, all entries visible. 2. Message text area. 3. Button
-     * panel.
+     * From top to bottom: 1. The table view with the whole tuple, all entries
+     * visible. 2. Message text area. 3. Button panel.
      */
     protected void genericCustomizeMainLayout() {
         this.mainPanel = new JPanel(new BorderLayout());

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
@@ -34,8 +35,8 @@ public interface AttrType extends AttrTuple, XMLObject {
             String name);
 
     /**
-     * Adding an empty declaration. The new declaration member is returned and can be extended by calling the respective
-     * AttrTypeMember methods.
+     * Adding an empty declaration. The new declaration member is returned and
+     * can be extended by calling the respective AttrTypeMember methods.
      */
     public AttrTypeMember addMember();
 
@@ -69,8 +70,8 @@ public interface AttrType extends AttrTuple, XMLObject {
     public void deleteMemberAt(AttrViewSetting viewSetting, int slot);
 
     /**
-     * Returns true when the member of the slot belongs to this attribute type, false - when the member belongs to a
-     * parent type.
+     * Returns true when the member of the slot belongs to this attribute type,
+     * false - when the member belongs to a parent type.
      *
      * @param viewSetting view setting to relate to
      * @param slot slot of the member within the view of the attribute tuple
@@ -100,7 +101,6 @@ public interface AttrType extends AttrTuple, XMLObject {
      */
     public void deleteEntry(String name);
 }
-
 /*
  * $Log: AttrType.java,v $
  * Revision 1.3  2008/10/15 07:51:22  olga

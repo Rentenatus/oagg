@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.view.impl;
 
 import java.lang.ref.WeakReference;
 import java.util.Vector;
-
 import agg.attribute.AttrTuple;
 import agg.attribute.AttrType;
 import agg.attribute.AttrEvent;
@@ -29,7 +29,6 @@ import agg.attribute.view.AttrViewSetting;
 public class MaskedViewSetting extends ViewSetting {
 
     static final long serialVersionUID = -7941882634203060406L;
-
     protected OpenViewSetting openView;
 
     public MaskedViewSetting(OpenViewSetting ov) {
@@ -38,8 +37,9 @@ public class MaskedViewSetting extends ViewSetting {
     }
 
     /**
-     * Getting the tuple format for a (type) tuple. Format tuples are created lazily "on demand". It means that when
-     * there is no format for the specified AttrTuple yet, it is created and returned.
+     * Getting the tuple format for a (type) tuple. Format tuples are created
+     * lazily "on demand". It means that when there is no format for the
+     * specified AttrTuple yet, it is created and returned.
      */
     protected TupleFormat getFormat(AttrTuple attr) {
         return ((ViewSetting) getOpenView()).getFormat(attr);
@@ -102,10 +102,8 @@ public class MaskedViewSetting extends ViewSetting {
         TupleFormat f = getFormat(attr);
         synchronized (f) {
             f.setVisible(b, f.getTotalSlot(slot));
-
             ((DeclMember) ((TupleObject) attr).getTupleType().getMemberAt(slot))
                     .setVisible(b);
-
             fireAttrChanged(((TupleObject) attr).getTupleType(),
                     AttrViewEvent.MEMBER_VISIBILITY, slot, slot);
             this.openView.fireAttrChanged(((TupleObject) attr).getTupleType(),

@@ -2,19 +2,19 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.view.impl;
 
 import java.lang.ref.WeakReference;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
-
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrTuple;
 import agg.attribute.AttrType;
@@ -25,8 +25,9 @@ import agg.attribute.view.AttrViewObserver;
 import agg.attribute.view.AttrViewSetting;
 
 /**
- * Common superclass for OpenViewSetting and MaskedViewSetting. Provides most routines for handling own observers and
- * event propagation. Most methods that actually manipulate the layout of attribute tuples are in the subclasses
+ * Common superclass for OpenViewSetting and MaskedViewSetting. Provides most
+ * routines for handling own observers and event propagation. Most methods that
+ * actually manipulate the layout of attribute tuples are in the subclasses
  * mentioned above.
  *
  * @author $Author: olga $
@@ -36,12 +37,10 @@ public abstract class ViewSetting extends ManagedObject implements
         AttrViewSetting {
 
     static final long serialVersionUID = -582744399860233794L;
-
     /**
      * Table of observers for tuples.
      */
-    transient protected Hashtable<AttrTuple, Vector<WeakReference<AttrViewObserver>>> observerTab = new Hashtable<AttrTuple, Vector<WeakReference<AttrViewObserver>>>();
-
+    transient protected HashMap<AttrTuple, Vector<WeakReference<AttrViewObserver>>> observerTab = new HashMap<AttrTuple, Vector<WeakReference<AttrViewObserver>>>();
     Object obsvs;
 
     public ViewSetting(AttrTupleManager m) {
@@ -51,12 +50,10 @@ public abstract class ViewSetting extends ManagedObject implements
     public void dispose() {
     }
 
-    public void finalize() {
-    }
-
     /**
-     * Getting the format for a (type) tuple. Formats are created lazily "on demand". It means that when there is no
-     * format for the specified AttrTuple yet, it is created and returned.
+     * Getting the format for a (type) tuple. Formats are created lazily "on
+     * demand". It means that when there is no format for the specified
+     * AttrTuple yet, it is created and returned.
      */
     protected abstract TupleFormat getFormat(AttrTuple attr);
 
@@ -68,12 +65,13 @@ public abstract class ViewSetting extends ManagedObject implements
     /**
      * Getting the observers of a tuple managed in this view.
      *
-     * @return A vector of observers for the specified tuple or null if the tuple is not in this view.
+     * @return A vector of observers for the specified tuple or null if the
+     * tuple is not in this view.
      */
     protected Vector<WeakReference<AttrViewObserver>> getObserversForTuple(
             AttrTuple attr) {
         if (this.observerTab == null) {
-            this.observerTab = new Hashtable<AttrTuple, Vector<WeakReference<AttrViewObserver>>>();
+            this.observerTab = new HashMap<AttrTuple, Vector<WeakReference<AttrViewObserver>>>();
         }
         return this.observerTab.get(attr);
     }
@@ -100,12 +98,12 @@ public abstract class ViewSetting extends ManagedObject implements
         if (observers == null) {
             return;
         }
-
         removeElement(observers, o);
     }
 
     /**
-     * finds the WeakReference which contains the AttrViewObserver or returns null
+     * finds the WeakReference which contains the AttrViewObserver or returns
+     * null
      */
     private WeakReference<?> find(Vector<WeakReference<AttrViewObserver>> observers, AttrViewObserver o) {
         for (int i = 0; i < observers.size(); i++) {
@@ -138,8 +136,8 @@ public abstract class ViewSetting extends ManagedObject implements
     }
 
     /**
-     * Called by fireAttrChanged() from this class. The change event is sent only to observers who are interested in the
-     * attribute's representation.
+     * Called by fireAttrChanged() from this class. The change event is sent
+     * only to observers who are interested in the attribute's representation.
      */
     protected void notifyObservers(AttrTuple attr, int id, int slot0, int slot1) {
         AttrViewObserver obs;
@@ -148,9 +146,7 @@ public abstract class ViewSetting extends ManagedObject implements
         if (observers == null) {
             return;
         }
-
         TupleViewEvent evt = new TupleViewEvent(attr, id, slot0, slot1, this);
-
         for (Enumeration<WeakReference<AttrViewObserver>> en = observers.elements(); en.hasMoreElements();) {
             WeakReference<AttrViewObserver> wr = en.nextElement();
             obs = wr.get();
@@ -163,27 +159,28 @@ public abstract class ViewSetting extends ManagedObject implements
     }
 
     /**
-     * Called from within this class whenever the format (layout) of an attribute is changed. Since the change affects
-     * only the attribute type representation, two things are important:
+     * Called from within this class whenever the format (layout) of an
+     * attribute is changed. Since the change affects only the attribute type
+     * representation, two things are important:
      *
-     * 1. Only observers that are interested in the attribute's REPRESENTATION should be notified. This is ensured by
-     * the sub-method notifyObservers().
+     * 1. Only observers that are interested in the attribute's REPRESENTATION
+     * should be notified. This is ensured by the sub-method notifyObservers().
      *
-     * 2. All the observers of attribute types that are attribute instances have to notify THEIR view observers as well.
-     * Usually this propagating mechanism is provided by the TupleObject class. But here, it cannot be used (see 1.).
-     * Therefore, this method loops over all the observers of 'attr' if it's a type and recursively calls
-     * fireAttrChanged() for all the AttrInstance instances among them. The same holds for interfaces.
+     * 2. All the observers of attribute types that are attribute instances have
+     * to notify THEIR view observers as well. Usually this propagating
+     * mechanism is provided by the TupleObject class. But here, it cannot be
+     * used (see 1.). Therefore, this method loops over all the observers of
+     * 'attr' if it's a type and recursively calls fireAttrChanged() for all the
+     * AttrInstance instances among them. The same holds for interfaces.
      */
     protected void fireAttrChanged(TupleObject attr, int id, int slot0,
             int slot1) {
         Object obj;
         Enumeration<?> objEnum;
         notifyObservers(attr, id, slot0, slot1);
-
         if (obsvs == null) {
             return;
         }
-
         for (objEnum = attr.getObservers(); objEnum.hasMoreElements();) {
             obj = objEnum.nextElement();
             if (obj instanceof AttrTuple) {
@@ -202,11 +199,9 @@ public abstract class ViewSetting extends ManagedObject implements
         if (attr == null) {
             return;
         }
-
         int id = event.getID();
         int index0 = event.getIndex0();
         int index1 = event.getIndex1();
-
         if (id == AttrEvent.GENERAL_CHANGE) {
             notifyObservers(attr, id, index0, index1);
         } else {

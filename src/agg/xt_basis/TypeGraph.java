@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -17,20 +19,19 @@ import agg.attribute.impl.VarMember;
 import agg.util.Change;
 import agg.util.Pair;
 import agg.util.XMLHelper;
-import agg.xt_basis.calculator.GraphOrientation;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
 
 /**
  *
  * @author Olga
  * @author Janusch Rentenatus
  */
-public class TypeGraph extends Graph {
+public final class TypeGraph extends Graph {
 
     /**
      * Creates an empty type graph for the specified type set.
@@ -42,6 +43,7 @@ public class TypeGraph extends Graph {
 
     /**
      * Creates an empty type graph for the specified type set.
+     * Uses directed orientation by default.
      *
      * @param aTypeSet
      */
@@ -50,9 +52,11 @@ public class TypeGraph extends Graph {
         this.kind = GraphKind.TG;
     }
 
+ 
+
     /**
-     * prepare this graph for garbage collection. so cut all connections to other objects and dispose all graph object
-     * contained.
+     * prepare this graph for garbage collection. so cut all connections to
+     * other objects and dispose all graph object contained.
      */
     @Override
     public void dispose() {
@@ -83,28 +87,23 @@ public class TypeGraph extends Graph {
     }
 
     @Override
-    public void finalize() {
-        super.finalize();
-    }
-
-    @Override
     public boolean isParallelArcAllowed(Type edgeType, Node src, Node tar) {
         return true;
     }
 
     /**
-     * Only new type nodes are created for the node types inside of the specified types. The types should be a subset of
-     * the type set of this type graph.
+     * Only new type nodes are created for the node types inside of the
+     * specified types. The types should be a subset of the type set of this
+     * type graph.
      *
      * @param types is a subset of my type set.
      */
-    public void tryToExtendByTypeNodes(final Vector<Type> types) {
+    public void tryToExtendByTypeNodes(final List<Type> types) {
         for (int i = 0; i < types.size(); i++) {
             Type t = types.get(i);
             if (!this.itsTypes.containsType(t)) {
                 continue;
             }
-
             if (!this.getElementsOfType(t).hasNext()) {
                 if (t.isNodeType()) {
                     try {
@@ -112,7 +111,6 @@ public class TypeGraph extends Graph {
                     } catch (TypeException ex) {
                     }
                 } else if (t.isArcType()) {
-
                 }
             }
         }
@@ -140,8 +138,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Adds a copy of the specified Graph g. The Graph g should be an instance of TypeGraph. The type graph check of
-     * this type graph should be disabled.
+     * Adds a copy of the specified Graph g. The Graph g should be an instance
+     * of TypeGraph. The type graph check of this type graph should be disabled.
      *
      * @param g another TypeGraph instance
      * @return true if a copy of the type graph g was added, otherwise false.
@@ -151,7 +149,7 @@ public class TypeGraph extends Graph {
             if (g instanceof TypeGraph) {
                 boolean failed = false;
                 if (this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
-                    final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(g
+                    final Map<Node, Node> memo1 = new HashMap<Node, Node>(g
                             .getSize());
                     Iterator<Node> vtxList = g.getNodesSet().iterator();
                     while (vtxList.hasNext()) {
@@ -169,7 +167,6 @@ public class TypeGraph extends Graph {
                             if (type.getTypeGraphNodeObject() == null) {
                                 try {
                                     vtxCopy = this.newNode(type);
-
                                     if (vtxCopy != null) {
                                         // add inheritance edge
                                         for (int i = 0; i < vtxOrig.getType()
@@ -195,7 +192,6 @@ public class TypeGraph extends Graph {
                                         vtxCopy.copyAttributes(vtxOrig);
                                         vtxCopy.setContextUsage(vtxOrig
                                                 .getContextUsage());
-
                                         memo1.put(vtxOrig, vtxCopy);
                                         if (this.notificationRequired) {
                                             propagateChange(new Change(
@@ -245,7 +241,6 @@ public class TypeGraph extends Graph {
                                         arcCopy.copyAttributes(arcOrig);
                                         arcCopy.setContextUsage(arcOrig
                                                 .getContextUsage());
-
                                         Type srctype = arcCopy.getSource().getType();
                                         Type tartype = arcCopy.getTarget().getType();
                                         // check source multiplicity
@@ -276,7 +271,6 @@ public class TypeGraph extends Graph {
                         }
                     }// while
                     memo1.clear();
-
                     refreshGraph();
                 } else {
                     failed = true;
@@ -290,7 +284,7 @@ public class TypeGraph extends Graph {
     public boolean makeFromPlainGraph(final Graph g) {
         boolean failed = false;
         if (this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
-            final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(g
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(g
                     .getSize());
             Iterator<Node> vtxList = g.getNodesSet().iterator();
             while (vtxList.hasNext()) {
@@ -308,7 +302,6 @@ public class TypeGraph extends Graph {
                     if (type.getTypeGraphNodeObject() == null) {
                         try {
                             vtxCopy = this.newNode(type);
-
                             if (vtxCopy != null) {
                                 // add inheritance edge
                                 for (int i = 0; i < vtxOrig.getType()
@@ -334,7 +327,6 @@ public class TypeGraph extends Graph {
                                 vtxCopy.copyAttributes(vtxOrig);
                                 vtxCopy.setContextUsage(vtxOrig
                                         .getContextUsage());
-
                                 memo1.put(vtxOrig, vtxCopy);
                                 if (this.notificationRequired) {
                                     propagateChange(new Change(
@@ -375,7 +367,6 @@ public class TypeGraph extends Graph {
                                 arcCopy.copyAttributes(arcOrig);
                                 arcCopy.setContextUsage(arcOrig
                                         .getContextUsage());
-
                                 Type srctype = arcCopy.getSource().getType();
                                 Type tartype = arcCopy.getTarget().getType();
                                 // check source multiplicity
@@ -406,7 +397,6 @@ public class TypeGraph extends Graph {
                 }
             }// while
             memo1.clear();
-
             refreshGraph();
         } else {
             failed = true;
@@ -415,8 +405,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Adds a copy of the specified Graph g. The Graph g should be an instance of TypeGraph. The type graph check of
-     * this type graph should be disabled.
+     * Adds a copy of the specified Graph g. The Graph g should be an instance
+     * of TypeGraph. The type graph check of this type graph should be disabled.
      *
      * @param g another TypeGraph instance
      * @param disabledTypeGraph has always to be true
@@ -431,10 +421,11 @@ public class TypeGraph extends Graph {
 //			int tglevel = 
             typeSet.getLevelOfTypeGraphCheck();
             boolean failed = false;
-            final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(this
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(this
                     .getSize());
-
-            TypeGraph theCopy = typeSet.isArcDirected() ? new TypeGraph(typeSet) : new UndirectedTypeGraph(typeSet);
+            // Use the same orientation as this type graph, but respect the type set's directed setting
+            GraphOrientation copyOrientation = typeSet.isArcDirected() ? this.getOrientation() : GraphOrientationUndirected.INSTANCE;
+            TypeGraph theCopy = new TypeGraph(copyOrientation, typeSet);
             Iterator<?> iter = this.itsNodes.iterator();
             while (!failed && iter.hasNext()) {
                 Node vtxOrig = (Node) iter.next();
@@ -463,7 +454,6 @@ public class TypeGraph extends Graph {
                             vtxCopy.setContextUsage(vtxOrig
                                     .getContextUsage());
                             memo1.put(vtxOrig, vtxCopy);
-
                         }
                     } catch (TypeException e) {
                         // e.printStackTrace();
@@ -512,14 +502,13 @@ public class TypeGraph extends Graph {
             if (failed) {
                 return null;
             }
-
             return (theCopy);
         }
     }
 
     /**
-     * Returns a copy of this type graph typed above the specified typeset. The specified typeset should be compatible
-     * to its typeset.
+     * Returns a copy of this type graph typed above the specified typeset. The
+     * specified typeset should be compatible to its typeset.
      */
     public Graph copy(final TypeSet types) {
         return graphcopy(types);
@@ -531,8 +520,10 @@ public class TypeGraph extends Graph {
             boolean failed = false;
             Iterator<Arc> arcList = this.getArcsSet().iterator();
             Iterator<Node> vtxList = this.getNodesSet().iterator();
-            TypeGraph theCopy = typeSet.isArcDirected() ? new TypeGraph(typeSet) : new UndirectedTypeGraph(typeSet);
-            final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(this
+            // Use the same orientation as this type graph, but respect the type set's directed setting
+            GraphOrientation copyOrientation = typeSet.isArcDirected() ? this.getOrientation() : GraphOrientationUndirected.INSTANCE;
+            TypeGraph theCopy = new TypeGraph(copyOrientation, typeSet);
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(this
                     .getSize());
             while (vtxList.hasNext() && !failed) {
                 Node vtxOrig = vtxList.next();
@@ -558,7 +549,6 @@ public class TypeGraph extends Graph {
                     theCopy.dispose();
                 }
             }// while
-
             while (arcList.hasNext() && !failed) {
                 Arc arcOrig = arcList.next();
                 Arc arcCopy = null;
@@ -587,7 +577,6 @@ public class TypeGraph extends Graph {
             if (failed) {
                 return null;
             }
-
             return (theCopy);
         }
     }
@@ -595,24 +584,25 @@ public class TypeGraph extends Graph {
     /**
      * Makes a copy of this graph
      *
-     * @param orig2copy this hashtable is used to store the pairs (original, copy), where an original is a node or edge
-     * of this graph and a copy is a copied node or edge of the graph copy.
+     * @param orig2copy this hashtable is used to store the pairs (original,
+     * copy), where an original is a node or edge of this graph and a copy is a
+     * copied node or edge of the graph copy.
      * @return a copy of this graph or null if an error occured
      */
-    public Graph copy(final Hashtable<GraphObject, GraphObject> orig2copy) {
+    public Graph copy(final Map<GraphObject, GraphObject> orig2copy) {
         return graphcopy(orig2copy);
     }
 
     /**
      * Makes a copy of this graph
      *
-     * @param orig2copy this hashtable is used to store the pairs (original, copy), where an original is a node or edge
-     * of this graph and a copy is a copied node or edge of the graph copy.
+     * @param orig2copy this hashtable is used to store the pairs (original,
+     * copy), where an original is a node or edge of this graph and a copy is a
+     * copied node or edge of the graph copy.
      * @return a copy of this graph or null if an error occured
      */
     protected Graph graphcopy(
-            final Hashtable<GraphObject, GraphObject> orig2copy) {
-
+            final Map<GraphObject, GraphObject> orig2copy) {
         synchronized (this) {
             boolean failed = false;
             TypeGraph theCopy = new TypeGraph(getTypeSet());
@@ -668,7 +658,6 @@ public class TypeGraph extends Graph {
             if (failed) {
                 return null;
             }
-
             return (theCopy);
         }
     }
@@ -679,10 +668,9 @@ public class TypeGraph extends Graph {
     public Graph graphcopy() {
         synchronized (this) {
             boolean failed = false;
-            final Hashtable<Node, Node> memo1 = new Hashtable<Node, Node>(this
+            final Map<Node, Node> memo1 = new HashMap<Node, Node>(this
                     .getSize());
             TypeGraph theCopy = new TypeGraph(getTypeSet());
-
             Iterator<?> iter = this.itsNodes.iterator();
             while (!failed && iter.hasNext()) {
                 Node vtxOrig = (Node) iter.next();
@@ -700,7 +688,6 @@ public class TypeGraph extends Graph {
                     theCopy.dispose();
                 }
             }
-
             iter = this.itsArcs.iterator();
             while (!failed && iter.hasNext()) {
                 Arc arcOrig = (Arc) iter.next();
@@ -719,18 +706,17 @@ public class TypeGraph extends Graph {
                     theCopy.dispose();
                 }
             }
-
             memo1.clear();
             if (failed) {
                 return null;
             }
-
             return (theCopy);
         }
     }
 
     /**
-     * Copy a graph The method returns a flat copy (without references) of the graph.
+     * Copy a graph The method returns a flat copy (without references) of the
+     * graph.
      */
     public Graph copy() {
         return this.graphcopy();
@@ -746,7 +732,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Adds the specified node to my nodes. The type of the specified node has to be in my type set.
+     * Adds the specified node to my nodes. The type of the specified node has
+     * to be in my type set.
      */
     public void addNode(final Node n) {
         if (!this.itsNodes.contains(n)) {
@@ -756,7 +743,6 @@ public class TypeGraph extends Graph {
             } else {
                 this.itsNodes.add(n);
                 addNodeToTypeObjectsMap(n);
-
                 if (n.getAttribute() != null) {
                     ((ValueTuple) n.getAttribute()).addObserver(n);
                     this.attributed = true;
@@ -768,8 +754,9 @@ public class TypeGraph extends Graph {
 
     /**
      * *************************************************************************
-     * Create a new Node as a copy of <code>orig</code>. Only the type and the * attributes are copied, the structural
-     * context (incoming/outgoing arcs) is not. *
+     * Create a new Node as a copy of <code>orig</code>. Only the type and the *
+     * attributes are copied, the structural context (incoming/outgoing arcs) is
+     * not. *
      * ************************************************************************
      */
     public Node copyNode(final Node orig) throws TypeException {
@@ -797,7 +784,6 @@ public class TypeGraph extends Graph {
                 anIter = n.getOutgoingArcsSet().iterator();
             }
             this.itsNodes.remove(n);
-
 //			n.getType().removeTypeUser(n);
             removeNodeFromTypeObjectsMap(n);
             this.changed = true;
@@ -805,7 +791,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Adds the specified edge to my edges. The type of the specified edge has to be in my type set.
+     * Adds the specified edge to my edges. The type of the specified edge has
+     * to be in my type set.
      */
     public void addArc(final Arc a) {
         if (!this.itsArcs.contains(a)) {
@@ -815,7 +802,6 @@ public class TypeGraph extends Graph {
             } else {
                 this.itsArcs.add(a);
                 addArcToTypeObjectsMap(a);
-
                 if (a.getAttribute() != null) {
                     ((ValueTuple) a.getAttribute()).addObserver(a);
                 }
@@ -831,12 +817,9 @@ public class TypeGraph extends Graph {
             aNode.dispose();
             throw new TypeException(typeError);
         }
-
         this.attributed = aNode.getAttribute() != null;
-
         this.itsNodes.add(aNode);
         addNodeToTypeObjectsMap(aNode);
-
         this.changed = true;
         if (this.notificationRequired) {
             propagateChange(new Change(Change.OBJECT_CREATED, aNode));
@@ -880,8 +863,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Returns the attribute tuple of the type node of the specified type. Otherwise, if the node is not attributed -
-     * returns <code>null</code>.
+     * Returns the attribute tuple of the type node of the specified type.
+     * Otherwise, if the node is not attributed - returns <code>null</code>.
      */
     public AttrInstance getAttrValueOfTypeNode(final Type type) {
         Node n = this.itsTypes.getTypeGraphNode(type);
@@ -907,14 +890,14 @@ public class TypeGraph extends Graph {
     /**
      * Delete a Node. Dangling Arcs are deleted implicitly.
      *
-     * @throws TypeException If the parameter forceDestroy is false and there are objects of this node, the type
-     * exception will be thrown, otherwise not.
+     * @throws TypeException If the parameter forceDestroy is false and there
+     * are objects of this node, the type exception will be thrown, otherwise
+     * not.
      */
     public synchronized void destroyNode(
             final Node node,
             final boolean checkFirst,
             final boolean forceDestroy) throws TypeException {
-
         TypeError typeError = null;
         if (forceDestroy
                 || this.itsTypes.getLevelOfTypeGraphCheck() <= TypeSet.DISABLED) {
@@ -941,7 +924,6 @@ public class TypeGraph extends Graph {
         if (!forceDestroy && (typeError != null)) {
             throw new TypeException(typeError);
         }
-
         Type myType = node.getType();
         this.itsTypes.removeAllInheritanceRelations(myType);
         Iterator<Node> en = getNodesSet().iterator();
@@ -961,7 +943,6 @@ public class TypeGraph extends Graph {
             }
         }
         this.itsTypes.refreshInheritanceArcs();
-
         // destroy incoming/outgoing arcs
         Arc a;
         Iterator<Arc> iter = node.getIncomingArcsSet().iterator();
@@ -976,11 +957,9 @@ public class TypeGraph extends Graph {
             destroyArc(a, false, false);
             iter = node.getOutgoingArcsSet().iterator();
         }
-
         if (this.notificationRequired) {
             propagateChange(new Change(Change.WANT_DESTROY_OBJECT, node));
         }
-
         this.itsNodes.remove(node);
         this.changed = true;
         if (this.notificationRequired) {
@@ -990,7 +969,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Create a new Arc with given Type, source and target objects. Source and target object must be part of this graph.
+     * Create a new Arc with given Type, source and target objects. Source and
+     * target object must be part of this graph.
      */
     protected Arc newArc(final Type t, final Node src, final Node tar) throws TypeException {
         final Arc anArc = new Arc(t, src, tar, this);
@@ -998,20 +978,16 @@ public class TypeGraph extends Graph {
                 && t.getAttrType().getNumberOfEntries() != 0) {
             anArc.createAttributeInstance();
         }
-
         TypeError typeError = this.itsTypes.addTypeGraphObject(anArc);
         if (typeError != null) {
             anArc.dispose();
             throw new TypeException(typeError);
         }
-
         if (anArc.getAttribute() != null) {
             this.attributed = true;
         }
-
         this.itsArcs.add(anArc);
         addArcToTypeObjectsMap(anArc);
-
         this.changed = true;
         if (this.notificationRequired) {
             propagateChange(new Change(Change.OBJECT_CREATED, anArc));
@@ -1028,7 +1004,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Create a new Arc with given Type, source and target objects.Source and target object must be part of this graph.
+     * Create a new Arc with given Type, source and target objects.Source and
+     * target object must be part of this graph.
      *
      * @param type
      * @param src
@@ -1039,11 +1016,10 @@ public class TypeGraph extends Graph {
     @Override
     public Arc createArc(final Type type, final Node src, final Node tar) throws TypeException {
         if (src == null || tar == null) {
-            throw new TypeException("UndirectedGraph.createArc:: Cannot create an UndirectedArc of type : " + type.getStringRepr() + "   Source or target node is null!");
+            throw new TypeException("TypeGraph.createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "   Source or target node is null!");
         } else if (!this.isNode(src) || !this.isNode(tar)) {
-            throw new TypeException("UndirectedGraph.createArc:: Cannot create an UndirectedArc of type : " + type.getStringRepr() + "  Source or target does not belong to this graph!");
+            throw new TypeException("TypeGraph.createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "  Source or target does not belong to this graph!");
         }
-
         Type arcType = null;
         if (this.itsTypes.containsType(type)) {
             arcType = type;
@@ -1054,22 +1030,22 @@ public class TypeGraph extends Graph {
                 arcType = this.itsTypes.addType(type);
             }
         }
-
         Arc anArc = newArc(arcType, src, tar);
         return anArc;
     }
 
     /**
-     * Create a new Arc of the specified Type, source and target objects. Source and target object must be part of
-     * <code>this</code> graph.
+     * Create a new Arc of the specified Type, source and target objects. Source
+     * and target object must be part of <code>this</code> graph.
      */
     public Arc createTypeArc(final Type type, final Node src, final Node tar) throws TypeException {
         return this.createArc(type, src, tar);
     }
 
     /**
-     * Returns the type graph edge of the specified type <code>arcType</code>, with a source node of the specified type
-     * <code>source</code> and a target node of the specified type <code>target</code>, otherwise returns
+     * Returns the type graph edge of the specified type <code>arcType</code>,
+     * with a source node of the specified type <code>source</code> and a target
+     * node of the specified type <code>target</code>, otherwise returns
      * <code>null</code>.
      */
     public Arc getTypeGraphArc(final Type t, final Type source, final Type target) {
@@ -1122,8 +1098,9 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Create a new Arc as a copy of <code>orig</code>. Only the type and the attributes are copied, the structural
-     * context (source, target) is not. Source and target object must be part of this graph.
+     * Create a new Arc as a copy of <code>orig</code>. Only the type and the
+     * attributes are copied, the structural context (source, target) is not.
+     * Source and target object must be part of this graph.
      */
     public Arc copyArc(final Arc orig, final Node src, final Node tar) throws TypeException {
         try {
@@ -1147,15 +1124,15 @@ public class TypeGraph extends Graph {
     /**
      * The specified arc will be removed from this type graph.
      *
-     * @throws TypeException If the parameter forceDestroy is false and there are objects of this node, the type
-     * exception will be thrown, otherwise not.
+     * @throws TypeException If the parameter forceDestroy is false and there
+     * are objects of this node, the type exception will be thrown, otherwise
+     * not.
      */
     public synchronized void destroyArc(final Arc arc, final boolean checkFirst,
             final boolean forceDestroy) throws TypeException {
         if (arc == null) {
             return;
         }
-
         TypeError typeError = null;
         if (forceDestroy
                 || this.itsTypes.getLevelOfTypeGraphCheck() <= TypeSet.DISABLED) {
@@ -1166,15 +1143,12 @@ public class TypeGraph extends Graph {
                 throw new TypeException(typeError);
             }
         }
-
         if (this.notificationRequired) {
             propagateChange(new Change(Change.WANT_DESTROY_OBJECT, arc));
         }
-
         this.itsArcs.remove(arc);
         arc.dispose();
         this.changed = true;
-
         propagateChange(new Change(Change.OBJECT_DESTROYED, arc));
     }
 
@@ -1184,7 +1158,7 @@ public class TypeGraph extends Graph {
             result = true;
         } else {
             if (this.getSize() >= g.getSize()) {
-                final Hashtable<GraphObject, GraphObject> table = new Hashtable<GraphObject, GraphObject>();
+                final Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
                 boolean found = true;
                 Iterator<?> iterG = g.getArcsSet().iterator();
                 while (found && iterG.hasNext()) {
@@ -1216,7 +1190,6 @@ public class TypeGraph extends Graph {
                         }
                     }
                 }
-
                 iterG = g.getNodesSet().iterator();
                 while (found && iterG.hasNext()) {
                     Node elemi = (Node) iterG.next();
@@ -1233,7 +1206,6 @@ public class TypeGraph extends Graph {
                         }
                     }
                 }
-
                 if (table.size() == g.getSize()) {
                     result = true;
                 }
@@ -1245,7 +1217,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Adds the given Node to the list for type key = anObj.getType().convertToKey().
+     * Adds the given Node to the list for type key =
+     * anObj.getType().convertToKey().
      *
      */
     protected void addNodeToTypeObjectsMap(Node n) {
@@ -1256,25 +1229,22 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Adds the given Arc to the list of type key. key = ((Arc) anObj).getSource().getType().convertToKey() +
-     * anObj.getType().convertToKey() + ((Arc) anObj).getTarget().getType().convertToKey(). Additionally, this Arc
-     * object is added to the keys of all children of its source resp. target Node because of the inherited edge
-     * relation.
+     * Adds the given Arc to the list of type key. key = ((Arc)
+     * anObj).getSource().getType().convertToKey() +
+     * anObj.getType().convertToKey() + ((Arc)
+     * anObj).getTarget().getType().convertToKey(). Additionally, this Arc
+     * object is added to the keys of all children of its source resp. target
+     * Node because of the inherited edge relation.
      *
      */
     protected void addArcToTypeObjectsMap(Arc arc) {
-
-        Vector<Type> mySrcChildren = arc.getSource().getType().getAllChildren();
-        Vector<Type> myTarChildren = arc.getTarget().getType().getAllChildren();
-
+        List<Type> mySrcChildren = arc.getSource().getType().getAllChildren();
+        List<Type> myTarChildren = arc.getTarget().getType().getAllChildren();
         for (int i = 0; i < mySrcChildren.size(); ++i) {
-
             for (int j = 0; j < myTarChildren.size(); ++j) {
-
                 String keystr = mySrcChildren.get(i).convertToKey()
                         + arc.getType().convertToKey()
                         + myTarChildren.get(j).convertToKey();
-
                 HashSet<GraphObject> anObjVec = new LinkedHashSet<GraphObject>(1);
                 anObjVec.add(arc);
                 this.itsTypeObjectsMap.put(keystr, anObjVec);
@@ -1283,10 +1253,13 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Adds the given GraphObject to the list for type key. For a Node object then key = anObj.getType().convertToKey(),
-     * for an Arc object then key = ((Arc) anObj).getSource().getType().convertToKey() + anObj.getType().convertToKey()
-     * + ((Arc) anObj).getTarget().getType().convertToKey(). Additionally, this Arc object is added to the keys for all
-     * children of its source resp. target Node because of the inherited edge relation.
+     * Adds the given GraphObject to the list for type key. For a Node object
+     * then key = anObj.getType().convertToKey(), for an Arc object then key =
+     * ((Arc) anObj).getSource().getType().convertToKey() +
+     * anObj.getType().convertToKey() + ((Arc)
+     * anObj).getTarget().getType().convertToKey(). Additionally, this Arc
+     * object is added to the keys for all children of its source resp. target
+     * Node because of the inherited edge relation.
      *
      */
     protected void addToTypeObjectsMap(GraphObject anObj) {
@@ -1303,7 +1276,8 @@ public class TypeGraph extends Graph {
     }
 
     /**
-     * Extends the type-objects map by adding all inherited edges of the given node type as child type.
+     * Extends the type-objects map by adding all inherited edges of the given
+     * node type as child type.
      *
      */
     protected void extendTypeObjectsMap(final Type nodeType) {
@@ -1330,7 +1304,6 @@ public class TypeGraph extends Graph {
                     HashSet<GraphObject> anObjVec = new LinkedHashSet<GraphObject>(1);
                     anObjVec.add(a);
                     this.itsTypeObjectsMap.put(keystr, anObjVec);
-
 //					System.out.println("TypeGraph.extendTypeObjectsMap: "
 //							+nodeType.getName()+" - "
 //							+a.getType().getName()+" -> "
@@ -1348,7 +1321,6 @@ public class TypeGraph extends Graph {
                     HashSet<GraphObject> anObjVec = new LinkedHashSet<GraphObject>(1);
                     anObjVec.add(a);
                     this.itsTypeObjectsMap.put(keystr, anObjVec);
-
 //					System.out.println("TypeGraph.extendTypeObjectsMap: "
 //							+a.getSourceType().getName()+" - "
 //							+a.getType().getName()+" -> "
@@ -1356,7 +1328,6 @@ public class TypeGraph extends Graph {
                 }
             }
         }
-
     }
 
     /**
@@ -1383,7 +1354,7 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public boolean isReadyForTransform(Vector<GraphObject> storeOfFailedObjs) {
+    public boolean isReadyForTransform(List<GraphObject> storeOfFailedObjs) {
         return false;
     }
 
@@ -1449,19 +1420,15 @@ public class TypeGraph extends Graph {
     public void XwriteObject(XMLHelper h) {
         h.openNewElem("Graph", this);
         h.addAttr("name", getName());
-
         if (!this.kind.equals("")) {
             h.addAttr("kind", this.kind);
         }
-
         if (!this.comment.equals("")) {
             h.addAttr("comment", this.comment);
         }
-
         if (!this.info.equals("")) {
             h.addAttr("info", this.info);
         }
-
         h.addIteration("", this.itsNodes.iterator(), true);
         // multiplicity will be written by node
         h.addIteration("", this.itsArcs.iterator(), true);
@@ -1473,22 +1440,18 @@ public class TypeGraph extends Graph {
         if (h.isTag("Graph", this)) {
             String str = h.readAttr("name");
             setName(str.replaceAll(" ", ""));
-
             str = h.readAttr("comment");
             if (!str.equals("")) {
                 this.comment = str.toString();
             }
-
             str = h.readAttr("kind");
             if (!str.equals("")) {
                 this.kind = str.toString();
             }
-
             str = h.readAttr("info");
             if (!str.equals("")) {
                 this.info = str.toString();
             }
-
             Iterator<?> en = h.getEnumeration("", null, true, "Node");
             while (en.hasNext()) {
                 h.peekElement(en.next());
@@ -1504,7 +1467,6 @@ public class TypeGraph extends Graph {
                         // e.printStackTrace();
                         System.out.println("TypeGraph.XreadObject: cannot load a Node: " + e.getMessage());
                     }
-
                     // load multiplicity, if this is the type graph
                     // read the multiplicities
                     String m = h.readAttr("sourcemin");
@@ -1547,11 +1509,9 @@ public class TypeGraph extends Graph {
                         System.out.println("TypeGraph.XreadObject: cannot load an Arc: " + e.getMessage());
 //						e.printStackTrace();
                     }
-
                     // load multiplicity, if this is the type graph
                     Type sourceType = n1.getType();
                     Type targetType = n2.getType();
-
                     // read the multiplicities
                     String m = h.readAttr("sourcemin");
                     if (!"".equals(m)) {
@@ -1607,7 +1567,7 @@ public class TypeGraph extends Graph {
     /**
      * This method is not implemented for this class.
      */
-    public Vector<OrdinaryMorphism> generateAllSubgraphs(int sizeOfInclusions,
+    public List<OrdinaryMorphism> generateAllSubgraphs(int sizeOfInclusions,
             boolean union, boolean withIsomorphic) {
         return null;
     }
@@ -1615,8 +1575,8 @@ public class TypeGraph extends Graph {
     /**
      * This method is not implemented for this class.
      */
-    public Vector<OrdinaryMorphism> generateAllSubgraphsWithInclusionsOfSize(
-            int i, Vector<GraphObject> itsGOSet, Vector<OrdinaryMorphism> inclusions, boolean withIsomorphic) {
+    public List<OrdinaryMorphism> generateAllSubgraphsWithInclusionsOfSize(
+            int i, List<GraphObject> itsGOSet, List<OrdinaryMorphism> inclusions, boolean withIsomorphic) {
         return null;
     }
 
@@ -1644,14 +1604,14 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public Vector<String> getVariableNamesOfAttributes() {
+    public List<String> getVariableNamesOfAttributes() {
         return null;
     }
 
     /**
      * This method is not defined for this class.
      */
-    public Vector<VarMember> getSameVariablesOfAttributes() {
+    public List<VarMember> getSameVariablesOfAttributes() {
         return null;
     }
 
@@ -1670,9 +1630,8 @@ public class TypeGraph extends Graph {
     /**
      * This method is not defined for this class.
      */
-    public Vector<Hashtable<GraphObject, GraphObject>> getPartialMorphismIntoSet(
-            Vector<GraphObject> set) {
+    public List<Map<GraphObject, GraphObject>> getPartialMorphismIntoSet(
+            List<GraphObject> set) {
         return null;
     }
-
 }

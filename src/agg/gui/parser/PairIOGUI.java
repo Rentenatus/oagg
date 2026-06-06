@@ -2,20 +2,19 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.parser;
 
 import java.io.File;
 import java.util.Vector;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-
 import agg.gui.cpa.ConflictsDependenciesContainerSaveLoad;
 import agg.gui.saveload.ExtensionFileFilter;
 import agg.parser.PairContainer;
@@ -24,8 +23,9 @@ import agg.parser.ConflictsDependenciesContainer;
 import agg.util.XMLHelper;
 
 /**
- * This class controlls the load and save process. The choice of xml format for saving needs some preparation for the
- * load process. For the load process the creation of an empty object of the correct type is needed.
+ * This class controlls the load and save process. The choice of xml format for
+ * saving needs some preparation for the load process. For the load process the
+ * creation of an empty object of the correct type is needed.
  *
  * @author $Author: olga $
  * @version $Id: PairIOGUI.java,v 1.14 2010/09/23 08:20:54 olga Exp $
@@ -33,23 +33,15 @@ import agg.util.XMLHelper;
 public class PairIOGUI {
 
     private JFrame frame;
-
     private JFileChooser chooser;
-
     private PairContainer pc;
-
     private ConflictsDependenciesContainer cdContainer;
     private ConflictsDependenciesContainerSaveLoad cdContainerSaveLoad;
-
     private String directory = "";
-
 //	private String currentDir = "";
     private String fileName = "";
-
     private PairFileFilter filter;
-
     private boolean isSaved;
-
     private boolean combined = false;
 
     /**
@@ -189,7 +181,6 @@ public class PairIOGUI {
 
     public void setCriticalPairContainer(ConflictsDependenciesContainerSaveLoad pairs) {
         this.cdContainerSaveLoad = pairs;
-
         this.pc = null;
         this.cdContainer = null;
         this.combined = true;
@@ -197,8 +188,8 @@ public class PairIOGUI {
     }
 
     /**
-     * This method provides a convenient way to get a graphical save interface. This interface lets the user choose the
-     * file easily.
+     * This method provides a convenient way to get a graphical save interface.
+     * This interface lets the user choose the file easily.
      */
     public void save() {
         this.isSaved = false;
@@ -207,7 +198,6 @@ public class PairIOGUI {
                 && this.pc == null) {
             return;
         }
-
         int returnVal = this.chooser.showSaveDialog(this.frame);
         this.directory = this.chooser.getCurrentDirectory().toString();
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -225,6 +215,7 @@ public class PairIOGUI {
                 }
                 save(this.directory, this.fileName);
 //				if (this.isSaved) {
+
             
         
     
@@ -234,7 +225,6 @@ public class PairIOGUI {
 			}
 		}
 	}
-
 	/**
 	 * This method controlls the process of saving. That is way a directory and
 	 * a file name is needed.
@@ -247,7 +237,6 @@ public class PairIOGUI {
 	public void save(String dir, String file) {
         XMLHelper xmlh = new XMLHelper();
         // file = XMLHelper.replaceGermanSpecialCh(file);
-
         if (this.combined) {
             if (this.cdContainerSaveLoad != null) {
                 xmlh.addTopObject(this.cdContainerSaveLoad);
@@ -270,8 +259,8 @@ public class PairIOGUI {
     }
 
     /**
-     * This method provides a convenient way to get a graphical load interface. This interface lets the user enter a
-     * file name easily.
+     * This method provides a convenient way to get a graphical load interface.
+     * This interface lets the user enter a file name easily.
      *
      * @return The loaded object.
      */
@@ -279,7 +268,6 @@ public class PairIOGUI {
         if (this.pc == null) {
             return null;
         }
-
         Object result = null;
         int returnVal = this.chooser.showOpenDialog(this.frame);
         this.directory = this.chooser.getCurrentDirectory().toString();
@@ -307,9 +295,7 @@ public class PairIOGUI {
         if (!combi) {
             return load();
         }
-
         this.cdContainerSaveLoad = new ConflictsDependenciesContainerSaveLoad();
-
         Object result = null;
         int returnVal = this.chooser.showOpenDialog(this.frame);
         this.directory = this.chooser.getCurrentDirectory().toString();
@@ -326,7 +312,6 @@ public class PairIOGUI {
                     this.fileName += ((ExtensionFileFilter) this.chooser.getFileFilter())
                             .getExtension();
                 }
-
                 result = load(this.directory, this.fileName);
 //				currentDir = directory;
             }
@@ -335,7 +320,8 @@ public class PairIOGUI {
     }
 
     /**
-     * This method controlls the process of loading. Therefor a directory and a file name is needed.
+     * This method controlls the process of loading. Therefor a directory and a
+     * file name is needed.
      *
      * @param dir The destination directory of the file.
      * @param file The destination file name.
@@ -347,7 +333,6 @@ public class PairIOGUI {
                 && this.pc == null) {
             return null;
         }
-
         Object result = null;
         this.directory = dir;
         this.fileName = file;
@@ -355,11 +340,10 @@ public class PairIOGUI {
         /*
 		 * if(XMLHelper.hasGermanSpecialCh(fileName)){ System.out.println(" Read
 		 * file name exception occurred! " +"\n Maybe the German characters like
-		 * ä, ö, ü, ß or spase were used. " +"\n Please rename the file " +"\n
+		 * ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼, ÃƒÅ¸ or spase were used. " +"\n Please rename the file " +"\n
 		 * and try again."); return null; }
          */
         if (h.read_from_xml(this.directory + this.fileName)) {
-
             if (this.cdContainerSaveLoad != null) {
                 this.combined = true;
                 result = h.getTopObject(this.cdContainerSaveLoad);
@@ -380,17 +364,15 @@ public class PairIOGUI {
                 && this.pc == null) {
             return null;
         }
-
         Object result = null;
         XMLHelper h = new XMLHelper();
         /*
 		 * if(XMLHelper.hasGermanSpecialCh(fullFileName)){
 		 * System.out.println("Read file name exception occurred! " +"\nMaybe
-		 * the German characters like ä, ö, ü, ß or space were used. "
+		 * the German characters like ÃƒÂ¤, ÃƒÂ¶, ÃƒÂ¼, ÃƒÅ¸ or space were used. "
 		 * +"\nPlease rename the file " +"\nand try again."); return null; }
          */
         if (h.read_from_xml(fullFileName)) {
-
             if (this.cdContainerSaveLoad != null) {
                 this.combined = true;
                 result = h.getTopObject(this.cdContainerSaveLoad);
@@ -421,7 +403,6 @@ public class PairIOGUI {
         if (this.fileName.equals("")) {
             this.chooser.setSelectedFile(null);
         }
-
     }
 
     public String getDirectoryName() {
@@ -431,7 +412,6 @@ public class PairIOGUI {
     public boolean isCombined() {
         return this.combined;
     }
-
 }
 /*
  * $Log: PairIOGUI.java,v $

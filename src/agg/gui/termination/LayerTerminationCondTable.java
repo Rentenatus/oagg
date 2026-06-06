@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -24,11 +26,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -37,7 +41,6 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
-
 import agg.xt_basis.Arc;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
@@ -46,14 +49,18 @@ import agg.termination.TerminationLGTS;
 import agg.termination.TerminationLGTSInterface;
 import agg.termination.TerminationLGTSTypedByTypeGraph;
 import agg.util.Pair;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Shows a table with a row for a layer and a column for a termination condition, so that each element stands for rules
- * on certain layer. The color of the pairs shows the state of them (green - condition is satisfied, rot - not
- * satisfied).
+ * Shows a table with a row for a layer and a column for a termination
+ * condition, so that each element stands for rules on certain layer. The color
+ * of the pairs shows the state of them (green - condition is satisfied, rot -
+ * not satisfied).
  *
- * @version $Id: LayerTerminationCondTable.java,v 1.3 2006/12/13 13:33:05 enrico Exp $
+ * @version $Id: LayerTerminationCondTable.java,v 1.3 2006/12/13 13:33:05 enrico
+ * Exp $
  * @author $Author: olga $
  */
 @SuppressWarnings("serial")
@@ -61,43 +68,29 @@ public class LayerTerminationCondTable extends JDialog implements
         ActionListener {
 
     static final Color NOT_VALID = Color.red;
-
     static final Color VALID = Color.green;
-
     /**
      * the Buttons for the entries. Hashtable[Integer, Vector[Rule]]
      */
-    private Hashtable<Integer, Hashtable<String, JButton>> buttons = new Hashtable<Integer, Hashtable<String, JButton>>();
-
+    private HashMap<Integer, HashMap<String, JButton>> buttons = new HashMap<Integer, HashMap<String, JButton>>();
     private TerminationLGTSInterface termination;
-
     /**
      * the layer for a Button.
      */
-    private Hashtable<JButton, Integer> firstLayers = new Hashtable<JButton, Integer>();
-
+    private HashMap<JButton, Integer> firstLayers = new HashMap<JButton, Integer>();
     /**
      * the condition for a Button.
      */
-    private Hashtable<JButton, String> secondConds = new Hashtable<JButton, String>();
-
+    private HashMap<JButton, String> secondConds = new HashMap<JButton, String>();
     private JPanel panel;
-
     private JPanel tablePanel;
-
     private JScrollPane scrLayer;
-
 //	private JScrollPane scrInfo;
     private RuleTable tableRule;
-
     private TypeTable tableTypeDeletion;
-
     private TypeTable tableTypeCreation;
-
     private JButton lastButton;
-
     private Vector<Pair<String, String>> conds;
-
     private int w, h;
 
     /**
@@ -115,46 +108,38 @@ public class LayerTerminationCondTable extends JDialog implements
     }
 
     /**
-     * constructs a new dialog panel for the given layers and termination conditions
+     * constructs a new dialog panel for the given layers and termination
+     * conditions
      */
     public LayerTerminationCondTable(TerminationLGTSInterface termination) {
         super(new JFrame(), false);
-
         setTitle("Termination of LGTS");
-
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 setVisible(false);
                 dispose();
             }
         });
-
         this.termination = termination;
-
         GridBagLayout gridbag = new GridBagLayout();
-
         JPanel main = new JPanel(new BorderLayout());
         main.setBackground(Color.lightGray);
-
         this.panel = new JPanel(gridbag);
-
         // create the ScrollPane
         this.scrLayer = new JScrollPane();
         this.scrLayer.setBackground(Color.orange);
         this.scrLayer.setBorder(new TitledBorder(" Termination Conditions of LGTS "));
-
         // the head of the rows
         JPanel rowHead = new JPanel();
         rowHead.setLayout(new GridLayout(termination.getOrderedRuleLayer()
                 .size(), 1));
-        Iterator<Integer> en = termination.getOrderedRuleLayer().iterator();
-        while (en.hasNext()) {
-            String text = en.next().toString();
+        ArrayMovieInt orderedLayers = termination.getOrderedRuleLayer();
+        for (int idx = 0; idx < orderedLayers.size(); idx++) {
+            String text = String.valueOf(orderedLayers.get(idx));
             JLabel act = new JLabel(" Layer " + text + " ");
             act.setToolTipText("");
             rowHead.add(act);
         }
-
         // the head of the columns
         JPanel colHead = new JPanel();
         colHead.setLayout(new GridLayout(1, 3));
@@ -166,34 +151,26 @@ public class LayerTerminationCondTable extends JDialog implements
             act.setToolTipText("");
             colHead.add(act);
         }
-
         // create the center panel with a button for each rule
         this.tablePanel = new JPanel();
-        this.tablePanel.setLayout(new GridLayout(termination.getOrderedRuleLayer()
-                .size(), 3));
-
-        int i = 0;
-        while (i < termination.getOrderedRuleLayer().size()) {
-            int ii = 0;
-            while (ii < 3) {
+        this.tablePanel.setLayout(new GridLayout(orderedLayers.size(), 3));
+        for (int i = 0; i < orderedLayers.size(); i++) {
+            int currentLayer = orderedLayers.get(i);
+            for (int ii = 0; ii < 3; ii++) {
                 JButton act = new JButton("   ");
-
                 act.setToolTipText(this.conds.elementAt(ii).first);
                 act.setMinimumSize(new Dimension(act.getHeight(), act
                         .getHeight()));
                 act.addActionListener(this);
-                // System.out.println(termination.getOrderedRuleLayer().elementAt(i));
+                // System.out.println(currentLayer);
                 // System.out.println(this.conds.elementAt(ii));
-                this.addButton(termination.getOrderedRuleLayer().get(i),
+                this.addButton(currentLayer,
                         this.conds.elementAt(ii).first, act);
                 this.tablePanel.add(act);
-                refreshView(termination.getOrderedRuleLayer().get(i),
+                refreshView(currentLayer,
                         this.conds.elementAt(ii).first, act);
-                ii++;
             }
-            i++;
         }
-
         // get the preferred size for the center panel
         Dimension dim = this.tablePanel.getPreferredSize();
         // System.out.println("tablePanel "+dim);
@@ -204,13 +181,11 @@ public class LayerTerminationCondTable extends JDialog implements
         dim2.setSize(dim1.getWidth(), colHead.getPreferredSize().getHeight());
         colHead.setMinimumSize(dim2);
         colHead.setPreferredSize(dim2);
-
         // calculate minimum/preferred size for row header
         dim2 = new Dimension();
         dim2.setSize(rowHead.getPreferredSize().getWidth(), dim1.getHeight());
         rowHead.setPreferredSize(dim2);
         rowHead.setMinimumSize(dim2);
-
         // set the table panel to its actual size
         this.tablePanel.setPreferredSize(dim1);
         this.tablePanel.setMinimumSize(dim1);
@@ -220,10 +195,8 @@ public class LayerTerminationCondTable extends JDialog implements
         this.scrLayer.setViewportView(this.tablePanel);
         this.scrLayer.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER,
                 new JLabel(""));
-
         constrainBuild(this.panel, this.scrLayer, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -235,18 +208,14 @@ public class LayerTerminationCondTable extends JDialog implements
         closeP.add(new JLabel("  "));
         closeP.add(closeButton);
         closeP.add(new JLabel("  "));
-
         main.add(this.panel, BorderLayout.CENTER);
         main.add(closeP, BorderLayout.SOUTH);
         main.revalidate();
-
         JScrollPane scroll = new JScrollPane(main);
         scroll.setPreferredSize(new Dimension(300, 250));
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(scroll);
         validate();
-
         setLocation(200, 100);
         pack();
     }
@@ -263,7 +232,6 @@ public class LayerTerminationCondTable extends JDialog implements
         Object source = e.getSource();
         Integer layer = this.firstLayers.get(source);
         String second = this.secondConds.get(source);
-
         if (this.lastButton != null) {
             this.lastButton.setText("");
         }
@@ -280,13 +248,11 @@ public class LayerTerminationCondTable extends JDialog implements
             if (this.tableTypeCreation != null) {
                 this.panel.remove(this.tableTypeCreation);
             }
-
             ((JButton) source).setText("X");
             this.h = (int) (this.scrLayer.getPreferredSize().getHeight());
             constrainBuild(this.panel, this.scrLayer, 0, 0, 1, 1,
                     GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0,
                     0.0, 5, 5, 5, 5);
-
             Vector<String> rules = getRules(layer, second);
             if (rules.size() != 0) {
                 this.tableRule = new RuleTable(rules, " Rules of the Layer  "
@@ -319,7 +285,6 @@ public class LayerTerminationCondTable extends JDialog implements
                     constrainBuild(this.panel, this.tableTypeDeletion, 0, 2, 1, 1,
                             GridBagConstraints.BOTH, GridBagConstraints.CENTER,
                             1.0, 0.0, 5, 5, 10, 5);
-
                     Vector<String> creationTypes = getCreatedTypesOnDeletionLayer(layer);
                     if (creationTypes.size() != 0) {
                         this.tableTypeCreation = new TypeTable(creationTypes,
@@ -349,22 +314,21 @@ public class LayerTerminationCondTable extends JDialog implements
             this.h = this.h + 50;
             this.panel.setPreferredSize(new Dimension(this.w, this.h));
             this.panel.revalidate();
-
             setSize(this.w + 50, this.h + 80);
             validate();
             this.lastButton = (JButton) source;
         }
-
     }
 
     /**
-     * adds the button to the internal structur, so it can be adressed for relabeling.
+     * adds the button to the internal structur, so it can be adressed for
+     * relabeling.
      */
-    void addButton(Integer layer, String condName, JButton button) {
+    void addButton(int layer, String condName, JButton button) {
         // create buttons-Hashtable
-        Hashtable<String, JButton> hash1 = this.buttons.get(layer);
+        HashMap<String, JButton> hash1 = this.buttons.get(layer);
         if (hash1 == null) {
-            hash1 = new Hashtable<String, JButton>();
+            hash1 = new HashMap<String, JButton>();
             this.buttons.put(layer, hash1);
         }
         hash1.put(condName, button);
@@ -376,8 +340,8 @@ public class LayerTerminationCondTable extends JDialog implements
     /**
      * returns the button for the given rule pair (r1,r2)
      */
-    JButton getButton(Integer layer, String condName) {
-        Hashtable<String, JButton> hash1 = this.buttons.get(layer);
+    JButton getButton(int layer, String condName) {
+        HashMap<String, JButton> hash1 = this.buttons.get(layer);
         if (hash1 == null) {
             return null;
         }
@@ -388,12 +352,8 @@ public class LayerTerminationCondTable extends JDialog implements
      * force the panel to update all buttons
      */
     public void refreshView() {
-        Enumeration<Integer> en1 = this.buttons.keys();
-        while (en1.hasMoreElements()) {
-            Integer first = en1.nextElement();
-            Enumeration<String> en2 = this.buttons.get(first).keys();
-            while (en2.hasMoreElements()) {
-                String second = en2.nextElement();
+        for (Integer first : this.buttons.keySet()) {
+            for (String second : this.buttons.get(first).keySet()) {
                 refreshView(first, second);
             } // while en2.hasMoreElements
         } // while en1.hasMoreElements
@@ -402,16 +362,15 @@ public class LayerTerminationCondTable extends JDialog implements
     /**
      * renews the button for the given pair (first, second).
      */
-    void refreshView(Integer first, String second) {
+    void refreshView(int first, String second) {
         // the button for the pair
         refreshView(first, second, getButton(first, second));
-
     } // refreshView
 
     /**
      * renews the button for the given pair (layer, cond).
      */
-    void refreshView(Integer layer, String cond, JButton button) {
+    void refreshView(int layer, String cond, JButton button) {
         boolean value = getValue(layer, cond);
         if (value) {
             button.setBackground(VALID);
@@ -422,7 +381,7 @@ public class LayerTerminationCondTable extends JDialog implements
         }
     }
 
-    private boolean getValue(Integer layer, String condName) {
+    private boolean getValue(int layer, String condName) {
         if (condName.equals("Deletion_1")) {
             Pair<Boolean, List<Rule>> value = this.termination
                     .getResultTypeDeletion().get(layer);
@@ -457,7 +416,6 @@ public class LayerTerminationCondTable extends JDialog implements
                     .get(layer);
             result = p.first.booleanValue();
         }
-
         HashSet<?> rulesForLayer = this.termination
                 .getInvertedRuleLayer().get(layer);
         Iterator<?> en = rulesForLayer.iterator();
@@ -465,7 +423,6 @@ public class LayerTerminationCondTable extends JDialog implements
             Rule rule = (Rule) en.next();
             names.addElement(rule.getName());
         }
-
         return names;
     }
 
@@ -522,7 +479,6 @@ public class LayerTerminationCondTable extends JDialog implements
                 typesForLayer = this.termination.getInvertedTypeCreationLayer().get(layer);
             }
         }
-
         if (typesForLayer != null) {
             Iterator<?> en = typesForLayer.iterator();
             while (en.hasNext()) {
@@ -541,7 +497,6 @@ public class LayerTerminationCondTable extends JDialog implements
                 }
             }
         }
-
         return names;
     }
 
@@ -597,16 +552,13 @@ public class LayerTerminationCondTable extends JDialog implements
     private String getTypeStringOfEdge(final Arc go) {
         String s = getTypeStringOfNode((Node) go.getSource());
         s = s.concat("--");
-
         String s1 = go.getType().getStringRepr();
         if (s1.equals("")) {
             s1 = "(unnamed)";
         }
         s = s.concat(s1);
-
         s = s.concat("->");
         s = s.concat(getTypeStringOfNode((Node) go.getTarget()));
         return s;
     }
-
 }

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.facade;
 
@@ -29,26 +30,30 @@ public interface EditorFacade {
     public AttrManager getAttrManager();
 
     /**
-     * Returns a comprehensive editor, allowing to edit: - an attribute tuple, including its type member properties,
-     * such as the member handlers, types and names; - the hiding and moving of members is possible; - a rule or match
-     * context (its variables and application conditions); - options of the attribute component (customization).
+     * Returns a comprehensive editor, allowing to edit: - an attribute tuple,
+     * including its type member properties, such as the member handlers, types
+     * and names; - the hiding and moving of members is possible; - a rule or
+     * match context (its variables and application conditions); - options of
+     * the attribute component (customization).
      */
     public AttrTopEditor getTopEditor();
 
     /**
-     * Returns a compact editor for an attribute tuple instance, showing the members' types, names and the instance
-     * members, where only the latter can be changed.
+     * Returns a compact editor for an attribute tuple instance, showing the
+     * members' types, names and the instance members, where only the latter can
+     * be changed.
      */
     public AttrTupleEditor getSmallEditorForInstance(AttrInstance inst);
 
     /**
-     * Setting ("loading") an attribute tuple instance into an attribute tuple editor (or into a "top editor", which is
-     * a subclass thereof.
+     * Setting ("loading") an attribute tuple instance into an attribute tuple
+     * editor (or into a "top editor", which is a subclass thereof.
      */
     public void editInstance(AttrTupleEditor ed, AttrInstance inst);
 
     /**
-     * Setting ("loading") an attribute (rule or match) context into a "top editor".
+     * Setting ("loading") an attribute (rule or match) context into a "top
+     * editor".
      */
     public void editContext(AttrContextEditor ed, AttrContext ctx);
 

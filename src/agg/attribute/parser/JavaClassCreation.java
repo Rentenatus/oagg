@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser;
 
@@ -15,7 +16,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.util.Vector;
-
 import agg.attribute.AttrContext;
 //import agg.attribute.AttrMember;
 //import agg.attribute.AttrConditionMember;
@@ -40,19 +40,12 @@ import agg.attribute.impl.VarMember;
 public class JavaClassCreation {
 
     private static String s1 = "public class ";
-
     private static String s2 = " {";
-
     private static String s3 = "}";
-
     private String name;
-
     private Vector<String> classPackages;
-
     private AttrContext attrContext;
-
     private ValueMember member;
-
     private String expr;
 
     public JavaClassCreation() {
@@ -69,7 +62,6 @@ public class JavaClassCreation {
         this.member = vmember;
         this.expr = vexpr;
         this.name = className;
-
         boolean fileExists = true;
         int i = 0;
         while (fileExists) {
@@ -82,9 +74,7 @@ public class JavaClassCreation {
                 fileExists = false;
             }
         }
-
         final File file = new File(this.name + ".java");
-
         System.out.println("Output file:  " + file);
         String b = new String();
         b = b + createImports() + "\n";
@@ -97,7 +87,6 @@ public class JavaClassCreation {
         }
         b = b + s3;
         System.out.println("\n" + b + "\n");
-
         try {
             FileOutputStream fos = new FileOutputStream(file);
 //			byte buffer[] = new byte[1024 * 64];

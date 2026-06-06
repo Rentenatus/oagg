@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.popupmenu;
 
@@ -15,7 +16,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.attribute.impl.CondMember;
 import agg.editor.impl.EdRule;
 import agg.gui.treeview.GraGraTreeView;
@@ -28,7 +28,6 @@ public class AttrConditionPopupMenu extends JPopupMenu {
     public AttrConditionPopupMenu(GraGraTreeView tree) {
         super("AttributeCondition");
         this.treeView = tree;
-
         // JMenuItem mi = (JMenuItem) add(new JMenuItem("Delete "));
         // mi.setEnabled(false);
         // mi.setActionCommand("deleteAttrCondition");
@@ -38,7 +37,6 @@ public class AttrConditionPopupMenu extends JPopupMenu {
         this.disable.setActionCommand("disableAttrCondition");
         this.disable.addActionListener(this.treeView.getActionAdapter());
         add(this.disable);
-
         pack();
         setBorderPainted(true);
     }
@@ -68,8 +66,6 @@ public class AttrConditionPopupMenu extends JPopupMenu {
         }
         return false;
     }
-
     private GraGraTreeView treeView;
-
     private JMenuItem disable;
 }

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.util.colim;
 
@@ -21,7 +22,6 @@ public class IntArray implements Container {
     static final int THRESHOLD = 2000;
     static final int MULTIPLIER = 2;
     static final int HASH_SIZE = 16;
-
     int array[];
 
     /**
@@ -103,7 +103,8 @@ public class IntArray implements Container {
     }
 
     /**
-     * Return true if I contain the same items in the same order as another IntArray.
+     * Return true if I contain the same items in the same order as another
+     * IntArray.
      *
      * @param object The IntArray to compare myself against.
      * @return true if I'm equal to the specified object.
@@ -113,7 +114,8 @@ public class IntArray implements Container {
     }
 
     /**
-     * Return true if I contain the same items in the same order as another IntBuffer.
+     * Return true if I contain the same items in the same order as another
+     * IntBuffer.
      *
      * @param buffer The IntBuffer to compare myself against.
      */
@@ -122,7 +124,8 @@ public class IntArray implements Container {
     }
 
     /**
-     * Return true if I contain the same items in the same order as a native array of ints.
+     * Return true if I contain the same items in the same order as a native
+     * array of ints.
      *
      * @param array The array to compare myself against.
      */
@@ -131,7 +134,6 @@ public class IntArray implements Container {
             if (this.array.length != array.length) {
                 return false;
             }
-
             int i = 0;
             while (i < array.length) {
                 if (this.array[i] != array[i]) {
@@ -192,7 +194,7 @@ public class IntArray implements Container {
      * @param index The index.
      */
     public Object at(int index) {
-        return new Integer(intAt(index));
+        return intAt(index);
     }
 
     /**
@@ -205,8 +207,8 @@ public class IntArray implements Container {
     }
 
     /**
-     * Return the index of the first object that matches a particular value, or -1 if the object is not found. Uses
-     * .equals() to find a match
+     * Return the index of the first object that matches a particular value, or
+     * -1 if the object is not found. Uses .equals() to find a match
      *
      * @param object The object to find.
      * @exception java.lang.ClassCastException if objects are not Boolean
@@ -216,13 +218,14 @@ public class IntArray implements Container {
     }
 
     /**
-     * Return an index positioned at the first object within a specified range that matches a particular object, or -1
-     * if the object is not found.
+     * Return an index positioned at the first object within a specified range
+     * that matches a particular object, or -1 if the object is not found.
      *
      * @param first The index of the first object to consider.
      * @param last The index of the last object to consider.
      * @param object The object to find.
-     * @exception java.lang.IndexOutOfBoundsException If either index is invalid.
+     * @exception java.lang.IndexOutOfBoundsException If either index is
+     * invalid.
      * @exception java.lang.ClassCastException if objects are not Boolean
      */
     public synchronized int indexOf(int first, int last, Object object) {
@@ -231,32 +234,31 @@ public class IntArray implements Container {
                 return i;
             }
         }
-
         return -1;
     }
 
     /**
-     * Return the number of objects within a specified range of that match a particular value. the range is inclusive
+     * Return the number of objects within a specified range of that match a
+     * particular value. the range is inclusive
      *
      * @param first The index of the first object to consider.
      * @param last The index of the last object to consider.
-     * @exception java.lang.IndexOutOfBoundsException If either index is invalid.
+     * @exception java.lang.IndexOutOfBoundsException If either index is
+     * invalid.
      */
     public synchronized int count(int first, int last, Object object) {
         int count = 0;
-
         for (int i = first; i <= last; i++) {
             if (at(i).equals(object)) {
                 ++count;
             }
         }
-
         return count;
     }
 
     /**
-     * Replace all elements that match a particular object with a new value and return the number of objects that were
-     * replaced.
+     * Replace all elements that match a particular object with a new value and
+     * return the number of objects that were replaced.
      *
      * @param oldValue The object to be replaced.
      * @param newValue The value to substitute.
@@ -266,14 +268,16 @@ public class IntArray implements Container {
     }
 
     /**
-     * Replace all elements within a specified range that match a particular object with a new value and return the
-     * number of objects that were replaced.
+     * Replace all elements within a specified range that match a particular
+     * object with a new value and return the number of objects that were
+     * replaced.
      *
      * @param first The index of the first object to be considered.
      * @param last The index of the last object to be considered.
      * @param oldValue The object to be replaced.
      * @param newValue The value to substitute.
-     * @exception java.lang.IndexOutOfBoundsException If either index is invalid.
+     * @exception java.lang.IndexOutOfBoundsException If either index is
+     * invalid.
      */
     public synchronized int replace(int first, int last, Object oldValue, Object newValue) {
         int count = 0;
@@ -413,5 +417,4 @@ public class IntArray implements Container {
     public Object add(Object object) {
         throw new RuntimeException("cannot execute add() on a native array");
     }
-
 }

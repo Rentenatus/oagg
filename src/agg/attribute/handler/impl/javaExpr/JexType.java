@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.impl.javaExpr;
 
 import java.io.IOException;
-
 import agg.attribute.handler.HandlerType;
 
 /**
@@ -21,11 +21,8 @@ import agg.attribute.handler.HandlerType;
 public class JexType implements HandlerType {
 
     static final long serialVersionUID = 8053541082320950101L;
-
     protected JexHandler handler = null;
-
     protected String text = null;
-
     protected Class<?> clazz = null;
 
     public JexType(JexHandler handler, String typeString, Class<?> clazz) {
@@ -35,7 +32,8 @@ public class JexType implements HandlerType {
     }
 
     /**
-     * Getting the string representation of this type. Overrides the "toString()" method of the "Object" class.
+     * Getting the string representation of this type. Overrides the
+     * "toString()" method of the "Object" class.
      */
     public String toString() {
         return this.text;
@@ -55,8 +53,9 @@ public class JexType implements HandlerType {
     }
 
     /**
-     * Overriding of the standard implementation is required, because representations for primitive types (Integer.TYPE,
-     * Character.TYPE etc.) are not serializable. They are not written on the stream.
+     * Overriding of the standard implementation is required, because
+     * representations for primitive types (Integer.TYPE, Character.TYPE etc.)
+     * are not serializable. They are not written on the stream.
      *
      * @see #readObject
      */
@@ -69,9 +68,10 @@ public class JexType implements HandlerType {
     }
 
     /**
-     * Overriding of the standard implementation is required, because representations for primitive types (Integer.TYPE,
-     * Character.TYPE etc.) are not serializable. They are not read from the stream. Instead, they are restored
-     * according to their string representation.
+     * Overriding of the standard implementation is required, because
+     * representations for primitive types (Integer.TYPE, Character.TYPE etc.)
+     * are not serializable. They are not read from the stream. Instead, they
+     * are restored according to their string representation.
      *
      * @see #writeObject
      */

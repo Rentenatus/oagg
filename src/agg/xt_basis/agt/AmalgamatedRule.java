@@ -1,19 +1,17 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis.agt;
-
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
 
 import agg.attribute.impl.DeclMember;
 import agg.attribute.impl.ValueMember;
@@ -26,6 +24,7 @@ import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TypeSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -46,9 +45,7 @@ public class AmalgamatedRule extends Rule {
 
     public AmalgamatedRule(final OrdinaryMorphism h) {
         super(h.getSource(), h.getTarget());
-
         makeRuleFromMorphism(h);
-
         this.unsetInputParameter();
     }
 
@@ -68,7 +65,6 @@ public class AmalgamatedRule extends Rule {
     private void makeRuleFromMorphism(final OrdinaryMorphism h) {
         List<String> list = this.itsOrig.getVariableNamesOfAttributes();
         list.addAll(this.itsImag.getVariableNamesOfAttributes());
-
         // set variables
         VarTuple varsMorph = (VarTuple) h.getAttrContext().getVariables();
         final VarTuple vars = (VarTuple) getAttrContext().getVariables();
@@ -84,7 +80,6 @@ public class AmalgamatedRule extends Rule {
                 }
             }
         }
-
         // add object mapping
         final Iterator<GraphObject> dom = h.getDomain();
         while (dom.hasNext()) {
@@ -96,11 +91,9 @@ public class AmalgamatedRule extends Rule {
             } catch (BadMappingException ex) {
             }
         }
-
         // check attr. setting of graph objects of the RHS, use variable value if it is available		
         applyVarValueToAttr(vars, getRight().getNodesSet().iterator());
         applyVarValueToAttr(vars, getRight().getArcsSet().iterator());
-
         this.removeUnusedVariableOfAttrContext();
     }
 
@@ -110,7 +103,6 @@ public class AmalgamatedRule extends Rule {
             if (o.getAttribute() == null) {
                 continue;
             }
-
             ValueTuple value = (ValueTuple) o.getAttribute();
             for (int i = 0; i < value.getSize(); i++) {
                 ValueMember vm = value.getValueMemberAt(i);
@@ -129,11 +121,9 @@ public class AmalgamatedRule extends Rule {
             final GraphObject from,
             final GraphObject to,
             final VarTuple vars) {
-
         if (from.getAttribute() == null || to.getAttribute() == null) {
             return;
         }
-
         final ValueTuple valuefrom = (ValueTuple) from.getAttribute();
         final ValueTuple value = (ValueTuple) to.getAttribute();
         for (int i = 0; i < value.getSize(); i++) {

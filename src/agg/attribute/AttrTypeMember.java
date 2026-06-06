@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute;
 
@@ -39,7 +40,8 @@ public interface AttrTypeMember extends AttrMember {
     public void setName(String name);
 
     /**
-     * Retrieving its type. Returns null if no type is set or if the type is not valid.
+     * Retrieving its type. Returns null if no type is set or if the type is not
+     * valid.
      */
     public HandlerType getType();
 
@@ -64,7 +66,6 @@ public interface AttrTypeMember extends AttrMember {
     public void setHandler(AttrHandler h);
 
     public boolean compareTo(AttrTypeMember mem); // NEU: von Gabi
-
     // public void retype( AttrHandler handler, String typeString );
 }
 /*

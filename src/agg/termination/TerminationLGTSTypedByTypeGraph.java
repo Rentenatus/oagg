@@ -1,47 +1,53 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.termination;
 
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.List;
-
-import agg.xt_basis.csp.Completion_InheritCSP;
+import agg.util.Pair;
+import agg.xt_basis.Arc;
+import agg.xt_basis.BaseFactory;
 import agg.xt_basis.Completion_InjCSP;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
-import agg.xt_basis.Rule;
 import agg.xt_basis.OrdinaryMorphism;
-import agg.xt_basis.BaseFactory;
+import agg.xt_basis.Rule;
+import agg.xt_basis.RuleLayer;
 import agg.xt_basis.RulePriority;
 import agg.xt_basis.Type;
-import agg.xt_basis.RuleLayer;
-import agg.xt_basis.Arc;
 import agg.xt_basis.TypeGraph;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.util.Pair;
+import agg.xt_basis.csp.Completion_InheritCSP;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 /**
- * This class implements termination conditions of Layered Graph Grammar which is typed by a type graph.
+ * This class implements termination conditions of Layered Graph Grammar which
+ * is typed by a type graph.
  *
  * @author $Author: olga $
- * @version $Id: TerminationLGTSTypedByTypeGraph.java,v 1.13 2010/09/23 08:26:15 olga Exp $
+ * @version $Id: TerminationLGTSTypedByTypeGraph.java,v 1.13 2010/09/23 08:26:15
+ * olga Exp $
  */
 public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface {
 
@@ -49,69 +55,41 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
      * The graph grammar
      */
     private GraGra grammar;
-
     private TypeGraph typeGraph;
-
     private List<Rule> listOfRules;
-
     private boolean layered, priority;
-
     private List<Rule> deletionRule;
-
     private List<Rule> nondeletionRule;
-
     private List<Rule> creationRule;
-
-    private Hashtable<Rule, Integer> ruleLayer;
-
-    private Hashtable<GraphObject, Integer> creationLayer;
-
-    private Hashtable<GraphObject, Integer> deletionLayer;
-
+    private Map<Rule, Integer> ruleLayer;
+    private Map<GraphObject, Integer> creationLayer;
+    private Map<GraphObject, Integer> deletionLayer;
     private boolean generateRuleLayer;
-
-    private Hashtable<Rule, Integer> oldRuleLayer;
-
+    private Map<Rule, Integer> oldRuleLayer;
     private int maxl;
-
-    private Hashtable<Integer, HashSet<Rule>> invertedRuleLayer;
-
-    private OrderedSet<Integer> orderedRuleLayerSet;
-
-    private Hashtable<Integer, HashSet<Object>> invertedTypeDeletionLayer;
-
-    private OrderedSet<Integer> orderedTypeDeletionLayerSet;
-
-    private Hashtable<Integer, HashSet<Object>> invertedTypeCreationLayer;
-
-    private OrderedSet<Integer> orderedTypeCreationLayerSet;
-
+    private Map<Integer, HashSet<Rule>> invertedRuleLayer;
+    private SortedSeasonSet<Integer> orderedRuleLayerSet;
+    private Map<Integer, HashSet<Object>> invertedTypeDeletionLayer;
+    private SortedSeasonSet<Integer> orderedTypeDeletionLayerSet;
+    private Map<Integer, HashSet<Object>> invertedTypeCreationLayer;
+    private SortedSeasonSet<Integer> orderedTypeCreationLayerSet;
     private Integer startLayer, startRuleLayer;
-
-    private List<Integer> orderedRuleLayer;
+    private ArraySeasonInt orderedRuleLayer;
     // private List<Integer> orderedTypeDeletionLayer;
     // private List<Integer> orderedTypeCreationLayer;
-
-    private Hashtable<Integer, Pair<Boolean, List<Rule>>> resultTypeDeletion;
-
-    private Hashtable<Integer, Pair<Boolean, List<Rule>>> resultDeletion;
-
-    private Hashtable<Integer, Pair<Boolean, List<Rule>>> resultNonDeletion;
-
-    private Hashtable<Integer, List<String>> errorMsg;
-    private Hashtable<Integer, List<String>> errorMsgDeletion1;
-    private Hashtable<Integer, List<String>> errorMsgDeletion2;
-    private Hashtable<Integer, List<String>> errorMsgNonDeletion;
-
-    private Hashtable<Integer, List<GraphObject>> deletionType;
-
+    private Map<Integer, Pair<Boolean, List<Rule>>> resultTypeDeletion;
+    private Map<Integer, Pair<Boolean, List<Rule>>> resultDeletion;
+    private Map<Integer, Pair<Boolean, List<Rule>>> resultNonDeletion;
+    private Map<Integer, List<String>> errorMsg;
+    private Map<Integer, List<String>> errorMsgDeletion1;
+    private Map<Integer, List<String>> errorMsgDeletion2;
+    private Map<Integer, List<String>> errorMsgNonDeletion;
+    private Map<Integer, List<GraphObject>> deletionType;
     private boolean needCorrection = false;
-
     /**
      * The error message if termination conditions are not valid
      */
     private String errMsg;
-
     /**
      * true if termination conditions are valid
      */
@@ -135,7 +113,8 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     }
 
     /**
-     * Initialize a termination layers of the grammar. Initially the termination conditions are invalid.
+     * Initialize a termination layers of the grammar. Initially the termination
+     * conditions are invalid.
      *
      * @param gra The graph grammar.
      */
@@ -149,13 +128,13 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
             this.listOfRules = this.getListOfEnabledRules();
             this.errMsg = "";
             this.valid = false;
-            this.oldRuleLayer = new Hashtable<>();
+            this.oldRuleLayer = new HashMap<>();
             setKind();
             initRuleLayer(this.grammar);
             initCreationLayer(this.grammar);
             initDeletionLayer(this.grammar);
             initOrderedRuleLayer(this.grammar);
-            this.deletionType = new Hashtable<>();
+            this.deletionType = new HashMap<>();
             initResults();
         }
     }
@@ -203,7 +182,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 changed = true;
                 this.setGrammar(this.grammar);
             }
-
             return changed;
         }
         return false;
@@ -213,31 +191,29 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         return this.listOfRules;
     }
 
-    public Hashtable<Integer, HashSet<Rule>> getInvertedRuleLayer() {
+    public Map<Integer, HashSet<Rule>> getInvertedRuleLayer() {
         return this.invertedRuleLayer;
     }
 
-    public List<Integer> getOrderedRuleLayer() {
+    public ArrayMovieInt getOrderedRuleLayer() {
         return this.orderedRuleLayer;
     }
 
-    public Hashtable<Integer, HashSet<Object>> getInvertedTypeDeletionLayer() {
+    public Map<Integer, HashSet<Object>> getInvertedTypeDeletionLayer() {
         return this.invertedTypeDeletionLayer;
     }
 
     // public List getOrderedTypeDeletionLayer()
     // { return orderedTypeDeletionLayer; }
-    public Hashtable<Integer, HashSet<Object>> getInvertedTypeCreationLayer() {
+    public Map<Integer, HashSet<Object>> getInvertedTypeCreationLayer() {
         return this.invertedTypeCreationLayer;
     }
 
     // public List getOrderedTypeCreationLayer()
     // { return orderedTypeCreationLayer; }
-    public Hashtable<Integer, List<Type>> getDeletionType() {
-        final Hashtable<Integer, List<Type>> delLayerType = new Hashtable<>();
-        Enumeration<Integer> keys = this.deletionType.keys();
-        while (keys.hasMoreElements()) {
-            Integer key = keys.nextElement();
+    public Map<Integer, List<Type>> getDeletionType() {
+        final Map<Integer, List<Type>> delLayerType = new HashMap<>();
+        for (Integer key : this.deletionType.keySet()) {
             final List<GraphObject> typeGOs = this.deletionType.get(key);
             final List<Type> typeObjs = new Vector<>();
             for (int i = 0; i < typeGOs.size(); i++) {
@@ -248,19 +224,19 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         return delLayerType;
     }
 
-    public Hashtable<Integer, List<GraphObject>> getDeletionTypeObject() {
+    public Map<Integer, List<GraphObject>> getDeletionTypeObject() {
         return this.deletionType;
     }
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultTypeDeletion() {
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultTypeDeletion() {
         return this.resultTypeDeletion;
     }
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultDeletion() {
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultDeletion() {
         return this.resultDeletion;
     }
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultNondeletion() {
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultNondeletion() {
         return this.resultNonDeletion;
     }
 
@@ -271,7 +247,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         initCreationLayer(this.grammar);
         initDeletionLayer(this.grammar);
         initOrderedRuleLayer(this.grammar);
-        this.deletionType = new Hashtable<>();
+        this.deletionType = new HashMap<>();
         initResults();
     }
 
@@ -293,12 +269,11 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         this.resultDeletion.clear();
         this.resultDeletion.clear();
         this.resultNonDeletion.clear();
-
         clearErrors();
     }
 
     private void initRuleLayer(GraGra gragra) {
-        this.ruleLayer = new Hashtable<Rule, Integer>();
+        this.ruleLayer = new HashMap<Rule, Integer>();
         this.deletionRule = new Vector<>();
         this.nondeletionRule = new Vector<>();
         this.creationRule = new Vector<>();
@@ -313,7 +288,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
             if (isDeleting(rule)) {
                 this.deletionRule.add(rule);
 //					System.out.println("Deleting rule:  "+rule.getName());
-
 //					if (isCreating(rule)) {
 //						creationRule.add(rule);
 //						System.out.println("Deleting and Creating rule:  "+rule.getName());
@@ -364,9 +338,9 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
 		}
 	}
      */
-    public void initRuleLayer(Hashtable<?, Integer> init) {
-        for (Enumeration<?> keys = init.keys(); keys.hasMoreElements();) {
-            Rule rule = (Rule) keys.nextElement();
+    public void initRuleLayer(Map<?, Integer> init) {
+        for (Object key : init.keySet()) {
+            Rule rule = (Rule) key;
             if (rule.isEnabled()) {
                 Integer rl = init.get(rule);
                 this.ruleLayer.put(rule, Integer.valueOf(rl.intValue()));
@@ -375,7 +349,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     }
 
     private void initCreationLayer(GraGra gragra) {
-        this.creationLayer = new Hashtable<GraphObject, Integer>();
+        this.creationLayer = new HashMap<GraphObject, Integer>();
         Iterator<Node> typeNodes = this.typeGraph.getNodesSet().iterator();
         while (typeNodes.hasNext()) {
             Node t = typeNodes.next();
@@ -411,14 +385,14 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     }
 
     private void initCreationLayer(int init) {
-        for (Enumeration<GraphObject> keys = this.creationLayer.keys(); keys.hasMoreElements();) {
-            GraphObject t = keys.nextElement();
+        for (GraphObject key : this.creationLayer.keySet()) {
+            GraphObject t = key;
             this.creationLayer.put(t, Integer.valueOf(init));
         }
     }
 
     private void initDeletionLayer(GraGra gragra) {
-        this.deletionLayer = new Hashtable<GraphObject, Integer>();
+        this.deletionLayer = new HashMap<GraphObject, Integer>();
         Iterator<Node> typeNodes = this.typeGraph.getNodesSet().iterator();
         while (typeNodes.hasNext()) {
             Node t = typeNodes.next();
@@ -446,8 +420,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     }
 
     private void initDeletionLayer(int init) {
-        for (Enumeration<GraphObject> keys = this.deletionLayer.keys(); keys.hasMoreElements();) {
-            GraphObject t = keys.nextElement();
+        for (GraphObject t : this.deletionLayer.keySet()) {
             this.deletionLayer.put(t, Integer.valueOf(init));
         }
     }
@@ -457,17 +430,17 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
             RulePriority layer = new RulePriority(this.listOfRules);
             this.invertedRuleLayer = layer.invertPriority();
             this.startRuleLayer = layer.getStartPriority();
-            this.orderedRuleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
-            for (Enumeration<Integer> en = this.invertedRuleLayer.keys(); en.hasMoreElements();) {
-                this.orderedRuleLayerSet.add(en.nextElement());
+            this.orderedRuleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+            for (Integer key : this.invertedRuleLayer.keySet()) {
+                this.orderedRuleLayerSet.add(key);
             }
         } else {
             RuleLayer layer = new RuleLayer(this.listOfRules);
             this.invertedRuleLayer = layer.invertLayer();
             this.startRuleLayer = layer.getStartLayer();
-            this.orderedRuleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
-            for (Enumeration<Integer> en = this.invertedRuleLayer.keys(); en.hasMoreElements();) {
-                this.orderedRuleLayerSet.add(en.nextElement());
+            this.orderedRuleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+            for (Integer key : this.invertedRuleLayer.keySet()) {
+                this.orderedRuleLayerSet.add(key);
             }
         }
     }
@@ -477,17 +450,17 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
             RulePriority layer = new RulePriority(this.listOfRules);
             this.invertedRuleLayer = layer.invertPriority();
             this.startRuleLayer = layer.getStartPriority();
-            this.orderedRuleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
-            for (Enumeration<Integer> en = this.invertedRuleLayer.keys(); en.hasMoreElements();) {
-                this.orderedRuleLayerSet.add(en.nextElement());
+            this.orderedRuleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+            for (Integer key : this.invertedRuleLayer.keySet()) {
+                this.orderedRuleLayerSet.add(key);
             }
         } else {
             RuleLayer layer = new RuleLayer(this.listOfRules);
             this.invertedRuleLayer = layer.invertLayer();
             this.startRuleLayer = layer.getStartLayer();
             this.orderedRuleLayerSet.clear();
-            for (Enumeration<Integer> en = this.invertedRuleLayer.keys(); en.hasMoreElements();) {
-                this.orderedRuleLayerSet.add(en.nextElement());
+            for (Integer key : this.invertedRuleLayer.keySet()) {
+                this.orderedRuleLayerSet.add(key);
             }
         }
     }
@@ -497,10 +470,9 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         this.invertedTypeDeletionLayer = layer.invertLayer();
         this.startLayer = layer.getStartLayer();
         this.invertedTypeDeletionLayer = layer.invertLayer();
-        this.orderedTypeDeletionLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
-        for (Enumeration<Integer> en = this.invertedTypeDeletionLayer.keys(); en
-                .hasMoreElements();) {
-            this.orderedTypeDeletionLayerSet.add(en.nextElement());
+        this.orderedTypeDeletionLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        for (Integer key : this.invertedTypeDeletionLayer.keySet()) {
+            this.orderedTypeDeletionLayerSet.add(key);
         }
     }
 
@@ -509,23 +481,21 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         this.invertedTypeCreationLayer = layer.invertLayer();
         this.startLayer = layer.getStartLayer();
         this.invertedTypeCreationLayer = layer.invertLayer();
-        this.orderedTypeCreationLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
-        for (Enumeration<Integer> en = this.invertedTypeCreationLayer.keys();
-                en.hasMoreElements();) {
-            this.orderedTypeCreationLayerSet.add(en.nextElement());
+        this.orderedTypeCreationLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        for (Integer key : this.invertedTypeCreationLayer.keySet()) {
+            this.orderedTypeCreationLayerSet.add(key);
         }
     }
 
     private void initResults() {
-        this.orderedRuleLayer = new Vector<>();
-        this.resultTypeDeletion = new Hashtable<>();
-        this.resultDeletion = new Hashtable<>();
-        this.resultNonDeletion = new Hashtable<>();
-
-        this.errorMsg = new Hashtable<>();
-        this.errorMsgDeletion1 = new Hashtable<>();
-        this.errorMsgDeletion2 = new Hashtable<>();
-        this.errorMsgNonDeletion = new Hashtable<>();
+        this.orderedRuleLayer = new ArraySeasonInt();
+        this.resultTypeDeletion = new HashMap<>();
+        this.resultDeletion = new HashMap<>();
+        this.resultNonDeletion = new HashMap<>();
+        this.errorMsg = new HashMap<>();
+        this.errorMsgDeletion1 = new HashMap<>();
+        this.errorMsgDeletion2 = new HashMap<>();
+        this.errorMsgNonDeletion = new HashMap<>();
     }
 
     private void reinitResults() {
@@ -595,9 +565,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     private void generateCreationLayer() {
         for (Iterator<Rule> en = this.nondeletionRule.iterator(); en.hasNext();) {
             Rule r = en.next();
-            for (Enumeration<GraphObject> types = this.creationLayer.keys(); types
-                    .hasMoreElements();) {
-                GraphObject t = types.nextElement();
+            for (GraphObject t : this.creationLayer.keySet()) {
                 setCreationLayer(r, t);
             }
         }
@@ -691,14 +659,11 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
 		}
 		return false;
 	}
-
 	
 	private void passCreationLayer() {
 		for (Enumeration<Rule> en = creationRule.elements(); en.hasMoreElements();) {
 			Rule r = en.nextElement();
-			for (Enumeration<GraphObject> types = this.creationLayer.keys(); types
-					.hasMoreElements();) {
-				GraphObject t = types.nextElement();
+			for (GraphObject t : this.creationLayer.keySet()) {
 				// System.out.print("creation type: <"+t+">");
 				Integer rl = ruleLayer.get(r);
 				Integer cl = this.creationLayer.get(t);
@@ -724,12 +689,9 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 }
             }
         }
-
         for (Iterator<Rule> en = this.deletionRule.iterator(); en.hasNext();) {
             Rule r = en.next();
-            for (Enumeration<GraphObject> types = this.deletionLayer.keys(); types
-                    .hasMoreElements();) {
-                GraphObject t = types.nextElement();
+            for (GraphObject t : this.deletionLayer.keySet()) {
                 setDeletionLayer(r, t);
             }
         }
@@ -753,17 +715,14 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                     Integer rl = this.ruleLayer.get(r);
                     Integer cl = this.creationLayer.get(t);
                     Integer dl = this.deletionLayer.get(t);
-
                     int l = cl.intValue(); // + 1;
                     if (l > this.maxl) {
                         this.maxl = l;
                     }
-
                     if (this.generateRuleLayer && (rl.intValue() < this.maxl)) {
                         this.ruleLayer.put(r, Integer.valueOf(this.maxl));
                         rl = this.ruleLayer.get(r);
                     }
-
                     if (dl.intValue() < cl.intValue()) {
                         this.deletionLayer.put(t, Integer.valueOf(this.maxl));
                         dl = this.deletionLayer.get(t);
@@ -810,7 +769,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
      */
     public boolean checkTermination() {
         clearErrors();
-
         if (this.generateRuleLayer) {
             initAll(this.generateRuleLayer);
         }
@@ -823,9 +781,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
             generateDeletionLayer();
             n--;
         }
-
         this.valid = false;
-
         // check totality of rule layer function
         for (Iterator<Rule> en = this.listOfRules.iterator(); en.hasNext();) {
             Rule r = en.next();
@@ -856,19 +812,15 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 return false;
             }
         }
-
         boolean result = checkTerminationConditions();
-
         initOrderedTypeDeletionLayer();
         initOrderedTypeCreationLayer();
-
         this.valid = this.setValidResult();
-
         return result;
     }
 
     private void addErrorMessage(
-            final Hashtable<Integer, List<String>> msgContainer,
+            final Map<Integer, List<String>> msgContainer,
             final Integer key,
             final String msg) {
         List<String> errList = msgContainer.get(key);
@@ -888,7 +840,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
             HashSet<Rule> rulesForLayer = this.invertedRuleLayer.get(currentLayer);
             if (rulesForLayer != null) {
                 this.orderedRuleLayer.add(currentLayer);
-
                 List<Rule> currentRules = new Vector<>();
                 Iterator<?> en = rulesForLayer.iterator();
                 while (en.hasNext()) {
@@ -897,23 +848,19 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                         currentRules.add(rule);
                     }
                 }
-
                 boolean checkOK = checkTypeDeletion(currentLayer, currentRules);
                 Pair<Boolean, List<Rule>> value1 = new Pair<>(
                         Boolean.valueOf(checkOK), currentRules);
                 this.resultTypeDeletion.put(currentLayer, value1);
-
                 checkOK = checkNonDeletionLayer(currentRules);
                 Pair<Boolean, List<Rule>> value2 = new Pair<>(
                         Boolean.valueOf(checkOK), currentRules);
                 this.resultNonDeletion.put(currentLayer, value2);
-
                 checkOK = checkDeletionLayer(currentRules);
                 Pair<Boolean, List<Rule>> value3 = new Pair<>(
                         Boolean.valueOf(checkOK), currentRules);
                 this.resultDeletion.put(currentLayer, value3);
             }
-
 //			OrderedSetIterator osi = this.orderedRuleLayerSet.find(currentLayer);
 //			if ((osi == null) || osi.atEnd())
 //				nextLayerExists = false;
@@ -928,13 +875,12 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 nextLayerExists = false;
             }
         }
-
         return true;
     }
 
     /**
-     * Checks first (type) deletion condition of rules on a certain layer . These rules must to delete at least one node
-     * or edge of a certain type.
+     * Checks first (type) deletion condition of rules on a certain layer .
+     * These rules must to delete at least one node or edge of a certain type.
      *
      * @param rules belong to the same rule layer
      * @return true if condition is satisfied.
@@ -945,7 +891,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         // 1) check: each rule decreases the number of graph items
         for (int j = 0; j < rules.size(); j++) {
             Rule r = rules.get(j);
-
             // each rule has to delete
             if (this.deletionRule.contains(r)) {
                 if (r.getLeft().getSize() < r.getRight().getSize()) {
@@ -975,11 +920,9 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         // or
         // 2) check: each rule decreases the number of graph items of one
         // special type
-        Hashtable<Pair<GraphObject, Object>, List<Rule>> deletedType = new Hashtable<>();
-
+        Map<Pair<GraphObject, Object>, List<Rule>> deletedType = new HashMap<>();
         for (int j = 0; j < rules.size(); j++) {
             Rule r = rules.get(j);
-
             // each rule has to delete is already checked
             // check one special type
             for (Iterator<GraphObject> en = r.getLeft().iteratorOfElems(); en.hasNext();) {
@@ -994,18 +937,15 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                                 ((Arc) o).getSourceType(),
                                 ((Arc) o).getTargetType());
                     }
-
                     Pair<GraphObject, Object> delt = new Pair<GraphObject, Object>(t, null);
                     if (o.isArc()) {
                         delt.second = new Pair<GraphObject, GraphObject>(
                                 r.getTypeSet().getTypeGraphNode(((Arc) o).getSource().getType()),
                                 r.getTypeSet().getTypeGraphNode(((Arc) o).getTarget().getType()));
                     }
-
                     Pair<GraphObject, Object> t1 = null;
-                    Enumeration<Pair<GraphObject, Object>> e = deletedType.keys();
-                    while (e.hasMoreElements()) {
-                        t1 = e.nextElement();
+                    for (Pair<GraphObject, Object> t2 : deletedType.keySet()) {
+                        t1 = t2;
                         if (t.getType().isRelatedTo(t1.first.getType())) {
                             if (t1.second == null && delt.second == null) {
                                 containsKey = true;
@@ -1036,10 +976,8 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 }
             }
         }
-
         List<GraphObject> ltypes = new Vector<>();
-        for (Enumeration<Pair<GraphObject, Object>> en = deletedType.keys(); en.hasMoreElements();) {
-            Pair<GraphObject, Object> key = en.nextElement();
+        for (Pair<GraphObject, Object> key : deletedType.keySet()) {
             GraphObject t = key.first;
             List<Rule> v = deletedType.get(key);
             if (v.size() == rules.size()) {
@@ -1102,10 +1040,8 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
             deletionSet.clear();
             creationSet.clear();
             Rule rule = rules.get(j);
-
             if (this.deletionRule.contains(rule)) {
                 Integer rl = this.ruleLayer.get(rule);
-
                 Graph leftGraph = rule.getLeft();
                 Graph rightGraph = rule.getRight();
                 /* find all objects to delete */
@@ -1123,12 +1059,12 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                     addErrorMessage(this.errorMsgDeletion2, rl, this.errMsg);
                     break;
                 }
-
                 /* 2. 0<= cl(l)<=dl(l)<=n */
-                for (Enumeration<Object> en = getDeletionLayer().keys(); en
-                        .hasMoreElements()
-                        && result;) {
-                    GraphObject key = (GraphObject) en.nextElement();
+                for (Object obj : getDeletionLayer().keySet()) {
+                    if (!result) {
+                        break;
+                    }
+                    GraphObject key = (GraphObject) obj;
                     Integer dl = getDeletionLayer().get(key);
                     Integer cl = getCreationLayer().get(key);
                     if (!(0 <= cl.intValue())
@@ -1145,7 +1081,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                         break;
                     }
                 }
-
                 /* 3. dl(l) <= rl(r) */
                 for (Iterator<?> en = deletionSet.iterator(); en.hasNext()
                         && result;) {
@@ -1167,7 +1102,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 if (!result) {
                     break;
                 }
-
                 /* alle erzeugten Objekte suchen */
                 for (Iterator<GraphObject> en = rightGraph.iteratorOfElems(); en.hasNext();) {
                     GraphObject go = en.next();
@@ -1175,7 +1109,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                         creationSet.add(go);
                     }
                 }
-
                 /* 4. cl(l) > rl(r) */
                 for (Iterator<?> en = creationSet.iterator(); en.hasNext()
                         && result;) {
@@ -1199,7 +1132,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 break;
             }
         }
-
         return result;
     }
 
@@ -1213,40 +1145,35 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         boolean result = true;
         HashSet<Object> preservedSet = new HashSet<Object>();
         HashSet<Object> creationSet = new HashSet<Object>();
-
         for (int j = 0; j < rules.size(); j++) {
             Rule rule = rules.get(j);
-
             int errKey = rule.getLayer();
             if (this.priority) {
                 errKey = rule.getPriority();
             }
-
             if (this.nondeletionRule.contains(rule)) {
-
                 /* rule is total */
                 if (!rule.isTotal()) {
                     this.errMsg = "Rule <" + rule.getName()
                             + "> is not total.";
-                    addErrorMessage(this.errorMsgNonDeletion, new Integer(errKey), this.errMsg);
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
                     return false;
                 }
                 /* 1. rule is injective */
                 if (!rule.isInjective()) {
                     this.errMsg = "Rule <" + rule.getName()
                             + "> is not injective.";
-                    addErrorMessage(this.errorMsgNonDeletion, new Integer(errKey), this.errMsg);
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
                     return false;
                 } /* 2. rule has a NAC */ else if (rule.isCreating()
                         && rule.getNACsList().isEmpty()) {
                     this.errMsg = "Rule <" + rule.getName()
                             + "> does not have any NAC.";
-                    addErrorMessage(this.errorMsgNonDeletion, new Integer(errKey), this.errMsg);
+                    addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
                     return false;
                 } /* 2. NAC : L -> N with N -> R injective */ else if (!this.ruleWithRightInjNAC(errKey, rule)) {
                     return false;
                 }
-
                 Integer rl = this.ruleLayer.get(rule);
                 creationSet.clear();
                 preservedSet.clear();
@@ -1260,7 +1187,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                         preservedSet.add(grob);
                     }
                 }
-
                 /* alle erzeugten Objekte suchen */
                 for (Iterator<GraphObject> en = rightGraph.iteratorOfElems(); en
                         .hasNext();) {
@@ -1269,7 +1195,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                         creationSet.add(grob);
                     }
                 }
-
                 /* 3. for preserved objects: cl(l) <= rl(r) */
                 for (Iterator<?> en = preservedSet.iterator(); en.hasNext()
                         && result;) {
@@ -1288,7 +1213,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                         break;
                     }
                 }
-
                 /* 4. for created objects: cl(l) > rl(r) */
                 for (Iterator<?> en = creationSet.iterator(); en.hasNext()
                         && result;) {
@@ -1324,7 +1248,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         if (nacs.isEmpty()) {
             return false;
         }
-
         List<Pair<OrdinaryMorphism, OrdinaryMorphism>> childNacs = null;
         boolean result = false;
         for (int l = 0; l < nacs.size() && !result; l++) {
@@ -1367,7 +1290,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 }
             }
         }
-
         if (!result && childNacs != null && !childNacs.isEmpty()) {
             for (int i = 0; i < childNacs.size() && !result; i++) {
                 result = ruleWithRightInjChildNAC(rule, childNacs.get(i));
@@ -1376,7 +1298,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         if (!result) {
             this.errMsg = "Rule <" + rule.getName() + "> "
                     + "does not have any right injective NACs.";
-            addErrorMessage(this.errorMsgNonDeletion, new Integer(errKey), this.errMsg);
+            addErrorMessage(this.errorMsgNonDeletion, errKey, this.errMsg);
         }
         return result;
     }
@@ -1431,15 +1353,13 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     private boolean setValidResult() {
         boolean result = true;
         for (int i = 0; i < this.orderedRuleLayer.size(); i++) {
-            Integer currentLayer = this.orderedRuleLayer.get(i);
-//			System.out.println("Layer: "+currentLayer.intValue());
+            int currentLayer = this.orderedRuleLayer.get(i);
+//			System.out.println("Layer: "+currentLayer);
             boolean localresult = true; //false;
-
             Pair<Boolean, List<Rule>> p = this.resultTypeDeletion.get(currentLayer);
             if (p != null && !p.second.isEmpty()) {
                 localresult = p.first.booleanValue();
             }
-
             if (!localresult) {
                 p = this.resultNonDeletion.get(currentLayer);
                 localresult = p.first.booleanValue();
@@ -1464,10 +1384,8 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 this.errorMsgDeletion2.remove(currentLayer);
                 this.errorMsgNonDeletion.remove(currentLayer);
             }
-
             result = result && localresult;
         }
-
         return result;
     }
 
@@ -1495,9 +1413,11 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         int n = 0;
         String str0 = "*** (Type) Deletion Layer Condition ( Deletion_1 ) ***";
         String str = "";
-        Enumeration<Integer> keys = this.errorMsgDeletion1.keys();
-        while (keys.hasMoreElements() && n <= maxErrors) {
-            final List<String> list = this.errorMsgDeletion1.get(keys.nextElement());
+        for (Integer key : this.errorMsgDeletion1.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgDeletion1.get(key);
             for (int i = 0; i < list.size(); i++) {
                 str = str.concat("\n");
                 str = str.concat(list.get(i));
@@ -1511,7 +1431,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         if (!str.equals("")) {
             str = str0.concat(str);
         }
-
         return str;
     }
 
@@ -1519,9 +1438,11 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         int n = 0;
         String str0 = "*** Deletion Layer Condition ( Deletion_2 ) ***";
         String str = "";
-        Enumeration<Integer> keys = this.errorMsgDeletion2.keys();
-        while (keys.hasMoreElements() && n <= maxErrors) {
-            final List<String> list = this.errorMsgDeletion2.get(keys.nextElement());
+        for (Integer key : this.errorMsgDeletion2.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgDeletion2.get(key);
             for (int i = 0; i < list.size(); i++) {
                 str = str.concat("\n");
                 str = str.concat(list.get(i));
@@ -1535,7 +1456,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         if (!str.equals("")) {
             str = str0.concat(str);
         }
-
         return str;
     }
 
@@ -1543,9 +1463,11 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         int n = 0;
         String str0 = "*** Nondeletion Layer Condition ( Nondeletion ) ***";
         String str = "";
-        Enumeration<Integer> keys = this.errorMsgNonDeletion.keys();
-        while (keys.hasMoreElements() && n <= maxErrors) {
-            final List<String> list = this.errorMsgNonDeletion.get(keys.nextElement());
+        for (Integer key : this.errorMsgNonDeletion.keySet()) {
+            if (n > maxErrors) {
+                break;
+            }
+            final List<String> list = this.errorMsgNonDeletion.get(key);
             for (int i = 0; i < list.size(); i++) {
                 str = str.concat("\n");
                 str = str.concat(list.get(i));
@@ -1558,7 +1480,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         if (!str.equals("")) {
             str = str0.concat(str);
         }
-
         return str;
     }
 
@@ -1567,14 +1488,12 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
      *
      * @return The rule layer.
      */
-    public Hashtable<Rule, Integer> getRuleLayer() {
+    public Map<Rule, Integer> getRuleLayer() {
         int size = this.listOfRules.size();
-
         if (size != this.ruleLayer.size()) {
             initRuleLayer(this.grammar);
             return this.ruleLayer;
         }
-
         Iterator<Rule> en = this.listOfRules.iterator();
         while (en.hasNext()) {
             Object key = en.next();
@@ -1583,7 +1502,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 return this.ruleLayer;
             }
         }
-
         return this.ruleLayer;
     }
 
@@ -1591,7 +1509,6 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         if (this.ruleLayer.containsKey(r)) {
             return this.ruleLayer.get(r).intValue();
         }
-
         return 0;
     }
 
@@ -1600,31 +1517,27 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
      *
      * @return The creation layer.
      */
-    public Hashtable<Object, Integer> getCreationLayer() {
+    public Map<Object, Integer> getCreationLayer() {
         int size = this.typeGraph.getSize();
-
         if (size != this.creationLayer.size()) {
             initCreationLayer(this.grammar);
-            return new Hashtable<Object, Integer>(this.creationLayer);
+            return new HashMap<Object, Integer>(this.creationLayer);
         }
-
         Iterator<GraphObject> en = this.typeGraph.iteratorOfElems();
         while (en.hasNext()) {
             Object key = en.next();
             if (!this.creationLayer.containsKey(key)) {
                 initCreationLayer(this.grammar);
-                return new Hashtable<Object, Integer>(this.creationLayer);
+                return new HashMap<Object, Integer>(this.creationLayer);
             }
         }
-
-        return new Hashtable<Object, Integer>(this.creationLayer);
+        return new HashMap<Object, Integer>(this.creationLayer);
     }
 
     public int getCreationLayer(GraphObject t) {
         if (this.creationLayer.containsKey(t)) {
             return this.creationLayer.get(t).intValue();
         }
-
         return 0;
     }
 
@@ -1633,31 +1546,27 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
      *
      * @return The deletion layer.
      */
-    public Hashtable<Object, Integer> getDeletionLayer() {
+    public Map<Object, Integer> getDeletionLayer() {
         int size = this.typeGraph.getSize();
-
         if (size != this.deletionLayer.size()) {
             initDeletionLayer(this.grammar);
-            return new Hashtable<Object, Integer>(this.deletionLayer);
+            return new HashMap<Object, Integer>(this.deletionLayer);
         }
-
         Iterator<GraphObject> en = this.typeGraph.iteratorOfElems();
         while (en.hasNext()) {
             Object key = en.next();
             if (!this.deletionLayer.containsKey(key)) {
                 initDeletionLayer(this.grammar);
-                return new Hashtable<Object, Integer>(this.deletionLayer);
+                return new HashMap<Object, Integer>(this.deletionLayer);
             }
         }
-
-        return new Hashtable<Object, Integer>(this.deletionLayer);
+        return new HashMap<Object, Integer>(this.deletionLayer);
     }
 
     public int getDeletionLayer(GraphObject t) {
         if (this.deletionLayer.containsKey(t)) {
             return this.deletionLayer.get(t).intValue();
         }
-
         return 0;
     }
 
@@ -1669,8 +1578,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     public Integer getStartLayer() {
         int startL = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : this.ruleLayer.keySet()) {
             Integer layer = this.ruleLayer.get(key);
             if (layer.intValue() < startL) {
                 startL = layer.intValue();
@@ -1681,16 +1589,16 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     }
 
     /**
-     * Inverts a layer function so that the layer is the key and the value is a set.
+     * Inverts a layer function so that the layer is the key and the value is a
+     * set.
      *
      * @param layer The layer function will be inverted.
      * @return The inverted layer function.
      */
-    public Hashtable<Integer, HashSet<Rule>> invertLayer(
-            Hashtable<Rule, Integer> layer) {
-        Hashtable<Integer, HashSet<Rule>> inverted = new Hashtable<Integer, HashSet<Rule>>();
-        for (Enumeration<Rule> keys = layer.keys(); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+    public Map<Integer, HashSet<Rule>> invertLayer(
+            Map<Rule, Integer> layer) {
+        Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
+        for (Rule key : layer.keySet()) {
             Integer value = layer.get(key);
             HashSet<Rule> invertedValue = inverted.get(value);
             if (invertedValue == null) {
@@ -1705,8 +1613,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     }
 
     public void saveRuleLayer() {
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
-            Rule r = keys.nextElement();
+        for (Rule r : this.ruleLayer.keySet()) {
             Integer layer = this.ruleLayer.get(r);
             if (this.layered) {
                 r.setLayer(layer.intValue());
@@ -1719,7 +1626,7 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
         saveRuleLayerInto(this.oldRuleLayer);
     }
 
-    private void saveRuleLayerInto(Hashtable<Rule, Integer> table) {
+    private void saveRuleLayerInto(Map<Rule, Integer> table) {
         for (Iterator<Rule> e = this.listOfRules.iterator(); e.hasNext();) {
             Rule r = e.next();
             if (this.layered) {
@@ -1738,20 +1645,17 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
 
     public void showLayer() {
         System.out.println(" RULE LAYER");
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
-            Rule r = keys.nextElement();
+        for (Rule r : this.ruleLayer.keySet()) {
             Integer layer = this.ruleLayer.get(r);
             System.out.println(layer.intValue() + " " + r.getName());
         }
         System.out.println(" CREATION LAYER");
-        for (Enumeration<GraphObject> keys = this.creationLayer.keys(); keys.hasMoreElements();) {
-            GraphObject t = keys.nextElement();
+        for (GraphObject t : this.creationLayer.keySet()) { 
             Integer layer = this.creationLayer.get(t);
             System.out.println(layer.intValue() + " " + t.getType().getStringRepr());
         }
         System.out.println(" DELETION LAYER");
-        for (Enumeration<GraphObject> keys = this.deletionLayer.keys(); keys.hasMoreElements();) {
-            GraphObject t = keys.nextElement();
+        for (GraphObject t : this.deletionLayer.keySet()) { 
             Integer layer = this.deletionLayer.get(t);
             System.out.println(layer.intValue() + " " + t.getType().getStringRepr());
         }
@@ -1780,5 +1684,4 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
     public int getDeletionLayer(Type t) {
         return 0;
     }
-
 }

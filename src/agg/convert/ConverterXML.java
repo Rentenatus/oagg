@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.convert;
 
@@ -15,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.Source;
@@ -60,17 +60,13 @@ public class ConverterXML {
                     .println("agg.convert.ConverterXML.ggx2gxl:: source  'ggx2gxl.xsl'  NOT FOUND");
             return false;
         }
-
         Source src = getSource(".ggx", filenameIn);
 //		 System.out.println("source: "+src);
-
         Result result = getResult(".gxl", filenameOut);
 //		 System.out.println("result: "+result);
-
         if (src == null || result == null) {
             return false;
         }
-
         Templates templates = null;
         try {
             templates = tf.newTemplates(templatesSrc);
@@ -79,7 +75,6 @@ public class ConverterXML {
             System.out.println(ex1.getMessage());
             return false;
         }
-
         Transformer transformer = null;
         try {
             transformer = templates.newTransformer();
@@ -124,17 +119,13 @@ public class ConverterXML {
                     .println("agg.convert.ConverterXML.gxl2ggx:: source  'gxl2ggx.xsl'  NOT FOUND");
             return false;
         }
-
         Source src = getSource(".gxl", filenameIn);
 //		System.out.println("source: "+src);
-
         Result result = getResult(".ggx", filenameOut);
         System.out.println("result: " + result);
-
         if (src == null || result == null) {
             return false;
         }
-
         Templates templates = null;
         try {
             templates = tf.newTemplates(templatesSrc);
@@ -143,7 +134,6 @@ public class ConverterXML {
             System.out.println("TransformerConfigurationException. " + ex1.getMessage());
             return false;
         }
-
         Transformer transformer = null;
         try {
             transformer = templates.newTransformer();
@@ -188,7 +178,6 @@ public class ConverterXML {
                     .println("agg.convert.ConverterXML.gts2gtxl:: source  'gts2gtxl.xsl'  NOT FOUND");
             return false;
         }
-
         Source src = getSource(".ggx", filenameIn);
         // System.out.println("source: "+src);
         // System.out.println("filenameIn: "+filenameIn);
@@ -198,7 +187,6 @@ public class ConverterXML {
         if (src == null || result == null) {
             return false;
         }
-
         Templates templates = null;
         try {
             templates = tf.newTemplates(templatesSrc);
@@ -207,7 +195,6 @@ public class ConverterXML {
             System.out.println(ex1.getMessage());
             return false;
         }
-
         Transformer transformer = null;
         try {
             transformer = templates.newTransformer();
@@ -243,7 +230,6 @@ public class ConverterXML {
         System.out.println(name);
         String filenameOutGXL = name //filenameIn.substring(0, filenameIn.length() - 6)
                 + "_ecore.gxl";
-
         TransformerFactory tf = TransformerFactory.newInstance();
         // System.out.println("factory: "+tf);
         Source templatesSrcGXL = null;
@@ -276,7 +262,6 @@ public class ConverterXML {
                     .println("agg.convert.ConverterXML.omondoxmi2gxl:: template source  'gxl2ggx.xsl'  NOT FOUND");
             return false;
         }
-
         Source src = getSource(".ecore", filenameIn);
         if (src != null) {
             ext = ".ecore";
@@ -299,14 +284,11 @@ public class ConverterXML {
 //			}
         }
 //		System.out.println(this.getClass().getName()+"::  "+ ext+"     source: "+src);
-
         Result result = getResult(".gxl", filenameOutGXL);
         // System.out.println("result: "+result);
-
         if (src == null || result == null) {
             return false;
         }
-
         Templates templates = null;
         try {
             // System.out.println("try to create templates ...");
@@ -318,7 +300,6 @@ public class ConverterXML {
                             + ex1.getLocalizedMessage());
             return false;
         }
-
         Transformer transformer = null;
         try {
             // System.out.println("try to create transformer ...");
@@ -333,7 +314,6 @@ public class ConverterXML {
                             + ex3.getLocalizedMessage());
             return false;
         }
-
         return gxl2ggx(filenameOutGXL, filenameOut, sourceNameGGX);
     }
 
@@ -397,5 +377,4 @@ public class ConverterXML {
         StreamResult stream = new StreamResult(f);
         return stream;
     }
-
 }

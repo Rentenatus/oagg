@@ -1,35 +1,35 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
+import agg.attribute.AttrEvent;
+import agg.attribute.AttrInstance;
+import agg.attribute.impl.AttrTupleManager;
+import agg.attribute.impl.ContextView;
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
+import agg.attribute.impl.VarMember;
+import agg.attribute.impl.VarTuple;
+import agg.util.Change;
+import agg.util.Pair;
+import agg.util.XMLHelper;
+import agg.util.XMLObject;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Vector;
-
-import agg.attribute.AttrInstance;
-import agg.attribute.AttrEvent;
-import agg.attribute.impl.AttrTupleManager;
-import agg.attribute.impl.ValueTuple;
-import agg.attribute.impl.ValueMember;
-import agg.attribute.impl.VarTuple;
-import agg.attribute.impl.VarMember;
-import agg.attribute.impl.ContextView;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
-import agg.util.Change;
-import agg.util.Pair;
 
 /**
  * @version $Id: Node.java,v 1.47 2010/11/06 18:34:59 olga Exp $
@@ -37,29 +37,24 @@ import agg.util.Pair;
  */
 @SuppressWarnings("serial")
 public class Node extends GraphObject implements XMLObject {
-
 //	// test: node XY-position as attribute
-    public boolean xyAttr = false;
 
-//	final protected Vector<Arc> itsOutgoingArcs = new Vector<Arc>();	
-//	final protected Vector<Arc> itsIncomingArcs = new Vector<Arc>();
-    final protected LinkedHashSet<Arc> itsOutgoingArcs = new LinkedHashSet<Arc>();
-    final protected LinkedHashSet<Arc> itsIncomingArcs = new LinkedHashSet<Arc>();
+    public boolean xyAttr = false;
+//	final protected List<Arc> itsOutgoingArcs = new ArrayList<Arc>();	
+//	final protected List<Arc> itsIncomingArcs = new ArrayList<Arc>();
+    final protected LinkedHashSet<Arc> itsOutgoingArcs = new LinkedHashSet<>();
+    final protected LinkedHashSet<Arc> itsIncomingArcs = new LinkedHashSet<>();
 
     protected Node(Type type, Graph context) {
         this.itsContext = context;
         this.itsType = type;
-
         this.itsContextUsage = hashCode();
-
         // test: XY Position as attributes
         addXYPosAttrs(this.itsContext != null && this.itsContext.xyAttr);
-
         if (!this.itsType.isAttrTypeEmpty() && this.itsAttr == null) {
             this.itsAttr = AttrTupleManager.getDefaultManager().newInstance(
                     this.itsType.getAttrType(), context.getAttrContext());
         }
-
         if (this.itsAttr != null) {
             this.itsAttr.addObserver(this);
         }
@@ -68,14 +63,10 @@ public class Node extends GraphObject implements XMLObject {
     public Node(AttrInstance attr, Type type, Graph context) {
         this.itsContext = context;
         this.itsType = type;
-
         this.itsContextUsage = hashCode();
-
         this.itsAttr = attr;
-
         // test: XY Position as attributes
         addXYPosAttrs(this.itsContext != null && this.itsContext.xyAttr);
-
         if (this.itsAttr != null) {
             this.itsAttr.addObserver(this);
         }
@@ -104,13 +95,11 @@ public class Node extends GraphObject implements XMLObject {
                         agg.attribute.facade.impl.DefaultInformationFacade.self().getJavaHandler(),
                         "int", "thisY");
             }
-
         }
     }
 
     protected Node(Node orig, Graph context) {
         this(orig.getType(), context);
-
         if (orig.getAttribute() != null) {
             if (this.itsAttr == null) {
                 this.createAttributeInstance();
@@ -126,37 +115,52 @@ public class Node extends GraphObject implements XMLObject {
     public void dispose() {
         this.itsOutgoingArcs.clear();
         this.itsIncomingArcs.clear();
-
         if (this.itsAttr != null) {
             this.itsAttr.removeObserver(this);
             ((ValueTuple) this.itsAttr).dispose();
             this.itsAttr = null;
         }
-
         this.itsType = null;
         this.itsContext = null;
         this.itsContextUsage = -1;
     }
 
-    public void finalize() {
+    /**
+     *
+     * @param anArc
+     */
+    protected synchronized void addOut(Arc anArc) {
+        this.itsOutgoingArcs.add((Arc) anArc);
     }
 
-    protected synchronized void addOut(GraphObject obj) {
-        this.itsOutgoingArcs.add((Arc) obj);
+    /**
+     *
+     * @param anArc
+     */
+    protected synchronized void addIn(Arc anArc) {
+        this.itsIncomingArcs.add((Arc) anArc);
     }
 
-    protected synchronized void addIn(GraphObject obj) {
-        this.itsIncomingArcs.add((Arc) obj);
+    /**
+     *
+     * @param anArc
+     */
+    protected synchronized void removeOut(Arc anArc) {
+        this.itsOutgoingArcs.remove(anArc);
     }
 
-    protected synchronized void removeOut(GraphObject obj) {
-        this.itsOutgoingArcs.remove(obj);
+    /**
+     *
+     * @param anArc
+     */
+    protected synchronized void removeIn(Arc anArc) {
+        this.itsIncomingArcs.remove(anArc);
     }
 
-    protected synchronized void removeIn(GraphObject obj) {
-        this.itsIncomingArcs.remove(obj);
-    }
-
+    /**
+     *
+     * @return
+     */
     public final int getNumberOfArcs() {
         return this.itsOutgoingArcs.size() + this.itsIncomingArcs.size();
     }
@@ -164,6 +168,7 @@ public class Node extends GraphObject implements XMLObject {
     /**
      * Iterate through all the arcs that I am the target of.
      *
+     * @return
      * @see agg.xt_basis.Arc
      */
     public final Iterator<Arc> getIncomingArcs() {
@@ -171,49 +176,55 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * @deprecated	replaced by <code>HashSet<Arc> getIncomingArcsSet()</code>.<br>
-     * The order of arcs may differ from the arc creation order.
-     */
-    public final List<Arc> getIncomingArcsVec() {
-        return (new ArrayList<Arc>(this.itsIncomingArcs));
-    }
-
-    /**
-     * @return a set of ordered incoming arcs. The order of arcs is the arc creation order.
+     * @return a set of ordered incoming arcs. The order of arcs is the arc
+     * creation order.
      */
     public final Iterator<Arc> getIncomingArcsIterator() {
         return this.itsIncomingArcs.iterator();
     }
 
     /**
-     * @return a set of incoming arcs. The order of arcs may differ from the arc creation order.
+     * @return a set of incoming arcs. The order of arcs may differ from the arc
+     * creation order.
      */
     public final HashSet<Arc> getIncomingArcsSet() {
         return this.itsIncomingArcs;
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public final int getNumberOfIncomingArcs() {
         return this.itsIncomingArcs.size();
     }
 
-    public final int getNumberOfIncomingArcs(Type t) {
+    /**
+     *
+     * @param aType
+     * @return
+     */
+    public final int getNumberOfIncomingArcs(Type aType) {
         int n = 0;
-        Iterator<Arc> iter = this.itsIncomingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
-            if (go.getType().compareTo(t)) {
+        for (Arc go : this.itsIncomingArcs) {
+            if (go.getType().compareTo(aType)) {
                 n++;
             }
         }
         return n;
     }
 
-    public final int getNumberOfIncomingArcsOfTypeFromSourceType(Type t, Type srcType) {
+    /**
+     *
+     * @param aType
+     * @param srcType
+     * @return
+     */
+    public final int getNumberOfIncomingArcsOfTypeFromSourceType(Type aType, Type srcType) {
         int n = 0;
-        Iterator<Arc> iter = this.itsIncomingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
-            if (go.getType().compareTo(t)) {
+        for (Arc go : this.itsIncomingArcs) {
+            if (go.getType().compareTo(aType)) {
                 if (srcType.isParentOf(go.getSource().getType())) {
                     n++;
                 }
@@ -224,16 +235,14 @@ public class Node extends GraphObject implements XMLObject {
 
     /**
      *
-     * @param t type of incoming arcs
+     * @param aType type of incoming arcs
      * @param src	(parent) type of the source node of incoming arcs
      * @return number of incoming arcs
      */
-    public final int getNumberOfIncomingArcs(Type t, Type src) {
+    public final int getNumberOfIncomingArcs(Type aType, Type src) {
         int n = 0;
-        Iterator<Arc> iter = this.itsIncomingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
-            if (go.getType().compareTo(t)) {
+        for (Arc go : this.itsIncomingArcs) {
+            if (go.getType().compareTo(aType)) {
                 if (src.isParentOf(go.getSourceType())) {
                     n++;
                 } else if (!this.itsContext.isCompleteGraph()
@@ -245,12 +254,10 @@ public class Node extends GraphObject implements XMLObject {
         return n;
     }
 
-    public final List<Arc> getIncomingArcs(Type t, Type src) {
-        final List<Arc> result = new Vector<Arc>(2);
-        Iterator<Arc> iter = this.itsIncomingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
-            if (go.getType().compareTo(t)) {
+    public final List<Arc> getIncomingArcs(Type aType, Type src) {
+        final List<Arc> result = new ArrayList<>(2);
+        for (Arc go : this.itsIncomingArcs) {
+            if (go.getType().compareTo(aType)) {
                 if (src.isParentOf(go.getSourceType())) {
                     result.add(go);
                 } else if (!this.itsContext.isCompleteGraph()
@@ -264,15 +271,13 @@ public class Node extends GraphObject implements XMLObject {
 
     /**
      *
-     * @param t (parent) type of the source node of an incoming arc
+     * @param aType (parent) type of the source node of an incoming arc
      * @return true when an incoming arc exists
      */
-    public boolean hasIncomingArcFrom(Type t) {
-        Iterator<Arc> e = this.itsIncomingArcs.iterator();
-        while (e.hasNext()) {
-            Arc a = e.next();
-            if (t.isParentOf(a.getSourceType())
-                    || a.getSourceType().isParentOf(t)) {
+    public boolean hasIncomingArcFrom(Type aType) {
+        for (Arc a : this.itsIncomingArcs) {
+            if (aType.isParentOf(a.getSourceType())
+                    || a.getSourceType().isParentOf(aType)) {
                 return true;
             }
         }
@@ -282,56 +287,63 @@ public class Node extends GraphObject implements XMLObject {
     /**
      * Iterate through all the arcs that I am the source of.
      *
+     * @return
      * @see agg.xt_basis.Arc
      */
     public final Iterator<Arc> getOutgoingArcs() {
         return ((LinkedHashSet<Arc>) this.itsOutgoingArcs).iterator();
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public final int getNumberOfOutgoingArcs() {
         return this.itsOutgoingArcs.size();
     }
 
     /**
-     * @deprecated replaced by <code>HashSet<Arc> getOutgoingArcsSet()</code>. The order of arcs may differ from the arc
+     * @return a set of outgoing arcs. The order of arcs may differ from the arc
      * creation order.
-     */
-    public final List<Arc> getOutgoingArcsVec() {
-        return (new ArrayList<Arc>(this.itsOutgoingArcs));
-    }
-
-    /**
-     * @return a set of outgoing arcs. The order of arcs may differ from the arc creation order.
      */
     public final HashSet<Arc> getOutgoingArcsSet() {
         return this.itsOutgoingArcs;
     }
 
     /**
-     * @return a set of ordered outgoing arcs. The order of arcs may differ from the arc creation order.
+     * @return a set of ordered outgoing arcs. The order of arcs may differ from
+     * the arc creation order.
      */
     public final Iterator<Arc> getOutgoingArcsIterator() {
         return this.itsOutgoingArcs.iterator();
     }
 
-    public final int getNumberOfOutgoingArcs(Type t) {
+    /**
+     *
+     * @param aType
+     * @return
+     */
+    public final int getNumberOfOutgoingArcs(Type aType) {
         int n = 0;
-        Iterator<Arc> iter = this.itsOutgoingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
-            if (go.getType().compareTo(t)) {
+        for (Arc go : this.itsOutgoingArcs) {
+            if (go.getType().compareTo(aType)) {
                 n++;
             }
         }
         return n;
     }
 
-    public final int getNumberOfOutgoingArcsOfTypeToTargetType(Type t, Type tarType) {
+    /**
+     *
+     * @param aType
+     * @param tarType
+     * @return
+     */
+    public final int getNumberOfOutgoingArcsOfTypeToTargetType(Type aType, Type tarType) {
         int n = 0;
-        Iterator<Arc> iter = this.itsOutgoingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
-            if (go.getType().compareTo(t)) {
+        for (Arc go : this.itsOutgoingArcs) {
+            if (go.getType().compareTo(aType)) {
                 if (tarType.isParentOf(go.getTarget().getType())) {
                     n++;
                 }
@@ -342,16 +354,14 @@ public class Node extends GraphObject implements XMLObject {
 
     /**
      *
-     * @param t type of outgoing arcs
+     * @param aType type of outgoing arcs
      * @param tar	(parent) type of the target node of outgoing arcs
      * @return number of outgoing arcs
      */
-    public final int getNumberOfOutgoingArcs(Type t, Type tar) {
+    public final int getNumberOfOutgoingArcs(Type aType, Type tar) {
         int n = 0;
-        Iterator<Arc> iter = this.itsOutgoingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
-            if (go.getType().compareTo(t)) {
+        for (Arc go : this.itsOutgoingArcs) {
+            if (go.getType().compareTo(aType)) {
                 if (tar.isParentOf(go.getTargetType())) {
                     n++;
                 } else if (!this.itsContext.isCompleteGraph()
@@ -363,20 +373,28 @@ public class Node extends GraphObject implements XMLObject {
         return n;
     }
 
-    /*
-	 * Checks whether this node is the source of an edge of the given type 
-	 * and the specified target node.
+    /**
+     * Checks whether this node is the source of an edge of the given type and
+     * the specified target node.
+     *
+     * @param arct
+     * @param tar
+     * @return
      */
     public boolean hasArc(final Type arct, final Node tar) {
         return (this.getOutgoingArc(arct, tar) != null);
     }
 
-    public final List<Arc> getOutgoingArcs(Type t, Type tar) {
-        final List<Arc> result = new Vector<Arc>(2);
-        Iterator<Arc> iter = this.itsOutgoingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
-            if (go.getType().compareTo(t)) {
+    /**
+     *
+     * @param aType
+     * @param tar
+     * @return
+     */
+    public final List<Arc> getOutgoingArcs(Type aType, Type tar) {
+        final List<Arc> result = new ArrayList<>(2);
+        for (Arc go : this.itsOutgoingArcs) {
+            if (go.getType().compareTo(aType)) {
                 if (tar.isParentOf(go.getTargetType())) {
                     result.add(go);
                 } else if (!this.itsContext.isCompleteGraph()
@@ -388,10 +406,14 @@ public class Node extends GraphObject implements XMLObject {
         return result;
     }
 
+    /**
+     *
+     * @param t
+     * @param tar
+     * @return
+     */
     public final Arc getOutgoingArc(Type t, Node tar) {
-        Iterator<Arc> iter = this.itsOutgoingArcs.iterator();
-        while (iter.hasNext()) {
-            Arc go = iter.next();
+        for (Arc go : this.itsOutgoingArcs) {
             if (go.getTarget() == tar
                     && go.getType().compareTo(t)) {
                 return go;
@@ -401,22 +423,26 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     *
-     * @param t (parent) type of the target node of an outgoing arc
-     * @return true when an outgoing arc exists
+    /**
+     * Checks if this node has an outgoing arc to a node of the specified type.
+     * @param targetType the (parent) type of the target node of an outgoing arc
+     * @return true when an outgoing arc exists, false otherwise
      */
-    public boolean hasOutgoingArcTo(Type t) {
-        Iterator<Arc> e = this.itsOutgoingArcs.iterator();
-        while (e.hasNext()) {
-            Arc a = e.next();
-            if (t.isParentOf(a.getTargetType())
-                    || a.getTargetType().isParentOf(t)) {
+    public boolean hasOutgoingArcTo(Type targetType) {
+        for (Arc arc : this.itsOutgoingArcs) {
+            if (targetType.isParentOf(arc.getTargetType())
+                    || arc.getTargetType().isParentOf(targetType)) {
                 return true;
             }
         }
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public final int getNumberOfInOutArcs() {
         int nb = this.itsIncomingArcs.size() + this.itsOutgoingArcs.size();
         return nb;
@@ -424,50 +450,63 @@ public class Node extends GraphObject implements XMLObject {
 
     /**
      * Converts my type to a type key string that is used for search operations.
+     *
+     * @return
      */
+    @Override
     public String convertToKey() {
         return this.getType().convertToKey();
     }
 
+    /**
+     *
+     * @return
+     */
+    @Override
     public String resetTypeKey() {
         return this.getType().resetKey();
     }
 
-    public boolean compareTo(GraphObject o) {
-        if (!o.isNode()) {
+    /**
+     *
+     * @param otherObject the graph object to compare with
+     * @return true if objects are equal, false otherwise
+     */
+    @Override
+    public boolean compareTo(GraphObject otherObject) {
+        if (!otherObject.isNode()) {
             return false;
         }
-
-        Node n = (Node) o;
-//		if (!this.getObjectName().equals(n.getObjectName())) {
+        Node otherNode = (Node) otherObject;
+//		if (!this.getObjectName().equals(otherNode.getObjectName())) {
 //			return false;
 //		}
-        if (!this.itsType.isParentOf(n.getType())) {
+        if (!this.itsType.isParentOf(otherNode.getType())) {
             return false;
         }
-        if ((this.itsAttr == null && n.getAttribute() == null)
-                || ((this.attrExists() && n.attrExists())
-                && this.itsAttr.compareTo(n.getAttribute()))) {
+        if ((this.itsAttr == null && otherNode.getAttribute() == null)
+                || ((this.attrExists() && otherNode.attrExists())
+                && this.itsAttr.compareTo(otherNode.getAttribute()))) {
             ;
         } else {
             return false;
         }
-        if (!this.compareMultiplicityTo(n)) {
+        if (!this.compareMultiplicityTo(otherNode)) {
             return false;
         }
         return true;
     }
 
-    protected boolean compareMultiplicityTo(Node n) {
+    protected boolean compareMultiplicityTo(Node otherNode) {
         if (this.itsContext.isTypeGraph()) {
             int minmax = this.itsType.getSourceMin();
-            int n_minmax = n.getType().getSourceMin();
-            if (minmax != n_minmax) {
+            int otherMinmax = otherNode.getType().getSourceMin();
+            if (minmax != otherMinmax) {
                 return false;
             } else {
                 minmax = this.itsType.getSourceMax();
-                n_minmax = n.getType().getSourceMax();
-                if (minmax != n_minmax) {
+                otherMinmax = otherNode.getType().getSourceMax();
+                if (minmax != otherMinmax) {
                     return false;
                 }
             }
@@ -475,61 +514,62 @@ public class Node extends GraphObject implements XMLObject {
         return true;
     }
 
-    public void XwriteObject(XMLHelper h) {
-        h.openNewElem("Node", this);
-
+    /**
+     * Writes this node to XML.
+     * @param xmlHelper the XML helper to write with
+     */
+    @Override
+    public void XwriteObject(XMLHelper xmlHelper) {
+        xmlHelper.openNewElem("Node", this);
         if (!this.visible) {
-            h.addAttr("visible", "false");
+            xmlHelper.addAttr("visible", "false");
         }
-
         if (!this.getObjectName().equals("")) {
-            h.addAttr("name", this.getObjectName());
+            xmlHelper.addAttr("name", this.getObjectName());
         }
-
-        // if(!itsContextUsage.equals("")) h.addAttr("context",
+        // if(!itsContextUsage.equals("")) xmlHelper.addAttr("context",
         // itsContextUsage);
-        h.addObject("type", this.itsType, false);
-
+        xmlHelper.addObject("type", this.itsType, false);
         // System.out.println("Node.XwriteObject ...
         // "+itsAttr.toString());
-        // h.addObject("", itsAttr, true);
+        // xmlHelper.addObject("", itsAttr, true);
         // save multiplicity, if part of type graph
         if (this.itsContext != null && this.itsContext.isTypeGraph()) {
             // System.out.println("Node.Xwrite... is elem of type graph");
             int minmax = this.itsType.getSourceMin();
             if (minmax != Type.UNDEFINED) {
-                h.addAttr("sourcemin", Integer.toString(minmax));
+                xmlHelper.addAttr("sourcemin", Integer.toString(minmax));
             }
-
             minmax = this.itsType.getSourceMax();
             if (minmax != Type.UNDEFINED) {
-                h.addAttr("sourcemax", Integer.toString(minmax));
+                xmlHelper.addAttr("sourcemax", Integer.toString(minmax));
             }
         } //else 
         {
             // System.out.println("Node.XwriteObject ...
             // "+itsAttr.toString());
-            h.addObject("", this.itsAttr, true);
+            xmlHelper.addObject("", this.itsAttr, true);
         }
-        h.close();
+        xmlHelper.close();
     }
 
-    public void XreadObject(XMLHelper h) {
-        if (h.isTag("Node", this)) {
+    /**
+     * Reads this node from XML.
+     * @param xmlHelper the XML helper to read from
+     */
+    @Override
+    public void XreadObject(XMLHelper xmlHelper) {
+        if (xmlHelper.isTag("Node", this)) {
             // System.out.println("Node.XreadObject: ");
-            String str = h.readAttr("visible");
-            str = h.readAttr("visible");
-            this.visible = str.equals("false") ? false : true;
-
-            str = h.readAttr("name");
+            String str = xmlHelper.readAttr("visible");
+            this.visible = !str.equals("false");
+            str = xmlHelper.readAttr("name");
             this.setObjectName(str);
-
             if (this.itsType.getAttrType() != null
                     || this.itsType.hasInheritedAttribute()
                     || (this.itsContext != null && this.itsContext.xyAttr)) {
                 this.createAttributeInstance();
             }
-
             AttrInstance attri = this.itsAttr;
             if (attri != null) {
                 if (this.itsContext != null && this.itsContext.xyAttr) {
@@ -546,7 +586,6 @@ public class Node extends GraphObject implements XMLObject {
                                 "int", "thisY");
                     }
                 }
-
                 // if(Debug.HASHCODE){
                 // agg.attribute.AttrType attrType = itsType.getAttrType();
                 // if(!((agg.attribute.impl.DeclTuple)
@@ -561,10 +600,9 @@ public class Node extends GraphObject implements XMLObject {
                 // mem.setExprAsObject(hc);
                 // mem.checkValidity();
                 // }
-                h.enrichObject(attri);
+                xmlHelper.enrichObject(attri);
             }
-            h.close();
-
+            xmlHelper.close();
             // if this node uses variable
             // in its attribute so the variable will be marked
             if (this.itsContext != null && this.itsContext.getAttrContext() != null
@@ -594,67 +632,71 @@ public class Node extends GraphObject implements XMLObject {
                     }
                 }
             }
-
         }
     }
 
+    /**
+     *
+     * @return false
+     */
+    @Override
     public final boolean isArc() {
         return false;
     }
 
+    /**
+     *
+     * @return true
+     */
+    @Override
     public final boolean isNode() {
         return true;
     }
 
     /**
-     * @return true if don't exist any outgoing or incoming edges, otherwise false
+     * @return true if don'typeStr exist any outgoing or incoming edges,
+     * otherwise false
      */
     public final boolean isIsolated() {
-        if (this.itsOutgoingArcs.isEmpty()
-                && this.itsIncomingArcs.isEmpty()) {
-            return true;
-        }
-        return false;
+        return this.itsOutgoingArcs.isEmpty()
+                && this.itsIncomingArcs.isEmpty();
     }
 
+    @Override
     public String toString() {
-        String result = "";
-        String t = this.itsType.getStringRepr();
+        String typeStr = this.itsType.getStringRepr();
         if (this.itsAttr != null) {
-            result = " (" + "[" + hashCode() + "] " + "Node: " + t + ")  "
+            return " (" + "[" + hashCode() + "] " + "Node: " + typeStr + ")  "
                     + this.itsAttr.toString();
         } else {
-            result = " (" + "[" + hashCode() + "] " + "Node: " + t + ") ";
+            return " (" + "[" + hashCode() + "] " + "Node: " + typeStr + ") ";
         }
-        return result;
     }
 
     /**
-     * Implements the AttrObserver. Propagates the change      <code>agg.util.Change.OBJECT_MODIFIED<code>
-	 * and object Pair (this, ev)
-     * to its Graph if the attributes are changed.
+     * Implements the AttrObserver. Propagates the change
+     *      <code>agg.util.Change.OBJECT_MODIFIED</code> and object Pair (this,
+     * ev) to its Graph if the attributes are changed.
      */
     @Override
     public void attributeChanged(AttrEvent ev) {
         super.attributeChanged(ev);
         if (this.itsContext != null) {
-
-            Pair<Object, AttrEvent> p = new Pair<Object, AttrEvent>(this, ev);
-
+            Pair<Object, AttrEvent> p = new Pair<>(this, ev);
             if (this.itsContext.isTypeGraph()) {
                 if (ev.getID() == AttrEvent.MEMBER_VALUE_MODIFIED) {
                     propagateAttrValueToChildNode();
                 }
             }
-
             this.itsContext.propagateChange(new Change(Change.OBJECT_MODIFIED, p));
         }
     }
 
+    /**
+     *
+     */
     private void propagateAttrValueToChildNode() {
-        Enumeration<Type> children = this.getType().getChildren().elements();
-        while (children.hasMoreElements()) {
-            Type cht = children.nextElement();
+        for (Type cht : this.getType().getChildren()) {
             List<Node> chnodes = this.itsContext.getNodesByParentType(cht);
             if (chnodes != null) {
                 Node childNode = chnodes.get(0);
@@ -665,26 +707,29 @@ public class Node extends GraphObject implements XMLObject {
         }
     }
 
+    /**
+     *
+     */
     private void setValueToChildMember(Node childNode) {
-        for (int i = 0; i < ((ValueTuple) this.itsAttr).getNumberOfEntries(); i++) {
-            ValueMember vm = ((ValueTuple) this.itsAttr).getValueMemberAt(i);
+        final ValueTuple valueTuple = (ValueTuple) this.itsAttr;
+        for (int i = 0; i < valueTuple.getNumberOfEntries(); i++) {
+            ValueMember vm = valueTuple.getValueMemberAt(i);
             if (vm.isSet()
                     && childNode.getAttribute() != null
                     && ((ValueTuple) childNode.getAttribute()).getValueAt(vm.getName()) == null) {
                 ((ValueTuple) childNode.getAttribute()).setExprValueAt(vm.getExprAsText(), vm.getName());
             }
         }
-
     }
 
+    /**
+     *
+     */
     public void propagateAttrValueFromParentNode() {
         if (!this.itsContext.isTypeGraph()) {
             return;
         }
-
-        Enumeration<Type> parents = this.getType().getParents().elements();
-        while (parents.hasMoreElements()) {
-            Type part = parents.nextElement();
+        for (Type part : this.getType().getParents()) {
             List<Node> parnodes = this.itsContext.getNodesByParentType(part);
             if (parnodes != null) {
                 Node parNode = parnodes.get(0);
@@ -695,10 +740,12 @@ public class Node extends GraphObject implements XMLObject {
         }
     }
 
+    /**
+     *
+     */
     private void setValueFromParentMember(Node parentNode) {
         if (parentNode.getAttribute() != null && this.itsAttr == null) {
             this.createAttributeInstance();
-
             for (int i = 0; i < ((ValueTuple) this.itsAttr).getNumberOfEntries(); i++) {
                 ValueMember vm = ((ValueTuple) this.itsAttr).getValueMemberAt(i);
                 ValueMember parvm = ((ValueTuple) parentNode.getAttribute()).getValueMemberAt(vm.getName());
@@ -708,5 +755,4 @@ public class Node extends GraphObject implements XMLObject {
             }
         }
     }
-
 }

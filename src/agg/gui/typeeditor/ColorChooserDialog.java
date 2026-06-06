@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.typeeditor;
 
@@ -29,19 +30,15 @@ import javax.swing.JButton;
 public class ColorChooserDialog extends JPanel {
 
     JDialog dialog;
-
     private JColorChooser tcc;
-
 //	private JLabel banner;
 //	private Color color;
     private JButton closeButton;
 
     public ColorChooserDialog() {
         super(new BorderLayout());
-
         // Set up color chooser for setting type color
         this.tcc = new JColorChooser(Color.yellow);
-
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
@@ -50,10 +47,8 @@ public class ColorChooserDialog extends JPanel {
                 ColorChooserDialog.this.dialog.setVisible(false);
             }
         });
-
         add(this.tcc, BorderLayout.CENTER);
         add(this.closeButton, BorderLayout.PAGE_END);
-
         setOpaque(true);
     }
 
@@ -108,5 +103,4 @@ public class ColorChooserDialog extends JPanel {
     public Color getColor() {
         return this.tcc.getColor();
     }
-
 }

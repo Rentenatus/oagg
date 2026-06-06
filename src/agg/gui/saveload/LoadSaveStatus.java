@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.saveload;
 
@@ -14,8 +15,10 @@ import java.util.Observer;
 import java.util.Vector;
 
 /**
- * This class reports the status of the load and save process. Therefore any object which wants to know the status has
- * to be registered (observer pattern). As there is only one status for loading and saving the status is static.
+ * This class reports the status of the load and save process. Therefore any
+ * object which wants to know the status has to be registered (observer
+ * pattern). As there is only one status for loading and saving the status is
+ * static.
  *
  * @author $Author: olga $
  * @version $Id: LoadSaveStatus.java,v 1.1 2008/10/29 09:04:11 olga Exp $
@@ -26,39 +29,35 @@ public class LoadSaveStatus {
      * This is the maximum which percentage can reach
      */
     private static int MAXIMUM = 100;
-
     /**
      * This is the minimum where percentage start from
      */
     private static int MINIMUM = 0;
-
     /**
      * This counts how much is done
      */
     private static int PERCENTAGE = MINIMUM;
-
     /**
      * observes all its observers
      */
     private static Vector<Observer> OBSERVER = new Vector<Observer>();
-
     /**
      * size of a small step
      */
     private static int SMALLSTEP = 1;
-
     /**
      * size of a big step
      */
     private static int BIGSTEP = 2;
-
     /**
-     * fixes the direction if a step sums up or substracts 1 stands for summing up -1 stands for substraction
+     * fixes the direction if a step sums up or substracts 1 stands for summing
+     * up -1 stands for substraction
      */
     private static int DIRECTION = 1;
 
     /**
-     * There must not be a instance of this class. So the constructor does nothing
+     * There must not be a instance of this class. So the constructor does
+     * nothing
      */
     private LoadSaveStatus() {
     }
@@ -77,11 +76,14 @@ public class LoadSaveStatus {
     }
 
     /**
-     * If this object has changed, as indicated by the <code>hasChanged</code> method, then notify all of its observers
-     * and then call the <code>clearChanged</code> method to indicate that this object has no longer changed.
+     * If this object has changed, as indicated by the <code>hasChanged</code>
+     * method, then notify all of its observers and then call the
+     * <code>clearChanged</code> method to indicate that this object has no
+     * longer changed.
      * <p>
-     * Each observer has its <code>update</code> method called with two arguments: this observable object and
-     * <code>null</code>. In other words, this method is equivalent to: <blockquote>
+     * Each observer has its <code>update</code> method called with two
+     * arguments: this observable object and <code>null</code>. In other words,
+     * this method is equivalent to: <blockquote>
      *
      * <pre>
      * notifyOvservers(null)
@@ -130,9 +132,11 @@ public class LoadSaveStatus {
     }
 
     /**
-     * sets a new maximum. This maximum must be greater or equal than the minimum. If this condition is violated the
-     * maximum will be reset to the old value. <br>
-     * If the current percentage is greater than the maximum the percentage will be adjust to the maximum.
+     * sets a new maximum. This maximum must be greater or equal than the
+     * minimum. If this condition is violated the maximum will be reset to the
+     * old value. <br>
+     * If the current percentage is greater than the maximum the percentage will
+     * be adjust to the maximum.
      */
     public static void setMaximum(int max) {
         if (max >= getMinimum()) {
@@ -151,9 +155,11 @@ public class LoadSaveStatus {
     }
 
     /**
-     * sets a new minimum. This minimum must be less or equal than the maximum. If this condition is violated the
-     * minumum will be reset to the old value.<br>
-     * If the current percentage is less than the minimum the percentage will be adjust to the minimum.
+     * sets a new minimum. This minimum must be less or equal than the maximum.
+     * If this condition is violated the minumum will be reset to the old
+     * value.<br>
+     * If the current percentage is less than the minimum the percentage will be
+     * adjust to the minimum.
      */
     public static void setMinimum(int min) {
         if (min <= getMaximum()) {
@@ -172,8 +178,9 @@ public class LoadSaveStatus {
     }
 
     /**
-     * sets the current percentage. This percentage must be less or equal than the maximum and must be greater or equal
-     * than the minimum. If this condition is violated the percentage will be reset to the old value.
+     * sets the current percentage. This percentage must be less or equal than
+     * the maximum and must be greater or equal than the minimum. If this
+     * condition is violated the percentage will be reset to the old value.
      */
     public static void setValue(int percent) {
         if (percent <= getMaximum() && percent >= getMinimum()) {
@@ -212,26 +219,31 @@ public class LoadSaveStatus {
     }
 
     /**
-     * does a small step. This means if a step will exceed the maximum a small step will substract from the current
-     * percentage. Vice versa if a step will exceed the minimum a small step will sum up. <br>
-     * By a small step the percentage will bounce between the minimum and the maximum.
+     * does a small step. This means if a step will exceed the maximum a small
+     * step will substract from the current percentage. Vice versa if a step
+     * will exceed the minimum a small step will sum up. <br>
+     * By a small step the percentage will bounce between the minimum and the
+     * maximum.
      */
     public static void smallStep() {
         calcValue(getSmallSize());
     }
 
     /**
-     * does a big step. This means if a step will exceed the maximum a big step will substract from the current
-     * percentage. Vice versa if a step will exceed the minimum a big step will sum up. <br>
-     * By a big step the percentage will bounce between the minimum and the maximum.
+     * does a big step. This means if a step will exceed the maximum a big step
+     * will substract from the current percentage. Vice versa if a step will
+     * exceed the minimum a big step will sum up. <br>
+     * By a big step the percentage will bounce between the minimum and the
+     * maximum.
      */
     public static void bigStep() {
         calcValue(getBigSize());
     }
 
     /**
-     * sets the step size of a small step. This size must be greater than zero and less or equal than the size of a big
-     * step. If not the new value won't be accepted.
+     * sets the step size of a small step. This size must be greater than zero
+     * and less or equal than the size of a big step. If not the new value won't
+     * be accepted.
      */
     public static void setSmallSize(int small) {
         if (small > 0 && small <= getBigSize()) {
@@ -240,8 +252,9 @@ public class LoadSaveStatus {
     }
 
     /**
-     * sets the step size of a big step. This size must be greater or equal than the size of a small step and less or
-     * equal than the maximum. If not the new value won't be accepted.
+     * sets the step size of a big step. This size must be greater or equal than
+     * the size of a small step and less or equal than the maximum. If not the
+     * new value won't be accepted.
      */
     public static void setBigSize(int big) {
         if (big >= getSmallSize() && big <= getMaximum()) {
@@ -299,3 +312,4 @@ public class LoadSaveStatus {
 // Progressbalken fuer das Laden und Speichern
 // integriert.
 //
+

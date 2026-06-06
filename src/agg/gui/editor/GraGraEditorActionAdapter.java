@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -15,13 +15,11 @@ package agg.gui.editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButton;
-
 import agg.attribute.impl.AttrTupleManager;
 import agg.gui.event.EditEvent;
 import agg.gui.icons.TextIcon;
@@ -50,7 +48,6 @@ public class GraGraEditorActionAdapter implements ActionListener {
             if (!((JButton) e.getSource()).isEnabled()) {
                 return;
             }
-
             final JButton b = (JButton) e.getSource();
             if (b.equals(this.editor.getTransformationKindButton())) {
                 if (((TextIcon) b.getIcon()).getText().equals("NT")) {
@@ -95,7 +92,6 @@ public class GraGraEditorActionAdapter implements ActionListener {
                     this.editor.getRedoButton().setEnabled(false);
                 }
             }
-
         } else if (e.getSource() instanceof JCheckBoxMenuItem) {
             String actionCommand = ((JCheckBoxMenuItem) e.getSource()).getActionCommand();
 //			if (actionCommand.equals("undirectedArcs")) {
@@ -118,7 +114,6 @@ public class GraGraEditorActionAdapter implements ActionListener {
             } else if (actionCommand.equals("showAttributesOfTypeGraph")) {
                 this.editor.getGraphEditor().setTypeGraphAttributeVisible(((JCheckBoxMenuItem) e.getSource()).isSelected());
             }
-
         } else if (e.getSource() instanceof JMenuItem) {
             if (!((JMenuItem) e.getSource()).isEnabled()) {
                 return;
@@ -148,9 +143,7 @@ public class GraGraEditorActionAdapter implements ActionListener {
             }
             return;
         }
-
         String command = e.getActionCommand();
-
         /* edit commands */
         if (command.equals("attributes")) {
             this.editor.attrsProc();
@@ -258,7 +251,6 @@ public class GraGraEditorActionAdapter implements ActionListener {
                     || this.editor.isTransformationRunning()) {
                 return;
             }
-
             this.editor.resetStepCounter();
             if (this.editor.getEditMode() == EditorConstants.ATTRIBUTES) {
                 this.editor.setEditMode(EditorConstants.MOVE);
@@ -266,7 +258,6 @@ public class GraGraEditorActionAdapter implements ActionListener {
             }
             this.editor.getTypeEditor().setEnabled(false);
             this.editor.splitPane1.setDividerLocation(this.editor.splitPane1.getWidth());
-
             // update tool bar and menus
             this.editor.selectToolBarTransformItem("start");
             if (e.getSource() instanceof JButton) {
@@ -275,24 +266,18 @@ public class GraGraEditorActionAdapter implements ActionListener {
                 this.editor.resetTransformMenu((JMenuItem) e.getSource());
             }
             this.editor.resetEditModeAfterMapping(this.editor.getLastEditMode());
-
             ((AttrTupleManager) AttrTupleManager.getDefaultManager())
                     .setVariableContext(false);
-
             this.editor.enableStopButton(true);
-
             this.editor.getGraGra().destroyAllMatches();
             this.editor.getGraphEditor().getGraph().adjustTypeObjectsMap();
-
             // prepare layouter: path of jpg images and metrics
             if (this.editor.getGraphLayouter().isEnabled()) {
                 this.editor.doPrepareLayouterProc();
             } else {
                 this.editor.doPrepareDefaultGraphLayout();
             }
-
             this.editor.getGraGra().getGraph().setTransformChangeEnabled(true);
-
 //			if (this.editor.getGraGra().isAnimated()
 //					&& this.editor.isImageViewModeSelected()) {	
 //				if (this.editor.getUndoManager() != null) 
@@ -302,7 +287,6 @@ public class GraGraEditorActionAdapter implements ActionListener {
                     && this.editor.getUndoManager().isEnabled()) {
                 this.editor.getUndoManager().setUndoEndOfTransformStep();
             }
-
             if (this.editor.getGraGraTransform().layeredEnabled()) {
                 if (!this.editor.isLayeredTransformationRunning()) {
                     this.editor.doPrepareTransformProc();
@@ -331,18 +315,14 @@ public class GraGraEditorActionAdapter implements ActionListener {
         } else if (command.equals("stop")) {
             if (this.editor.getGraGra() != null
                     && this.editor.getGraGra().getGraph() != null) {
-
                 if (!this.editor.getGraGra().getGraph().isEditable()) {
                     return;
                 }
-
                 if (this.editor.isAnimationRunning()) {
                     this.editor.getNodeAnimation().setStop();
                 }
-
                 if (this.editor.isLayeredTransformationRunning()) {
                     this.editor.selectToolBarTransformItem("stop");
-
                     if (this.editor.getGraGraTransform().breakAllLayerEnabled()) {
                         if (e.getSource() instanceof JButton) {
                             this.editor.resetTransformMenu("Stop");
@@ -392,7 +372,5 @@ public class GraGraEditorActionAdapter implements ActionListener {
         } else if (command.equals("graphlayout")) {
             this.editor.doGraphLayout();
         }
-
     }
-
 }

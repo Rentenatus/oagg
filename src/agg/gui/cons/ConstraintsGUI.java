@@ -2,20 +2,19 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.cons;
 
 import java.awt.Container;
 import java.awt.Dimension;
-
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-
 import agg.cons.AtomConstraint;
 import agg.editor.impl.EdGraGra;
 import agg.gui.cpa.RuleModel;
@@ -28,19 +27,15 @@ import agg.xt_basis.Rule;
 public class ConstraintsGUI implements ParserGUIListener {
 
     JSplitPane mainPane;
-
     /**
      * the top tree view
      */
     RuleTree rtTop;
-
     /**
      * the bottom tree view
      */
     RuleTree rtBottom;
-
     RuleConstraint right;
-
     EdGraGra eGra;
 
     public ConstraintsGUI() {
@@ -48,7 +43,6 @@ public class ConstraintsGUI implements ParserGUIListener {
         this.rtTop.addParserGUIListener(this);
         this.rtBottom = new RuleTree(null, true, false); // the Atomics
         this.rtBottom.addParserGUIListener(this);
-
         JSplitPane treePane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         treePane.setOneTouchExpandable(true);
         treePane.setContinuousLayout(true);
@@ -63,15 +57,12 @@ public class ConstraintsGUI implements ParserGUIListener {
         treePane.getTopComponent().setSize(185, 300);
         treePane.getBottomComponent().setSize(185, 300);
         treePane.resetToPreferredSizes();
-
         this.right = new RuleConstraint(null);
-
         this.mainPane = new JSplitPane();
         this.mainPane.setOneTouchExpandable(true);
         this.mainPane.setContinuousLayout(true);
         this.mainPane.setRightComponent(this.right.getComponent());
         this.mainPane.setLeftComponent(treePane);
-
         setGrammar(null);
         setLayout(null);
     }
@@ -116,7 +107,8 @@ public class ConstraintsGUI implements ParserGUIListener {
     }
 
     /**
-     * this gui listens for <CODE>ParserGUIEvents</CODE>. So it must implement the listener
+     * this gui listens for <CODE>ParserGUIEvents</CODE>. So it must implement
+     * the listener
      *
      * @param pguie the event
      */

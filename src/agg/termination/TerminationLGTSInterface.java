@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -16,20 +18,23 @@ import agg.xt_basis.GraGra;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class implements termination conditions of Layered Graph Grammar.
  *
  * @author $Author: olga $
- * @version $Id: TerminationLGTSInterface.java,v 1.4 2009/02/04 10:11:29 olga Exp $
+ * @version $Id: TerminationLGTSInterface.java,v 1.4 2009/02/04 10:11:29 olga
+ * Exp $
  */
 public interface TerminationLGTSInterface {
 
     /**
-     * Initialize a termination layers of the grammar. Initially the termination conditions are invalid.
+     * Initialize a termination layers of the grammar. Initially the termination
+     * conditions are invalid.
      *
      * @param gra The graph grammar.
      */
@@ -45,27 +50,27 @@ public interface TerminationLGTSInterface {
 
     public List<Rule> getListOfRules();
 
-    public Hashtable<Integer, HashSet<Rule>> getInvertedRuleLayer();
+    public Map<Integer, HashSet<Rule>> getInvertedRuleLayer();
 
-    public List<Integer> getOrderedRuleLayer();
+    public ArrayMovieInt getOrderedRuleLayer();
 
-    public Hashtable<Integer, HashSet<Object>> getInvertedTypeDeletionLayer();
+    public Map<Integer, HashSet<Object>> getInvertedTypeDeletionLayer();
 
-    public Hashtable<Integer, HashSet<Object>> getInvertedTypeCreationLayer();
+    public Map<Integer, HashSet<Object>> getInvertedTypeCreationLayer();
 
-    public Hashtable<Integer, List<Type>> getDeletionType();
+    public Map<Integer, List<Type>> getDeletionType();
 
-    public Hashtable<Integer, List<GraphObject>> getDeletionTypeObject();
+    public Map<Integer, List<GraphObject>> getDeletionTypeObject();
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultTypeDeletion();
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultTypeDeletion();
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultDeletion();
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultDeletion();
 
-    public Hashtable<Integer, Pair<Boolean, List<Rule>>> getResultNondeletion();
+    public Map<Integer, Pair<Boolean, List<Rule>>> getResultNondeletion();
 
     public void resetLayer();
 
-    public void initRuleLayer(Hashtable<?, Integer> init);
+    public void initRuleLayer(Map<?, Integer> init);
 
     public void initAll(boolean generate);
 
@@ -97,7 +102,7 @@ public interface TerminationLGTSInterface {
      *
      * @return The rule layer.
      */
-    public Hashtable<Rule, Integer> getRuleLayer();
+    public Map<Rule, Integer> getRuleLayer();
 
     public int getRuleLayer(Rule r);
 
@@ -106,7 +111,7 @@ public interface TerminationLGTSInterface {
      *
      * @return The creation layer.
      */
-    public Hashtable<Object, Integer> getCreationLayer();
+    public Map<Object, Integer> getCreationLayer();
 
     public int getCreationLayer(Type t);
 
@@ -117,7 +122,7 @@ public interface TerminationLGTSInterface {
      *
      * @return The deletion layer.
      */
-    public Hashtable<Object, Integer> getDeletionLayer();
+    public Map<Object, Integer> getDeletionLayer();
 
     public int getDeletionLayer(Type t);
 
@@ -131,13 +136,14 @@ public interface TerminationLGTSInterface {
     public Integer getStartLayer();
 
     /**
-     * Inverts a layer function so that the layer is the key and the value is a set.
+     * Inverts a layer function so that the layer is the key and the value is a
+     * set.
      *
      * @param layer The layer function will be inverted.
      * @return The inverted layer function.
      */
-    public Hashtable<Integer, HashSet<Rule>> invertLayer(
-            Hashtable<Rule, Integer> layer);
+    public Map<Integer, HashSet<Rule>> invertLayer(
+            Map<Rule, Integer> layer);
 
     public void saveRuleLayer();
 
@@ -151,5 +157,4 @@ public interface TerminationLGTSInterface {
      * @return The text.
      */
     public String toString();
-
 }

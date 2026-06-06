@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.convert;
 
@@ -43,8 +44,8 @@ public class WSDL2ggx implements XMLObject {
         try {
             return gragra.getTypeSet().getTypeGraph().createNode(nt);
         } catch (TypeException ex) {
+            return null;
         }
-        return null;
     }
 
     private void addAttr(AttrHandler attrHandler, Type nodeType, String aType, String aName) {

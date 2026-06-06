@@ -1,15 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
+ * *****************************************************************************
  */
 package agg.ruleappl;
 
@@ -20,7 +17,6 @@ package agg.ruleappl;
 public class ApplicabilityConstants {
 
     public final static String UNDEFINED = "undefined";
-
     /**
      * Rule applicability criterion 1...4
      */
@@ -28,17 +24,14 @@ public class ApplicabilityConstants {
      * 1
      */
     public final static String INITIALIZATION = "initialization";
-
     /**
      * 2
      */
     public final static String NO_NODE_DELETING = "no-node-deleting-rules";
-
     /**
      * 3
      */
     public final static String NO_IMPEDING_PREDECESSORS = "no-impeding-predecessors";
-
     /**
      * 4a
      */
@@ -55,15 +48,11 @@ public class ApplicabilityConstants {
      * 4d
      */
     public final static String PREDECESSOR_NOT_NEEDED = "predecessor-not-needed";
-
     public final static String NO_ENABLING_PREDECESSOR_NAC = "no-enabling-predecessor-nac";
-
     public final static String ENABLING_PREDECESSOR = "enabling-predecessor";
-
     /**
      * Rule non-applicability criterion
      */
     public final static String INITIALIZATION_ERROR = "initialization-error";
     public final static String NO_ENABLING_PREDECESSOR = "no-enabling-predecessor";
-
 }

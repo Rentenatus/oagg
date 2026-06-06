@@ -1,18 +1,17 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.attribute.impl;
-
-import java.util.Enumeration;
-import java.util.Vector;
 
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrMember;
@@ -27,10 +26,12 @@ import agg.attribute.view.AttrViewSetting;
 import agg.attribute.view.impl.OpenViewSetting;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
 import org.w3c.dom.Element;
-
 //import agg.util.Debug;
+
 /**
  * @author $Author: olga $
  * @version $Id: DeclTuple.java,v 1.30 2010/11/28 22:11:36 olga Exp $
@@ -40,16 +41,12 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
         XMLObject {
 
     protected static AttrViewSetting fixedFormSetting;
-
     private OpenViewSetting view;
-
     /**
      * Parent list of this type. All parent entries are "inherited".
      */
     final protected Vector<DeclTuple> parents = new Vector<DeclTuple>(5);
-
     final private Vector<DeclTuple> directParents = new Vector<DeclTuple>(5);
-
     protected boolean loneDeclaration = false;
 
     public DeclTuple(AttrTupleManager manager) {
@@ -71,10 +68,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
             this.view.removeFormat(this);
         }
         this.view = null;
-    }
-
-    protected void finalize() {
-        super.finalize();
     }
 
     // multiple inheritance
@@ -105,12 +98,12 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
         if (index < this.directParents.size()) {
             return this.directParents.get(index);
         }
-
         return null;
     }
 
     /**
-     * Returns <code>true</code> if the given attribute type is one of my parents. Otherwise returns <code>false</code>.
+     * Returns <code>true</code> if the given attribute type is one of my
+     * parents. Otherwise returns <code>false</code>.
      *
      * @param an attribute type
      */
@@ -123,8 +116,8 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     }
 
     /**
-     * Returns <code>true</code> if the given attribute type is one of my children. Otherwise returns
-     * <code>false</code>.
+     * Returns <code>true</code> if the given attribute type is one of my
+     * children. Otherwise returns <code>false</code>.
      *
      * @param an attribute type
      */
@@ -145,8 +138,8 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     }
 
     /**
-     * Own size is added to the parents' size, recursively, so the result ist the total number of declarations known to
-     * this instance.
+     * Own size is added to the parents' size, recursively, so the result ist
+     * the total number of declarations known to this instance.
      */
     public int getSize() {
         // return getParentSize() + rawGetSize();
@@ -167,7 +160,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
         if (this.parents.isEmpty()) {
             return 0;
         }
-
         for (int i = 0; i < this.parents.size(); i++) {
             s = s + this.parents.get(i).rawGetSize(); // getSize();
         }
@@ -177,7 +169,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     public Vector<DeclTuple> getDirectParents() {
         return this.directParents;
     }
-
 //	private void showParents(Vector<DeclTuple> parentList) {
 //		if (parentList == parents)
 //			System.out.println("DeclTuple:: All Relatives of  \""
@@ -191,6 +182,7 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
 //		}
 //		System.out.println("\n***************************");
 //	}
+
     /**
      * Transforming a root index into the corresponding index of this leaf.
      *
@@ -221,8 +213,8 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     }
 
     /**
-     * Convenience method for internal operations; works much like the generic getMemberAt( int index ), but returns the
-     * appropriate member type.
+     * Convenience method for internal operations; works much like the generic
+     * getMemberAt( int index ), but returns the appropriate member type.
      *
      * @see agg.attribute.impl.TupleObject#getMemberAt( int )
      */
@@ -231,8 +223,8 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     }
 
     /**
-     * Convenience method for internal operations; works much like the generic getMemberAt( int index ), but returns the
-     * appropriate member type.
+     * Convenience method for internal operations; works much like the generic
+     * getMemberAt( int index ), but returns the appropriate member type.
      *
      * @see agg.attribute.impl.TupleObject#getMemberAt( String )
      */
@@ -241,7 +233,8 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     }
 
     /**
-     * Subclasses use/override this method in order to create their own members of the appropriate type.
+     * Subclasses use/override this method in order to create their own members
+     * of the appropriate type.
      */
     protected DeclMember newMember() {
         return new DeclMember(this);
@@ -269,15 +262,16 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
 
     // Services for DeclMember
     /**
-     * Checking the validity of a name as a unique key for a member. Tests if 'name' is assigned to more than one
-     * member. If so, the method 'setNameValid( false )' is invoked on every such member. Otherwise, 'setNameValid( true
-     * )' is invoked on the member with this name if such a member exists. Called by DeclMember when changing the name.
+     * Checking the validity of a name as a unique key for a member. Tests if
+     * 'name' is assigned to more than one member. If so, the method
+     * 'setNameValid( false )' is invoked on every such member. Otherwise,
+     * 'setNameValid( true )' is invoked on the member with this name if such a
+     * member exists. Called by DeclMember when changing the name.
      */
     public void checkNameValidity(String name) {
         if (name == null) {
             return;
         }
-
 //		if (isClassName(name)) {
 //			getDeclMemberAt(name).setNameValid(false);
 //			return;
@@ -286,11 +280,9 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
         boolean valid = true;
         for (int i = 0; i < getSize(); i++) {
             // for( int i = 0; i<rawGetSize(); i++ ){ 
-
             if (getMemberAt(i) == null) {
                 continue;
             }
-
             if (name.equals(getMemberAt(i).getName())) {
                 // First time ?
                 if (first == -1) {
@@ -309,16 +301,15 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
 
     /**
      * This method is only used in
-     * <code>agg.attribute.gui.impl.TupleTableModel.setItem(Object,AttrMember,int,AttrTuple,int)</code> to check the
-     * name and the value of an attribute member. A Class name should not be used for the name and the value of an
-     * attribute member.
+     * <code>agg.attribute.gui.impl.TupleTableModel.setItem(Object,AttrMember,int,AttrTuple,int)</code>
+     * to check the name and the value of an attribute member. A Class name
+     * should not be used for the name and the value of an attribute member.
      */
     public boolean isClassName(String name) {
         Boolean cache = ((AttrTupleManager) AttrTupleManager.getDefaultManager()).classNameLookupMap.get(name);
         if (cache != null) {
             return cache.booleanValue();
         }
-
         boolean isClass = false;
         try {
             Class.forName(name);
@@ -337,10 +328,8 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
                 agg.attribute.handler.AttrHandler attrh = attrHandlers[h];
                 java.util.Vector<String> packs = ((agg.attribute.handler.impl.javaExpr.JexHandler) attrh)
                         .getClassResolver().getPackages();
-
                 for (int pi = 0; pi < packs.size(); pi++) {
                     String pack = packs.get(pi);
-
                     String test = name;
                     if (!test.startsWith(pack)) {
                         test = pack + "." + name;
@@ -378,7 +367,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
         if (m.getHoldingTuple() == this) {
             return true;
         }
-
         return false;
     }
 
@@ -386,7 +374,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
         if (getLeafMemberAt(getIndexForName(name)) != null) {
             return true;
         }
-
         return false;
     }
 
@@ -402,7 +389,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
             }
         }
         return this;
-
         /*// old code
 		 * TupleObject res = null; if( (index >= getParentsSize())) res = this;
 		 * int pos = index; int prev = 0; for(int i=0; i<parents.size(); i++){
@@ -450,7 +436,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
             if (handler == null || type == null) {
                 return null;
             }
-
             DeclMember member = newMember();
             addMember(member);
             int newIndex = getSize() - 1;
@@ -467,7 +452,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
             if (handler == null || type == null) {
                 return null;
             }
-
             DeclMember member = newMember();
             addMember(index, member);
             member.setName(name);
@@ -502,7 +486,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
 
     public void deleteMemberAt(String name) {
 //		deleteMemberAt(getIndexForName(name));
-
         int index = getIndexForName(name);
         if (index >= 0) {
             deleteMemberAt(index);
@@ -537,7 +520,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
                 } else {
                     ((DeclMember) mem).setVisible(false);
                 }
-
 //				if (mem.getType() == null || mem.getTypeName().length() == 0) {
 //					System.out
 //							.println("DeclTuple.XreadObject: WARNING!"
@@ -559,7 +541,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
 //						+ "\nAn attribute member could not be created, "
 //						+ "\nbecause type and name of the member are empty.");
 //			}
-
             h.close();
         }
     }
@@ -567,12 +548,12 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     /**
      * Translation between number- and name-oriented access.
      *
-     * @return The corresponding index if the name is declared within the tuple, -1 otherwise.
+     * @return The corresponding index if the name is declared within the tuple,
+     * -1 otherwise.
      */
     public int getIndexForName(String name) {
         int size = getSize();
         String n;
-
         for (int i = 0; i < size; i++) {
             // n = getDeclMemberAt(i).getName();
             DeclMember dm = getDeclMemberAt(i);
@@ -602,8 +583,9 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     }
 
     /**
-     * Check if 'text'is already defined as attribute name. Returns an attribute status code as result of the attribute
-     * name check. It is failed for the status code > 0.
+     * Check if 'text'is already defined as attribute name. Returns an attribute
+     * status code as result of the attribute name check. It is failed for the
+     * status code > 0.
      *
      * @see AttrMsgCode interface
      */
@@ -660,8 +642,8 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     // Begin of AttrType interface implementation.
     /**
      * *************************************************************************
-     * Getting the total number of attribute entries (lines); The retrieval index range is [0 .. (getNumberOfEntries() -
-     * 1)].
+     * Getting the total number of attribute entries (lines); The retrieval
+     * index range is [0 .. (getNumberOfEntries() - 1)].
      */
     public int getNumberOfEntries() {
         return getSize();
@@ -685,7 +667,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
         if (getDeclMemberAt(entryIndex) != null) {
             return getDeclMemberAt(entryIndex).getName();
         }
-
         return "";
     }
 
@@ -808,7 +789,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
 //	private DeclMember getEntryAt(int index) {
 //		return (DeclMember) getMemberAt(index);
 //	}
-
     /*
 	 * Getting a declaration by the name, not the number.
 	 * 
@@ -821,7 +801,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
     public void setParent(DeclTuple newParent) {
         // assignParent (newParent);
         addParent(newParent);
-
         Enumeration<AttrObserver> en = getObservers();
         while (en.hasMoreElements()) {
             AttrObserver obs = en.nextElement();
@@ -843,7 +822,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
                 && !this.parents.contains(p)) {
             p.addObserver(this);
             this.parent = p;
-
             for (int i = 0; i < p.getParents().size(); i++) {
                 DeclTuple pi = p.getParents().get(i);
                 if (!this.parents.contains(pi)) {
@@ -853,7 +831,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
             }
             this.parents.add(p);
             this.directParents.add(p);
-
             refreshObservers();
             return true;
         }
@@ -891,7 +868,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
                 if (this.directParents.contains(p)) {
                     this.directParents.remove(p);
                 }
-
                 boolean canremove = true;
                 for (int i = 0; i < this.directParents.size(); i++) {
                     DeclTuple pi = this.directParents.get(i);
@@ -904,7 +880,6 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
                     p.removeObserver(this);
                     this.parents.remove(p);
                 }
-
                 for (int i = 0; i < p.getParents().size(); i++) {
                     DeclTuple pi = p.getParents().get(i);
                     if (this.parents.contains(pi)) {
@@ -997,9 +972,7 @@ public class DeclTuple extends TupleObject implements AttrType, AttrMsgCode,
             }
         }
     }
-
 }
-
 /*
  * $Log: DeclTuple.java,v $
  * Revision 1.30  2010/11/28 22:11:36  olga

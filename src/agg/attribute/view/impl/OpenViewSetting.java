@@ -2,18 +2,19 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.view.impl;
 
 import java.lang.ref.WeakReference;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
-
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrObserver;
 import agg.attribute.AttrTuple;
@@ -35,24 +36,18 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     /**
      * Table of tuple formats for (type) tuples.
      */
-    protected Hashtable<DeclTuple, TupleFormat> formatTab;
-
+    protected Map<DeclTuple, TupleFormat> formatTab;
     protected MaskedViewSetting maskedView;
-
     protected int lastOpenDeletedSlot0 = -1;
-
     protected int lastOpenDeletedSlot1 = -1;
-
     protected int lastMaskedDeletedSlot0 = -1;
-
     protected int lastMaskedDeletedSlot1 = -1;
-
     static final long serialVersionUID = 4242537253046200014L;
 
     public OpenViewSetting(AttrTupleManager m) {
         super(m);
         this.maskedView = new MaskedViewSetting(this);
-        this.formatTab = new Hashtable<DeclTuple, TupleFormat>(50);
+        this.formatTab = new HashMap<DeclTuple, TupleFormat>(50);
     }
 
     /**
@@ -75,8 +70,9 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     }
 
     /**
-     * Getting the tuple format for a (type) tuple. Format tuples are created lazily "on demand". It means that when
-     * there is no format for the specified AttrTuple yet, it is created and returned.
+     * Getting the tuple format for a (type) tuple. Format tuples are created
+     * lazily "on demand". It means that when there is no format for the
+     * specified AttrTuple yet, it is created and returned.
      */
     protected TupleFormat getFormat(AttrTuple attr) {
         TupleFormat format = rawGetFormat(attr);
@@ -109,7 +105,8 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     // Public methods
     //
     /**
-     * Called by addObserver(), from MaskedViewSetting as well as from this class.
+     * Called by addObserver(), from MaskedViewSetting as well as from this
+     * class.
      */
     public void ensureBeingAttrObserver(AttrTuple attr) {
         // System.out.println("OpenViewSetting.ensureBeingAttrObserver vor
@@ -117,7 +114,6 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
         if (attr == null) {
             return;
         }
-
         DeclTuple type = ((TupleObject) attr).getTupleType();
         if (!hasObserversForTuple(attr)) {
             type.addObserver(this);
@@ -127,7 +123,8 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     }
 
     /**
-     * Called by removeObserver(), from MaskedViewSetting as well as from this class.
+     * Called by removeObserver(), from MaskedViewSetting as well as from this
+     * class.
      */
     public void stopObservingIfNeedless(AttrTuple attr) {
 //		DeclTuple type = ((TupleObject) attr).getTupleType();
@@ -155,7 +152,6 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
         if (attr == null) {
             return;
         }
-
         ensureBeingAttrObserver(attr);
         addObserverForTuple(o, attr);
     }
@@ -195,10 +191,8 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
         TupleFormat f = getFormat(attr);
         synchronized (f) {
             f.setVisible(b, slot);
-
             ((DeclMember) (((TupleObject) attr).getTupleType())
                     .getMemberAt(slot)).setVisible(b);
-
             fireAttrChanged(((TupleObject) attr).getTupleType(),
                     AttrViewEvent.MEMBER_VISIBILITY, slot, slot);
             this.maskedView.fireAttrChanged(((TupleObject) attr).getTupleType(),
@@ -238,7 +232,6 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
 
     public void moveSlotInserting(AttrTuple attr, int srcSlot, int destSlot) {
         getFormat(attr).moveSlotInserting(srcSlot, destSlot);
-
         fireAttrChanged(((TupleObject) attr).getTupleType(),
                 AttrViewEvent.MEMBER_MOVED, srcSlot, destSlot);
         if (isVisible(attr, destSlot)) {
@@ -252,12 +245,9 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
         // System.out.println("OpenViewSetting.resetTuple... "+
         // attr.hashCode());
         DeclTuple type = ((TupleObject) attr).getTupleType();
-
         removeFormat(type);
-
 //		TupleFormat format = 
         getFormat(type);
-
         // Hashtable t = getIndexOfSameMember(attr); // -olga
         // System.out.println("after getFormat: "+type.getSize()+"
         // "+type.getNumberOfEntries());
@@ -270,7 +260,7 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     /*
 	private Hashtable<DeclMember, Vector<Integer>> getIndexOfSameMember(AttrTuple attr) {
 		DeclTuple type = ((TupleObject) attr).getTupleType();
-		Hashtable<DeclMember, Vector<Integer>> t = new Hashtable<DeclMember, Vector<Integer>>();
+		Map<DeclMember, Vector<Integer>> t = new HashMap<DeclMember, Vector<Integer>>();
 		int length = type.getNumberOfEntries();
 		for (int i = 0; i < length; i++) {
 			DeclMember mi = (DeclMember) type.getMemberAt(i);
@@ -283,12 +273,11 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
 							// System.out.println(attr);
 							// mi.setEnabled(false);
 							// mi.setVisible(false);
-
 							System.out.println(i + " | " + j + ":  "
 									+ mi.getHoldingTuple().hashCode()
 									+ "  ==  "
 									+ mj.getHoldingTuple().hashCode());
-							v.add(new Integer(j));
+							v.add(j);
 						}
 					}
 				}
@@ -304,7 +293,6 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
         // attr.hashCode());
         DeclTuple type = ((TupleObject) attr).getTupleType();
         // removeFormat( type );
-
         // multiple inheritance - olga
         removeFormat(type);
         getFormat(type);
@@ -316,8 +304,9 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     }
 
     /**
-     * AttrObserver implementation; Attribute event handling relies on the fact that an AttrType always sends its
-     * MEMBER_ADDED and MEMBER_DELETED events before his AttrInstance.
+     * AttrObserver implementation; Attribute event handling relies on the fact
+     * that an AttrType always sends its MEMBER_ADDED and MEMBER_DELETED events
+     * before his AttrInstance.
      */
     public void attributeChanged(AttrEvent event) {
         // System.out.println(this+ " attributeChanged "+event+")");
@@ -325,7 +314,6 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
         int id = event.getID();
         int index0 = event.getIndex0();
         int index1 = event.getIndex1();
-
         switch (id) {
             case AttrEvent.MEMBER_ADDED:
                 if (attr instanceof AttrType) { // Only for types
@@ -356,7 +344,6 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
 			 * lastOpenDeletedSlot1+"); ("+lastMaskedDeletedSlot0+", "+
 			 * lastMaskedDeletedSlot1+")");
                  */
-
                 notifyObservers(attr, id, this.lastOpenDeletedSlot0,
                         this.lastOpenDeletedSlot1);
                 this.maskedView.notifyObservers(attr, id, this.lastMaskedDeletedSlot0,
@@ -374,7 +361,6 @@ public class OpenViewSetting extends ViewSetting implements AttrObserver {
     public boolean isPersistentFor(AttrTuple at) {
         return true;
     }
-
 }
 /*
  * $Log: OpenViewSetting.java,v $

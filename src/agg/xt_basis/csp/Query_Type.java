@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.csp;
 
@@ -14,8 +14,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Random;
-import java.util.Vector;
-
+import java.util.ArrayList;
+import java.util.List;
 import agg.util.csp.Query;
 import agg.util.csp.Variable;
 import agg.xt_basis.GraphObject;
@@ -24,18 +24,16 @@ public class Query_Type extends Query {
 
     private HashSet<GraphObject> itsObjects;
     private HashSet<GraphObject> objList;
-
     private boolean randomized;
 
     /**
-     * Construct myself to be a constant query for the objects given in the parameter <code>objects</code>.
+     * Construct myself to be a constant query for the objects given in the
+     * parameter <code>objects</code>.
      */
     public Query_Type(HashSet<GraphObject> objects, Variable querytar) {
         super(querytar, 0);
-
         this.objList = objects;
         this.itsObjects = new LinkedHashSet<GraphObject>(objects);
-
         this.itsWeight = 0;
         if (querytar.getKind() == 1) // its is an Arc
         {
@@ -47,7 +45,6 @@ public class Query_Type extends Query {
         super(querytar, 0);
 //		System.out.println(((GraphObject)this.itsTarget.getGraphObject()).getType().convertToKey());
         itsObjects = new LinkedHashSet<GraphObject>();
-
         this.itsWeight = 0;
         if (querytar.getKind() == 1) // its is an Arc
         {
@@ -57,9 +54,7 @@ public class Query_Type extends Query {
 
     public void setObjects(final HashSet<GraphObject> objects) {
         if (objects != null && this.objList != objects) {
-
             this.objList = objects;
-
             if (this.randomized && this.objList.size() > 1) {
                 this.itsObjects.clear();
                 this.randomize(this.objList);
@@ -80,7 +75,6 @@ public class Query_Type extends Query {
                 this.itsObjects.clear();
                 this.itsObjects.addAll(this.objList);
             }
-
             getTarget().setDomainSize(this.itsObjects.size());
         }
     }
@@ -106,7 +100,6 @@ public class Query_Type extends Query {
     public final String getKind() {
         return "Query_Type";
     }
-
     // pablo -->
     /**
      * Caches results of getAvgOutgoingDegree().
@@ -116,17 +109,16 @@ public class Query_Type extends Query {
     int outgoing = -1;
 
     /**
-     * Calculates the average degree of incoming arcs of all nodes in this type query.
+     * Calculates the average degree of incoming arcs of all nodes in this type
+     * query.
      */
     public final int getAvgOutgoingDegree() {
         if (this.getSize() <= 0) {
             return 0;
         }
-
         // calculate average degree
         if (this.outgoing == -1) {
             this.outgoing = 0;
-
             Iterator<?> iter = this.itsObjects.iterator();
             while (iter.hasNext()) {
                 GraphObject go = (GraphObject) iter.next();
@@ -134,10 +126,8 @@ public class Query_Type extends Query {
             }
             this.outgoing /= this.getSize();
         }
-
         return this.outgoing;
     }
-
     /**
      * Caches results of getAvgIncomingDegree().
      *
@@ -152,11 +142,9 @@ public class Query_Type extends Query {
         if (this.getSize() <= 0) {
             return 0;
         }
-
         // calculate average degree
         if (this.incoming == -1) {
             this.incoming = 0;
-
             Iterator<?> iter = this.itsObjects.iterator();
             while (iter.hasNext()) {
                 GraphObject go = (GraphObject) iter.next();
@@ -164,7 +152,6 @@ public class Query_Type extends Query {
             }
             this.incoming /= this.getSize();
         }
-
         return this.incoming;
     }
 
@@ -176,7 +163,7 @@ public class Query_Type extends Query {
     }
 
     private void randomize(HashSet<GraphObject> objects) {
-        final Vector<GraphObject> newDom = new Vector<GraphObject>(objects);
+        final List<GraphObject> newDom = new ArrayList<GraphObject>(objects);
         final Random r = new Random();
         while (newDom.size() > 0) {
             int domSize = newDom.size();
@@ -189,5 +176,4 @@ public class Query_Type extends Query {
     public void setRandomizedDomain(boolean randomized) {
         this.randomized = randomized;
     }
-
 }

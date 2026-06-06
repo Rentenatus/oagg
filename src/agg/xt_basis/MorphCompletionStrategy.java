@@ -2,20 +2,19 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Dictionary;
-
+import java.util.Map;
 import agg.util.StrategyProperties;
 import agg.util.csp.Variable;
 import agg.xt_basis.csp.CompletionPropertyBits;
@@ -25,15 +24,10 @@ public class MorphCompletionStrategy implements StrategyProperties,
         CompletionPropertyBits, Cloneable {
 
     private BitSet itsSupportedProperties;
-
     protected BitSet itsProperties;
-
     protected String itsName = "";
-
     protected boolean randomDomain;
-
     protected boolean parallel;
-
     protected boolean startParallelMatchByFirstCSPVar;
 
     public MorphCompletionStrategy() {
@@ -82,7 +76,8 @@ public class MorphCompletionStrategy implements StrategyProperties,
     }
 
     /**
-     * Allows to define for CSP solver that it should always start the next completion by the first CSP variable.
+     * Allows to define for CSP solver that it should always start the next
+     * completion by the first CSP variable.
      */
     public void setStartParallelSearchByFirst(boolean b) {
         this.startParallelMatchByFirstCSPVar = b;
@@ -93,15 +88,17 @@ public class MorphCompletionStrategy implements StrategyProperties,
     }
 
     /**
-     * Return information about what properties I support. A property is supported if its corresponding bit is set.
+     * Return information about what properties I support. A property is
+     * supported if its corresponding bit is set.
      */
     public final BitSet getSupportedProperties() {
         return (BitSet) this.itsSupportedProperties.clone();
     }
 
     /**
-     * Return information about what properties are currently activated. Properties can be activated or deactivated by
-     * setting or clearing their respective bits via the <code>BitSet</code> interface.
+     * Return information about what properties are currently activated.
+     * Properties can be activated or deactivated by setting or clearing their
+     * respective bits via the <code>BitSet</code> interface.
      */
     public final BitSet getProperties() {
         return this.itsProperties;
@@ -144,8 +141,8 @@ public class MorphCompletionStrategy implements StrategyProperties,
     }
 
     /**
-     * Return <code>true</code> iff the given object is an instance of the same concrete strategy class as me and has
-     * the same property bits set.
+     * Return <code>true</code> iff the given object is an instance of the same
+     * concrete strategy class as me and has the same property bits set.
      */
     public final boolean equals(Object other) {
         return (other instanceof MorphCompletionStrategy && this.itsProperties
@@ -153,8 +150,8 @@ public class MorphCompletionStrategy implements StrategyProperties,
     }
 
     /**
-     * Reset my internal state, so that the forthcoming invocation of <code>next()</code> computes the first completion
-     * of the given morphism.
+     * Reset my internal state, so that the forthcoming invocation of
+     * <code>next()</code> computes the first completion of the given morphism.
      */
     public void reset() {
     }
@@ -166,8 +163,8 @@ public class MorphCompletionStrategy implements StrategyProperties,
     }
 
     /**
-     * Compute the next completion of <code>morph</code>. Invoke this method successively with the same argument to get
-     * all completions of a morphism.
+     * Compute the next completion of <code>morph</code>. Invoke this method
+     * successively with the same argument to get all completions of a morphism.
      *
      * @param morph the morphism to totalize.
      * @return <code>false</code> if there are no more completions.
@@ -177,8 +174,10 @@ public class MorphCompletionStrategy implements StrategyProperties,
     }
 
     /**
-     * Compute the next completion of <code>morph</code> for the nodes and edges specified by Vector varnodes and Vector
-     * varedges. Invoke this method successively with the same arguments to get all completions of a morphism.
+     * Compute the next completion of <code>morph</code> for the nodes and edges
+     * specified by Vector varnodes and Vector varedges. Invoke this method
+     * successively with the same arguments to get all completions of a
+     * morphism.
      *
      * @return <code>false</code> if there are no more completions.
      */
@@ -202,9 +201,7 @@ public class MorphCompletionStrategy implements StrategyProperties,
             aClone.randomDomain = this.randomDomain;
             aClone.parallel = this.parallel;
             aClone.startParallelMatchByFirstCSPVar = this.startParallelMatchByFirstCSPVar;
-
             return aClone;
-
         } catch (CloneNotSupportedException exc) {
             throw new RuntimeException(exc.getMessage());
         }
@@ -253,7 +250,7 @@ public class MorphCompletionStrategy implements StrategyProperties,
     public void resetTypeMap(Graph g) {
     }
 
-    public void resetTypeMap(Hashtable<String, HashSet<GraphObject>> typemap) {
+    public void resetTypeMap(Map<String, HashSet<GraphObject>> typemap) {
     }
 
     public void resetVariableDomain(boolean instanceNull) {
@@ -277,30 +274,31 @@ public class MorphCompletionStrategy implements StrategyProperties,
     }
 
     public void setRelatedInstanceVarMap(
-            Dictionary<Object, Variable> relatedVarMap) {
+            Map<Object, Variable> relatedVarMap) {
     }
 
     public boolean hasRelatedInstanceVarMap() {
         return false;
     }
 
-    public Dictionary<Object, Variable> getInstanceVarMap() {
+    public Map<Object, Variable> getInstanceVarMap() {
         return null;
     }
-
 //	public void resetSolverVariablesFromIndex(int startIndx) {
 //	}
+
     /**
-     * An additional object name constraint will be added for the CSP variable of the given GraphObject anObj. This
-     * constraint requires equality of the object names.<br>
+     * An additional object name constraint will be added for the CSP variable
+     * of the given GraphObject anObj. This constraint requires equality of the
+     * object names.<br>
      * Each subclass should implement this method.
      */
     public void addObjectNameConstraint(GraphObject anObj) {
     }
 
     /**
-     * Removes the object name constraint for the CSP variable of the given GraphObject anObj. Each subclass should
-     * implement this method.
+     * Removes the object name constraint for the CSP variable of the given
+     * GraphObject anObj. Each subclass should implement this method.
      */
     public void removeObjectNameConstraint(GraphObject anObj) {
     }

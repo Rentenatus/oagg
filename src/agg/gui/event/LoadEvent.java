@@ -2,22 +2,23 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.event;
 
 import java.awt.Component;
 import java.util.EventObject;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.saveload.GraGraLoad;
 
 /**
- * A LoadEvent is used to notify the loading state of the loaded gragra or errors.
+ * A LoadEvent is used to notify the loading state of the loaded gragra or
+ * errors.
  *
  * @author olga
  * @version $ID:$
@@ -26,29 +27,17 @@ import agg.gui.saveload.GraGraLoad;
 public class LoadEvent extends EventObject {
 
     public static final int LOAD = 0;
-
     public static final int PROGRESS_BEGIN = 1;
-
     public static final int PROGRESS_FINISHED = 2;
-
     public static final int SECURITY_ERROR = 3;
-
     public static final int STREAM_ERROR = 4;
-
     public static final int CLASS_NOT_FOUND_ERROR = 5;
-
     public static final int INVALID_CLASS_ERROR = 6;
-
     public static final int DATA_ERROR = 7;
-
     public static final int IO_ERROR = 8;
-
     public static final int UNKNOWN_ERROR = 9;
-
     public static final int EMPTY_ERROR = 10;
-
     public static final int STACK_OVERFLOW_ERROR = 11;
-
     public static final int LOADED = 12;
 
     public LoadEvent(Object source, int key, String fileName) {
@@ -124,17 +113,10 @@ public class LoadEvent extends EventObject {
     public EdGraGra getGraGra() {
         return this.gragra;
     }
-
     private int msgkey;
-
     private String msg;
-
     private String msg1;
-
     private String name;
-
     private EdGraGra gragra;
-
     private Component component;
-
 }

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -23,7 +24,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Vector;
-
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,7 +34,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.TitledBorder;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdType;
 import agg.gui.editor.EditorConstants;
@@ -55,26 +54,17 @@ import agg.gui.icons.RoundRectShapeIcon;
 public class NodeEdgeTypeSelectionDialog {
 
     public final static int YES_OPTION = 0;
-
     protected final JDialog dialog;
-
     protected final JButton button, button2;
-
     protected boolean cancelled;
-
     protected EdGraGra gragra;
-
     protected EdType nodeType, edgeType;
-
     protected Vector<EdType> edgeTypes, nodeTypes;
-
     @SuppressWarnings("rawtypes")
     protected JComboBox edgeTypeCB, nodeTypeCB;
-
     final Object[] options = {"Continue", "Cancel"};
 
     public NodeEdgeTypeSelectionDialog(final JFrame parent) {
-
         this.dialog = new JDialog(parent, "Select Type");
         this.dialog.setModal(true);
 //		this.dialog.setLocationRelativeTo(parent);	
@@ -83,7 +73,6 @@ public class NodeEdgeTypeSelectionDialog {
                 NodeEdgeTypeSelectionDialog.this.dialog.setVisible(false);
             }
         });
-
         this.button = new JButton("Option");
         this.button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -91,7 +80,6 @@ public class NodeEdgeTypeSelectionDialog {
                 NodeEdgeTypeSelectionDialog.this.dialog.setVisible(false);
             }
         });
-
         this.button2 = new JButton("Option2");
         this.button2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -99,7 +87,6 @@ public class NodeEdgeTypeSelectionDialog {
                 NodeEdgeTypeSelectionDialog.this.dialog.setVisible(false);
             }
         });
-
         if (this.options.length == 2) {
             if (this.options[0] instanceof String) {
                 this.button.setText((String) this.options[0]);
@@ -108,13 +95,10 @@ public class NodeEdgeTypeSelectionDialog {
                 this.button2.setText((String) this.options[1]);
             }
         }
-
         final JPanel content = new JPanel(new BorderLayout());
         initContent(content);
-
         this.dialog.getContentPane().add(content);
         this.dialog.validate();
-
         this.dialog.setPreferredSize(new Dimension(300, 350));
         this.dialog.pack();
     }
@@ -136,35 +120,27 @@ public class NodeEdgeTypeSelectionDialog {
         p.add(new JLabel("        ColorGraph format.                 "));
         p.add(new JLabel("                                           "));
         p.add(new JLabel("                                           "));
-
         content.add(p, BorderLayout.NORTH);
-
         final JPanel p11 = new JPanel(new BorderLayout());
         p11.setBorder(new TitledBorder("  Node  Type  "));
         p11.add(createNodeTypeComboBox(), BorderLayout.CENTER);
         p11.add(new JLabel("           "), BorderLayout.SOUTH);
-
         final JPanel p21 = new JPanel(new BorderLayout());
         p21.setBorder(new TitledBorder("  Edge  Type  "));
         p21.add(createEdgeTypeComboBox(), BorderLayout.CENTER);
         p21.add(new JLabel("           "), BorderLayout.SOUTH);
-
         final JPanel p3 = new JPanel();
         p3.add(p11);
         p3.add(p21);
-
         content.add(p3, BorderLayout.CENTER);
-
         final JPanel p5 = new JPanel();
         p5.add(this.button);
         p5.add(new JLabel("          "));
         p5.add(this.button2);
-
         final JPanel p6 = new JPanel(new BorderLayout());
         p6.add(new JLabel("          "), BorderLayout.NORTH);
         p6.add(p5, BorderLayout.CENTER);
         p6.add(new JLabel("          "), BorderLayout.SOUTH);
-
         content.add(p6, BorderLayout.SOUTH);
     }
 
@@ -182,14 +158,11 @@ public class NodeEdgeTypeSelectionDialog {
 
     public void setGraGra(EdGraGra gra) {
         this.gragra = gra;
-
         updateNodeTypeComboBox(null);
         updateEdgeTypeComboBox(null);
-
         if (this.gragra != null) {
             updateNodeTypeComboBox(this.gragra.getTypeSet().getNodeTypes());
             updateEdgeTypeComboBox(this.gragra.getTypeSet().getArcTypes());
-
 //			int indx1 = this.nodeTypeCB.getSelectedIndex();
 //			int indx2 = this.edgeTypeCB.getSelectedIndex();
         }
@@ -299,11 +272,9 @@ public class NodeEdgeTypeSelectionDialog {
         if (this.nodeTypeCB != null) {
             this.nodeTypeCB.removeAllItems();
         }
-
         if (this.nodeTypes == null) {
             return this.nodeTypeCB;
         }
-
         this.nodeTypeCB.addItem(new JLabel("ALL"));
         for (int i = 0; i < this.nodeTypes.size(); i++) {
             EdType t = this.nodeTypes.get(i);
@@ -312,7 +283,6 @@ public class NodeEdgeTypeSelectionDialog {
             l.setForeground(t.getColor());
             this.nodeTypeCB.addItem(l);
         }
-
         return this.nodeTypeCB;
     }
 
@@ -322,11 +292,9 @@ public class NodeEdgeTypeSelectionDialog {
         if (this.edgeTypeCB != null) {
             this.edgeTypeCB.removeAllItems();
         }
-
         if (this.edgeTypes == null) {
             return this.edgeTypeCB;
         }
-
         this.edgeTypeCB.addItem(new JLabel("ALL"));
         for (int i = 0; i < this.edgeTypes.size(); i++) {
             EdType t = this.edgeTypes.get(i);
@@ -335,7 +303,6 @@ public class NodeEdgeTypeSelectionDialog {
             l.setForeground(t.getColor());
             this.edgeTypeCB.addItem(l);
         }
-
         return this.edgeTypeCB;
     }
 

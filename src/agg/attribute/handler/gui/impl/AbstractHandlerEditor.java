@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.gui.impl;
 
 import java.util.Enumeration;
 import java.util.Vector;
-
 import agg.attribute.handler.gui.HandlerChangeEvent;
 import agg.attribute.handler.gui.HandlerEditor;
 import agg.attribute.handler.gui.HandlerEditorObserver;
@@ -26,7 +26,8 @@ import agg.attribute.handler.gui.HandlerEditorObserver;
 public class AbstractHandlerEditor extends Object implements HandlerEditor {
 
     /**
-     * Container with observers of this instance, all of which implement the HandlerEditorObserver interface.
+     * Container with observers of this instance, all of which implement the
+     * HandlerEditorObserver interface.
      */
     final protected transient Vector<HandlerEditorObserver> observers = new Vector<HandlerEditorObserver>(
             10, 10);
@@ -51,7 +52,6 @@ public class AbstractHandlerEditor extends Object implements HandlerEditor {
 
     protected void fireEditingCancelled(HandlerChangeEvent evt) {
         HandlerEditorObserver obs;
-
         for (Enumeration<HandlerEditorObserver> en = this.observers.elements(); en.hasMoreElements();) {
             obs = en.nextElement();
             obs.editingCancelled(evt);
@@ -64,13 +64,11 @@ public class AbstractHandlerEditor extends Object implements HandlerEditor {
 
     protected void fireEditingStopped(HandlerChangeEvent evt) {
         HandlerEditorObserver obs;
-
         for (Enumeration<HandlerEditorObserver> en = this.observers.elements(); en.hasMoreElements();) {
             obs = en.nextElement();
             obs.editingStopped(evt);
         }
     }
-
 }
 /*
  * $Log: AbstractHandlerEditor.java,v $

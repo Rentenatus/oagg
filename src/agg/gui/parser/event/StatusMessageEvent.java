@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.parser.event;
 
@@ -27,7 +28,6 @@ public class StatusMessageEvent extends EventObject {
      * @serial All events are serializable.
      */
     private String label;
-
     /**
      * The message
      *
@@ -36,8 +36,9 @@ public class StatusMessageEvent extends EventObject {
     private String message;
 
     /**
-     * This is the main constructor. It is possible to specify a text for the green box and a message for the status
-     * bar. If the empty string is set the field is unchanged.
+     * This is the main constructor. It is possible to specify a text for the
+     * green box and a message for the status bar. If the empty string is set
+     * the field is unchanged.
      *
      * @param source the source of the event
      * @param theLabel the little green box

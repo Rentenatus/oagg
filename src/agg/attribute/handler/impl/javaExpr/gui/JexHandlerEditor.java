@@ -2,21 +2,21 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.impl.javaExpr.gui;
-
 //import agg.attribute.gui.TextField;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
-
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -32,7 +32,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.gui.HandlerCustomizingEditor;
 import agg.attribute.handler.gui.impl.AbstractHandlerEditor;
@@ -53,21 +52,13 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
         RowDragListener {
 
     protected JexHandler handler;
-
     protected ClassResolver classResolver;
-
     protected Vector<String> packages;
-
     protected PackageTableModel tableModel;
-
     protected JPanel mainPanel;
-
     protected JPanel packageP, buttonP, entriesP, inputP;
-
     protected JTable entriesL;
-
     protected JTextField inputTF;
-
     protected Action insertAction, appendAction, deleteAction;
 
     @SuppressWarnings("serial")
@@ -75,7 +66,6 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
         super();
         this.handler = (JexHandler) h;
         this.classResolver = this.handler.getClassResolver();
-
         // Package list
         this.tableModel = new PackageTableModel();
         this.entriesL = new JTable(this.tableModel);
@@ -85,10 +75,8 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
         this.entriesL.getSelectionModel().addListSelectionListener(this);
         // this.entriesL.setMaximumSize(new Dimension( 100, 5 ));
         this.entriesL.setPreferredScrollableViewportSize(new Dimension(200, 100));
-
         TableRowDragger rowDragger = new TableRowDragger(this.entriesL);
         rowDragger.addRowDragListener(this);
-
         // Package list decoration
         JScrollPane listScrollPane = new JScrollPane(this.entriesL);
         /*
@@ -97,19 +85,15 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
 		 * listScrollPane.setBorder( new BevelBorder( BevelBorder.LOWERED ));
          */
         listScrollPane.setPreferredSize(new Dimension(200, 100));
-
         this.entriesP = new JPanel();
         this.entriesP.setLayout(new BorderLayout());
         this.entriesP.add(listScrollPane, "Center");
         this.entriesP.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(),
                 "Searched Packages", TitledBorder.CENTER, TitledBorder.TOP));
-
         this.entriesP.setPreferredSize(new Dimension(200, 100));
         // Tool bar
-
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-
         this.insertAction = new AbstractAction("Insert") {
             public void actionPerformed(ActionEvent ev) {
                 int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
@@ -123,7 +107,6 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
         };
         toolBar.add(this.insertAction);
         toolBar.addSeparator();
-
         this.appendAction = new AbstractAction("Append") {
             public void actionPerformed(ActionEvent ev) {
                 int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
@@ -137,7 +120,6 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
         };
         toolBar.add(this.appendAction);
         toolBar.addSeparator();
-
         this.deleteAction = new AbstractAction("Remove") {
             public void actionPerformed(ActionEvent ev) {
                 int sel = JexHandlerEditor.this.entriesL.getSelectedRow();
@@ -149,24 +131,20 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
             }
         };
         toolBar.add(this.deleteAction);
-
         // Tool bar decoration
         JPanel toolPanel = new JPanel();
         toolPanel.add(toolBar);
         // toolPanel.setPreferredSize( new Dimension( 300, 20 ));
         // buttonP.setBorder( new BevelBorder( BevelBorder.RAISED ));
-
         this.packageP = new JPanel();
         this.packageP.setLayout(new BorderLayout());
         this.packageP.add(this.entriesP, "Center");
         this.packageP.add(toolPanel, "South");
         this.packageP.setPreferredSize(new Dimension(200, 200));
-
         this.mainPanel = this.packageP; // new JPanel( new BorderLayout());
         // this.mainPanel.add( this.packageP, "Center" );
         this.mainPanel.setPreferredSize(new Dimension(200, 200));
         // this.mainPanel.setBorder( new BevelBorder( BevelBorder.LOWERED ));
-
         updateList();
     }
 
@@ -218,7 +196,6 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
         }
         // System.out.println("Source row="+src+"; dest. row="+dest);
         String p = this.packages.elementAt(src);
-
         if (src < dest) {
             appendPackageAt(p, dest);
             this.packages.removeElementAt(src);
@@ -307,7 +284,6 @@ public class JexHandlerEditor extends AbstractHandlerEditor implements
         }
     }
 }
-
 /*
  * $Log: JexHandlerEditor.java,v $
  * Revision 1.4  2010/09/23 08:13:48  olga

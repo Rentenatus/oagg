@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -16,7 +18,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import agg.util.Pair;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
@@ -28,19 +29,26 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 
 /**
- * This class allows a more comfortable access to the critical pairs of two rules. The critical pairs have to be
- * computed before.<br>
+ * This class allows a more comfortable access to the critical pairs of two
+ * rules. The critical pairs have to be computed before.<br>
  * <ul>
- * <li>Use <code>PairContainer.getCriticalPairData(Rule, Rule)</code> to get an instance of this class.</li>
- * <li>Use <code>hasCriticals()</code> and <code>next()</code> to set the current critical pair.</li>
- * <li>Use <code>getMorph1()</code>, <code>getMorph2()</code>, <code>getMorph(Rule)</code> to get the first or second
- * embedding of the rule graph into the critical graph.<br>
- * Depending of the critical kind the rule graph may be LHS, RHS or a special created graph.</li>
- * <li>Use <code>getMorph1DueToLHS()</code>, <code>getMorph2DueToLHS()</code> to get the embedding of the LHS of the
- * rule into the critical graph.</li>
- * <li>Use <code>getCriticalDataOfKind(int)</code> to get the pairs of the special conflict/dependency kind.<br>
- * (see for kind: <tt>CriticalPairData.DELETE_USE_CONFLICT, CriticalPairData.DELETE_NEED_CONFLICT,
- * CriticalPairData.PRODUCE_FORBID_CONFLICT, CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
+ * <li>Use <code>PairContainer.getCriticalPairData(Rule, Rule)</code> to get an
+ * instance of this class.</li>
+ * <li>Use <code>hasCriticals()</code> and <code>next()</code> to set the
+ * current critical pair.</li>
+ * <li>Use <code>getMorph1()</code>, <code>getMorph2()</code>,
+ * <code>getMorph(Rule)</code> to get the first or second embedding of the rule
+ * graph into the critical graph.<br>
+ * Depending of the critical kind the rule graph may be LHS, RHS or a special
+ * created graph.</li>
+ * <li>Use <code>getMorph1DueToLHS()</code>, <code>getMorph2DueToLHS()</code> to
+ * get the embedding of the LHS of the rule into the critical graph.</li>
+ * <li>Use <code>getCriticalDataOfKind(int)</code> to get the pairs of the
+ * special conflict/dependency kind.<br>
+ * (see for kind: <tt>CriticalPairData.DELETE_USE_CONFLICT,
+ * CriticalPairData.DELETE_NEED_CONFLICT,
+ * CriticalPairData.PRODUCE_FORBID_CONFLICT,
+ * CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
  * </li>
  * </ul>
  *
@@ -69,7 +77,6 @@ public class CriticalPairData {
     public static final int CREATE_DELETE_DEPENDENCY = 132;
     public static final int FORBID_PRODUCE_DEPENDENCY = 14; // r2 produces,  r1 forbids 
     public static final int PRODUCE_CHANGE_DEPENDENCY = 15; // r2 changes,  r1 changes
-
     // search text for conflict
     public static final String DELETE_USE_C_TXT = "delete-use-conflict";
     public static final String DELETE_NEED_C_TXT = "delete-need-conflict";
@@ -88,36 +95,27 @@ public class CriticalPairData {
     public static final String PRODUCE_DELETE_D_TXT = "deliver-delete-dependency"; //"delete-switch-dependency"
     public static final String FORBID_PRODUCE_D_TXT = "forbid-produce-dependency"; //"forbid-switch-dependency"	
     public static final String PRODUCE_CHANGE_D_TXT = "deliver-change-dependency";  //"change-switch-dependency" or "change-change-dependency"
-
     // old code	
     public static final String DELETE_SWITCH_D_TXT = "delete-switch-dependency";
     public static final String FORBID_SWITCH_D_TXT = "forbid-switch-dependency";
     public static final String CHANGE_SWITCH_D_TXT = "change-switch-dependency";
-
     private Rule r1;
     private Rule r2;
-
     private List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlaps;
-
     private Iterator<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> iterator;
-
     private Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pair;
-
     private HashMap<Integer, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> map;
-
     private HashMap<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>, Integer> map2;
-
     int size = 0;
 
     /**
-     * Constructs an instance of <tt>CriticalPairData</tt> with the specified rules and a list of critical overlapping
-     * pairs.
+     * Constructs an instance of <tt>CriticalPairData</tt> with the specified
+     * rules and a list of critical overlapping pairs.
      */
     public CriticalPairData(
             final Rule rule1,
             final Rule rule2,
             final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings) {
-
         this.r1 = rule1;
         this.r2 = rule2;
         this.overlaps = overlappings;
@@ -151,8 +149,10 @@ public class CriticalPairData {
 
     /**
      * Returns the kind of the current critical overlapping pair. (see for kind:
-     * <tt>CriticalPairData.DELETE_USE_CONFLICT, CriticalPairData.DELETE_NEED_CONFLICT,
-     * CriticalPairData.PRODUCE_FORBID_CONFLICT, CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
+     * <tt>CriticalPairData.DELETE_USE_CONFLICT,
+     * CriticalPairData.DELETE_NEED_CONFLICT,
+     * CriticalPairData.PRODUCE_FORBID_CONFLICT,
+     * CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
      */
     public int getKindOfCurrentCritical() {
         if (this.pair != null) {
@@ -165,9 +165,12 @@ public class CriticalPairData {
     }
 
     /**
-     * Checks whether the critical pairs contain conflicts or dependencies of the specified kind. (see for kind:
-     * <tt>CriticalPairData.DELETE_USE_CONFLICT, CriticalPairData.DELETE_NEED_CONFLICT,
-     * CriticalPairData.PRODUCE_FORBID_CONFLICT, CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
+     * Checks whether the critical pairs contain conflicts or dependencies of
+     * the specified kind. (see for kind:
+     * <tt>CriticalPairData.DELETE_USE_CONFLICT,
+     * CriticalPairData.DELETE_NEED_CONFLICT,
+     * CriticalPairData.PRODUCE_FORBID_CONFLICT,
+     * CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
      */
     public boolean hasCriticalsOfKind(int kind) {
         if (this.map.get(Integer.valueOf(kind)) != null) {
@@ -177,8 +180,10 @@ public class CriticalPairData {
     }
 
     /**
-     * Returns critical pairs of the specified kind. (see for kind: <tt>CriticalPairData.DELETE_USE_CONFLICT,
-     * CriticalPairData.DELETE_NEED_CONFLICT, CriticalPairData.PRODUCE_FORBID_CONFLICT,
+     * Returns critical pairs of the specified kind. (see for kind:
+     * <tt>CriticalPairData.DELETE_USE_CONFLICT,
+     * CriticalPairData.DELETE_NEED_CONFLICT,
+     * CriticalPairData.PRODUCE_FORBID_CONFLICT,
      * CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
      */
     public List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
@@ -188,14 +193,16 @@ public class CriticalPairData {
                 return this.map.values().iterator().next();
             }
         }
-
         return this.map.get(Integer.valueOf(kind));
     }
 
     /**
-     * Returns the critical pair data of the special conflict/dependency kind.<br>
-     * (see for kind: <tt>CriticalPairData.DELETE_USE_CONFLICT, CriticalPairData.DELETE_NEED_CONFLICT,
-     * CriticalPairData.PRODUCE_FORBID_CONFLICT, CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
+     * Returns the critical pair data of the special conflict/dependency
+     * kind.<br>
+     * (see for kind: <tt>CriticalPairData.DELETE_USE_CONFLICT,
+     * CriticalPairData.DELETE_NEED_CONFLICT,
+     * CriticalPairData.PRODUCE_FORBID_CONFLICT,
+     * CriticalPairData.DELETE_FORBID_DEPENDENCY, ...</tt>
      */
     public CriticalPairData getCriticalDataOfKind(int kind) {
         Integer key = Integer.valueOf(kind);
@@ -203,7 +210,6 @@ public class CriticalPairData {
         if (l != null) {
             return new CriticalPairData(this.r1, this.r2, l);
         }
-
         return null;
     }
 
@@ -236,38 +242,36 @@ public class CriticalPairData {
     }
 
     /**
-     * Returns the graph embedding of the first rule into the critical graph of the current overlapping pair.
+     * Returns the graph embedding of the first rule into the critical graph of
+     * the current overlapping pair.
      */
     public OrdinaryMorphism getMorph1() {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             return this.pair.first.first;
         }
-
         return null;
     }
 
     /**
-     * Returns the graph embedding of the second rule into the critical graph of the current overlapping pair.
+     * Returns the graph embedding of the second rule into the critical graph of
+     * the current overlapping pair.
      */
     public OrdinaryMorphism getMorph2() {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             return this.pair.first.second;
         }
-
         return null;
     }
 
     /**
-     * Returns the graph embedding of the specified rule into the critical graph of the current critical overlapping
-     * pair.
+     * Returns the graph embedding of the specified rule into the critical graph
+     * of the current critical overlapping pair.
      */
     public OrdinaryMorphism getMorph(final Rule r) {
         if (r == this.r1) {
@@ -280,13 +284,13 @@ public class CriticalPairData {
     }
 
     /**
-     * Returns the LHS graph embedding of the first rule into the critical graph of the current overlapping pair.
+     * Returns the LHS graph embedding of the first rule into the critical graph
+     * of the current overlapping pair.
      */
     public OrdinaryMorphism getMorph1DueToLHS() {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             if (this.pair.second == null) {
                 return this.pair.first.first;
@@ -295,18 +299,17 @@ public class CriticalPairData {
 //				return this.adjustMorph1(this.pair.first.first, this.pair.second.first);
             }
         }
-
         return null;
     }
 
     /**
-     * Returns the LHS graph embedding of the second rule into the critical graph of the current overlapping pair.
+     * Returns the LHS graph embedding of the second rule into the critical
+     * graph of the current overlapping pair.
      */
     public OrdinaryMorphism getMorph2DueToLHS() {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             if (this.pair.second == null) {
                 return this.pair.first.second;
@@ -319,18 +322,17 @@ public class CriticalPairData {
                 return this.pair.first.second;
             }
         }
-
         return null;
     }
 
     /**
-     * Returns a NAC graph embedding of the second rule into the critical graph of the current overlapping pair.
+     * Returns a NAC graph embedding of the second rule into the critical graph
+     * of the current overlapping pair.
      */
     public OrdinaryMorphism getMorph2DueToNAC() {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             if (this.pair.second == null) {
                 return null;
@@ -339,19 +341,17 @@ public class CriticalPairData {
                 return this.adjustMorph2NAC(this.pair.first.second, this.pair.second.second);
             }
         }
-
         return null;
     }
 
     /**
-     * If existing, returns a PAC graph embedding of the second rule into the critical graph of the current overlapping
-     * pair, otherwise - NULL.
+     * If existing, returns a PAC graph embedding of the second rule into the
+     * critical graph of the current overlapping pair, otherwise - NULL.
      */
     public OrdinaryMorphism getMorph2DueToPAC() {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             if (this.pair.second == null) {
                 return null;
@@ -378,7 +378,6 @@ public class CriticalPairData {
                 }
             }
         }
-
         return null;
     }
 
@@ -389,7 +388,6 @@ public class CriticalPairData {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             return this.pair.first.first.getTarget();
         }
@@ -397,18 +395,16 @@ public class CriticalPairData {
     }
 
     /**
-     * Returns the overlapping graph objects of the current critical overlapping pair. The result list contains at least
-     * the critical graph objects.
+     * Returns the overlapping graph objects of the current critical overlapping
+     * pair. The result list contains at least the critical graph objects.
      */
     public List<GraphObject> getOverlapGraphObjects() {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             List<GraphObject> list = new Vector<GraphObject>();
             Graph g = this.pair.first.first.getTarget();
-
             Iterator<Node> nodes = g.getNodesCollection().iterator();
             while (nodes.hasNext()) {
                 GraphObject go = nodes.next();
@@ -431,18 +427,17 @@ public class CriticalPairData {
     }
 
     /**
-     * Returns the critical graph objects of the current critical overlapping pair. The result list only contains the
-     * graph objects which determine the critical place of the graph.
+     * Returns the critical graph objects of the current critical overlapping
+     * pair. The result list only contains the graph objects which determine the
+     * critical place of the graph.
      */
     public List<GraphObject> getCriticalGraphObjects() {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             List<GraphObject> list = new Vector<GraphObject>();
             Graph g = this.pair.first.first.getTarget();
-
             Iterator<Node> nodes = g.getNodesCollection().iterator();
             while (nodes.hasNext()) {
                 GraphObject go = nodes.next();
@@ -467,7 +462,6 @@ public class CriticalPairData {
     }
 
     private OrdinaryMorphism adjustMorph1(final OrdinaryMorphism m1) {
-
         if (m1.getSource() == this.r1.getRight()) {
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     this.r1.getLeft(), m1.getTarget());
@@ -492,7 +486,6 @@ public class CriticalPairData {
     @SuppressWarnings("unused")
     private OrdinaryMorphism adjustMorph1(
             final OrdinaryMorphism m1, final OrdinaryMorphism help1) {
-
         if (m1.getSource() == this.r1.getRight()) {
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     this.r1.getLeft(), m1.getTarget());
@@ -516,7 +509,6 @@ public class CriticalPairData {
 
     private OrdinaryMorphism adjustMorph2(
             final OrdinaryMorphism m2, final OrdinaryMorphism help2) {
-
         if (m2.getSource() != this.r2.getLeft()
                 && m2.getSource() == help2.getTarget()
                 && this.r2.getLeft() == help2.getSource()) {
@@ -542,10 +534,8 @@ public class CriticalPairData {
 
     private OrdinaryMorphism adjustMorph2NAC(
             final OrdinaryMorphism m2, final OrdinaryMorphism help2) {
-
         if (m2.getSource() == help2.getTarget()
                 && this.r2.hasNAC(help2.getSource())) {
-
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     help2.getSource(), m2.getTarget());
             Iterator<GraphObject> dom = m2.getDomain();
@@ -568,10 +558,8 @@ public class CriticalPairData {
 
     private OrdinaryMorphism adjustMorph2PAC(
             final OrdinaryMorphism m2, final OrdinaryMorphism help1, final OrdinaryMorphism help2) {
-
         if (help1.getTarget() == help2.getSource()
                 && this.r2.hasPAC(help1.getSource())) {
-
             OrdinaryMorphism om = BaseFactory.theFactory().createMorphism(
                     help1.getSource(), m2.getTarget());
             Iterator<GraphObject> dom = help1.getDomain();
@@ -602,7 +590,6 @@ public class CriticalPairData {
         if (this.pair == null && this.iterator.hasNext()) {
             this.pair = this.iterator.next();
         }
-
         if (this.pair != null) {
             if (r == this.r1) {
                 return ExcludePairHelper.makeLeftACFromGraph(this.pair, r, true, false);
@@ -610,17 +597,14 @@ public class CriticalPairData {
                 return ExcludePairHelper.makeLeftACFromGraph(this.pair, r, false, false);
             }
         }
-
         return null;
     }
 
     private void fillMap(
             final List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> list) {
-
         for (int i = 0; i < list.size(); i++) {
             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = list.get(i);
             String gname = p.first.first.getTarget().getName();
-
             if (addToList(p, gname, CriticalPairData.DELETE_USE_C_TXT, DELETE_USE_CONFLICT)); else if (addToList(p, gname, CriticalPairData.DELETE_NEED_C_TXT, DELETE_NEED_CONFLICT)); else if (addToList(p, gname, CriticalPairData.PRODUCE_FORBID_C_TXT, PRODUCE_FORBID_CONFLICT)); else if (addToList(p, gname, CriticalPairData.PRODUCE_EDGE_DELETE_NODE_C_TXT, PRODUCE_EDGE_DELTE_NODE_CONFLICT)); else if (addToList(p, gname, CriticalPairData.CHANGE_USE_ATTR_C_TXT, CHANGE_USE_ATTR_CONFLICT)); else if (addToList(p, gname, CriticalPairData.CHANGE_NEED_ATTR_C_TXT, CHANGE_NEED_ATTR_CONFLICT)); else if (addToList(p, gname, CriticalPairData.CHANGE_FORBID_ATTR_C_TXT, CHANGE_FORBID_ATTR_CONFLICT)); else if (addToList(p, gname, CriticalPairData.DELETE_FORBID_D_TXT, DELETE_FORBID_DEPENDENCY)); else if (addToList(p, gname, CriticalPairData.PRODUCE_USE_D_TXT, PRODUCE_USE_DEPENDENCY)); else if (addToList(p, gname, CriticalPairData.PRODUCE_NEED_D_TXT, PRODUCE_NEED_DEPENDENCY)); else if (addToList(p, gname, CriticalPairData.CHANGE_USE_ATTR_D_TXT, CHANGE_USE_ATTR_DEPENDENCY)); else if (addToList(p, gname, CriticalPairData.CHANGE_FORBID_ATTR_D_TXT, CHANGE_FORBID_ATTR_DEPENDENCY)); else if (addToList(p, gname, CriticalPairData.CHANGE_NEED_ATTR_D_TXT, CHANGE_NEED_ATTR_DEPENDENCY)); else if (addToList(p, gname, CriticalPairData.PRODUCE_DELETE_D_TXT, PRODUCE_DELETE_DEPENDENCY)) {
                 addToList_(p, gname, CriticalPairData.PRODUCE_DELETE_D_TXT, READ_DELETE_DEPENDENCY);
                 addToList_(p, gname, CriticalPairData.PRODUCE_DELETE_D_TXT, CREATE_DELETE_DEPENDENCY);
@@ -634,7 +618,6 @@ public class CriticalPairData {
             String graphName,
             String searchTxt,
             int kind) {
-
         if (graphName.indexOf(searchTxt) != -1) {
             Integer key = Integer.valueOf(kind);
             map2.put(p, key);
@@ -654,7 +637,6 @@ public class CriticalPairData {
             String graphName,
             String searchTxt,
             int kind) {
-
         if (graphName.indexOf(searchTxt) != -1) {
 //			System.out.println(r1.getQualifiedName()+"  ,  "+r2.getQualifiedName());
             if (kind == READ_DELETE_DEPENDENCY) {
@@ -824,5 +806,4 @@ public class CriticalPairData {
         }
         return false;
     }
-
 }

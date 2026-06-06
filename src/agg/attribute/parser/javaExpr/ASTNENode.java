@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
-
 
 /* JJT: 0.2.2 */
 /**
@@ -30,7 +29,6 @@ public class ASTNENode extends TYPE1xTYPE1toBOOL {
 
     public void interpret() {
         // System.out.println("ASTNENode.interpret()... ");
-
         Node child1 = jjtGetChild(0);
         Node child2 = jjtGetChild(1);
         // child1.interpret();
@@ -40,7 +38,6 @@ public class ASTNENode extends TYPE1xTYPE1toBOOL {
             // System.out.println("ASTNENode.interpret() ... ex: "+child1+" ::
             // "+e);
             if (e instanceof ASTMissingValueException) {
-
             } else {
                 throw (RuntimeException) e;
             }
@@ -52,25 +49,21 @@ public class ASTNENode extends TYPE1xTYPE1toBOOL {
             // System.out.println("ASTNENode.interpret() ... ex: "+child2+" ::
             // "+e);
             if (e instanceof ASTMissingValueException) {
-
             } else {
                 throw (RuntimeException) e;
             }
         }
-
         // System.out.println("ASTNENode.interpret() child1: "+child1);
         // System.out.println("ASTNENode.interpret() child2: "+child2);
         Object op1Result = null;
         Object op2Result = null;
         Object result;
-
         if (top > 0) {
             op1Result = stack.get(top - 1);
             op2Result = stack.get(top);
         } else {
             op1Result = stack.get(top);
         }
-
         // System.out.println("ASTNENode.interpret() op1Result: "+op1Result);
         // System.out.println("ASTNENode.interpret() op2Result: "+op2Result);
         if (stack.get(top) instanceof Boolean) {
@@ -78,7 +71,7 @@ public class ASTNENode extends TYPE1xTYPE1toBOOL {
             // System.out.println(((Boolean) op1Result).booleanValue()+"
             // "+((Boolean) op2Result).booleanValue());
             if (op1Result instanceof Boolean && op2Result instanceof Boolean) {
-                result = new Boolean(
+                result = Boolean.valueOf(
                         ((Boolean) op1Result).booleanValue() != ((Boolean) op2Result)
                         .booleanValue());
             } else {
@@ -88,28 +81,28 @@ public class ASTNENode extends TYPE1xTYPE1toBOOL {
             Class<?> commonType = commonNumberType((SimpleNode) child1, (SimpleNode) child2);
             if (op1Result != null && op2Result != null) {
                 if (typeCode(commonType) <= typeCode(Integer.TYPE)) {
-                    result = new Boolean(
+                    result = Boolean.valueOf(
                             ((Number) op1Result).intValue() != ((Number) op2Result)
                             .intValue());
                 } else {
-                    result = new Boolean(
+                    result = Boolean.valueOf(
                             ((Number) op1Result).floatValue() != ((Number) op2Result)
                             .floatValue());
                 }
             } else if (op1Result == null && op2Result == null) {
-                result = new Boolean(false);
+                result = Boolean.FALSE;
             } else {
-                result = new Boolean(true);
+                result = Boolean.TRUE;
             }
         } // TEST strings
         else if (((SimpleNode) child1).hasStringType()
                 && ((SimpleNode) child2).hasStringType()) {
             if (op1Result == null && op2Result == null) {
-                result = new Boolean(false);
+                result = Boolean.FALSE;
             } else if (op1Result != null && op2Result != null) {
-                result = new Boolean(!((String) op1Result).equals(op2Result));
+                result = Boolean.valueOf(!((String) op1Result).equals(op2Result));
             } else {
-                result = new Boolean(true);
+                result = Boolean.TRUE;
             }
         } // TEST != null
         else if (((SimpleNode) child1).getNodeClass() != null
@@ -119,28 +112,28 @@ public class ASTNENode extends TYPE1xTYPE1toBOOL {
             // "+child1.getString()+" op1Result = "+op1Result);
             // System.out.println("ASTNENode TEST:: child2.getString():
             // "+child2.getString()+" op2Result = "+op2Result);
-
             if (((SimpleNode) child1).hasStringType()) {
                 // System.out.println("ASTNENode TEST:: child1.hasStringType:
                 // "+child1.hasStringType());
                 if (op1Result != null && child1.getString().equals(op1Result)) {
-                    result = new Boolean(true);
+                    result = Boolean.TRUE;
                 } else {
-                    result = new Boolean(false);
+                    result = Boolean.FALSE;
                 }
             } else if (op1Result instanceof Boolean) {
                 // System.out.println("ASTNENode TEST:: op1Result Boolean:
                 // "+op1Result);
                 if (((Boolean) op1Result).booleanValue()) {
-                    result = new Boolean(false);
+                    result = Boolean.FALSE;
                 } else {
                     result = op1Result;
                 }
             } else {
                 // System.out.println("ASTNENode TEST:: else : op1Result:
                 // "+op1Result);
-                result = new Boolean(op1Result != null);
+                result = Boolean.valueOf(op1Result != null);
             }
+
           
             ////			stack[top] = result;
 //			Array.set(stack, top, result);
@@ -149,7 +142,6 @@ public class ASTNENode extends TYPE1xTYPE1toBOOL {
 		} else {
 			result = null;
         }
-
 //		stack[top] = result;
         stack.set(top, result);
         if (top > 0) {

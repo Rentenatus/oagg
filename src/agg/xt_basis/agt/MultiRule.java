@@ -1,23 +1,17 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis.agt;
-
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Vector;
 
 import agg.attribute.impl.ContextView;
 import agg.attribute.impl.TupleMapping;
@@ -40,72 +34,81 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.TypeException;
 import agg.xt_basis.TypeSet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
- * Multi rule is an extending rule of an interaction rule scheme. The kernel rule of a rule scheme is embedded into
- * multi rule. So the application of two or more multi rules is synchronized by the kernel rule above this embedding.
+ * Multi rule is an extending rule of an interaction rule scheme. The kernel
+ * rule of a rule scheme is embedded into multi rule. So the application of two
+ * or more multi rules is synchronized by the kernel rule above this embedding.
  *
  * @author olga
  *
  */
 public class MultiRule extends Rule implements Observer {
 
-    private RuleScheme itsRuleScheme;
+    /**
+     * Accepts a visitor for this multi rule.
+     *
+     * @param visitor the visitor to accept
+     * @param <T> the return type of the visitor
+     * @return the result of visiting this multi rule
+     */
+    @Override
+    public <T> T accept(agg.xt_basis.RuleVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 
+    private RuleScheme itsRuleScheme;
     /**
      * embedded morphism left
      */
     private OrdinaryMorphism embeddingLeft;
-
     /**
      * embedded morphism right
      */
     private OrdinaryMorphism embeddingRight;
-
-    private final Hashtable<GraphObject, GraphObject> kernel2objects = new Hashtable<GraphObject, GraphObject>();
-
-    private final Hashtable<GraphObject, GraphObject> objects2kernel = new Hashtable<GraphObject, GraphObject>();
-
-    private List<OrdinaryMorphism> shiftedApplConds = new Vector<OrdinaryMorphism>();
+    private final Map<GraphObject, GraphObject> kernel2objects = new HashMap<GraphObject, GraphObject>();
+    private final Map<GraphObject, GraphObject> objects2kernel = new HashMap<GraphObject, GraphObject>();
+    private List<OrdinaryMorphism> shiftedApplConds = new ArrayList<OrdinaryMorphism>();
 
     // private boolean isChanged = false;
     /**
-     * Creates a multi rule with empty left and right graphs based on the specified type set.
+     * Creates a multi rule with empty left and right graphs based on the
+     * specified type set.
      */
     public MultiRule(TypeSet types) {
         super(types);
-
         this.itsName = "MultiRule";
     }
 
     /**
-     * Creates a multi rule based on the specified left and right embedding of the kernel rule. Target graph of the left
-     * embedding is the LHS, target graph of the right embedding is the RHS of the multi rule. The object mapping of the
-     * kernel rule builds partial mapping of the multi rule.
+     * Creates a multi rule based on the specified left and right embedding of
+     * the kernel rule. Target graph of the left embedding is the LHS, target
+     * graph of the right embedding is the RHS of the multi rule. The object
+     * mapping of the kernel rule builds partial mapping of the multi rule.
      */
     public MultiRule(final Rule kernelRule,
             final OrdinaryMorphism embeddingLeft,
             final OrdinaryMorphism embeddingRight) {
-
         super(embeddingLeft.getTarget(), embeddingRight.getTarget());
-
         this.itsName = "MultiRule";
-
 //		this.itsOrig.setAttrContext(getAttrManager().newLeftContext(
 //				getAttrContext()));
 //		this.itsImag.setAttrContext(getAttrManager().newRightContext(
 //				getAttrContext()));
         this.embeddingLeft = embeddingLeft;
         this.embeddingRight = embeddingRight;
-
         this.applyEmbeddedRuleMapping(kernelRule);
-
         this.itsOrig.setKind(GraphKind.LHS);
         this.itsImag.setKind(GraphKind.RHS);
-
         kernelRule.getLeft().setKind(GraphKind.LHS);
         kernelRule.getRight().setKind(GraphKind.RHS);
-
         mapKernel2MultiObject();
     }
 
@@ -116,7 +119,6 @@ public class MultiRule extends Rule implements Observer {
         if (this.itsRuleScheme != null) {
             return this.itsRuleScheme.getName().concat(".").concat(this.itsName);
         }
-
         return this.itsName;
     }
 
@@ -170,14 +172,12 @@ public class MultiRule extends Rule implements Observer {
                         this.itsRuleScheme.getKernelRule().getMatch()
                                 .getTarget());
             }
-
             if (!setPartialMultiMatch(this.itsRuleScheme.getKernelRule()
                     .getMatch())) {
                 this.itsMatch.dispose();
                 this.itsMatch = null;
             }
         }
-
         return this.itsMatch;
     }
 
@@ -219,7 +219,6 @@ public class MultiRule extends Rule implements Observer {
             }
             this.itsMatch.adaptAttrContextValues(kernelMatch.getAttrContext());
             setTempInputParameter(kernelMatch);
-
             if (this.itsMatch.getSize() > 0) {
                 this.itsMatch.setPartialMorphismCompletion(true);
             }
@@ -250,7 +249,8 @@ public class MultiRule extends Rule implements Observer {
     }
 
     /**
-     * @return true if the left embedding of the LHS of the kernel rule holds, otherwise false.
+     * @return true if the left embedding of the LHS of the kernel rule holds,
+     * otherwise false.
      */
     public boolean isLeftEmbeddingValid() {
         Iterator<?> kernelElems = this.embeddingLeft.getSource().getNodesSet()
@@ -266,7 +266,6 @@ public class MultiRule extends Rule implements Observer {
         if (kernelElems.hasNext()) {
             return false;
         }
-
         kernelElems = this.embeddingLeft.getSource().getArcsSet().iterator();
         while (kernelElems.hasNext()) {
             final GraphObject obj = (GraphObject) kernelElems.next();
@@ -279,12 +278,12 @@ public class MultiRule extends Rule implements Observer {
         if (kernelElems.hasNext()) {
             return false;
         }
-
         return true;
     }
 
     /**
-     * @return true if the right embedding of the RHS of the kernel rule holds, otherwise false.
+     * @return true if the right embedding of the RHS of the kernel rule holds,
+     * otherwise false.
      */
     public boolean isRightEmbeddingValid() {
         Iterator<?> kernelElems = this.itsRuleScheme.getKernelRule().getRight()
@@ -300,7 +299,6 @@ public class MultiRule extends Rule implements Observer {
         if (kernelElems.hasNext()) {
             return false;
         }
-
         kernelElems = this.itsRuleScheme.getKernelRule().getRight()
                 .getArcsSet().iterator();
         while (kernelElems.hasNext()) {
@@ -319,7 +317,8 @@ public class MultiRule extends Rule implements Observer {
 
     /**
      *
-     * @return true if the rule morphism embedding of the kernel rule holds, otherwise false.
+     * @return true if the rule morphism embedding of the kernel rule holds,
+     * otherwise false.
      */
     public boolean isMorphismEmbeddingValid() {
         final Iterator<GraphObject> kernelDom = this.itsRuleScheme
@@ -381,7 +380,6 @@ public class MultiRule extends Rule implements Observer {
                 this.mapKernel2MultiObject(this.embeddingLeft.firstOfInverseImage(obj), obj);
             }
         }
-
         final Iterator<Node> nRight = this.itsImag.getNodesSet().iterator();
         while (nRight.hasNext()) {
             GraphObject obj = nRight.next();
@@ -428,8 +426,9 @@ public class MultiRule extends Rule implements Observer {
     }
 
     /**
-     * Set the left embedding morphism with the source graph is the left graph of the kernel rule and the target graph
-     * is the left graph of this multi rule.
+     * Set the left embedding morphism with the source graph is the left graph
+     * of the kernel rule and the target graph is the left graph of this multi
+     * rule.
      *
      * @param left the left embedding morphism
      */
@@ -438,8 +437,9 @@ public class MultiRule extends Rule implements Observer {
     }
 
     /**
-     * Set the right embedding morphism with the source graph is the right graph of the kernel rule and the target graph
-     * is the right graph of this multi rule.
+     * Set the right embedding morphism with the source graph is the right graph
+     * of the kernel rule and the target graph is the right graph of this multi
+     * rule.
      *
      * @param right the right embedding morphism
      */
@@ -448,8 +448,9 @@ public class MultiRule extends Rule implements Observer {
     }
 
     /**
-     * @return its left embedding morphism with the source graph is the left graph of the kernel rule and the target
-     * graph is the left graph of this multi rule.
+     * @return its left embedding morphism with the source graph is the left
+     * graph of the kernel rule and the target graph is the left graph of this
+     * multi rule.
      */
     public OrdinaryMorphism getEmbeddingLeft() {
         return this.embeddingLeft;
@@ -457,8 +458,9 @@ public class MultiRule extends Rule implements Observer {
 
     /**
      *
-     * @return its right embedding morphism with the source graph is the right graph of the kernel rule and the target
-     * graph is the right graph of this multi rule.
+     * @return its right embedding morphism with the source graph is the right
+     * graph of the kernel rule and the target graph is the right graph of this
+     * multi rule.
      */
     public OrdinaryMorphism getEmbeddingRight() {
         return this.embeddingRight;
@@ -505,7 +507,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
     public List<Node> getOwnNodesLeft() {
-        Vector<Node> list = new Vector<Node>();
+        List<Node> list = new ArrayList<Node>();
         Iterator<Node> nodes = this.itsOrig.getNodesSet().iterator();
         while (nodes.hasNext()) {
             Node n = nodes.next();
@@ -517,7 +519,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
     public List<Node> getOwnNodesRight() {
-        Vector<Node> list = new Vector<Node>();
+        List<Node> list = new ArrayList<Node>();
         Iterator<Node> nodes = this.itsImag.getNodesSet().iterator();
         while (nodes.hasNext()) {
             Node n = nodes.next();
@@ -529,7 +531,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
     public List<Arc> getOwnArcsLeft() {
-        Vector<Arc> list = new Vector<Arc>();
+        List<Arc> list = new ArrayList<Arc>();
         Iterator<Arc> arcs = this.itsOrig.getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc a = arcs.next();
@@ -541,7 +543,7 @@ public class MultiRule extends Rule implements Observer {
     }
 
     public List<Arc> getOwnArcsRight() {
-        Vector<Arc> list = new Vector<Arc>();
+        List<Arc> list = new ArrayList<Arc>();
         Iterator<Arc> arcs = this.itsImag.getArcsSet().iterator();
         while (arcs.hasNext()) {
             Arc a = arcs.next();
@@ -605,7 +607,8 @@ public class MultiRule extends Rule implements Observer {
 
     /**
      * @param obj an object of the LHS of the kernel rule
-     * @return true if the specified graph object belongs to the LHS of the kernel rule
+     * @return true if the specified graph object belongs to the LHS of the
+     * kernel rule
      */
     public boolean isSourceOfEmbeddingLeft(final GraphObject obj) {
         return this.embeddingLeft.getImage(obj) != null;
@@ -613,7 +616,8 @@ public class MultiRule extends Rule implements Observer {
 
     /**
      * @param obj an object of the RHS of the kernel rule
-     * @return true if the specified graph object belongs to the RHS of the kernel rule
+     * @return true if the specified graph object belongs to the RHS of the
+     * kernel rule
      */
     public boolean isSourceOfEmbeddingRight(final GraphObject obj) {
         return this.embeddingRight.getImage(obj) != null;
@@ -621,8 +625,9 @@ public class MultiRule extends Rule implements Observer {
 
     /**
      * @param obj an object of the LHS of this multi rule
-     * @return true if the specified graph object belongs to the LHS of this multi rule and its source object of the
-     * left embedding belongs to the LHS of the kernel rule.
+     * @return true if the specified graph object belongs to the LHS of this
+     * multi rule and its source object of the left embedding belongs to the LHS
+     * of the kernel rule.
      */
     public boolean isTargetOfEmbeddingLeft(final GraphObject obj) {
         return this.embeddingLeft.hasInverseImage(obj);
@@ -630,8 +635,9 @@ public class MultiRule extends Rule implements Observer {
 
     /**
      * @param obj an object of the RHS of this multi rule
-     * @return true if the specified graph object belongs to the RHS of this multi rule and its source object of the
-     * right embedding belongs to the RHS of the kernel rule.
+     * @return true if the specified graph object belongs to the RHS of this
+     * multi rule and its source object of the right embedding belongs to the
+     * RHS of the kernel rule.
      */
     public boolean isTargetOfEmbeddingRight(final GraphObject obj) {
         return this.embeddingRight.hasInverseImage(obj);
@@ -669,7 +675,6 @@ public class MultiRule extends Rule implements Observer {
 //		System.out.println("MultiRule.update:   "+o+"    "+arg);
         GraphObject go = null;
         Graph graph = null;
-
         if (arg instanceof Change) {
             Change change = (Change) arg;
             if (change.getItem() instanceof GraphObject) {
@@ -680,7 +685,6 @@ public class MultiRule extends Rule implements Observer {
                     go = (GraphObject) p.first;
                 }
             }
-
             if (o instanceof Graph) {
                 if (this.itsRuleScheme.getKernelRule().getLeft() == o) {
                     graph = this.itsOrig;
@@ -688,7 +692,6 @@ public class MultiRule extends Rule implements Observer {
                     graph = this.itsImag;
                 }
             }
-
             if (go != null
                     && graph != null) {
                 if (change.getEvent() == Change.OBJECT_MODIFIED) {
@@ -704,14 +707,13 @@ public class MultiRule extends Rule implements Observer {
 
     private void adoptEntriesWhereEmpty(final OrdinaryMorphism morph,
             final GraphObject from, final GraphObject to) {
-
         if (morph.getImage(from) != null && from.getAttribute() != null
                 && to.getAttribute() != null) {
             final ContextView context = (ContextView) morph.getAttrContext();
-            Vector<TupleMapping> mappings = context
+            List<TupleMapping> mappings = context
                     .getMappingsToTarget((ValueTuple) to.getAttribute());
             if (mappings != null) {
-                mappings.elementAt(0).adoptEntriesWhereEmpty(
+                mappings.get(0).adoptEntriesWhereEmpty(
                         (ValueTuple) from.getAttribute(),
                         (ValueTuple) to.getAttribute());
             }
@@ -725,7 +727,6 @@ public class MultiRule extends Rule implements Observer {
      */
     public void XwriteObject(XMLHelper h) {
         super.XwriteObject(h);
-
     }
 
     /**
@@ -735,7 +736,5 @@ public class MultiRule extends Rule implements Observer {
      */
     public void XreadObject(XMLHelper h) {
         super.XreadObject(h);
-
     }
-
 }

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -25,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.io.File;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -45,7 +46,6 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.JFileChooser;
-
 import agg.cons.AtomApplCond;
 import agg.cons.EvalSet;
 import agg.cons.Evaluable;
@@ -186,11 +186,8 @@ public class GraGraTreeView extends JPanel implements
      */
     public GraGraTreeView(JFrame aggappl) {
         super(new BorderLayout());
-
         this.applFrame = aggappl;
-
         setBorder(BorderFactory.createRaisedBevelBorder());
-
         /* create an empty tree of gragras with top node <GraGras> */
         this.top = new DefaultMutableTreeNode(new GraGrasTreeNodeData("GraGras"));
         this.treeModel = new GraGraTreeModel(this.top);
@@ -198,44 +195,34 @@ public class GraGraTreeView extends JPanel implements
         this.tree.setEditable(false);
         this.tree.setDoubleBuffered(true);
         this.tree.putClientProperty("JTree.lineStyle", "Angled");
-
         /* implement my MouseListener */
         mouseAdapter = new GraGraTreeViewMouseAdapter(this);
         this.tree.addMouseListener(mouseAdapter);
-
         /* implements my ActionListener */
         actionAdapter = new TreeViewActionAdapter(this);
-
         /* implement my KeyListener */
         keyAdapter = new GraGraTreeViewKeyAdapter(this);
         this.tree.addKeyListener(keyAdapter);
-
         this.gragraStore = new GraGraElementsStore(this);
-
         /* create file menu */
         this.file = new JMenu("File", true);
         createMenus();
-
         /* create tool bar */
         this.toolBar = new AGGToolBar(0);
         this.trash = this.toolBar.createTool("imageable", "trash",
                 "Trash of grammar elements", "undoDelete", this.actionAdapter, false);
         createToolBar();
-
         /* Enable tool tips for the tree */
         ToolTipManager.sharedInstance().registerComponent(this.tree);
-
         /*
 		 * Set the cell renderer of the tree to GraGraTreeCellRenderer for
 		 * drawing
          */
         this.tree.setCellRenderer(new GraGraTreeCellRenderer());
-
         /**
          * Add the tree within the JScrollPane to the GraGraTreeView panel
          */
         add(new JScrollPane(this.tree), BorderLayout.CENTER);
-
         /* create file, gragra, rule, constraint, atomic, nac ...*/
         this.filePopupMenu = new FilePopupMenu(this.actionAdapter);
         this.gragraPopupMenu = new GraGraPopupMenu(this);
@@ -257,14 +244,11 @@ public class GraGraTreeView extends JPanel implements
         this.graphPopupMenu = new GraphPopupMenu(this);
         this.attrConditionPopupMenu = new AttrConditionPopupMenu(this);
         this.applFormulaPopupMenu = new ApplFormulaPopupMenu(this);
-
         /* create save and load instances */
         this.gragraSave = new GraGraSave(this.applFrame);
         this.gragraLoad = new GraGraLoad(this.applFrame);
         this.gragraLoad.addLoadEventListener(this);
-
         this.trash.addMouseListener(mouseAdapter);
-
         // multiple selection
         this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
     }
@@ -281,13 +265,11 @@ public class GraGraTreeView extends JPanel implements
                             != ((GraGraTreeNodeData) node.getUserObject()).getNestedAC().getRule()) {
                         this.selectPath(this.getTreePathOfGrammarElement(
                                 ((GraGraTreeNodeData) node.getUserObject()).getNestedAC().getRule()));
-
                         this.tree.getCellRenderer().getTreeCellRendererComponent(
                                 tree, node, true, true, false, this.tree.getRowForPath(this.selPath), true);
                         return;
                     }
                 }
-
                 fireTreeViewEvent(new TreeViewEvent(this,
                         TreeViewEvent.SELECT, this.selPath));
                 setFlagForNew();
@@ -526,7 +508,6 @@ public class GraGraTreeView extends JPanel implements
     public void exitAppl(final Object[] options) {
 //		Object[] options = { "SAVE", "EXIT", "CANCEL" };
 //		Object[] options = { "SAVE", "EXIT" };
-
         int answ = 1;
         List<EdGraGra> gragras = getGraGras();
         for (int i = 0; i < gragras.size(); i++) {
@@ -581,7 +562,6 @@ public class GraGraTreeView extends JPanel implements
 
     public synchronized void removeTreeModelListener(TreeModelListener l) {
         getTree().getModel().removeTreeModelListener(l);
-
     }
 
     public ActionListener getActionListener() {
@@ -773,7 +753,6 @@ public class GraGraTreeView extends JPanel implements
         } else {
             this.currentGraGra.getBasisGraGra().removeGraTraOption(GraTraOptions.LAYERED);
         }
-
         this.treeModel.ruleNameChanged(this.currentGraGra, this.layered);
         this.treeModel.constraintNameChanged(this.currentGraGra, this.layered);
     }
@@ -796,7 +775,6 @@ public class GraGraTreeView extends JPanel implements
         } else {
             this.currentGraGra.getBasisGraGra().removeGraTraOption(GraTraOptions.PRIORITY);
         }
-
         this.treeModel.ruleNameChanged(this.currentGraGra, this.layered, this.priority);
         this.treeModel.constraintNameChanged(this.currentGraGra, this.layered, this.priority);
     }
@@ -805,9 +783,7 @@ public class GraGraTreeView extends JPanel implements
         if (this.currentGraGra == null) {
             return;
         }
-
         boolean ruleSeqShown = this.ruleSequence;
-
         this.ruleSequence = ((JRadioButton) e.getSource()).isSelected();
         if (this.ruleSequence) {
             this.currentGraGra.getBasisGraGra().addGraTraOption(GraTraOptions.RULE_SEQUENCE);
@@ -821,7 +797,6 @@ public class GraGraTreeView extends JPanel implements
         } else {
             this.currentGraGra.getBasisGraGra().removeGraTraOption(GraTraOptions.RULE_SEQUENCE);
         }
-
         this.treeModel.ruleNameChanged(this.currentGraGra, this.layered, this.priority);
         this.treeModel.constraintNameChanged(this.currentGraGra, this.layered, this.priority);
     }
@@ -836,11 +811,9 @@ public class GraGraTreeView extends JPanel implements
             this.ruleSequence = false;
             this.hideRuleSequence();
         }
-
         this.currentGraGra.getBasisGraGra().removeGraTraOption(GraTraOptions.LAYERED);
         this.currentGraGra.getBasisGraGra().removeGraTraOption(GraTraOptions.PRIORITY);
         this.currentGraGra.getBasisGraGra().removeGraTraOption(GraTraOptions.RULE_SEQUENCE);
-
         this.treeModel.ruleNameChanged(this.currentGraGra, this.layered, this.priority);
         this.treeModel.constraintNameChanged(this.currentGraGra, this.layered, this.priority);
     }
@@ -852,15 +825,11 @@ public class GraGraTreeView extends JPanel implements
         if (grammar != null) {
             BaseFactory.theFactory().notify(grammar.getBasisGraGra());
             grammar.update();
-
             GrammarTreeNode grammarTreeNode = new GrammarTreeNode(grammar);
             int indx = grammarTreeNode.insertIntoTree(this);
-
             this.tree.treeDidChange();
-
             /* put gragra in editor */
             propagateGraGraToEditor(indx);
-
             if (this.currentGraGra.getGraTraOptions().contains("layered")) {
                 this.layered = true;
                 this.priority = false;
@@ -875,18 +844,14 @@ public class GraGraTreeView extends JPanel implements
                         this.priority);
             }
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.LOADED));
-
             this.directory = this.gragraLoad.getDirName();
             resetEnabledOfFileMenuItems("open");
             this.filePopupMenu.resetEnabledOfFileMenuItems("open");
             resetEnabledOfToolBarItems("open");
-
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.LOADED));
-
 //			fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.NEW));
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.SELECTED,
                     this.editorPath));
-
             return true;
         }
         return false;
@@ -909,7 +874,6 @@ public class GraGraTreeView extends JPanel implements
         // test undirected
         final EdGraGra newGraGra = new EdGraGra(name, !undirectedArcs, !nonparallelArcs);
         newGraGra.getTypeSet().getBasisTypeSet().setAllowEmptyAttr(!this.checkEmptyAttrs);
-
         final GrammarTreeNodeData sdGraGra = new GrammarTreeNodeData(newGraGra);
         final DefaultMutableTreeNode newGraGraNode = new DefaultMutableTreeNode(sdGraGra);
         sdGraGra.setTreeNode(newGraGraNode);
@@ -918,20 +882,17 @@ public class GraGraTreeView extends JPanel implements
             this.tree.expandPath(this.tree.getPathForRow(0));
         }
         int graIndex = this.tree.getRowCount() - 1;
-
         GraphTreeNodeData sdGraph = new GraphTreeNodeData(newGraGra.getGraph());
         DefaultMutableTreeNode newGraphNode = new DefaultMutableTreeNode(sdGraph);
         sdGraph.setTreeNode(newGraphNode);
         parent = newGraGraNode;
         newIndex = parent.getChildCount();
         this.treeModel.insertNodeInto(newGraphNode, parent, newIndex);
-
         RuleTreeNodeData sdRule = new RuleTreeNodeData(newGraGra.getRules().firstElement());
         DefaultMutableTreeNode newRuleNode = new DefaultMutableTreeNode(sdRule);
         sdRule.setTreeNode(newRuleNode);
         newIndex = parent.getChildCount();
         this.treeModel.insertNodeInto(newRuleNode, parent, newIndex);
-
         // here add RuleScheme
         if (!this.tree.isExpanded(this.tree.getPathForRow(graIndex))) {
             this.tree.expandPath(this.tree.getPathForRow(graIndex));
@@ -941,20 +902,15 @@ public class GraGraTreeView extends JPanel implements
         this.selPath = this.tree.getPathForRow(this.tree.getMinSelectionRow());
         this.editorPath = this.selPath;
         setFlagForNew();
-
 //		fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.NEW));
         setCurrentData(this.editorPath);
-
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.SELECTED,
                 this.editorPath));
-
         this.layered = false;
         this.priority = false;
         this.treeModel.ruleNameChanged(newGraGra, this.layered, this.priority);
         this.treeModel.constraintNameChanged(newGraGra, this.layered, this.priority);
-
         newGraGra.setChanged(false);
-
         return newGraGra;
     }
 
@@ -997,7 +953,6 @@ public class GraGraTreeView extends JPanel implements
                     JOptionPane.WARNING_MESSAGE);
             return false;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         EdGraGra eGra = getGraGra(parent);
@@ -1070,7 +1025,6 @@ public class GraGraTreeView extends JPanel implements
                     JOptionPane.WARNING_MESSAGE);
             return null;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         EdGraGra eGra = getGraGra(parent);
@@ -1084,14 +1038,11 @@ public class GraGraTreeView extends JPanel implements
             return null;
         }
         EdGraph typeGraph = eGra.createTypeGraph();
-
         TypeGraphTreeNodeData sdTypeGraph = new TypeGraphTreeNodeData(typeGraph);
         sdTypeGraph.setString("[D]TypeGraph");
-
         DefaultMutableTreeNode newTypeGraphNode = new DefaultMutableTreeNode(sdTypeGraph);
         sdTypeGraph.setTreeNode(newTypeGraphNode);
         this.treeModel.insertNodeInto(newTypeGraphNode, parent, 0);
-
         // if (!this.tree.isExpanded(this.selPath)) this.tree.expandPath(this.selPath);
         return typeGraph;
     }
@@ -1145,9 +1096,7 @@ public class GraGraTreeView extends JPanel implements
                     JOptionPane.WARNING_MESSAGE);
             return false;
         }
-
         eGra.setTypeGraph(g);
-
         TypeGraphTreeNodeData sdTypeGraph = new TypeGraphTreeNodeData(g);
         sdTypeGraph.setString("[D]TypeGraph");
         DefaultMutableTreeNode newTypeGraphNode = new DefaultMutableTreeNode(sdTypeGraph);
@@ -1214,9 +1163,7 @@ public class GraGraTreeView extends JPanel implements
                     indx++;
                 }
             }
-
             putRuleSchemeIntoTree(newRS, parent, indx);
-
             //      if (!this.tree.isExpanded(this.selPath)) this.tree.expandPath(this.selPath);
             return true;
         } else {
@@ -1227,7 +1174,6 @@ public class GraGraTreeView extends JPanel implements
 
     public void putRuleSchemeIntoTree(final EdRuleScheme newRS,
             final DefaultMutableTreeNode parentNode, int index) {
-
         RuleSchemeTreeNodeData sdRuleScheme = new RuleSchemeTreeNodeData(newRS);
         DefaultMutableTreeNode newRuleSchemeNode = new DefaultMutableTreeNode(sdRuleScheme);
         sdRuleScheme.setTreeNode(newRuleSchemeNode);
@@ -1251,14 +1197,12 @@ public class GraGraTreeView extends JPanel implements
         this.addPACsToRuleTreeNode(newRS.getKernelRule(), newKernelRuleNode, nn);
         // add attr condition tree node
         this.addAttrCondToRuleTreeNode(newRS.getKernelRule(), newKernelRuleNode);
-
         for (int j = 0; j < newRS.getMultiRules().size(); j++) {
             EdRule mr = newRS.getMultiRules().get(j);
             MultiRuleTreeNodeData sdMultiRule = new MultiRuleTreeNodeData(mr);
             DefaultMutableTreeNode newMultiRuleNode = new DefaultMutableTreeNode(sdMultiRule);
             sdMultiRule.setTreeNode(newMultiRuleNode);
             this.treeModel.insertNodeInto(newMultiRuleNode, parent, j + 1);
-
             // add GACs tree nodes 
             nn = 0;
             nn = this.addGACsToRuleTreeNode(mr, newMultiRuleNode, nn);
@@ -1280,7 +1224,6 @@ public class GraGraTreeView extends JPanel implements
             DefaultMutableTreeNode acNode = new DefaultMutableTreeNode(sd);
             sd.setTreeNode(acNode);
             this.treeModel.insertNodeInto(acNode, parent, parent.getChildCount());
-
             String f = ac.getNestedMorphism().getFormulaText();
             if (!"true".equals(f)) {
                 ApplFormulaTreeNodeData fdata = new ApplFormulaTreeNodeData(f, true, ac);
@@ -1289,7 +1232,6 @@ public class GraGraTreeView extends JPanel implements
                 fdata.setTreeNode(fnode);
                 this.treeModel.insertNodeInto(fnode, acNode, 0);
             }
-
             addNestedACs(ac.getEnabledACs(), acNode);
         }
     }
@@ -1338,7 +1280,6 @@ public class GraGraTreeView extends JPanel implements
             String name = "Rule" + eGra.getRules().size();
             name = ((GraGraTreeModel) this.tree.getModel()).makeNewName(eGra, name);
             EdRule newRule = eGra.createRule(name);
-
             RuleTreeNodeData sdRule = new RuleTreeNodeData(newRule);
             if (this.layered) {
                 String tag = "[" + newRule.getBasisRule().getLayer() + "]";
@@ -1435,21 +1376,16 @@ public class GraGraTreeView extends JPanel implements
             int nn = 0;
             // add formula and GACs tree nodes 
             nn = this.addGACsToRuleTreeNode(newRule, newRuleNode, nn);
-
             nn = nn + newRule.getNestedACs().size();
             // add NAGs tree nodes 
             this.addNACsToRuleTreeNode(newRule, newRuleNode, nn);
-
             nn = nn + newRule.getNACs().size();
             // add PAGs tree nodes 
             this.addPACsToRuleTreeNode(newRule, newRuleNode, nn);
-
             // add rule attr conditions
             addAttrCondToRuleTreeNode(newRule, newRuleNode);
-
             this.fireTreeViewEvent(new TreeViewEvent(this,
                     TreeViewEvent.RULE_ADDED, this.selPath));
-
             return true;
         } else {
             lockWarning();
@@ -1481,7 +1417,6 @@ public class GraGraTreeView extends JPanel implements
             sd.setTreeNode(acNode);
             this.treeModel.insertNodeInto(acNode, ruleNode, nn);
             nn++;
-
             f = ac.getNestedMorphism().getFormulaText();
             if (!"true".equals(f)) {
                 ApplFormulaTreeNodeData fdata = new ApplFormulaTreeNodeData(f, true, ac);
@@ -1563,15 +1498,12 @@ public class GraGraTreeView extends JPanel implements
                         + eGra.getRules().size()
                         + eGra.getAtomics().size()
                         + eGra.getConstraints().size();
-
                 if (eGra.getTypeSet().getTypeGraph() != null) {
                     indx++;
                 }
-
                 for (int i = 0; i < eGra.getBasisGraGra().getRuleSequences().size(); i++) {
                     RuleSequence rseq = eGra.getBasisGraGra().getRuleSequences().get(i);
                     rseq.setCriticalPairOption(((AGGAppl) this.getFrame()).getCPA().getCriticalPairOption());
-
                     if (this.getTreeNodeOfGrammarElement(rseq) == null) {
                         RuleSequenceTreeNodeData sdRuleSequence = new RuleSequenceTreeNodeData(rseq);
                         DefaultMutableTreeNode newRuleSequenceNode = new DefaultMutableTreeNode(sdRuleSequence);
@@ -1587,7 +1519,6 @@ public class GraGraTreeView extends JPanel implements
         if (!this.ruleSequenceHidden) {
             this.hideRuleSequence();
         }
-
         this.addRuleSequences();
         this.ruleSequenceHidden = false;
     }
@@ -1645,11 +1576,9 @@ public class GraGraTreeView extends JPanel implements
                     JOptionPane.WARNING_MESSAGE);
             return null;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         EdGraGra eGra = getGraGra(parent);
-
         if (eGra.isEditable()) {
             // handleRuleConstraints(parent, false);
             int newIndex = eGra.getGraphs().size() + eGra.getRules().size()
@@ -1663,22 +1592,18 @@ public class GraGraTreeView extends JPanel implements
             }
             name = ((GraGraTreeModel) this.tree.getModel()).makeNewName(eGra, name);
             EdAtomic newAtomic = eGra.createAtomic(name);
-
             AtomicGraphConstraintTreeNodeData sd = new AtomicGraphConstraintTreeNodeData(newAtomic);
             DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(sd);
             sd.setTreeNode(newNode);
             this.treeModel.insertNodeInto(newNode, parent, newIndex);
-
             /* add first conclusion */
             newIndex = newAtomic.getConclusions().size() - 1;
             EdAtomic aConclusion = newAtomic.getConclusion(0);
             name = aConclusion.getMorphism().getName();
-
             ConclusionTreeNodeData sdc = new ConclusionTreeNodeData(aConclusion);
             DefaultMutableTreeNode aNode = new DefaultMutableTreeNode(sdc);
             sdc.setTreeNode(aNode);
             this.treeModel.insertNodeInto(aNode, newNode, newIndex);
-
             // if (!this.tree.isExpanded(this.selPath)) this.tree.expandPath(this.selPath);
             return newAtomic;
         } else {
@@ -1722,7 +1647,6 @@ public class GraGraTreeView extends JPanel implements
                     JOptionPane.WARNING_MESSAGE);
             return false;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         EdGraGra eGra = getGraGra(parent);
@@ -1787,14 +1711,12 @@ public class GraGraTreeView extends JPanel implements
                     JOptionPane.WARNING_MESSAGE);
             return null;
         }
-
         if (data.getAtomic().getGraGra().isEditable()) {
             EdAtomic parentAtomic = data.getAtomic();
             TreePath graPath = this.selPath.getParentPath();
             DefaultMutableTreeNode graNode = (DefaultMutableTreeNode) graPath
                     .getLastPathComponent();
             handleRuleConstraints(graNode, false, parentAtomic);
-
             int newIndex = parentAtomic.getConclusions().size();
             String name = "Conclusion" + parentAtomic.getConclusions().size();
             EdAtomic newConclusion = parentAtomic.createNextConclusion(name);
@@ -1938,7 +1860,8 @@ public class GraGraTreeView extends JPanel implements
     }
 
     /**
-     * Checks currently selected graph consistency constraint at the current host graph.
+     * Checks currently selected graph consistency constraint at the current
+     * host graph.
      */
     public void checkOne() {
         if (this.selPath == null) {
@@ -1963,7 +1886,6 @@ public class GraGraTreeView extends JPanel implements
 		 * if(gra.getBasisGraGra().getTypeSet().hasInheritance()) {
 		 * inheritanceWarning(); return; }
          */
-
         TreeViewEvent e = new TreeViewEvent(this, TreeViewEvent.CHECK);
         fireTreeViewEvent(e);
         boolean valid = false;
@@ -1977,11 +1899,9 @@ public class GraGraTreeView extends JPanel implements
             valid = eatom.getBasisAtomic().isValid();
             if (valid) {
                 if (gra.getBasisGraGra().isGraphReadyForTransform()) {
-
 //					if (gra.getLevelOfTypeGraphCheck() == TypeSet.ENABLED_MAX_MIN
 //							&& this.setLevelOfTypeGraphCheck(gra, gra.getLevelOfTypeGraphCheck())) 
                     {
-
                         eatom.getBasisAtomic().setMorphismCompletionStrategy(
                                 gra.getBasisGraGra().getMorphismCompletionStrategy());
                         good = eatom.getBasisAtomic().eval(
@@ -2002,11 +1922,9 @@ public class GraGraTreeView extends JPanel implements
             valid = econs.getBasisConstraint().isValid();
             if (valid) {
                 if (gra.getBasisGraGra().isGraphReadyForTransform()) {
-
 //					if (gra.getLevelOfTypeGraphCheck() == TypeSet.ENABLED_MAX_MIN
 //							&& this.setLevelOfTypeGraphCheck(gra, gra.getLevelOfTypeGraphCheck())) 
                     {
-
                         gra.getBasisGraGra()
                                 .setMorphismCompletionStrategyOfGraphConstraints();
                         good = econs.getBasisConstraint().eval(
@@ -2022,7 +1940,6 @@ public class GraGraTreeView extends JPanel implements
                 }
             }
         }
-
         if (!valid) {
             mesg = "This " + thing + " isn't valid.  No checking done.";
             JOptionPane.showMessageDialog(this.applFrame, mesg, "Not valid", JOptionPane.ERROR_MESSAGE);
@@ -2033,7 +1950,6 @@ public class GraGraTreeView extends JPanel implements
             mesg = "The graph fulfills this " + thing + ".";
             JOptionPane.showMessageDialog(this.applFrame, mesg, "Fulfilled", JOptionPane.INFORMATION_MESSAGE);
         }
-
 //		e = new TreeViewEvent(this, TreeViewEvent.CHECK_DONE);
 //		e.setMessage(mesg);
 //		fireTreeViewEvent(e);
@@ -2064,7 +1980,6 @@ public class GraGraTreeView extends JPanel implements
             this.selPath = this.tree.getPathForRow(this.tree.getMinSelectionRow());
             setFlagForNew();
         }
-
         if (!this.newApplCondOK) {
             JOptionPane.showMessageDialog(this.applFrame,
                     "<html><body>Bad selection.<br> Please select a rule.",
@@ -2072,11 +1987,9 @@ public class GraGraTreeView extends JPanel implements
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         final EdRule eRule = getRule(parent);
-
 //		if (eRule.getGraGra().getBasisGraGra().getTypeSet().usesInheritance()) {
 //			inheritanceWarning();
 //			return;
@@ -2097,7 +2010,6 @@ public class GraGraTreeView extends JPanel implements
                     }
                 };
                 thread.start();
-
                 fireTreeViewEvent(new TreeViewEvent(this,
                         TreeViewEvent.CONVERT_STEP,
                         "Creating Post Application Condition. Please wait ..."));
@@ -2105,7 +2017,6 @@ public class GraGraTreeView extends JPanel implements
                         "Creating Post Application Condition ... ");
                 while (thread.isAlive()) {
                 }
-
                 if (!this.msg.equals("")) {
                     if (eRule.getBasisRule().getConstraints().size() == 0) {
                         fireTreeViewEvent(new TreeViewEvent(this,
@@ -2118,9 +2029,7 @@ public class GraGraTreeView extends JPanel implements
                             + this.msg,
                             "Create Post Application Condition",
                             JOptionPane.ERROR_MESSAGE);
-
                 }
-
                 if (eRule.getBasisRule().getConstraints().size() > 0) {
                     handleRuleConstraints(parent, true, null);
                     fireTreeViewEvent(new TreeViewEvent(this,
@@ -2164,7 +2073,6 @@ public class GraGraTreeView extends JPanel implements
                     "", JOptionPane.WARNING_MESSAGE);
             return null;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         EdGraGra eGra = getGraGra(parent);
@@ -2180,9 +2088,7 @@ public class GraGraTreeView extends JPanel implements
             }
             name = ((GraGraTreeModel) this.tree.getModel()).makeNewName(eGra, name);
             EdConstraint newConstraint = eGra.createConstraint(name);
-
             handleRuleConstraints(parent, false, newConstraint);
-
             ConstraintTreeNodeData sd = new ConstraintTreeNodeData(newConstraint);
             if (this.layered && !newConstraint.getBasisConstraint().getLayer().isEmpty()) {
                 String tag = "["
@@ -2194,7 +2100,6 @@ public class GraGraTreeView extends JPanel implements
             sd.setTreeNode(newNode);
             this.treeModel.insertNodeInto(newNode, parent, newIndex);
             // if (!this.tree.isExpanded(this.selPath)) this.tree.expandPath(this.selPath);
-
             return newConstraint;
         } else {
             lockWarning();
@@ -2247,7 +2152,6 @@ public class GraGraTreeView extends JPanel implements
                     "", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-
         if (eGra.isEditable()) {
             handleRuleConstraints(parent, false, newConstraint);
             eGra.addConstraint(newConstraint);
@@ -2291,12 +2195,10 @@ public class GraGraTreeView extends JPanel implements
             JOptionPane.showMessageDialog(this.applFrame, s);
             return;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         DefaultMutableTreeNode granode = (DefaultMutableTreeNode) parent
                 .getParent();
-
         EdGraGra eGra = (granode != null) ? getGraGra(granode) : null;
         EdConstraint con = getConstraint(parent);
         if (eGra == null || con == null) {
@@ -2304,7 +2206,6 @@ public class GraGraTreeView extends JPanel implements
         }
 //		FormulaDialog d = new FormulaDialog(this.applFrame,
 //				" Editor of Graph Constraint (Formula) ", true);
-
         String ownerName = "graph constraint : " + con.getName();
         FormulaGraphGUI d = new FormulaGraphGUI(this.applFrame, ownerName,
                 " Graph editor of Formula above Atomic Graph Constraints.",
@@ -2312,11 +2213,8 @@ public class GraGraTreeView extends JPanel implements
                 true);
         d.setExportJPEG(this.exportJPEG);
         d.disableFORALL(true);
-
         List<Evaluable> atomics = eGra.getBasisGraGra().getListOfAtomicObjects();
-
         String oldf = con.getBasisConstraint().getAsString(atomics);
-
         d.setVarsAsObjs(eGra.getAtomics(), oldf);
         d.setLocation(200, 100);
         while (true) {
@@ -2377,7 +2275,6 @@ public class GraGraTreeView extends JPanel implements
                     "", JOptionPane.WARNING_MESSAGE);
             return null;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         final EdRule eRule = getRule(parent);
@@ -2519,7 +2416,6 @@ public class GraGraTreeView extends JPanel implements
                     "", JOptionPane.WARNING_MESSAGE);
             return null;
         }
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         final EdRule eRule = getRule(parent);
@@ -2649,7 +2545,6 @@ public class GraGraTreeView extends JPanel implements
         }
         EdNestedApplCond newAC = null;
         String name = "ApplCond";
-
         DefaultMutableTreeNode parent = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         int newIndex = 0;
@@ -2774,13 +2669,11 @@ public class GraGraTreeView extends JPanel implements
                 sd.setString(tag, newAC.getName());
             }
             putNestedACIntoTree(newAC, parent, newIndex);
-
             if (!this.tree.isExpanded(this.selPath)) {
                 this.tree.expandPath(this.selPath);
             }
             return true;
         }
-
         return false;
     }
 
@@ -2795,7 +2688,6 @@ public class GraGraTreeView extends JPanel implements
         DefaultMutableTreeNode newACNode = new DefaultMutableTreeNode(sd);
         sd.setTreeNode(newACNode);
         this.treeModel.insertNodeInto(newACNode, parentNode, index);
-
         // add subtree of newAC
         addSubTreeOfNestedAC(ac, newACNode);
     }
@@ -2808,7 +2700,6 @@ public class GraGraTreeView extends JPanel implements
             List<String> allVars = ac.getNestedMorphism().getNameOfEnabledACs();
             List<Integer> vars = Formula.getFromStringAboveList(
                     ac.getNestedMorphism().getFormulaText(), allVars);
-
             ApplFormulaTreeNodeData conddata = new ApplFormulaTreeNodeData(
                     ac.getNestedMorphism().getFormulaText(), true, ac);
             DefaultMutableTreeNode condchild = new DefaultMutableTreeNode(conddata);
@@ -2827,7 +2718,6 @@ public class GraGraTreeView extends JPanel implements
             sd.setTreeNode(condNode);
             this.treeModel.insertNodeInto(condNode, acNode, indx);
             indx++;
-
             // add subtree of newAC
             addSubTreeOfNestedAC(cond, condNode);
         }
@@ -3123,7 +3013,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isGraGra()) {
             return data.getGraGra();
         }
-
         return null;
     }
 
@@ -3135,7 +3024,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isGraph()) {
             return data.getGraph();
         }
-
         return null;
     }
 
@@ -3147,7 +3035,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isAtomic()) {
             return data.getAtomic();
         }
-
         return null;
     }
 
@@ -3159,19 +3046,18 @@ public class GraGraTreeView extends JPanel implements
         if (data.isConclusion()) {
             return data.getConclusion();
         }
-
         return null;
     }
 
     /**
-     * Returns an EdConstraint as the used object of the DefaultMutableTreeNode n
+     * Returns an EdConstraint as the used object of the DefaultMutableTreeNode
+     * n
      */
     public EdConstraint getConstraint(final DefaultMutableTreeNode n) {
         GraGraTreeNodeData data = (GraGraTreeNodeData) n.getUserObject();
         if (data.isConstraint()) {
             return data.getConstraint();
         }
-
         return null;
     }
 
@@ -3183,7 +3069,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isRule()) {
             return data.getRule();
         }
-
         return null;
     }
 
@@ -3192,7 +3077,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isKernelRule()) {
             return data.getKernelRule();
         }
-
         return null;
     }
 
@@ -3201,19 +3085,18 @@ public class GraGraTreeView extends JPanel implements
         if (data.isMultiRule()) {
             return data.getMultiRule();
         }
-
         return null;
     }
 
     /**
-     * Returns an EdRuleScheme as the used object of the DefaultMutableTreeNode n
+     * Returns an EdRuleScheme as the used object of the DefaultMutableTreeNode
+     * n
      */
     public EdRuleScheme getRuleScheme(DefaultMutableTreeNode n) {
         GraGraTreeNodeData data = (GraGraTreeNodeData) n.getUserObject();
         if (data.isRuleScheme()) {
             return data.getRuleScheme();
         }
-
         return null;
     }
 
@@ -3225,7 +3108,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isRuleSequence()) {
             return data.getRuleSequence();
         }
-
         return null;
     }
 
@@ -3237,7 +3119,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isNAC()) {
             return data.getNAC();
         }
-
         return null;
     }
 
@@ -3249,7 +3130,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isPAC()) {
             return data.getPAC();
         }
-
         return null;
     }
 
@@ -3261,7 +3141,6 @@ public class GraGraTreeView extends JPanel implements
         if (data.isNestedAC()) {
             return data.getNestedAC();
         }
-
         return null;
     }
 
@@ -3304,26 +3183,26 @@ public class GraGraTreeView extends JPanel implements
     }
 
     /**
-     * Returns an EdRuleConstraint as the used object of the DefaultMutableTreeNode n
+     * Returns an EdRuleConstraint as the used object of the
+     * DefaultMutableTreeNode n
      */
     public EdRuleConstraint getRuleConstraint(DefaultMutableTreeNode n) {
         GraGraTreeNodeData data = (GraGraTreeNodeData) n.getUserObject();
         if (data.isRuleConstraint()) {
             return data.getRuleConstraint();
         }
-
         return null;
     }
 
     /**
-     * Returns an EdAtomApplCond as the used object of the DefaultMutableTreeNode n
+     * Returns an EdAtomApplCond as the used object of the
+     * DefaultMutableTreeNode n
      */
     public EdAtomApplCond getAtomApplCond(final DefaultMutableTreeNode n) {
         GraGraTreeNodeData data = (GraGraTreeNodeData) n.getUserObject();
         if (data.isAtomApplCond()) {
             return data.getAtomApplCond();
         }
-
         return null;
     }
 
@@ -3362,7 +3241,8 @@ public class GraGraTreeView extends JPanel implements
 	 * ******************************************************************************
      */
     /**
-     * Copies the selected rule node into the same gragra tree. The rule node is specified by the String "Rule".
+     * Copies the selected rule node into the same gragra tree. The rule node is
+     * specified by the String "Rule".
      */
     public void copy(final String menuItemString) {
         if (this.selPath == null) {
@@ -3371,7 +3251,6 @@ public class GraGraTreeView extends JPanel implements
                     "", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         DefaultMutableTreeNode aNode = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         if (aNode == null) {
@@ -3402,7 +3281,6 @@ public class GraGraTreeView extends JPanel implements
             return;
         }
         graPath = this.selPath.getParentPath();
-
         if (graPath != null) {
             DefaultMutableTreeNode graNode = (DefaultMutableTreeNode) graPath.getLastPathComponent();
             if (graNode.getUserObject() instanceof GrammarTreeNodeData) {
@@ -3426,7 +3304,6 @@ public class GraGraTreeView extends JPanel implements
                     EdRule ruleClone = graData.getGraGra().cloneAmalgamatedRule(data.getRule(), rsData.getRuleScheme(), true);
                     this.tree.collapsePath(rsPath);
                     putRuleIntoTree(ruleClone, graNode, graNode.getIndex(rsNode) + 1);
-
                     this.fireTreeViewEvent(new TreeViewEvent(this,
                             TreeViewEvent.RULE_ADDED, this.selPath));
                 }
@@ -3466,13 +3343,11 @@ public class GraGraTreeView extends JPanel implements
             return;
         }
         graPath = this.selPath.getParentPath();
-
         if (graPath != null) {
             DefaultMutableTreeNode graNode = (DefaultMutableTreeNode) graPath
                     .getLastPathComponent();
             GraGraTreeNodeData graData = (GraGraTreeNodeData) graNode
                     .getUserObject();
-
             EdRule rule1 = data.getRule();
             int rule2indx = graData.getGraGra().getIndexOfRule(rule1);
             int nn = 1;
@@ -3491,14 +3366,11 @@ public class GraGraTreeView extends JPanel implements
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
             EdRule concurrentRule = graData.getGraGra().makeConcurrentRule(rule1, rule2, true, true);
-
             if (concurrentRule != null) {
                 this.putRuleIntoTree(concurrentRule,
                         (DefaultMutableTreeNode) node.getParent(),
                         ((DefaultMutableTreeNode) node.getParent()).getIndex(node) + nn);
-
                 if (!concurrentRule.getBasisRule().getErrorMsg().equals("")) {
                     String warnMsg = concurrentRule.getBasisRule().getErrorMsg().replaceAll(";", "<br>");
                     warnMsg = warnMsg.replaceAll("\n", "<br>");
@@ -3548,7 +3420,6 @@ public class GraGraTreeView extends JPanel implements
                     + "is added at the end of the rule set.\n\n",
                     "Concurrent Rule:  " + concurrentRule.getName(),
                     JOptionPane.INFORMATION_MESSAGE);
-
 //			String warnMsg = concurrentRule.getBasisRule().getErrorMsg().replaceAll(";", "<br>");
 //			warnMsg = warnMsg.replaceAll("\n", "<br>");
 //			JOptionPane.showMessageDialog(this.applFrame, 				
@@ -3590,13 +3461,11 @@ public class GraGraTreeView extends JPanel implements
 
     public void putRuleIntoTree(final EdRule rule,
             final DefaultMutableTreeNode parentNode, int index) {
-
         RuleTreeNodeData sd = new RuleTreeNodeData(rule);
         DefaultMutableTreeNode ruleNode = new DefaultMutableTreeNode(sd);
         sd.setTreeNode(ruleNode);
         this.treeModel.insertNodeInto(ruleNode,
                 parentNode, index);
-
         int indx = 0;
         // GACs
         indx = this.addGACsToRuleTreeNode(rule, ruleNode, indx);
@@ -3608,10 +3477,8 @@ public class GraGraTreeView extends JPanel implements
         this.addPACsToRuleTreeNode(rule, ruleNode, indx);
         // attribute conditions
         addAttrCondToRuleTreeNode(rule, ruleNode);
-
         this.treeModel.ruleNameChanged(ruleNode, this.layered);
         this.tree.treeDidChange();
-
         this.fireTreeViewEvent(new TreeViewEvent(this,
                 TreeViewEvent.RULE_ADDED, this.selPath));
     }
@@ -3622,25 +3489,22 @@ public class GraGraTreeView extends JPanel implements
 	 * ******************************************************************************
      */
     /**
-     * Disable the selected rule node. The disabled rule is not used by graph transformation. The specified parameter
-     * key should get the value "Rule".
+     * Disable the selected rule node. The disabled rule is not used by graph
+     * transformation. The specified parameter key should get the value "Rule".
      */
     public void disable(final String key, final boolean disable) {
         if (this.selPath == null) {
             return;
         }
-
         DefaultMutableTreeNode aNode = (DefaultMutableTreeNode) this.selPath
                 .getLastPathComponent();
         if (aNode == null) {
             return;
         }
-
         GraGraTreeNodeData sd = (GraGraTreeNodeData) aNode.getUserObject();
         if (sd == null) {
             return;
         }
-
         if (key.equals("Rule")) {
             if (sd.isRule()) {
                 if (disable) {
@@ -3751,7 +3615,6 @@ public class GraGraTreeView extends JPanel implements
                 sd.getAttrCondition().first.setEnabled(!disable);
                 this.treeModel.nodeChanged(aNode);
                 this.tree.treeDidChange();
-
                 if (((AGGAppl) this.applFrame).getGraGraEditor().getEditMode() != EditorConstants.ATTRIBUTES) {
                     ((AGGAppl) this.applFrame).getGraGraEditor().resetGraphEditor();
                 }
@@ -3817,9 +3680,7 @@ public class GraGraTreeView extends JPanel implements
         if (sd == null) {
             return;
         }
-
         cancelCommentsEdit();
-
         if (command.equals("commentGraph")) {
             if (sd.isGraph() && !sd.getGraph().isTypeGraph()) {
                 this.comments = new GraGraTextualComment(this.applFrame, this.popupLocation.x,
@@ -3899,7 +3760,6 @@ public class GraGraTreeView extends JPanel implements
         this.setFlagForNew();
         this.fireTreeViewEvent(new TreeViewEvent(this,
                 TreeViewEvent.SELECTED, this.getEditorPath()));
-
         if ((((GraGraTreeNodeData) ((DefaultMutableTreeNode) selPath
                 .getLastPathComponent()).getUserObject()).isGraph())) {
             if (!this.getCurrentGraGra().getRules().isEmpty()) {
@@ -3913,8 +3773,8 @@ public class GraGraTreeView extends JPanel implements
     }
 
     /**
-     * Deletes the selected node from the gragra tree. The node can be a gragra | rule | NAC and is specified by the
-     * String "GraGra" | "Rule" | "NAC".
+     * Deletes the selected node from the gragra tree. The node can be a gragra
+     * | rule | NAC and is specified by the String "GraGra" | "Rule" | "NAC".
      */
     public void delete(final String treeItemString) {
         if (this.selPath == null) {
@@ -3937,7 +3797,6 @@ public class GraGraTreeView extends JPanel implements
             }
             return;
         }
-
         if (!treeItemString.equals("GraGra")
                 && (this.currentGraGra != null
                 && !this.currentGraGra.getGraph().isEditable())) {
@@ -3946,7 +3805,6 @@ public class GraGraTreeView extends JPanel implements
                     "Delete", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         DefaultMutableTreeNode aNode = (DefaultMutableTreeNode) this.selPath.getLastPathComponent();
         if (aNode == null) {
             JOptionPane.showMessageDialog(this.applFrame,
@@ -3961,7 +3819,6 @@ public class GraGraTreeView extends JPanel implements
                     "", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         if (!treeItemString.equals("")) {
             if (treeItemString.equals("GraGra")) {
                 if (sd.isGraGra()) {
@@ -4084,7 +3941,6 @@ public class GraGraTreeView extends JPanel implements
                             "Bad selection.\nPlease select a rule.",
                             "", JOptionPane.WARNING_MESSAGE);
                 }
-
             } else {
                 JOptionPane.showMessageDialog(this.applFrame,
                         "Bad selection for deletion.",
@@ -4164,15 +4020,12 @@ public class GraGraTreeView extends JPanel implements
                     && cpaGraGraWarning("CLOSE") != JOptionPane.YES_OPTION) {
                 return;
             }
-
 //			int answer = withWarning? this.removeWarning("GraGra"): 0;
 //			if (answer == JOptionPane.YES_OPTION) 
             {
                 this.gragraStore.removeGraGra(sd.getGraGra());
                 this.treeModel.removeNodeFromParent(delNode);
-
                 fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.DELETED, path));
-
                 EdGraGra gra = sd.getGraGra();
                 // remove gragra subtree
                 deleteGraGraSubtree(delNode);
@@ -4193,15 +4046,12 @@ public class GraGraTreeView extends JPanel implements
                     return;
                 }
             }
-
             this.gragraStore.removeGraGra(this.currentGraGra);
             this.treeModel.removeNodeFromParent(delNode);
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.DELETED, path));
-
             // remove gragra subtree
             deleteGraGraSubtree(delNode);
             this.currentGraGra.dispose();
-
             this.selPath = null;
             this.currentGraGra = null;
             this.currentGraph = null;
@@ -4353,7 +4203,6 @@ public class GraGraTreeView extends JPanel implements
                             "", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 if (data.getConclusion() == this.currentConclusion
                         && path == this.tree.getSelectionPath()) {
                     int row = this.tree.getRowForPath(path);
@@ -4588,7 +4437,6 @@ public class GraGraTreeView extends JPanel implements
                 ruleData.getRule().getGraGra().setChanged(true);
                 this.currentRuleConstraint = null;
                 this.currentAtomApplCond = null;
-
                 int row = this.tree.getRowForPath(path);
                 setEditPath(row);
                 setFlagForNew();
@@ -4706,13 +4554,11 @@ public class GraGraTreeView extends JPanel implements
         }
         GraGraTreeNodeData data = (GraGraTreeNodeData) delNode.getUserObject();
         TreePath parentPath = this.selPath.getParentPath();
-
         if (parentPath != null) {
             DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) parentPath
                     .getLastPathComponent();
             GraGraTreeNodeData parentData = (GraGraTreeNodeData) parentNode
                     .getUserObject();
-
 //			int row = -1;
             boolean candelete = false;
             if (data.getNestedAC() == this.currentNestedAC) {
@@ -4726,39 +4572,32 @@ public class GraGraTreeView extends JPanel implements
                                 TreeViewEvent.DELETED, this.selPath));
                     }
                 }
-
             }
             if (candelete) {
                 EdNestedApplCond ac = data.getNestedAC();
-
                 if (parentData.isRule()) {
                     this.gragraStore.storeNestedAC(ac.getRule(), ac);
                 } else if (parentData.isNestedAC()) {
                     this.gragraStore.storeNestedAC(ac.getParent(), ac);
                 }
-
                 GraGraTreeNodeData firstChildData = null;
                 if (parentData.getTreeNode().getChildCount() > 0) {
                     firstChildData = (GraGraTreeNodeData) ((DefaultMutableTreeNode) parentData.
                             getTreeNode().getFirstChild()).getUserObject();
                 }
-
                 if (parentData.isRule()) {
                     parentData.getRule().removeNestedAC(ac);
                 } else if (parentData.isNestedAC()) {
                     parentData.getNestedAC().removeNestedAC(ac);
                 }
-
                 if (firstChildData != null && firstChildData.isApplFormula()) {
                     this.treeModel.removeNodeFromParent(firstChildData.getTreeNode());
                 }
-
                 if (parentData.isRule()) {
                     parentData.getRule().getBasisRule().setFormula("true");
                 } else if (parentData.isNestedAC()) {
                     parentData.getNestedAC().getNestedMorphism().setFormula("true");
                 }
-
                 this.tree.treeDidChange();
                 // update this.tree path of NestedApplConds of rule
                 this.selectPath(parentPath);
@@ -4767,7 +4606,8 @@ public class GraGraTreeView extends JPanel implements
     }
 
     /**
-     * Either inserts or deletes the constraints for the given rule R from the tree view.
+     * Either inserts or deletes the constraints for the given rule R from the
+     * tree view.
      */
     public void removeRuleConstraints(DefaultMutableTreeNode rnode,
             Object objToCheck) {
@@ -4776,7 +4616,6 @@ public class GraGraTreeView extends JPanel implements
                 || (sd.getRule().getBasisRule().getAtomApplConds().size() == 0)) {
             return;
         }
-
         if (objToCheck != null) {
             if (objToCheck instanceof EdAtomic) {
                 EdAtomic parAtom = ((EdAtomic) objToCheck).getParent();
@@ -4813,7 +4652,6 @@ public class GraGraTreeView extends JPanel implements
                 }
             }
         }
-
         TreePath path = new TreePath(rnode.getPath());
         this.tree.collapsePath(path);
         while (true) {
@@ -4902,7 +4740,6 @@ public class GraGraTreeView extends JPanel implements
                         DefaultMutableTreeNode condchild = new DefaultMutableTreeNode(conddata);
                         conddata.setTreeNode(condchild);
                         this.treeModel.insertNodeInto(condchild, child, child.getChildCount());
-
                         for (int l = 0; l < cond.getEquivalents().size(); l++) {
                             AtomApplCond eq = cond.getEquivalents().elementAt(l);
                             String eqn = n + "_Eq" + l;
@@ -4940,7 +4777,6 @@ public class GraGraTreeView extends JPanel implements
                     }
                 }
             }
-
         } else if (sd.isRule()) {
             if (insert) {
                 addRuleConstraints(node, objToCheck);
@@ -4980,16 +4816,13 @@ public class GraGraTreeView extends JPanel implements
                 File f = new File(fullFileName);
                 if (f.exists()) {
                     long time0 = System.currentTimeMillis();
-
                     XMLHelper h = new XMLHelper();
                     if (h.read_from_xml(fullFileName)) {
                         GraGra bgra = BaseFactory.theFactory().createGraGra();
                         h.getTopObject(bgra);
-
                         System.out.println("(Base) Grammar  <" + bgra.getName()
                                 + ">  loaded in  "
                                 + (System.currentTimeMillis() - time0) + "ms");
-
                         loadedGraGra = new EdGraGra(bgra);
                         if (f.getParent() != null) {
                             loadedGraGra.setDirName(f.getParent());
@@ -5001,7 +4834,6 @@ public class GraGraTreeView extends JPanel implements
                         loadedGraGra.getTypeSet().setResourcesPath(
                                 loadedGraGra.getDirName());
                         h.enrichObject(loadedGraGra);
-
                         System.out.println("(Layouted) Grammar loaded in  "
                                 + (System.currentTimeMillis() - time0) + "ms");
                         if (bgra.getRulesVec().size() > 20) {
@@ -5024,7 +4856,6 @@ public class GraGraTreeView extends JPanel implements
                 }
             }
             // long time0 = System.currentTimeMillis();
-
             if (loadedGraGra != null) {
                 // notify BaseFactory
                 BaseFactory.theFactory().notify(loadedGraGra.getBasisGraGra());
@@ -5032,12 +4863,10 @@ public class GraGraTreeView extends JPanel implements
                 GrammarTreeNode grammarTreeNode = new GrammarTreeNode(loadedGraGra);
                 int graIndex = grammarTreeNode.insertIntoTree(this);
 //			int graIndex = putGraGraInTree(loadedGraGra);	
-
                 /* put gragra in editor */
                 propagateGraGraToEditor(graIndex);
                 loadedGraGra.setChanged(false);
                 fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.LOADED));
-
                 if (this.currentGraGra.getGraTraOptions().contains(GraTraOptions.LAYERED)) {
                     this.layered = true;
                     this.priority = false;
@@ -5061,7 +4890,6 @@ public class GraGraTreeView extends JPanel implements
                     this.priority = false;
                     this.ruleSequence = false;
                 }
-
                 this.directory = this.gragraLoad.getDirName();
                 resetEnabledOfFileMenuItems("open");
                 this.filePopupMenu.resetEnabledOfFileMenuItems("open");
@@ -5088,32 +4916,26 @@ public class GraGraTreeView extends JPanel implements
      */
     protected void loadBaseGrammar() {
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.LOAD));
-
         /* open load dialog and get gragra */
         this.gragraLoad.loadBase();
         if (this.gragraLoad.getBaseGraGra() != null) {
             GraGra loadedBasis = this.gragraLoad.getBaseGraGra();
             BaseFactory.theFactory().notify(loadedBasis);
-
             EdGraGra loadedGraGra = new EdGraGra(loadedBasis);
             loadedGraGra.setDirName(this.gragraLoad.getDirName());
             loadedGraGra.setFileName(this.gragraLoad.getFileName());
             loadedGraGra.makeLayoutOfBasisGraphs();
-
             GrammarTreeNode grammarTreeNode = new GrammarTreeNode(loadedGraGra);
             int graIndex = grammarTreeNode.insertIntoTree(this);
 //			int graIndex = putGraGraInTree(loadedGraGra);
-
             /* put gragra in editor */
             propagateGraGraToEditor(graIndex);
             if (this.currentGraGra.getGraTraOptions().contains("layered")) {
                 this.treeModel.ruleNameChanged(this.currentGraGra, true);
             }
-
             resetEnabledOfFileMenuItems("open");
             this.filePopupMenu.resetEnabledOfFileMenuItems("open");
             resetEnabledOfToolBarItems("open");
-
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.LOADED));
         } else {
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
@@ -5160,24 +4982,20 @@ public class GraGraTreeView extends JPanel implements
      */
     protected void reloadCurrentGraGra() {
         EdGraGra gra = this.currentGraGra;
-
         final DefaultMutableTreeNode aNode = (DefaultMutableTreeNode) this.selPath.getLastPathComponent();
         if (((GraGraTreeNodeData) aNode.getUserObject()).isGraGra()
                 && gra != ((GraGraTreeNodeData) aNode.getUserObject()).getGraGra()) {
             gra = ((GraGraTreeNodeData) aNode.getUserObject()).getGraGra();
         }
-
         if (gra.getFileName().equals("")) {
             JOptionPane.showMessageDialog(this.applFrame,
                     "Please save the grammar first.",
                     "", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         if (gra == this.currentGraGra) {
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.LOAD));
         }
-
         // Warning
         if (gra.isChanged()) {
             int answer = changedGraGraWarning("RELOAD");
@@ -5185,13 +5003,10 @@ public class GraGraTreeView extends JPanel implements
                 return;
             }
         }
-
         EdGraGra gragra = (new GrammarTreeNode()).reloadCurrentGraGra(this, this.selPath, this.gragraLoad, gra);
         if (gragra != null) {
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.LOADED));
-
             this.selectPath(this.selPath);
-
             /* put gragra in editor */
 //			this.editorPath = this.selPath;
 //			setCurrentData(this.editorPath);		
@@ -5360,7 +5175,6 @@ public class GraGraTreeView extends JPanel implements
             if (gragra.getDirName().equals("")) {
                 this.gragraSave.setDirName(this.directory);
             }
-
             this.gragraSave.setGraGra(gragra, gragra.getDirName(), gragra.getFileName());
             this.gragraSave.save();
         }
@@ -5374,7 +5188,6 @@ public class GraGraTreeView extends JPanel implements
         EdGraGra selGraGra = getGraGra();
         if (selGraGra != null) {
             selGraGra.refreshAttrInstances();
-
             (new GrammarTreeNode()).saveGraGra(this, this.gragraSave,
                     this.directory, selGraGra);
         }
@@ -5388,7 +5201,6 @@ public class GraGraTreeView extends JPanel implements
         EdGraGra selGraGra = getGraGra();
         if (selGraGra != null) {
             selGraGra.refreshAttrInstances();
-
             (new GrammarTreeNode()).saveAsGraGra(this, this.gragraSave,
                     this.directory, selGraGra);
         }
@@ -5402,10 +5214,8 @@ public class GraGraTreeView extends JPanel implements
         EdGraGra selGraGra = getGraGra();
         if (selGraGra != null) {
             selGraGra.refreshAttrInstances();
-
             /* deselect all selections and remove all matches */
             selGraGra.clear();
-
             (new GrammarTreeNode()).saveAsBaseGraGra(this, this.gragraSave,
                     this.directory, selGraGra);
         }
@@ -5420,31 +5230,30 @@ public class GraGraTreeView extends JPanel implements
     }
 
     /**
-     * Reset the working host graph of the currently selected gragra by the copy of its start graph.
+     * Reset the working host graph of the currently selected gragra by the copy
+     * of its start graph.
      */
     protected synchronized void resetGraph() {
         resetGraph(null);
     }
 
     /**
-     * Reset the specified graph of the currently selected gragra by the copy of its start graph.
+     * Reset the specified graph of the currently selected gragra by the copy of
+     * its start graph.
      */
     public synchronized void resetGraph(final EdGraph graph) {
         /* get selected gragra */
         EdGraGra selGraGra = getGraGra();
         if (selGraGra != null) {
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_RESET));
-
             GraGraTreeNodeData ndataEdit = (GraGraTreeNodeData) ((DefaultMutableTreeNode) this.editorPath.getLastPathComponent()).getUserObject();
             GraGraTreeNodeData ndataSel = (GraGraTreeNodeData) ((DefaultMutableTreeNode) this.selPath.getLastPathComponent()).getUserObject();
-
             if (ndataEdit.isGraph() && ndataSel.isGraph()
                     && (ndataEdit.getGraph() == ndataSel.getGraph())) {
                 if (selGraGra.resetGraph()) {
                     ndataEdit.setData(selGraGra.getGraph());
                     ndataEdit.setString(selGraGra.getGraph().getName());
                     this.tree.treeDidChange();
-
                     fireTreeViewEvent(new TreeViewEvent(this,
                             TreeViewEvent.RESET_GRAPH, this.editorPath));
                 }
@@ -5454,7 +5263,6 @@ public class GraGraTreeView extends JPanel implements
                         ndataSel.setData(selGraGra.getGraph());
                         ndataSel.setString(selGraGra.getGraph().getName());
                         this.tree.treeDidChange();
-
                         fireTreeViewEvent(new TreeViewEvent(this,
                                 TreeViewEvent.RESET_GRAPH, this.selPath));
                     }
@@ -5478,7 +5286,6 @@ public class GraGraTreeView extends JPanel implements
                         ndata.setString(selGraGra.getGraph().getName());
                         this.currentGraph = selGraGra.getGraph();
                         this.tree.treeDidChange();
-
                         fireTreeViewEvent(new TreeViewEvent(this,
                                 TreeViewEvent.RESET_GRAPH, path));
                     }
@@ -5493,7 +5300,6 @@ public class GraGraTreeView extends JPanel implements
                         ndata.setString(selGraGra.getGraph().getName());
                         this.currentGraph = selGraGra.getGraph();
                         this.tree.treeDidChange();
-
                         fireTreeViewEvent(new TreeViewEvent(this,
                                 TreeViewEvent.RESET_GRAPH, path));
                     }
@@ -5520,7 +5326,8 @@ public class GraGraTreeView extends JPanel implements
     }
 
     /**
-     * Converts gragra to GXL : XML-based File Exchange Format for Graphs and Graph Transformation Systems
+     * Converts gragra to GXL : XML-based File Exchange Format for Graphs and
+     * Graph Transformation Systems
      */
     public void exportGraGra(final String format) {
         /* get gragra to save */
@@ -5528,21 +5335,17 @@ public class GraGraTreeView extends JPanel implements
         if (selGraGra == null) {
             return;
         }
-
         /* deselect all selections and remove all matches */
         selGraGra.clear();
         String oldDir = selGraGra.getDirName();
         String oldFile = selGraGra.getFileName();
-
         /* set gragra to save */
         String tmpn = "tmp_" + selGraGra.getName() + ".ggx";
         String tmpName = tmpn.replaceAll(" ", "");
         this.gragraSave.setGraGra(selGraGra, selGraGra.getDirName(), tmpName);
         this.gragraSave.save();
-
         File tmpf = new File(selGraGra.getDirName() + tmpName);
         tmpf.deleteOnExit();
-
         ConverterXML converter = new ConverterXML();
         String fn = "";
         String fd = "";
@@ -5554,7 +5357,6 @@ public class GraGraTreeView extends JPanel implements
         } else if (format.endsWith("COLOR_GRAPH")) {
             filter = ".col";
         }
-
         if (!filter.equals("")) {
             // get name of gxl or gtxl file
             JFileChooser chooser = null;
@@ -5563,7 +5365,6 @@ public class GraGraTreeView extends JPanel implements
             } else {
                 chooser = new JFileChooser(this.directory);
             }
-
             AGGFileFilter fileFilter = null;
             if (format.endsWith("COLOR_GRAPH")) {
                 fileFilter = new AGGFileFilter(filter, "COLOR_GRAPH Files ("
@@ -5572,7 +5373,6 @@ public class GraGraTreeView extends JPanel implements
                 fileFilter = new AGGFileFilter(filter, "XML Files ("
                         + filter + ")");
             }
-
             chooser.addChoosableFileFilter(fileFilter);
             chooser.setFileFilter(fileFilter);
             int value = chooser.showSaveDialog(this.applFrame);
@@ -5588,7 +5388,6 @@ public class GraGraTreeView extends JPanel implements
                     fd += File.separator;
                 }
             }
-
             if (!fn.equals("")) {
                 File source = null;
                 if (format.equals("GXL")) {
@@ -5645,13 +5444,13 @@ public class GraGraTreeView extends JPanel implements
                 }
             }
         }
-
         selGraGra.setDirName(oldDir);
         selGraGra.setFileName(oldFile);
     }
 
     /**
-     * Converts gragra from GXL : XML-based File Exchange Format for Graphs and Graph Transformation Systems
+     * Converts gragra from GXL : XML-based File Exchange Format for Graphs and
+     * Graph Transformation Systems
      */
     public void importGraGra(final String format) {
         doImportGraGra(format);
@@ -5659,7 +5458,8 @@ public class GraGraTreeView extends JPanel implements
     }
 
     /**
-     * Converts gragra from GXL : XML-based File Exchange Format for Graphs and Graph Transformation Systems
+     * Converts gragra from GXL : XML-based File Exchange Format for Graphs and
+     * Graph Transformation Systems
      */
     @SuppressWarnings("unused")
     protected synchronized void doImportGraGra(String format) {
@@ -5701,10 +5501,8 @@ public class GraGraTreeView extends JPanel implements
                     importAsGrammar = false;
                 }
             }
-
             if (!importAsGrammar && !format.endsWith("COLOR_GRAPH")) {
                 EdGraGra selGraGra = data.getGraGra();
-
                 if (this.editorPath != null && !(path == this.editorPath)) {
                     JOptionPane.showMessageDialog(this.applFrame,
                             "<html><body>"
@@ -5725,7 +5523,6 @@ public class GraGraTreeView extends JPanel implements
                 }
             }
         }
-
         ConverterXML converter = new ConverterXML();
         String fn = "";
         String fd = "";
@@ -5741,7 +5538,6 @@ public class GraGraTreeView extends JPanel implements
         } else if (format.endsWith("COLOR_GRAPH")) {
             filter = ".res";
         }
-
         if (!filter.equals("")) {
             // get name of gxl or gtxl file
             JFileChooser chooser = null;
@@ -5750,14 +5546,12 @@ public class GraGraTreeView extends JPanel implements
             } else {
                 chooser = new JFileChooser(this.directory);
             }
-
             AGGFileFilter filterXML = null;
             if (format.endsWith("COLOR_GRAPH")) {
                 filterXML = new AGGFileFilter(filter, "COLOR_GRAPH Files (" + filter + ")");
             } else {
                 filterXML = new AGGFileFilter(filter, "XML Files (" + filter + ")");
             }
-
             chooser.addChoosableFileFilter(filterXML);
             chooser.setFileFilter(filterXML);
             int value = chooser.showOpenDialog(this.applFrame);
@@ -5772,7 +5566,6 @@ public class GraGraTreeView extends JPanel implements
                     }
                 }
             }
-
             if (!fn.equals("")) {
                 String fnOut = "";
                 File gxldtd = null;
@@ -5822,7 +5615,6 @@ public class GraGraTreeView extends JPanel implements
                             + "as value of color attributes of the nodes of the current host graph.\n"
                             + "The color attribute should be of type <int> or <String>",
                             "Import result of ColorGraph", JOptionPane.INFORMATION_MESSAGE);
-
                     Type ntype = null;
                     if (this.nodeTypeOfColorGraph != null) {
                         ntype = this.nodeTypeOfColorGraph.getBasisType();
@@ -5840,7 +5632,6 @@ public class GraGraTreeView extends JPanel implements
                                 TreeViewEvent.GRAPH_CHANGED));
                     }
                 }
-
                 if (!format.equals("GGX")
                         && !format.endsWith("COLOR_GRAPH")
                         && ((gxldtd == null) || (gtsdtd == null))) {
@@ -5849,7 +5640,6 @@ public class GraGraTreeView extends JPanel implements
                                     "Import failed!\n File gxl.dtd resp. gts.dtd is not found.",
                                     "", JOptionPane.WARNING_MESSAGE);
                 }
-
                 if (format.equals("GGX")) {
                     fireTreeViewEvent(new TreeViewEvent(this,
                             TreeViewEvent.LOAD));
@@ -5879,7 +5669,6 @@ public class GraGraTreeView extends JPanel implements
 //						this.gragraSave.setGraGra(test, test.getDirName(), test
 //								.getFileName());
 //						this.gragraSave.save();
-
 //						//test
 //						if (converter.getFileExtOfImport().equals(".ecore")) {
 //							test.makeTypeGraphFromPlainGraph(test.getGraph());
@@ -5914,11 +5703,9 @@ public class GraGraTreeView extends JPanel implements
                         BaseFactory.theFactory().notify(
                                 loadedGraGra.getBasisGraGra());
                         loadedGraGra.update();
-
 //						putGraGraInTree(loadedGraGra);						
                         GrammarTreeNode grammarTreeNode = new GrammarTreeNode(loadedGraGra);
                         int indx = grammarTreeNode.insertIntoTree(this);
-
                         fireTreeViewEvent(new TreeViewEvent(this,
                                 TreeViewEvent.LOADED));
                     } else {
@@ -5955,7 +5742,6 @@ public class GraGraTreeView extends JPanel implements
                                 "", JOptionPane.ERROR_MESSAGE);
                     }
                 } else if (format.endsWith("COLOR_GRAPH")) {
-
                 } else {
                     fireTreeViewEvent(new TreeViewEvent(this,
                             TreeViewEvent.ERROR));
@@ -5976,12 +5762,10 @@ public class GraGraTreeView extends JPanel implements
                 importAsGrammar(importGraGra);
                 return;
             }
-
             boolean impAsTG = false;
             boolean impAsG = false;
             boolean impAsR = false;
             boolean impAsGC = false;
-
             if ((importGraGra.getTypeSet().getTypeGraph() != null)
                     && !importGraGra.getTypeSet().getTypeGraph()
                             .getBasisGraph().isEmpty()) {
@@ -6272,7 +6056,6 @@ public class GraGraTreeView extends JPanel implements
                                 "", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
             boolean typeGraphImported = importTypeGraph(imp, selGraGra, path);
             if (!typeGraphImported && !this.rewriteTypeGraph) {
                 fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
@@ -6341,10 +6124,8 @@ public class GraGraTreeView extends JPanel implements
         }
         BaseFactory.theFactory().notify(imp.getBasisGraGra());
         imp.update();
-
         GrammarTreeNode grammarTreeNode = new GrammarTreeNode(imp);
         int graIndex = grammarTreeNode.insertIntoTree(this);
-
         /* put gragra in editor */
         propagateGraGraToEditor(graIndex);
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.LOADED));
@@ -6375,7 +6156,6 @@ public class GraGraTreeView extends JPanel implements
                         "", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-
             EdGraGra selGraGra = data.getGraGra();
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_IMPORT));
             importGrammarItems(importGraGra, selGraGra, path);
@@ -6439,10 +6219,8 @@ public class GraGraTreeView extends JPanel implements
         }
         // import graph constraints
         importGraphConstraints(importGraGra, selGraGra);
-
         selGraGra.getTypeSet().getBasisTypeSet().setHelpInfo("");
         selGraGra.getTypeSet().getBasisTypeSet().getTypeGraph().setHelpInfo("");
-
         if (failed.size() > 0) {
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
             this.applFrame.getRootPane().revalidate();
@@ -6485,7 +6263,6 @@ public class GraGraTreeView extends JPanel implements
                 }
             }
         }
-
         if (this.rewriteTypeGraph) {
             if (selGraGra.importTypeGraph(importGraGra.getTypeGraph(), true)) {
                 imported = true;
@@ -6541,7 +6318,6 @@ public class GraGraTreeView extends JPanel implements
                     TreeViewEvent.IMPORT_TYPE_GRAPH));
             return true;
         }
-
         this.rewriteTypeGraph = false;
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
         this.applFrame.getRootPane().revalidate();
@@ -6570,7 +6346,6 @@ public class GraGraTreeView extends JPanel implements
             }
         }
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_IMPORT));
-
         EdGraph graphToImport = null;
         List<String> graphNames = new Vector<String>();
         if (importGraGra.getGraphs().size() > 1) {
@@ -6578,7 +6353,6 @@ public class GraGraTreeView extends JPanel implements
             for (int i = 0; i < graphs.size(); i++) {
                 graphNames.add(graphs.get(i).getName());
             }
-
             GraphImportDialog gid = new GraphImportDialog(this.applFrame,
                     "Graph to import", graphNames, true);
             gid.setVisible(true);
@@ -6589,7 +6363,6 @@ public class GraGraTreeView extends JPanel implements
         } else {
             graphToImport = importGraGra.getGraph();
         }
-
         if (graphToImport != null && !graphToImport.getBasisGraph().isEmpty()) {
             if ((importGraGra.getTypeGraph() != null)
                     && ((selGraGra.getTypeGraph() == null)
@@ -6653,7 +6426,6 @@ public class GraGraTreeView extends JPanel implements
     private boolean importGraph(
             final EdGraph importGraph,
             final EdGraGra selGraGra) {
-
         if (selGraGra.addImportGraph(importGraph)) {
             EdGraph eg = selGraGra.getGraphs().lastElement();
             if (addGraph(selGraGra, eg)) {
@@ -6661,7 +6433,6 @@ public class GraGraTreeView extends JPanel implements
                 return true;
             }
         }
-
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.ERROR));
         this.applFrame.getRootPane().revalidate();
         return false;
@@ -6689,15 +6460,12 @@ public class GraGraTreeView extends JPanel implements
                 return false;
             }
             EdGraGra selGraGra = data.getGraGra();
-
             fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_IMPORT));
-
             List<String> ruleNames = new Vector<String>();
             List<EdRule> rules = importGraGra.getRules();
             for (int i = 0; i < rules.size(); i++) {
                 ruleNames.add(rules.get(i).getName());
             }
-
             ItemImportDialog rid = new ItemImportDialog(this.applFrame,
                     "Rule to import", ruleNames);
             rid.setVisible(true);
@@ -6705,9 +6473,8 @@ public class GraGraTreeView extends JPanel implements
             List<String> failed = new Vector<String>();
             if (ruleNames.size() > 0) {
                 selGraGra.getTypeSet().getBasisTypeSet().adaptTypes(
-                        importGraGra.getBasisGraGra().getTypes(), true);
+                        importGraGra.getBasisGraGra().getTypeWalker(), true);
                 selGraGra.getTypeSet().refreshTypes(true);
-
 //				List<Rule> set = new Vector<Rule>(); // test
                 for (int i = 0; i < ruleNames.size(); i++) {
                     String rname = ruleNames.get(i);
@@ -6720,7 +6487,6 @@ public class GraGraTreeView extends JPanel implements
 //					else
 //						set.add(newRule.getBasisRule()); // test
                 }
-
 //				selGraGra.getBasisGraGra().addRuleSubset(set); // test
                 fireTreeViewEvent(new TreeViewEvent(this,
                         TreeViewEvent.IMPORT_RULE));
@@ -6788,7 +6554,6 @@ public class GraGraTreeView extends JPanel implements
                 return false;
             }
             EdGraGra selGraGra = data.getGraGra();
-
             Object[] options = {"All Constraints", "Atomic Graph Constraints", "Cancel"};
             int answer = JOptionPane
                     .showOptionDialog(this.applFrame,
@@ -6811,11 +6576,9 @@ public class GraGraTreeView extends JPanel implements
 
     private void importAllGraphConstraints(final EdGraGra importGraGra, final EdGraGra selGraGra) {
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_IMPORT));
-
         selGraGra.getTypeSet().getBasisTypeSet().adaptTypes(
                 importGraGra.getBasisGraGra().getTypeSet(), true);
         selGraGra.getTypeSet().refreshTypes(true);
-
         importGraphConstraints(importGraGra, selGraGra);
     }
 
@@ -6823,9 +6586,7 @@ public class GraGraTreeView extends JPanel implements
         GraGraTreeNodeData data = (GraGraTreeNodeData) ((DefaultMutableTreeNode) path
                 .getLastPathComponent()).getUserObject();
         EdGraGra selGraGra = data.getGraGra();
-
         fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.TRY_IMPORT));
-
         List<String> names = importGraGra.getAtomicNames();
         ItemImportDialog rid = new ItemImportDialog(this.applFrame,
                 "Atomic Graph Constraint to import", names);
@@ -6834,9 +6595,8 @@ public class GraGraTreeView extends JPanel implements
         List<String> failed = new Vector<String>();
         if (names.size() > 0) {
             selGraGra.getTypeSet().getBasisTypeSet().adaptTypes(
-                    importGraGra.getBasisGraGra().getTypes(), true);
+                    importGraGra.getBasisGraGra().getTypeWalker(), true);
             selGraGra.getTypeSet().refreshTypes(true);
-
             for (int i = 0; i < names.size(); i++) {
                 String name = names.get(i);
                 EdAtomic ac = importGraGra.getAtomic(name);
@@ -6845,7 +6605,6 @@ public class GraGraTreeView extends JPanel implements
                     failed.add(name);
                 }
             }
-
             fireTreeViewEvent(new TreeViewEvent(this,
                     TreeViewEvent.IMPORT_ATOMIC));
         }
@@ -6904,7 +6663,6 @@ public class GraGraTreeView extends JPanel implements
             final EdGraGra selGraGra,
             final TreePath path,
             final boolean adapt) {
-
         boolean result = false;
         List<EdGraph> graphsToImport = new Vector<EdGraph>();
         List<String> graphNames = new Vector<String>();
@@ -6925,7 +6683,6 @@ public class GraGraTreeView extends JPanel implements
         } else {
             graphsToImport.add(importGraGra.getGraph());
         }
-
         for (int i = 0; i < graphsToImport.size(); i++) {
             EdGraph graphToImport = graphsToImport.get(i);
             if (adapt) {
@@ -6968,11 +6725,9 @@ public class GraGraTreeView extends JPanel implements
                                 + "\n into tree view of the current grammar.",
                                 "New Type Graph",
                                 JOptionPane.WARNING_MESSAGE);
-
             }
             return true;
         }
-
         fireTreeViewEvent(new TreeViewEvent(this,
                 TreeViewEvent.ERROR));
         this.applFrame.getRootPane().revalidate();
@@ -7039,7 +6794,6 @@ public class GraGraTreeView extends JPanel implements
             } else if (e.getMessage().equals("Quit")) {
                 executeCommand("exit");
             }
-
         } else if (e.getMsg() == EditEvent.DATA_LOADED) {
             this.applFrame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         } else if (e.getMsg() == EditEvent.ATTR_CONDITION_CHANGED) {
@@ -7151,7 +6905,6 @@ public class GraGraTreeView extends JPanel implements
         } else if (e.getMsg() == EditEvent.DELETE_RULE_REQUEST) {
             if (e.getObject() instanceof EdRule) {
                 EdRule r = (EdRule) e.getObject();
-
                 if (r.getBasisRule() instanceof AmalgamatedRule) {
                     deleteAmalgamatedRule(getTreeNodeOfGrammarElement(r), false);
                 } else if (r.getBasisRule() instanceof KernelRule
@@ -7175,7 +6928,6 @@ public class GraGraTreeView extends JPanel implements
         } else if (e.getMsg() == EditEvent.HIDE_RULE_SEQUENCE) {
             hideRuleSequence();
         }
-
     }
 
     public void setFlagForNew() {
@@ -7300,7 +7052,6 @@ public class GraGraTreeView extends JPanel implements
         this.currentConstraint = null;
         this.currentRuleConstraint = null;
         this.currentAtomApplCond = null;
-
 //		isGraGra = true;
         this.layered = false;
         this.priority = false;
@@ -7923,11 +7674,9 @@ public class GraGraTreeView extends JPanel implements
                     this.currentAtomic = null;
                     this.currentConclusion = null;
                 }
-
                 this.currentConstraint = null;
                 this.currentRuleConstraint = null;
                 this.currentAtomApplCond = null;
-
             }
 //			isAttrCondition = true;
             // checkCurrentData();
@@ -8091,7 +7840,6 @@ public class GraGraTreeView extends JPanel implements
         if (obj == null) {
             return;
         }
-
         if (obj instanceof EdNestedApplCond) {
             if (((EdNestedApplCond) obj).getParent() == null) {
                 TreePath path = getTreePathOfGrammarElement(((EdNestedApplCond) obj).getRule());
@@ -8404,7 +8152,6 @@ public class GraGraTreeView extends JPanel implements
 				options, options[1]);
 		return answer;
 	}
-
 	private int saveWarning(String obj, String name) {
 		Object[] options = { "SAVE", "CANCEL" };
 		int answer = JOptionPane.showOptionDialog(this.applFrame, 
@@ -8441,123 +8188,98 @@ public class GraGraTreeView extends JPanel implements
 
     private void createMenus() {
         this.file.setMnemonic('F');
-
         JMenuItem mi = this.file.add(new JMenuItem("New GraGra            Ctrl+N"));
         mi.setEnabled(true);
         mi.setMnemonic('N');
         mi.setActionCommand("newGraGra");
         mi.addActionListener(this.actionAdapter);
-
         this.file.addSeparator();
-
         mi = this.file.add(new JMenuItem("Open                      Ctrl+O"));
         mi.setEnabled(true);
         mi.setMnemonic('O');
         mi.setActionCommand("open");
         mi.addActionListener(this.actionAdapter);
-
         mi = this.file.add(new JMenuItem("Save                       Ctrl+S"));
         mi.setEnabled(false);
         mi.setMnemonic('S');
         mi.setActionCommand("save");
         mi.addActionListener(this.actionAdapter);
-
         mi = this.file.add(new JMenuItem("Save As                   Alt+S"));
         mi.setEnabled(false);
         mi.setMnemonic(KeyEvent.VK_A);
         mi.setDisplayedMnemonicIndex(5);
         mi.setActionCommand("saveAs");
         mi.addActionListener(this.actionAdapter);
-
         this.file.addSeparator();
-
         mi = this.file.add(new JMenuItem("Open (Base)"));
         mi.setActionCommand("openBase");
         mi.addActionListener(this.actionAdapter);
-
         mi = this.file.add(new JMenuItem("Save As (Base)"));
         mi.setEnabled(false);
         mi.setActionCommand("saveAsBase");
         mi.addActionListener(this.actionAdapter);
-
         this.file.addSeparator();
-
         JMenu subm = (JMenu) this.file.add(new JMenu("Export"));
         subm.setEnabled(false);
         subm.setMnemonic('x');
-
         mi = subm.add(new JMenuItem("JPEG         Shift+J"));
         mi.setEnabled(true);
         mi.setMnemonic('J');
         mi.setActionCommand("exportGraphJPEG");
         mi.addActionListener(this.actionAdapter);
-
         mi = subm.add(new JMenuItem("GXL          Shift+X"));
         mi.setEnabled(true);
         mi.setMnemonic('X');
         mi.setActionCommand("exportGXL");
         mi.addActionListener(this.actionAdapter);
-
         mi = subm.add(new JMenuItem("GTXL        Shift+T"));
         mi.setEnabled(true);
         mi.setMnemonic('T');
         mi.setActionCommand("exportGTXL");
         mi.addActionListener(this.actionAdapter);
-
         subm = (JMenu) this.file.add(new JMenu("Import"));
         subm.setEnabled(true);
         subm.setMnemonic('I');
-
         mi = subm.add(new JMenuItem("GGX                         Shift+Alt+G"));
         mi.setEnabled(true);
         mi.setMnemonic('G');
         mi.setActionCommand("importGGX");
         mi.addActionListener(this.actionAdapter);
-
         mi = subm
                 .add(new JMenuItem("GXL                          Shift+Alt+X"));
         mi.setEnabled(true);
         mi.setMnemonic('X');
         mi.setActionCommand("importGXL");
         mi.addActionListener(this.actionAdapter);
-
         // mi = (JMenuItem) subm.add(new JMenuItem("GTXL"));
         mi = new JMenuItem("GTXL");
         mi.setEnabled(false);
         mi.setMnemonic('T');
         mi.setActionCommand("importGTXL");
         mi.addActionListener(this.actionAdapter);
-
         mi = subm.add(new JMenuItem("OMONDO XMI ( .ecore )   Shift+Alt+O"));
         mi.setEnabled(true);
         mi.setMnemonic('O');
         mi.setActionCommand("importOMONDOXMI");
         mi.addActionListener(this.actionAdapter);
-
         this.file.addSeparator();
-
         mi = this.file.add(new JMenuItem("Close GraGra           Ctrl+W"));
         mi.setEnabled(false);
         mi.setMnemonic('C');
         mi.setActionCommand("deleteGraGra");
         mi.addActionListener(this.actionAdapter);
-
         this.file.addSeparator();
-
         mi = this.file.add(new JMenuItem("AGG View to JPEG"));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ((AGGAppl) GraGraTreeView.this.applFrame).exportAppl2JPEG();
             }
         });
-
         this.file.addSeparator();
-
         mi = this.file.add(new JMenuItem("Quit                        Ctrl+Q"));
         mi.setActionCommand("exit");
         mi.setMnemonic('Q');
         mi.addActionListener(this.actionAdapter);
-
         this.menus.add(this.file);
     }
 
@@ -8580,7 +8302,6 @@ public class GraGraTreeView extends JPanel implements
                         } else {
                             m.setEnabled(false);
                         }
-
                     } else if (this.file.getItem(i) != null) {
                         JMenuItem mi = this.file.getItem(i);
 //						System.out.println(mi.getText());
@@ -8617,7 +8338,6 @@ public class GraGraTreeView extends JPanel implements
         this.toolBar.addTool(this.toolBar.createTool("iconable", "NewRuleIcon",
                 "New Rule", "newRule", this.actionAdapter, false));
         this.toolBar.addSeparator(new Dimension(3, 3));
-
         this.newNestedAC = this.toolBar.createTool("iconable", "NewNestedACIcon",
                 "New General Application Condition", "newNestedAC", this.actionAdapter, false);
         this.indxNewNestedAC = this.toolBar.getComponentCount();
@@ -8692,7 +8412,6 @@ public class GraGraTreeView extends JPanel implements
                 if (this.toolBar.getComponentAtIndex(i) instanceof JButton) {
                     JButton b = (JButton) this.toolBar.getComponentAtIndex(i);
                     b.setEnabled(true);
-
                     if (b.getIcon() instanceof NewTypeGraphIcon) {
                         ((NewTypeGraphIcon) b.getIcon()).setEnabled(true);
                     } else if (b.getIcon() instanceof NewGraphIcon) {
@@ -8741,7 +8460,6 @@ public class GraGraTreeView extends JPanel implements
                     if (this.toolBar.getComponentAtIndex(i) instanceof JButton) {
                         JButton b = (JButton) this.toolBar.getComponentAtIndex(i);
                         b.setEnabled(false);
-
                         if (b.getIcon() instanceof NewTypeGraphIcon) {
                             ((NewTypeGraphIcon) b.getIcon()).setEnabled(false);
                         } else if (b.getIcon() instanceof NewGraphIcon) {
@@ -8904,152 +8622,84 @@ public class GraGraTreeView extends JPanel implements
     public void enableNestedApplCond(boolean b) {
         if (b) {
             this.rulePopupMenu.enableNestedApplCond(b);
-
             this.toolBar.addTool(this.newNestedAC, this.indxNewNestedAC);
             this.toolBar.addSeparator(new Dimension(3, 3), this.indxNewNestedAC + 1);
             this.toolBar.addTool(this.delNestedAC, this.indxDelNestedAC + 2);
             this.toolBar.addSeparator(new Dimension(3, 3), this.indxDelNestedAC + 3);
         }
     }
-
     protected final JFrame applFrame;
-
     private final GraGraTreeViewKeyAdapter keyAdapter;
-
     private final GraGraTreeViewMouseAdapter mouseAdapter;
-
     private final TreeViewActionAdapter actionAdapter;
-
     protected String msg;
-
     private final List<JMenu> menus = new Vector<JMenu>();
-
     private final JMenu file;
-
     private final AGGToolBar toolBar;
-
     private final GraGraSave gragraSave;
-
     private final GraGraLoad gragraLoad;
-
     private final List<TreeViewEventListener> treeEventListeners = new Vector<TreeViewEventListener>();
-
     private String directory = "";
-
     protected EdGraGra currentGraGra;
-
     protected RuleSequence currentRuleSequence;
-
     private EdGraph currentGraph;
-
     protected EdRule currentRule;
-
     protected EdRuleScheme currentRuleScheme;
-
     private EdNAC currentNAC;
-
     private EdPAC currentPAC, currentNestedAC;
-
     private EdAtomic currentAtomic;
-
     private EdAtomic currentConclusion;
-
     private EdConstraint currentConstraint;
-
     private EdRuleConstraint currentRuleConstraint;
-
     private EdAtomApplCond currentAtomApplCond;
-
     private Pair<EdRule, List<String>> currentRuleContext;
-
     private Pair<EdAtomic, List<String>> currentConclusionContext;
-
     protected final FilePopupMenu filePopupMenu;
-
     protected final ConstraintPopupMenu constraintPopupMenu;
-
     protected final AtomicPopupMenu atomicPopupMenu;
-
     protected final ConclusionPopupMenu conclusionPopupMenu;
-
     protected final RuleConstraintPopupMenu ruleConstraintPopupMenu;
-
     protected final AtomApplCondPopupMenu atomApplCondPopupMenu;
-
     protected final GraGraPopupMenu gragraPopupMenu;
-
     protected final RulePopupMenu rulePopupMenu;
     protected final AmalgamRulePopupMenu amalgamRulePopupMenu;
-
     protected final RuleSchemePopupMenu ruleSchemePopupMenu;
     protected final KernelRulePopupMenu kernRulePopupMenu;
     protected final MultiRulePopupMenu multiRulePopupMenu;
-
     protected final RuleSequencePopupMenu ruleSequencePopupMenu;
-
     protected final NACPopupMenu nacPopupMenu;
-
     protected final PACPopupMenu pacPopupMenu;
-
     protected final NestedACPopupMenu acPopupMenu;
-
     protected final TypeGraphPopupMenu typeGraphPopupMenu;
-
     protected final GraphPopupMenu graphPopupMenu;
-
     protected final AttrConditionPopupMenu attrConditionPopupMenu;
-
     protected final ApplFormulaPopupMenu applFormulaPopupMenu;
-
     protected Point popupLocation;
-
     protected final JTree tree;
-
     protected final GraGraTreeModel treeModel;
-
     private final DefaultMutableTreeNode top;
-
     public TreePath selPath; // Path clicked with the mouse
-
     public TreePath editorPath; // Path underlayed with selection color
-
     protected Rectangle movedRect;
-
     protected DefaultMutableTreeNode movedNode;
-
     protected Point movedPoint = new Point(0, 0);
-
     private boolean newRuleOK = false;
     private boolean newApplCondOK = false;
-
     protected boolean pressedMouseLeft = false;
-
     protected boolean wasMoved = false;
-
     protected DefaultMutableTreeNode tmpSelNode;
-
     protected TreePath tmpSelPath;
-
     protected boolean isSelected = false;
-
     public boolean layered = false, priority = false;
-
     boolean ruleSequence = false, ruleSequenceHidden = false;
-
     private boolean rewriteTypeGraph = false;
     private boolean undirectedArcs, nonparallelArcs, checkEmptyAttrs;
-
     protected final GraGraElementsStore gragraStore;
-
     protected final JButton trash;
     protected JButton newNestedAC, delNestedAC;
     protected int indxNewNestedAC, indxDelNestedAC;
-
     private GraGraTextualComment comments;
-
     private GraphicsExportJPEG exportJPEG;
-
     private EdType nodeTypeOfColorGraph;
     private EdType edgeTypeOfColorGraph;
-
 }

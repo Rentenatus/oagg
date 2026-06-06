@@ -1,24 +1,21 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
+ * *****************************************************************************
  */
 package agg.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-
 import agg.xt_basis.GraphObject;
 
 /**
@@ -46,7 +43,6 @@ public class LinkedGOHashSet<T extends GraphObject> extends
         super(c.size(), loadFactor);
         addAll(c);
     }
-
 //	private T get(int indx) {		
 //		T obj = null;
 //		int i = 0;
@@ -61,6 +57,7 @@ public class LinkedGOHashSet<T extends GraphObject> extends
 //		}
 //		return obj;
 //	}
+
     public int indexOf(T obj, int startIndx) {
         int i = startIndx;
         final Iterator<T> iter = this.iterator();
@@ -79,11 +76,10 @@ public class LinkedGOHashSet<T extends GraphObject> extends
     }
 
     public Enumeration<T> elements() {
-        return (new Vector<T>(this)).elements();
+        return Collections.enumeration(new ArrayList<T>(this));
     }
 
     public List<T> list() {
-        return (new Vector<T>(this));
+        return new ArrayList<T>(this);
     }
-
 }

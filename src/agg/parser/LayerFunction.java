@@ -1,26 +1,28 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.parser;
-
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
 
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
+import de.jare.ndimcol.ref.IteratorWalker;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This layer function layers a set of rules of a given graph grammar.
@@ -35,27 +37,22 @@ public class LayerFunction implements XMLObject {
      * The graph grammar.
      */
     protected GraGra grammar;
-
-    protected Hashtable<Rule, Integer> ruleLayer;
-
-    protected Hashtable<Type, Integer> creationLayer;
-
-    protected Hashtable<Type, Integer> deletionLayer;
-
+    protected Map<Rule, Integer> ruleLayer;
+    protected Map<Type, Integer> creationLayer;
+    protected Map<Type, Integer> deletionLayer;
     /**
      * The error message if this layer function is not valid.
      */
     protected String errMsg;
-
     /**
      * true if this layer function is valid.
      */
     protected boolean valid;
-
     protected String option;
 
     /**
-     * Creates a new layer function for a given graph grammar. Initially this layer function is invalid.
+     * Creates a new layer function for a given graph grammar. Initially this
+     * layer function is invalid.
      *
      * @param gragra The graph grammar.
      */
@@ -70,28 +67,28 @@ public class LayerFunction implements XMLObject {
     }
 
     private void initRuleLayer(GraGra gragra) {
-        this.ruleLayer = new Hashtable<Rule, Integer>();
+        this.ruleLayer = new HashMap<Rule, Integer>();
         for (int i = 0; i < gragra.getListOfRules().size(); i++) {
             Rule rule = gragra.getListOfRules().get(i);
-            this.ruleLayer.put(rule, new Integer(rule.getLayer()));
+            this.ruleLayer.put(rule, rule.getLayer());
         }
     }
 
     private void initCreationLayer(GraGra gragra) {
-        this.creationLayer = new Hashtable<Type, Integer>();
-        Iterator<Type> types = gragra.getTypes();
+        this.creationLayer = new HashMap<Type, Integer>();
+        IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type type = types.next();
-            this.creationLayer.put(type, new Integer(0));
+            this.creationLayer.put(type, 0);
         }
     }
 
     private void initDeletionLayer(GraGra gragra) {
-        this.deletionLayer = new Hashtable<Type, Integer>();
-        Iterator<Type> types = gragra.getTypes();
+        this.deletionLayer = new HashMap<Type, Integer>();
+        IteratorWalker<Type> types = gragra.getTypeWalker();
         while (types.hasNext()) {
             Type type = types.next();
-            this.deletionLayer.put(type, new Integer(0));
+            this.deletionLayer.put(type, 0);
         }
     }
 
@@ -110,7 +107,7 @@ public class LayerFunction implements XMLObject {
 		Report.trace("starte ckeckLayer()", 2);
 		boolean result = true;
 		// 0<= cl(l)<=dl(l)<=n 
-		for (Enumeration<?> en = getDeletionLayer().keys(); en.hasMoreElements()
+		for (Object key : getDeletionLayer().keySet()) {
 				&& result;) {
 			Object key = en.nextElement();
 			Integer dl = getDeletionLayer().get(key);
@@ -131,14 +128,15 @@ public class LayerFunction implements XMLObject {
 						+ " is not satisfied.";
 			}
 		}
-
 		HashSet deletionSet = new HashSet();
 		HashSet creationSet = new HashSet();
-		Enumeration<?> rules = getRuleLayer().keys();
-		while (result && rules.hasMoreElements()) {
+		for (Object obj : getRuleLayer().keySet()) {
+			if (!result) {
+				break;
+			}
 			deletionSet.clear();
 			creationSet.clear();
-			Rule rule = (Rule) rules.nextElement();
+			Rule rule = (Rule) obj;
 			Integer layerRule = getRuleLayer().get(rule);
 			
 //			  gibt es keinen Layer fuer eine Regel, so ist die Layerfunktion
@@ -175,9 +173,11 @@ public class LayerFunction implements XMLObject {
 				break;
 			}
 			// dl(l) <= k 
-			for (Enumeration<?> en = deletionSet.elements(); en.hasMoreElements()
-					&& result;) {
-				GraphObject grob = (GraphObject) en.nextElement();
+			for (Object obj : deletionSet) {
+				if (!result) {
+					break;
+				}
+				GraphObject grob = (GraphObject) obj;
 				Type t = grob.getType();
 				Integer dl = getDeletionLayer().get(t);
 				Report.println("dl(" + t + ") = " + dl + "  <=  rl(" + rule
@@ -216,11 +216,12 @@ public class LayerFunction implements XMLObject {
 			}
 			Report.println("creationSet reduziert auf " + creationSet,
 					Report.LAYER);
-
 			// cl > k 
-			for (Enumeration<?> en = creationSet.elements(); en.hasMoreElements()
-					&& result;) {
-				GraphObject grob = (GraphObject) en.nextElement();
+			for (Object obj : creationSet) {
+				if (!result) {
+					break;
+				}
+				GraphObject grob = (GraphObject) obj;
 				Type t = grob.getType();
 				Integer cl = getCreationLayer().get(t);
 				Report.println("cl(" + t + ") = " + cl + "  >  rl(" + rule
@@ -264,19 +265,17 @@ public class LayerFunction implements XMLObject {
      *
      * @return The rule layer.
      */
-    public Hashtable<Rule, Integer> getRuleLayer() {
+    public Map<Rule, Integer> getRuleLayer() {
         int size = 0;
         Iterator<Rule> en = this.grammar.getListOfRules().iterator();
         while (en.hasNext()) {
             en.next();
             size++;
         }
-
         if (size != this.ruleLayer.size()) {
             initRuleLayer(this.grammar);
             return this.ruleLayer;
         }
-
         en = this.grammar.getListOfRules().iterator();
         while (en.hasNext()) {
             Object key = en.next();
@@ -285,7 +284,6 @@ public class LayerFunction implements XMLObject {
                 return this.ruleLayer;
             }
         }
-
         return this.ruleLayer;
     }
 
@@ -294,9 +292,9 @@ public class LayerFunction implements XMLObject {
      *
      * @return The creation layer.
      */
-    public Hashtable<Type, Integer> getCreationLayer() {
+    public Map<Type, Integer> getCreationLayer() {
         int size = 0;
-        Iterator<Type> en = this.grammar.getTypes();
+        IteratorWalker<Type> en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             en.next();
             size++;
@@ -305,8 +303,7 @@ public class LayerFunction implements XMLObject {
             initCreationLayer(this.grammar);
             return this.creationLayer;
         }
-
-        en = this.grammar.getTypes();
+        en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             Object key = en.next();
             if (!this.creationLayer.containsKey(key)) {
@@ -322,20 +319,18 @@ public class LayerFunction implements XMLObject {
      *
      * @return The deletion layer.
      */
-    public Hashtable<Type, Integer> getDeletionLayer() {
+    public Map<Type, Integer> getDeletionLayer() {
         int size = 0;
-        Iterator<Type> en = this.grammar.getTypes();
+        IteratorWalker<Type> en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             en.next();
             size++;
         }
-
         if (size != this.deletionLayer.size()) {
             initDeletionLayer(this.grammar);
             return this.deletionLayer;
         }
-
-        en = this.grammar.getTypes();
+        en = this.grammar.getTypeWalker();
         while (en.hasNext()) {
             Object key = en.next();
             if (!this.deletionLayer.containsKey(key)) {
@@ -355,8 +350,7 @@ public class LayerFunction implements XMLObject {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
         /* RuleLayer sind fuer das Parsieren noetig */
-        for (Enumeration<?> keys = getRuleLayer().keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Object key : getRuleLayer().keySet()) {
             Integer layer = getRuleLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -367,16 +361,16 @@ public class LayerFunction implements XMLObject {
     }
 
     /**
-     * Inverts a layer function so that the layer is the key and the value is a set.
+     * Inverts a layer function so that the layer is the key and the value is a
+     * set.
      *
      * @param layer The layer function will be inverted.
      * @return The inverted layer function.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Hashtable<Integer, HashSet> invertLayer(Hashtable<?, ?> layer) {
-        Hashtable<Integer, HashSet> inverted = new Hashtable<Integer, HashSet>();
-        for (Enumeration<?> keys = layer.keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+    public Map<Integer, HashSet> invertLayer(Map<?, ?> layer) {
+        Map<Integer, HashSet> inverted = new HashMap<Integer, HashSet>();
+        for (Object key : layer.keySet()) {
             Integer value = (Integer) layer.get(key);
             HashSet invertedValue = inverted.get(value);
             if (invertedValue == null) {
@@ -391,8 +385,9 @@ public class LayerFunction implements XMLObject {
     }
 
     /**
-     * Returns layer option. The layer option will be initialized during loading of critical pairs file. This option can
-     * be used in the method setLayer(String l) of the LayerOption class.
+     * Returns layer option. The layer option will be initialized during loading
+     * of critical pairs file. This option can be used in the method
+     * setLayer(String l) of the LayerOption class.
      */
     public String getOption() {
         return this.option;
@@ -404,12 +399,12 @@ public class LayerFunction implements XMLObject {
      * @param xmlObjects <CODE>this</CODE>
      * @param h A helper object.
      */
-    protected void writeHashtableToXML(Hashtable<?, ?> xmlObjects, XMLHelper h) {
-        for (Enumeration<?> keys = xmlObjects.keys(); keys.hasMoreElements();) {
-            XMLObject r1 = (XMLObject) keys.nextElement();
+    protected void writeHashtableToXML(Map<?, ?> xmlObjects, XMLHelper h) {
+        for (Map.Entry<?, ?> entry : xmlObjects.entrySet()) {
+            XMLObject r1 = (XMLObject) entry.getKey();
             h.openSubTag("Datum");
             h.addObject("key", r1, false);
-            h.addAttr("value", "" + xmlObjects.get(r1));
+            h.addAttr("value", "" + entry.getValue());
             h.close();
         }
     }
@@ -431,7 +426,6 @@ public class LayerFunction implements XMLObject {
 		 * LayerFunction) h.addAttr("option","RCD_LAYER");
          */
         h.addObject("GraGra", this.grammar, false);
-
         /*
 		 * if(isValid()){ h.openSubTag("ruleLayer");
 		 * writeHashtableToXML(getRuleLayer(),h); h.close();
@@ -456,7 +450,6 @@ public class LayerFunction implements XMLObject {
             // "+this.grammar);
             // String v = h.readAttr("valid");
             // System.out.println("LayerFunction: valid gelesen");
-
             // option = h.readAttr("option");
             // System.out.println("LayerFunction: option gelesen: "+option);
             this.valid = true; // false;
@@ -464,11 +457,10 @@ public class LayerFunction implements XMLObject {
             initRuleLayer(this.grammar);
             initCreationLayer(this.grammar);
             initDeletionLayer(this.grammar);
-
             /*
 			 * if(v.equals("true")){ this.valid = true; if
 			 * (h.readSubTag("ruleLayer")) { if(ruleLayer == null) ruleLayer =
-			 * new Hashtable(); Enumeration data = h.getEnumeration("", null,
+			 * new HashMap(); Enumeration data = h.getEnumeration("", null,
 			 * true, "Datum"); while(data.hasMoreElements()){
 			 * h.peekElement(data.nextElement()); Rule r2 =
 			 * (Rule)h.getObject("key",null,false); Integer i = new
@@ -476,7 +468,7 @@ public class LayerFunction implements XMLObject {
 			 * getRuleLayer().put(r2,i); r2.setLayer(i.intValue()); } h.close(); }
 			 * h.close(); //System.out.println("LayerFunction: ruleLayer
 			 * gelesen"); } if (h.readSubTag("deletionLayer")){ if(deletionLayer ==
-			 * null) deletionLayer = new Hashtable(); Enumeration data =
+			 * null) deletionLayer = new HashMap(); Enumeration data =
 			 * h.getEnumeration("", null, true, "Datum");
 			 * while(data.hasMoreElements()){ h.peekElement(data.nextElement());
 			 * Type t = (Type)h.getObject("key",null,false); Integer i = new
@@ -484,7 +476,7 @@ public class LayerFunction implements XMLObject {
 			 * getDeletionLayer().put(t,i); h.close(); } h.close();
 			 * //System.out.println("LayerFunction: deletionLayer gelesen"); }
 			 * if (h.readSubTag("creationLayer")){ if(creationLayer == null)
-			 * creationLayer = new Hashtable(); Enumeration data =
+			 * creationLayer = new HashMap(); Enumeration data =
 			 * h.getEnumeration("", null, true, "Datum");
 			 * while(data.hasMoreElements()){ h.peekElement(data.nextElement());
 			 * Type t = (Type)h.getObject("key",null,false); Integer i = new

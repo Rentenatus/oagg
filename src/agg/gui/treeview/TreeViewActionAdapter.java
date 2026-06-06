@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenuItem;
 
@@ -32,9 +32,7 @@ public class TreeViewActionAdapter implements ActionListener {
     @Override
     /* Implements the actionPerformed method of the ActionListener */
     public void actionPerformed(ActionEvent e) {
-
         String command = e.getActionCommand();
-
         if (command.equals("undirectedArcs")) {
             this.treeView.setUndirectedArcsOfGraphs(e);
         } else if (command.equals("nonparallelArcs")) {
@@ -109,5 +107,4 @@ public class TreeViewActionAdapter implements ActionListener {
             this.treeView.executeCommand(command);
         }
     }
-
 }

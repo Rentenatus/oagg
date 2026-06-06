@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.editor.impl;
 
@@ -17,71 +18,39 @@ import javax.swing.undo.*;
 public class EditUndoManager extends UndoManager {
 
     public static final String CREATE_DELETE = "CREATE_DELETE";
-
     public static final String DELETE_CREATE = "DELETE_CREATE";
-
     public static final String EMBEDDING_LEFT_DELETE_CREATE = "EMBEDDING_LEFT_DELETE_CREATE";
-
     public static final String EMBEDDING_RIGHT_DELETE_CREATE = "EMBEDDING_RIGHT_DELETE_CREATE";
-
     public static final String COMMON_DELETE_CREATE = "COMMON_DELETE_CREATE";
-
     public static final String SELECT_DESELECT = "SELECT_DESELECT";
-
     public static final String DESELECT_SELECT = "DESELECT_SELECT";
-
     public static final String CHANGE_ATTRIBUTE = "CHANGE_ATTRIBUTE";
-
     public static final String MOVE_GOBACK = "MOVE_GOBACK";
-
     public static final String CHANGE_MULTIPLICITY = "CHANGE_MULTIPLICITY";
-
     public static final String CHANGE_PARENT = "CHANGE_PARENT";
-
     public static final String CHANGE_TYPE = "CHANGE_TYPE";
-
     public static final String CHANGE = "CHANGE";
-
     public static final String SOURCE_UNSET_SET = "SOURCE_UNSET_SET";
     public static final String SOURCE_SET_UNSET = "SOURCE_SET_UNSET";
-
     public static final String TARGET_UNSET_SET = "TARGET_UNSET_SET";
     public static final String TARGET_SET_UNSET = "TARGET_SET_UNSET";
-
     public static final String MAPPING_CREATE_DELETE = "MAPPING_CREATE_DELETE";
-
     public static final String MAPPING_DELETE_CREATE = "MAPPING_DELETE_CREATE";
-
     public static final String NAC_MAPPING_CREATE_DELETE = "NAC_MAPPING_CREATE_DELETE";
-
     public static final String NAC_MAPPING_DELETE_CREATE = "NAC_MAPPING_DELETE_CREATE";
-
     public static final String PAC_MAPPING_CREATE_DELETE = "PAC_MAPPING_CREATE_DELETE";
-
     public static final String PAC_MAPPING_DELETE_CREATE = "PAC_MAPPING_DELETE_CREATE";
-
     public static final String AC_MAPPING_CREATE_DELETE = "AC_MAPPING_CREATE_DELETE";
-
     public static final String AC_MAPPING_DELETE_CREATE = "AC_MAPPING_DELETE_CREATE";
-
     public static final String MATCH_MAPPING_CREATE_DELETE = "MATCH_MAPPING_CREATE_DELETE";
-
     public static final String MATCH_MAPPING_DELETE_CREATE = "MATCH_MAPPING_DELETE_CREATE";
-
     public static final String MATCH_COMPLETION_MAPPING_CREATE_DELETE = "MATCH_COMPLETION_MAPPING_CREATE_DELETE";
-
     public static final String MATCH_COMPLETION_MAPPING_DELETE_CREATE = "MATCH_COMPLETION_MAPPING_DELETE_CREATE";
-
     protected String presentationName;
-
     protected int undoStateID = -1;
-
     protected StateEdit edit;
-
     protected Vector<Integer> undoEndOfTransStep;
-
     protected boolean allowUndoEndOfTransStep;
-
     protected boolean enabled = true;
 
     public EditUndoManager(final String presentationName) {
@@ -114,8 +83,8 @@ public class EditUndoManager extends UndoManager {
 
     // inherited and rewritten methods
     /**
-     * Overridden to preserve usual semantics: returns true if an undo operation would be successful now, false
-     * otherwise
+     * Overridden to preserve usual semantics: returns true if an undo operation
+     * would be successful now, false otherwise
      */
     public synchronized boolean canUndo() {
         if (this.enabled) {
@@ -129,13 +98,13 @@ public class EditUndoManager extends UndoManager {
     }
 
     /**
-     * Overridden to preserve usual semantics: returns true if an undo operation was successful now, false otherwise
+     * Overridden to preserve usual semantics: returns true if an undo operation
+     * was successful now, false otherwise
      */
     public boolean addEdit(final UndoableEdit anEdit) {
         if (anEdit == null || !this.enabled) {
             return false;
         }
-
         if (super.addEdit(anEdit)) {
             this.undoStateID++;
             return true;
@@ -207,8 +176,8 @@ public class EditUndoManager extends UndoManager {
     }
 
     public void setUndoEndOfTransformStep() {
-        if (!this.undoEndOfTransStep.contains(new Integer(this.undoStateID + 1))) {
-            this.undoEndOfTransStep.add(new Integer(this.undoStateID + 1));
+        if (!this.undoEndOfTransStep.contains(this.undoStateID + 1)) {
+            this.undoEndOfTransStep.add(this.undoStateID + 1);
         }
     }
 
@@ -216,7 +185,6 @@ public class EditUndoManager extends UndoManager {
         if (this.undoEndOfTransStep.size() == 0) {
             return -1;
         }
-
         while (this.undoEndOfTransStep.lastElement().intValue() > this.undoStateID) {
             this.undoEndOfTransStep.remove(this.undoEndOfTransStep.lastElement());
         }
@@ -224,5 +192,4 @@ public class EditUndoManager extends UndoManager {
         this.undoEndOfTransStep.remove(this.undoEndOfTransStep.lastElement());
         return last;
     }
-
 }

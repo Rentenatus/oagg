@@ -2,39 +2,38 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: RuleAttrConditionTreeNodeData.java,v 1.4 2010/09/23 08:23:32 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.attribute.impl.CondMember;
 import agg.editor.impl.EdRule;
 import agg.util.Pair;
 
 /**
- * The RuleAttrConditionTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The RuleAttrConditionTreeNodeData implements an user object of a tree node in
+ * the GraGraTreeModel.
  *
  * @author $Author: olga $
- * @version $Id: RuleAttrConditionTreeNodeData.java,v 1.4 2010/09/23 08:23:32 olga Exp $
+ * @version $Id: RuleAttrConditionTreeNodeData.java,v 1.4 2010/09/23 08:23:32
+ * olga Exp $
  */
 public class RuleAttrCondTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private Object data;
-
 //	private EdRule eRule;
     private Pair<CondMember, EdRule> attrCondition;
-
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */
@@ -46,7 +45,6 @@ public class RuleAttrCondTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private void setAttrCondition(final Pair<CondMember, EdRule> attrCondRulePair) {
         this.data = attrCondRulePair;
-
         if (!attrCondRulePair.first.isEnabled()) {
             this.string = "[D]" + attrCondRulePair.first.getExprAsText();
         } else {
@@ -107,13 +105,11 @@ public class RuleAttrCondTreeNodeData extends GraGraTreeNodeDataAdapter {
 //		String oldString = string;
 //		String newString = str.replaceAll(" ", "");
 //		string = newString;
-
         if (!this.attrCondition.first.isEnabled()) {
             this.string = "[D]" + this.attrCondition.first.getExprAsText();
         } else {
             this.string = this.attrCondition.first.getExprAsText();
         }
-
     }
 
     public void setString(String tag, String newString) {
@@ -142,7 +138,6 @@ public class RuleAttrCondTreeNodeData extends GraGraTreeNodeDataAdapter {
     public String toString() {
         return this.string;
     }
-
 //	public EdRule getRule() {
 //		return eRule;
 //	}

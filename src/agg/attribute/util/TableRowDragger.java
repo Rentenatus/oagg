@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.util;
 
@@ -18,7 +19,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import javax.swing.JTable;
 
 /**
@@ -30,25 +30,20 @@ import javax.swing.JTable;
 public class TableRowDragger {
 
     /**
-     * Container with observers of this instance, all of which implement the RowDragListener interface.
+     * Container with observers of this instance, all of which implement the
+     * RowDragListener interface.
      */
     protected transient Vector<RowDragListener> listener = new Vector<RowDragListener>(
             10, 10);
-
     protected JTable tableView;
-
     protected boolean draggingStarted = false;
-
     protected int draggedRow = -1;
-
     protected Cursor defaultCursor;
-
     protected Cursor moveCursor = Cursor
             .getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
 
     public TableRowDragger(JTable table) {
         this.tableView = table;
-
         MouseMotionListener dragMotionListener = new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
                 int row = TableRowDragger.this.tableView.rowAtPoint(e.getPoint());
@@ -70,9 +65,7 @@ public class TableRowDragger {
                 }
             }
         };
-
         MouseListener dragStartStopListener = new MouseAdapter() {
-
             public void mousePressed(MouseEvent e) {
                 int row = TableRowDragger.this.tableView.rowAtPoint(e.getPoint());
                 if (row != -1) { // && row < tuple.getNumberOfEntries()){
@@ -90,7 +83,6 @@ public class TableRowDragger {
                 }
             }
         };
-
         this.tableView.addMouseListener(dragStartStopListener);
         this.tableView.addMouseMotionListener(dragMotionListener);
     }
@@ -112,7 +104,6 @@ public class TableRowDragger {
     protected void fireDraggingStarted(int row) {
         RowDragListener li;
         RowDragEvent ev = new RowDragEvent(this, RowDragEvent.STARTED, row, row);
-
         for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
             li = en.nextElement();
             li.draggingStarted(ev);
@@ -122,7 +113,6 @@ public class TableRowDragger {
     protected void fireDraggingStopped() {
         RowDragListener li;
         RowDragEvent ev = new RowDragEvent(this, RowDragEvent.STOPPED, -1, -1);
-
         for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
             li = en.nextElement();
             li.draggingStopped(ev);
@@ -132,14 +122,12 @@ public class TableRowDragger {
     protected void fireDraggingMoved(int src, int dest) {
         RowDragListener li;
         RowDragEvent ev = new RowDragEvent(this, RowDragEvent.MOVED, src, dest);
-
         for (Enumeration<RowDragListener> en = this.listener.elements(); en.hasMoreElements();) {
             li = en.nextElement();
             li.draggingMoved(ev);
         }
     }
 }
-
 /*
  * $Log: TableRowDragger.java,v $
  * Revision 1.4  2010/09/23 08:15:16  olga

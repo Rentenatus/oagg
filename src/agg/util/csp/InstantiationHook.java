@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: InstantiationHook.java,v 1.2 2007/09/10 13:05:05 olga Exp $
 // $Log: InstantiationHook.java,v $
@@ -36,22 +36,24 @@
 package agg.util.csp;
 
 /**
- * An interface for the realization of side effects which are to take place at instantiation/uninstantiation time of a
- * CSP variable.
+ * An interface for the realization of side effects which are to take place at
+ * instantiation/uninstantiation time of a CSP variable.
  *
  * @see agg.util.csp.Variable
  */
 public interface InstantiationHook {
 
     /**
-     * This method is called whenever the variable I'm hooked to gets instantiated. It is called <i>after</i> the new
-     * value has been set, with the variable as an argument.
+     * This method is called whenever the variable I'm hooked to gets
+     * instantiated. It is called <i>after</i> the new value has been set, with
+     * the variable as an argument.
      */
     public void instantiate(Variable var);
 
     /**
-     * This method is called whenever the variable I'm hooked to gets uninstantiated, or when it is set to a new value.
-     * It is called <i>before</i>
+     * This method is called whenever the variable I'm hooked to gets
+     * uninstantiated, or when it is set to a new value. It is called
+     * <i>before</i>
      * the value is re- or unset, with the variable as an argument.
      */
     public void uninstantiate(Variable var);

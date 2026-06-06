@@ -1,20 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
-
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
 
 import agg.attribute.impl.TupleMapping;
 import agg.xt_basis.colim.ALPHA_DIAGRAM;
@@ -22,27 +16,34 @@ import agg.xt_basis.colim.COLIM_DEFS;
 import agg.xt_basis.colim.COLIM_VECTOR;
 import agg.xt_basis.colim.INT_VECTOR;
 import agg.xt_basis.colim.SET_DIAGRAM;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
- * This class allows for representation of general diagrams of graphs and for computation of their colimit. It has
- * capabilities for optional in-place computation of the colimit object in one of the diagram nodes. Attributes are
- * ignored for colimit computation. The colimit computation itself is implemented using the colimit library from Dietmar
- * Wolz.
+ * This class allows for representation of general diagrams of graphs and for
+ * computation of their colimit. It has capabilities for optional in-place
+ * computation of the colimit object in one of the diagram nodes. Attributes are
+ * ignored for colimit computation. The colimit computation itself is
+ * implemented using the colimit library from Dietmar Wolz.
  */
 public class ColimDiagram implements COLIM_DEFS {
 
     /**
-     * Construct myself to be an empty diagram where the colimit object is to be computed into the given Graph
-     * <code>result</code>. By adding <code>result</code> as an ordinary diagram node via <code>addNode</code> as well,
-     * in-place computation can be achieved.
+     * Construct myself to be an empty diagram where the colimit object is to be
+     * computed into the given Graph <code>result</code>. By adding
+     * <code>result</code> as an ordinary diagram node via <code>addNode</code>
+     * as well, in-place computation can be achieved.
      * <p>
      * <b>Pre:</b> <code>result.isGraph()</code>.
      */
     public ColimDiagram(Graph result) {
         this.itsDiagram = new ALPHA_DIAGRAM();
         this.itsColimGraph = result;
-        this.itsColimMorphisms = new Vector<OrdinaryMorphism>();
-        this.itsGraphIndexMap = new Hashtable<Graph, Integer>(8);
+        this.itsColimMorphisms = new ArrayList<OrdinaryMorphism>();
+        this.itsGraphIndexMap = new HashMap<Graph, Integer>(8);
         this.itsInplaceFlag = false;
     }
 
@@ -61,17 +62,15 @@ public class ColimDiagram implements COLIM_DEFS {
         COLIM_VECTOR allObjectsAttrs = new COLIM_VECTOR(32);
         // Mapping of graph objects to their index in diagram representation
         // (maps GraphObject to Integer):
-        Dictionary<GraphObject, Integer> anIndexMap = new Hashtable<GraphObject, Integer>(32);
+        Map<GraphObject, Integer> anIndexMap = new HashMap<GraphObject, Integer>(32);
         if (graph == this.itsColimGraph) {
             this.itsInplaceFlag = true;
         }
-
         // fill allObjects:
         fillObjects(allObjects, allObjectsRefs, allObjectsAttrs, anIndexMap,
                 graph.getNodesSet().iterator());
         fillObjects(allObjects, allObjectsRefs, allObjectsAttrs, anIndexMap,
                 graph.getArcsSet().iterator());
-
         /*
 		 * // fill allObjects allObjects.ensureCapacity(graph.getSize());
 		 * Enumeration anObjectIter = graph.getElements(); for (int i = 0;
@@ -96,26 +95,23 @@ public class ColimDiagram implements COLIM_DEFS {
         allObjects.trimToSize();
         allObjectsRefs.trimToSize();
         allObjectsAttrs.trimToSize();
-
         int i = this.itsDiagram.insert_object(allObjects, allObjectsRefs,
                 allObjectsAttrs, graph.getName());
-
-        this.itsGraphIndexMap.put(graph, new Integer(i));
+        this.itsGraphIndexMap.put(graph, i);
     }
 
     private void fillObjects(
             final COLIM_VECTOR allObjects,
             final COLIM_VECTOR allObjectsRefs,
             final COLIM_VECTOR allObjectsAttrs,
-            final Dictionary<GraphObject, Integer> anIndexMap,
+            final Map<GraphObject, Integer> anIndexMap,
             final Iterator<?> anObjectIter) {
         // fill allObjects and allObjectsRefs
         int count = allObjects.size();
         for (int i = count; anObjectIter.hasNext(); i++) {
             GraphObject anObject = (GraphObject) anObjectIter.next();
             allObjects.push_back(anObject);
-            anIndexMap.put(anObject, new Integer(i));
-
+            anIndexMap.put(anObject, i);
             INT_VECTOR anObjectsRefs = new INT_VECTOR(2);
             if (anObject.isNode()) {
                 // set source and target references to undefined:
@@ -130,7 +126,6 @@ public class ColimDiagram implements COLIM_DEFS {
                 anObjectsRefs.trimToSize();
             }
             allObjectsRefs.push_back(anObjectsRefs);
-
             COLIM_VECTOR anObjectsAttrs = new COLIM_VECTOR(1);
             anObjectsAttrs.push_back(anObject.getType());
             anObjectsAttrs.trimToSize();
@@ -141,8 +136,9 @@ public class ColimDiagram implements COLIM_DEFS {
     /**
      * Add an Morphism as an edge to the diagram.
      * <p>
-     * <b>Pre:</b> <code>morph.getOriginal()</code> and <code>morph.getImage()</code> have been added to the diagram
-     * with <code>addNode()</code> before.
+     * <b>Pre:</b> <code>morph.getOriginal()</code> and
+     * <code>morph.getImage()</code> have been added to the diagram with
+     * <code>addNode()</code> before.
      *
      * @see agg.xt_basis.Morphism#getOriginal()
      * @see agg.xt_basis.Morphism#getImage()
@@ -151,26 +147,22 @@ public class ColimDiagram implements COLIM_DEFS {
     public void addEdge(Morphism morph) {
         Graph aSourceGraph = morph.getOriginal();
         Graph aTargetGraph = morph.getImage();
-
         GraphObject anObject = null;
-
-        Dictionary<GraphObject, Integer> aTargetIndexMap = new Hashtable<GraphObject, Integer>(32);
+        Map<GraphObject, Integer> aTargetIndexMap = new HashMap<GraphObject, Integer>(32);
         // maps GraphObject to Integer
         int count = 0;
         Iterator<?> anObjectIter = aTargetGraph.getNodesSet().iterator();
         for (int i = count; anObjectIter.hasNext(); i++) {
             aTargetIndexMap.put((GraphObject) anObjectIter.next(),
-                    new Integer(i));
+                    i);
         }
         count = aTargetIndexMap.size();
         anObjectIter = aTargetGraph.getArcsSet().iterator();
         for (int i = count; anObjectIter.hasNext(); i++) {
             aTargetIndexMap.put((GraphObject) anObjectIter.next(),
-                    new Integer(i));
+                    i);
         }
-
         INT_VECTOR aMorphism = new INT_VECTOR(64);
-
         anObjectIter = aSourceGraph.getNodesSet().iterator();
         while (anObjectIter.hasNext()) {
             anObject = morph.getImage((GraphObject) anObjectIter.next());
@@ -205,8 +197,9 @@ public class ColimDiagram implements COLIM_DEFS {
     }
 
     /**
-     * Perform the colimit computation for the diagram I'm representing. The Graph <code>result</code> which has been
-     * passed to my constructor becomes the colimit object, and the colimit morphisms requested by
+     * Perform the colimit computation for the diagram I'm representing. The
+     * Graph <code>result</code> which has been passed to my constructor becomes
+     * the colimit object, and the colimit morphisms requested by
      * <code>requestEdge()</code> are built accordingly.
      *
      * @see agg.xt_basis.ColimDiagram#requestEdge
@@ -240,13 +233,16 @@ public class ColimDiagram implements COLIM_DEFS {
     }
 
     /**
-     * Request the computation of the given empty morphism as a colimit morphism.
+     * Request the computation of the given empty morphism as a colimit
+     * morphism.
      * <p>
      * <b>Pre:</b>
      * <ol>
      * <li>The domain of <code>morph</code> is empty.
-     * <li><code>morph.getOriginal()</code> has been added to the diagram via <code>addNode()</code>.
-     * <li><code>morph.getImage()</code> is the <code>result</code> object that has been passed to my constructor.
+     * <li><code>morph.getOriginal()</code> has been added to the diagram via
+     * <code>addNode()</code>.
+     * <li><code>morph.getImage()</code> is the <code>result</code> object that
+     * has been passed to my constructor.
      * </ol>
      *
      * @see agg.xt_basis.OrdinaryMorphism#getOriginal()
@@ -264,28 +260,24 @@ public class ColimDiagram implements COLIM_DEFS {
     private final void convertColimit(COLIM_VECTOR items, COLIM_VECTOR refs,
             COLIM_VECTOR attrs) throws TypeException {
         SET_DIAGRAM anItemDiagram = this.itsDiagram.get_item_diagram();
-
         // The Vector "allColimItems" is computed following different
         // strategies in the two cases "inplace" and "diagram".
         // Once it has been built, it behaves like this:
         // for every index i into the colimit vector "items",
-        // allColimItems.elementAt(i) will get us the corresponding
+        // allColimItems.get(i) will get us the corresponding
         // GraphObject in "itsColimGraph".
-        Vector<Vector<GraphObject>> allColimItems = null;
-
+        List<List<GraphObject>> allColimItems = null;
         if (this.itsInplaceFlag) {
-            // A Vector to represent the inverse relation of the implicit
+            // A List to represent the inverse relation of the implicit
             // morphism between "itsColimGraph" and the computed colimit
             // object represented by "items". Elements are of type
-            // Vector of GraphObject.
-            Vector<Vector<GraphObject>> allOrigs = new Vector<Vector<GraphObject>>(
+            // List of GraphObject.
+            List<List<GraphObject>> allOrigs = new ArrayList<List<GraphObject>>(
                     items.size());
-
-            // initialize "allOrigs" with empty vectors:
+            // initialize "allOrigs" with empty lists:
             for (int i = 0; i < items.size(); i++) {
-                allOrigs.addElement(new Vector<GraphObject>(2));
+                allOrigs.add(new ArrayList<GraphObject>(2));
             }
-
             // loop over all GraphObjects in "itsColimGraph", computing
             // the inverse image Vector "allOrigs".
             // On the fly, delete GraphObjects that are not mapped.
@@ -295,7 +287,7 @@ public class ColimDiagram implements COLIM_DEFS {
                     .intValue();
             int aFirstIndex = anItemDiagram.set_at_node(aColimGraphIndex).lower;
             int aLastIndex = anItemDiagram.set_at_node(aColimGraphIndex).upper;
-            final Vector<Node> nodestodestroy = new Vector<Node>();
+            final List<Node> nodestodestroy = new ArrayList<Node>();
             for (int anObjIndex = aFirstIndex; anObjIndex <= aLastIndex; anObjIndex++) {
                 anOrigObj = (GraphObject) anItemDiagram.get_element(anObjIndex);
                 anImgIndex = anItemDiagram.get_colimit_pos(anObjIndex);
@@ -311,7 +303,7 @@ public class ColimDiagram implements COLIM_DEFS {
                     }
                 } else {
                     // remained objects
-                    allOrigs.elementAt(anImgIndex).addElement(anOrigObj);
+                    allOrigs.get(anImgIndex).add(anOrigObj);
                 }
             }
             // destroy nodes without img
@@ -325,28 +317,25 @@ public class ColimDiagram implements COLIM_DEFS {
             // and which objects have to be created.
             // This is done in a loop over the elements of the vector
             // "items" that represents the colimit object:
-
-            Vector<GraphObject> aCurOrigs; // The GraphObjects contained in
-            // this vector
+            List<GraphObject> aCurOrigs; // The GraphObjects contained in
+            // this list
             // represent the inverse image of the currently
             // processed element of the colimit object
-
             INT_VECTOR anObjectsRefs;
             Type aType;
-            Vector<GraphObject> aSrcOrigs, aTarOrigs; // similar to aCurOrigs
+            List<GraphObject> aSrcOrigs, aTarOrigs; // similar to aCurOrigs
             boolean anObjectLeftToCreate; // flag if there's an Object left to			
             // create
             do {
                 anObjectLeftToCreate = false;
-
                 for (int i = 0; i < items.size(); i++) {
-                    aCurOrigs = allOrigs.elementAt(i);
+                    aCurOrigs = allOrigs.get(i);
                     switch (aCurOrigs.size()) {
                         case 0:
                             // a new GraphObject has to be created:
                             anObjectsRefs = (INT_VECTOR) refs.item(i);
-                            aSrcOrigs = allOrigs.elementAt(anObjectsRefs.item(0));
-                            aTarOrigs = allOrigs.elementAt(anObjectsRefs.item(1));
+                            aSrcOrigs = allOrigs.get(anObjectsRefs.item(0));
+                            aTarOrigs = allOrigs.get(anObjectsRefs.item(1));
                             GraphObject gobj = (GraphObject) items.item(i);
                             aType = gobj.getType();
                             if (gobj.getContext().getTypeSet() != this.itsColimGraph
@@ -355,12 +344,11 @@ public class ColimDiagram implements COLIM_DEFS {
                                         gobj.getType());
                             }
                             try {
-
                                 if (gobj.isNode()) {
                                     // create a node:
                                     Node n = this.itsColimGraph.createNode(aType);
                                     n.setContextUsage(gobj.getContextUsage());
-                                    allOrigs.elementAt(i).addElement(n);
+                                    allOrigs.get(i).add(n);
                                     this.createdNodes.add(n);
                                     // // undo here
                                 } else {
@@ -369,9 +357,9 @@ public class ColimDiagram implements COLIM_DEFS {
                                             && (aTarOrigs.size() > 0)) {
                                         // src and tar objects exist -
                                         Arc a = this.itsColimGraph.createArc(aType,
-                                                (Node) aSrcOrigs.firstElement(),
-                                                (Node) aTarOrigs.firstElement());
-                                        allOrigs.elementAt(i).addElement(a);
+                                                (Node) aSrcOrigs.get(0),
+                                                (Node) aTarOrigs.get(0));
+                                        allOrigs.get(i).add(a);
                                         // undo here
                                         // if the new arc brokes the multiplicity
                                         // condition a TypeException will be thrown
@@ -379,11 +367,9 @@ public class ColimDiagram implements COLIM_DEFS {
                                         anObjectLeftToCreate = true;
                                     }
                                 }
-
                             } catch (TypeException ex) {
                                 throw (ex);
                             }
-
                             // Note: The vectors a***Origs contain more than
                             // one element only if there is a non-injective
                             // morphism in the colim diagram. In this case, we
@@ -395,12 +381,10 @@ public class ColimDiagram implements COLIM_DEFS {
                             // switch default case.)
                             // else anObjectLeftToCreate = true;
                             break;
-
                         case 1:
                             // keep this object!");
                             // the object does already exist.
                             break;
-
                         default:
                             // merge....										
                             for (int j = 1; j < aCurOrigs.size(); j++) {
@@ -410,36 +394,28 @@ public class ColimDiagram implements COLIM_DEFS {
                     }
                 } // for
             } while (anObjectLeftToCreate);
-
             allColimItems = allOrigs;
         } else {
             System.out
                     .println("agg.xt_basis.ColimDiagram:  Sorry, only inplace computation is supported yet");
             return;
         }
-
         // compute requested colimit morphisms:
-        OrdinaryMorphism aColimMorph;
         GraphObject aSrc, aTar;
-        Enumeration<OrdinaryMorphism> aMorphIter;
         int aSrcGraph, aTarPos;
-
         // Loop over all colimit morphisms:
-        for (aMorphIter = this.itsColimMorphisms.elements(); aMorphIter
-                .hasMoreElements();) {
-            aColimMorph = aMorphIter.nextElement();
+        for (OrdinaryMorphism aColimMorph : this.itsColimMorphisms) {
             aSrcGraph = this.itsGraphIndexMap.get(aColimMorph.getOriginal())
                     .intValue();
-
             // Loop over all GraphObjects in source graph of morphism:
             for (int anObjIndex = anItemDiagram.set_at_node(aSrcGraph).lower; anObjIndex <= anItemDiagram
                     .set_at_node(aSrcGraph).upper; anObjIndex++) {
                 aTarPos = anItemDiagram.get_colimit_pos(anObjIndex);
                 if (aTarPos != undefined) {
                     aSrc = (GraphObject) anItemDiagram.get_element(anObjIndex);
-                    // aTar = (GraphObject) allColimItems.elementAt(aTarPos);
-                    aTar = (GraphObject) ((Vector) allColimItems
-                            .elementAt(aTarPos)).firstElement();
+                    // aTar = (GraphObject) allColimItems.get(aTarPos).get(0);
+                    aTar = (GraphObject) allColimItems
+                            .get(aTarPos).get(0);
                     try {
                         aColimMorph.addMapping(aSrc, aTar);
                     } catch (BadMappingException ex) {
@@ -460,15 +436,14 @@ public class ColimDiagram implements COLIM_DEFS {
                 || (to.getAttribute() == null)) {
             return;
         }
-
         if (morph.getImage(from) != null) {
             agg.attribute.impl.ContextView context = (agg.attribute.impl.ContextView) morph
                     .getAttrContext();
-            Vector<TupleMapping> mappings = context
+            List<TupleMapping> mappings = context
                     .getMappingsToTarget((agg.attribute.impl.ValueTuple) to
                             .getAttribute());
             if (mappings != null) {
-                mappings.elementAt(0).adoptEntriesWhereEmpty(
+                mappings.get(0).adoptEntriesWhereEmpty(
                         (agg.attribute.impl.ValueTuple) from
                                 .getAttribute(),
                         (agg.attribute.impl.ValueTuple) to
@@ -477,30 +452,23 @@ public class ColimDiagram implements COLIM_DEFS {
         }
     }
 
-    public Vector<GraphObject> getCreatedNodes() {
+    public List<GraphObject> getCreatedNodes() {
         return this.createdNodes;
     }
-
     // ---- member variables -----------------------------------------
     /**
      * The graph that becomes the resulting colimit graph.
      */
     private Graph itsColimGraph;
-
     /**
-     * A mapping of graphs to the indices of their representing nodes in <code>itsDiagram</code>. Keys are of type
-     * <code>Graph</code>, values of type <code>Integer</code>.
+     * A mapping of graphs to the indices of their representing nodes in
+     * <code>itsDiagram</code>. Keys are of type <code>Graph</code>, values of
+     * type <code>Integer</code>.
      */
-    private Dictionary<Graph, Integer> itsGraphIndexMap;
-
+    private Map<Graph, Integer> itsGraphIndexMap;
     private ALPHA_DIAGRAM itsDiagram;
-
-    private Vector<OrdinaryMorphism> itsColimMorphisms;
-
+    private List<OrdinaryMorphism> itsColimMorphisms;
     private boolean itsInplaceFlag;
-
     private boolean adoptEntriesWhereEmpty = false;
-
-    private final Vector<GraphObject> createdNodes = new Vector<GraphObject>();
-
+    private final List<GraphObject> createdNodes = new ArrayList<GraphObject>();
 }

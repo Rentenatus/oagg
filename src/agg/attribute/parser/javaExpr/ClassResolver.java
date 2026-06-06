@@ -1,17 +1,17 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
 import java.lang.reflect.Array;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
 
 /**
@@ -21,10 +21,8 @@ import java.util.Vector;
 public class ClassResolver implements java.io.Serializable {
 
     protected Vector<String> packages = new Vector<String>(16);
-
-    final static protected Hashtable<String, Object> primitives = new Hashtable<String, Object>(
+    final static protected HashMap<String, Object> primitives = new HashMap<String, Object>(
             16);
-
     public static final long serialVersionUID = 5146841301451537847L;
 
     public ClassResolver() {
@@ -52,17 +50,14 @@ public class ClassResolver implements java.io.Serializable {
         int[] dimArray;
         int nDimensions = 0;
         int ptr = 0;
-
         while (ptr < text.length()) {
             // Skipping ignorable characters:
             while (ptr < text.length()
                     && Character.isWhitespace(text.charAt(ptr))) {
                 ptr++;
             }
-
             // More input left ?
             if (ptr < text.length()) {
-
                 // Beginning of another dimension parameter ?
                 if (text.charAt(ptr++) == '[') {
                     // Skipping ignorable characters:
@@ -95,23 +90,19 @@ public class ClassResolver implements java.io.Serializable {
     }
 
     protected Class<?> getArrayClass(String name) {
-
         Class<?> arrayClass;
         Class<?> componentClass;
         Object arrayInst;
         int dimensions[];
         String componentText, dimensionText;
         int iBeginDim;
-
         iBeginDim = name.indexOf("[");
         componentText = name.substring(0, iBeginDim).trim();
         dimensionText = name.substring(iBeginDim, name.length());
-
         componentClass = forName(componentText);
         if (componentClass == null) {
             return null;
         }
-
         dimensions = getArrayDimensions(dimensionText);
         if (dimensions == null) {
             throw new ClassResolverException(
@@ -119,21 +110,17 @@ public class ClassResolver implements java.io.Serializable {
         }
         arrayInst = Array.newInstance(componentClass, dimensions);
         arrayClass = arrayInst.getClass();
-
         return arrayClass;
     }
 
     @SuppressWarnings("rawtypes")
     public Class<?> forName(String name) {
         Class<?> c;
-
         init();
-
         if (name.indexOf("[") != -1) {
             // it's an array class
             return getArrayClass(name);
         }
-
         if (name.indexOf('.') != -1) {
             // The name is a complete path
             try {
@@ -143,7 +130,6 @@ public class ClassResolver implements java.io.Serializable {
                 return null;
             }
         }
-
         // Is a primitive type?
         if (Character.isLowerCase(name.charAt(0))) {
             c = (Class) primitives.get(name);

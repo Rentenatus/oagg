@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -19,7 +21,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-
 import agg.gui.event.EditEventListener;
 import agg.gui.event.EditEvent;
 import agg.gui.options.AbstractOptionGUI;
@@ -42,9 +43,7 @@ public class AGGPreferences implements EditEventListener {
         this.mainMenu.setMnemonic('P');
         this.optionsMenu = new JMenuItem("Options...");
         this.optionsMenu.setMnemonic('O');
-
         this.defaults = new Vector<JMenuItem>();
-
         makePreferencesMenu();
     }
 
@@ -95,9 +94,7 @@ public class AGGPreferences implements EditEventListener {
                 showOptionGUI();
             }
         });
-
         addDefaults();
-
         this.menus.addElement(this.mainMenu);
     }
 
@@ -120,7 +117,6 @@ public class AGGPreferences implements EditEventListener {
 
     private void addDefaults() {
         this.mainMenu.addSeparator();
-
         // font style menu
         final JMenu font = new JMenu("Font", true);
         font.setMnemonic('F');
@@ -145,7 +141,6 @@ public class AGGPreferences implements EditEventListener {
         }
         this.defaults.add(font);
         this.mainMenu.add(font);
-
         // font size menu
         final JMenu size = new JMenu("Font Size", true);
         size.setMnemonic('z');
@@ -171,7 +166,6 @@ public class AGGPreferences implements EditEventListener {
         }
         this.defaults.add(size);
         this.mainMenu.add(size);
-
         // scale menu
         final JMenu scale = new JMenu("Zoom", true);
         scale.setMnemonic('s');
@@ -201,29 +195,23 @@ public class AGGPreferences implements EditEventListener {
         scale.add(scaleGraphOnly);
         this.defaults.add(scale);
         this.mainMenu.add(scale);
-
         this.mainMenu.addSeparator();
-
         this.nonparallel = new JCheckBoxMenuItem("No Parallel Edges of Graphs", false);
         this.nonparallel.setActionCommand("nonparallelArcs");
         this.defaults.add(this.nonparallel);
         this.mainMenu.add(this.nonparallel);
-
         this.undirected = new JCheckBoxMenuItem("Undirected Edges of Graphs", false);
         this.undirected.setToolTipText("This setting is effective for new GraGra only.");
         this.undirected.setActionCommand("undirectedArcs");
         this.defaults.add(this.undirected);
         this.mainMenu.add(this.undirected);
-
         this.mainMenu.addSeparator();
-
         // enable checking empty (not set) attributes of the new objects in the RHS and in the objects of a host graph
         this.checkEmptyAttrs = new JCheckBoxMenuItem("Check Empty Attributes", false);
         this.checkEmptyAttrs.setToolTipText("Check Empty Attributes of new objects in the RHS and Hostgraphs.");
         this.checkEmptyAttrs.setActionCommand("checkEmptyAttrs");
         this.defaults.add(this.checkEmptyAttrs);
         this.mainMenu.add(this.checkEmptyAttrs);
-
         // show attributes menu
         final JMenu showAttributes = new JMenu("Show Attributes", true);
         final JCheckBoxMenuItem showAttrsOfGraph = new JCheckBoxMenuItem("Graph", true);
@@ -237,9 +225,7 @@ public class AGGPreferences implements EditEventListener {
         showAttributes.add(showAttrsOfTypeGraph);
         this.defaults.add(showAttributes);
         this.mainMenu.add(showAttributes);
-
         this.mainMenu.addSeparator();
-
         // menu item: keep type editor on top 
         // rights of the gragra editor 
         this.typesOnTop = new JCheckBoxMenuItem("Keep Types On Top", false);
@@ -271,17 +257,10 @@ public class AGGPreferences implements EditEventListener {
             this.checkEmptyAttrs.setSelected(b);
         }
     }
-
     private final JMenu mainMenu;
-
     private final Vector<JMenu> menus;
-
     private final Vector<JMenuItem> defaults;
-
     private final JMenuItem optionsMenu;
-
     private JCheckBoxMenuItem typesOnTop, undirected, nonparallel, checkEmptyAttrs;
-
     protected final OptionGUI optionGUI;
-
 }

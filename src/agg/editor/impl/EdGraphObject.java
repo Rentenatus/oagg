@@ -2,10 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * </copyright>
+ * *****************************************************************************
  */
 package agg.editor.impl;
 
@@ -15,7 +17,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Vector;
-
 import agg.attribute.view.AttrViewSetting;
 import agg.gui.editor.EditorConstants;
 import agg.gui.editor.GraphPanel;
@@ -23,73 +24,50 @@ import agg.xt_basis.GraphObject;
 import java.util.List;
 
 /**
- * An EdGraphObject specifies the common layout interface and implementations for nodes and arcs. This abstract class is
- * the superclass of EdNode and EdArc.
+ * An EdGraphObject specifies the common layout interface and implementations
+ * for nodes and arcs. This abstract class is the superclass of EdNode and
+ * EdArc.
  *
  * @author $Author: olga $
  * @version $Id: EdGraphObject.java,v 1.35 2010/11/13 02:25:16 olga Exp $
  */
 public abstract class EdGraphObject {
-
 //	public final static int CRITICAL_GREEN = 0;	
 //	public final static int CRITICAL_BLACK_BOLD = 1;
+
     protected int criticalStyle = 0;
-
     protected Integer itsUndoReprDataHC;
-
     protected EdType eType;
-
     protected EdGraph eGraph;
-
     protected int x;
-
     protected int y;
-
     protected int w;
-
     protected int h;
-
     double itsScale = 1.0;
-
     // contextUsage is used for undo and stores its hashcode(s)
     // as string like this - ":hashcode:hashcode:hashcode:"
     // it used from NodeReprData and ArcReprDate to store/restore node, edge
     // DO NOT REWRITE THIS!
     protected String contextUsage = "";
-
     protected boolean hasDefaultLayout;
-
     protected boolean elemOfTG; // is element of a TypeGraph
-
     /**
-     * true, if the graph object has (type) errors. if true the object will be marked.
+     * true, if the graph object has (type) errors. if true the object will be
+     * marked.
      */
     protected boolean errorMode;
-
     protected boolean visible = true;
-
     protected boolean attrVisible = true;
-
     protected Color backgroundColor = null; //Color.white;
-
     protected int myKey = 0;
-
     transient protected final List<String> marks;
-
     transient protected EdGraphObject myCopy;
-
     transient protected boolean selected, weakselected;
-
     transient protected boolean moved;
-
     transient protected GraphPanel myGraphPanel;
-
     transient protected boolean attrObserver;
-
     transient protected boolean attrChanged;
-
     protected AttrViewSetting view;
-
     transient protected boolean init;
 
     /**
@@ -266,12 +244,10 @@ public abstract class EdGraphObject {
         } else {
             h1 = fm.getHeight();
         }
-
         if ((fm != null && fm.getFont().getSize() < 8)
                 || !this.attrVisible) {
             return h1;
         }
-
         if (attrs != null) {
             nn = attrs.size();
             for (int i = 0; i < attrs.size(); i++) {
@@ -316,12 +292,10 @@ public abstract class EdGraphObject {
         } else {
             wdth = fm.stringWidth(typeStr);
         }
-
         if ((fm != null && fm.getFont().getSize() < 8)
                 || !this.attrVisible) {
             return wdth;
         }
-
         List<List<String>> attrs = getAttributes();
         if (attrs != null) {
             for (int i = 0; i < attrs.size(); i++) {
@@ -364,7 +338,6 @@ public abstract class EdGraphObject {
         if (!this.getBasisObject().getObjectName().equals("")) {
             typeStr = this.getBasisObject().getObjectName().concat(":").concat(typeStr);
         }
-
         if (getMorphismMark().length() != 0) {
             typeStr = getMorphismMark().concat(":").concat(typeStr);
         }
@@ -421,30 +394,31 @@ public abstract class EdGraphObject {
     }
 
     /**
-     * Returns TRUE if my type is the same as the type specified by the EdGraphObject eObj
+     * Returns TRUE if my type is the same as the type specified by the
+     * EdGraphObject eObj
      */
     public boolean hasSimilarType(EdGraphObject eObj) {
         if (this.eType.isParentOf(eObj.getType())) {
             return true;
         }
-
         return false;
     }
 
     /**
-     * Returns TRUE if the point specified by the int X, int Y is inside of myself
+     * Returns TRUE if the point specified by the int X, int Y is inside of
+     * myself
      */
     public abstract boolean inside(int X, int Y);
 
     /**
-     * Returns the dimension of the overlapping from another layout specified by the EdGraphObject eObj
+     * Returns the dimension of the overlapping from another layout specified by
+     * the EdGraphObject eObj
      */
     public Dimension ifOverlapFrom(EdGraphObject eObj) {
         Point p1 = new Point(this.x - this.w / 2, this.y - this.h / 2);
         Point p2 = new Point(this.x + this.w / 2, this.y - this.h / 2);
         Point p3 = new Point(this.x + this.w / 2, this.y + this.h / 2);
         Point p4 = new Point(this.x - this.w / 2, this.y + this.h / 2);
-
         Point p11 = new Point(eObj.getX() - eObj.getWidth() / 2, eObj.getY()
                 - eObj.getHeight() / 2);
         Point p12 = new Point(eObj.getX() + eObj.getWidth() / 2, eObj.getY()
@@ -453,7 +427,6 @@ public abstract class EdGraphObject {
                 + eObj.getHeight() / 2);
         Point p14 = new Point(eObj.getX() - eObj.getWidth() / 2, eObj.getY()
                 + eObj.getHeight() / 2);
-
         int minDist = 10;
         Dimension overlapSize = new Dimension(
                 ((p3.x + eObj.getWidth() / 2 + minDist) - this.x), ((p3.y
@@ -469,11 +442,9 @@ public abstract class EdGraphObject {
                 || eObj.inside(p3.x, p3.y) || eObj.inside(p4.x, p4.y)) {
             overlap = true;
         }
-
         if (overlap) {
             return overlapSize;
         }
-
         return new Dimension(0, 0);
     }
 
@@ -596,7 +567,6 @@ public abstract class EdGraphObject {
         if (this.marks.isEmpty()) {
             return true;
         }
-
         return false;
     }
 
@@ -655,15 +625,15 @@ public abstract class EdGraphObject {
     }
 
     /**
-     * sets if the current graph object has an error or not. If called with true, the object will be marked in the
-     * display and unmarked, if called with false as parameter.
+     * sets if the current graph object has an error or not. If called with
+     * true, the object will be marked in the display and unmarked, if called
+     * with false as parameter.
      *
      * @author Joerg <komm>
      */
     public void setErrorMode(boolean errorMode) {
         this.errorMode = errorMode;
     }// setErrorMode
-
 }
 // $Log: EdGraphObject.java,v $
 // Revision 1.35  2010/11/13 02:25:16  olga
@@ -902,3 +872,4 @@ public abstract class EdGraphObject {
 // Revision 1.6 1999/09/06 13:59:47 shultzke
 // Editoren sind statisch samt serialVersionUID
 //
+

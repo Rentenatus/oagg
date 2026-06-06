@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: SearchStrategy.java,v 1.4 2010/02/22 14:43:06 olga Exp $
 // $Log: SearchStrategy.java,v $
@@ -55,17 +55,18 @@ package agg.util.csp;
 import java.util.Vector;
 
 /**
- * An interface for algorithms calculating search plans (variable orderings given by a list of queries).
+ * An interface for algorithms calculating search plans (variable orderings
+ * given by a list of queries).
  */
 public interface SearchStrategy {
 
     /**
-     * Return a list of queries representing a search plan. A variable ordering is given by the target variables of the
-     * queries, and the domain for such a target variable is given by its query. Vector elements are of type
+     * Return a list of queries representing a search plan. A variable ordering
+     * is given by the target variables of the queries, and the domain for such
+     * a target variable is given by its query. Vector elements are of type
      * <code>Query</code>.
      *
      * @see agg.util.csp.Query
      */
     public Vector<Query> execute(CSP csp);
-
 }

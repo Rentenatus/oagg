@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -29,18 +29,15 @@ public class TYPE1xTYPE1toBOOL extends SimpleNode {
 
     public void checkContext() throws ASTWrongTypeException {
         Node child1 = jjtGetChild(0), child2 = jjtGetChild(1);
-
         // System.out.println("TYPE1xTYPE1toBOOL.checkContext:: child1:
         // "+child1);
         // System.out.println("TYPE1xTYPE1toBOOL.checkContext:: child2:
         // "+child2);
         child1.checkContext();
         child2.checkContext();
-
         if (((SimpleNode) child1).hasNumberType()
                 && ((SimpleNode) child2).hasNumberType()) {
             setNodeClass(Boolean.TYPE);
-
         } else if (((SimpleNode) child1).getNodeClass() == ((SimpleNode) child2).getNodeClass()) {
             setNodeClass(Boolean.TYPE);
         } else {
@@ -60,7 +57,6 @@ public class TYPE1xTYPE1toBOOL extends SimpleNode {
                 setNodeClass(Boolean.TYPE);
                 return;
             }
-
             throw new ASTWrongTypeException("[TYPE_1 x TYPE_1 -> boolean]", "["
                     + ((SimpleNode) child1).getNodeClass().getName() + " x "
                     + ((SimpleNode) child2).getNodeClass().getName() + "]");

@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: Search_BreadthFirst.java,v 1.15 2010/03/08 15:50:35 olga Exp $
 // $Log: Search_BreadthFirst.java,v $
@@ -121,7 +121,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import agg.util.OrderedSet;
 
 /**
@@ -139,13 +138,10 @@ public class Search_BreadthFirst implements SearchStrategy {
      */
     public final Vector<Query> execute(CSP csp) {
         Vector<Query> aQueryResult = new Vector<Query>();
-
         OrderedSet<Variable> allVarsLeft = new OrderedSet<Variable>(theirVariableOrder);
-
         Enumeration<?> anEnum = csp.getVariables();
         Variable aVar;
         Query aQuery;
-
         // only variables without instance will be used
         while (anEnum.hasMoreElements()) {
             aVar = (Variable) anEnum.nextElement();
@@ -154,9 +150,7 @@ public class Search_BreadthFirst implements SearchStrategy {
             }
         }
         // showVariables(allVarsLeft);
-
         List<Query> aQueryList = bfs(new OrderedSet<Variable>(theirVariableOrder), allVarsLeft);
-
         if (aQueryList != null) {
             Iterator<Query> iter1 = aQueryList.iterator();
             while (iter1.hasNext()) {
@@ -201,22 +195,18 @@ public class Search_BreadthFirst implements SearchStrategy {
             }
             // call recursively 
             List<Query> aVicQueryList = bfs(aVarSet, varsleft);
-
             // add result if not null
             if (aVicQueryList != null && !aVicQueryList.isEmpty()) {
                 aQueryList.addAll(aVicQueryList);
             }
-
             return aQueryList;
         } else {
             if (varsleft.isEmpty()) {
                 return null;
             }
-
             // get best variable which is the first Arc or if no arcs exist, the first Node
             Variable aVar = getBestVar(varsleft);
             breadthvars.add(aVar);
-
             // call recursively 
             return bfs(breadthvars, varsleft);
         }
@@ -226,7 +216,6 @@ public class Search_BreadthFirst implements SearchStrategy {
         // Remember: CSP implementation have to ensure that there
         // is always at least one incoming Query applicable for each
         // uninstantiated variable!
-
         // Initialize aBestSize with the size of the first applicable
         // Query:
         Iterator<Query> anEnum = var.getIncomingQueries();
@@ -284,7 +273,6 @@ public class Search_BreadthFirst implements SearchStrategy {
      */
     private final Variable getBestVar(OrderedSet<Variable> vars) {
         vars.start();
-
         Variable v = vars.get();
         while ((v.getKind() != Variable.ARC) && vars.hasNext()) {
             v = vars.get();
@@ -295,7 +283,6 @@ public class Search_BreadthFirst implements SearchStrategy {
     private final Variable getOtherVariable(BinaryConstraint bc, Variable v) {
         return v.equals(bc.getVar1()) ? bc.getVar2() : bc.getVar1();
     }
-
     /*	
 	private void showQueries(Vector<Query> aQueryVec, String text) {
 		System.out.println(text+"\n*** Search_BreadthFirst: QUERIES *** count: "
@@ -314,7 +301,6 @@ public class Search_BreadthFirst implements SearchStrategy {
 					+ "  LHS obj: "+ go.getType().getName());
 		}
 	}
-
 	private void showVariables(OrderedSet allVars) {
 		for (Enumeration<?> en = allVars.elements(); en.hasMoreElements();) {
 			Variable aVar = (Variable) en.nextElement();

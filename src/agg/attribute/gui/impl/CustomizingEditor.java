@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
@@ -15,7 +16,6 @@ import java.awt.Dimension;
 import javax.swing.SwingConstants;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-
 import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrCustomizingEditor;
 import agg.attribute.gui.AttrEditorManager;
@@ -23,7 +23,8 @@ import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.gui.HandlerCustomizingEditor;
 
 /**
- * Customizing of an attribute manager as well as his handlers. The implementation uses a tabbed view.
+ * Customizing of an attribute manager as well as his handlers. The
+ * implementation uses a tabbed view.
  *
  * @author $Author: olga $
  * @version $Id: CustomizingEditor.java,v 1.4 2010/08/18 09:24:53 olga Exp $
@@ -32,9 +33,7 @@ public class CustomizingEditor extends AbstractEditor implements
         AttrCustomizingEditor {
 
     protected ManagerCustomizingEditor managerCustomizingEditor = null;
-
     protected JTabbedPane mainTab, handlerTab;
-
     protected JPanel handlerPanel;
 
     public CustomizingEditor(AttrManager m, AttrEditorManager em) {
@@ -48,11 +47,9 @@ public class CustomizingEditor extends AbstractEditor implements
         this.managerCustomizingEditor = new ManagerCustomizingEditor(
                 getAttrManager(), getEditorManager());
         this.handlerTab = new JTabbedPane(SwingConstants.LEFT);
-
         AttrHandler handlers[] = getAttrManager().getHandlers();
         AttrHandler tmpHandler;
         HandlerCustomizingEditor hce;
-
         for (int i = 0; i < handlers.length; i++) {
             tmpHandler = handlers[i];
             hce = getHandlerEditorManager().getCustomizingEditor(tmpHandler);
@@ -60,7 +57,6 @@ public class CustomizingEditor extends AbstractEditor implements
                 this.handlerTab.addTab(tmpHandler.getName(), hce.getComponent());
             }
         }
-
         this.handlerPanel = new JPanel(new BorderLayout());
         this.handlerPanel.add(this.handlerTab, BorderLayout.CENTER);
     }
@@ -72,12 +68,10 @@ public class CustomizingEditor extends AbstractEditor implements
         this.handlerTab.setPreferredSize(new Dimension(200, 100));
         this.handlerPanel.setPreferredSize(new Dimension(200, 100));
         // mainTab.setPreferredSize( new Dimension( 320, 220 ));
-
         this.mainPanel = new JPanel(new BorderLayout());
         this.mainPanel.add(this.mainTab, BorderLayout.CENTER);
     }
 }
-
 /*
  * $Log: CustomizingEditor.java,v $
  * Revision 1.4  2010/08/18 09:24:53  olga

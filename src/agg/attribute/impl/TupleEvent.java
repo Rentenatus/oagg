@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
@@ -17,11 +18,8 @@ import agg.attribute.AttrTuple;
 public class TupleEvent extends AttrObject implements AttrEvent {
 
     protected int id;
-
     protected int index0, index1;
-
     protected AttrTuple src;
-
     protected AttrMember member;
 
     public TupleEvent(AttrTuple attr, int id, int index0, int index1) {
@@ -30,7 +28,6 @@ public class TupleEvent extends AttrObject implements AttrEvent {
         this.id = id;
         this.index0 = index0;
         this.index1 = index1;
-
         if (this.index0 == this.index1) {
             this.member = attr.getMemberAt(index0);
         }
@@ -42,7 +39,6 @@ public class TupleEvent extends AttrObject implements AttrEvent {
         this.id = id;
         this.index0 = index;
         this.index1 = index;
-
         this.member = attr.getMemberAt(index);
     }
 

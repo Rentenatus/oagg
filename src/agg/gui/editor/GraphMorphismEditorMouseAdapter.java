@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -15,9 +16,7 @@ package agg.gui.editor;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.SwingUtilities;
-
 import agg.editor.impl.EdGraphObject;
 
 /**
@@ -41,7 +40,6 @@ public class GraphMorphismEditorMouseAdapter extends MouseAdapter {
                 || this.editor.getRightGraph() == null) {
             return;
         }
-
 //		Object source = e.getSource();
 //		if (editor.setActivePanel(source) == null) {
 //			return;
@@ -60,6 +58,7 @@ public class GraphMorphismEditorMouseAdapter extends MouseAdapter {
 //			// set right object of mapping
 //			else if (source == editor.getRightPanel().getCanvas()) {
 //				rightObj = editor.getRightPanel().getGraph().getPicked(x, y);
+
     
 
     ////				System.out.println("left obj::  "+editor.leftObj+"   right obj::  "+editor.rightObj);
@@ -74,7 +73,6 @@ public class GraphMorphismEditorMouseAdapter extends MouseAdapter {
 //			}
 //		}
 	}
-
 	public void mouseReleased(MouseEvent e) {
         Object source = e.getSource();
         if (this.editor.getLeftGraph() == null
@@ -82,15 +80,12 @@ public class GraphMorphismEditorMouseAdapter extends MouseAdapter {
                 || this.editor.setActivePanel(source) == null) {
             return;
         }
-
 //		System.out.println(">>> GraphMorphismEditorMouseAdapter.mouseReleased "
 //				+this.editor.getActivePanel().getGraph().getName());
         int x = e.getX();
         int y = e.getY();
-
         if (SwingUtilities.isLeftMouseButton(e)
                 && this.editor.getLeftPanel().getEditMode() == EditorConstants.MAP) {
-
             if (source == this.editor.getLeftPanel().getCanvas()) {
                 this.leftObj = this.editor.getLeftPanel().getGraph().getPicked(x, y);
             } else if (source == this.editor.getRightPanel().getCanvas()) {
@@ -110,5 +105,4 @@ public class GraphMorphismEditorMouseAdapter extends MouseAdapter {
             }
         }
     }
-
 }

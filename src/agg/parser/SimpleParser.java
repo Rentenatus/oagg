@@ -2,29 +2,29 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
-import java.util.EmptyStackException;
-import java.util.Stack;
-
+import agg.util.Pair;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.Match;
 import agg.xt_basis.MorphCompletionStrategy;
 import agg.xt_basis.OrdinaryMorphism;
-import agg.util.Pair;
-
+import java.util.EmptyStackException;
+import java.util.Stack;
 // ---------------------------------------------------------------------------+
+
 /**
- * This class provides a parser which works without critical pair analysis. So a simple backtracking algorithm is
- * implemented.
+ * This class provides a parser which works without critical pair analysis. So a
+ * simple backtracking algorithm is implemented.
  *
  * @see ParserFactory#createParser createParser(...)
  * @author $Author: olga $ Parser Group
@@ -33,7 +33,6 @@ import agg.util.Pair;
 public class SimpleParser extends AbstractParser implements Runnable {
 
     protected boolean stop;
-
     protected boolean correct;
 
     /**
@@ -49,8 +48,8 @@ public class SimpleParser extends AbstractParser implements Runnable {
     }
 
     /**
-     * Usually this method is invoked by the start method from the class <CODE>Thread</CODE>. This method starts the
-     * parser.
+     * Usually this method is invoked by the start method from the class
+     * <CODE>Thread</CODE>. This method starts the parser.
      */
     public void run() {
         fireParserEvent(new ParserMessageEvent(this,
@@ -130,7 +129,6 @@ public class SimpleParser extends AbstractParser implements Runnable {
                     n.setCompletionStrategy((MorphCompletionStrategy) this.grammar
                             .getMorphismCompletionStrategy().clone(), true);
                     // n.getCompletionStrategy().showProperties();
-
                     boolean found = true;
                     while (!n.isValid() && found) {
                         if (!n.nextCompletion()) {
@@ -169,7 +167,6 @@ public class SimpleParser extends AbstractParser implements Runnable {
                 Pair<Graph, RuleInstances> tmpPair = stack.pop();
                 Graph g = tmpPair.first;
                 BaseFactory.theFactory().destroyGraph(g);
-                tmpPair.second.finalize();
                 // tmpPair.second = null;
             } catch (EmptyStackException ioe) {
             }
@@ -179,7 +176,6 @@ public class SimpleParser extends AbstractParser implements Runnable {
         return this.correct;
     }
 }
-
 /*
  * End of Parser.java
  * ----------------------------------------------------------------------------

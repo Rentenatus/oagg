@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.cpa;
 
@@ -25,7 +26,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -53,7 +53,6 @@ public class IntNumberDialog extends JDialog implements ActionListener,
 
     public IntNumberDialog(JFrame parent) {
         super(parent, true);
-
         setTitle(" Set Start & End Index");
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
@@ -61,14 +60,12 @@ public class IntNumberDialog extends JDialog implements ActionListener,
                 exitForm(evt);
             }
         });
-
         if (parent != null) {
             setLocationRelativeTo(parent);
         } else {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             setLocation(screenSize.width / 2 - 200, screenSize.height / 2 - 200);
         }
-
         initComponents();
     }
 
@@ -96,19 +93,15 @@ public class IntNumberDialog extends JDialog implements ActionListener,
     private void initComponents() {
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBackground(Color.lightGray);
-
         JPanel nbPanel = new JPanel(new BorderLayout());
-
         JPanel textPanel = new JPanel(new GridLayout(3, 1));
         this.text = new JLabel("    ");
         JLabel text2 = new JLabel("  Please set from-to index of Graphs to show.  ");
         textPanel.add(new JLabel("                         "));
         textPanel.add(this.text);
         textPanel.add(text2);
-
         nbPanel.add(textPanel, BorderLayout.NORTH);
         JPanel contentSrc = new JPanel(new GridBagLayout());
-
         JPanel panelFrom = new JPanel(new BorderLayout());
         JLabel labelMin = new JLabel(" from ");
         this.textFrom = new JTextField(5);
@@ -118,7 +111,6 @@ public class IntNumberDialog extends JDialog implements ActionListener,
         this.textFrom.getDocument().addDocumentListener(this);
         panelFrom.add(labelMin, BorderLayout.NORTH);
         panelFrom.add(this.textFrom, BorderLayout.CENTER);
-
         JPanel panelTo = new JPanel(new BorderLayout());
         JLabel labelMax = new JLabel(" to ");
         this.textTo = new JTextField(5);
@@ -128,40 +120,32 @@ public class IntNumberDialog extends JDialog implements ActionListener,
         this.textTo.getDocument().addDocumentListener(this);
         panelTo.add(labelMax, BorderLayout.NORTH);
         panelTo.add(this.textTo, BorderLayout.CENTER);
-
         constrainBuild(contentSrc, panelFrom, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 10, 10, 5);
         constrainBuild(contentSrc, panelTo, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 10, 5, 10, 10);
-
         nbPanel.add(contentSrc, BorderLayout.CENTER);
-
         JPanel buttonPanel = new JPanel(new GridBagLayout());
-
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("ok");
         this.closeButton.setText("Set");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.isCanceled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.addActionListener(this);
-
         constrainBuild(buttonPanel, this.closeButton, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 30, 20, 20);
         constrainBuild(buttonPanel, this.cancelButton, 1, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 50, 20, 30);
-
         contentPane.add(nbPanel, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
         contentPane.revalidate();
-
         setContentPane(contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -182,7 +166,6 @@ public class IntNumberDialog extends JDialog implements ActionListener,
             } else {
                 setVisible(false);
             }
-
         } else if (source == this.cancelButton) {
             this.isCanceled = true;
             setVisible(false);
@@ -207,7 +190,6 @@ public class IntNumberDialog extends JDialog implements ActionListener,
 
     private int convertTextField(JTextField textField, String str) {
         int result = -1;
-
         if ((str != null) && !str.equals("")) {
             try {
                 Integer i = Integer.valueOf(str);
@@ -271,5 +253,4 @@ public class IntNumberDialog extends JDialog implements ActionListener,
         ((GridBagLayout) container.getLayout()).setConstraints(component, c);
         container.add(component);
     }
-
 }

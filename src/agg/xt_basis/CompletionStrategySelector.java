@@ -2,31 +2,33 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
-import java.util.Dictionary;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
-
+import java.util.HashMap;
+import java.util.Map;
 import agg.xt_basis.csp.Completion_CSP_NoBJ;
 
 /**
- * This class contains an instance of every available completion strategy associated with a minimal description. It
- * provides the basic functionality to implement interactive strategy selection via a GUI.
+ * This class contains an instance of every available completion strategy
+ * associated with a minimal description. It provides the basic functionality to
+ * implement interactive strategy selection via a GUI.
  */
 public class CompletionStrategySelector {
 
     /**
-     * The dictionary of available Strategies, each associated with a short descriptive name.
+     * The dictionary of available Strategies, each associated with a short
+     * descriptive name.
      */
-    private static final Dictionary<MorphCompletionStrategy, String> itsStrategies = new Hashtable<MorphCompletionStrategy, String>(2);
-
+    private static final Map<MorphCompletionStrategy, String> itsStrategies = new HashMap<MorphCompletionStrategy, String>(2);
     /**
      * The default strategy.
      */
@@ -44,13 +46,13 @@ public class CompletionStrategySelector {
     }
 
     /**
-     * Return an enumeration of available strategies. Enumeration elements are of type
-     * <code>MorphCompletionStrategy</code>.
+     * Return an enumeration of available strategies. Enumeration elements are
+     * of type <code>MorphCompletionStrategy</code>.
      *
      * @see agg.xt_basis.MorphCompletionStrategy
      */
     public static Enumeration<MorphCompletionStrategy> getStrategies() {
-        return itsStrategies.keys();
+        return Collections.enumeration(itsStrategies.keySet());
     }
 
     /**
@@ -61,12 +63,11 @@ public class CompletionStrategySelector {
     }
 
     /**
-     * Return a short descriptive name for the given strategy. This name is intended for use e.g. as a label in a GUI
-     * listbox.
+     * Return a short descriptive name for the given strategy. This name is
+     * intended for use e.g. as a label in a GUI listbox.
      */
     public static String getName(MorphCompletionStrategy strat) {
         return strat.getName();
 //		return itsStrategies.get(strat);
     }
-
 }

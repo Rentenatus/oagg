@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -51,7 +51,6 @@ public class JexParserTokenManager implements JexParserConstants {
         }
         return retval;
     }
-
     static final long[] jjbitVec0 = {0x1L, 0x0L, 0xffffffffffffffffL,
         0xffffffffffffffffL};
 
@@ -216,7 +215,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 newStates[jjnewStateCnt + 0] = 10;
                                 newStates[jjnewStateCnt + 1] = 12;
                                 jjnewStateCnt += 2;
-
                             }
                             continue;
                         case 10:
@@ -247,7 +245,6 @@ public class JexParserTokenManager implements JexParserConstants {
                             if ((0xf000000000000L & l) != 0L) {
                                 newStates[jjnewStateCnt + 0] = 17;
                                 jjnewStateCnt += 1;
-
                             }
                             continue;
                         case 17:
@@ -261,7 +258,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 if (jjcurKind > 12) {
                                     jjcurKind = 12;
                                 }
-
                             }
                             continue;
                         case 18:
@@ -312,7 +308,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 if (jjcurKind > 13) {
                                     jjcurKind = 13;
                                 }
-
                             }
                             continue;
                         case 28:
@@ -322,7 +317,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 }
                                 newStates[jjnewStateCnt + 0] = 28;
                                 jjnewStateCnt += 1;
-
                             }
                             continue;
                         case 29:
@@ -363,7 +357,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 if (jjcurKind > 6) {
                                     jjcurKind = 6;
                                 }
-
                             }
                             continue;
                         case 45:
@@ -386,7 +379,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 newStates[jjnewStateCnt + 0] = 34;
                                 newStates[jjnewStateCnt + 1] = 35;
                                 jjnewStateCnt += 2;
-
                             }
                             continue;
                         case 5:
@@ -394,7 +386,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 newStates[jjnewStateCnt + 0] = 6;
                                 newStates[jjnewStateCnt + 1] = 7;
                                 jjnewStateCnt += 2;
-
                             }
                             continue;
                         case 8:
@@ -402,7 +393,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 if (jjcurKind > 10) {
                                     jjcurKind = 10;
                                 }
-
                             }
                             continue;
                         case 37:
@@ -410,7 +400,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 newStates[jjnewStateCnt + 0] = 38;
                                 newStates[jjnewStateCnt + 1] = 39;
                                 jjnewStateCnt += 2;
-
                             }
                             continue;
                         case 41:
@@ -418,7 +407,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 newStates[jjnewStateCnt + 0] = 42;
                                 newStates[jjnewStateCnt + 1] = 43;
                                 jjnewStateCnt += 2;
-
                             }
                             continue;
                         case 10:
@@ -433,7 +421,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 newStates[jjnewStateCnt + 1] = 14;
                                 newStates[jjnewStateCnt + 2] = 16;
                                 jjnewStateCnt += 3;
-
                             }
                             continue;
                         case 13:
@@ -454,7 +441,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 newStates[jjnewStateCnt + 1] = 23;
                                 newStates[jjnewStateCnt + 2] = 25;
                                 jjnewStateCnt += 3;
-
                             }
                             continue;
                         case 21:
@@ -614,7 +600,6 @@ public class JexParserTokenManager implements JexParserConstants {
         }
         return;
     }
-
     static long jjnewActive_00 = 0L, jjoldActive_00 = 0L;
 
     static private final void jjMoveStringLiteralDfa0_0()
@@ -736,7 +721,6 @@ public class JexParserTokenManager implements JexParserConstants {
                                 return;
                             }
                         }
-
                         jjstartStateSet = jjallInitStates_0;
                         jjnewStateCnt = jjstartStateSet.length;
                         jjMoveNfa_0(jjstartStateSet, jjstateSet2);
@@ -1007,93 +991,49 @@ public class JexParserTokenManager implements JexParserConstants {
             return;
         }
     }
-
     static final int[] jjstates0 = {1, 2,};
-
     static final int[] jjstates1 = {7, 8,};
-
     static final int[] jjstates2 = {7,};
-
     static final int[] jjstates3 = {6, 7,};
-
     static final int[] jjstates4 = {4, 5, 8,};
-
     static final int[] jjstates5 = {4,};
-
     static final int[] jjstates6 = {11,};
-
     static final int[] jjstates7 = {15, 11,};
-
     static final int[] jjstates8 = {15,};
-
     static final int[] jjstates9 = {17,};
-
     static final int[] jjstates10 = {13, 14, 16,};
-
     static final int[] jjstates11 = {10, 12,};
-
     static final int[] jjstates12 = {19, 20, 22,};
-
     static final int[] jjstates13 = {19, 20, 24, 22,};
-
     static final int[] jjstates14 = {24,};
-
     static final int[] jjstates15 = {26,};
-
     static final int[] jjstates16 = {21, 23, 25,};
-
     static final int[] jjstates17 = {28,};
-
     static final int[] jjstates18 = {35, 8,};
-
     static final int[] jjstates19 = {35,};
-
     static final int[] jjstates20 = {34, 35,};
-
     static final int[] jjstates21 = {32, 33, 8,};
-
     static final int[] jjstates22 = {30, 31,};
-
     static final int[] jjstates23 = {39, 8,};
-
     static final int[] jjstates24 = {39,};
-
     static final int[] jjstates25 = {38, 39,};
-
     static final int[] jjstates26 = {36, 37,};
-
     static final int[] jjstates27 = {43, 8,};
-
     static final int[] jjstates28 = {43,};
-
     static final int[] jjstates29 = {42, 43,};
-
     static final int[] jjstates30 = {40, 41, 8,};
-
     static final int[] jjstates31 = {30, 31, 36, 37, 40, 41, 8,};
-
     static final int[] jjstates32 = {46, 2,};
-
     static final int[] jjstates33 = {46,};
-
     static final int[] jjstates34 = {47, 2,};
-
     static final int[] jjstates35 = {45, 47, 2,};
-
     static final int[] jjallInitStates_0 = {0, 3, 9, 18, 27, 29, 44,};
-
     static final int[] jjstates36 = {18,};
-
     static final int[] jjstates37 = {9,};
-
     static final int[] jjstates38 = {3,};
-
     static final int[] jjstates39 = {29, 44,};
-
     static final int[] jjstates40 = {0, 29,};
-
     static final int[] jjstates41 = {27,};
-
     static final int[][] jjinitStates_0 = {jjallInitStates_0, null, null,
         null, null, null, null, null, null, null, null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, null,
@@ -1114,7 +1054,6 @@ public class JexParserTokenManager implements JexParserConstants {
         jjstates41, jjstates41, jjstates41, jjstates41, jjstates41,
         jjstates41, jjstates41, jjstates41, jjstates41, jjstates41, null,
         null, null, null, null,};
-
     public static final String[] jjstrLiteralImages = {null, null, null, null,
         null, null, null, null, null, null, null, null, null, null, "\50",
         "\51", "\173", "\175", "\133", "\135", "\73", "\54", "\56", "\44",
@@ -1123,29 +1062,17 @@ public class JexParserTokenManager implements JexParserConstants {
         "\52", "\57", "\45", "\176", "\41", "\156\145\167",
         "\164\162\165\145", "\146\141\154\163\145", "\156\165\154\154",
         null, null, null,};
-
     public static final String[] lexStateNames = {"DEFAULT",};
-
     static final long[] jjtoToken = {0x1fffffffff440L,};
-
     static final long[] jjtoSkip = {0x3eL,};
-
     static private ASCII_CharStream input_stream;
-
     static private int[] jjrounds = new int[48];
-
     static private int[] jjstateSet1 = new int[48];
-
     static private int[] jjstateSet2 = new int[48];
-
     static private int[] jjnextStates;
-
     static int curPos;
-
     static protected char curChar;
-
     static int jjcurKind = 2147483647;
-
     static JexParserTokenManager jjme;
 
     public JexParserTokenManager(ASCII_CharStream stream) {
@@ -1223,31 +1150,20 @@ public class JexParserTokenManager implements JexParserConstants {
             curLexState = lexState;
         }
     }
-
     static int curLexState = 0;
-
     static int defaultLexState = 0;
-
     static int jjnewStateCnt;
-
     static int jjround;
-
     static private boolean jjEOFSeen = false;
-
     static int[] jjtmpStates = jjstateSet1;
-
     static int jjmatchedPos;
-
     static Token matchedToken;
-
     static Token jjspecialToken;
-
     static private int[] jjstartStateSet;
 
     static public Token getNextToken() throws ParseError {
         // System.out.println("getNextToken...");
         matchedToken = new Token();
-
         EOFLoop:
         for (;;) {
             try {
@@ -1261,7 +1177,6 @@ public class JexParserTokenManager implements JexParserConstants {
                 matchedToken.image = "";
                 return matchedToken;
             }
-
             try {
                 for (;;) {
                     matchedToken.kind = 2147483647;
@@ -1280,12 +1195,10 @@ public class JexParserTokenManager implements JexParserConstants {
                             curPos++;
                         }
                     }
-
                     if (matchedToken.kind != 2147483647) {
                         if (jjmatchedPos + 1 < curPos) {
                             input_stream.backup(curPos - jjmatchedPos - 1);
                         }
-
                         if ((jjtoToken[matchedToken.kind >> 6] & (1L << (matchedToken.kind & 077))) != 0L) {
                             if ((matchedToken.image = jjstrLiteralImages[matchedToken.kind]) == null) {
                                 matchedToken.image = input_stream.GetImage();
@@ -1300,7 +1213,6 @@ public class JexParserTokenManager implements JexParserConstants {
                             return matchedToken;
                         }
                         continue EOFLoop;
-
                     }
                     if (jjme != null) {
                         jjme.error_line = input_stream.getEndLine();
@@ -1328,7 +1240,6 @@ public class JexParserTokenManager implements JexParserConstants {
                     if (jjmatchedPos + 1 < curPos) {
                         input_stream.backup(curPos - jjmatchedPos - 1);
                     }
-
                     if ((jjtoToken[matchedToken.kind >> 6] & (1L << (matchedToken.kind & 077))) != 0L) {
                         if ((matchedToken.image = jjstrLiteralImages[matchedToken.kind]) == null) {
                             matchedToken.image = input_stream.GetImage();
@@ -1341,7 +1252,6 @@ public class JexParserTokenManager implements JexParserConstants {
                         return matchedToken;
                     }
                     continue EOFLoop;
-
                 }
                 if (jjme != null) {
                     jjme.error_line = input_stream.getEndLine();
@@ -1363,9 +1273,7 @@ public class JexParserTokenManager implements JexParserConstants {
             }
         }
     }
-
     protected int error_line, error_column;
-
     protected String error_after;
 
     protected void LexicalError() {

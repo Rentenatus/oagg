@@ -1,33 +1,30 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.parser;
 
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.Hashtable;
-
+import agg.util.Pair;
+import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
-import agg.xt_basis.Rule;
 import agg.xt_basis.OrdinaryMorphism;
-import agg.xt_basis.BaseFactory;
-//import agg.cons.AtomConstraint;
-import agg.util.Pair;
+import agg.xt_basis.Rule;
 import java.util.List;
+import java.util.Map;
 
 public class Consistency implements Runnable {
 
     ExcludePairContainer excludeContainer;
-
     Rule rule1, rule2;
 
     public Consistency(ExcludePairContainer excludeContainer) {
@@ -54,22 +51,18 @@ public class Consistency implements Runnable {
     public void check() {
         // System.out.println("Consistency.check()");
         try {
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
+            Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
                     .getContainer(CriticalPair.EXCLUDE);
             GraGra gra = this.excludeContainer.getGrammar();
-
-            for (Enumeration<Rule> keys = excludeCont.keys(); keys.hasMoreElements();) {
-                Rule r1 = keys.nextElement();
-                Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
-                for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
-                    Rule r2 = k2.nextElement();
+            for (Rule r1 : excludeCont.keySet()) {
+                Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
+                for (Rule r2 : secondPart.keySet()) {
                     Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
                     Boolean b = pair.first;
                     if (b.booleanValue()) {
                         // System.out.println(r1.getName()+" "+r2.getName());
                         List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> v = pair.second;
                         int size = v.size();
-
                         for (int i = 0; i < size; i++) {
                             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> pi = v.get(i);
                             Pair<OrdinaryMorphism, OrdinaryMorphism> p = pi.first;
@@ -103,17 +96,13 @@ public class Consistency implements Runnable {
     public void checkRulePair() {
         try {
             // System.out.println("Consistency.checkRulePair()");
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
+            Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> excludeCont = this.excludeContainer
                     .getContainer(CriticalPair.EXCLUDE);
             GraGra gra = this.excludeContainer.getGrammar();
-
-            for (Enumeration<Rule> keys = excludeCont.keys(); keys.hasMoreElements();) {
-                Rule r1 = keys.nextElement();
+            for (Rule r1 : excludeCont.keySet()) {
                 if (r1 == this.rule1) {
-                    Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
-                    for (Enumeration<Rule> k2 = secondPart.keys(); k2
-                            .hasMoreElements();) {
-                        Rule r2 = k2.nextElement();
+                    Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = excludeCont.get(r1);
+                    for (Rule r2 : secondPart.keySet()) {
                         if (r2 == this.rule2) {
                             Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> pair = secondPart.get(r2);
                             Boolean b = pair.first;

@@ -2,36 +2,35 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: AmalgamatedRuleTreeNodeData.java,v 1.3 2010/08/18 10:57:26 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.editor.impl.EdRule;
 
 /**
- * The RuleTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The RuleTreeNodeData implements an user object of a tree node in the
+ * GraGraTreeModel.
  *
  * @author $Author: olga $
- * @version $Id: AmalgamatedRuleTreeNodeData.java,v 1.3 2010/08/18 10:57:26 olga Exp $
+ * @version $Id: AmalgamatedRuleTreeNodeData.java,v 1.3 2010/08/18 10:57:26 olga
+ * Exp $
  */
 public class AmalgamatedRuleTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private Object data;
-
     private EdRule eRule;
-
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */
@@ -100,7 +99,6 @@ public class AmalgamatedRuleTreeNodeData extends GraGraTreeNodeDataAdapter {
         String oldString = this.string;
         String newString = str.replaceAll(" ", "");
         this.string = newString;
-
         String newRuleName = "";
         String sD = "";
         if (!this.eRule.getBasisRule().isEnabled()) {

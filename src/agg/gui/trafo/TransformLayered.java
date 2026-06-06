@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.trafo;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdRule;
 import agg.gui.event.EditEvent;
@@ -30,8 +30,8 @@ import agg.xt_basis.Rule;
 import agg.xt_basis.RuleLayer;
 
 /**
- * The class TransformLayered implements an interpreting transformation of a layered gragra. It will be used by the
- * GraGraTransform class.
+ * The class TransformLayered implements an interpreting transformation of a
+ * layered gragra. It will be used by the GraGraTransform class.
  *
  * @author $Author: olga $
  * @version $ID: TransformLayered.java,v 1.31 2000/07/31 09:46:16 shultzke Exp $
@@ -88,7 +88,8 @@ public class TransformLayered extends Thread
     }
 
     /**
-     * If setting show is TRUE, the graph will be updated after each transformation step and shown newly
+     * If setting show is TRUE, the graph will be updated after each
+     * transformation step and shown newly
      */
     public void setShowGraphAfterStep(boolean show) {
         this.showGraphAfterStep = show;
@@ -109,7 +110,6 @@ public class TransformLayered extends Thread
         this.consistencyCheckNotNeeded = !this.gragra.hasEnabledConstraints();
         this.consistencyWhenCheckAfterGraphTrafo = this.gragraTransform.consistencyCheckAfterGraphTrafoEnabled();
         this.gragraAnimated = this.gragra.isAnimated();
-
         layeredTransform();
     }
 
@@ -133,7 +133,6 @@ public class TransformLayered extends Thread
         gratraOptions.addOption("layered");
         this.gragra.getBasisGraGra().setGraTraOptions(
                 this.gragraTransform.getGraTraOptionsList());
-
         this.rl = new RuleLayer(this.gragra.getBasisGraGra().getEnabledRules()); //getListOfRules());
         if (this.gragraTransform.showLayerEnabled()) {
             GraGraLayerDialog lg = new GraGraLayerDialog(this.parent, this.rl);
@@ -145,7 +144,6 @@ public class TransformLayered extends Thread
                 this.gragra.getBasisGraGra().setRuleLayer(this.rl);
             }
         }
-
         this.gratra.transform();
     }
 
@@ -156,37 +154,29 @@ public class TransformLayered extends Thread
         String ruleName = "";
         this.event = e;
         this.msgGraTra = e.getMessage();
-
         if (this.msgGraTra == GraTraEvent.MATCH_VALID) {
 //			if (e.getMatch().getRule() != null)
             ruleName = e.getMatch().getRule().getName();
             if (this.gragraTransform.selectMatchObjectsEnabled()) {
                 this.gragra.getGraph().updateAlongMorph(e.getMatch());
             }
-
             this.gragra.getGraph().unsetNodeNumberChanged();
-
             this.gragraTransform.fireTransform(new TransformEvent(this,
                     TransformEvent.MATCH_VALID,
                     this.event.getMatch(),
                     "  match of  <" + ruleName + ">  is valid"));
-
         } else if (this.msgGraTra == GraTraEvent.STEP_COMPLETED) {
             this.steps++;
             this.currentMatch = this.event.getMatch();
             this.currentRule = this.currentMatch.getRule();
             ruleName = this.currentRule.getName();
-
             if (this.showGraphAfterStep) {
-
                 this.gragra.getGraph().setXYofNewNode(this.gragra.getRule(this.currentRule), this.currentMatch, this.currentMatch.getCoMorphism());
-
                 if (this.gragra.isRuleAnimated(this.currentRule)) {
                     this.gragraTransform.fireTransform(new TransformEvent(this,
                             TransformEvent.ANIMATED_NODE, this.currentMatch));
                 } else if (!this.gragraAnimated) {
                     this.gragraTransform.getEditor().doStepLayoutProc();
-
                     if (this.gragraTransform.selectNewAfterStepEnabled()) {
                         this.gragra.getGraph().updateAlongMorph(this.event.getCoMatch(), this.currentRule);
                     }
@@ -196,53 +186,41 @@ public class TransformLayered extends Thread
             this.gragraTransform.fireTransform(new TransformEvent(this,
                     TransformEvent.STEP_COMPLETED, "  <" + ruleName
                     + ">  is applied"));
-
         } else if (this.msgGraTra == GraTraEvent.LAYER_FINISHED) {
             if (this.gratra.getCurrentLayer() >= 0) {
-
                 if (!this.showGraphAfterStep) {
                     this.gragraTransform.getEditor().doStandardLayoutProc();
                 }
-
                 this.gragraTransform.fireTransform(new TransformEvent(this,
                         TransformEvent.LAYER_FINISHED, " Layer  "
                         + e.getMessageText() + "  done.  "));
-
             } else if (this.gragraTransform.layeredLoopEnabled()) {
                 this.gragraTransform.fireTransform(new TransformEvent(this,
                         TransformEvent.LAYER_FINISHED, " Loop over layer. First layer will start. "));
             }
-
         } else if (this.msgGraTra == GraTraEvent.TRANSFORM_FINISHED) {
 //			System.out.println("GraTraEvent.TRANSFORM_FINISHED");
             this.gratra.stop();
-
             this.gragra.getGraph().clearMarks();
-
             if (!this.showGraphAfterStep) {
                 this.gragraTransform.getEditor().doStandardLayoutProc();
             }
-
             if (!this.cancelled) {
                 if (this.steps == 0) {
                     this.gragraTransform.fireTransform(new TransformEvent(this,
                             TransformEvent.CANNOT_TRANSFORM, e.getMessageText()));
                 }
             }
-
             this.gragraTransform.fireTransform(new TransformEvent(this,
                     TransformEvent.STOP, "  finished.  "));
             System.out.println("*** Layered transformation - finished.  ");
-
             if (this.gragraTransform.layeredLoopEnabled()
                     && this.gragraTransform.resetGraphEnabled()) {
-
                 if (!this.consistencyWhenCheckAfterGraphTrafo
                         || this.consistencyCheckNotNeeded) {
                     this.gragraTransform.fireTransform(new TransformEvent(this,
                             TransformEvent.RESET_GRAPH));
                 }
-
             }
         } else if ((this.msgGraTra == GraTraEvent.INPUT_PARAMETER_NOT_SET)) {
             this.inputParameterOK = false;
@@ -264,7 +242,6 @@ public class TransformLayered extends Thread
                     this.gragraTransform.fireTransform(new TransformEvent(this,
                             TransformEvent.INPUT_PARAMETER_NOT_SET, this.currentRule));
                 }
-
                 while (!this.inputParameterOK) {
                     // wait for INPUT_PARAMETER_OK 
                     // inside of editEventOccurred(EditEvent e)
@@ -273,7 +250,6 @@ public class TransformLayered extends Thread
                     } catch (InterruptedException ex) {
                     }
                 }
-
             } else if (answer == 1) { // Continue
                 this.gratra.stopRule();
             } else if (answer == 2) { // Cancel
@@ -282,13 +258,11 @@ public class TransformLayered extends Thread
                 this.gragraTransform.fireTransform(new TransformEvent(this,
                         TransformEvent.CANCEL));
             }
-
         } else if (this.msgGraTra == GraTraEvent.NOT_READY_TO_TRANSFORM) {
             ruleName = this.event.getMessageText();
             String s = "Please check variables of the rule:  " + ruleName; // e.getMessageText();			
             this.gragraTransform.fireTransform(new TransformEvent(this,
                     TransformEvent.NOT_READY_TO_TRANSFORM, s));
-
         } else if ((this.msgGraTra == GraTraEvent.ATTR_TYPE_FAILED)
                 || (this.msgGraTra == GraTraEvent.RULE_FAILED)
                 || (this.msgGraTra == GraTraEvent.ATOMIC_GC_FAILED)
@@ -296,7 +270,6 @@ public class TransformLayered extends Thread
             String s = e.getMessageText();
             this.gragraTransform.fireTransform(new TransformEvent(this,
                     TransformEvent.NOT_READY_TO_TRANSFORM, s));
-
         } else if (this.msgGraTra == GraTraEvent.NEW_MATCH) {
             // currentMatch = event.getMatch();
             // currentRule = currentMatch.getRule();
@@ -304,25 +277,21 @@ public class TransformLayered extends Thread
             // gragraTransform.fireTransform(new TransformEvent(this,
             // TransformEvent.NEW_MATCH, " new match of <"+ruleName+"> is
             // created"));
-
         } else if (this.msgGraTra == GraTraEvent.NO_COMPLETION) {
 //			if (this.showGraphAfterStep) {			
 //				this.currentRule = this.event.getMatch().getRule();
 //				disposeMatch();
 //			}
-
         } else if (this.msgGraTra == GraTraEvent.INCONSISTENT) {
             // ruleName = currentRule.getName();
             // String msg = "Graph inconsistency after applying rule <
             // "+ruleName+"> !";
-
             if (this.gragraTransform.consistencyCheckAfterGraphTrafoEnabled()) {
                 this.consistencyWhenCheckAfterGraphTrafo = false;
                 this.gragraTransform.fireTransform(new TransformEvent(this,
                         TransformEvent.INCONSISTENT, this.event.getMessageText()));
             }
         } else if (this.msgGraTra == GraTraEvent.MATCH_FAILED) {
-
         }
     }
 
@@ -342,7 +311,6 @@ public class TransformLayered extends Thread
         if (this.steps == 0) {
             return false;
         }
-
         return true;
     }
 
@@ -369,7 +337,6 @@ public class TransformLayered extends Thread
                 JOptionPane.WARNING_MESSAGE, null, options, options[0]);
         return answer;
     }
-
     /*
 	private void inheritanceWarning() {
 		if (gratra.getGraGra().getConstraints().hasMoreElements()
@@ -384,39 +351,22 @@ public class TransformLayered extends Thread
 	}
      */
     private JFrame parent;
-
     private GraGraTransform gragraTransform;
-
     private LayeredGraTraImpl gratra;
-
     private boolean consistencyWhenCheckAfterGraphTrafo = true;
-
     private int msgGraTra;
-
     private GraTraEvent event;
-
     private EdGraGra gragra;
-
     private Rule currentRule;
-
     private Match currentMatch;
-
     private boolean inputParameterOK = false;
-
     private int steps;
-
     private boolean cancelled = false;
-
     private boolean stopped = false;
-
     private RuleLayer rl;
-
 //	private int extraRuns = 10;
     private boolean showGraphAfterStep;
-
 //	private boolean inheritanceWarningSent = false;
     private boolean gragraAnimated;
-
     private boolean consistencyCheckNotNeeded = false;
-
 }

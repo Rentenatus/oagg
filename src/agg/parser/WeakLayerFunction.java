@@ -1,27 +1,27 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.parser;
-
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
 
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
-
+import java.util.HashSet;
+import java.util.Iterator;
 //import com.objectspace.jgl.HashSet;
+
 /**
  * Extends the layer function for a NAC check.
  *
@@ -51,9 +51,10 @@ public class WeakLayerFunction extends LayerFunction {
         Report.trace("starte ckeckLayer()", 2);
         boolean result = true;
         /* 0<= cl(l)<=dl(l)<=n */
-        for (Enumeration<?> en = getDeletionLayer().keys(); en.hasMoreElements()
-                && result;) {
-            Object key = en.nextElement();
+        for (Object key : getDeletionLayer().keySet()) {
+            if (!result) {
+                break;
+            }
             Integer dl = getDeletionLayer().get(key);
             Integer cl = getCreationLayer().get(key);
             /* layerfunktion muss total sein */
@@ -72,14 +73,15 @@ public class WeakLayerFunction extends LayerFunction {
                         + " is not satisfied.";
             }
         }
-
         HashSet<Object> deletionSet = new HashSet<Object>();
         HashSet<Object> creationSet = new HashSet<Object>();
-        Enumeration<Rule> rules = getRuleLayer().keys();
-        while (result && rules.hasMoreElements()) {
+        for (Object obj : getRuleLayer().keySet()) {
+            if (!result) {
+                break;
+            }
             deletionSet.clear();
             creationSet.clear();
-            Rule rule = rules.nextElement();
+            Rule rule = (Rule) obj;
             Integer layerRule = getRuleLayer().get(rule);
             /*
 			 * gibt es keinen Layer fuer eine Regel, so ist die Layerfunktion
@@ -102,7 +104,6 @@ public class WeakLayerFunction extends LayerFunction {
                 }
             }
             Report.println("deletionSet ist " + deletionSet, Report.LAYER);
-
             /* dl(l) <= k */
             for (Iterator<?> en = deletionSet.iterator(); en.hasNext()
                     && result;) {
@@ -138,7 +139,6 @@ public class WeakLayerFunction extends LayerFunction {
             }
             Report.println("creationSet reduziert auf " + creationSet,
                     Report.LAYER);
-
             /* cl > k */
             for (Iterator<?> en = creationSet.iterator(); en.hasNext()
                     && result;) {
@@ -162,7 +162,6 @@ public class WeakLayerFunction extends LayerFunction {
         Report.trace("beende checkLayer mit result = " + result, -2);
         return result;
     }
-
 }
 /*
  * $Log: WeakLayerFunction.java,v $

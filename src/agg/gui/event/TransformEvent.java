@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.event;
 
 import java.util.EventObject;
-
 import agg.gui.trafo.TransformInterpret;
 import agg.gui.trafo.TransformLayered;
 import agg.xt_basis.Match;
@@ -19,7 +19,8 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 
 /**
- * The class TransformEvent is used to notify the state of the gragra transformation.
+ * The class TransformEvent is used to notify the state of the gragra
+ * transformation.
  *
  * @author $Author: olga $
  * @version $ID:$
@@ -28,57 +29,31 @@ import agg.xt_basis.Rule;
 public class TransformEvent extends EventObject {
 
     public static final int INPUT_PARAMETER_NOT_SET = 1;
-
     public static final int STEP_COMPLETED = 2;
-
     public static final int NO_COMPLETION = 3;
-
     public static final int NOT_VALID = 14;
-
     public static final int CANNOT_TRANSFORM = 4;
-
     public static final int CLEAR_MATCH = 5;
-
     public static final int KEEP_MATCH = 6;
-
     public static final int MATCH_COMPLETED = 7;
-
     public static final int CANCEL = 8;
-
     public static final int START = 9;
-
     public static final int STOP = 10;
-
     public static final int MATCH_DEF = 11;
-
     public static final int NEXT = 12;
-
     public static final int STEP = 13;
-
     public static final int CANNOT_MATCH = 15;
-
     public static final int NEW_MATCH = 16;
-
     public static final int MATCH_VALID = 17;
-
     public static final int NOT_READY_TO_TRANSFORM = 18;
-
     public static final int INCONSISTENT = 19;
-
     public static final int APPLICABLE_RULES = 20;
-
     public static final int INHERITANCE = 21;
-
     public static final int LAYER_FINISHED = 22;
-
     public static final int MATCH_PARTIAL = 23;
-
     public static final int RULE_SEQUENCE_DEFINE = 24;
-
     public static final int ANIMATED_NODE = 25;
-
     public static final int RESET_GRAPH = 26;
-
     public static final int RULE = 27;
 
     public TransformEvent(Object source, int key) {
@@ -151,7 +126,6 @@ public class TransformEvent extends EventObject {
         if (this.obj instanceof Rule) {
             return (Rule) this.obj;
         }
-
         return null;
     }
 
@@ -159,7 +133,6 @@ public class TransformEvent extends EventObject {
         if (this.obj instanceof Match) {
             return (Match) this.obj;
         }
-
         return null;
     }
 
@@ -167,18 +140,14 @@ public class TransformEvent extends EventObject {
         if (this.obj instanceof OrdinaryMorphism) {
             return (OrdinaryMorphism) this.obj;
         }
-
         return null;
     }
 
     public Object getObject() {
         return this.obj;
     }
-
     private int msgkey;
-
     private String msg = "";
-
     // private Match match;
     private Object obj;
 }

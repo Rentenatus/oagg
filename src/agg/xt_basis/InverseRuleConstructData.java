@@ -1,41 +1,36 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
-import java.util.Hashtable;
-
+import java.util.HashMap;
+import java.util.Map;
 import agg.util.Pair;
 
 public class InverseRuleConstructData {
 
     private Rule invRule;
-
     private boolean extended;
-
     private OrdinaryMorphism l2rInv, r2lInv;
-
     // key: NAC, value: Pair
     // Pair.first: L -> Lcopy+NAC, 
     // Pair.second: NAC -> Lcopy+NAC
-    private Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftNAC2extLeft;
-
+    private Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftNAC2extLeft;
     // key: PAC, value: Pair
     // Pair.first: L -> Lcopy+PAC, 
     // Pair.second: PAC -> Lcopy+PAC
-    private Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftPAC2extLeft;
-
+    private Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftPAC2extLeft;
     // key: PAC, value: Pair
     // Pair.first: L -> Lcopy+PAC, 
     // Pair.second: PAC -> Lcopy+PAC
-    private Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftAC2extLeft;
+    private Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>> leftAC2extLeft;
 
     public InverseRuleConstructData(final Rule r) {
         Pair<Pair<Rule, Boolean>, Pair<OrdinaryMorphism, OrdinaryMorphism>> invConstruct = BaseFactory.theFactory().makeAbstractInverseRule(r);
@@ -71,51 +66,50 @@ public class InverseRuleConstructData {
         return this.r2lInv;
     }
 
-    public Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
+    public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getNACsStore() {
         if (this.leftNAC2extLeft == null) {
-            this.leftNAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftNAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
         }
         return this.leftNAC2extLeft;
     }
 
-    public Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
+    public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getPACsStore() {
         if (this.leftPAC2extLeft == null) {
-            this.leftPAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftPAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
         }
         return this.leftPAC2extLeft;
     }
 
-    public Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
+    public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getACsStor() {
         if (this.leftAC2extLeft == null) {
-            this.leftAC2extLeft = new Hashtable<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
         }
         return this.leftAC2extLeft;
     }
 
     /**
-     * This method does not destroy the Rule and OrdinaryMorphism instances of the inverse construction. They must be
-     * disposed by the user object explicitly.
+     * This method does not destroy the Rule and OrdinaryMorphism instances of
+     * the inverse construction. They must be disposed by the user object
+     * explicitly.
      */
     public void dispose() {
-
     }
 
     /**
-     * Destroys the Rule and OrdinaryMorphism instances of the inverse construction. The local references set to null.
+     * Destroys the Rule and OrdinaryMorphism instances of the inverse
+     * construction. The local references set to null.
      */
     public void destroy() {
         if (this.invRule != null) {
             this.dispose();
             this.l2rInv.dispose();
             this.r2lInv.dispose();
-
             this.invRule = null;
             this.l2rInv = null;
             this.r2lInv = null;
-
             if (this.leftAC2extLeft != null) {
                 this.leftAC2extLeft.clear();
             }
@@ -130,5 +124,4 @@ public class InverseRuleConstructData {
             this.leftPAC2extLeft = null;
         }
     }
-
 }

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.popupmenu;
 
@@ -14,13 +15,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.editor.impl.EdNestedApplCond;
 import agg.editor.impl.EdRule;
 import agg.gui.AGGAppl;
@@ -38,16 +37,13 @@ public class KernelRulePopupMenu extends JPopupMenu {
     public KernelRulePopupMenu(GraGraTreeView tree) {
         super("Kernel Rule");
         this.treeView = tree;
-
         this.miAC = add(new JMenuItem("New GAC (General Application Condition)"));
         this.miAC.setActionCommand("newNestedAC");
         this.miAC.addActionListener(this.treeView.getActionAdapter());
-
         this.miAC1 = new JMenuItem("Make GAC due to RHS");
         this.add(miAC1);
         this.miAC1.setActionCommand("makeGACFromRHS");
         this.miAC1.addActionListener(this.treeView.getActionAdapter());
-
         this.miFormula = add(new JMenuItem("Set Formula above GACs"));
         this.miFormula.setActionCommand("setFormulaAboveACs");
         this.miFormula.addActionListener(new ActionListener() {
@@ -55,29 +51,22 @@ public class KernelRulePopupMenu extends JPopupMenu {
                 setFormula();
             }
         });
-
         addSeparator();
-
         this.miNAC = add(new JMenuItem(
                 "New NAC                                 Shift+Alt+N"));
         this.miNAC.setActionCommand("newNAC");
         this.miNAC.addActionListener(this.treeView.getActionAdapter());
         // miNAC.setMnemonic('N');
-
         this.miNAC1 = add(new JMenuItem(
                 "Make NAC due to RHS               "));
         this.miNAC1.setActionCommand("makeNACFromRHS");
         this.miNAC1.addActionListener(this.treeView.getActionAdapter());
-
         addSeparator();
-
         this.miPAC = add(new JMenuItem("New PAC                                 "));// Shift+Alt+A
         this.miPAC.setActionCommand("newPAC");
         this.miPAC.addActionListener(this.treeView.getActionAdapter());
         // miPAC.setMnemonic('P');
-
         addSeparator();
-
         this.miAttrContext = add(new JMenuItem("Attribute Context"));
         this.miAttrContext.setActionCommand("attrContext");
         this.miAttrContext.addActionListener(new ActionListener() {
@@ -85,14 +74,11 @@ public class KernelRulePopupMenu extends JPopupMenu {
                 ((AGGAppl) treeView.getFrame()).getGraGraEditor().loadRuleAttrContextInEditor(rule);
             }
         });
-
         addSeparator();
-
         this.miComment = add(new JMenuItem("Textual Comments"));
         this.miComment.setActionCommand("commentRule");
         this.miComment.addActionListener(this.treeView.getActionAdapter());
         // miComment.setMnemonic('T');
-
         pack();
         setBorderPainted(true);
     }
@@ -101,7 +87,6 @@ public class KernelRulePopupMenu extends JPopupMenu {
         if (this.treeView == null) {
             return false;
         }
-
         if (this.treeView.getTree().getRowForLocation(x, y) != -1) {
             int pl = this.treeView.getTree().getPathForLocation(x, y).getPath().length;
             if (pl == 4) {
@@ -109,14 +94,11 @@ public class KernelRulePopupMenu extends JPopupMenu {
                 this.node = (DefaultMutableTreeNode) this.path.getLastPathComponent();
                 this.data = (GraGraTreeNodeData) this.node.getUserObject();
                 this.rule = this.treeView.getRule((DefaultMutableTreeNode) this.path.getLastPathComponent());
-
                 if (this.rule != null
                         && this.rule.getBasisRule() instanceof KernelRule) {
-
                     GrammarTreeNode.expand(this.treeView, this.node, this.path);
                     this.posX = x;
                     this.posY = y;
-
                     return true;
                 }
             }
@@ -131,16 +113,12 @@ public class KernelRulePopupMenu extends JPopupMenu {
                 " An empty graph is the case where all nodes are connected by AND.",
                 true);
         d.setExportJPEG(this.treeView.getGraphicsExportJPEG());
-
         String oldformula = this.rule.getBasisRule().getFormulaStr();
-
 //		List<String> allVars = this.rule.getBasisRule().getNameOfEnabledACs();
         List<EdNestedApplCond> allNestedACs = this.rule.getEnabledACs();
         List<NestedApplCond> list = makeFrom(allNestedACs);
-
         d.setVarsAsObjs(allNestedACs, oldformula);
         d.setLocation(this.posX + 20, this.posY + 20);
-
         while (true) {
             d.setVisible(true);
             if (!d.isCanceled()) {
@@ -189,7 +167,6 @@ public class KernelRulePopupMenu extends JPopupMenu {
                         .getUserObject()).isApplFormula()) {
                     this.treeView.getTreeModel().removeNodeFromParent((DefaultMutableTreeNode) child);
                 }
-
                 // add formula tree node into rule subtree
                 if (!"true".equals(f)) {
                     final ApplFormulaTreeNodeData conddata = new ApplFormulaTreeNodeData(f, true, this.rule);
@@ -202,14 +179,11 @@ public class KernelRulePopupMenu extends JPopupMenu {
             }
         }
     }
-
     GraGraTreeView treeView;
     TreePath path;
     DefaultMutableTreeNode node;
     GraGraTreeNodeData data;
     EdRule rule;
-
     int posX, posY;
-
     private JMenuItem miAC, miAC1, miFormula, miNAC, miNAC1, miPAC, miComment, miAttrContext;
 }

@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
 import java.io.File;
-
 import agg.util.XMLHelper;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
@@ -55,14 +55,12 @@ public class ComputeCriticalPairs implements ParserEventListener {
             System.out.println("Computing critical pairs  -  finished.");
             if (this.computeDependency) {
                 this.cpOption.setCriticalPairAlgorithm(CriticalPairOption.TRIGGER_DEPEND);
-
                 if (this.dependPairContainer == null) {
                     this.dependPairContainer = ParserFactory
                             .createEmptyCriticalPairs(this.gragra, this.cpOption
                                     .getCriticalPairAlgorithm(), this.cpOption
                                             .layeredEnabled());
                 }
-
                 ((ExcludePairContainer) this.dependPairContainer)
                         .enableComplete(this.cpOption.completeEnabled());
                 ((ExcludePairContainer) this.dependPairContainer)
@@ -91,7 +89,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
                         .enableNamedObjectOnly(this.cpOption.namedObjectEnabled());
                 ((ExcludePairContainer) this.dependPairContainer)
                         .enableMaxBoundOfCriticKind(this.cpOption.getMaxBoundOfCriticKind());
-
                 System.out.println("Generating dependencies of rules ... ");
                 this.dependPairContainer.addPairEventListener(this);
                 this.computeDependency = false;
@@ -108,11 +105,9 @@ public class ComputeCriticalPairs implements ParserEventListener {
         System.out.println("Generate CPA graph ...");
         Graph cpaGraph = generateCPAgraph();
         System.out.println("Save critical pairs and CPA graph ... ");
-
         /* save computed critical pairs */
         ConflictsDependenciesContainer cdPC = new ConflictsDependenciesContainer(
                 this.excludePairContainer, this.dependPairContainer, cpaGraph);
-
         XMLHelper h = new XMLHelper();
         h.addTopObject(cdPC);
         h.save_to_xml(this.outfname);
@@ -126,9 +121,7 @@ public class ComputeCriticalPairs implements ParserEventListener {
                 + this.pairsNumberToWrite + ").");
         ConflictsDependenciesContainer cdPC = new ConflictsDependenciesContainer(
                 this.excludePairContainer, this.dependPairContainer);
-
         renameLastSaving();
-
         XMLHelper h = new XMLHelper();
         h.addTopObject(cdPC);
         h.save_to_xml(this.outfname);
@@ -169,7 +162,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
                 .println("Usage: java -Xmx1000m agg.parser.ComputeCriticalPairs [-C | -D] [-e | -nc] [-cc] [-ns] [-wN] [-o outfile] file");
 //		System.out
 //				.println("Usage: java -Xmx1000m agg.parser.ComputeCriticalPairs [-C | -D] [-nc] [-cc] [-ns] [-wN] [-o outfile] file");
-
         System.out.println("Where:");
         String str = "\t-C\t\t- compute parallel conflicts of rules"
                 + "\n\t-D\t\t- compute sequential dependencies of rules"
@@ -217,13 +209,10 @@ public class ComputeCriticalPairs implements ParserEventListener {
         this.fname = "";
         this.outfname = "";
         this.pairsNumberToWrite = -1;
-
         // create an empty GraGra
         this.gragra = BaseFactory.theFactory().createGraGra();
-
         // objects for critical pairs
         XMLHelper h = new XMLHelper();
-
         if (args.length == 1) {
             this.fname = args[0];
             this.computeConflict = true;
@@ -253,7 +242,7 @@ public class ComputeCriticalPairs implements ParserEventListener {
                         nn = args[i].substring(2);
                     }
                     try {
-                        this.pairsNumberToWrite = (new Integer(nn)).intValue();
+                        this.pairsNumberToWrite = Integer.parseInt(nn);
                     } catch (NumberFormatException ex) {
                         this.pairsNumberToWrite = 10;
                     }
@@ -270,7 +259,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
                 }
             }
         }
-
         if (this.fname.indexOf(".ggx") != -1) {
             System.out.println("File to load:  " + this.fname);
             try {
@@ -285,7 +273,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
         } else if (this.fname.indexOf(".cpx") != -1) {
             System.out.println("File to load:  " + this.fname);
             ConflictsDependenciesContainer cdc = new ConflictsDependenciesContainer();
-
             Object o = null;
             if (h.read_from_xml(this.fname)) {
                 o = h.getTopObject(cdc);
@@ -294,7 +281,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
                 System.out.println("Loading file failed.");
                 return;
             }
-
             cdc = (ConflictsDependenciesContainer) o;
             if (cdc.getExcludePairContainer() != null) {
                 this.excludePairContainer = cdc.getExcludePairContainer();
@@ -322,7 +308,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
             System.out.println("Input file name failed.");
             return;
         }
-
         // check whether the grammar is ready to transform resp. compute CPs
         String s0 = "";
         Pair<Object, String> pair = this.gragra.isReadyToTransform(true);
@@ -334,16 +319,13 @@ public class ComputeCriticalPairs implements ParserEventListener {
                 return;
             }
         }
-
         setOutputFileName();
-
         if (this.computeConflict) {
             this.cpOption.setCriticalPairAlgorithm(CriticalPairOption.EXCLUDEONLY);
             if (this.excludePairContainer == null) {
                 this.excludePairContainer = ParserFactory.createEmptyCriticalPairs(
                         this.gragra, CriticalPairOption.EXCLUDEONLY, this.cpOption.layeredEnabled());
             }
-
             ((ExcludePairContainer) this.excludePairContainer)
                     .enableComplete(this.cpOption.completeEnabled());
             ((ExcludePairContainer) this.excludePairContainer).enableNACs(this.cpOption
@@ -372,7 +354,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
                     .enableNamedObjectOnly(this.cpOption.namedObjectEnabled());
             ((ExcludePairContainer) this.excludePairContainer)
                     .enableMaxBoundOfCriticKind(this.cpOption.getMaxBoundOfCriticKind());
-
             System.out.println("Generating conflicts of rules ... ");
             this.excludePairContainer.addPairEventListener(this);
             ParserFactory.generateCriticalPairs(this.excludePairContainer);
@@ -383,7 +364,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
                         this.gragra, this.cpOption.getCriticalPairAlgorithm(), this.cpOption
                         .layeredEnabled());
             }
-
             ((ExcludePairContainer) this.dependPairContainer)
                     .enableComplete(this.cpOption.completeEnabled());
             ((ExcludePairContainer) this.dependPairContainer).enableNACs(this.cpOption
@@ -410,7 +390,6 @@ public class ComputeCriticalPairs implements ParserEventListener {
                     .enableNamedObjectOnly(this.cpOption.namedObjectEnabled());
             ((ExcludePairContainer) this.dependPairContainer)
                     .enableMaxBoundOfCriticKind(this.cpOption.getMaxBoundOfCriticKind());
-
             System.out.println("Generating dependencies of rules ... ");
             this.dependPairContainer.addPairEventListener(this);
             ParserFactory.generateCriticalPairs(this.dependPairContainer);
@@ -421,25 +400,14 @@ public class ComputeCriticalPairs implements ParserEventListener {
         ComputeCriticalPairs ccp = new ComputeCriticalPairs();
         ccp.run(args);
     }
-
     public String anOptionStr;
-
     public CriticalPairOption cpOption;
-
     public ConflictsDependenciesContainer cdContainer;
-
     public PairContainer excludePairContainer;
-
     public PairContainer dependPairContainer;
-
     public String fname, outfname;
-
     public boolean computeConflict = true;
-
     public boolean computeDependency = true;
-
     public GraGra gragra;
-
     int pairsNumberToWrite, nP;
-
 }

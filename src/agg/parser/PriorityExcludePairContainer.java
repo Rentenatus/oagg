@@ -1,42 +1,43 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.parser;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
+import agg.util.Pair;
+import agg.util.XMLHelper;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
+import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
-import agg.xt_basis.GraphObject;
-import agg.util.XMLHelper;
-import agg.util.Pair;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import org.w3c.dom.Element;
 
 /**
- * This class provides a container for critical pairs. The critical pairs uses the exclude algorithm.
+ * This class provides a container for critical pairs. The critical pairs uses
+ * the exclude algorithm.
  *
  * @author $Author: olga $
  */
 public class PriorityExcludePairContainer extends ExcludePairContainer {
 
     /**
-     * Creates a new container for critical pairs. An invalid layer function is used. It is necessary to set a valid
-     * layer function.
+     * Creates a new container for critical pairs. An invalid layer function is
+     * used. It is necessary to set a valid layer function.
      *
      * @param gragra The graph grammar.
      */
@@ -45,7 +46,8 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
     }
 
     /**
-     * Computes if the first rule exclude the second rule. The result is added to the container.
+     * Computes if the first rule exclude the second rule. The result is added
+     * to the container.
      *
      * @param r1 The first rule.
      * @param r2 The second rule.
@@ -69,7 +71,6 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
                     + ">  should not be computed."));
             return;
         }
-
         if (r1.getPriority() != r2.getPriority()) {
             this.getEntry(r1, r2).state = Entry.NOT_RELATED;
             addEntry(r1, r2, false, null);
@@ -78,14 +79,12 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
             firePairEvent(new CriticalPairEvent(this, r1, r2, ""));
             return;
         }
-
         if ((this.getEntry(r1, r2).state == Entry.SCHEDULED_FOR_COMPUTING)
                 || (this.getEntry(r1, r2).state == Entry.NOT_SET)) {
             getEntry(r1, r2).setState(Entry.COMPUTING_IS_RUNNING);
             firePairEvent(new CriticalPairEvent(this, r1, r2,
                     "Computing critical rule pair  [  " + r1.getName()
                     + "  ,  " + r2.getName() + "  ]"));
-
             if (!this.complete) {
                 PrioritySimpleExcludePair pair = new PrioritySimpleExcludePair();
                 this.excludePair = pair;
@@ -93,9 +92,7 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
                 PriorityExcludePair pair = new PriorityExcludePair();
                 this.excludePair = pair;
             }
-
             setOptionsOfExcludePair();
-
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
             try {
                 if (this.excludePair != null) {
@@ -108,16 +105,12 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
 //					entry.state = Entry.NOT_COMPUTABLE;
 //				}
             }
-
             if (this.excludePair != null) {
                 this.excludePair.dispose();
             }
             this.excludePair = null;
-
             boolean critic = (overlapping != null);
-
             addEntry(r1, r2, critic, overlapping);
-
             /*
 			 * Wenn overlapping Elemente enthaelt sind r1/r2 kritisch critic
 			 * wird daher true. Alle wichtigen Informationen werden eingetragen.
@@ -125,19 +118,16 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
 			 * Wenn excludeContainer nach r1/r2 gefragt wird, liefert die
 			 * Antwort auch false. overlapping kann daher null sein.
              */
-
  /*
 			 * Achtung, wenn r1 r2 nicht kritisch ist gibt es keine
 			 * Ueberlappungen
              */
             addQuadruple(this.excludeContainer, r1, r2, critic, overlapping);
-
             /*
 			 * conflictfree braucht keine ueberlappungsgraphen daher ist das
 			 * letzte Argument null
              */
             addQuadruple(this.conflictFreeContainer, r1, r2, !critic, null);
-
             if (overlapping != null) {
                 firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
                         + r1.getName() + ">  and  <" + r2.getName()
@@ -160,17 +150,13 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
         h.addObject("GraGra", getGrammar(), true);
         h.openSubTag("conflictContainer");
         h.addAttr("kind", "exclude");
-
         // Inhalt von excludeContainer schreiben (save)
-        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
-
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer
                     .get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            for (Rule r2 : secondPart.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
                 Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
@@ -185,7 +171,6 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
                         OrdinaryMorphism first = p2.first;
                         Graph overlapping = first.getImage();
                         h.addObject("", overlapping, true);
-
                         Iterator<?> e = overlapping.getNodesSet().iterator();
                         while (e.hasNext()) {
                             GraphObject o = (GraphObject) e.next();
@@ -204,27 +189,22 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
                                 h.close();
                             }
                         }
-
                         writeOverlapMorphisms(h, r1, r2, p2i);
-
                         h.close();
                     }
                 }
                 h.close();
             }
-
             h.close();
         }
         h.close();
         h.openSubTag("conflictFreeContainer");
-        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer
                     .get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            for (Rule r2 : secondPart.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
                 Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
@@ -232,7 +212,6 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
                 h.addAttr("bool", b.toString());
                 h.close();
             }
-
             h.close();
         }
         h.close();
@@ -246,19 +225,15 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
      */
     public void XreadObject(XMLHelper h) {
         if (h.isTag("CriticalPairs", this)) {
-
             Rule r1 = null;
             Rule r2 = null;
             boolean b = false;
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
-
             this.grammar = BaseFactory.theFactory().createGraGra();
             h.getObject("", this.grammar, true);
-
             if (h.readSubTag("conflictContainer")) {
                 this.conflictKind = CriticalPair.CONFLICT;
             }
-
             if (this.conflictKind == CriticalPair.CONFLICT) {
                 Iterator<Element> r1s = h.getEnumeration("", null, true, "Rule");
                 if (!r1s.hasNext()) {
@@ -295,11 +270,9 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
                                     }
                                     h.close();
                                 }
-
                                 Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(
                                         h, r1, r2, g);
                                 allOverlappings.add(p);
-
                                 h.close();
                             }
                         }
@@ -336,7 +309,6 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
                             b = true;
                         }
                         addQuadruple(this.conflictFreeContainer, r1, r2, b, null);
-
                         if (!r1.isEnabled()) // test disabled rule
                         {
                             this.getEntry(r1, r2).state = Entry.DISABLED;
@@ -345,7 +317,6 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
                         {
                             this.getEntry(r1, r2).state = Entry.NOT_RELATED;
                         }
-
                         h.close();
                     }
                     h.close();
@@ -358,5 +329,4 @@ public class PriorityExcludePairContainer extends ExcludePairContainer {
         // isComputed = true;
         h.close();
     }
-
 }

@@ -1,27 +1,29 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.gui.cpa;
 
-import java.util.Hashtable;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 //import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
-
 import agg.parser.CriticalPair;
 import agg.parser.ExcludePairContainer;
 import agg.parser.PairContainer;
@@ -57,34 +59,23 @@ import agg.editor.impl.EdArc;
 import agg.editor.impl.EdNode;
 import agg.editor.impl.EdType;
 import agg.util.Pair;
+import java.util.HashMap;
 
 public class ConflictsDependenciesGraph implements ActionListener,
         ParserEventListener, ParserGUIListener {
 
     PairIOGUI pairIOGUI;
-
     GraphDesktop graphDesktop;
-
     ExcludePairContainer conflictCont;
-
     ExcludePairContainer dependCont;
-
     GraGra grammar;
-
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
-
-    Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
-
+    Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> conflicts;
+    Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> dependencies;
     Graph cpaGraph;
-
     EdGraph cpaLayout;
-
     boolean conflictAction = true;
-
     boolean hiddenGraphObject = false;
-
     GraphicsExportJPEG graphJPG;
-
     final List<Arc> visArcs = new Vector<Arc>();
 
     public ConflictsDependenciesGraph(ExcludePairContainer conflictsContainer,
@@ -95,7 +86,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
     public ConflictsDependenciesGraph(ExcludePairContainer conflictsContainer,
             ExcludePairContainer dependenciesContainer, EdGraph cpaGraph,
             boolean loaded) {
-
         if (cpaGraph == null) {
             init(conflictsContainer, dependenciesContainer);
         } else {
@@ -115,7 +105,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
             this.cpaLayout.setCPAgraph(true);
             this.cpaLayout.makeInitialUpdateOfNodes();
             layoutGraph(this.cpaLayout);
-
             if (this.conflictCont != null) {
                 this.conflictCont.addPairEventListener(this);
             }
@@ -123,7 +112,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 this.dependCont.addPairEventListener(this);
             }
         }
-
 //		if (cpaLayout != null)
 //			cpaLayout.setTransformChangeEnabled(true);
     }
@@ -142,10 +130,8 @@ public class ConflictsDependenciesGraph implements ActionListener,
             } else {
                 updatePairsContainerAlongCPAgraph();
             }
-
             this.cpaLayout.makeInitialUpdateOfNodes();
             layoutGraph(this.cpaLayout);
-
             if (this.conflictCont != null) {
                 this.conflictCont.addPairEventListener(this);
             }
@@ -164,7 +150,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
             this.cpaGraph.dispose();
             this.cpaGraph = null;
         }
-
         this.grammar = null;
         this.conflictCont = null;
         this.dependCont = null;
@@ -198,7 +183,8 @@ public class ConflictsDependenciesGraph implements ActionListener,
     }
 
     /**
-     * gets called if something changed in the critical pair container so the display must be updated.
+     * gets called if something changed in the critical pair container so the
+     * display must be updated.
      */
     public void parserEventOccured(ParserEvent p) {
         if (p instanceof CriticalPairEvent
@@ -207,15 +193,12 @@ public class ConflictsDependenciesGraph implements ActionListener,
                     || this.cpaLayout == null) {
                 return;
             }
-
             Rule r1 = ((CriticalPairEvent) p).getFirstRule();
             Rule r2 = ((CriticalPairEvent) p).getSecondRule();
-
             if (((ExcludePairContainer) p.getSource()).getKindOfConflict() == CriticalPair.CONFLICT) {
                 if (this.conflictCont != p.getSource()) {
                     return;
                 }
-
                 if (((CriticalPairEvent) p).getKey() == CriticalPairEvent.REMOVE_ENTRIES) {
                     updateGraphAlongPairContainer();
                     if (this.graphDesktop != null) {
@@ -223,10 +206,8 @@ public class ConflictsDependenciesGraph implements ActionListener,
                     }
                     return;
                 }
-
                 ExcludePairContainer.Entry entry = ((ExcludePairContainer) p.getSource()).
                         getEntry(r1, r2);
-
                 if (entry.getState() == ExcludePairContainer.Entry.COMPUTED
                         || entry.getState() == ExcludePairContainer.Entry.COMPUTED2
                         || entry.getState() == ExcludePairContainer.Entry.COMPUTED12) {
@@ -270,7 +251,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                     }
                     return;
                 }
-
                 ExcludePairContainer.Entry entry = ((ExcludePairContainer) p.getSource()).
                         getEntry(r1, r2);
                 if (entry.getState() == ExcludePairContainer.Entry.COMPUTED
@@ -310,7 +290,8 @@ public class ConflictsDependenciesGraph implements ActionListener,
     }
 
     /**
-     * gets called if something changed in the critical pair GUI so the display must be updated.
+     * gets called if something changed in the critical pair GUI so the display
+     * must be updated.
      */
     public void occured(ParserGUIEvent e) {
         if (e.getSource() instanceof CriticalPairPanel) {
@@ -324,14 +305,12 @@ public class ConflictsDependenciesGraph implements ActionListener,
                                 .getKindOfPairContainer() == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
                     this.conflictAction = false;
                 }
-
                 CPAEventData d = (CPAEventData) e.getData();
                 int kind = d.kind;
                 Rule r1 = d.r1;
                 Rule r2 = null;
                 String t = "";
                 boolean vis = d.visible;
-
                 if (kind == CPAEventData.SHOW_RULE) {
                     t = "Rule";
                 }
@@ -340,7 +319,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                     r2 = d.r2;
                     t = d.type;
                 }
-
                 if (this.cpaLayout != null) {
                     if (!vis) {
                         if (kind == CPAEventData.SHOW_RULE) {
@@ -352,7 +330,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                                 && t.equals("D")) {
                             hideEdge(this.cpaLayout.getBasisGraph(), "d", r1, r2);
                         }
-
                         this.cpaLayout.update();
                         if (this.graphDesktop != null) {
                             this.graphDesktop.refresh();
@@ -387,7 +364,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
             } else if (e.getData() instanceof CriticalPairEvent) {
                 Rule r1 = ((CriticalPairEvent) e.getData()).getFirstRule();
                 Rule r2 = ((CriticalPairEvent) e.getData()).getSecondRule();
-
                 if (((CriticalPairPanel) e.getSource()).getKindOfPairContainer() == CriticalPair.CONFLICT) {
                     if (((CriticalPairEvent) e.getData()).getKey() == CriticalPairEvent.REMOVE_RELATION_ENTRY) {
                         removeLayoutEdge(this.cpaLayout, "c", r1, r2);
@@ -416,12 +392,11 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if (this.cpaLayout == null || pc == null) {
             return;
         }
-
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
-        for (Enumeration<Rule> keys = container.keys(); keys.hasMoreElements();) {
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
+        for (Enumeration<Rule> keys = Collections.enumeration(container.keySet()); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
+            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 ExcludePairContainer.Entry entry = ((ExcludePairContainer) pc)
                         .getEntry(r1, r2);
@@ -440,7 +415,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                             }
                         }
                     }
-
                     String tn = "c";
                     if (pc.getKindOfConflict() == CriticalPair.TRIGGER_DEPENDENCY
                             || pc.getKindOfConflict() == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
@@ -532,12 +506,11 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if (this.cpaLayout == null || pc == null) {
             return;
         }
-
-        Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
-        for (Enumeration<Rule> keys = container.keys(); keys.hasMoreElements();) {
+        Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> container = ((ExcludePairContainer) pc).getExcludeContainer();
+        for (Enumeration<Rule> keys = Collections.enumeration(container.keySet()); keys.hasMoreElements();) {
             Rule r1 = keys.nextElement();
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = container.get(r1);
+            for (Enumeration<Rule> k2 = Collections.enumeration(secondPart.keySet()); k2.hasMoreElements();) {
                 Rule r2 = k2.nextElement();
                 ExcludePairContainer.Entry entry = ((ExcludePairContainer) pc)
                         .getEntry(r1, r2);
@@ -554,7 +527,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                             break;
                         }
                     }
-
                     String tn = "c";
                     if (pc.getKindOfConflict() == CriticalPair.TRIGGER_DEPENDENCY
                             || pc.getKindOfConflict() == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
@@ -628,12 +600,11 @@ public class ConflictsDependenciesGraph implements ActionListener,
     }
 
     private void updateGraphAlongPairContainer(EdGraph g, PairContainer pc,
-            Hashtable<Rule, Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> table1,
+            Map<Rule, Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>> table1,
             String tn) {
         if (g == null || pc == null || table1 == null) {
             return;
         }
-
         if (table1.isEmpty()) { // then remove all edges
             Iterator<Arc> e = g.getBasisGraph().getArcsSet().iterator();
             while (e.hasNext()) {
@@ -645,7 +616,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                     this.visArcs.remove(a);
                     g.delArc(a);
 //					g.getBasisGraph().destroyArc(a, false, true);
-
                     e = g.getBasisGraph().getArcsSet().iterator();
                 } catch (TypeException exc) {
                 }
@@ -668,7 +638,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                             this.visArcs.remove(a);
                             g.delArc(a);
 //							g.getBasisGraph().destroyArc(a, false, true);
-
                             e = g.getBasisGraph().getArcsSet().iterator();
                         } catch (TypeException ex) {
                         }
@@ -676,16 +645,14 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 }
             }
         }
-
-        for (Enumeration<Rule> keys1 = table1.keys(); keys1.hasMoreElements();) {
-            Rule r1 = keys1.nextElement();
+        for (Rule r1 : table1.keySet()) {
             Node n1 = getNode(g.getBasisGraph(), r1);
             if (n1 == null) {// new rule node
                 n1 = createNode(g.getBasisGraph(), "Rule", r1);
             }
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table2 = table1.get(r1);
-            for (Enumeration<Rule> keys2 = table2.keys(); keys2.hasMoreElements();) {
-                Rule r2 = keys2.nextElement();
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>
+            table2 = table1.get(r1);
+            for (Rule r2 : table2.keySet()) {
                 Node n2 = getNode(g.getBasisGraph(), r2);
                 if (n2 == null) // new rule node
                 {
@@ -778,10 +745,8 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 if (this.conflictCont != null) {
                     this.updatePairsContainerAllVisibile(this.conflictCont);
                 }
-
                 setEdgeVisible(this.cpaLayout.getBasisGraph(), "c", true);
                 setEdgeVisible(this.cpaLayout.getBasisGraph(), "d", false);
-
                 if (this.graphDesktop != null) {
                     this.graphDesktop.doClickShowAllConflicts();
                     this.graphDesktop.doClickShowAllDepends();
@@ -792,10 +757,8 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 if (this.dependCont != null) {
                     this.updatePairsContainerAllVisibile(this.dependCont);
                 }
-
                 setEdgeVisible(this.cpaLayout.getBasisGraph(), "d", true);
                 setEdgeVisible(this.cpaLayout.getBasisGraph(), "c", false);
-
                 if (this.graphDesktop != null) {
                     this.graphDesktop.doClickShowAllConflicts();
                     this.graphDesktop.doClickShowAllDepends();
@@ -809,7 +772,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 if (this.dependCont != null) {
                     this.updatePairsContainerAllVisibile(this.dependCont);
                 }
-
                 if (this.hiddenGraphObject) {
                     setAllVisible(this.cpaLayout.getBasisGraph());
                     this.hiddenGraphObject = false;
@@ -830,7 +792,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 if (this.dependCont != null) {
                     this.updatePairsContainerAllVisibile(this.dependCont);
                 }
-
                 this.setAllVisible(this.cpaGraph);
                 this.updateGraphAlongPairContainer();
                 this.cpaLayout.makeGraphObjectsOfNewBasisObjects(false);
@@ -847,9 +808,7 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 if (this.graphDesktop != null) {
                     this.graphDesktop.doClickShowAllConflicts();
                     this.graphDesktop.doClickShowAllDepends();
-
                     this.updatePairsContainerAlongCPAgraph();
-
                     this.graphDesktop.refresh();
                 }
             } else if (((JMenuItem) source).getText().equals("Straight Edges")) {
@@ -915,7 +874,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if (this.cpaLayout != null) {
             return this.cpaLayout;
         }
-
         return null;
     }
 
@@ -932,7 +890,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if (t == null) {
             return;
         }
-
         Iterator<Arc> e = g.getArcsSet().iterator();
         while (e.hasNext()) {
             Arc a = e.next();
@@ -972,12 +929,10 @@ public class ConflictsDependenciesGraph implements ActionListener,
 
     private void setAllVisible(Graph g) {
         this.cpaLayout.deselectAll();
-
         setNodeVisible(g);
         setEdgeVisible(g, "c", true);
         setEdgeVisible(g, "d", true);
     }
-
 //	private void getConflictsDependenciesContainer(String fileDirectory) {
 //		getConflictsFile(fileDirectory);
 //		getDependenciesFile(fileDirectory);
@@ -1018,7 +973,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
 			}
 		}
 	}
-
 	private void getDependenciesFile(String fileDirectory) {
 		Object[] options = { "Set", "Cancel" };
 		int answer = JOptionPane.YES_OPTION;
@@ -1063,10 +1017,8 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if ((this.conflicts == null) && (this.dependencies == null)) {
             return;
         }
-
-        Hashtable<String, Node> local = new Hashtable<String, Node>();
+        Map<String, Node> local = new HashMap<String, Node>();
         TypeSet types = null;
-
         if (this.conflicts != null || this.dependencies != null) {
             this.cpaGraph = new Graph();
             this.cpaGraph
@@ -1077,7 +1029,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
             Type nodeType = types.createNodeType(true);
             Type arcTypeConflict = types.createArcType(false);
             Type arcTypeDepend = types.createArcType(false);
-
             nodeType.setStringRepr("Rule");
             nodeType.setAdditionalRepr("[NODE]");
             arcTypeConflict.setStringRepr("c");
@@ -1086,20 +1037,16 @@ public class ConflictsDependenciesGraph implements ActionListener,
             arcTypeDepend.setStringRepr("d");
             arcTypeDepend
                     .setAdditionalRepr(":DOT_LINE:java.awt.Color[r=0,g=0,b=255]::[EDGE]:");
-
             InformationFacade info = DefaultInformationFacade.self();
             AttrHandler javaHandler = info.getJavaHandler();
             AttrType attrType = nodeType.getAttrType();
             attrType.addMember(javaHandler, "String", "name");
-
             if (this.conflicts != null) {
-                for (Enumeration<Rule> keys1 = this.conflicts.keys(); keys1.hasMoreElements();) {
-                    Rule r1 = keys1.nextElement();
+                for (Rule r1 : this.conflicts.keySet()) { 
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.conflicts.get(r1);
-                        for (Enumeration<Rule> keys2 = table.keys(); keys2
-                                .hasMoreElements();) {
-                            Rule r2 = keys2.nextElement();
+                        Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>
+                        table = this.conflicts.get(r1);
+                        for (Rule r2 : table.keySet()) {
                             if (r2.isEnabled()) {
                                 ExcludePairContainer.Entry entry = this.conflictCont.getEntry(r1, r2);
                                 Node nr1 = local.get(r1.getQualifiedName());
@@ -1126,17 +1073,13 @@ public class ConflictsDependenciesGraph implements ActionListener,
                     }
                 }
             }
-
             if (this.dependencies != null) {
                 local.clear();
-                for (Enumeration<Rule> keys1 = this.dependencies.keys(); keys1
-                        .hasMoreElements();) {
-                    Rule r1 = keys1.nextElement();
+                for (Rule r1 : this.dependencies.keySet()) { 
                     if (r1.isEnabled()) {
-                        Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> table = this.dependencies.get(r1);
-                        for (Enumeration<Rule> keys2 = table.keys(); keys2
-                                .hasMoreElements();) {
-                            Rule r2 = keys2.nextElement();
+                        Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>>
+                        table = this.dependencies.get(r1);
+                        for (Rule r2 : table.keySet()) {
                             if (r2.isEnabled()) {
                                 ExcludePairContainer.Entry entry = this.dependCont.getEntry(r1, r2);
                                 Node nr1 = local.get(r1.getQualifiedName());
@@ -1173,25 +1116,21 @@ public class ConflictsDependenciesGraph implements ActionListener,
         Iterator<EdArc> e = eg.getArcs().iterator();
         while (e.hasNext()) {
             EdArc a = e.next();
-
             if (a.getSource() == a.getTarget()) {
                 continue;
             }
             if (!a.getBasisArc().isDirected()) {
                 continue;
             }
-
             Iterator<EdArc> e1 = eg.getArcs().iterator();
             while (e1.hasNext()) {
                 EdArc a1 = e1.next();
-
                 if (a1.getSource() == a1.getTarget()) {
                     continue;
                 }
                 if (!a1.getBasisArc().isDirected()) {
                     continue;
                 }
-
                 if (a != a1) {
                     if (a.getType().getName().equals(a1.getType().getName())
                             && (a.getSource() == a1.getTarget())
@@ -1295,7 +1234,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if ((this.conflictCont != null) && (this.dependCont != null)) {
             ExcludePairContainer.Entry entryCC = this.conflictCont.getEntry(r, r);
             ExcludePairContainer.Entry entryDC = this.dependCont.getEntry(r, r);
-
             if (this.conflictAction) {
                 if ((entryDC.getState() == ExcludePairContainer.Entry.COMPUTED
                         || entryDC.getState() == ExcludePairContainer.Entry.COMPUTED2
@@ -1308,7 +1246,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
                 return;
             }
         }
-
         Node n = getNode(g, r);
         if (n != null && n.isVisible()) {
             n.setVisible(false);
@@ -1345,7 +1282,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if (t == null) {
             return null;
         }
-
         Node n1 = getNode(g, r1);
         Node n2 = getNode(g, r2);
         return showEdge(g, t, n1, n2);
@@ -1362,7 +1298,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
             if (a.getSource() == a.getTarget()) {
                 return a;
             }
-
             Arc a1 = getEdge(g, t, n2, n1);
             if (a1 != null) {
                 if (a1.isVisible()) {
@@ -1449,7 +1384,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
         if (a != null) {
             try {
                 g.destroyArc(a, true, false);
-
                 Arc a1 = getEdge(g, t, r2, r1);
                 if (a1 != null) {
                     if (!a1.isVisible()) {
@@ -1472,14 +1406,12 @@ public class ConflictsDependenciesGraph implements ActionListener,
             }
             try {
                 g.delArc(a);
-
                 Arc a1 = getEdge(g.getBasisGraph(), t, r2, r1);
                 if (a1 != null) {
                     if (!a1.isVisible()) {
                         a1.setVisible(true);
                         a1.setDirected(true);
                         this.visArcs.remove(a1);
-
                         EdType et = g.getTypeSet().getArcType(t);
                         if (g.findArc(a1) == null) {
                             g.addArc(a1, et);
@@ -1545,7 +1477,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
             if (a.getSource() == a.getTarget()) {
                 return true;
             }
-
             if (this.visArcs.contains(a)) {
                 this.visArcs.remove(a);
             }
@@ -1641,7 +1572,6 @@ public class ConflictsDependenciesGraph implements ActionListener,
     private void makeLayout(EdGraph g) {
         g.forceVisibilityUpdate();
         final List<EdNode> visiblenodes = g.getVisibleNodes();
-
         g.setCurrentLayoutToDefault(false);
         g.getDefaultGraphLayouter().setEnabled(true);
         Dimension dim = g.getDefaultGraphLayouter().getNeededPanelSize(visiblenodes);

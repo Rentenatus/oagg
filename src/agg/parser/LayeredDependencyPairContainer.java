@@ -1,45 +1,45 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.parser;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Vector;
-
+import agg.util.Pair;
+import agg.util.XMLHelper;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
+import agg.xt_basis.GraphObject;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
-import agg.xt_basis.GraphObject;
-import agg.util.XMLHelper;
-import agg.util.Pair;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import org.w3c.dom.Element;
 
 /**
- * This class provides a container for critical pairs. The critical pairs uses the exclude algorithm. Further on the
- * used graph grammar is layered.
+ * This class provides a container for critical pairs. The critical pairs uses
+ * the exclude algorithm. Further on the used graph grammar is layered.
  *
  * @author $Author: olga $
- * @version $Id: LayeredDependencyPairContainer.java,v 1.7 2006/12/13 13:33:00 enrico Exp $
+ * @version $Id: LayeredDependencyPairContainer.java,v 1.7 2006/12/13 13:33:00
+ * enrico Exp $
  */
 public class LayeredDependencyPairContainer extends DependencyPairContainer
         implements LayeredPairContainer {
 
     @SuppressWarnings("deprecation")
     private LayerFunction layerFunc;
-
     private int layer = -1; // compute all Layer
 
     /**
@@ -55,21 +55,20 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
     }
 
     /**
-     * Creates a new container for critical pairs. An invalid layer function is used. It is necessary to set a valid
-     * layer function.
+     * Creates a new container for critical pairs. An invalid layer function is
+     * used. It is necessary to set a valid layer function.
      *
      * @param gragra The graph grammar.
      */
     public LayeredDependencyPairContainer(GraGra gragra) {
         super(gragra);
     }
-
     protected LayeredDependencyPair layeredPair;
-
     protected LayeredSimpleDependencyPair layeredSimplePair;
 
     /**
-     * Computes if the first rule exclude the second rule. The result is added to the container.
+     * Computes if the first rule exclude the second rule. The result is added
+     * to the container.
      *
      * @param r1 The first rule.
      * @param r2 The second rule.
@@ -91,7 +90,6 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
                     + ">  should not be computed."));
             return;
         }
-
         if (r1.getLayer() != r2.getLayer()) {// test rule layer
             this.getEntry(r1, r2).state = Entry.NOT_RELATED;
             addEntry(r1, r2, false, null);
@@ -100,35 +98,26 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
             firePairEvent(new CriticalPairEvent(this, r1, r2, ""));
             return;
         }
-
         if ((this.layer > -1) && (r1.getLayer() != this.layer)) {
             return;
         }
-
         if ((this.getEntry(r1, r2).state == Entry.SCHEDULED_FOR_COMPUTING)
                 || (this.getEntry(r1, r2).state == Entry.NOT_SET)) {
             getEntry(r1, r2).setState(Entry.COMPUTING_IS_RUNNING);
-
             firePairEvent(new CriticalPairEvent(this, r1, r2,
                     "Computing critical rule pair  [  " + r1.getName()
                     + "  ,  " + r2.getName() + "  ]"));
-
             if (!this.complete) {
                 this.layeredPair = null;
-
                 this.layeredSimplePair = new LayeredSimpleDependencyPair();
                 this.excludePair = this.layeredSimplePair;
             } else {
                 this.layeredSimplePair = null;
-
                 this.layeredPair = new LayeredDependencyPair();
                 this.excludePair = this.layeredPair;
             }
-
             setOptionsOfExcludePair();
-
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlapping = null;
-
             try {
                 if (this.layeredPair != null) {
                     overlapping = this.layeredPair.isCritical(CriticalPair.EXCLUDE, r1, r2);
@@ -138,7 +127,6 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
             } catch (InvalidAlgorithmException iae) {
                 System.out.println(iae.getLocalizedMessage());
             }
-
             if (this.excludePair != null) {
                 this.excludePair.dispose();
             }
@@ -146,12 +134,9 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
             this.layeredPair = null;
             this.layeredSimplePair = null;
 //			System.gc();
-
             boolean critic = (overlapping != null);
-
             // new container
             addEntry(r1, r2, critic, overlapping);
-
             /*
 			 * Wenn overlapping Elemente enthaelt sind r1/r2 kritisch critic
 			 * wird daher true. Alle wichtigen Informationen werden eingetragen.
@@ -159,19 +144,16 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
 			 * Wenn excludeContainer nach r1/r2 gefragt wird, liefert die
 			 * Antwort auch false. overlapping kann daher null sein.
              */
-
  /*
 			 * Achtung, wenn r1 r2 nicht kritisch ist gibt es keine
 			 * Ueberlappungen
              */
             addQuadruple(this.excludeContainer, r1, r2, critic, overlapping);
-
             /*
 			 * conflictfree braucht keine ueberlappungsgraphen daher ist das
 			 * letzte Argument null
              */
             addQuadruple(this.conflictFreeContainer, r1, r2, !critic, null);
-
             if (overlapping != null) {
                 firePairEvent(new CriticalPairEvent(this, r1, r2, "<"
                         + r1.getName() + ">  and  <" + r2.getName()
@@ -233,22 +215,17 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
         h.openNewElem("CriticalPairs", this);
         h.addObject("GraGra", getGrammar(), true);
         h.openSubTag("dependenciesContainer");
-
         String kind = "trigger_dependency";
         if (this.switchDependency) {
             kind = "trigger_switch_dependency";
         }
         h.addAttr("kind", kind);
-
         // Inhalt von excludeContainer schreiben (save)
-        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
-
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.excludeContainer.get(r1);
+            for (Rule r2 : secondPart.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
                 Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>> p = secondPart.get(r2);
@@ -266,7 +243,6 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
 						 * durch das true macht der String am Anfang keinen Sinn
                          */
                         h.addObject("", overlapping, true);
-
                         Iterator<?> e = overlapping.getNodesSet().iterator();
                         while (e.hasNext()) {
                             GraphObject o = (GraphObject) e.next();
@@ -285,38 +261,31 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
                                 h.close();
                             }
                         }
-
                         /*
 						 * first.writeMorphism(h);
 						 * ((OrdinaryMorphism)p2.second).writeMorphism(h);
                          */
                         writeOverlapMorphisms(h, r1, r2, p2i);
-
                         h.close();
                     }
                 }
                 h.close();
             }
-
             h.close();
         }
         h.close();
         h.openSubTag("conflictFreeContainer");
-        for (Enumeration<Rule> keys = this.excludeContainer.keys(); keys.hasMoreElements();) {
-            Rule r1 = keys.nextElement();
+        for (Rule r1 : this.excludeContainer.keySet()) {
             h.openSubTag("Rule");
             h.addObject("R1", r1, false);
-
-            Hashtable<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
-            for (Enumeration<Rule> k2 = secondPart.keys(); k2.hasMoreElements();) {
-                Rule r2 = k2.nextElement();
+            Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = this.conflictFreeContainer.get(r1);
+            for (Rule r2 : secondPart.keySet()) {
                 h.openSubTag("Rule");
                 h.addObject("R2", r2, false);
                 Boolean b = secondPart.get(r2).first;
                 h.addAttr("bool", b.toString());
                 h.close();
             }
-
             h.close();
         }
         h.close();
@@ -337,19 +306,14 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
             List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> allOverlappings = null;
             List<String> tagnames = new Vector<>(1);
             List<String> tagnames2 = new Vector<>(1);
-
             this.grammar = BaseFactory.theFactory().createGraGra();
             h.getObject("", this.grammar, true);
-
             tagnames.add("conflictContainer");
             tagnames.add("conflictsContainer");
             tagnames.add("excludeContainer");
-
             tagnames2.add("dependencyContainer");
             tagnames2.add("dependenciesContainer");
-
             this.switchDependency = false;
-
             if (h.readSubTag(tagnames2)) {
                 this.conflictKind = CriticalPair.TRIGGER_DEPENDENCY;
                 if (h.readAttr("kind").equals("trigger_switch_dependency")) {
@@ -359,7 +323,6 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
             } else if (h.readSubTag(tagnames)) {
                 this.conflictKind = CriticalPair.CONFLICT;
             }
-
             if (this.conflictKind == CriticalPair.TRIGGER_DEPENDENCY
                     || this.conflictKind == CriticalPair.TRIGGER_SWITCH_DEPENDENCY
                     || this.conflictKind == CriticalPair.CONFLICT) {
@@ -393,7 +356,6 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
                                 h.peekElement(overlappings.next());
                                 Graph g = (Graph) h.getObject("", new Graph(),
                                         true);
-
                                 while (h.readSubTag("Critical")) {
                                     GraphObject o = (GraphObject) h.getObject(
                                             "object", null, false);
@@ -412,10 +374,8 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
 								 * allOverlappings.addElement(new
 								 * Pair(first,second));
                                  */
-
                                 Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> p = readOverlappingMorphisms(h, r1, r2, g);
                                 allOverlappings.add(p);
-
                                 h.close();
                             }
                         }
@@ -454,7 +414,6 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
                             b = true;
                         }
                         addQuadruple(this.conflictFreeContainer, r1, r2, b, null);
-
                         if (!r1.isEnabled()) // test disabled rule
                         {
                             this.getEntry(r1, r2).state = Entry.DISABLED;
@@ -463,7 +422,6 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
                         {
                             this.getEntry(r1, r2).state = Entry.NOT_RELATED;
                         }
-
                         h.close();
                     }
                     h.close();
@@ -476,5 +434,4 @@ public class LayeredDependencyPairContainer extends DependencyPairContainer
         // isComputed = true;
         h.close();
     }
-
 }

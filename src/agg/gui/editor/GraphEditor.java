@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.editor;
 
@@ -19,7 +20,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Insets;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,7 +27,6 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
 //import javax.swing.border.TitledBorder;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.gui.popupmenu.EditPopupMenu;
@@ -53,21 +52,18 @@ public class GraphEditor extends JPanel {
     }
 
     /**
-     * Creates a graph editor. The parent editor is specified by the GraGraEditorImpl anEditor or NULL.
+     * Creates a graph editor. The parent editor is specified by the
+     * GraGraEditorImpl anEditor or NULL.
      */
     public GraphEditor(GraGraEditor anEditor) {
         super(new BorderLayout());
         this.setBackground(Color.white);
         this.setForeground(Color.WHITE);
-
         this.mouseAdapter = new GraphEditorMouseAdapter(this);
-
         this.graphName = "";
         this.gragraName = "";
-
         this.graphPanel = new GraphPanel(this);
         this.graphPanel.getCanvas().addMouseListener(this.mouseAdapter);
-
         this.title = new JLabel(this.titleKind);
         this.buttonPanel = new JPanel();
         this.exportJPEGButton = createExportJPEGButton();
@@ -77,10 +73,8 @@ public class GraphEditor extends JPanel {
         this.titlePanel = new JPanel(new BorderLayout());
         this.titlePanel.add(this.title, BorderLayout.WEST);
         this.titlePanel.add(this.buttonPanel, BorderLayout.EAST);
-
         add(this.titlePanel, BorderLayout.NORTH);
         add(this.graphPanel, BorderLayout.CENTER);
-
         this.gragraEditor = anEditor;
         if (this.gragraEditor != null) {
             this.applFrame = anEditor.getParentFrame();
@@ -213,7 +207,6 @@ public class GraphEditor extends JPanel {
         }
     }
 
-
     /* (non-Javadoc)
 	 * @see agg.gui.impl.GraphEditor#getGraphPanel()
      */
@@ -276,7 +269,6 @@ public class GraphEditor extends JPanel {
         if (this.eGraph != null) {
             return true;
         }
-
         return false;
     }
 
@@ -285,7 +277,6 @@ public class GraphEditor extends JPanel {
      */
     public void setGraph(EdGraph eg) {
         this.eGraph = eg;
-
         this.titleKind = " ";
         if (this.eGraph == null) {
             setTitle("    ");
@@ -303,17 +294,13 @@ public class GraphEditor extends JPanel {
 //		else {
 //			this.titleKind = "[ Graph ]  ";
 //		}
-
         this.isEmpty = false;
-
         this.eGra = this.eGraph.getGraGra();
-
         if (this.eGra != null) {
             setTitle(this.eGraph.getBasisGraph().getName(), this.eGra.getName());
         } else {
             setTitle(this.eGraph.getBasisGraph().getName(), "");
         }
-
         if (!this.eGraph.isTypeGraph()) {
             this.graphPanel.getCanvas().setAttributeVisible(this.graphAttrsVisible);
             this.eGraph.setStaticNodePosition(
@@ -321,14 +308,10 @@ public class GraphEditor extends JPanel {
         } else {
             this.graphPanel.getCanvas().setAttributeVisible(this.typeGraphAttrsVisible);
         }
-
         this.graphPanel.setGraph(this.eGraph, true);
-
         this.eGraph.setStaticNodePosition(this.staticNodePositionForGraphLayouter);
-
         this.straightenArcs = this.eGraph.isStraightenArcsEnabled();
 //		this.eGraph.setStraightenArcs(this.straightenArcs);
-
         if (this.exportJPEG != null
                 && this.exportJPEGButton != null) {
             this.exportJPEGButton.setEnabled(true);
@@ -411,14 +394,12 @@ public class GraphEditor extends JPanel {
         this.graphPanel.updateGraphics(graphDimensionCheck);
     }
 
-
     /* (non-Javadoc)
 	 * @see agg.gui.impl.GraphEditor#setAttrEditor(agg.attribute.gui.AttrTopEditor)
      */
 //	public void setAttrEditor(AttrTopEditor attrEditor) {
 //		this.attrEditor = attrEditor;
 //	}
-
     /* (non-Javadoc)
 	 * @see agg.gui.impl.GraphEditor#setModePopupMenu(agg.gui.ModePopupMenu)
      */
@@ -441,7 +422,6 @@ public class GraphEditor extends JPanel {
     }
 
     /* Mode menu procedures */
-
  /* (non-Javadoc)
 	 * @see agg.gui.impl.GraphEditor#setEditMode(int)
      */
@@ -564,14 +544,12 @@ public class GraphEditor extends JPanel {
 		this.graphPanel.setEditMode(EditorConstants.INTERACT_RULE);
 		this.graphPanel.setEditCursor(new Cursor(Cursor.HAND_CURSOR));
 	}
-
 	private void nacDefModeProc() {
 		if (this.graphPanel.getEditMode() == EditorConstants.INTERACT_NAC)
 			return;
 		this.graphPanel.setEditMode(EditorConstants.INTERACT_NAC);
 		this.graphPanel.setEditCursor(new Cursor(Cursor.HAND_CURSOR));
 	}
-
 	private void pacDefModeProc() {
 		if (this.graphPanel.getEditMode() == EditorConstants.INTERACT_PAC)
 			return;
@@ -675,7 +653,6 @@ public class GraphEditor extends JPanel {
         this.graphPanel.setEditMode(EditorConstants.VIEW);
     }
 
-
     /* (non-Javadoc)
 	 * @see agg.gui.impl.GraphEditor#deleteProc()
      */
@@ -683,7 +660,6 @@ public class GraphEditor extends JPanel {
         if (this.eGraph == null || this.graphPanel.getEditMode() == EditorConstants.VIEW) {
             return false;
         }
-
         if (hasSelection()) {
             this.graphPanel.deleteSelected();
             this.graphPanel.updateGraphicsAfterDelete();
@@ -817,14 +793,12 @@ public class GraphEditor extends JPanel {
     }
 
     // private
-
     /* (non-Javadoc)
 	 * @see agg.gui.impl.GraphEditor#showPopupMenu(java.awt.event.MouseEvent)
      */
     public void showPopupMenu(MouseEvent e) {
         if (e.getSource() == this.graphPanel.getCanvas()
                 && (e.getX() > 0 && e.getY() > 0)) {
-
             if (this.editPopupMenu != null) {
                 this.editPopupMenu.setEditor(this);
                 this.editPopupMenu.setParentFrame(this.applFrame);
@@ -833,7 +807,6 @@ public class GraphEditor extends JPanel {
                 this.editSelPopupMenu.setEditor(this);
                 this.editSelPopupMenu.setParentFrame(this.applFrame);
             }
-
 //			isEditPopupMenu = false;
 //			isEditSelPopupMenu = false;
             if (this.modePopupMenu != null
@@ -854,58 +827,32 @@ public class GraphEditor extends JPanel {
             }
         }
     }
-
     protected final JFrame applFrame;
-
     int prefW = 500;
-
     int prefH = 200;
-
     private final GraGraEditor gragraEditor;
-
 //	private AttrTopEditor attrEditor;
     protected GraphPanel graphPanel;
-
     private boolean graphAttrsVisible = true;
-
     private boolean typeGraphAttrsVisible = true;
-
     private final JLabel title;
-
     private String titleKind = " ";
-
     private String graphName;
-
     private String gragraName;
-
     private EdGraGra eGra;
-
     private EdGraph eGraph;
-
     private EdGraph sourceOfCopy;
-
     private String msg = "";
-
     private ModePopupMenu modePopupMenu;
-
     private EditPopupMenu editPopupMenu;
-
     private EditSelPopupMenu editSelPopupMenu;
-
 //	private boolean isEditPopupMenu;
 //	private boolean isEditSelPopupMenu;
     private boolean doNotShowPopupMenu;
-
     private boolean isEmpty;
-
     protected GraphicsExportJPEG exportJPEG;
-
     private boolean staticNodePositionForGraphLayouter;
-
     private boolean straightenArcs;
-
     private final JButton exportJPEGButton;
-
     private final JPanel buttonPanel, titlePanel;
-
 }

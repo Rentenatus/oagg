@@ -2,27 +2,28 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
-
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
 
 import agg.attribute.AttrInstance;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
-
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 //****************************************************************************+
+
 /**
- * This event is used if the parser has to handle any error. Typically an error occurs if a graph cannot be parsed.
+ * This event is used if the parser has to handle any error. Typically an error
+ * occurs if a graph cannot be parsed.
  *
  * @author $Author: olga $ Parser Group
  * @version $Id: ParserErrorEvent.java,v 1.6 2010/09/23 08:25:00 olga Exp $
@@ -72,7 +73,8 @@ public class ParserErrorEvent extends ParserEvent {
     }
 
     /**
-     * If a graph is the source of this event this part of the graph is returned which causes the error.
+     * If a graph is the source of this event this part of the graph is returned
+     * which causes the error.
      *
      * @return A set of graph object.
      */
@@ -98,7 +100,6 @@ public class ParserErrorEvent extends ParserEvent {
         return graphElements.elements();
     }
 }
-
 /*
  * End of ParserErrorEvent.java
  * ---------------------------------------------------------------------- $Log:

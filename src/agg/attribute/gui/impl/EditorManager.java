@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
@@ -18,11 +19,11 @@ import agg.attribute.gui.AttrTupleEditor;
 import agg.attribute.handler.gui.HandlerEditorManager;
 import agg.attribute.handler.gui.impl.SampleHandlerEditorManager;
 import agg.attribute.view.AttrViewSetting;
-
 //import javax.swing.*;
 //import javax.swing.table.*;
 //import javax.swing.border.*;
 //import java.awt.*;
+
 /**
  * @version $Id: EditorManager.java,v 1.3 2010/08/25 08:22:29 olga Exp $
  * @author $Author: olga $
@@ -31,7 +32,6 @@ public class EditorManager extends Object implements AttrEditorManager {
 
     // Initialization
     protected static EditorManager myOnlyInstance = new EditorManager();
-
     protected HandlerEditorManager handlerManager = SampleHandlerEditorManager
             .self();
 

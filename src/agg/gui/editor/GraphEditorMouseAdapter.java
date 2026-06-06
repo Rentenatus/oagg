@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -16,9 +17,7 @@ package agg.gui.editor;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.SwingUtilities;
-
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraphObject;
 import agg.editor.impl.Loop;
@@ -53,11 +52,9 @@ public class GraphEditorMouseAdapter extends MouseAdapter {
         if (this.editor.getGraph() == null) {
             return;
         }
-
         Object source = e.getSource();
         int x = e.getX();
         int y = e.getY();
-
         if ((e.isPopupTrigger() || SwingUtilities.isRightMouseButton(e))
                 && this.editor.getGraph().isEditable()) {
             if (this.editor.getGraphPanel().getCanvas().isLeftPressed()) {
@@ -72,7 +69,6 @@ public class GraphEditorMouseAdapter extends MouseAdapter {
             if (this.editor.getGraphPanel().getCanvas().isRightPressed()) {
                 this.editor.allowToShowPopupMenu(false);
             }
-
             switch (this.editor.getGraphPanel().getEditMode()) {
                 case EditorConstants.DRAW:
                     break;
@@ -116,25 +112,21 @@ public class GraphEditorMouseAdapter extends MouseAdapter {
             return;
         }
 //		System.out.println(">>> GraphEditor.mouseReleased  ");
-
         if ((SwingUtilities.isRightMouseButton(e) || e.isPopupTrigger())
                 && this.editor.getGraph().isEditable()) {
             if (this.editor.isPopupMenuAllowed()) {
                 this.editor.showPopupMenu(e);
             }
-
             this.editor.allowToShowPopupMenu(true);
             this.editor.getGraphPanel().getCanvas().unsetLeftAndRightPressed();
         } else if (e.getSource() == this.editor.getGraphPanel().getCanvas()) {
             if (!this.editor.getGraphPanel().getCanvas().isRightPressed()) {
                 this.editor.getGraphPanel().getCanvas().setLeftPressed(false);
             }
-
             switch (this.editor.getGraphPanel().getEditMode()) {
                 case EditorConstants.ARC:
                     this.editor.setMsg("You have just picked the source of an edge. Click on a node to get the target.");
                     break;
-
                 case EditorConstants.DRAW:
                     this.editor.drawModeProc();
                     AGGAppl.getInstance().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -152,7 +144,6 @@ public class GraphEditorMouseAdapter extends MouseAdapter {
                     /*
 				if (this.editor.getGraph().getMsg().length() != 0)
 					this.editor.setMsg(this.editor.getGraph().getMsg());
-
 				if (this.editor.getGraphPanel().getLastEditMode() != EditorConstants.COPY) {
 					if (this.editor.getGraGraEditor() != null) {
 						this.editor.getGraGraEditor().setEditMode(this.editor.getGraGraEditor().getLastEditMode());
@@ -165,7 +156,6 @@ public class GraphEditorMouseAdapter extends MouseAdapter {
 					if (this.editor.getGraGraEditor() != null) {
 						this.editor.getGraGraEditor().setEditMode(this.editor.getGraGraEditor().getLastEditMode());
 						this.editor.getGraGraEditor().forwardModeCommand(EditorConstants.getModeOfID(this.editor.getGraGraEditor().getLastEditMode()));
-
 					} else {
 						this.editor.setEditMode(this.editor.getGraphPanel().getLastEditMode());
 					}
@@ -195,5 +185,4 @@ public class GraphEditorMouseAdapter extends MouseAdapter {
 
     public void mouseClicked(MouseEvent e) {
     }
-
 }

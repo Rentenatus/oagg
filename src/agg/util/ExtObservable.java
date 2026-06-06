@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: ExtObservable.java,v 1.4 2008/04/07 09:36:56 olga Exp $
 // $Log: ExtObservable.java,v $
@@ -52,17 +52,21 @@ package agg.util;
 import java.util.Observable;
 
 /**
- * An extension of the native Java <code>Observable</code> class that addresses the need for explicit disposure arising
- * from the circular references inherent to the observer pattern (observer knows observable and vice versa). In a
- * multi-layer observer architecture, the disposure command has to be passed way up the observer hierarchy to break the
- * circular references in every layer and thus make the participants amenable for garbage collection.
+ * An extension of the native Java <code>Observable</code> class that addresses
+ * the need for explicit disposure arising from the circular references inherent
+ * to the observer pattern (observer knows observable and vice versa). In a
+ * multi-layer observer architecture, the disposure command has to be passed way
+ * up the observer hierarchy to break the circular references in every layer and
+ * thus make the participants amenable for garbage collection.
  */
 public class ExtObservable extends Observable implements Disposable {
 
     /**
-     * Prepare myself for garbage collection. A change message <code>Change_ObservableGone</code> with myself as the
-     * item is sent out to all of my observers. Subclasses may override this to break their individual circular
-     * references, but they should always include a call to this original implementation.
+     * Prepare myself for garbage collection. A change message
+     * <code>Change_ObservableGone</code> with myself as the item is sent out to
+     * all of my observers. Subclasses may override this to break their
+     * individual circular references, but they should always include a call to
+     * this original implementation.
      *
      * @see agg.util.Change_ObservableGone
      */
@@ -74,13 +78,7 @@ public class ExtObservable extends Observable implements Disposable {
     }
 
     @Override
-    protected void finalize() {
-//		 System.out.println("ExtObservable.finalize:: "+this);
-    }
-
-    @Override
     public synchronized void setChanged() {
         super.setChanged();
     }
-
 }

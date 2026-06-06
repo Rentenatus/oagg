@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -26,10 +28,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -43,40 +45,29 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.DefaultTableCellRenderer;
-
 import agg.gui.help.HtmlBrowser;
 import agg.cons.Formula;
+import de.jare.ndimcol.primint.ArrayMovieInt;
 import java.util.List;
 
 /**
- * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers for graph
- * constraints.
+ * This class provides a window for a user dialog. This dialog is necessary to
+ * enter the grammar layers for graph constraints.
  */
 @SuppressWarnings("serial")
 public class ConstraintPriorityDialog extends JDialog implements ActionListener {
 
     private JPanel contentPane;
-
     private JPanel constraintPanel;
-
     private JPanel buttonPanel;
-
     private JScrollPane scrollPane;
-
     private JTable constraintTable;
-
     private JButton closeButton;
-
     private JButton cancelButton;
-
     private JButton helpButton;
-
     private boolean isCancelled;
-
     private List<Formula> constraints;
-
     private List<String> priorities;
-
 //	private EdGraGra gragra;
     private HtmlBrowser helpBrowser;
 
@@ -85,25 +76,23 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
      */
     public class HashTableModel extends DefaultTableModel {
 
-        Hashtable<Object, List<Object>> table;
+        HashMap<Object, List<Object>> table;
 
         /**
-         * Creates a new model with hashtable and the title for the columns of the table.
+         * Creates a new model with hashtable and the title for the columns of
+         * the table.
          */
         public HashTableModel(List<Formula> constraints,
                 List<String> priorities) {
             super();
-
             priorities.add(0, "Constraint / Rule Priority");
             for (int i = 0; i < priorities.size(); i++) {
                 addColumn(priorities.get(i));
             }
-
-            this.table = new Hashtable<Object, List<Object>>(constraints.size());
-
+            this.table = new HashMap<Object, List<Object>>(constraints.size());
             for (int i = 0; i < constraints.size(); i++) {
                 Formula f = constraints.get(i);
-                List<Integer> value = f.getPriority();
+                ArrayMovieInt value = f.getPriority();
                 Vector<Object> tmpVector = new Vector<Object>();
                 for (int k = 1; k < priorities.size(); k++) {
                     String l = priorities.get(k);
@@ -132,8 +121,8 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
          *
          * @param rowIndex The index of the row of the cell.
          * @param columnIndex The index of the column of the cell.
-         * @return The priority can only entered in the second column. So for any other column <CODE>false</CODE> is
-         * returned.
+         * @return The priority can only entered in the second column. So for
+         * any other column <CODE>false</CODE> is returned.
          */
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return (columnIndex == 1);
@@ -190,12 +179,12 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
             }
         }
 
-        public Hashtable<Object, List<Object>> getTable() {
+        public HashMap<Object, List<Object>> getTable() {
             return this.table;
         }
 
         public Formula getConstraint(String name) {
-            for (Enumeration<?> e = this.table.keys(); e.hasMoreElements();) {
+            for (Enumeration<?> e = Collections.enumeration(this.table.keySet()); e.hasMoreElements();) {
                 Formula key = (Formula) e.nextElement();
                 if (key.getName().equals(name)) {
                     return key;
@@ -214,18 +203,14 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
             }
             return -1;
         }
-
     }
 
     public class PriorityCellRenderer extends DefaultTableCellRenderer
             implements TableCellRenderer, MouseListener {
 
         List<JCheckBox> checks;
-
         int clmn;
-
         Color selColor = Color.WHITE;
-
         public final JTable jtable;
 
         public PriorityCellRenderer(int indx, int size, JTable aTable,
@@ -286,7 +271,6 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
 //							.getValueAt(i, this.clmn);
                     // System.out.println(" newValue: "+newValue);
                 }
-
             }
         }
 
@@ -305,7 +289,6 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
         public List<JCheckBox> getChecks() {
             return this.checks;
         }
-
     }
 
     /**
@@ -339,17 +322,16 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
     }
 
     /**
-     * This method is called from within the constructor to initialize the dialog.
+     * This method is called from within the constructor to initialize the
+     * dialog.
      */
     private void initComponents() {
         this.contentPane = new JPanel(new BorderLayout());
         this.contentPane.setBackground(Color.lightGray);
-
         this.constraintPanel = new JPanel(new BorderLayout());
         this.constraintPanel.setBackground(Color.orange);
         this.constraintPanel.setBorder(new TitledBorder(
                 "Select Rule Priority for Graph Constraint"));
-
         this.constraintTable = new JTable(
                 new HashTableModel(this.constraints, this.priorities));
         this.constraintTable.setRowSelectionAllowed(true);
@@ -375,35 +357,29 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
         this.scrollPane = new JScrollPane(this.constraintTable);
         this.scrollPane.setPreferredSize(new Dimension(300, hght));
         this.constraintPanel.add(this.scrollPane);
-
         this.buttonPanel = new JPanel(new GridLayout(0, 3, 5, 5));
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
         this.closeButton.setToolTipText("Accept entries and close dialog.");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.isCancelled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.closeButton.setToolTipText("Reject entries and close dialog.");
         this.cancelButton.addActionListener(this);
-
         this.helpButton = new JButton();
         // this.helpButton.setEnabled(false);
         this.helpButton.setActionCommand("help");
         this.helpButton.setText("Help");
         this.helpButton.addActionListener(this);
-
         this.buttonPanel.add(this.closeButton);
         this.buttonPanel.add(this.cancelButton);
         this.buttonPanel.add(this.helpButton);
-
         this.contentPane.add(this.constraintPanel, BorderLayout.CENTER);
         this.contentPane.add(this.buttonPanel, BorderLayout.SOUTH);
         this.contentPane.revalidate();
-
         setContentPane(this.contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -427,9 +403,9 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
     }
 
     private void acceptValues() {
-        Hashtable<Object, List<Object>> tab = ((HashTableModel) this.constraintTable.getModel())
+        HashMap<Object, List<Object>> tab = ((HashTableModel) this.constraintTable.getModel())
                 .getTable();
-        for (Enumeration<?> e = tab.keys(); e.hasMoreElements();) {
+        for (Enumeration<?> e = Collections.enumeration(tab.keySet()); e.hasMoreElements();) {
             Object key = e.nextElement();
             // System.out.println(key);
             List<?> l = tab.get(key);
@@ -482,10 +458,10 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
             }
         }
     }
-
 //	public void setGraGra(EdGraGra gra) {
 //		gragra = gra;
 //	}
+
     public boolean isCancelled() {
         return this.isCancelled;
     }
@@ -497,7 +473,6 @@ public class ConstraintPriorityDialog extends JDialog implements ActionListener 
         }
         return h;
     }
-
     /* constrainBuild() method
 	private void constrainBuild(Container container, Component component,
 			int grid_x, int grid_y, int grid_width, int grid_height, int fill,

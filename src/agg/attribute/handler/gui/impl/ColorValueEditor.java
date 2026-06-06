@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.gui.impl;
 
@@ -15,22 +16,20 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerExpr;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.handler.gui.HandlerExprEditor;
 import agg.attribute.impl.AttrSession;
-
 // import java.util.EventObject;
+
 /**
  * @version $Id: ColorValueEditor.java,v 1.3 2010/08/23 07:30:29 olga Exp $
  * @author $Author: olga $
@@ -39,9 +38,7 @@ public class ColorValueEditor extends AbstractHandlerEditor implements
         HandlerExprEditor {
 
     Color editedColor = null;
-
     HandlerType editedType = null;
-
     AttrHandler handler = null;
 
     public ColorValueEditor(AttrHandler h) {
@@ -50,9 +47,11 @@ public class ColorValueEditor extends AbstractHandlerEditor implements
     }
 
     /**
-     * Returns a graphical component for displaying the specified expr. The 'availableSpace' limit should be honoured,
-     * since this is a service for displaying the expr in a table cell. However, the renderer can contain tools (e.g.
-     * buttons) for invoking its larger custom renderer. Either 'type' or 'exprToRender' cannot be null.
+     * Returns a graphical component for displaying the specified expr. The
+     * 'availableSpace' limit should be honoured, since this is a service for
+     * displaying the expr in a table cell. However, the renderer can contain
+     * tools (e.g. buttons) for invoking its larger custom renderer. Either
+     * 'type' or 'exprToRender' cannot be null.
      */
     public Component getRendererComponent(HandlerType type,
             HandlerExpr exprToRender, Dimension availableSpace) {
@@ -71,9 +70,10 @@ public class ColorValueEditor extends AbstractHandlerEditor implements
     }
 
     /**
-     * Returns a graphical component for editing the specified expr. The 'availableSpace' is a recommendation when the
-     * editor wishes to be operatable in a compact table cell and needs not be taken into account. Either 'type' or
-     * 'exprToEdit' cannot be null.
+     * Returns a graphical component for editing the specified expr. The
+     * 'availableSpace' is a recommendation when the editor wishes to be
+     * operatable in a compact table cell and needs not be taken into account.
+     * Either 'type' or 'exprToEdit' cannot be null.
      */
     @SuppressWarnings("serial")
     public Component getEditorComponent(HandlerType type,
@@ -127,7 +127,6 @@ public class ColorValueEditor extends AbstractHandlerEditor implements
 			 * col.getBlue());
              */
         }
-
         JLabel label = new JLabel(colorRGB);
         if (col != null) {
             label.setBackground(col);

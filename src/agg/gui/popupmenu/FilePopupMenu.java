@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: FilePopupMenu.java,v 1.5 2010/09/20 14:28:57 olga Exp $
 package agg.gui.popupmenu;
@@ -23,30 +24,25 @@ public class FilePopupMenu extends JPopupMenu {
     public FilePopupMenu(ActionListener listener) {
         super("File");
         this.actionListener = listener;
-
         JMenuItem mi = add(new JMenuItem("New GraGra            Ctrl+N"));
 //		miNewGraGra = mi;
         mi.setEnabled(true);
         mi.setActionCommand("newGraGra");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('G');
-
         addSeparator();
-
         mi = add(new JMenuItem("Open                      Ctrl+O"));
 //		miOpen = mi;
         mi.setEnabled(true);
         mi.setActionCommand("open");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('O');
-
         mi = add(new JMenuItem("Save                       Ctrl+S"));
         this.miSave = mi;
         mi.setEnabled(false);
         mi.setActionCommand("save");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('S');
-
         mi = add(new JMenuItem("Save As                   Alt+S"));
         this.miSaveAs = mi;
         mi.setEnabled(false);
@@ -54,84 +50,68 @@ public class FilePopupMenu extends JPopupMenu {
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic(KeyEvent.VK_A);
         // mi.setDisplayedMnemonicIndex(5);
-
         addSeparator();
-
         mi = add(new JMenuItem("Open (Base)"));
 //		miOpenBase = mi;
         mi.setActionCommand("openBase");
         mi.addActionListener(this.actionListener);
-
         mi = add(new JMenuItem("Save As (Base)"));
         this.miSaveAsBase = mi;
         mi.setEnabled(false);
         mi.setActionCommand("saveAsBase");
         mi.addActionListener(this.actionListener);
-
         addSeparator();
-
         this.submExport = (JMenu) add(new JMenu("Export"));
         this.submExport.setEnabled(false);
         // submExport.setMnemonic('E');
-
         mi = this.submExport.add(new JMenuItem("JPEG         Shift+J"));
         mi.setEnabled(true);
         mi.setActionCommand("exportGraphJPEG");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('J');
-
         mi = this.submExport.add(new JMenuItem("GXL          Shift+X"));
         mi.setEnabled(true);
         mi.setActionCommand("exportGXL");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('X');
-
         mi = this.submExport.add(new JMenuItem("GTXL        Shift+T"));
         mi.setEnabled(true);
         mi.setActionCommand("exportGTXL");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('T');
-
         this.submImport = (JMenu) add(new JMenu("Import"));
         this.submImport.setEnabled(true);
         // submImport.setMnemonic('I');
-
         mi = this.submImport.add(new JMenuItem(
                 "GGX                         Shift+Alt+G"));
         mi.setEnabled(true);
         mi.setActionCommand("importGGX");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('G');
-
         mi = this.submImport.add(new JMenuItem(
                 "GXL                          Shift+Alt+X"));
         mi.setEnabled(true);
         mi.setActionCommand("importGXL");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('X');
-
         // mi = submImport.add(new JMenuItem("GTXL"));
         mi = new JMenuItem("GTXL");
         mi.setEnabled(false);
         mi.setActionCommand("importGTXL");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('T');
-
         mi = this.submImport.add(new JMenuItem("OMONDO XMI ( .ecore )   Shift+Alt+O"));
         mi.setEnabled(true);
         mi.setActionCommand("importOMONDOXMI");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('O');
-
         addSeparator();
-
         mi = add(new JMenuItem("Close GraGra           Ctrl+W"));
         this.miDelGraGra = mi;
         mi.setEnabled(false);
         mi.setActionCommand("deleteGraGra");
         mi.addActionListener(this.actionListener);
         // mi.setMnemonic('D');
-
         // mi = (JMenuItem) add(new JMenuItem("Delete Rule"));
         // mi = new JMenuItem("Delete Rule");
         // miDelRule = mi;
@@ -151,7 +131,6 @@ public class FilePopupMenu extends JPopupMenu {
         // mi.setEnabled(false);
         // mi.setActionCommand("print");
         // mi.addActionListener(actionListener);
-
         pack();
         setBorderPainted(true);
         // setDefaultLightWeightPopupEnabled(false);
@@ -189,15 +168,11 @@ public class FilePopupMenu extends JPopupMenu {
             }
         }
     }
-
     private ActionListener actionListener;
-
     private JMenuItem //			miNewGraGra, miNewTypeGraph, miNewRule, miNewNAC, miOpen,
             miSave, miSaveAs,
             //			miOpenBase, 			 
             //			miDelRule, miDelNAC, miPrint,
             miSaveAsBase, miDelGraGra;
-
     private JMenu submExport, submImport;
-
 }

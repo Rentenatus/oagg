@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -17,9 +18,9 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import java.util.Vector;
-
+import de.jare.ndimcol.primint.ArrayMovieInt;
+import de.jare.ndimcol.primint.ArraySeasonInt;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -31,7 +32,6 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-
 import agg.gui.AGGAppl;
 import agg.attribute.impl.VarMember;
 import agg.attribute.impl.VarTuple;
@@ -49,13 +49,9 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     final static String ttt = "The signature includes the rule name and "
             + "\nthe number, types and order of its parameters. "
             + "\nThe last parameter may be an output parameter.";
-
     protected JFrame applFrame;
-
     protected EdGraGra gragra;
-
     protected EdRule rule;
-
     protected ContextEditor contextEditor;
     protected VariableTupleEditor variableEditor;
     protected VarMember var;
@@ -63,23 +59,19 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     protected boolean inFailed, outFailed;
     protected String signatureTxt;
     protected String s0, s1, s2, s3, s4, s5;
-    private List<Integer> indexesIn;
-    private List<Integer> store;// 0:indxOut; 1...nn: indexesIn;
+    private ArrayMovieInt indexesIn;
+    private ArrayMovieInt store;// 0:indxOut; 1...nn: indexesIn;
     private JTextField signTxt;
     private static boolean showInfoMsg; // = true;
 
     public RuleSignatureDialog(final JFrame frame, final Point location, EdRule r) {
         super();
-
         this.applFrame = frame;
         this.rule = r;
         this.gragra = r.getGraGra();
-
         setModal(true); //false);		
         setTitle("  Signature of the Rule:  " + this.rule.getName());
-
         initData();
-
         ((AGGAppl) this.applFrame).getGraGraEditor().getAttrEditor().setContext(this.rule.getBasisRule().getAttrContext());
         this.contextEditor = ((TopEditor) ((AGGAppl) this.applFrame).getGraGraEditor()
                 .getAttrEditor()).getContextEditor();
@@ -87,28 +79,26 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
         this.variableEditor.getTableModel().addTableModelListener(this);
 //		((TopEditor) ((AGGAppl) this.applFrame).getGraGraEditor().getAttrEditor())
 //				.getContextEditor().getVariableEditor().getTableModel().addTableModelListener(this);
-
         final JPanel content = initContentPane();
-
         JScrollPane scroll = new JScrollPane(content);
         scroll.setPreferredSize(new Dimension(500, 550));
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(scroll, BorderLayout.CENTER);
         validate();
-
         setLocation(location);
         pack();
-
         this.storeIndexes();
     }
 
     private void initData() {
         indxOut = -1;
-        indexesIn = new Vector<Integer>(5);
+        indexesIn = new ArraySeasonInt();
         if (this.rule.getBasisRule().getSignaturOrder() != null) {
             VarTuple vars = (VarTuple) this.rule.getBasisRule().getAttrContext().getVariables();
-            indexesIn.addAll(vars.getSignaturOrder());
+            ArrayMovieInt signaturOrder = vars.getSignaturOrder();
+            for (int i = 0; i < signaturOrder.size(); i++) {
+                indexesIn.add(signaturOrder.get(i));
+            }
             fillSignatureItems(vars);
         }
         fillSignatureItems();
@@ -125,9 +115,8 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
 
     private void fillSignatureItems(VarTuple vars) {
         fillSignatureItems();
-
         for (int i = 0; i < indexesIn.size(); i++) {
-            VarMember m = (VarMember) vars.getMemberAt(indexesIn.get(i).intValue());
+            VarMember m = (VarMember) vars.getMemberAt(indexesIn.get(i));
             String nt = m.getName().concat(":").concat(m.getDeclaration().getTypeName());
             s3 = s3.concat(nt);
             if (i < (indexesIn.size() - 1)) {
@@ -151,21 +140,16 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
 
     private JPanel initContentPane() {
         JPanel p = new JPanel(new BorderLayout());
-
         JPanel p1 = makeRuleContextPanel();
-
         JPanel p2 = new JPanel(new BorderLayout());
         JPanel pAssign = new JPanel(new GridLayout());
         JPanel p3 = makeAssignInParPanel();
         JPanel p4 = makeAssignOutParPanel();
         pAssign.add(p3);
         pAssign.add(p4);
-
         JPanel pSign = makeSignaturePanel();
-
         p2.add(pAssign, BorderLayout.NORTH);
         p2.add(pSign, BorderLayout.CENTER);
-
         JPanel pClose = new JPanel(new GridLayout());
         JButton close = new JButton("Close");
         close.addActionListener(new ActionListener() {
@@ -196,12 +180,9 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
         pClose.add(new JLabel("     "));
         pClose.add(cancel);
         pClose.add(new JLabel("     "));
-
         p.add(p1, BorderLayout.NORTH);
-
         p.add(p2, BorderLayout.CENTER);
         p.add(pClose, BorderLayout.SOUTH);
-
         return p;
     }
 
@@ -234,8 +215,8 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     }
 
     private void storeIndexes() {
-        this.store = new Vector<Integer>(this.indexesIn);
-        this.store.add(0, Integer.valueOf(this.indxOut));
+        this.store = this.indexesIn.cloneMovie();
+        this.store.addAt(0, this.indxOut);
     }
 
     protected void clearSignature() {
@@ -246,7 +227,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     }
 
     protected void restoreSignature() {
-        this.indxOut = this.store.get(0).intValue();
+        this.indxOut = this.store.get(0);
         this.indexesIn.clear();
         for (int i = 1; i < this.store.size(); i++) {
             this.indexesIn.add(this.store.get(i));
@@ -256,7 +237,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
             ((VarMember) vars.getMemberAt(this.indxOut)).setOutputParameter(true);
         }
         for (int i = 0; i < this.indexesIn.size(); i++) {
-            ((VarMember) vars.getMemberAt(this.indexesIn.get(i).intValue())).setInputParameter(true);
+            ((VarMember) vars.getMemberAt(this.indexesIn.get(i))).setInputParameter(true);
         }
         fillSignatureItems(vars);
         setSignatureText();
@@ -269,7 +250,6 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
         p.add(new JLabel("     "));
         return p;
     }
-
     JPanel pVarEditor;
 
     private JPanel makeRuleContextPanel() {
@@ -280,7 +260,6 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
         pVarEditor.setBorder(new TitledBorder("  Rule  context  "));
         pVarEditor.add(makeLabelPanel(), BorderLayout.NORTH);
         pVarEditor.add(this.variableEditor.getComponent(), BorderLayout.CENTER);
-
         p.add(pVarEditor, BorderLayout.CENTER);
         p.add(new JLabel("     "), BorderLayout.SOUTH);
         return p;
@@ -292,7 +271,6 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
         p.add(new JLabel("  Please select an input parameter  "));
         p.add(new JLabel("  and assign it to the rule signature  "));
         JPanel p1 = new JPanel(new GridLayout(0, 2));
-
         JButton assign = new JButton("Assign Input");
         assign.setSize(50, 20);
         assign.addActionListener(new ActionListener() {
@@ -305,7 +283,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                     }
                     String nt = variableEditor.getSelectedMember().getDeclaration().getName()
                             + ":" + variableEditor.getSelectedMember().getDeclaration().getTypeName();
-                    if (indexesIn.contains(Integer.valueOf(i))) {
+                    if (indexesIn.contains(i)) {
                         s3 = s3.replaceFirst(nt, "");
                         if (s3.equals(", ")) {
                             s3 = "";
@@ -314,21 +292,19 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                         } else {
                             s3 = s3.replaceFirst(", , ", ", ");
                         }
-                        indexesIn.remove(Integer.valueOf(i));
+                        indexesIn.remove(i);
                     }
                     s3 = s3.concat(nt);
                     if (!s4.isEmpty()) {
                         s3 = s3 + ", ";
                     }
-                    indexesIn.add(Integer.valueOf(i));
+                    indexesIn.add(i);
                     setSignatureText();
                 }
             }
         });
-
         p1.add(assign);
         p1.add(new JLabel("      "));
-
         p.add(p1);
         return p;
     }
@@ -339,7 +315,6 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
         p.add(new JLabel("  Please select one output parameter  "));
         p.add(new JLabel("  and assign it to the rule signature  "));
         JPanel p1 = new JPanel(new GridLayout(0, 2));
-
         JButton assign = new JButton("Assign Output");
         assign.setSize(50, 20);
         assign.addActionListener(new ActionListener() {
@@ -357,7 +332,6 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                 }
             }
         });
-
         p1.add(assign);
         p1.add(new JLabel("      "));
         p.add(p1);
@@ -367,16 +341,13 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     private JPanel makeSignaturePanel() {
         JPanel p = new JPanel(new BorderLayout());
         p.add(new JLabel("     "), BorderLayout.NORTH);
-
         JPanel p1 = new JPanel(new BorderLayout());
         p1.setBorder(new TitledBorder("  Rule signature  "));
         signTxt = new JTextField();
         signTxt.setEditable(false);
         signTxt.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 14));
         setSignatureText();
-
         p1.add(signTxt, BorderLayout.CENTER);
-
         JPanel pClear = new JPanel(new GridLayout(0, 5));
         JButton clear = new JButton("Clear");
         clear.addActionListener(new ActionListener() {
@@ -384,18 +355,14 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                 clearSignature();
             }
         });
-
         pClear.add(new JLabel("     "));
         pClear.add(new JLabel("     "));
         pClear.add(clear);
         pClear.add(new JLabel("     "));
         pClear.add(new JLabel("     "));
-
         p1.add(pClear, BorderLayout.SOUTH);
-
         p.add(p1, BorderLayout.CENTER);
         p.add(new JLabel("     "), BorderLayout.SOUTH);
-
         return p;
     }
 
@@ -410,7 +377,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                 case TupleTableModel.IS_INPUT_PARAMETER:
                     if (var != null && !var.isInputParameter()) {
                         int i = variableEditor.getTuple().getIndexForMember(var);
-                        if (indexesIn.contains(Integer.valueOf(i))) {
+                        if (indexesIn.contains(i)) {
                             clearSignatureText();
                         }
                     }
@@ -426,7 +393,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                 case TupleTableModel.NAME:
                     if (var != null) {
                         int i = variableEditor.getTuple().getIndexForMember(var);
-                        if (indexesIn.contains(Integer.valueOf(i))) {
+                        if (indexesIn.contains(i)) {
                             warning("Incorrect Signature", "Changing of the type or name of an input|output parameter \nleads to an incorrect signature.\n\n"
                                     + "The current rule signature will be unset.");
                             clearSignatureText();
@@ -439,7 +406,6 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
                     }
                 default:;
             }
-
         }
     }
 
@@ -464,7 +430,7 @@ public class RuleSignatureDialog extends JDialog implements TableModelListener {
     protected boolean checkIn() {
         inFailed = false;
         for (int l = 0; l < indexesIn.size(); l++) {
-            int i = indexesIn.get(l).intValue();
+            int i = indexesIn.get(l);
             VarMember m = ((VarTuple) variableEditor.getTuple()).getVarMemberAt(i);
             if (m == null || !m.isInputParameter()) {
                 inFailed = true;

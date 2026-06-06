@@ -2,24 +2,25 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.handler.gui.impl;
 
 import java.awt.Component;
 import java.awt.Dimension;
-
 import agg.attribute.handler.AttrHandler;
 import agg.attribute.handler.HandlerType;
 import agg.attribute.handler.gui.HandlerTypeEditor;
-
 // import java.util.EventObject;
+
 /**
- * @version $Id: DefaultHandlerTypeEditor.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
+ * @version $Id: DefaultHandlerTypeEditor.java,v 1.1 2005/08/25 11:56:58 enrico
+ * Exp $
  * @author $Author: olga $
  */
 public class DefaultHandlerTypeEditor extends DefaultHandlerEditorSupport
@@ -30,9 +31,11 @@ public class DefaultHandlerTypeEditor extends DefaultHandlerEditorSupport
     }
 
     /**
-     * Returns a graphical component for displaying the specified type. The 'availableSpace' limit should be honoured,
-     * since this is a service for displaying the type in a table cell. However, the renderer can contain tools (e.g.
-     * buttons) for invoking its larger custom renderer. Either 'handler or 'typeToRender' cannot be null.
+     * Returns a graphical component for displaying the specified type. The
+     * 'availableSpace' limit should be honoured, since this is a service for
+     * displaying the type in a table cell. However, the renderer can contain
+     * tools (e.g. buttons) for invoking its larger custom renderer. Either
+     * 'handler or 'typeToRender' cannot be null.
      */
     public Component getRendererComponent(AttrHandler handler,
             HandlerType typeToRender, Dimension availableSpace) {
@@ -40,9 +43,10 @@ public class DefaultHandlerTypeEditor extends DefaultHandlerEditorSupport
     }
 
     /**
-     * Returns a graphical component for editing the specified type. The 'availableSpace' is a recommendation when the
-     * editor wishes to be operatable in a compact table cell and needs not be taken into account. Either 'handler or
-     * 'typeToRender' cannot be null.
+     * Returns a graphical component for editing the specified type. The
+     * 'availableSpace' is a recommendation when the editor wishes to be
+     * operatable in a compact table cell and needs not be taken into account.
+     * Either 'handler or 'typeToRender' cannot be null.
      */
     public Component getEditorComponent(AttrHandler handler,
             HandlerType typeToEdit, Dimension availableSpace) {

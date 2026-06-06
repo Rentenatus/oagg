@@ -1,34 +1,35 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis;
 
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.Hashtable;
-
-import agg.util.Change;
-import agg.util.Link;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrMapping;
-import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.AttrImplException;
+import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarTuple;
+import agg.util.Change;
+import agg.util.Link;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * This class implements a direct graph transformation step in the single pushout (SPO) approach to algebraic graph
- * transformation. The transformation is performed <i>in place</i>, i.e. the host graph is modified according to the
- * rule's instructions.
+ * This class implements a direct graph transformation step in the single
+ * pushout (SPO) approach to algebraic graph transformation. The transformation
+ * is performed <i>in place</i>, i.e. the host graph is modified according to
+ * the rule's instructions.
  */
 public class Step {
 
@@ -58,53 +59,53 @@ public class Step {
     }
 
     /**
-     * Perform an in-place graph transformation step: apply the rule given by <code>match.getRule()</code> via
-     * <code>match</code> on the host graph given by <code>match.getImage()</code>. The host graph is modified to
+     * Perform an in-place graph transformation step: apply the rule given by
+     * <code>match.getRule()</code> via <code>match</code> on the host graph
+     * given by <code>match.getImage()</code>. The host graph is modified to
      * represent the result of the rule application.
      *
-     * @return the co-match morphism from the right side of the rule into the result graph.
-     * @see agg.xt_basis.Morphism#getImage() Return NULL if execute of the step is failed.
+     * @return the co-match morphism from the right side of the rule into the
+     * result graph.
+     * @see agg.xt_basis.Morphism#getImage() Return NULL if execute of the step
+     * is failed.
      */
     public final Morphism execute(final Match match) throws TypeException {
         return execute(match, false, false);
     }
 
     /**
-     * Perform an in-place graph transformation step with respecting of allowing usage of variables for values of
-     * attributes of graph objects in a graph to be transformed.
+     * Perform an in-place graph transformation step with respecting of allowing
+     * usage of variables for values of attributes of graph objects in a graph
+     * to be transformed.
      */
     public final Morphism execute(
             final Match match,
             boolean allowAttrVarsInGraph) throws TypeException {
-
         return execute(match, allowAttrVarsInGraph, false);
     }
 
     /**
      * Perform an in-place graph transformation step <br>
-     * with respecting of allowing usage variables for values of attributes of objects inside of a graph, <br>
+     * with respecting of allowing usage variables for values of attributes of
+     * objects inside of a graph, <br>
      * and when usage of variables is allowed <br>
-     * then do it respecting equal names of variables inside of graph and the right hand side if of the rule of the
-     * given match.
+     * then do it respecting equal names of variables inside of graph and the
+     * right hand side if of the rule of the given match.
      */
     public final Morphism execute(
             final Match match,
             boolean allowAttrVarsInGraph,
             boolean wrtEqualAttrVarName) throws TypeException {
-
 //		int typeLevel = match.getImage().getTypeSet().getLevelOfTypeGraphCheck();
         final Rule rule = match.getRule();
         final Graph aHostGraph = match.getImage();
-
         OrdinaryMorphism aMatchStar = new OrdinaryMorphism(
                 rule.getImage(),
                 aHostGraph,
                 match.getAttrManager().newContext(
                         AttrMapping.PLAIN_MAP));
-
         try {
             match.getAttrContext().freeze();
-
             // use colimits to get pushout
             if (this.computeColimitBasedPushout) {
 //				System.out.println("Step: Colimit Based Pushout ... ");
@@ -115,7 +116,6 @@ public class Step {
                 aPushoutDiagram.addEdge(rule);
                 aPushoutDiagram.addEdge(match);
                 aPushoutDiagram.requestEdge(aMatchStar);
-
                 aPushoutDiagram.computeColimit();
             } // use simplified pushout
             else if (!match.isInjective() && !match.isGluingConditionSet()) {
@@ -123,13 +123,10 @@ public class Step {
             } else {
                 aMatchStar = pushout(rule, match, aMatchStar);
             }
-
             if (aMatchStar == null) {
                 throw new TypeException("Step failed!");
             }
-
             aMatchStar.setName("CoMorphOf_" + match.getName());
-
             try {
                 computeAttributes(match, aMatchStar, match.getAttrContext(),
                         allowAttrVarsInGraph, wrtEqualAttrVarName);
@@ -143,10 +140,8 @@ public class Step {
                 }
                 throw new TypeException(ex1.getMessage());
             }
-
             match.getAttrContext().defreeze();
             match.setCoMorphism(aMatchStar);
-
         } catch (TypeException ex) {
             aMatchStar = null;
             match.getAttrContext().defreeze();
@@ -157,12 +152,10 @@ public class Step {
             }
             throw (ex);
         }
-
         try {
             match.updateAttrMappings();
         } catch (BadMappingException exc) {
         }
-
         // the variables used in NACs can lose their declaration,
         // if step was successful, so restore the declaration.
         if (match.getTarget().isAttributed()) {
@@ -186,21 +179,17 @@ public class Step {
             final AttrContext context,
             boolean allowVariables,
             boolean wrtEqualAttrVarName) throws AttrImplException {
-
         if (!comatch.getTarget().isAttributed()) {
             return;
         }
-
-        final List<GraphObject> done = new Vector<GraphObject>(match.getSource().getSize());
+        final List<GraphObject> done = new ArrayList<GraphObject>(match.getSource().getSize());
         final Rule r = match.getRule();
         GraphObject lhsObj, rhsObj, gObj;
-
 //		compute attributes of preserved objects
         final Iterator<GraphObject> dom = match.getDomain();
         while (dom.hasNext()) {
             lhsObj = dom.next();
             gObj = match.getImage(lhsObj);
-
             if (!gObj.attrExists() //gObj.getAttribute() == null
                     || done.contains(gObj)) {
                 continue;
@@ -211,20 +200,17 @@ public class Step {
 //				if (rhsObj.getAttribute() == null) {
 //					throw new AttrImplException("Rule:  "+r.getName()+":  Attribute of RHS preserved object failed (null).");
 //				}
-
                 final ValueTuple rai = (ValueTuple) rhsObj.getAttribute();
                 final ValueTuple ai = (ValueTuple) gObj.getAttribute();
                 if (!allowVariables) {
                     match.getTarget().propagateChange(
                             new Change(Change.WANT_MODIFY_OBJECT, gObj));
-
                     ai.apply(rai, context);
                 } else {
                     ai.apply(rai, context, allowVariables, wrtEqualAttrVarName);
                 }
             }
         }
-
         // now compute attributes of new objects only
 //		Enumeration<GraphObject> anInvImage;
         final Iterator<GraphObject> anObjIter = comatch.getCodomain();
@@ -233,23 +219,19 @@ public class Step {
             if (r.hasInverseImage(rhsObj)) {
                 continue;
             }
-
             gObj = comatch.getImage(rhsObj);
             if (!gObj.attrExists()) //gObj.getAttribute() == null)
             {
                 continue;
             }
-
             if (rhsObj.getAttribute() == null) {
                 throw new AttrImplException("Rule:  " + r.getName() + ":  Attribute of RHS new object failed (null).");
             }
-
             final ValueTuple rai = (ValueTuple) rhsObj.getAttribute();
             final ValueTuple ai = (ValueTuple) gObj.getAttribute();
             if (!allowVariables) {
                 comatch.getTarget().propagateChange(
                         new Change(Change.WANT_MODIFY_OBJECT, gObj));
-
                 try {
                     ai.apply(rai, context);
                 } catch (AttrImplException ex) {
@@ -271,20 +253,14 @@ public class Step {
             final OrdinaryMorphism m,
             final OrdinaryMorphism p) throws TypeException {
         // p is co-match of m
-
         if (!m.isTotal()) {
             return null;
         }
-
-        final Hashtable<GraphObject, Link> hashMap = new Hashtable<GraphObject, Link>();
-
+        final HashMap<GraphObject, Link> hashMap = new HashMap<GraphObject, Link>();
         final Graph L = r.getOriginal();
         final Graph G = m.getTarget();
-
         boolean sameType = (G.getTypeSet() == r.getTarget().getTypeSet());
-
         fillHashMap(hashMap, r, m, L);
-
         /*
 		 * Now we link together all graphobjects which somehow are mapped to
 		 * each other. This UNION/FIND structure enables us to find quickly
@@ -306,7 +282,6 @@ public class Step {
                 }
             }
         }
-
         // now link edges
         Iterator<Arc> arcs = L.getArcsSet().iterator();
         while (arcs.hasNext()) {
@@ -327,7 +302,6 @@ public class Step {
                 }
             }
         }
-
         // first destroy arcs
         arcs = L.getArcsSet().iterator();
         while (arcs.hasNext()) {
@@ -337,7 +311,6 @@ public class Step {
                 destroyArc((Arc) img2, G);
             }
         }
-
         // destroy nodes 
         nodes = L.getNodesSet().iterator();
         while (nodes.hasNext()) {
@@ -347,15 +320,12 @@ public class Step {
                 destroyNode((Node) img2, G);
             }
         }
-
         /* Now we can create new objects in G. We first create nodes. */
         final Iterator<Node> nodesP = p.getOriginal().getNodesSet().iterator(); // RHS nodes
         while (nodesP.hasNext()) {
             Node n = nodesP.next(); // RHS node
-
             Link l = (hashMap.get(n)).find();
             Node n2 = (Node) l.get();
-
             if (n2 == null) {
                 try {
                     createNode(n, G, p, sameType);
@@ -371,7 +341,6 @@ public class Step {
                 }
             }
         }
-
         /* now create new edges in G */
         final Iterator<Arc> arcsP = p.getOriginal().getArcsSet().iterator(); // RHS edges
         while (arcsP.hasNext()) {
@@ -384,7 +353,6 @@ public class Step {
                 } catch (TypeException ex) {
                     throw new TypeException(ex.getLocalizedMessage());
                 }
-
             } else {
                 // non-injective rule? try to glue arcs of the host graph
                 try {
@@ -394,7 +362,6 @@ public class Step {
                 }
             }
         }
-
         return p;
     }
 
@@ -408,20 +375,14 @@ public class Step {
             final OrdinaryMorphism m,
             final OrdinaryMorphism p) throws TypeException {
         // p is co-match of m
-
         if (!m.isTotal()) {
             return null;
         }
-
-        final Hashtable<GraphObject, Link> hashMap = new Hashtable<GraphObject, Link>();
-
+        final HashMap<GraphObject, Link> hashMap = new HashMap<GraphObject, Link>();
         final Graph L = r.getOriginal();
         final Graph G = m.getTarget();
-
         boolean sameType = (G.getTypeSet() == r.getTarget().getTypeSet());
-
         fillHashMap(hashMap, r, m, L);
-
         /*
 		 * Now we link together all graph objects which somehow are mapped to
 		 * each other. This UNION/FIND structure enables us to find quickly
@@ -443,7 +404,6 @@ public class Step {
                 }
             }
         }
-
         // now link edges
         Iterator<Arc> arcs = L.getArcsSet().iterator();
         while (arcs.hasNext()) {
@@ -464,7 +424,6 @@ public class Step {
                 }
             }
         }
-
         // first destroy arcs
         arcs = L.getArcsSet().iterator();
         while (arcs.hasNext()) {
@@ -499,7 +458,6 @@ public class Step {
                 }
             }
         }
-
         // destroy nodes
         nodes = L.getNodesSet().iterator();
         while (nodes.hasNext()) {
@@ -533,15 +491,12 @@ public class Step {
                 }
             }
         }
-
         /* Now we can create new objects in G. We first create nodes. */
         final Iterator<Node> nodesP = p.getOriginal().getNodesSet().iterator(); // RHS nodes
         while (nodesP.hasNext()) {
             Node n = nodesP.next(); // RHS node
-
             Link l = (hashMap.get(n)).find();
             Node n2 = (Node) l.get();
-
             if (n2 == null) {
                 try {
                     createNodeOfNonInjectiveMatch(hashMap, n, G, r, m, p, sameType);
@@ -557,22 +512,18 @@ public class Step {
                 }
             }
         }
-
         /* now create new edges in G */
         final Iterator<Arc> arcsP = p.getOriginal().getArcsSet().iterator(); // RHS edges
         while (arcsP.hasNext()) {
             Arc a = arcsP.next();
-
             Link l = hashMap.get(a).find();
             Arc a2 = (Arc) l.get();
-
             if (a2 == null) {
                 try {
                     createArcOfNonInjectiveMatch(hashMap, a, G, r, m, p, sameType);
                 } catch (TypeException ex) {
                     throw new TypeException(ex.getLocalizedMessage());
                 }
-
             } else {
                 // non-injective rule? try to glue arcs of the host graph
                 try {
@@ -582,7 +533,6 @@ public class Step {
                 }
             }
         }
-
         return p;
     }
 
@@ -591,7 +541,6 @@ public class Step {
             final OrdinaryMorphism r,
             final OrdinaryMorphism m,
             final GraphObject go) {
-
         boolean canDelete = true;
         if (m instanceof Match
                 && r instanceof ParallelRule) {
@@ -615,30 +564,26 @@ public class Step {
     }
 
     private void fillHashMap(
-            final Hashtable<GraphObject, Link> hashMap,
+            final HashMap<GraphObject, Link> hashMap,
             final OrdinaryMorphism r,
             final OrdinaryMorphism m,
             final Graph left) {
-
         Iterator<?> iter = left.getNodesSet().iterator();
         while (iter.hasNext()) {
             GraphObject go = (GraphObject) iter.next();
             hashMap.put(go, new Link());
             hashMap.put(m.getImage(go), new Link());
         }
-
         iter = left.getArcsSet().iterator();
         while (iter.hasNext()) {
             GraphObject go = (GraphObject) iter.next();
             hashMap.put(go, new Link());
             hashMap.put(m.getImage(go), new Link());
         }
-
         iter = r.getImage().getNodesSet().iterator();
         while (iter.hasNext()) {
             hashMap.put((GraphObject) iter.next(), new Link());
         }
-
         iter = r.getImage().getArcsSet().iterator();
         while (iter.hasNext()) {
             hashMap.put((GraphObject) iter.next(), new Link());
@@ -651,7 +596,6 @@ public class Step {
             final OrdinaryMorphism p,
             boolean sameType)
             throws TypeException {
-
         try {
             if (sameType) {
                 //			long t = System.nanoTime();
@@ -667,7 +611,7 @@ public class Step {
     }
 
     private void createNodeOfNonInjectiveMatch(
-            final Hashtable<GraphObject, Link> hashMap,
+            final HashMap<GraphObject, Link> hashMap,
             final Node n,
             final Graph g,
             final OrdinaryMorphism r,
@@ -675,7 +619,6 @@ public class Step {
             final OrdinaryMorphism p,
             boolean sameType)
             throws TypeException {
-
         if (!m.isIdentificationSet()) {
             final Node go = (Node) hashMap.get(n).get();
             if (go != null) {
@@ -691,7 +634,6 @@ public class Step {
                 return;
             }
         }
-
         createNode(n, g, p, sameType);
     }
 
@@ -712,7 +654,6 @@ public class Step {
             g.destroyArcFast((Arc) a);
             iter = n.getIncomingArcsSet().iterator();
         }
-
         // and now destroy the node
         g.destroyNodeFast(n);
     }
@@ -723,7 +664,6 @@ public class Step {
             final OrdinaryMorphism p,
             boolean sameType)
             throws TypeException {
-
         GraphObject src = p.getImage(a.getSource());
         GraphObject tgt = p.getImage(a.getTarget());
         if (src != null && tgt != null) {
@@ -741,7 +681,7 @@ public class Step {
     }
 
     private void createArcOfNonInjectiveMatch(
-            final Hashtable<GraphObject, Link> hashMap,
+            final HashMap<GraphObject, Link> hashMap,
             final Arc a,
             final Graph g,
             final OrdinaryMorphism r,
@@ -749,7 +689,6 @@ public class Step {
             final OrdinaryMorphism p,
             boolean sameType)
             throws TypeException {
-
         if (!m.isIdentificationSet()) {
             final Arc go = (Arc) hashMap.get(a).get();
             if (go != null) {
@@ -765,7 +704,6 @@ public class Step {
                 return;
             }
         }
-
         createArc(a, g, p, sameType);
     }
 
@@ -779,21 +717,17 @@ public class Step {
             final OrdinaryMorphism m,
             final OrdinaryMorphism p,
             final Graph g) throws TypeException {
-
         // non-injective rule? try to glue nodes of the host graph			
         boolean glued = false;
         final List<GraphObject> origs = r.getInverseImageList(n);
         if (!origs.isEmpty()) {
-            final Hashtable<Arc, Arc> arc2arcimg = new Hashtable<Arc, Arc>();
-
+            final HashMap<Arc, Arc> arc2arcimg = new HashMap<Arc, Arc>();
             final GraphObject ol1 = origs.get(0);
             final GraphObject og1 = m.getImage(ol1);
-
             if (og1 != null) {
                 for (int j = 1; j < origs.size(); j++) {
                     final Node ol2 = (Node) origs.get(j);
                     final Node og2 = (Node) m.getImage(ol2);
-
                     if (og2 != null) {
                         Iterator<?> iter = ol2.getIncomingArcsSet().iterator();
                         while (iter.hasNext()) {
@@ -822,7 +756,6 @@ public class Step {
                                 "Step.pushout: Cannot finish transformation step. Identification condition failed!");
                     }
                 }
-
                 try {
                     if (p.getImage(n) == null || p.getImage(n) != og1) {
                         p.addPlainMapping(n, og1);
@@ -830,7 +763,6 @@ public class Step {
                 } catch (BadMappingException ex1) {
                     throw new TypeException(ex1.getLocalizedMessage());
                 }
-
                 if (glued) {
                     // reset mappings of LHS glued nodes 
                     for (int j = 1; j < origs.size(); j++) {
@@ -842,9 +774,7 @@ public class Step {
                         }
                     }
                     // reset mappings of new Source/Target of Edges
-                    final Enumeration<Arc> inoutarcs = arc2arcimg.keys();
-                    while (inoutarcs.hasMoreElements()) {
-                        final Arc arc = inoutarcs.nextElement();
+                    for (final Arc arc : arc2arcimg.keySet()) {
                         try {
                             m.addObjectPlainMapping(arc, arc2arcimg.get(arc));
                         } catch (BadMappingException ex1) {
@@ -865,7 +795,6 @@ public class Step {
             final OrdinaryMorphism m,
             final OrdinaryMorphism p,
             final Graph g) throws TypeException {
-
         // non-injective rule? try to glue arcs of the host graph
         boolean glued = false;
         final List<GraphObject> origs = r.getInverseImageList(a);
@@ -873,11 +802,9 @@ public class Step {
             GraphObject ol1 = origs.get(0);
             GraphObject og1 = m.getImage(ol1);
             if (og1 != null) {
-
                 for (int j = 1; j < origs.size(); j++) {
                     Arc ol2 = (Arc) origs.get(j);
                     Arc og2 = (Arc) m.getImage(ol2);
-
                     if (og2 != null) {
 //						if (p.getImage(a) == og2)
 //							p.removeMapping(a, og2);
@@ -892,7 +819,6 @@ public class Step {
                                 "Step.pushout: Cannot finish transformation step. Identification condition failed!");
                     }
                 }
-
                 try {
                     if (p.getImage(a) == null) {
                         p.addPlainMapping(a, og1);
@@ -900,7 +826,6 @@ public class Step {
                 } catch (BadMappingException ex1) {
                     throw new TypeException(ex1.getLocalizedMessage());
                 }
-
                 try {
                     if (p.getImage(a) == null || p.getImage(a) != og1) {
                         p.addPlainMapping(a, og1);
@@ -908,7 +833,6 @@ public class Step {
                 } catch (BadMappingException ex1) {
                     throw new TypeException(ex1.getLocalizedMessage());
                 }
-
                 if (glued) {
                     // reset mappings of LHS glued edges
                     for (int j = 1; j < origs.size(); j++) {
@@ -958,7 +882,6 @@ public class Step {
             final Node n,
             final Graph G,
             final OrdinaryMorphism p) throws TypeException {
-
         try {
             final Type nodetype = G.getTypeSet().getSimilarType(n.getType());
             if (nodetype != null) {
@@ -988,7 +911,6 @@ public class Step {
             final GraphObject tar,
             final Graph G,
             final OrdinaryMorphism p) throws TypeException {
-
         try {
             final Type arctype = a.getType();
             if (arctype != null) {
@@ -1019,7 +941,6 @@ public class Step {
             final GraphObject tgt,
             final Graph G,
             final OrdinaryMorphism p) throws TypeException {
-
         try {
             final Type arctype = G.getTypeSet().getSimilarType(a.getType());
             if (arctype != null) {
@@ -1046,8 +967,7 @@ public class Step {
     public List<GraphObject> getCreatedNodes(
             final Rule r,
             final Morphism comatch) {
-
-        final List<GraphObject> list = new Vector<GraphObject>();
+        final List<GraphObject> list = new ArrayList<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
             Iterator<GraphObject> dom = comatch.getDomain();
             while (dom.hasNext()) {
@@ -1063,8 +983,7 @@ public class Step {
     public List<GraphObject> getCreatedObjects(
             final Rule r,
             final Morphism comatch) {
-
-        final List<GraphObject> list = new Vector<GraphObject>();
+        final List<GraphObject> list = new ArrayList<GraphObject>();
         if (r.getRight() == ((OrdinaryMorphism) comatch).getSource()) {
             Iterator<GraphObject> dom = comatch.getDomain();
             while (dom.hasNext()) {
@@ -1076,5 +995,4 @@ public class Step {
         }
         return list;
     }
-
 }

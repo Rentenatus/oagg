@@ -2,36 +2,35 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: RuleApplConstraintTreeNodeData.java,v 1.3 2010/09/23 08:23:32 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.editor.impl.EdRuleConstraint;
 
 /**
- * The RuleApplConstraintTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The RuleApplConstraintTreeNodeData implements an user object of a tree node
+ * in the GraGraTreeModel.
  *
  * @author $Author: olga $
- * @version $Id: RuleApplConstraintTreeNodeData.java,v 1.3 2010/09/23 08:23:32 olga Exp $
+ * @version $Id: RuleApplConstraintTreeNodeData.java,v 1.3 2010/09/23 08:23:32
+ * olga Exp $
  */
 public class RuleApplConstraintTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private Object data;
-
     private EdRuleConstraint eRuleConstraint;
-
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.parser;
 
@@ -16,18 +17,16 @@ import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.EventObject;
-
 import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-
 import agg.gui.options.AbstractOptionGUI;
 import agg.parser.LayerOption;
 import agg.parser.OptionEventListener;
 
 /**
- * This gui shows the preferences for the layer function. The user can choose between a basic function and a function
- * with NAC check.
+ * This gui shows the preferences for the layer function. The user can choose
+ * between a basic function and a function with NAC check.
  *
  * @version $Id: LayerOptionGUI.java,v 1.4 2010/09/23 08:20:54 olga Exp $
  * @author $Author: olga $
@@ -41,15 +40,10 @@ public class LayerOptionGUI extends AbstractOptionGUI implements ItemListener,
      */
     @SuppressWarnings("rawtypes")
     JComboBox layerType;
-
     public static final String RCD_LAYER = "Rule, Creation, Deletion, Rule must delete";
-
     public static final String RCDN_LAYER = RCD_LAYER + ", NAC check";
-
     public static final String WEAK_RCD_LAYER = "Rule, Creation, Deletion";
-
     public static final String WEAK_RCDN_LAYER = WEAK_RCD_LAYER + ", NAC check";
-
     /**
      * The option
      *
@@ -65,19 +59,15 @@ public class LayerOptionGUI extends AbstractOptionGUI implements ItemListener,
     public LayerOptionGUI(LayerOption lOption) {
         super();
         this.lOption = lOption;
-
         GridBagLayout gridbag = new GridBagLayout();
         GridBagConstraints c = new GridBagConstraints();
-
         setLayout(gridbag);
-
         c.fill = GridBagConstraints.BOTH;
         c.anchor = GridBagConstraints.NORTHWEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.weighty = 0.0;
         c.weightx = 1.0;
         add(makeLayerType(), c);
-
         c.fill = GridBagConstraints.BOTH;
         c.anchor = GridBagConstraints.NORTHWEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
@@ -106,16 +96,13 @@ public class LayerOptionGUI extends AbstractOptionGUI implements ItemListener,
     @SuppressWarnings({"rawtypes", "unchecked"})
     private JPanel makeLayerType() {
         GridBagConstraints c = new GridBagConstraints();
-
         c.fill = GridBagConstraints.BOTH;
         c.gridwidth = GridBagConstraints.RELATIVE;
         c.gridheight = 1;
         c.weightx = 0.0;
         c.anchor = GridBagConstraints.WEST;
-
         JPanel optionPanel = makeInitialOptionPanel(true,
                 "Select algorithm for layer function", c);
-
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.weightx = 1.0;
         optionPanel.add(new JPanel(), c);
@@ -132,7 +119,6 @@ public class LayerOptionGUI extends AbstractOptionGUI implements ItemListener,
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.weightx = 1.0;
         optionPanel.add(new JPanel(), c);
-
         return optionPanel;
     }
 
@@ -227,7 +213,6 @@ public class LayerOptionGUI extends AbstractOptionGUI implements ItemListener,
 
     public void executeOnClose() {
     }
-
 }
 /*
  * $Log: LayerOptionGUI.java,v $

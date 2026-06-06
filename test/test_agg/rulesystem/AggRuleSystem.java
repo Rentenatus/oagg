@@ -62,6 +62,14 @@ public class AggRuleSystem {
         dataGraph = g.graphcopy();
         return dataGraph != null;
     }
+    
+    public boolean useGraph(Graph g) {
+        if (g == null) {
+            return false;
+        }
+        dataGraph = g.graphcopy();
+        return dataGraph != null;
+    }
 
     public String getSemanticsName() {
         return semanticsName;

@@ -1,49 +1,39 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
-
-import java.util.List;
-import java.util.Random;
-import java.util.Vector;
-import java.util.Date;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
 
 import agg.cons.AtomConstraint;
 import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 public class DefaultGraTraImpl extends GraTra {
 
     @SuppressWarnings("unused")
     private int doneSteps; // only for test
-
     private int counterMax;
-
     Random ran = new Random();
-
     private boolean appliedOnce;
-
     private boolean applyContinue = false;
-
     private boolean allRulesEnabled = false;
-
     File f;
-
     FileOutputStream os;
-
     String protocolFileName = "";
-
     private boolean grammarChecked;
 
     public DefaultGraTraImpl() {
@@ -64,26 +54,23 @@ public class DefaultGraTraImpl extends GraTra {
         if (!this.allRulesEnabled) {
             // remove disabled rules from currentRuleSet
             for (int j = 0; j < this.currentRuleSet.size(); j++) {
-                if (!this.currentRuleSet.elementAt(j).isEnabled()) {
-                    this.currentRuleSet.removeElementAt(j);
+                if (!this.currentRuleSet.get(j).isEnabled()) {
+                    this.currentRuleSet.remove(j);
                     j--;
                 }
             }
             this.allRulesEnabled = true;
         }
-
         boolean applied = false;
         while (!this.stopping && (this.currentRuleSet.size() > 0) && !applied) {
             this.pauseRule = false;
             this.stoppingRule = false;
-
             if (!this.applyContinue) {
                 int i = this.ran.nextInt(this.currentRuleSet.size());
-                this.currentRule = this.currentRuleSet.elementAt(i);
+                this.currentRule = this.currentRuleSet.get(i);
             } else {
                 this.applyContinue = false;
             }
-
             if (!this.stoppingRule) {
                 if (this.currentRule instanceof RuleScheme) {
                     applied = apply((RuleScheme) this.currentRule);
@@ -94,25 +81,20 @@ public class DefaultGraTraImpl extends GraTra {
             } else {
                 this.stoppingRule = false;
             }
-
             if (this.pauseRule) {
                 return false;
             }
-
 //			System.out.println(currentRule.getName() + " \t applied:  "
 //					+ applied);
             if (this.os != null) {
                 writeTransformProtocol(this.currentRule.getName() + " \t applied:  "
                         + applied);
             }
-
             if (!applied) {
                 if (this.os != null) {
                     writeTransformProtocol(getErrorMsg());
                 }
-
                 this.currentRuleSet.remove(this.currentRule);
-
                 if (this.os != null) {
                     writeTransformProtocol(getRuleNames(this.currentRuleSet));
                 }
@@ -136,14 +118,11 @@ public class DefaultGraTraImpl extends GraTra {
                 String ss = getRuleNames(ruleSet);
                 writeTransformProtocol(ss);
             }
-            this.currentRuleSet = new Vector<Rule>(ruleSet);
-
+            this.currentRuleSet = new ArrayList<Rule>(ruleSet);
             applicable = apply();
-
             if (this.pauseRule) {
                 return;
             }
-
             if (this.waitAfterStep) {
                 return;
             }
@@ -157,26 +136,20 @@ public class DefaultGraTraImpl extends GraTra {
     public void transformByCounter(List<Rule> ruleSet) {
         this.allRulesEnabled = true;
         boolean applicable = true;
-
         for (int i = 1; i <= this.counterMax && applicable; i++) {
             if (this.os != null) {
                 String ss = getRuleNames(ruleSet);
                 writeTransformProtocol(ss);
             }
-
-            this.currentRuleSet = new Vector<Rule>(ruleSet);
-
+            this.currentRuleSet = new ArrayList<Rule>(ruleSet);
             long t0 = System.currentTimeMillis();
-
             applicable = apply();
-
             System.out.println(i + ")  Time: "
                     + (System.currentTimeMillis() - t0) + "ms   "
                     + Runtime.getRuntime().freeMemory() + "b"
                     + "  nodes  (" + this.hostgraph.getNodesCount() + ")"
                     + "  edges  (" + this.hostgraph.getArcsCount() + ")"
             );
-
 //			if(pauseRule) return;
 //    		
 //    		if(waitAfterStep) return;
@@ -186,18 +159,14 @@ public class DefaultGraTraImpl extends GraTra {
     public void transformContinue() {
         this.applyContinue = true;
         this.pauseRule = false;
-
         transform(this.currentRuleSet);
-
 //		if(pauseRule) return;		    	
 //		if(!stopping && waitAfterStep) return;		    	
     }
 
     public void transformContinueWithNextStep() {
         this.pauseRule = false;
-
         transform(this.currentRuleSet);
-
 //		if(pauseRule) return;		    	
 //		if(!stopping && waitAfterStep) return;
 //		writeTransformProtocol("\nGraph transformation is finished");
@@ -207,11 +176,9 @@ public class DefaultGraTraImpl extends GraTra {
 
     public void transform() {
         this.stopping = false;
-
         if (!this.grammar.getListOfRules().isEmpty() && this.currentRuleSet.isEmpty()) {
             setRuleSet();
         }
-
         if (this.writeLogFile) {
             String dirName = this.grammar.getDirName();
             String fileName = this.grammar.getFileName();
@@ -236,7 +203,6 @@ public class DefaultGraTraImpl extends GraTra {
                 Object test = pair.first;
                 if (test != null) {
                     String s0 = pair.second + "\nTransformation is stopped.";
-
                     if (test instanceof Type) {
                         ((GraTra) this).fireGraTra(new GraTraEvent(this,
                                 GraTraEvent.ATTR_TYPE_FAILED, s0));
@@ -268,42 +234,35 @@ public class DefaultGraTraImpl extends GraTra {
             }
             this.grammarChecked = true;
         }
-
-        Vector<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
-
+        List<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
         // set start time
         long startTime = System.currentTimeMillis();
-
         if (this.counterMax == 0) {
             transform(ruleSet);
         } else {
             this.transformByCounter(ruleSet);
         }
-
         // stop end time
         System.out.println("Used time for graph transformation: "
                 + (System.currentTimeMillis() - startTime) + "ms");
-
         if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
             this.checkGraphConsistency();
         }
-
         if (this.writeLogFile) {
             writeTransformProtocol("\nUsed time for graph transformation: "
                     + (System.currentTimeMillis() - startTime) + "ms");
             writeTransformProtocol("\nGraph transformation finished");
             closeTransformProtocol();
         }
-
         fireGraTra(new GraTraEvent(this, GraTraEvent.TRANSFORM_FINISHED,
                 this.errorMsg));
     }
 
-    private Vector<Rule> getEnabledRules(Vector<Rule> ruleSet) {
-        Vector<Rule> vec = new Vector<Rule>(ruleSet.size());
+    private List<Rule> getEnabledRules(List<Rule> ruleSet) {
+        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
-            if (ruleSet.elementAt(j).isEnabled()) {
-                vec.add(ruleSet.elementAt(j));
+            if (ruleSet.get(j).isEnabled()) {
+                vec.add(ruleSet.get(j));
             }
         }
         return vec;
@@ -354,7 +313,6 @@ public class DefaultGraTraImpl extends GraTra {
             }
         }
         // System.out.println(fName);
-
         if ((dName != null) && !dName.equals("")) {
             this.f = new File(dName);
             if (this.f.exists()) {
@@ -377,14 +335,12 @@ public class DefaultGraTraImpl extends GraTra {
         } else {
             this.f = new File(fName);
         }
-
         try {
             this.os = new FileOutputStream(this.f);
             this.protocolFileName = this.f.getName();
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
-
         writeTransformProtocol((new Date()).toString());
     }
 
@@ -412,5 +368,4 @@ public class DefaultGraTraImpl extends GraTra {
             ex.printStackTrace();
         }
     }
-
 }

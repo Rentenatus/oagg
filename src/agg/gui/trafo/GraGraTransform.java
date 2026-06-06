@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -14,7 +16,6 @@ package agg.gui.trafo;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Vector;
-
 import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdRule;
 import agg.gui.editor.GraGraEditor;
@@ -33,10 +34,12 @@ import agg.xt_basis.RuleSequencesGraTraImpl;
 import agg.xt_basis.csp.CompletionPropertyBits;
 import agg.ruleappl.RuleSequence;
 import agg.util.Pair;
+import java.util.ArrayList;
 
 /**
- * The class GraGraTransform handles a step by step (debugger) and interpreting (interpreter) transformation of a
- * gragra. It uses the class TransformDebug for the debugger and the class TransformInterpret for the interpreter. It
+ * The class GraGraTransform handles a step by step (debugger) and interpreting
+ * (interpreter) transformation of a gragra. It uses the class TransformDebug
+ * for the debugger and the class TransformInterpret for the interpreter. It
  * provides the procedures to the Transform menu.
  *
  * @author $Author: olga $
@@ -50,19 +53,15 @@ public class GraGraTransform {
     public GraGraTransform(GraGraEditor anEditor) {
         this.editor = anEditor;
         this.threadpriority = 7;
-
         /* create gratra options GUI */
         this.generalOptionGUI = new GraTraMatchOptionGUI(this);
         this.optionGUI = new GraTraOptionGUI(this.editor.getParentFrame(), this);
-
         /* set strategy to default strategy */
         this.strategy = this.generalOptionGUI.getMorphCompletionStrategy();
-
         /* create a new step by step (debugger) transformation object */
         this.debugger = new TransformDebug(this);
         this.debugger.setCompletionStrategy(this.strategy);
         this.editor.addEditEventListener(this.debugger);
-
         this.transformListeners = new Vector<>();
     }
 
@@ -79,12 +78,12 @@ public class GraGraTransform {
 //			return this.editor.getGraGra().getRules();
             return this.editor.getGraGra().getEnabledRules();
         }
-
         return new Vector<>(0);
     }
 
     /**
-     * Returns GraTraOptionGUI instance which allows to set the possible graph transformation options.
+     * Returns GraTraOptionGUI instance which allows to set the possible graph
+     * transformation options.
      */
     public GraTraOptionGUI getOptionGUI() {
         return this.optionGUI;
@@ -113,7 +112,6 @@ public class GraGraTransform {
     public void setRuleSequences(
             final List<EdRule> rules,
             final List<Pair<List<Pair<String, String>>, String>> sequences) {
-
         this.optionGUI.setRulesOfRuleSequenceGUI(rules);
         this.optionGUI.setRuleSequences(sequences);
         this.optionGUI.enableRuleSequenceGUI(this.optionGUI.ruleSequenceEnabled());
@@ -137,7 +135,6 @@ public class GraGraTransform {
         if (this.optionGUI.ruleSequenceEnabled()) {
             return this.optionGUI.getRuleSequences();
         }
-
         return null;
     }
 
@@ -145,100 +142,111 @@ public class GraGraTransform {
         if (this.optionGUI.ruleSequenceEnabled()) {
             return this.optionGUI.getRuleSequencesAsText();
         }
-
         return null;
     }
 
     /**
-     * If return value is TRUE, the rule to be applied is choosen non-deterministically.
+     * If return value is TRUE, the rule to be applied is choosen
+     * non-deterministically.
      */
     public boolean nondeterministicallyEnabled() {
         return this.optionGUI.nondeterministicallyEnabled();
     }
 
     /**
-     * If return value is TRUE, the user defined rule priorities are used for graph transformation.
+     * If return value is TRUE, the user defined rule priorities are used for
+     * graph transformation.
      */
     public boolean priorityEnabled() {
         return this.optionGUI.priorityEnabled();
     }
 
     /**
-     * If return value is TRUE, the user defined rule layers are used for graph transformation.
+     * If return value is TRUE, the user defined rule layers are used for graph
+     * transformation.
      */
     public boolean layeredEnabled() {
         return this.optionGUI.layeredEnabled();
     }
 
     /**
-     * If return value is TRUE, the user defined rule sequences are used for graph transformation.
+     * If return value is TRUE, the user defined rule sequences are used for
+     * graph transformation.
      */
     public boolean ruleSequenceEnabled() {
         return this.optionGUI.ruleSequenceEnabled();
     }
 
     /**
-     * In case of TRUE, the consistency check will be done after each transformation step. If the consistency check
-     * fails, the next valid match is taken for the graph transformation.
+     * In case of TRUE, the consistency check will be done after each
+     * transformation step. If the consistency check fails, the next valid match
+     * is taken for the graph transformation.
      */
     public boolean consistencyEnabled() {
         return this.generalOptionGUI.consistencyEnabled();
     }
 
     /**
-     * In case of TRUE, the consistency check will be done after the graph transformation finished. For layered graph
-     * transformation the consistency check will be done at the end of a layer.
+     * In case of TRUE, the consistency check will be done after the graph
+     * transformation finished. For layered graph transformation the consistency
+     * check will be done at the end of a layer.
      */
     public boolean consistencyCheckAfterGraphTrafoEnabled() {
         return this.generalOptionGUI.consistencyCheckAfterGraphTrafoEnabled();
     }
 
     /**
-     * If return value is TRUE, the layer's table is displayed before transformation starts to give the user a
-     * possibility to change the current rule-layer setting.
+     * If return value is TRUE, the layer's table is displayed before
+     * transformation starts to give the user a possibility to change the
+     * current rule-layer setting.
      */
     public boolean showLayerEnabled() {
         return this.optionGUI.showLayerEnabled();
     }
 
     /**
-     * If return value is TRUE, the graph transformation will stop after each layer and wait for a user action.
+     * If return value is TRUE, the graph transformation will stop after each
+     * layer and wait for a user action.
      */
     public boolean stopLayerAndWaitEnabled() {
         return this.optionGUI.stopLayerAndWaitEnabled();
     }
 
     /**
-     * If return value is TRUE, the only current layer will break when the tool button "Stop" transformation is pressed.
+     * If return value is TRUE, the only current layer will break when the tool
+     * button "Stop" transformation is pressed.
      */
     public boolean breakLayerEnabled() {
         return this.optionGUI.breakLayerEnabled();
     }
 
     /**
-     * If return value is TRUE, the layered transformation will break when the tool button "Stop" transformation is
-     * pressed.
+     * If return value is TRUE, the layered transformation will break when the
+     * tool button "Stop" transformation is pressed.
      */
     public boolean breakAllLayerEnabled() {
         return this.optionGUI.breakAllLayerEnabled();
     }
 
     /**
-     * If return value is TRUE, the modified host graph will be shown after each transformation step.
+     * If return value is TRUE, the modified host graph will be shown after each
+     * transformation step.
      */
     public boolean showGraphAfterStepEnabled() {
         return this.generalOptionGUI.showGraphAfterStepEnabled();
     }
 
     /**
-     * If return value is TRUE, the graph transformation will stop after each step and wait for a user action.
+     * If return value is TRUE, the graph transformation will stop after each
+     * step and wait for a user action.
      */
     public boolean waitAfterStepEnabled() {
         return this.generalOptionGUI.waitAfterStepEnabled();
     }
 
     /**
-     * If return value is TRUE, the rule applicability check will be done after each transformation step.
+     * If return value is TRUE, the rule applicability check will be done after
+     * each transformation step.
      */
     public boolean checkRuleApplicabilityEnabled() {
         return this.generalOptionGUI.checkRuleApplicabilityEnabled();
@@ -255,22 +263,24 @@ public class GraGraTransform {
     }
 
     /**
-     * If return value is TRUE, all nodes and edges created during transformation step are shown as selected objects.
+     * If return value is TRUE, all nodes and edges created during
+     * transformation step are shown as selected objects.
      */
     public boolean selectNewAfterStepEnabled() {
         return this.generalOptionGUI.selectNewAfterStepEnabled();
     }
 
     /**
-     * If return value is TRUE, the layered transformation starts with the first layer again.
+     * If return value is TRUE, the layered transformation starts with the first
+     * layer again.
      */
     public boolean layeredLoopEnabled() {
         return this.optionGUI.layeredLoopEnabled();
     }
 
     /**
-     * Returns TRUE if the option - reset graph - is set in this case the host graph will be reset for each loop over
-     * layers.
+     * Returns TRUE if the option - reset graph - is set in this case the host
+     * graph will be reset for each loop over layers.
      */
     public boolean resetGraphEnabled() {
         return this.optionGUI.resetGraphEnabled();
@@ -281,7 +291,8 @@ public class GraGraTransform {
     }
 
     /**
-     * Sets the current completion strategy. The completion strategy of the transform debugger will be set too.
+     * Sets the current completion strategy. The completion strategy of the
+     * transform debugger will be set too.
      */
     public void setCompletionStrategy(MorphCompletionStrategy strat) {
         this.strategy = strat;
@@ -295,7 +306,7 @@ public class GraGraTransform {
     /**
      * The current transformation options, backed by a vector of option names.
      */
-    public Vector<String> getGraTraOptionsList() {
+    public List<String> getGraTraOptionsList() {
         GraTraOptions gratraOptions = getGraTraOptions();
         return gratraOptions.getOptions();
     }
@@ -313,15 +324,12 @@ public class GraGraTransform {
         if (!this.strategy.isRandomisedDomain()) {
             gratraOptions.addOption(GraTraOptions.DETERMINED_CSP_DOMAIN);
         }
-
         if (this.generalOptionGUI.consistencyEnabled()) {
             gratraOptions.addOption(GraTraOptions.CONSISTENT_ONLY);
         }
-
         if (this.generalOptionGUI.consistencyCheckAfterGraphTrafoEnabled()) {
             gratraOptions.addOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO);
         }
-
         if (this.optionGUI.priorityEnabled()) {
             gratraOptions.addOption(GraTraOptions.PRIORITY);
         } else if (this.optionGUI.layeredEnabled()) {
@@ -332,7 +340,6 @@ public class GraGraTransform {
                 gratraOptions.addOption(GraTraOptions.EACH_RULE_TO_APPLY);
             }
         }
-
         if (this.optionGUI.stopLayerAndWaitEnabled()) {
             gratraOptions.addOption(GraTraOptions.STOP_LAYER_AND_WAIT);
         }
@@ -348,7 +355,6 @@ public class GraGraTransform {
         if (this.optionGUI.breakAllLayerEnabled()) {
             gratraOptions.addOption(GraTraOptions.BREAK_ALL_LAYER);
         }
-
         if (this.generalOptionGUI.checkRuleApplicabilityEnabled()) {
             gratraOptions.addOption(GraTraOptions.CHECK_RULE_APPLICABILITY);
         }
@@ -361,7 +367,6 @@ public class GraGraTransform {
         if (this.generalOptionGUI.waitAfterStepEnabled()) {
             gratraOptions.addOption(GraTraOptions.WAIT_AFTER_STEP);
         }
-
         return gratraOptions;
     }
 
@@ -369,7 +374,6 @@ public class GraGraTransform {
         if (this.editor.getGraGra() == null) {
             return;
         }
-
         if (this.layeredTransform != null && this.layeredTransform.isAlive()) {
             if (opt.equals(GraTraOptions.LOOP_OVER_LAYER) && !b) {
                 ((LayeredGraTraImpl) this.layeredTransform.getGraTra()).setLayeredLoop(false);
@@ -386,10 +390,12 @@ public class GraGraTransform {
         }
     }
 
-    public void updateGraTraOptionGUI(Vector<String> optionsList) {
-        this.optionGUI.update(optionsList);
+    public void updateGraTraOptionGUI(List<String> optionsList) {
+        Vector<String> list = new Vector<>();
+        list.addAll(optionsList);
+        this.optionGUI.update(list);
         this.optionGUI.updateLayerToStopIfNeeded();
-        this.generalOptionGUI.update(optionsList);
+        this.generalOptionGUI.update(list);
     }
 
     public void setRulesOfGraphRuleSequenceGUI(List<EdRule> rules) {
@@ -482,29 +488,24 @@ public class GraGraTransform {
     public void startTransformByRuleSequence(
             final EdGraGra gragra,
             final RuleSequence ruleSequence) {
-
         this.editor.removeEditEventListener(this.debugger);
         this.editor.addEditEventListener(this.ruleSequenceTransform);
         this.editor.setInterpreting(false);
         this.editor.setLayering(false);
         this.editor.setTransformRuleSequences(true);
-
         if (gragra.getBasisGraGra().trafoByApplicableRuleSequence()) {
             gragra.getBasisGraGra().addGraTraOption(GraTraOptions.WAIT_AFTER_STEP);
             gragra.getBasisGraGra().addGraTraOption(GraTraOptions.SELECT_NEW_AFTER_STEP);
         }
-
         this.ruleSequenceTransform.setGraGra(gragra, ruleSequence);
         this.ruleSequenceTransform.setCompletionStrategy(this.strategy);
         this.ruleSequenceTransform.setPriority(this.threadpriority);
         this.ruleSequenceTransform
                 .setShowGraphAfterStep(showGraphAfterStepEnabled());
-
         ((RuleSequencesGraTraImpl) this.ruleSequenceTransform.getGraTra())
                 .setGraTraOptions(getGraTraOptions());
         fireTransform(new TransformEvent(this.ruleSequenceTransform,
                 TransformEvent.START));
-
         this.ruleSequenceTransform.start();
     }
 
@@ -536,7 +537,6 @@ public class GraGraTransform {
                 .setGraTraOptions(getGraTraOptions());
         fireTransform(new TransformEvent(this.interpreterTransform,
                 TransformEvent.START));
-
         this.interpreterTransform.start();
     }
 
@@ -565,7 +565,6 @@ public class GraGraTransform {
                 .setGraTraOptions(getGraTraOptions());
         fireTransform(new TransformEvent(this.rulePriorityTransform,
                 TransformEvent.START));
-
         this.rulePriorityTransform.start();
     }
 
@@ -585,12 +584,10 @@ public class GraGraTransform {
         this.editor.setInterpreting(false);
         this.editor.setLayering(true);
         this.editor.setTransformRuleSequences(false);
-
         this.layeredTransform.setGraGra(gragra);
         this.layeredTransform.setCompletionStrategy(this.strategy);
         this.layeredTransform.setPriority(this.threadpriority);
         this.layeredTransform.setShowGraphAfterStep(showGraphAfterStepEnabled());
-
         ((LayeredGraTraImpl) this.layeredTransform.getGraTra())
                 .setStopLayerAndWait(stopLayerAndWaitEnabled());
         ((LayeredGraTraImpl) this.layeredTransform.getGraTra())
@@ -601,9 +598,7 @@ public class GraGraTransform {
                 .setBreakLayer(breakLayerEnabled());
         ((LayeredGraTraImpl) this.layeredTransform.getGraTra())
                 .setBreakAllLayer(breakAllLayerEnabled());
-
         fireTransform(new TransformEvent(this.layeredTransform, TransformEvent.START));
-
         this.layeredTransform.start();
     }
 
@@ -687,27 +682,15 @@ public class GraGraTransform {
             this.transformListeners.get(i).transformEventOccurred(e);
         }
     }
-
     private final GraTraOptionGUI optionGUI;
-
     private final GraTraMatchOptionGUI generalOptionGUI;
-
     private MorphCompletionStrategy strategy;
-
     private final TransformDebug debugger;
-
     private TransformInterpret interpreterTransform;
-
     private TransformInterpret rulePriorityTransform;
-
     private TransformLayered layeredTransform;
-
     private TransformRuleSequences ruleSequenceTransform;
-
     private final List<TransformEventListener> transformListeners;
-
     private GraGraEditor editor;
-
     private int threadpriority;
-
 }

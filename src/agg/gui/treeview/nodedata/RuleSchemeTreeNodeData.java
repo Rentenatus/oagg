@@ -2,37 +2,36 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: RuleSchemeTreeNodeData.java,v 1.4 2010/09/23 08:23:32 olga Exp $
 package agg.gui.treeview.nodedata;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import agg.editor.impl.EdRule;
 import agg.editor.impl.EdRuleScheme;
 
 /**
- * The RuleTreeNodeData implements an user object of a tree node in the GraGraTreeModel.
+ * The RuleTreeNodeData implements an user object of a tree node in the
+ * GraGraTreeModel.
  *
  * @author $Author: olga $
- * @version $Id: RuleSchemeTreeNodeData.java,v 1.4 2010/09/23 08:23:32 olga Exp $
+ * @version $Id: RuleSchemeTreeNodeData.java,v 1.4 2010/09/23 08:23:32 olga Exp
+ * $
  */
 public class RuleSchemeTreeNodeData extends GraGraTreeNodeDataAdapter {
 
     private Object data;
-
     private EdRuleScheme eRuleScheme;
-
     /**
      * Value to display.
      */
     private String string = "";
-
     /**
      * My tree node in a tree
      */
@@ -101,7 +100,6 @@ public class RuleSchemeTreeNodeData extends GraGraTreeNodeDataAdapter {
         String oldString = this.string;
         String newString = str.replaceAll(" ", "");
         this.string = newString;
-
         String newRuleName = "";
         String sD = "";
         if (!this.eRuleScheme.getBasisRule().isEnabled()) {
@@ -197,11 +195,9 @@ public class RuleSchemeTreeNodeData extends GraGraTreeNodeDataAdapter {
         } else {
             toolTipText = " Rule scheme ";
         }
-
         if (!this.eRuleScheme.getBasisRule().getTextualComment().equals("")) {
             toolTipText = " " + this.eRuleScheme.getBasisRule().getTextualComment();
         }
         return toolTipText;
     }
-
 }

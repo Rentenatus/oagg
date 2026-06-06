@@ -1,30 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
-
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.util.Enumeration;
-import java.util.Vector;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import agg.attribute.AttrInstance;
 import agg.attribute.AttrInstanceMember;
@@ -39,12 +23,27 @@ import agg.attribute.util.RowDragEvent;
 import agg.attribute.util.RowDragListener;
 import agg.attribute.util.TableRowDragger;
 import agg.attribute.view.AttrViewEvent;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.util.Enumeration;
+import java.util.Vector;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * Editor for all data of a tuple.
  *
  * @author $Author: olga $
- * @version $Id: ExtendedTupleEditorSupport.java,v 1.2 2005/11/21 09:20:45 olga Exp $
+ * @version $Id: ExtendedTupleEditorSupport.java,v 1.2 2005/11/21 09:20:45 olga
+ * Exp $
  */
 public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
         implements ListSelectionListener, RowDragListener {
@@ -54,68 +53,54 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
      * Action for removing a member from the edited tuple.
      */
     protected Action deleteAction;
-
     /**
      * Action for evaluating a member of the edited tuple.
      */
     protected Action evaluateAction;
-
     /**
      * Resetting the layout of the edited tuple.
      */
     protected Action resetAction;
-
     /**
      * Making all members visible.
      */
     protected Action showAllAction;
-
     /**
      * Making all members invisible.
      */
     protected Action hideAllAction;
-
     /**
-     * Collections of tuple actions, used for collectively enabling/disabling actions depending on the state of the
-     * editor.
+     * Collections of tuple actions, used for collectively enabling/disabling
+     * actions depending on the state of the editor.
      */
     protected Vector<Action> tupleActions;
-
     /**
-     * Collections of member actions, used for collectively enabling/disabling actions depending on the state of the
-     * editor.
+     * Collections of member actions, used for collectively enabling/disabling
+     * actions depending on the state of the editor.
      */
     protected Vector<Action> memberActions;
-
     // State indicators
     /**
      * Indicates if row selection is enabled.
      */
     protected boolean rowSelectionEnabled;
-
     /**
      * Indicates if row dragging is enabled.
      */
     protected boolean rowDraggingEnabled;
-
     /**
      * The row dragger instance.
      */
     protected TableRowDragger rowDragger;
-
     /**
-     * When disabling of dragging was requested while dragging was active, the operation is performed later, as soon as
-     * dragging stops.
+     * When disabling of dragging was requested while dragging was active, the
+     * operation is performed later, as soon as dragging stops.
      */
     protected boolean rowDraggingDisablingRequested;
-
     // Widgets
     protected JTextArea outputTextArea;
-
     protected JScrollPane outputScrollPane;
-
     protected JPanel toolBarPanel;
-
     protected JSplitPane tableAndOutputSplitPane;
 
     // ///////////////////////////////////////////
@@ -132,11 +117,9 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
         super.createTableView();
         // Reordering of columns.
         this.tableView.getTableHeader().setReorderingAllowed(true);
-
         // Enable row selection and -dragging.
         setRowSelectionEnabled(true);
         setRowDraggingEnabled(true);
-
         // Decorating.
         // tableScrollPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
     }
@@ -148,9 +131,10 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
     }
 
     /**
-     * Called by createTableView(). Makes selecting of rows possible or not. Calling this method with 'true' is
-     * necessary if one desires any member actions (deleting, evaluating). Can also be called from 'outside', even in
-     * the middle of a session.
+     * Called by createTableView(). Makes selecting of rows possible or not.
+     * Calling this method with 'true' is necessary if one desires any member
+     * actions (deleting, evaluating). Can also be called from 'outside', even
+     * in the middle of a session.
      */
     public void setRowSelectionEnabled(boolean b) {
         // AttrSession.logPrintln(this+": setRowSelectionEnabled("+b+")");
@@ -158,10 +142,8 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
             // Selecting of rows, not columns:
             this.tableView.setRowSelectionAllowed(true);
             this.tableView.setColumnSelectionAllowed(false);
-
             // Just one row at a time:
             this.tableView.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
             // Listen to selection events:
             if (!this.rowSelectionEnabled) {
                 this.rowSelectionEnabled = true;
@@ -171,7 +153,6 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
             // Selecting of neither rows nor columns:
             this.tableView.setRowSelectionAllowed(false);
             this.tableView.setColumnSelectionAllowed(false);
-
             // Stop listening to selection events:
             if (this.rowSelectionEnabled) {
                 this.rowSelectionEnabled = false;
@@ -181,8 +162,10 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
     }
 
     /**
-     * Called by createTableView(). Makes dragging of rows possible or not. Calling this method with 'true' is necessary
-     * if one desires moving of rows around. Can also be called from 'outside', even in the middle of a session.
+     * Called by createTableView(). Makes dragging of rows possible or not.
+     * Calling this method with 'true' is necessary if one desires moving of
+     * rows around. Can also be called from 'outside', even in the middle of a
+     * session.
      */
     public void setRowDraggingEnabled(boolean b) {
         // AttrSession.logPrintln(this + ": setRowDraggingEnabled("+b+")");
@@ -210,8 +193,8 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
     }
 
     /**
-     * Switching sensitivity of buttons for actions which apply to the whole tuple on or off. Typically called with
-     * 'false' when the tuple is null.
+     * Switching sensitivity of buttons for actions which apply to the whole
+     * tuple on or off. Typically called with 'false' when the tuple is null.
      */
     protected void setTupleActionsEnabled(boolean b) {
         for (Enumeration<Action> en = this.tupleActions.elements(); en.hasMoreElements();) {
@@ -220,8 +203,9 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
     }
 
     /**
-     * Switching sensitivity of buttons for actions which apply to single tuple members on or off. Typically called with
-     * 'false' when no member is selected.
+     * Switching sensitivity of buttons for actions which apply to single tuple
+     * members on or off. Typically called with 'false' when no member is
+     * selected.
      */
     protected void setMemberActionsEnabled(boolean b) {
         for (Enumeration<Action> en = this.memberActions.elements(); en.hasMoreElements();) {
@@ -252,7 +236,8 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
     //
     // "Library" of TUPLE actions that can be attached to toolbars and/or menus.
     /**
-     * Action for setting the view back: all members become visible, the order is as created.
+     * Action for setting the view back: all members become visible, the order
+     * is as created.
      */
     @SuppressWarnings("serial")
     protected Action getResetAction() {
@@ -339,7 +324,6 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
                 }
                 AttrType type = ((AttrInstance) ExtendedTupleEditorSupport.this.tuple).getType();
                 int slot = ExtendedTupleEditorSupport.this.tableView.getSelectedRow();
-
                 if (slot >= type.getNumberOfEntries(ExtendedTupleEditorSupport.this.viewSetting)) {
                     return;
                 } else if (!type.isOwnMemberAt(ExtendedTupleEditorSupport.this.viewSetting, slot)) {
@@ -354,7 +338,6 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
                             JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
                 type.deleteMemberAt(ExtendedTupleEditorSupport.this.viewSetting, slot);
             }
         };
@@ -521,7 +504,8 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
     }
 
     /**
-     * Convenience method, called by the list selection event handling method valueChanged().
+     * Convenience method, called by the list selection event handling method
+     * valueChanged().
      */
     protected void memberRowSelected(int row) {
         displayValidityReport();
@@ -529,8 +513,9 @@ public abstract class ExtendedTupleEditorSupport extends BasicTupleEditor
     }
 
     /**
-     * Convenience method, called by the list selection event handling method valueChanged( ListSelectionEvent ev ),
-     * when the selected row is the bottom row for adding of new members..
+     * Convenience method, called by the list selection event handling method
+     * valueChanged( ListSelectionEvent ev ), when the selected row is the
+     * bottom row for adding of new members..
      */
     protected void newRowSelected() {
         setMessage("A new member can be added in this row.");

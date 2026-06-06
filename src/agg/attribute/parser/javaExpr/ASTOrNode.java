@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
-
 
 /* JJT: 0.2.2 */
 /**
@@ -42,12 +41,10 @@ public class ASTOrNode extends BOOLxBOOLtoBOOLnode {
                 throw (RuntimeException) e;
             }
         }
-
         if (((Boolean) stack.get(top)).booleanValue()) {
-            stack.set(top, new Boolean(true));
+            stack.set(top, Boolean.TRUE);
             return;
         }
-
         // jjtGetChild(1).interpret();
         try {
             jjtGetChild(1).interpret();
@@ -59,22 +56,20 @@ public class ASTOrNode extends BOOLxBOOLtoBOOLnode {
                 throw (RuntimeException) e;
             }
         }
-
         // System.out.println("ASTOrNode.interpret() stack[top]: "+stack[top]);
         // System.out.println("ASTOrNode.interpret() stack[top+1]:
         // "+stack[top+1]);
         if (stack.get(top + 1) instanceof Boolean) {
-            result = new Boolean(((Boolean) stack.get(top)).booleanValue()
+            result = Boolean.valueOf(((Boolean) stack.get(top)).booleanValue()
                     || ((Boolean) stack.get(top + 1)).booleanValue());
         } else if ((top > 0) && (stack.get(top - 1) instanceof Boolean)) {
-            result = new Boolean(((Boolean) stack.get(top)).booleanValue()
+            result = Boolean.valueOf(((Boolean) stack.get(top)).booleanValue()
                     || ((Boolean) stack.get(top - 1)).booleanValue());
         } else {
-            result = new Boolean(((Boolean) stack.get(top)).booleanValue());
+            result = Boolean.valueOf(((Boolean) stack.get(top)).booleanValue());
         }
-
         /*
-		 * result = new Boolean(((Boolean)stack[top]).booleanValue() ||
+		 * result = Boolean.valueOf(((Boolean)stack[top]).booleanValue() ||
 		 * ((Boolean)stack[top - 1]).booleanValue()); //((Boolean)stack[top +
 		 * 1]).booleanValue());
          */
@@ -83,7 +78,6 @@ public class ASTOrNode extends BOOLxBOOLtoBOOLnode {
         } else {
             stack.set(top, result);
         }
-
         // System.out.println("ASTOrNode.interpret() result: "+result);
     }
 

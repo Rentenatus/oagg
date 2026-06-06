@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.SymbolTable;
 
@@ -31,27 +30,16 @@ import agg.attribute.handler.SymbolTable;
 public class Jex implements ActionListener {
 
     static final long serialVersionUID = 1L;
-
     static public final int PARSE_ERROR = 0;
-
     static public final int IS_CONSTANT = 1;
-
     static public final int IS_VARIABLE = 2;
-
     static public final int IS_COMPLEX = 3;
-
     protected TextField typeTF;
-
     static protected JexParser parser;
-
     protected PrintStream out, err;
-
     protected ByteArrayOutputStream redirect;
-
     protected PrintStream redirectOut;
-
     protected boolean isOutput = false; // true;
-
     protected Object variableExpression;
 
     public Jex() {
@@ -61,7 +49,6 @@ public class Jex implements ActionListener {
     public static void main(String args[]) {
         Jex me = new Jex();
         SimpleNode.setClassResolver(new ClassResolver());
-
         Frame frame = new Frame("Jex-Test");
         me.typeTF = new TextField("", 30);
         me.typeTF.setBackground(Color.WHITE);
@@ -92,7 +79,6 @@ public class Jex implements ActionListener {
         synchronized (JexParser.jjtree) {
             SimpleNode node = (SimpleNode) JexParser.jjtree.rootNode();
             int result = IS_COMPLEX;
-
             if (node.isConstantExpr()) {
                 result = IS_CONSTANT;
             } else if (node.jjtGetNumChildren() == 1) {
@@ -228,16 +214,12 @@ public class Jex implements ActionListener {
 //		AttrSession.logPrintln(VerboseControl.logJexParser, "Jex:\n->\tparse_");
 //		AttrSession
 //				.logPrintln(VerboseControl.logJexParser, "Jex: text " + text);
-
         // swapPrintStream();
         int result = PARSE_ERROR;
-
         String line = text + " ";
         byte bytes[] = line.getBytes();
-
         java.io.ByteArrayInputStream stream = new java.io.ByteArrayInputStream(
                 bytes);
-
         synchronized (JexParser.jjtree) {
 //		if (parser == null) {
 //			parser = new JexParser(stream);
@@ -245,7 +227,6 @@ public class Jex implements ActionListener {
             {
                 JexParser.ReInit(stream);
                 JexParser.jjtree.reset();
-
 //			System.out.println("parse text: "+text+"    stack: "+SimpleNode.stack.size()+"   top: "+SimpleNode.top+"    :::: "+SimpleNode.stack.hashCode());
                 SimpleNode.top = -1;
                 SimpleNode.stack.clear();
@@ -257,7 +238,6 @@ public class Jex implements ActionListener {
                 JexParser.CompilationUnit();
                 JexParser.jjtree.rootNode().dump("  ");
                 result = getExprProperty();
-
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					" Expression property: " + getPropertyText(result));
 //			// swapPrintStream();
@@ -288,7 +268,6 @@ public class Jex implements ActionListener {
 //				AttrSession
 //						.logPrintln(VerboseControl.logJexParser, "Variable \""
 //								+ ex1.getMessage() + "\" is not declared");
-
                 throw ex1;
             } catch (ASTWrongTypeException ex2) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
@@ -299,20 +278,16 @@ public class Jex implements ActionListener {
 //				}
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Encountered: " + ex2.getFound());
-
                 throw ex2;
             } catch (ASTMemberException ex3) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Exception:\n" + ex3.getMessage());
-
                 throw ex3;
             } catch (Exception ex) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Exception:\n" + ex.getMessage());
-
                 throw new RuntimeException(ex.getMessage());
             }
-
             if (type != null && type != Void.TYPE) {
                 Class<?> resultType = ((SimpleNode) ast).getNodeClass();
                 boolean assignable = isAssignable(type, resultType);
@@ -320,7 +295,6 @@ public class Jex implements ActionListener {
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
 //							"Types are assignable");
                 } else {
-
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
 //							"Wrong expression type.");
 //					AttrSession.logPrintln(VerboseControl.logJexParser,
@@ -335,7 +309,6 @@ public class Jex implements ActionListener {
             if (this.redirect != null) {
                 throw new AttrHandlerException(this.redirect.toString());
             }
-
             throw new AttrHandlerException(ex1.getMessage());
         } finally {
             // restoreOutputStream();
@@ -356,7 +329,6 @@ public class Jex implements ActionListener {
             // System.out.println("Jex.check:: 2) AttrHandlerException:
             // "+ex1.getMessage() );
             throw new AttrHandlerException(ex1.getMessage());
-
         } finally {
             // restoreOutputStream();
         }
@@ -364,10 +336,8 @@ public class Jex implements ActionListener {
 
     public void check_(String text, Class<?> type, SymbolTable symtab)
             throws ParseError {
-
         parse_(text);
         SimpleNode.setSymbolTable(symtab);
-
         synchronized (JexParser.jjtree) {
             try {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
@@ -388,7 +358,6 @@ public class Jex implements ActionListener {
 //			}
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Encountered: "
 //					+ ex2.getFound());
-
                 throw new ASTWrongTypeException(
                         "Wrong expression type.  Required signature: "
                         + ex2.getExpected() + "   Encountered: "
@@ -396,7 +365,6 @@ public class Jex implements ActionListener {
             } catch (ASTMemberException ex3) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Exception:\n"
 //					+ ex3.getMessage());
-
                 throw new ASTMemberException("Member Exception:  "
                         + ex3.getMessage());
             } catch (Exception ex) {
@@ -404,7 +372,6 @@ public class Jex implements ActionListener {
 //					+ ex.getMessage());
                 throw new RuntimeException("Exception:  " + ex.getMessage());
             }
-
             if (type != null && type != Void.TYPE) {
                 Class<?> resultType = ((SimpleNode) JexParser.jjtree.rootNode())
                         .getNodeClass();
@@ -419,7 +386,6 @@ public class Jex implements ActionListener {
             }
         }
     }
-
     protected static Object refObj = new Object();
 
     protected boolean isAssignable(Class<?> to, Class<?> from) {
@@ -444,14 +410,12 @@ public class Jex implements ActionListener {
                 return (to == from);
             }
         }
-
         return to.isAssignableFrom(from) || from.isInstance(refObj);
     }
 
     protected Object test_interpret(String text, Class<?> type, SymbolTable symtab)
             throws AttrHandlerException {
         Object result;
-
         // redirectToString();//
         try {
             result = interpret_(text, type, symtab);
@@ -460,7 +424,6 @@ public class Jex implements ActionListener {
                 throw new AttrHandlerException(this.redirect.toString()
                         + addMessage(ex1));
             }
-
             throw new AttrHandlerException(addMessage(ex1));
         } finally {
             // restoreOutputStream();//
@@ -480,7 +443,6 @@ public class Jex implements ActionListener {
 //				"Jex: \n->interpret(ast)");
         try {
             Object result = null;
-
             check(ast, type, symtab);
             // redirectToString();
             try {
@@ -494,28 +456,23 @@ public class Jex implements ActionListener {
 //				AttrSession
 //						.logPrintln(VerboseControl.logJexParser, "Variable \""
 //								+ ex1.getMessage() + "\" is not declared");
-
                 throw ex1;
             } catch (ASTMissingValueException ex2) {
                 if (ast.getString().indexOf("==null") != -1) {
-                    result = new Boolean(true); // ast.getRootResult();
+                    result = Boolean.TRUE; // ast.getRootResult();
                     return result;
                 }
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //							"Missing value for variable \"" + ex2.getMessage()
 //									+ "\".");
-
                 throw ex2;
-
             } catch (ASTMemberException ex3) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"ASTMemberException " + ex3.getMessage());
-
                 throw ex3;
             } catch (Exception ex) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"Exception:\n" + ex.getMessage());
-
                 throw new AttrHandlerException("AttrHandlerException  : "
                         + ex.getMessage());
 //				throw new RuntimeException(ex.getMessage());
@@ -529,7 +486,6 @@ public class Jex implements ActionListener {
             // swapPrintStream();
 //			if (this.redirect != null)
 //				throw new AttrHandlerException(this.redirect.toString());
-
             throw new AttrHandlerException("AttrHandlerException  : "
                     + ex1.getMessage());
         } finally {
@@ -548,7 +504,6 @@ public class Jex implements ActionListener {
      */
     public Object interpret(String text, Class<?> type, SymbolTable symtab)
             throws AttrHandlerException {
-
 //		AttrSession.logPrintln(VerboseControl.logTrace, "Jex: \n->interpret()");
 //		AttrSession.logPrintln(VerboseControl.logJexParser,
 //				"Jex: \n->interpret()");
@@ -565,7 +520,6 @@ public class Jex implements ActionListener {
             if (this.redirect != null) {
                 throw new AttrHandlerException(this.redirect.toString());
             }
-
             throw new AttrHandlerException(ex1.getMessage());
         } finally {
             // restoreOutputStream();
@@ -587,9 +541,7 @@ public class Jex implements ActionListener {
                 JexParser.jjtree.rootNode().dump("");
             }
             // swapPrintStream();
-
             check_(text, type, symtab);
-
             try {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Evaluating ...");
@@ -600,7 +552,6 @@ public class Jex implements ActionListener {
 //					+ resultString);
                 // swapPrintStream();
                 JexParser.jjtree.rootNode().dump("");
-
 //			AttrSession.logPrintln(VerboseControl.logJexParser, "Result = "
 //					+ resultString);
                 // swapPrintStream();
@@ -613,7 +564,6 @@ public class Jex implements ActionListener {
             } catch (ASTMissingValueException ex2) {
 //			AttrSession.logPrintln(VerboseControl.logJexParser,
 //					"Missing value for variable \"" + ex2.getMessage() + "\".");
-
                 /*
 			 * ContextView cv = (ContextView) symtab; VarMember vm =
 			 * ((VarTuple)cv.getVariables()).getVarMemberAt("x");
@@ -664,7 +614,6 @@ public class Jex implements ActionListener {
             // restoreOutputStream();
         }
         ast.rewrite();
-
         if (ast.getError().length() != 0) {
             throw new AttrHandlerException(ast.getError());
         }
@@ -680,7 +629,6 @@ public class Jex implements ActionListener {
     public Object getVariableExpression() {
         return this.variableExpression;
     }
-
 }
 /*
  * $Log: Jex.java,v $

@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.facade.impl;
 
@@ -26,9 +27,11 @@ import agg.attribute.handler.impl.javaExpr.JexHandler;
 import agg.attribute.impl.AttrTupleManager;
 
 /**
- * Collection of methods for storing and retrieving information in attribute tuples and members.
+ * Collection of methods for storing and retrieving information in attribute
+ * tuples and members.
  *
- * @version $Id: DefaultInformationFacade.java,v 1.1 2005/08/25 11:57:00 enrico Exp $
+ * @version $Id: DefaultInformationFacade.java,v 1.1 2005/08/25 11:57:00 enrico
+ * Exp $
  * @author $Author: olga $
  */
 public class DefaultInformationFacade implements InformationFacade {
@@ -46,7 +49,8 @@ public class DefaultInformationFacade implements InformationFacade {
     // //////////////////////////////////////////////////////
     // Attribute Manager
     /**
-     * Returns the default attribute manager which can be used for advanced operations not provided by this facade.
+     * Returns the default attribute manager which can be used for advanced
+     * operations not provided by this facade.
      */
     public AttrManager getAttrManager() {
         return AttrTupleManager.getDefaultManager();
@@ -56,7 +60,8 @@ public class DefaultInformationFacade implements InformationFacade {
     // Java Expression Handler:
     //
     /**
-     * Returns the java expression handler. This can then be used for creating a tuple type member.
+     * Returns the java expression handler. This can then be used for creating a
+     * tuple type member.
      */
     public AttrHandler getJavaHandler() {
         return getAttrManager().getHandler(JexHandler.getLabelName());
@@ -100,8 +105,9 @@ public class DefaultInformationFacade implements InformationFacade {
      * @param tupleType the tuple type to be extended.
      * @param handler attribute handler for the entry type;
      * @param memberType textual representation of the member type;
-     * @param name name (selector) of the entry within the attribute tuple. The new declaration member is returned and
-     * can be extended by calling the respective AttrTypeMember methods.
+     * @param name name (selector) of the entry within the attribute tuple. The
+     * new declaration member is returned and can be extended by calling the
+     * respective AttrTypeMember methods.
      */
     public AttrTypeMember addMember(AttrType tupleType, AttrHandler handler,
             String memberType, String name) {
@@ -111,8 +117,9 @@ public class DefaultInformationFacade implements InformationFacade {
     /**
      * Adding an empty member declaration to a tuple type.
      *
-     * @param tupleType the tuple type to be extended. The new declaration member is returned and can be extended by
-     * calling the respective AttrTypeMember methods.
+     * @param tupleType the tuple type to be extended. The new declaration
+     * member is returned and can be extended by calling the respective
+     * AttrTypeMember methods.
      */
     public AttrTypeMember addMember(AttrType tupleType) {
         return tupleType.addMember();
@@ -169,7 +176,8 @@ public class DefaultInformationFacade implements InformationFacade {
     }
 
     /**
-     * Retrieving the type. Returns null if no type is set or if the type is not valid.
+     * Retrieving the type. Returns null if no type is set or if the type is not
+     * valid.
      */
     public HandlerType getType(AttrTypeMember memberDecl) {
         return memberDecl.getType();
@@ -206,8 +214,9 @@ public class DefaultInformationFacade implements InformationFacade {
     // //////////////////////////////////////////////////////
     // Tuple Instance
     /**
-     * Creating a new attribute instance of the required type and in the given context or a context view. In Graph
-     * Transformation, it is used for creating a new attribute in a rule.
+     * Creating a new attribute instance of the required type and in the given
+     * context or a context view. In Graph Transformation, it is used for
+     * creating a new attribute in a rule.
      *
      * @param type The type to use
      * @param context The context to use, can be null
@@ -248,8 +257,9 @@ public class DefaultInformationFacade implements InformationFacade {
     }
 
     /**
-     * Retrieving the expression (value) contained in a member. The result can be queried and set according to the
-     * agg.attribute.handler.HandlerExpr interface.
+     * Retrieving the expression (value) contained in a member. The result can
+     * be queried and set according to the agg.attribute.handler.HandlerExpr
+     * interface.
      */
     public HandlerExpr getExpr(AttrInstanceMember instanceMember) {
         return instanceMember.getExpr();
@@ -263,9 +273,10 @@ public class DefaultInformationFacade implements InformationFacade {
     }
 
     /**
-     * Retrieving the value of a member. If the result is 'null', the reason can be: 1. The value is set as 'null'; 2.
-     * The value is not set at all. For testing if the value was set as 'null' or not set at all, use 'isSet()' of this
-     * interface.
+     * Retrieving the value of a member. If the result is 'null', the reason can
+     * be: 1. The value is set as 'null'; 2. The value is not set at all. For
+     * testing if the value was set as 'null' or not set at all, use 'isSet()'
+     * of this interface.
      */
     public Object getExprAsObject(AttrInstanceMember instanceMember) {
         return instanceMember.getExprAsObject();
@@ -300,7 +311,8 @@ public class DefaultInformationFacade implements InformationFacade {
     }
 
     /**
-     * Setting an expression for a member without immediate evaluation. Syntax and type checking are performed.
+     * Setting an expression for a member without immediate evaluation. Syntax
+     * and type checking are performed.
      *
      * @param instanceMember The member of an attribute tuple instance.
      * @param expr textual expression representation;
@@ -308,9 +320,7 @@ public class DefaultInformationFacade implements InformationFacade {
     public void setExprAsText(AttrInstanceMember instanceMember, String expr) {
         instanceMember.setExprAsText(expr);
     }
-
 }
-
 /*
  * $Log: DefaultInformationFacade.java,v $
  * Revision 1.2  2007/09/10 13:05:50  olga

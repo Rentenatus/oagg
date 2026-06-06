@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -13,17 +15,19 @@ package agg.layout.evolutionary;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.util.List;
-import java.util.Vector;
+import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
-
+import java.util.Vector;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
 import agg.editor.impl.EdArc;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Type;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * @author Dennis
@@ -32,46 +36,30 @@ import agg.xt_basis.Type;
 public class EvolutionaryGraphLayout {
 
     private boolean jpgOutput;
-
     private boolean enabled;
-
     private Dimension panel;
-
     private boolean panelChangable;
-
     private final LayoutMetrics lmetric;
-
     private EdGraph oldedgraph;
-
     private int gnrlEdgeLngth;
-
     private int temperature;
-
     private boolean usePattern;
-
     private boolean frozenPos;
-
     private boolean centre;
-
     private boolean writeMetrics;
-
     private int iters, nodeIntersctnIters,
             edgeIntersctnIters;
-
     private int overlapscnt;
-
-    private final Hashtable<Type, List<LayoutPattern>> layoutPatterns;
-
-    private final Hashtable<LayoutNode, Type> layoutNode2Type;
-
+    private final HashMap<Type, List<LayoutPattern>> layoutPatterns;
+    private final HashMap<LayoutNode, Type> layoutNode2Type;
 //	private boolean freezingOldNode, freezingOldEdge;
     private final Random random = new Random();
 
     /**
      * konstruktor fuer den Layouter
      *
-     * @param temp temp gibt eine begrenzug fuer die bewegung einer node in einem iterationsschritt an, wird hier als
-     * temperatur bezeichnet....
+     * @param temp temp gibt eine begrenzug fuer die bewegung einer node in
+     * einem iterationsschritt an, wird hier als temperatur bezeichnet....
      *
      */
     public EvolutionaryGraphLayout(final int temp, final Dimension panel) {
@@ -91,8 +79,8 @@ public class EvolutionaryGraphLayout {
         this.edgeIntersctnIters = 50;
         this.overlapscnt = 0;
         this.gnrlEdgeLngth = 200;
-        this.layoutPatterns = new Hashtable<Type, List<LayoutPattern>>();
-        this.layoutNode2Type = new Hashtable<LayoutNode, Type>();
+        this.layoutPatterns = new HashMap<Type, List<LayoutPattern>>();
+        this.layoutNode2Type = new HashMap<LayoutNode, Type>();
     }
 
     public void setEnabled(final boolean b) {
@@ -104,8 +92,9 @@ public class EvolutionaryGraphLayout {
     }
 
     /**
-     * gibt die anziehungskraefte zwischen nodes wieder momentan wird die eigenschaft der kante zwischen den nodes nicht
-     * beruecksichtigt. TODO Kanteneigenschaften beruecksichtigen
+     * gibt die anziehungskraefte zwischen nodes wieder momentan wird die
+     * eigenschaft der kante zwischen den nodes nicht beruecksichtigt. TODO
+     * Kanteneigenschaften beruecksichtigen
      *
      * @param d distanz zwischen 2 nodes
      * @param z Zone um die nodes in der keine andere node liegen soll
@@ -117,8 +106,9 @@ public class EvolutionaryGraphLayout {
     }
 
     /**
-     * gibt die abstossenden Kraefte zwischen 2 nodes wieder diese sind unabhaengig davon, ob die nodes durch eine
-     * kante(arc) verbunden sind, oder nicht.
+     * gibt die abstossenden Kraefte zwischen 2 nodes wieder diese sind
+     * unabhaengig davon, ob die nodes durch eine kante(arc) verbunden sind,
+     * oder nicht.
      *
      * @param d distanz zwischen 2 nodes
      * @param z zone um die nodes in der keine andere node liegen soll
@@ -134,12 +124,12 @@ public class EvolutionaryGraphLayout {
         // angefangen mit it+2, weil it ja im ersten schritt 0 ist, so wird
         // also t im ersten schritt halbiert, dann der rest um ein drittel
         // reduziert, dann um ein viertel........
-
         return temp - (temp / (it + 2));
     }
 
     /**
-     * reduziert die bewegungsfreiheit fuer einen knoten entsprechend seinem Alter
+     * reduziert die bewegungsfreiheit fuer einen knoten entsprechend seinem
+     * Alter
      *
      * @param temp Ausgangstemperatur / Bewegungsfreiheit
      * @param age Alter des betrachteten Knotens
@@ -191,7 +181,6 @@ public class EvolutionaryGraphLayout {
             final List<EdNode> nodes,
             final List<EdArc> arcs,
             final int itrs) {
-
         final List<LayoutNode> lnodes = getLayoutNodes(nodes);
         final List<LayoutArc> larcs = getLayoutArcs(arcs);
         int temp = this.temperature;
@@ -237,33 +226,29 @@ public class EvolutionaryGraphLayout {
                 break;
             }
         }
-
         egraph.setGraphDim(this.panel);
         // die neuen Layoutinfos aus dem Layoutnodes in die EdNodes uebertragen.
         egraph.updateNodePosLtoE(nodes);
     }
 
     /**
-     * berechnet die positionsaenderung von knoten anhand der abstossenden kraefte die zwischen allen knoten bestehen.
+     * berechnet die positionsaenderung von knoten anhand der abstossenden
+     * kraefte die zwischen allen knoten bestehen.
      *
      * @param lnodes
      */
     private void calcNodeRepulse(final List<LayoutNode> lnodes) {
         for (int j = 0; j < lnodes.size(); j++) {
             final LayoutNode lnodev = lnodes.get(j);
-
             if ((!this.usePattern && (lnodev.isFrozenByDefault() && this.frozenPos))
                     || isFrozen(lnodev)) {// type pattern check
                 continue;
             }
-
             lnodev.setDistX(0);
             lnodev.setDistY(0);
-
             // bestimmung der kraefte anteilig in x und y richtung
             for (int k = 0; k < lnodes.size(); k++) {
                 final LayoutNode lnodeu = lnodes.get(k);
-
                 // keine werte fuer identische lnodes berechnen
                 if (lnodev.equals(lnodeu)) {
                     continue;
@@ -272,7 +257,6 @@ public class EvolutionaryGraphLayout {
                 // continue;
                 // else if(isFrozen(lnodeu)) // type pattern check
                 // continue;
-
                 final int deltax = lnodev.getAkt().x - lnodeu.getAkt().x;
                 final int deltay = lnodev.getAkt().y - lnodeu.getAkt().y;
                 // abfragen um division durch 0 zu vermeiden, wenn deltax oder
@@ -284,7 +268,6 @@ public class EvolutionaryGraphLayout {
                 if (deltax != 0) {
                     // distx = lnodev.getDistX() +
                     // ((deltax/Math.abs(deltax))*getRepulseForce(deltax,lnodev.getZone()));
-
                     lnodev.setDistX(lnodev.getDistX()
                             + ((deltax / Math.abs(deltax)) * getRepulseForce(
                             deltax, lnodev.getZone())));
@@ -292,7 +275,6 @@ public class EvolutionaryGraphLayout {
                 if (deltay != 0) {
                     // disty = lnodev.getDistY() +
                     // ((deltay/Math.abs(deltay))*getRepulseForce(deltay,lnodev.getZone()));
-
                     lnodev.setDistY(lnodev.getDistY()
                             + ((deltay / Math.abs(deltay)) * getRepulseForce(
                             deltay, lnodev.getZone())));
@@ -302,18 +284,15 @@ public class EvolutionaryGraphLayout {
                 // if(disty < 0) disty = disty * (-1);
                 // lnodev.setDistX(distx);
                 // lnodev.setDistY(disty);
-
                 if (deltax == 0 && deltay == 0) {
                     // wenn die knoten auf der selben position liegen
                     // zuefaellige distx und disty aenderung
                     // gibt sicher noch ne bessere moeglichkeit???
                     // long l = Double.doubleToLongBits(Math.random());
                     // int r = ((Long)l).intValue()%200;
-
                     int r = this.random.nextInt(this.panel.width) % 200;
                     lnodev.setDistX(lnodev.getDistX() + r);
                     lnodev.setDistY(lnodev.getDistY() - r);
-
                     // test minus bereich
                     // disty = lnodev.getDistY() - r;
                     // if(disty < 0) disty = disty * (-1);
@@ -327,12 +306,9 @@ public class EvolutionaryGraphLayout {
             final List<LayoutNode> lnodes,
             final int temp,
             final int gage) {
-
         int newx, newy, minx, miny, age, akttemp;
-
         for (int j = 0; j < lnodes.size(); j++) {
             final LayoutNode lnodev = lnodes.get(j);
-
             if ((!this.usePattern && (lnodev.isFrozenByDefault() && this.frozenPos))
                     || isFrozen(lnodev)) {
                 continue;
@@ -343,7 +319,6 @@ public class EvolutionaryGraphLayout {
             miny = 0;
             age = lnodev.getAge();
             akttemp = reduceTempByAge(temp, age, gage);
-
             if (lnodev.getDistX() != 0) {
                 // newx = lnodev.getAkt().x +
                 // ((lnodev.getDistX()/Math.abs(lnodev.getDistX()))*Math.min(Math.abs(lnodev.getDistX()),temp));
@@ -366,7 +341,6 @@ public class EvolutionaryGraphLayout {
             }
             // System.out.println("min(distx,temp): "+minx+" min(disty,temp):
             // "+miny+" newx: "+newx+" newy:"+newy);
-
             // simpler ansatz um zu verhindern,
             // das die nodes aus dem Panel wandern
             // vermutlich noch zu verbessern
@@ -377,7 +351,6 @@ public class EvolutionaryGraphLayout {
             if ((newy - lnodev.getEdNode().getHeight() / 2) <= 0) {
                 newy = Math.max(newy, lnodev.getEdNode().getHeight());
             }
-
             // // keine werte die groesser sind als die panelbreite
             // newx =
             // Math.min(newx,this.panel.width-lnodev.getEdNode().getWidth()*2);
@@ -393,15 +366,12 @@ public class EvolutionaryGraphLayout {
             // //TODO eventuell noch an die panelgroesse anpassen.....
             // check min, max position, change if needed
             Point newp = getRandomPosIfNeeded(newx, newy, lnodev);
-
             lnodev.setOpt(newp);
             lnodev.setAkt(newp);
         }
-
         if (this.usePattern) {
             for (int i = 0; i < arcs.size(); i++) {
                 final EdArc arc = arcs.get(i);
-
                 List<LayoutPattern> patterns = null;
                 if (arc.isElementOfTypeGraph()) {
                     patterns = getInheritancePattern(arc);
@@ -410,7 +380,6 @@ public class EvolutionaryGraphLayout {
                     patterns = getLayoutPatternsForType(arc.getType()
                             .getBasisType());
                 }
-
                 for (int p = 0; p < patterns.size(); p++) {
                     // lp =
                     // /*eg.getGraGra().*/getLayoutPatternForTypeName(arc.getTypename());
@@ -493,13 +462,15 @@ public class EvolutionaryGraphLayout {
     }
 
     /**
-     * berechnet ein layout fuer den graphen nur anhand der aktuellen und bevorzugten Kantenlaengen
+     * berechnet ein layout fuer den graphen nur anhand der aktuellen und
+     * bevorzugten Kantenlaengen
      *
      * @param eg Graph zu layout
      * @param nodes sichtbare Knoten in dem Graphen
      * @param arcs Kanten mit Soure und Target in sichtbaren Knoten
      * @param itrs Anzahl der Iterationen
-     * @param temp "temperatur" gibt an, wie stark sich die position eines Knoten pro berechnungsschritt aendern darf
+     * @param temp "temperatur" gibt an, wie stark sich die position eines
+     * Knoten pro berechnungsschritt aendern darf
      */
     // arcLayout
     public boolean layoutByArcLength(final EdGraph eg,
@@ -507,15 +478,12 @@ public class EvolutionaryGraphLayout {
             final List<EdArc> arcs,
             final int itrs,
             final int temp) {
-
         // wenn der graph keine kanten enthaelt, ist diese methode irrelevant:
         if (arcs.size() == 0) {
             return true;
         }
-
         int age, akttemp;
         final int gage = eg.getGraphGen();
-
         // System.out.println("Layouter.layoutByArcLength ...");
         // aktuelle laenge aller arcs berechnen
         for (int i = 0; i < arcs.size(); i++) {
@@ -523,11 +491,9 @@ public class EvolutionaryGraphLayout {
             arc.getLArc().calcAktLength();
             arc.getLArc().resetUsed();
         }
-
         int index;
         int max, abw, xchange, ychange, sxchange, sychange, txchange, tychange, sxnew, synew, txnew, tynew;
         boolean layoutDone = false;
-
         for (int i = 0; i < itrs; i++) {
             // arc mit groesster abweichung bestimmen
             max = 0;
@@ -535,7 +501,6 @@ public class EvolutionaryGraphLayout {
             for (int j = 0; j < arcs.size(); j++) {
                 final EdArc edarc = arcs.get(j);
                 final LayoutArc larc = edarc.getLArc();
-
                 int prefLength = larc.getPrefLength();
                 LayoutPattern lpat = getLayoutPatternForType(edarc
                         .getBasisArc().getType(), "edge_length");
@@ -557,11 +522,9 @@ public class EvolutionaryGraphLayout {
                     index = j;
                 }
             }
-
             if (index == -1) {
                 continue;
             }
-
             final EdArc arc = arcs.get(index);
             final LayoutArc larc = arc.getLArc();
             larc.incUsed();
@@ -574,11 +537,9 @@ public class EvolutionaryGraphLayout {
                 // "+larc.getYLength());
                 break;
             }
-
             // neue Positionen fuer die endknoten berechnen
             final LayoutNode source = ((EdNode) arc.getSource()).getLNode();
             final LayoutNode target = ((EdNode) arc.getTarget()).getLNode();
-
             int prefLength = larc.getPrefLength();
             LayoutPattern lpat = getLayoutPatternForType(arc.getBasisArc()
                     .getType(), "edge_length");
@@ -611,7 +572,6 @@ public class EvolutionaryGraphLayout {
                     ychange = 0;
                 }
             }
-
             // //System.out.println("Akt-LEngth: "+larc.getAktLength()+"
             // Abweichung: "+abw+" xchange: "+xchange+" ychange: "+ychange);
             // positionsaenderungen werden durch temperatur beschraenkt und mit
@@ -624,7 +584,6 @@ public class EvolutionaryGraphLayout {
             }
             sxchange = Math.min(xchange, akttemp) * (abw / Math.abs(abw));
             sychange = Math.min(ychange, akttemp) * (abw / Math.abs(abw));
-
             age = target.getAge();
             if (!(this.frozenPos && target.isFrozenByDefault())) {
                 akttemp = reduceTempByAge(temp, age, gage);
@@ -634,7 +593,6 @@ public class EvolutionaryGraphLayout {
             akttemp = reduceTempByAge(temp, age, gage);
             txchange = Math.min(xchange, akttemp) * (abw / Math.abs(abw));
             tychange = Math.min(ychange, akttemp) * (abw / Math.abs(abw));
-
             if (source.getAkt().x <= target.getAkt().x) {
                 sxnew = source.getAkt().x + sxchange;
                 txnew = target.getAkt().x - txchange;
@@ -663,20 +621,17 @@ public class EvolutionaryGraphLayout {
             // Math.min(txnew,this.panel.width-target.getEdNode().getWidth()*2);
             // tynew =
             // Math.min(tynew,this.panel.height-target.getEdNode().getHeight()*2);
-
             // test
             if (!(this.frozenPos && source.isFrozenByDefault())) {
                 Point newsp = getRandomPosIfNeeded(sxnew, synew, source);
                 sxnew = newsp.x;
                 synew = newsp.y;
             }
-
             if (!(this.frozenPos && target.isFrozenByDefault())) {
                 Point newtp = getRandomPosIfNeeded(txnew, tynew, target);
                 txnew = newtp.x;
                 tynew = newtp.y;
             }
-
             if (this.usePattern) {
                 List<LayoutPattern> patterns = null;
                 if (arc.isElementOfTypeGraph()) {
@@ -729,7 +684,6 @@ public class EvolutionaryGraphLayout {
                     }
                 }
             }
-
             // //System.out.println("sourcex: "+sxnew+" sourcey: "+synew+"
             // targetx: "+txnew+" targety: "+tynew);
             // System.out.println("Layouter.layoutByArc:: isFrozen(source):
@@ -753,7 +707,6 @@ public class EvolutionaryGraphLayout {
         }
         // neue positionswerte aus den layoutnodes in die ednodes uebernehmen
         eg.updateNodePosLtoE(nodes);
-
         return layoutDone;
     }
 
@@ -797,7 +750,6 @@ public class EvolutionaryGraphLayout {
             final int nodeit,
             final int arcit) {
 //		System.out.println("Layouter.layoutGraph... iters: "+iters+" nodeit: "+nodeit+" arcit: "+arcit);
-
         for (int i = 0; i < arcs.size(); i++) {
             final EdArc a = arcs.get(i);
             if (!a.getLArc().isFrozen() && !this.frozenPos
@@ -805,7 +757,6 @@ public class EvolutionaryGraphLayout {
                 a.setAnchor(null);
             }
         }
-
         final List<LayoutNode> lnodes = getLayoutNodes(nodes);
         for (int i = 0; i < itrs; i++) {
             final int temp2 = this.temperature;
@@ -817,19 +768,16 @@ public class EvolutionaryGraphLayout {
             layoutByArcLength(eg, nodes, arcs, arcit, this.temperature);
             cool(this.temperature, i);
         }
-
         this.overlapscnt = this.lmetric.getNodeIntersect(nodes, true);
         if (/*!this.usepattern &&*/this.overlapscnt == 0) {
             eg.updateNodePosLtoE(nodes);
             return false;
         }
-
         // jetzt nach metricverletzungen suchen und versuchen diese zu
         // beheben.(momentan nur knotenueberschneidungen)
         int x1, x2, y1, y2;
         int ovlNodeIndx;
         int stop = 100; //this.overlapscount;
-
         while (this.overlapscnt > 0 && stop > 0) {
             for (int i = 0; i < lnodes.size(); i++) {
                 final LayoutNode lnode1 = lnodes.get(i);
@@ -846,9 +794,7 @@ public class EvolutionaryGraphLayout {
                         lnode1.unsetOverlap();
                         continue;
                     }
-
                     final LayoutNode lnode2 = lnodes.get(ovlNodeIndx);
-
                     if ((!this.usePattern && lnode2.isFrozenByDefault() && this.frozenPos)
                             || isFrozen(lnode2)) {// type pattern check
                         continue;
@@ -869,7 +815,6 @@ public class EvolutionaryGraphLayout {
                         y1 = lnode1.getAkt().y + lnode1.getEdNode().getHeight();
                         y2 = lnode2.getAkt().y - lnode2.getEdNode().getHeight();
                     }
-
                     // x1 = Math.max(x1,lnode1.getEdNode().getWidth());
                     // x2 = Math.max(x2,lnode2.getEdNode().getWidth());
                     // y1 = Math.max(y1,lnode1.getEdNode().getHeight());
@@ -889,12 +834,10 @@ public class EvolutionaryGraphLayout {
                     y1 = p1.y;
                     x2 = p2.x;
                     y2 = p2.y;
-
                     lnode1.setAkt(new Point(x1, y1));
                     lnode1.setOpt(lnode1.getAkt());
                     lnode2.setAkt(new Point(x2, y2));
                     lnode2.setOpt(lnode2.getAkt());
-
                     lnode1.unsetOverlap();
                     lnode2.unsetOverlap();
                 }
@@ -902,7 +845,6 @@ public class EvolutionaryGraphLayout {
             this.overlapscnt = this.lmetric.getNodeIntersect(nodes, true);
             // System.out.println("Layouter.layoutGraph... this.overlapscount
             // "+this.overlapscount);
-
             stop--;
         }
         eg.updateNodePosLtoE(nodes);
@@ -992,7 +934,6 @@ public class EvolutionaryGraphLayout {
         int x = Math.max(xpos, lnode.getEdNode().getWidth());
         // keine negativen werte
         int y = Math.max(ypos, lnode.getEdNode().getHeight());
-
         // keine werte die groesser sind als die panelbreite
         // x = Math.min(x,this.panel.width-lnode.getEdNode().getWidth()*2);
         // keine werte, die groesser als die Panelhoehe sind
@@ -1024,14 +965,12 @@ public class EvolutionaryGraphLayout {
             // y = Math.abs(y - r);
             y = Math.abs(y - Math.abs(this.random.nextInt(this.panel.height)));
         }
-
         return new Point(x, y);
     }
 
     public void randomLayout(final EdGraph eg, final List<EdNode> nodes) {
 //		final int xdim = this.panel.width;
 //		final int ydim = this.panel.height;
-
         final List<LayoutNode> lnodes = getLayoutNodes(nodes);
         for (int i = 0; i < lnodes.size(); i++) {
             final LayoutNode lnode = lnodes.get(i);
@@ -1044,7 +983,6 @@ public class EvolutionaryGraphLayout {
             lnode.setAkt(new Point(x, y));
             lnode.setOpt(new Point(x, y));
         }
-
         eg.updateNodePosLtoE(nodes);
     }
 
@@ -1055,37 +993,30 @@ public class EvolutionaryGraphLayout {
         final int xdim = this.panel.width;
         final int ydim = this.panel.height;
         int x, y;
-
         for (int i = 0; i < lnodes.size(); i++) {
             final LayoutNode lnode = lnodes.get(i);
             // System.out.println(i+". :: "+this.usepattern+"
             // "+lnode.isFrozenByDefault()+" "+this.frozenPos+" "+lnode.isFrozen()+"
             // "+isFrozen(lnode));
-
             if ((!this.usePattern && (lnode.isFrozenByDefault() && this.frozenPos))
                     || isFrozen(lnode)) {
                 continue;
             }
-
             if (lnode.getAge() == 0) {
                 final int rdx = Math.abs(this.random.nextInt(xdim));
                 // while(rdx < 50)
                 // rdx = Math.abs(this.random.nextInt(xdim));
-
                 final int rdy = Math.abs(this.random.nextInt(ydim));
                 // while(rdy < 50)
                 // rdy = Math.abs(this.random.nextInt(ydim));
-
                 x = rdx % xdim;
                 y = rdy % ydim;
-
                 if (x - lnode.getEdNode().getWidth() < 0) {
                     x = Math.max(x, lnode.getEdNode().getWidth());
                 }
                 if (y - lnode.getEdNode().getHeight() < 0) {
                     y = Math.max(y, lnode.getEdNode().getHeight());
                 }
-
                 // System.out.println("Layouter.makeRandomLayoutOfNodes::: node:
                 // "+lnode.getEdNode().getTypeName()+" dim: ["+xdim+" ,
                 // "+ydim+"] zufallszahl: "+rdx+" , "+rdy+" x: "+x+" y: "+y);
@@ -1096,7 +1027,6 @@ public class EvolutionaryGraphLayout {
                         final EdArc arc = arcs.get(j);
                         if (arc.getSource().equals(node)
                                 || arc.getTarget().equals(node)) {
-
                             List<LayoutPattern> patterns = null;
                             if (arc.isElementOfTypeGraph()) {
                                 patterns = getInheritancePattern(arc);
@@ -1105,10 +1035,8 @@ public class EvolutionaryGraphLayout {
                                 patterns = getLayoutPatternsForType(arc
                                         .getType().getBasisType());
                             }
-
                             for (int p = 0; p < patterns.size(); p++) {
                                 final LayoutPattern lp = patterns.get(p);
-
                                 if (lp != null && lp.isEdgePattern()) {
                                     if (arc.getSource().equals(node)) {
                                         if (lp.isXOffset()) {
@@ -1171,7 +1099,6 @@ public class EvolutionaryGraphLayout {
         int xmax = 0;
         int ymin = this.panel.height;
         int ymax = 0;
-
         for (int i = 0; i < lnodes.size(); i++) {
             final LayoutNode lnode = lnodes.get(i);
             if (lnode.getAkt().x < xmin) {
@@ -1201,7 +1128,6 @@ public class EvolutionaryGraphLayout {
         final int downdif = lnodedown.getAkt().y - center;
         final int x_change = (leftdif - rightdif) / 2;
         final int y_change = (updif - downdif) / 2;
-
         for (int i = 0; i < lnodes.size(); i++) {
             final LayoutNode lnode = lnodes.get(i);
             lnode.getAkt().x = lnode.getAkt().x + x_change;
@@ -1229,11 +1155,9 @@ public class EvolutionaryGraphLayout {
                 aw = aw + e.getWidth();
                 ah = ah + e.getHeight();
             }
-
             aw = aw / nodes.size();
             ah = ah / nodes.size();
         }
-
         return new Dimension((int) aw, (int) ah);
     }
 
@@ -1244,7 +1168,6 @@ public class EvolutionaryGraphLayout {
             averagenodesize.width = 25;
             averagenodesize.height = 25;
         }
-
         final int ans = (averagenodesize.width >= averagenodesize.height) ? averagenodesize.width : averagenodesize.height;
         int sizetmp = 2 * (int) Math.sqrt(nodes.size());
         int sizeX = ans * sizetmp;
@@ -1252,15 +1175,12 @@ public class EvolutionaryGraphLayout {
             sizeX = 1000;
         }
         int sizeY = sizeX * 3 / 4;
-
         final Dimension neededpanelsize = new Dimension(sizeX, sizeY);
-
         // vergroessere zu kleine panel
         if (neededpanelsize.width < 400 || neededpanelsize.height < 400) {
             neededpanelsize.width = 400;
             neededpanelsize.height = 400;
         }
-
         return neededpanelsize;
     }
 
@@ -1273,8 +1193,9 @@ public class EvolutionaryGraphLayout {
     }
 
     /**
-     * momentan schrott, wegen fehlender vergleichbarkeit eines EdNodes mit seiner kopie koordiniert die blitzalterung
-     * von knoten deren nachbarn weggefallen sind
+     * momentan schrott, wegen fehlender vergleichbarkeit eines EdNodes mit
+     * seiner kopie koordiniert die blitzalterung von knoten deren nachbarn
+     * weggefallen sind
      *
      * @param eg
      */
@@ -1406,15 +1327,17 @@ public class EvolutionaryGraphLayout {
     }
 
     /**
-     * erzeugt ein neues LayoutPattern mit den uebergebenen Parametern und fuegt es dem layoutPatterns-Vector von this
-     * hinzu.
+     * erzeugt ein neues LayoutPattern mit den uebergebenen Parametern und fuegt
+     * es dem layoutPatterns-Vector von this hinzu.
      *
      * @param name name of layout pattern
      * @param pType Patterntyp ("edge" oder "node") Vorerst nur "edge" sinnvoll
      * @param type type des edges auf das sich dieses LayoutPattern bezieht
-     * @param offsetType in welche richtung soll das offset wirken ('x' oder 'y')
-     * @param offset gibt an, wie source und target einer edge zueinander liegen sollen. Bsp. offsettype='x' offset>0
-     * target soll rechts von source liegen.
+     * @param offsetType in welche richtung soll das offset wirken ('x' oder
+     * 'y')
+     * @param offset gibt an, wie source und target einer edge zueinander liegen
+     * sollen. Bsp. offsettype='x' offset>0 target soll rechts von source
+     * liegen.
      */
     public void createLayoutPattern(final String name, final String pType, final Type type,
             final char offsetType, final int offset) {
@@ -1457,7 +1380,7 @@ public class EvolutionaryGraphLayout {
     }
 
     public void removeLayoutPattern(final Type type) {
-        if (this.layoutPatterns.contains(type)) {
+        if (this.layoutPatterns.containsKey(type)) {
             this.layoutPatterns.remove(type);
         }
     }
@@ -1479,7 +1402,7 @@ public class EvolutionaryGraphLayout {
         // name: "+patternName+" count:"+v.size());
     }
 
-    public Hashtable<Type, List<LayoutPattern>> getLayoutPatterns() {
+    public  Map<Type, List<LayoutPattern>> getLayoutPatterns() {
         return this.layoutPatterns;
     }
 
@@ -1501,7 +1424,6 @@ public class EvolutionaryGraphLayout {
         if (v == null) {
             return null;
         }
-
         for (int i = 0; i < v.size(); i++) {
             final LayoutPattern lp = v.get(i);
             // System.out.println(lp+" "+lp.getName()+" "+patternName);
@@ -1512,15 +1434,14 @@ public class EvolutionaryGraphLayout {
         return null;
     }
 
-    public void setLayoutPatterns(final Hashtable<Type, List<LayoutPattern>> table) {
+    public void setLayoutPatterns(final HashMap<Type, List<LayoutPattern>> table) {
         this.layoutPatterns.clear();
-        final Enumeration<Type> keys = table.keys();
+        final Enumeration<Type> keys = Collections.enumeration(table.keySet());
         while (keys.hasMoreElements()) {
             final Type key = keys.nextElement();
             this.layoutPatterns.put(key, table.get(key));
         }
     }
-
     // private void delBendPoints(EdGraph eg){
     // List arcs = eg.getArcs();
     //		

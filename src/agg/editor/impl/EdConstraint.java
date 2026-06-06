@@ -2,17 +2,17 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.editor.impl;
 
 import java.util.List;
 import java.util.Vector;
-
 import agg.cons.Evaluable;
 import agg.cons.Formula;
 import agg.util.XMLHelper;
@@ -21,9 +21,7 @@ import agg.util.XMLObject;
 public class EdConstraint implements XMLObject {
 
     private Formula formula;
-
     private String fstrByIndx, fstrByNames;
-
     transient protected EdGraGra eGra; // my EdGraGra
 
     public EdConstraint(String n) {
@@ -44,9 +42,6 @@ public class EdConstraint implements XMLObject {
         this.fstrByIndx = "";
         this.formula = null;
         this.eGra = null;
-    }
-
-    public void finalize() {
     }
 
     public Formula getBasisConstraint() {
@@ -103,5 +98,4 @@ public class EdConstraint implements XMLObject {
         h.openObject(this.formula, this);
         h.close();
     }
-
 }

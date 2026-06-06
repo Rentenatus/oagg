@@ -2,22 +2,21 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.gui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-
 import agg.attribute.AttrManager;
 import agg.attribute.gui.AttrEditorManager;
 
@@ -25,7 +24,8 @@ import agg.attribute.gui.AttrEditorManager;
  * Editor for all data of an attribute instance tuple.
  *
  * @author $Author: olga $
- * @version $Id: FullInstanceTupleEditor.java,v 1.1 2005/08/25 11:56:58 enrico Exp $
+ * @version $Id: FullInstanceTupleEditor.java,v 1.1 2005/08/25 11:56:58 enrico
+ * Exp $
  */
 public class FullInstanceTupleEditor extends TabMesTool_TupleEditor {
 
@@ -45,8 +45,9 @@ public class FullInstanceTupleEditor extends TabMesTool_TupleEditor {
     //
     // Overriding...
     /**
-     * The heart of the matter. Columns are: [ VISIBILITY, HANDLER, TYPE, NAME, EXPR, CORRECTNESS ]. Extendable: true.
-     * Titles: default. Editable: default (all except for CORRECTNESS).
+     * The heart of the matter. Columns are: [ VISIBILITY, HANDLER, TYPE, NAME,
+     * EXPR, CORRECTNESS ]. Extendable: true. Titles: default. Editable: default
+     * (all except for CORRECTNESS).
      */
     protected TupleTableModel createTableModel() {
         int columns[] = {VISIBILITY, HANDLER, TYPE, NAME, EXPR, CORRECTNESS};
@@ -59,7 +60,6 @@ public class FullInstanceTupleEditor extends TabMesTool_TupleEditor {
     protected void createToolBar() {
         JLabel label1 = new JLabel("Tuple:");
         JLabel label2 = new JLabel("Member:");
-
         JToolBar toolBar1 = new JToolBar();
         toolBar1.setFloatable(false);
         toolBar1.add(getResetAction());
@@ -67,13 +67,11 @@ public class FullInstanceTupleEditor extends TabMesTool_TupleEditor {
         toolBar1.add(getShowAllAction());
         toolBar1.addSeparator();
         toolBar1.add(getHideAllAction());
-
         JToolBar toolBar2 = new JToolBar();
         toolBar2.setFloatable(false);
         toolBar2.add(getDeleteAction());
         toolBar2.addSeparator();
         toolBar2.add(getEvaluateAction());
-
         Box hBox = Box.createHorizontalBox();
         hBox.add(label1);
         hBox.add(toolBar1);

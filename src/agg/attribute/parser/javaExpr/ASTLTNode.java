@@ -1,15 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
-
 
 /* JJT: 0.2.2 */
 /**
@@ -31,24 +30,20 @@ public class ASTLTNode extends NUMxNUMtoBOOLnode {
     public void interpret() {
         Node child1 = jjtGetChild(0);
         Node child2 = jjtGetChild(1);
-
         child1.interpret();
         child2.interpret();
-
         Object op1Result = stack.get(top - 1);
         Object op2Result = stack.get(top);
         Object result;
         Class<?> commonType = commonNumberType((SimpleNode) child1, (SimpleNode) child2);
-
         if (typeCode(commonType) <= typeCode(Integer.TYPE)) {
-            result = new Boolean(
+            result = Boolean.valueOf(
                     ((Number) op1Result).intValue() < ((Number) op2Result)
                     .intValue());
         } else {
-            result = new Boolean(
+            result = Boolean.valueOf(
                     ((Number) op1Result).floatValue() < ((Number) op2Result)
                     .floatValue());
-
         }
 //		stack[--top] = result;
         stack.set(--top, result);

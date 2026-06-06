@@ -2,14 +2,19 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview.dialog;
 
+import agg.xt_basis.Rule;
+import agg.xt_basis.RuleLayer;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -22,12 +27,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -38,14 +44,9 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-//import agg.editor.impl.EdGraGra;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
-import agg.xt_basis.Rule;
-import agg.xt_basis.RuleLayer;
-
 /**
- * This class provides a window for a user dialog. This dialog is necessary to enter the grammar layers.
+ * This class provides a window for a user dialog. This dialog is necessary to
+ * enter the grammar layers.
  *
  * @author $Author: olga $
  * @version $Id: GraGraLayerDialog.java,v 1.3 2010/09/23 08:23:05 olga Exp $
@@ -54,23 +55,14 @@ import agg.xt_basis.RuleLayer;
 public class GraGraLayerDialog extends JDialog implements ActionListener {
 
     private JPanel contentPane;
-
     private JPanel rulePanel;
-
     private JPanel buttonPanel;
-
     private JScrollPane ruleScrollPane;
-
     private JTable ruleTable;
-
     private JButton closeButton;
-
     private JButton cancelButton;
-
     private boolean isCancelled;
-
     private RuleLayer layer;
-
 //	private EdGraGra gragra;
     boolean changed = false;
 
@@ -79,26 +71,24 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
      */
     public class HashTableModel extends DefaultTableModel {
 
-        Hashtable<Rule, Integer> table;
-
+        Map<Rule, Integer> table;
         RuleLayer ruleLayer;
 
         /**
-         * Creates a new model with hashtable and the title for the column of the table.
+         * Creates a new model with hashtable and the title for the column of
+         * the table.
          *
          * @param table The hashtable for the modle.
          * @param columnNames The array with the column names.
          */
-        public HashTableModel(Hashtable<Rule, Integer> table,
+        public HashTableModel(HashMap<Rule, Integer> table,
                 String[] columnNames) {
             super();
             for (int i = 0; i < columnNames.length; i++) {
                 addColumn(columnNames[i]);
             }
             this.table = table;
-            Enumeration<?> keys = this.table.keys();
-            while (keys.hasMoreElements()) {
-                Object key = keys.nextElement();
+            for (Object key : this.table.keySet()) {
                 Object value = this.table.get(key);
                 Vector<Object> tmpVector = new Vector<Object>();
                 tmpVector.addElement(key);
@@ -108,7 +98,8 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
         }
 
         /**
-         * Creates a new model with hashtable and the title for the column of the table.
+         * Creates a new model with hashtable and the title for the column of
+         * the table.
          *
          * @param layer The rule layer with hashtable for the model.
          * @param columnNames The array with the column names.
@@ -121,15 +112,12 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
             this.table = layer.getRuleLayer();
             this.ruleLayer = layer;
             Integer startLayer = layer.getStartLayer();
-            Hashtable<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
-
-            OrderedSet<Integer> ruleLayerSet = new OrderedSet<Integer>(new IntComparator<Integer>());
-            for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
-                    .hasMoreElements();) {
-                ruleLayerSet.add(en.nextElement());
+            Map<Integer, HashSet<Rule>> invertedRuleLayer = layer.invertLayer();
+            SortedSeasonSet<Integer> ruleLayerSet = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+            for (Integer key : invertedRuleLayer.keySet()) {
+                ruleLayerSet.add(key);
             }
             int i = 0;
-
             Integer currentLayer = startLayer;
             boolean nextLayerExists = true;
             while (nextLayerExists && (currentLayer != null)) {
@@ -157,8 +145,8 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
          *
          * @param rowIndex The index of the row of the cell.
          * @param columnIndex The index of the column of the cell.
-         * @return The layer function can only entered in the second column. So for any other column <CODE>false</CODE>
-         * is returned.
+         * @return The layer function can only entered in the second column. So
+         * for any other column <CODE>false</CODE> is returned.
          */
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return columnIndex == 1;
@@ -198,10 +186,9 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
             }
         }
 
-        public Hashtable<Rule, Integer> getTable() {
+        public Map<Rule, Integer> getTable() {
             return this.table;
         }
-
     }
 
     /**
@@ -229,12 +216,12 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
     }
 
     /**
-     * This method is called from within the constructor to initialize the dialog.
+     * This method is called from within the constructor to initialize the
+     * dialog.
      */
     private void initComponents() {
         this.contentPane = new JPanel(new BorderLayout());
         this.contentPane.setBackground(Color.lightGray);
-
         this.rulePanel = new JPanel(new BorderLayout());
         this.rulePanel.setBackground(Color.orange);
         this.rulePanel.setBorder(new TitledBorder("Set Rule Layer"));
@@ -250,21 +237,18 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
         this.ruleScrollPane = new JScrollPane(this.ruleTable);
         this.ruleScrollPane.setPreferredSize(new Dimension(200, hght));
         this.rulePanel.add(this.ruleScrollPane);
-
         this.buttonPanel = new JPanel(new GridBagLayout());
         this.closeButton = new JButton();
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
         this.closeButton.setToolTipText("Accept entries and close dialog.");
         this.closeButton.addActionListener(this);
-
         this.cancelButton = new JButton();
         this.isCancelled = false;
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
         this.cancelButton.setToolTipText("Reject entries and close dialog.");
         this.cancelButton.addActionListener(this);
-
         constrainBuild(this.buttonPanel, this.closeButton, 0, 0, 1, 1,
                 GridBagConstraints.BOTH, GridBagConstraints.CENTER, 1.0, 0.0,
                 5, 10, 10, 5);
@@ -274,7 +258,6 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
         this.contentPane.add(this.rulePanel, BorderLayout.CENTER);
         this.contentPane.add(this.buttonPanel, BorderLayout.SOUTH);
         this.contentPane.revalidate();
-
         setContentPane(this.contentPane);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         validate();
@@ -298,9 +281,8 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
     }
 
     private void acceptValues() {
-        Hashtable<Rule, Integer> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
-        for (Enumeration<?> e = table.keys(); e.hasMoreElements();) {
-            Object key = e.nextElement();
+        Map<Rule, Integer> table = ((HashTableModel) this.ruleTable.getModel()).getTable();
+        for (Object key : table.keySet()) {
             Integer l = table.get(key);
             if (l.intValue() != ((Rule) key).getLayer()) {
                 ((Rule) key).setLayer(l.intValue());
@@ -326,10 +308,10 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
             dispose();
         }
     }
-
 //	public void setGraGra(EdGraGra gra) {
 //		gragra = gra;
 //	}
+
     public boolean isCancelled() {
         return this.isCancelled;
     }
@@ -360,7 +342,6 @@ public class GraGraLayerDialog extends JDialog implements ActionListener {
         ((GridBagLayout) container.getLayout()).setConstraints(component, c);
         container.add(component);
     }
-
 }
 /*
  * $Log: GraGraLayerDialog.java,v $

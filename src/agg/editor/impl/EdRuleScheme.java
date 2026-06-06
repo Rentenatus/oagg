@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -16,7 +18,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
-
 import agg.util.XMLHelper;
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
@@ -45,15 +46,11 @@ public class EdRuleScheme extends EdRule {
 
     public EdRuleScheme(final RuleScheme ruleScheme, final EdTypeSet types) {
         super(ruleScheme, types);
-
         this.name = ruleScheme.getSchemeName();
-
         this.itsKernelRule = new EdRule(ruleScheme.getKernelRule(), types);
 //      this.kernelRule.setKind(0);
-
         this.itsMultiRules = new Vector<EdRule>();
         createMultiRules(ruleScheme.getMultiRules());
-
         if (ruleScheme.getAmalgamatedRule() != null) {
             makeAmalgamatedRule(ruleScheme.getAmalgamatedRule());
         }
@@ -63,7 +60,6 @@ public class EdRuleScheme extends EdRule {
         if (this.itsAmalgamatedRule != null) {
             this.itsAmalgamatedRule.dispose();
         }
-
         for (int i = 0; i < this.itsMultiRules.size(); i++) {
             this.itsMultiRules.remove(0).dispose();
         }
@@ -78,14 +74,11 @@ public class EdRuleScheme extends EdRule {
 
     public void setGraGra(final EdGraGra gra) {
         super.setGraGra(gra);
-
         this.itsKernelRule.setGraGra(gra);
-
         for (int i = 0; i < this.itsMultiRules.size(); i++) {
             final EdRule multiRule = this.itsMultiRules.get(i);
             multiRule.setGraGra(gra);
         }
-
         if (this.itsAmalgamatedRule != null) {
             this.itsAmalgamatedRule.setGraGra(gra);
         }
@@ -95,9 +88,7 @@ public class EdRuleScheme extends EdRule {
         this.undoManager = anUndoManager;
 //		this.eLeft.setUndoManager(this.undoManager);
 //		this.eRight.setUndoManager(this.undoManager);
-
         this.itsKernelRule.setUndoManager(this.undoManager);
-
         for (int i = 0; i < this.itsMultiRules.size(); i++) {
             final EdRule multiRule = this.itsMultiRules.get(i);
             multiRule.setUndoManager(this.undoManager);
@@ -109,7 +100,6 @@ public class EdRuleScheme extends EdRule {
                 || rulename.equals(this.getName() + "." + this.itsKernelRule.getName())) {
             return this.itsKernelRule;
         }
-
         for (int i = 0; i < this.itsMultiRules.size(); i++) {
             final EdRule multiRule = this.itsMultiRules.get(i);
             if (multiRule.getName().equals(rulename)
@@ -117,7 +107,6 @@ public class EdRuleScheme extends EdRule {
                 return multiRule;
             }
         }
-
         return null;
     }
 
@@ -155,7 +144,6 @@ public class EdRuleScheme extends EdRule {
                 || this.itsKernelRule.getBasisRule().getRight() == g) {
             return this.itsKernelRule;
         }
-
         return null;
     }
 
@@ -185,30 +173,24 @@ public class EdRuleScheme extends EdRule {
         for (int i = 0; i < multiRules.size(); i++) {
             final MultiRule multiRule = (MultiRule) multiRules.get(i);
             final EdRule r = new EdRule(multiRule, this.getTypeSet());
-
             r.setGraGra(this.eGra);
             r.setUndoManager(this.undoManager);
-
             this.itsMultiRules.add(r);
         }
     }
 
     public EdRule addMultiRule(final String ruleName) {
         MultiRule mr = (MultiRule) ((RuleScheme) this.getBasisRule()).addMultiRule(ruleName);
-
         EdRule r = new EdRule(mr, this.getTypeSet());
         applyLayoutOfKernelRule(r);
-
         r.setGraGra(this.eGra);
         r.setUndoManager(this.undoManager);
-
         this.itsMultiRules.add(r);
         return r;
     }
 
     private EdNode addNodeCopy(final EdNode sourceNode, final EdGraph targetGraph) {
         EdNode en = targetGraph.copyNode(sourceNode, sourceNode.getX(), sourceNode.getY());
-
 //		targetGraph.addCreatedToUndo(en);
 //		targetGraph.undoManagerEndEdit();
         return en;
@@ -218,11 +200,9 @@ public class EdRuleScheme extends EdRule {
             final EdGraphObject targetSrc,
             final EdGraphObject targetTar,
             final EdGraph targetGraph) {
-
         EdArc ea = targetGraph.copyArc(sourceArc, targetSrc, targetTar);
 //			targetGraph.addCreatedToUndo(ea);
 //			targetGraph.undoManagerEndEdit();
-
         return ea;
     }
 
@@ -235,7 +215,6 @@ public class EdRuleScheme extends EdRule {
                     if (copy != null) {
                         try {
                             ((MultiRule) mr.getBasisRule()).addEmbeddingLeft(kernObj.getBasisObject(), copy.getBasisObject());
-
                             copy.addContextUsage(String.valueOf(kernObj.hashCode()));
                             copy.addContextUsage(kernObj.getContextUsage());
                         } catch (BadMappingException ex) {
@@ -270,7 +249,6 @@ public class EdRuleScheme extends EdRule {
                     if (copy != null) {
                         try {
                             ((MultiRule) mr.getBasisRule()).addEmbeddingRight(kernObj.getBasisObject(), copy.getBasisObject());
-
                             copy.addContextUsage(String.valueOf(kernObj.hashCode()));
                             copy.addContextUsage(kernObj.getContextUsage());
                         } catch (BadMappingException ex) {
@@ -318,70 +296,55 @@ public class EdRuleScheme extends EdRule {
                 this.propagateRemoveGraphObjectToMultiRule(arc);
             }
         }
-
         for (int i = 0; i < this.itsMultiRules.size(); i++) {
             EdRule mr = this.itsMultiRules.get(i);
-
             if (this.itsKernelRule.getLeft() == srcObject.getContext()) {
                 EdGraphObject tarObj = mr.getLeft().findGraphObject(
                         ((MultiRule) mr.getBasisRule()).getEmbeddingLeft().getImage(srcObject.getBasisObject()));
-
                 if (srcObject.isNode()) {
                     Node bNode = (Node) ((MultiRule) mr.getBasisRule())
                             .getEmbeddingLeft().getImage(srcObject.getBasisObject());
                     if (bNode != null) {
                         try {
                             ((MultiRule) mr.getBasisRule()).removeEmbeddingLeft(srcObject.getBasisObject());
-
                             srcObject.addContextUsage(String.valueOf(tarObj.hashCode()));
-
                             mr.getLeft().delNode(bNode);
                         } catch (TypeException ex) {
                         }
                     }
-
                 } else {
                     Arc bArc = (Arc) ((MultiRule) mr.getBasisRule())
                             .getEmbeddingLeft().getImage(srcObject.getBasisObject());
                     if (bArc != null) {
                         try {
                             ((MultiRule) mr.getBasisRule()).removeEmbeddingLeft(srcObject.getBasisObject());
-
                             srcObject.addContextUsage(String.valueOf(tarObj.hashCode()));
-
                             mr.getLeft().delArc(bArc);
                         } catch (TypeException ex) {
                         }
                     }
                 }
             } else if (this.itsKernelRule.getRight() == srcObject.getContext()) {
-
                 EdGraphObject tarObj = mr.getRight().findGraphObject(
                         ((MultiRule) mr.getBasisRule()).getEmbeddingRight().getImage(srcObject.getBasisObject()));
-
                 if (srcObject.isNode()) {
                     Node bNode = (Node) ((MultiRule) mr.getBasisRule())
                             .getEmbeddingRight().getImage(srcObject.getBasisObject());
                     if (bNode != null) {
                         try {
                             ((MultiRule) mr.getBasisRule()).removeEmbeddingRight(srcObject.getBasisObject());
-
                             srcObject.addContextUsage(String.valueOf(tarObj.hashCode()));
-
                             mr.getRight().delNode(bNode);
                         } catch (TypeException ex) {
                         }
                     }
-
                 } else {
                     Arc bArc = (Arc) ((MultiRule) mr.getBasisRule())
                             .getEmbeddingRight().getImage(srcObject.getBasisObject());
                     if (bArc != null) {
                         try {
                             ((MultiRule) mr.getBasisRule()).removeEmbeddingRight(srcObject.getBasisObject());
-
                             srcObject.addContextUsage(String.valueOf(tarObj.hashCode()));
-
                             mr.getRight().delArc(bArc);
                         } catch (TypeException ex) {
                         }
@@ -484,7 +447,6 @@ public class EdRuleScheme extends EdRule {
                 go1.setXY(go.getX(), go.getY());
             }
         }
-
         final Iterator<GraphObject> embRight = ((MultiRule) multiRule.getBasisRule()).getEmbeddingRight().getDomain();
         while (embRight.hasNext()) {
             GraphObject o = embRight.next();
@@ -508,16 +470,12 @@ public class EdRuleScheme extends EdRule {
         if (this.itsAmalgamatedRule != null) {
             this.itsAmalgamatedRule.dispose();
         }
-
         this.itsAmalgamatedRule = r;
         this.itsAmalgamatedRule.setGraGra(this.eGra);
-
         setXYLayoutOfAmalgamatedRule(this.itsAmalgamatedRule);
-
         this.itsAmalgamatedRule.getLeft().setEditable(false);
         this.itsAmalgamatedRule.getRight().setEditable(false);
         this.itsAmalgamatedRule.setEditable(false);
-
         // nur in EdRuleScheme available
         if (this.itsAmalgamatedRule.getMatch() != null) {
             this.eGra.getBasisGraGra().addMatch(this.itsAmalgamatedRule.getMatch());
@@ -526,11 +484,8 @@ public class EdRuleScheme extends EdRule {
 
     private void makeAmalgamatedRule(final AmalgamatedRule rule) {
         this.itsAmalgamatedRule = new EdRule(rule);
-
         this.itsAmalgamatedRule.setGraGra(this.eGra);
-
         setXYLayoutOfAmalgamatedRule(this.itsAmalgamatedRule);
-
         this.itsAmalgamatedRule.getLeft().setEditable(false);
         this.itsAmalgamatedRule.getRight().setEditable(false);
         this.itsAmalgamatedRule.setEditable(false);
@@ -573,7 +528,6 @@ public class EdRuleScheme extends EdRule {
                 ac.setLayoutByIndex(ac1, true);
             }
         }
-
         for (int i = 0; i < this.itsMultiRules.size(); i++) {
             EdRule mr = this.itsMultiRules.get(i);
             EdRule r = rs.getMultiRules().get(i);
@@ -584,7 +538,6 @@ public class EdRuleScheme extends EdRule {
                 mr.getLeft().setLayoutByIndex(r.getLeft(), true);
                 mr.getRight().setLayoutByIndex(r.getRight(), true);
             }
-
             for (int n = 0; n < mr.getNestedACs().size(); n++) {
                 EdNestedApplCond ac = (EdNestedApplCond) mr.getNestedACs().get(n);
                 if (n < r.getNestedACs().size()) {
@@ -627,7 +580,6 @@ public class EdRuleScheme extends EdRule {
                     }
                 }
             }
-
             // make more layout of RHS of rule r
             r.getRight().layoutBasisGraph(new Dimension(400, 300));
         }
@@ -640,14 +592,11 @@ public class EdRuleScheme extends EdRule {
         if (m == null || eImageGraph == null) {
             return;
         }
-
         eImageGraph.clearMarks();
-
         Iterator<GraphObject> domain = m.getDomain();
         while (domain.hasNext()) {
             GraphObject bOrig = domain.next();
             GraphObject bImage = m.getImage(bOrig);
-
             EdNode enI = eImageGraph.findNode(bImage);
             if (enI != null) {
                 if (enI.isMorphismMarkEmpty()) {
@@ -672,7 +621,6 @@ public class EdRuleScheme extends EdRule {
                 this.itsAmalgamatedRule.updateMatch();
                 this.eGra.getBasisGraGra().destroyMatch(this.itsAmalgamatedRule.getBasisRule().getMatch());
             }
-
             this.itsAmalgamatedRule.dispose();
             ((RuleScheme) this.bRule).disposeAmalgamatedRule();
             this.itsAmalgamatedRule = null;
@@ -684,7 +632,6 @@ public class EdRuleScheme extends EdRule {
     public boolean deleteGraphObjectsOfType(
             final EdGraphObject tgo,
             boolean addToUndo) {
-
         boolean allDone = true;
         for (int j = 0; j < this.itsMultiRules.size(); j++) {
             EdRule r = this.itsMultiRules.get(j);
@@ -692,9 +639,7 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         allDone = this.delObjsOfTypeFromKernelRule(tgo, addToUndo);
-
         return allDone;
     }
 
@@ -702,10 +647,8 @@ public class EdRuleScheme extends EdRule {
             final EdGraphObject tgo,
             final EdRule r,
             boolean addToUndo) {
-
         List<EdGraphObject> listLHS = r.eLeft.getGraphObjectsOfType(tgo);
         List<EdGraphObject> listRHS = r.eRight.getGraphObjectsOfType(tgo);
-
         if (addToUndo) {
             for (int i = 0; i < listLHS.size(); i++) {
                 EdGraphObject go = listLHS.get(i);
@@ -719,9 +662,7 @@ public class EdRuleScheme extends EdRule {
                 }
             }
         }
-
         boolean allDone = true;
-
         for (int j = 0; j < r.itsNACs.size(); j++) {
             EdNAC nac = r.itsNACs.get(j);
             if (addToUndo) {
@@ -739,7 +680,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         for (int j = 0; j < r.itsPACs.size(); j++) {
             EdPAC pac = r.itsPACs.get(j);
             if (addToUndo) {
@@ -757,7 +697,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         for (int j = 0; j < r.itsACs.size(); j++) {
             EdNestedApplCond ac = (EdNestedApplCond) r.itsACs.get(j);
             if (addToUndo) {
@@ -776,14 +715,12 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         if (addToUndo) {
             for (int i = 0; i < listLHS.size(); i++) {
                 EdGraphObject go = listLHS.get(i);
                 if (((MultiRule) r.getBasisRule()).isTargetOfEmbeddingLeft(go.getBasisObject())) {
                     continue;
                 }
-
                 if (go.isNode()) {
                     if (r.eLeft.deleteNode((EdNode) go, addToUndo)) {
                     } else {
@@ -796,13 +733,11 @@ public class EdRuleScheme extends EdRule {
                     }
                 }
             }
-
             for (int i = 0; i < listRHS.size(); i++) {
                 EdGraphObject go = listRHS.get(i);
                 if (((MultiRule) r.getBasisRule()).isTargetOfEmbeddingRight(go.getBasisObject())) {
                     continue;
                 }
-
                 if (go.isNode()) {
                     if (r.eRight.deleteNode((EdNode) go, addToUndo)) {
                     } else {
@@ -823,7 +758,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         return allDone;
     }
 
@@ -831,10 +765,8 @@ public class EdRuleScheme extends EdRule {
             final EdType t,
             final EdRule r,
             boolean addToUndo) {
-
         List<EdGraphObject> listLHS = r.eLeft.getGraphObjectsOfType(t);
         List<EdGraphObject> listRHS = r.eRight.getGraphObjectsOfType(t);
-
         if (addToUndo) {
             for (int i = 0; i < listLHS.size(); i++) {
                 EdGraphObject go = listLHS.get(i);
@@ -848,9 +780,7 @@ public class EdRuleScheme extends EdRule {
                 }
             }
         }
-
         boolean allDone = true;
-
         for (int j = 0; j < r.itsNACs.size(); j++) {
             EdNAC nac = r.itsNACs.get(j);
             if (addToUndo) {
@@ -868,7 +798,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         for (int j = 0; j < r.itsPACs.size(); j++) {
             EdPAC pac = r.itsPACs.get(j);
             if (addToUndo) {
@@ -886,7 +815,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         for (int j = 0; j < r.itsACs.size(); j++) {
             EdNestedApplCond ac = (EdNestedApplCond) r.itsACs.get(j);
             if (addToUndo) {
@@ -905,14 +833,12 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         if (addToUndo) {
             for (int i = 0; i < listLHS.size(); i++) {
                 EdGraphObject go = listLHS.get(i);
                 if (((MultiRule) r.getBasisRule()).isTargetOfEmbeddingLeft(go.getBasisObject())) {
                     continue;
                 }
-
                 if (go.isNode()) {
                     if (r.eLeft.deleteNode((EdNode) go, addToUndo)) {
                     } else {
@@ -925,13 +851,11 @@ public class EdRuleScheme extends EdRule {
                     }
                 }
             }
-
             for (int i = 0; i < listRHS.size(); i++) {
                 EdGraphObject go = listRHS.get(i);
                 if (((MultiRule) r.getBasisRule()).isTargetOfEmbeddingRight(go.getBasisObject())) {
                     continue;
                 }
-
                 if (go.isNode()) {
                     if (r.eRight.deleteNode((EdNode) go, addToUndo)) {
                     } else {
@@ -952,17 +876,14 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         return allDone;
     }
 
     private boolean delObjsOfTypeFromKernelRule(
             final EdGraphObject tgo,
             boolean addToUndo) {
-
         List<EdGraphObject> listLHS = this.itsKernelRule.eLeft.getGraphObjectsOfType(tgo);
         List<EdGraphObject> listRHS = this.itsKernelRule.eRight.getGraphObjectsOfType(tgo);
-
         if (addToUndo) {
             for (int i = 0; i < listLHS.size(); i++) {
                 EdGraphObject go = listLHS.get(i);
@@ -975,9 +896,7 @@ public class EdRuleScheme extends EdRule {
                 }
             }
         }
-
         boolean allDone = true;
-
         for (int j = 0; j < this.itsKernelRule.itsNACs.size(); j++) {
             EdNAC nac = this.itsKernelRule.itsNACs.get(j);
             if (addToUndo) {
@@ -995,7 +914,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         for (int j = 0; j < this.itsKernelRule.itsPACs.size(); j++) {
             EdPAC pac = this.itsKernelRule.itsPACs.get(j);
             if (addToUndo) {
@@ -1013,7 +931,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         for (int j = 0; j < this.itsKernelRule.itsACs.size(); j++) {
             EdNestedApplCond ac = (EdNestedApplCond) this.itsKernelRule.itsACs.get(j);
             if (addToUndo) {
@@ -1032,12 +949,10 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         if (addToUndo) {
             for (int i = 0; i < listLHS.size(); i++) {
                 EdGraphObject go = listLHS.get(i);
                 this.propagateRemoveGraphObjectToMultiRule(go);
-
                 if (go.isNode()) {
                     if (!this.itsKernelRule.eLeft.deleteNode((EdNode) go, addToUndo)) {
                         allDone = false;
@@ -1051,7 +966,6 @@ public class EdRuleScheme extends EdRule {
             for (int i = 0; i < listRHS.size(); i++) {
                 EdGraphObject go = listRHS.get(i);
                 this.propagateRemoveGraphObjectToMultiRule(go);
-
                 if (go.isNode()) {
                     if (!this.itsKernelRule.eRight.deleteNode((EdNode) go, addToUndo)) {
                         allDone = false;
@@ -1066,19 +980,16 @@ public class EdRuleScheme extends EdRule {
             if (!this.itsKernelRule.eLeft.deleteGraphObjectsOfTypeFromGraph(tgo, addToUndo)) {
                 allDone = false;
             }
-
             if (!this.itsKernelRule.eRight.deleteGraphObjectsOfTypeFromGraph(tgo, addToUndo)) {
                 allDone = false;
             }
         }
-
         return allDone;
     }
 
     public boolean deleteGraphObjectsOfType(
             final EdType t,
             boolean addToUndo) {
-
         boolean allDone = true;
         for (int j = 0; j < this.itsMultiRules.size(); j++) {
             EdRule r = this.itsMultiRules.get(j);
@@ -1093,7 +1004,6 @@ public class EdRuleScheme extends EdRule {
     private boolean delObjsOfTypeFromKernelRule(
             final EdType t,
             boolean addToUndo) {
-
         List<EdGraphObject> list = this.itsKernelRule.eLeft.getGraphObjectsOfType(t);
         if (addToUndo) {
             for (int i = 0; i < list.size(); i++) {
@@ -1107,9 +1017,7 @@ public class EdRuleScheme extends EdRule {
                 }
             }
         }
-
         boolean allDone = true;
-
         for (int j = 0; j < this.itsKernelRule.itsNACs.size(); j++) {
             EdNAC nac = this.itsKernelRule.itsNACs.get(j);
             if (addToUndo) {
@@ -1127,7 +1035,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         for (int j = 0; j < this.itsKernelRule.itsPACs.size(); j++) {
             EdPAC pac = this.itsKernelRule.itsPACs.get(j);
             if (addToUndo) {
@@ -1145,7 +1052,6 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         for (int j = 0; j < this.itsKernelRule.itsACs.size(); j++) {
             EdNestedApplCond ac = (EdNestedApplCond) this.itsKernelRule.itsACs.get(j);
             if (addToUndo) {
@@ -1164,14 +1070,12 @@ public class EdRuleScheme extends EdRule {
                 allDone = false;
             }
         }
-
         if (!this.itsKernelRule.eLeft.deleteGraphObjectsOfTypeFromGraph(t, addToUndo)) {
             allDone = false;
         }
         if (!this.itsKernelRule.eRight.deleteGraphObjectsOfTypeFromGraph(t, addToUndo)) {
             allDone = false;
         }
-
         return allDone;
     }
 
@@ -1181,14 +1085,12 @@ public class EdRuleScheme extends EdRule {
     public void XreadObject(XMLHelper h) {
         h.enrichObject(this.itsKernelRule);
         this.itsKernelRule.setGraGra(this.eGra);
-
         for (int j = 0; j < this.itsMultiRules.size(); j++) {
             EdRule r = this.itsMultiRules.get(j);
             h.enrichObject(r);
             r.setGraGra(this.eGra);
             enrichContextUsageOfEmbedTarget(r);
         }
-
         if (this.itsAmalgamatedRule != null) {
             h.enrichObject(this.itsAmalgamatedRule);
             this.itsAmalgamatedRule.setGraGra(this.eGra);
@@ -1229,11 +1131,9 @@ public class EdRuleScheme extends EdRule {
      */
     public void XwriteObject(XMLHelper h) {
         h.addObject("", this.itsKernelRule, true);
-
         for (int j = 0; j < this.itsMultiRules.size(); j++) {
             h.addObject("", this.itsMultiRules.get(j), true);
         }
-
         if (this.itsAmalgamatedRule != null) {
             h.addObject("", this.itsAmalgamatedRule, true);
         }
@@ -1250,7 +1150,6 @@ public class EdRuleScheme extends EdRule {
 	 * @see javax.swing.undo.StateEditable#storeState(java.util.Hashtable)
      */
     public void storeState(Hashtable<Object, Object> state) {
-        super.restoreState(state);
+        super.storeState(state);
     }
-
 }

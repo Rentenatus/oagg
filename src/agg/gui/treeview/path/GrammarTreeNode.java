@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -13,12 +15,10 @@ package agg.gui.treeview.path;
 
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
 import agg.attribute.impl.CondMember;
 import agg.attribute.impl.CondTuple;
 import agg.cons.AtomApplCond;
@@ -82,7 +82,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
 
     public GrammarTreeNode(final EdGraGra gragra) {
         super(new GrammarTreeNodeData(gragra));
-
         ((GrammarTreeNodeData) this.getUserObject()).setTreeNode(this);
     }
 
@@ -94,18 +93,14 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraSave gragraSave,
             final String directory,
             final EdGraGra gragra) {
-
         treeView.fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.SAVE));
-
         // set gragra to save
         if (gragra.getDirName().equals("")) {
             gragraSave.setDirName(directory);
         }
-
         gragraSave.setGraGra(gragra, gragra.getDirName(),
                 gragra.getFileName());
         gragraSave.save();
-
         treeView.fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.SAVED));
     }
 
@@ -116,9 +111,7 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraSave gragraSave,
             final String directory,
             final EdGraGra gragra) {
-
         treeView.fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.SAVE));
-
         gragraSave.setDirName(directory);
         gragraSave.setGraGra(gragra, gragra.getDirName(), gragra.getFileName());
         if (gragraSave.saveAs()) {
@@ -137,13 +130,10 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraSave gragraSave,
             final String directory,
             final EdGraGra gragra) {
-
         treeView.fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.SAVE));
-
         gragraSave.setGraGra(gragra);
         gragraSave.setBaseGraGra(gragra.getBasisGraGra(), "", "");
         gragraSave.saveAsBase();
-
         treeView.fireTreeViewEvent(new TreeViewEvent(this, TreeViewEvent.SAVED));
     }
 
@@ -155,16 +145,13 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final TreePath selPath,
             final GraGraLoad gragraLoad,
             final EdGraGra gra) {
-
         /* reload gragra */
         gragraLoad.setGraGra(gra, gra.getDirName(), gra.getFileName());
         gragraLoad.reload();
         if (gragraLoad.getGraGra() != null) {
             EdGraGra gragra = gragraLoad.getGraGra();
             BaseFactory.theFactory().notify(gragra.getBasisGraGra());
-
             this.refreshCurrentGraGra(treeView, selPath, gragra);
-
             return gragra;
         }
         return null;
@@ -177,12 +164,10 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeView treeView,
             final TreePath selPath,
             final EdGraGra gra) {
-
         /* collapse selected tree path */
         if (treeView.getTree().isExpanded(selPath)) {
             treeView.getTree().collapsePath(selPath);
         }
-
         /* remove all gragra's children */
         DefaultMutableTreeNode graNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
         while (graNode.getChildCount() > 0) {
@@ -191,20 +176,16 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             ((GraGraTreeNodeData) child.getUserObject()).dispose();
         }
         graNode.removeAllChildren();
-
         /* set gragra */
         GrammarTreeNodeData graNodeData = new GrammarTreeNodeData(gra);
         graNode.setUserObject(graNodeData);
         graNodeData.setTreeNode(graNode);
         treeView.getTreeModel().nodeChanged(graNode);
-
         int graIndex = treeView.getTree().getRowForPath(selPath);
         updateTreeNodeData(treeView, graNode, gra);
-
         if (!treeView.getTree().isExpanded(treeView.getTree().getPathForRow(graIndex))) {
             treeView.getTree().expandPath(treeView.getTree().getPathForRow(graIndex));
         }
-
         gra.setChanged(false);
     }
 
@@ -212,33 +193,26 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeView treeView,
             final DefaultMutableTreeNode graNode,
             final EdGraGra gragra) {
-
         insertGraGraDataIntoTree(treeView, graNode, gragra);
     }
 
     public int insertIntoTree(
             final GraGraTreeView treeView) {
 //		System.out.println("GrammarTreeNode.insertIntoTree...");
-
         final GraGraTreeModel treeModel = treeView.getTreeModel();
         DefaultMutableTreeNode modelRoot = (DefaultMutableTreeNode) treeModel.getRoot();
         treeModel.insertNodeInto(this, modelRoot, modelRoot.getChildCount());
-
         if (!treeView.getTree().isExpanded(treeView.getTree().getPathForRow(0))) {
             treeView.getTree().expandPath(treeView.getTree().getPathForRow(0));
         }
-
         // System.out.println(treeView.getTree().getRowCount());
         int graIndex = treeView.getTree().getRowCount() - 1;
-
         EdGraGra gragra = ((GrammarTreeNodeData) this.getUserObject()).getGraGra();
         insertGraGraDataIntoTree(treeView, this, gragra);
 //		System.out.println(graIndex+"   "+treeView.getTree().getPathForRow(graIndex));
-
         if (!treeView.getTree().isExpanded(treeView.getTree().getPathForRow(graIndex))) {
             treeView.getTree().expandPath(treeView.getTree().getPathForRow(graIndex));
         }
-
         return graIndex;
     }
 
@@ -247,7 +221,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final DefaultMutableTreeNode delNode,
             final TreePath selPath,
             boolean withWarning) {
-
         final GraGraTreeNodeData data = (GraGraTreeNodeData) delNode.getUserObject();
         final TreePath graPath = selPath.getParentPath();
         if (graPath != null) {
@@ -403,7 +376,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
                     treeView.setFlagForNew();
                     treeView.fireTreeViewEvent(new TreeViewEvent(this,
                             TreeViewEvent.SELECTED, treeView.getEditorPath()));
-
                     if ((((GraGraTreeNodeData) ((DefaultMutableTreeNode) treeView.getSelectedPath()
                             .getLastPathComponent()).getUserObject()).isGraph()
                             && !treeView.getCurrentGraGra().getRules().isEmpty())) {
@@ -425,7 +397,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final DefaultMutableTreeNode delNode,
             final TreePath selPath,
             boolean withWarning) {
-
         final GraGraTreeNodeData data = (GraGraTreeNodeData) delNode.getUserObject();
         final TreePath graPath = selPath.getParentPath();
         if (graPath != null) {
@@ -443,7 +414,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
                     EdRule rs = data.getRuleScheme();
                     treeView.getGraGraStore().storeRuleScheme(rs.getGraGra(), (EdRuleScheme) rs);
                     graData.getGraGra().removeRule(rs);
-
                     row--;
                     treeView.setEditPath(row);
                     treeView.setFlagForNew();
@@ -461,13 +431,11 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
                     EdRule rs = data.getRule();
                     treeView.getGraGraStore().storeRuleScheme(rs.getGraGra(), (EdRuleScheme) rs);
                     graData.getGraGra().removeRule(rs);
-
                     row--;
                     treeView.setEditPath(row);
                     treeView.setFlagForNew();
                     treeView.fireTreeViewEvent(new TreeViewEvent(this,
                             TreeViewEvent.SELECTED, treeView.editorPath));
-
                     if ((((GraGraTreeNodeData) ((DefaultMutableTreeNode) treeView.selPath.getLastPathComponent())
                             .getUserObject()).isGraph()
                             && !treeView.getCurrentGraGra().getRules().isEmpty())) {
@@ -520,20 +488,17 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeView treeView,
             final DefaultMutableTreeNode graNode,
             final EdGraGra gragra) {
-
         /* create the type graph node */
         final EdGraph typeGraph = gragra.getTypeSet().getTypeGraph();
         if (typeGraph != null) {
             insertTypeGraphIntoTree(treeView.getTreeModel(), graNode, typeGraph);
         }
-
         /* create tree nodes of graphs*/
         // System.out.println(gragra.getGraphs().size());
         for (int i = 0; i < gragra.getGraphs().size(); i++) {
             final EdGraph g = gragra.getGraphs().get(i);
             insertGraphIntoTree(treeView.getTreeModel(), graNode, g);
         }
-
         /* create tree nodes of rules*/
         for (int i = 0; i < gragra.getRules().size(); i++) {
             final EdRule r = gragra.getRules().elementAt(i);
@@ -543,19 +508,16 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
                 insertRuleIntoTree(treeView, graNode, r);
             }
         }
-
         /* create atomics nodes */
         for (int i = 0; i < gragra.getAtomics().size(); i++) {
             EdAtomic a = gragra.getAtomics().elementAt(i);
             insertAtomicGraphConstraintIntoTree(treeView.getTreeModel(), graNode, a);
         }
-
         /* create constraints (formulas) nodes */
         for (int i = 0; i < gragra.getConstraints().size(); i++) {
             final EdConstraint c = gragra.getConstraints().get(i);
             insertFormulaIntoTree(treeView.getTreeModel(), graNode, c);
         }
-
         /* create rule sequence nodes */
         if (gragra.getBasisGraGra().trafoByRuleSequence()) {
             for (int i = 0; i < gragra.getBasisGraGra().getRuleSequences().size(); i++) {
@@ -563,7 +525,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
                 insertRuleSequenceIntoTree(treeView.getTreeModel(), graNode, rs);
             }
         }
-
 //		if (gragra.getConstraints().size() != 0) 
         {
             if (gragra.getBasisGraGra().isLayered()) {
@@ -580,7 +541,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode graNode,
             final EdGraph typeGraph) {
-
         EdGraGra gragra = ((GrammarTreeNodeData) graNode.getUserObject()).getGraGra();
         TypeGraphTreeNodeData sd = new TypeGraphTreeNodeData(typeGraph);
         DefaultMutableTreeNode typeGraphNode = new DefaultMutableTreeNode(sd);
@@ -613,7 +573,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode graNode,
             final EdGraph graph) {
-
         final GraGraTreeNodeData sd = new GraphTreeNodeData(graph);
         final DefaultMutableTreeNode graphNode = new DefaultMutableTreeNode(sd);
         sd.setTreeNode(graphNode);
@@ -626,12 +585,10 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeView treeView,
             final DefaultMutableTreeNode graNode,
             final EdRule rule) {
-
         RuleTreeNodeData sd = new RuleTreeNodeData(rule);
         final DefaultMutableTreeNode ruleNode = new DefaultMutableTreeNode(sd);
         sd.setTreeNode(ruleNode);
         treeView.getTreeModel().insertNodeInto(ruleNode, graNode, graNode.getChildCount());
-
         /* insert formula above nested ACs into rule tree*/
         insertRuleFormulaIntoTree(treeView, ruleNode, rule.getBasisRule().getFormulaStr());
         /* create Nested AC tree nodes */
@@ -639,7 +596,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final EdNestedApplCond ac = (EdNestedApplCond) rule.getNestedACs().get(j);
             insertNestedACIntoTree(treeView, ruleNode, ac);
         }
-
         /* create NAC tree nodes */
         for (int j = 0; j < rule.getNACs().size(); j++) {
             final EdNAC nac = rule.getNACs().get(j);
@@ -650,7 +606,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final EdPAC pac = rule.getPACs().get(j);
             insertPACIntoTree(treeView.getTreeModel(), ruleNode, pac);
         }
-
         /* create attr condition tree nodes */
         CondTuple conds = (CondTuple) rule.getBasisRule().getAttrContext()
                 .getConditions();
@@ -658,7 +613,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final CondMember cond = (CondMember) conds.getMemberAt(c);
             insertRuleAttrConditionIntoTree(treeView.getTreeModel(), ruleNode, cond);
         }
-
         /* create post application conditions */
         insertRuleConstraintsIntoTree(treeView.getTreeModel(), ruleNode);
     }
@@ -667,21 +621,17 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeView treeView,
             final DefaultMutableTreeNode graNode,
             final EdRuleScheme ruleScheme) {
-
         RuleSchemeTreeNodeData sd = new RuleSchemeTreeNodeData(ruleScheme);
         final DefaultMutableTreeNode ruleSchemeNode = new DefaultMutableTreeNode(sd);
         sd.setTreeNode(ruleSchemeNode);
         treeView.getTreeModel().insertNodeInto(ruleSchemeNode, graNode, graNode.getChildCount());
-
         // make kernel rule tree node of rule scheme
         insertSchemeRuleIntoTree(treeView, ruleSchemeNode, ruleScheme.getKernelRule(), this.KERNEL);
-
         // make multi rule tree node of rule scheme
         for (int i = 0; i < ruleScheme.getMultiRules().size(); i++) {
             EdRule multiRule = ruleScheme.getMultiRules().get(i);
             insertSchemeRuleIntoTree(treeView, ruleSchemeNode, multiRule, this.MULTI);
         }
-
         // make amalgamated rule tree node of rule scheme
         if (ruleScheme.getAmalgamatedRule() != null) {
             insertSchemeRuleIntoTree(treeView, ruleSchemeNode,
@@ -694,7 +644,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final DefaultMutableTreeNode ruleSchemeNode,
             final EdRule schemeRule,
             int kind) {
-
         GraGraTreeNodeData sdRule = null;
         if (kind == this.KERNEL) {
             sdRule = new KernelRuleTreeNodeData(schemeRule);
@@ -703,12 +652,10 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
         } else if (kind == this.AMALGAMATED) {
             sdRule = new AmalgamatedRuleTreeNodeData(schemeRule);
         }
-
         if (sdRule != null) {
             final DefaultMutableTreeNode ruleNode = new DefaultMutableTreeNode(sdRule);
             sdRule.setTreeNode(ruleNode);
             treeView.getTreeModel().insertNodeInto(ruleNode, ruleSchemeNode, ruleSchemeNode.getChildCount());
-
             /* insert formula above nested ACs into rule tree*/
             insertRuleFormulaIntoTree(treeView, ruleNode, schemeRule.getBasisRule().getFormulaStr());
             /* create nested AC tree nodes */
@@ -716,7 +663,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
                 final EdNestedApplCond ac = (EdNestedApplCond) schemeRule.getNestedACs().get(j);
                 insertNestedACIntoTree(treeView, ruleNode, ac);
             }
-
             /* create NAC tree nodes */
             for (int j = 0; j < schemeRule.getNACs().size(); j++) {
                 final EdNAC nac = schemeRule.getNACs().get(j);
@@ -727,7 +673,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
                 final EdPAC pac = schemeRule.getPACs().get(j);
                 insertPACIntoTree(treeView.getTreeModel(), ruleNode, pac);
             }
-
             /* create attr condition tree nodes */
             final CondTuple conds = (CondTuple) schemeRule.getBasisRule().getAttrContext()
                     .getConditions();
@@ -742,12 +687,10 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeView treeView,
             final DefaultMutableTreeNode parNode,
             final EdNestedApplCond ac) {
-
         NestedACTreeNodeData acsd = new NestedACTreeNodeData(ac);
         final DefaultMutableTreeNode acNode = new DefaultMutableTreeNode(acsd);
         acsd.setTreeNode(acNode);
         treeView.getTreeModel().insertNodeInto(acNode, parNode, parNode.getChildCount());
-
         for (int i = 0; i < ac.getNestedACs().size(); i++) {
             EdNestedApplCond acCh = ac.getNestedACs().get(i);
             insertNestedACIntoTree(treeView, acNode, acCh);
@@ -759,7 +702,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode ruleNode,
             final EdNAC nac) {
-
         NACTreeNodeData nacsd = new NACTreeNodeData(nac);
         DefaultMutableTreeNode nacNode = new DefaultMutableTreeNode(nacsd);
         nacsd.setTreeNode(nacNode);
@@ -770,7 +712,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode ruleNode,
             final EdPAC pac) {
-
         PACTreeNodeData pacsd = new PACTreeNodeData(pac);
         DefaultMutableTreeNode pacNode = new DefaultMutableTreeNode(pacsd);
         pacsd.setTreeNode(pacNode);
@@ -781,7 +722,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode ruleNode,
             final CondMember condition) {
-
         EdRule rule = null;
         if (ruleNode.getUserObject() instanceof RuleTreeNodeData) {
             rule = ((RuleTreeNodeData) ruleNode.getUserObject()).getRule();
@@ -790,7 +730,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
         } else if (ruleNode.getUserObject() instanceof MultiRuleTreeNodeData) {
             rule = ((MultiRuleTreeNodeData) ruleNode.getUserObject()).getRule();
         }
-
         if (rule != null) {
             final String condStr = condition.getExprAsText();
             RuleAttrCondTreeNodeData conddata = new RuleAttrCondTreeNodeData(condition, rule);
@@ -813,12 +752,10 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
         } else if (ruleNode.getUserObject() instanceof MultiRuleTreeNodeData) {
             rule = ((MultiRuleTreeNodeData) ruleNode.getUserObject()).getRule();
         }
-
         if (rule != null && !"true".equals(formula)) {
             List<String> allVars = rule.getBasisRule().getNameOfEnabledACs();
 //			List<Integer> vars = 
             Formula.getFromStringAboveList(formula, allVars);
-
             ApplFormulaTreeNodeData conddata = new ApplFormulaTreeNodeData(formula, true, rule);
             DefaultMutableTreeNode condchild = new DefaultMutableTreeNode(conddata);
             conddata.setTreeNode(condchild);
@@ -834,12 +771,10 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
         if (acNode.getUserObject() instanceof NestedACTreeNodeData) {
             ac = ((NestedACTreeNodeData) acNode.getUserObject()).getNestedAC();
         }
-
         if (ac != null && !"true".equals(formula)) {
             List<String> allVars = ac.getNestedMorphism().getNameOfEnabledACs();
 //			List<Integer> vars = 
             Formula.getFromStringAboveList(formula, allVars);
-
             ApplFormulaTreeNodeData conddata = new ApplFormulaTreeNodeData(formula, true, ac);
             DefaultMutableTreeNode condchild = new DefaultMutableTreeNode(conddata);
             conddata.setTreeNode(condchild);
@@ -851,7 +786,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode rnode) {
         // System.out.println("GraGraTreeNode.insertRuleConstraintsIntoTree ");
-
         GraGraTreeNodeData sd = (GraGraTreeNodeData) rnode.getUserObject();
         if (!sd.isRule()) {
             return;
@@ -909,7 +843,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode graNode,
             final EdAtomic atomicGC) {
-
         AtomicGraphConstraintTreeNodeData sd = new AtomicGraphConstraintTreeNodeData(atomicGC);
         final DefaultMutableTreeNode node = new DefaultMutableTreeNode(sd);
         sd.setTreeNode(node);
@@ -920,7 +853,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final DefaultMutableTreeNode conclNode = new DefaultMutableTreeNode(conclsd);
             conclsd.setTreeNode(conclNode);
             treeModel.insertNodeInto(conclNode, node, node.getChildCount());
-
             final CondTuple conds = (CondTuple) concl.getBasisAtomic().getAttrContext().getConditions();
             for (int c = 0; c < conds.getSize(); c++) {
                 final CondMember cond = (CondMember) conds.getMemberAt(c);
@@ -933,7 +865,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode conclusionNode,
             final CondMember condition) {
-
         EdAtomic conclusion = ((ConclusionTreeNodeData) conclusionNode.getUserObject()).getConclusion();
         String condStr = condition.getExprAsText();
         ConclusionAttrConditionTreeNodeData conddata = new ConclusionAttrConditionTreeNodeData(condition, conclusion);
@@ -947,7 +878,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode graNode,
             final EdConstraint formula) {
-
         ConstraintTreeNodeData sd = new ConstraintTreeNodeData(formula);
         DefaultMutableTreeNode node = new DefaultMutableTreeNode(sd);
         sd.setTreeNode(node);
@@ -958,7 +888,6 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             final GraGraTreeModel treeModel,
             final DefaultMutableTreeNode graNode,
             final RuleSequence ruleSequence) {
-
         RuleSequenceTreeNodeData sd = new RuleSequenceTreeNodeData(ruleSequence);
         DefaultMutableTreeNode node = new DefaultMutableTreeNode(sd);
         sd.setTreeNode(node);
@@ -982,5 +911,4 @@ public class GrammarTreeNode extends DefaultMutableTreeNode {
             }
         }
     }
-
 }

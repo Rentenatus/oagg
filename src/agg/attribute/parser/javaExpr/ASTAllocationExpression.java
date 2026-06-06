@@ -1,11 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright> *****************************************************************************
+ * </copyright>
+ * *****************************************************************************
  */
 package agg.attribute.parser.javaExpr;
 
@@ -14,13 +15,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * @version $Id: ASTAllocationExpression.java,v 1.1 2005/08/25 11:56:52 enrico Exp $
+ * @version $Id: ASTAllocationExpression.java,v 1.1 2005/08/25 11:56:52 enrico
+ * Exp $
  * @author $Author: olga $
  */
 public class ASTAllocationExpression extends SimpleNode {
 
     static final long serialVersionUID = 1L;
-
     Constructor<?> constructor = null;
 
     ASTAllocationExpression(String id) {
@@ -37,7 +38,6 @@ public class ASTAllocationExpression extends SimpleNode {
 
     protected String getMethodName() {
         String name = ((ASTClassName) jjtGetChild(0)).name;
-
         if (this.constructor == null) {
             return "\"" + name + "\"";
         }
@@ -49,11 +49,9 @@ public class ASTAllocationExpression extends SimpleNode {
         Node constrName = jjtGetChild(0);
         Node param;
         Class<?> paramClasses[] = new Class[nChildren - 1];
-
         try {
             constrName.checkContext();
             takeNodeClassFrom((SimpleNode) constrName);
-
             for (int i = 1; i < nChildren; i++) {
                 param = jjtGetChild(i);
                 param.checkContext();
@@ -81,7 +79,6 @@ public class ASTAllocationExpression extends SimpleNode {
         }
         int nChildren = jjtGetNumChildren();
         Object params[] = new Object[nChildren - 1];
-
         for (int i = 1; i < nChildren; i++) {
             jjtGetChild(i).interpret();
             params[i - 1] = stack.get(top--); //stack[top--];

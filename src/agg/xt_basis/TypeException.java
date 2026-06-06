@@ -2,16 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
 /**
- * This Exception will be thrown if an invalid typed graph object will be added to the graph
+ * This Exception will be thrown if an invalid typed graph object will be added
+ * to the graph
  *
  * @version $Id: TypeException.java,v 1.4 2010/09/23 08:27:33 olga Exp $
  * @author $Author: olga $
@@ -37,7 +39,6 @@ public class TypeException extends Exception {
     public TypeError getTypeError() {
         return this.typeError;
     }
-
 }
 // $Log: TypeException.java,v $
 // Revision 1.4  2010/09/23 08:27:33  olga
@@ -72,3 +73,4 @@ public class TypeException extends Exception {
 // Revision 1.1 2002/09/23 12:24:14 komm
 // added type graph in xt_basis, editor and GUI
 //
+

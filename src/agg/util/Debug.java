@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.util;
 
@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
-
 import agg.attribute.AttrInstance;
 import agg.xt_basis.Arc;
 import agg.xt_basis.Graph;
@@ -25,8 +24,9 @@ import agg.xt_basis.Morphism;
 import agg.xt_basis.Node;
 
 /**
- * This class provides methods for debugging output. There should be no runtime overhead if <code>DEBUG</code> is set to
- * <code>false</code> and inlining is activated by using the "-O" switch for <code>javac</code>.
+ * This class provides methods for debugging output. There should be no runtime
+ * overhead if <code>DEBUG</code> is set to <code>false</code> and inlining is
+ * activated by using the "-O" switch for <code>javac</code>.
  *
  * @author $Author: olga $
  * @version $Id: Debug.java,v 1.6 2010/03/04 14:13:00 olga Exp $
@@ -40,37 +40,36 @@ public final class Debug {
         // ein privater Konstruktor verhindert das Erzeugen von Objekten
         // von dritten.
     }
-
     /**
-     * Set this flag to <code>false</code> to suppress all debug output. This flag is the master flag. It activates the
-     * output in general. It doesn't matter if any other flag is set to <code>true</code>.
+     * Set this flag to <code>false</code> to suppress all debug output. This
+     * flag is the master flag. It activates the output in general. It doesn't
+     * matter if any other flag is set to <code>true</code>.
      */
     public static boolean DEBUG = false;
-
     /**
      * Activates the debug output of the <code>findAbstraction</code> process
      */
     public static boolean ABSTRACTION = false;
-
     /**
      * Activates the debug output for some parsing stuff
      */
     public static boolean PARSING = false;
-
     /**
-     * Will be used only for debug purposes to set current object hashcode (Object.hashCode()) of graph objects. A new
-     * attribute member String HASHCODE will be added to the attribute of a graph object and its value will be set to
-     * hashcode. The name "HASHCODE" is reserved for debugging. Do not use this name for an attribute member. This
-     * attribute member will be ignored during graph transformation. Do not save grammar if HASHCODE is true!
+     * Will be used only for debug purposes to set current object hashcode
+     * (Object.hashCode()) of graph objects. A new attribute member String
+     * HASHCODE will be added to the attribute of a graph object and its value
+     * will be set to hashcode. The name "HASHCODE" is reserved for debugging.
+     * Do not use this name for an attribute member. This attribute member will
+     * be ignored during graph transformation. Do not save grammar if HASHCODE
+     * is true!
      */
     public static boolean HASHCODE = false;
-
     public static boolean MATCH = false;
-
     public static boolean CSP_VAR = false;
 
     /**
-     * Write <code>msg</code> to standard output, succeeded by a newline character.
+     * Write <code>msg</code> to standard output, succeeded by a newline
+     * character.
      */
     public final static void println(String msg) {
         if (DEBUG) {
@@ -88,8 +87,8 @@ public final class Debug {
     }
 
     /**
-     * Write <code>msg</code> to standard output, preceeded by the class name of <code>obj</code>, and succeeded by a
-     * newline character.
+     * Write <code>msg</code> to standard output, preceeded by the class name of
+     * <code>obj</code>, and succeeded by a newline character.
      */
     public final static void println(String msg, Object obj) {
         if (DEBUG) {
@@ -98,7 +97,8 @@ public final class Debug {
     }
 
     /**
-     * Write <code>msg</code> to standard output, preceeded by the class name of <code>obj</code>.
+     * Write <code>msg</code> to standard output, preceeded by the class name of
+     * <code>obj</code>.
      */
     public final static void print(String msg, Object obj) {
         if (DEBUG) {
@@ -107,8 +107,9 @@ public final class Debug {
     }
 
     /**
-     * Writes <code>msg</code> to standard output, preceeded by the class name of <code>obj</code>, and succeeded by a
-     * newline character. Additionally it takes care if the debug <code>topic</code> is set.
+     * Writes <code>msg</code> to standard output, preceeded by the class name
+     * of <code>obj</code>, and succeeded by a newline character. Additionally
+     * it takes care if the debug <code>topic</code> is set.
      */
     public final static void println(String msg, Object obj, boolean topic) {
         if (topic) // println(msg,obj);
@@ -121,7 +122,8 @@ public final class Debug {
      * Prints a graph with all nodes and edges
      *
      * @param printGraph The graph will be printed
-     * @param name Just a short word so it is easier to identify the beginning and end
+     * @param name Just a short word so it is easier to identify the beginning
+     * and end
      * @param topic takes care if the debug is set.
      */
     public static void printlnGraph(Graph printGraph, String name, boolean topic) {
@@ -129,9 +131,7 @@ public final class Debug {
             printlnGraph(printGraph, name);
         }
     }
-
     private static HashMap<Object, Integer> hash = null;
-
     private static int new_id;
 
     private static void reset() {
@@ -145,10 +145,10 @@ public final class Debug {
         }
         Integer i = hash.get(o);
         if (i == null) {
-            i = new Integer(new_id++);
+            i = new_id++;
             hash.put(o, i);
         }
-        return i.intValue();
+        return i;
     }
 
     public static void printlnGraph(Graph g, String name) {
@@ -167,7 +167,8 @@ public final class Debug {
      * Prints a graph with all nodes and edges
      *
      * @param agg.xt_basis.Graph#printGraph The graph which will be printed
-     * @param name Just a short word so it is easier to identify the beginning and end
+     * @param name Just a short word so it is easier to identify the beginning
+     * and end
      */
     private static void printlnGraph2(Graph printGraph, String name,
             boolean for_morph) {
@@ -175,13 +176,11 @@ public final class Debug {
         Node node;
         Arc arc;
         Node src, tar;
-
         System.out.println("--------------- Graph: " + name
                 + " beginns ---------------");
         if (!for_morph) {
             System.out.println();
         }
-
         while (nodes.hasNext()) {
             node = nodes.next();
             System.out.print(get_id(node) + " "
@@ -190,7 +189,6 @@ public final class Debug {
                 printAttributes(node.getAttribute());
             }
             System.out.println(") ");
-
             Iterator<Arc> incoming = node.getIncomingArcsSet().iterator();
             System.out.print("  incoming: ");
             while (incoming.hasNext()) {
@@ -206,7 +204,6 @@ public final class Debug {
                 System.out.print("]) ");
             }
             System.out.println();
-
             Iterator<Arc> outgoing = node.getOutgoingArcsSet().iterator();
             if (outgoing.hasNext()) {
                 System.out.print("  outgoing: ");
@@ -225,7 +222,6 @@ public final class Debug {
                 System.out.println();
             }
         }
-
         if (!for_morph) {
             System.out.println("--------------- Graph: " + name
                     + " ends ---------------\n");
@@ -243,7 +239,8 @@ public final class Debug {
      * Prints a graph with all nodes and edges
      *
      * @param morph The morphism which will be printed
-     * @param name Just a short word so it is easier to identify the beginning and end
+     * @param name Just a short word so it is easier to identify the beginning
+     * and end
      * @param topic takes care if the debug is set.
      */
     public static void printlnMorph(Morphism morph, String name, boolean topic) {
@@ -256,20 +253,19 @@ public final class Debug {
      * Prints a graph with all nodes and edges
      *
      * @param morph The morphism which will be printed
-     * @param name Just a short word so it is easier to identify the beginning and end
+     * @param name Just a short word so it is easier to identify the beginning
+     * and end
      */
     public static void printlnMorph(Morphism morph, String name) {
         Iterator<Node> nodes;
         Node node, mappedNode;
         Graph srcG = morph.getOriginal(), tarG = morph.getImage();
-
         reset();
         System.out.println("--------------- Morphism: " + name
                 + " beginns ---------------");
         printlnGraph2(srcG, "source graph", true);
         printlnGraph2(tarG, "target graph", true);
         System.out.println("  ---- mappings ----");
-
         System.out.println("Nodes: ");
         nodes = srcG.getNodesSet().iterator();
         while (nodes.hasNext()) {
@@ -293,15 +289,12 @@ public final class Debug {
             }
             // TODO: Morphismus fuer die Kanten ausgeben.
         }
-
         System.out.println("--------------- Morphism: " + name
                 + " ends ---------------\n");
         hash = null;
     }
-
     // test output in a file
     private static File f;
-
     private static FileOutputStream os;
 
     public static void openFile(String fname, String text) {
@@ -355,9 +348,7 @@ public final class Debug {
             }
         }
     }
-
 }
-
 // $Log: Debug.java,v $
 // Revision 1.6  2010/03/04 14:13:00  olga
 // code optimizing

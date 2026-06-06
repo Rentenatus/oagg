@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -14,13 +16,11 @@ package agg.gui.popupmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JComponent;
-
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraphObject;
 import agg.editor.impl.EdType;
@@ -42,12 +42,10 @@ public class ModePopupMenu extends JPopupMenu {
 
     public ModePopupMenu() {
         super("Mode");
-
 //		JMenuItem miLabel = 
         add(new JMenuItem("            Edit Mode & Operations"));
         // miLabel.setEnabled(false);
         addSeparator();
-
         this.miUndoManager = add(new JMenuItem(
                 "Disable Undo Manager"));
         this.miUndoManager.setActionCommand("disableUndo");
@@ -65,7 +63,6 @@ public class ModePopupMenu extends JPopupMenu {
             }
         });
         addSeparator();
-
         this.miUndo = add(
                 new JMenuItem("Undo Edit                                 Ctrl+Z"));
         this.miUndo.setMnemonic('Z');
@@ -91,7 +88,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miRedo = add(
                 new JMenuItem("Redo Edit                                 Ctrl+Y"));
         this.miRedo.setEnabled(false);
@@ -105,7 +101,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miDiscardAllEdits = add(new JMenuItem(
                 "Discard All Edits                                   "));
         this.miDiscardAllEdits.setEnabled(false);
@@ -125,9 +120,7 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         addSeparator();
-
         this.miDraw = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem(
                 "Draw                                        Shift+D"));
         this.miDraw.setSelected(true);
@@ -137,10 +130,8 @@ public class ModePopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() instanceof JMenuItem) {
                     ((JCheckBoxMenuItem) e.getSource()).setSelected(true);
-
                     selectEditModeMenuItem("Draw");
                     selectMainEditModeMenuItem("Draw");
-
                     // action
                     if (ModePopupMenu.this.editor != null) {
                         ModePopupMenu.this.editor.setEditMode(EditorConstants.DRAW);
@@ -153,7 +144,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         JCheckBoxMenuItem miMagicArc = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem(
                 "Magic Edge Draw Support "));
         miMagicArc.setSelected(true);
@@ -169,7 +159,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miSelect = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem(
                 "Select                                      Shift+S"));
         this.miSelect.setActionCommand("selectMode");
@@ -178,10 +167,8 @@ public class ModePopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() instanceof JMenuItem) {
                     ((JCheckBoxMenuItem) e.getSource()).setSelected(true);
-
                     selectEditModeMenuItem("Select");
                     selectMainEditModeMenuItem("Select");
-
                     // action
                     if (ModePopupMenu.this.editor != null) {
                         ModePopupMenu.this.editor.setEditMode(EditorConstants.SELECT);
@@ -194,7 +181,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miMove = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem(
                 "Move                                        Shift+M"));
         this.miMove.setActionCommand("moveMode");
@@ -203,10 +189,8 @@ public class ModePopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() instanceof JMenuItem) {
                     ((JCheckBoxMenuItem) e.getSource()).setSelected(true);
-
                     selectEditModeMenuItem("Move");
                     selectMainEditModeMenuItem("Move");
-
                     // action
                     if (ModePopupMenu.this.editor != null) {
                         ModePopupMenu.this.editor.setEditMode(EditorConstants.MOVE);
@@ -219,7 +203,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miSynchronMove = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem(
                 "Synchron Move of Mapped Objects"));
         this.miSynchronMove.setActionCommand("synchronMoveMode");
@@ -237,7 +220,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miAttrs = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem(
                 "Attributes                                Shift+A"));
         this.miAttrs.setActionCommand("atributesMode");
@@ -246,10 +228,8 @@ public class ModePopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() instanceof JMenuItem) {
                     ((JCheckBoxMenuItem) e.getSource()).setSelected(true);
-
                     selectEditModeMenuItem("Attributes");
                     selectMainEditModeMenuItem("Attributes");
-
                     // action
                     if (ModePopupMenu.this.editor != null) {
                         ModePopupMenu.this.editor.setEditMode(EditorConstants.ATTRIBUTES);
@@ -262,7 +242,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miMap = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem(
                 "Map                                           Ctrl+M"));
         this.miMap.setActionCommand("mapMode");
@@ -271,10 +250,8 @@ public class ModePopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() instanceof JMenuItem) {
                     ((JCheckBoxMenuItem) e.getSource()).setSelected(true);
-
                     selectEditModeMenuItem("Map");
                     selectMainEditModeMenuItem("Map");
-
                     // action
                     if (ModePopupMenu.this.editor != null) {
                         ModePopupMenu.this.editor.setEditMode(EditorConstants.MAP);
@@ -287,7 +264,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miUnmap = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem(
                 "Unmap                                      Ctrl+U"));
         this.miUnmap.setActionCommand("unmapMode");
@@ -296,10 +272,8 @@ public class ModePopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() instanceof JMenuItem) {
                     ((JCheckBoxMenuItem) e.getSource()).setSelected(true);
-
                     selectEditModeMenuItem("Unmap");
                     selectMainEditModeMenuItem("Unmap");
-
                     // action
                     if (ModePopupMenu.this.editor != null) {
                         ModePopupMenu.this.editor.setEditMode(EditorConstants.UNMAP);
@@ -312,7 +286,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         // miImage = new JCheckBoxMenuItem("Image_view");
         // miImage.setActionCommand("imageMode");
         // miImage.setMnemonic('I');
@@ -331,7 +304,6 @@ public class ModePopupMenu extends JPopupMenu {
         // }
         // }});
         addSeparator();
-
         JMenuItem miSelNodeType = add(new JMenuItem(
                 "Select Nodes of Type            Ctrl+Alt+N"));
         miSelNodeType.setActionCommand("selectNodeType");
@@ -347,7 +319,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         JMenuItem miSelArcType = add(new JMenuItem(
                 "Select Edges of Type            Ctrl+Alt+E"));
         miSelArcType.setActionCommand("selectArcType");
@@ -363,7 +334,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         JMenuItem miSelectAll = add(new JMenuItem(
                 "Select All                                  Ctrl+Alt+S"));
         miSelectAll.setActionCommand("selectAll");
@@ -380,7 +350,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         JMenuItem miDeselectAll = add(new JMenuItem(
                 "Deselect All                             Ctrl+Alt+U"));
         miDeselectAll.setActionCommand("deselectAll");
@@ -393,9 +362,7 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         addSeparator();
-
         this.miNodeVisibility = add(new JMenuItem("Hide Objects of Selected Node Type"));
         this.miNodeVisibility.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -408,11 +375,9 @@ public class ModePopupMenu extends JPopupMenu {
                             ModePopupMenu.this.gp.getGraph().getGraGra().getTypeSet().getSelectedNodeType(),
                             true);
                 }
-
                 ModePopupMenu.this.gp.updateGraphics();
             }
         });
-
         this.miArcVisibility = add(new JMenuItem("Hide Objects of Selected Edge Type"));
         this.miArcVisibility.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -425,13 +390,10 @@ public class ModePopupMenu extends JPopupMenu {
                             ModePopupMenu.this.gp.getGraph().getGraGra().getTypeSet().getSelectedArcType(),
                             true);
                 }
-
                 ModePopupMenu.this.gp.updateGraphics();
             }
         });
-
         addSeparator();
-
         this.miStraightenArcs = add(new JMenuItem("Straighten All Edges"));
         this.miStraightenArcs.setActionCommand("straightenAllEdges");
         this.miStraightenArcs.addActionListener(new ActionListener() {
@@ -441,14 +403,11 @@ public class ModePopupMenu extends JPopupMenu {
                     if (!ModePopupMenu.this.gp.getGraph().isTypeGraph()) {
                         ModePopupMenu.this.gp.getGraph().setStraightenArcs(true);
                     }
-
                     ModePopupMenu.this.gp.updateGraphics();
                 }
             }
         });
-
         addSeparator();
-
         this.miStaticNodePosition = (JCheckBoxMenuItem) add(new JCheckBoxMenuItem("Static Node Position"));
         this.miStaticNodePosition.setMnemonic('c');
         this.miStaticNodePosition.setActionCommand("staticNodePositionForGraphLayout");
@@ -465,7 +424,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         this.miLayoutGraph = add(new JMenuItem("Layout Graph "));
         this.miLayoutGraph.setMnemonic('G');
         this.miLayoutGraph.setActionCommand("defaultEGraphLayout");
@@ -480,7 +438,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         JMenuItem miGraphExportJPG = add(new JMenuItem("Export JPEG"));
         miGraphExportJPG.setMnemonic('J');
         miGraphExportJPG.addActionListener(new ActionListener() {
@@ -492,7 +449,6 @@ public class ModePopupMenu extends JPopupMenu {
                 }
             }
         });
-
         pack();
         setBorderPainted(true);
         // setDefaultLightWeightPopupEnabled(false);
@@ -534,7 +490,6 @@ public class ModePopupMenu extends JPopupMenu {
             }
             if (ego == null
                     || !ego.isVisible()) {
-
                 this.miNodeVisibility.setEnabled(false);
                 this.miArcVisibility.setEnabled(false);
                 if (parent instanceof RuleEditor) {
@@ -550,16 +505,13 @@ public class ModePopupMenu extends JPopupMenu {
                     }
                     // this.miLayoutGraph.setEnabled(false);
                 }
-
                 resetVisibilityMenuItem();
-
                 if (this.gp.getGraph().getUndoManager() != null) {
                     if (((EditUndoManager) this.gp.getGraph().getUndoManager()).isEnabled()) {
                         this.miUndoManager.setText("Disable Undo Manager");
                     } else {
                         this.miUndoManager.setText("Enable Undo Manager");
                     }
-
                     if (this.gp.getGraph().getUndoManager().canUndo()
                             && this.gp.getGraph().getUndoManager().canRedo()) {
                         this.miUndo.setEnabled(true);
@@ -579,7 +531,6 @@ public class ModePopupMenu extends JPopupMenu {
                         this.miDiscardAllEdits.setEnabled(false);
                     }
                 }
-
                 requestFocusInWindow();
                 return true; // click on background
             }
@@ -595,7 +546,6 @@ public class ModePopupMenu extends JPopupMenu {
             } else {
                 this.miNodeVisibility.setText("Show Objects of Selected Node Type");
             }
-
             this.miArcVisibility.setText("Hide Objects of Selected Edge Type");
             EdType type = this.gp.getGraph().getTypeSet().getSelectedArcType();
             List<EdArc> edges = this.gp.getGraph().getTypeSet().getTypeGraph().getArcs(type);
@@ -685,22 +635,14 @@ public class ModePopupMenu extends JPopupMenu {
             }
         }
     }
-
     public JCheckBoxMenuItem miDraw, miSelect, miMove, miAttrs, // miImage,
             miMap, miUnmap, miSynchronMove, miStaticNodePosition;
-
     private JMenu mainModeMenu;
-
     public JMenuItem miUndoManager, miUndo, miRedo, miDiscardAllEdits,
             miNodeVisibility, miArcVisibility, miLayoutGraph, miStraightenArcs;
-
     GraGraEditor editor;
-
     RuleEditor ruleEditor;
-
     GraphEditor graphEditor;
-
     GraphPanel gp;
-
     GraphicsExportJPEG exportJPEG;
 }

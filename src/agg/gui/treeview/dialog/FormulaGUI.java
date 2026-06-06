@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.treeview.dialog;
 
@@ -28,7 +29,6 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -39,7 +39,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import agg.editor.impl.EdNestedApplCond;
 import agg.editor.impl.EdPAC;
 import agg.gui.editor.GraphMorphismEditor;
@@ -56,25 +55,17 @@ public class FormulaGUI extends JDialog implements ActionListener,
     @SuppressWarnings("rawtypes")
     final JList list;
     String t;
-
     final JTextField text;
-
     final JButton ok, cancel, clear, clearLast;
-
     final JPanel dialogPanel;
-
     JFrame frame;
-
     boolean changed, canceled;
-
     String formula, f;
     final List<Integer> itsVars = new Vector<Integer>(2);
     final List<Object> objs = new Vector<Object>(5, 1);
-
     final Vector<Pair<String, String>> edit = new Vector<Pair<String, String>>(5, 2);
     int n1, n2;
     boolean forall, p1forall, p2forall, exists, p1exists, p2exists;
-
     final JButton andB, orB, notB, forallB, existsB, notexistsB, trueB, falseB;
     final GraphMorphismEditor view;
     final JDialog viewFrame;
@@ -92,70 +83,55 @@ public class FormulaGUI extends JDialog implements ActionListener,
         this.viewFrame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 //		this.viewFrame.setLocation(this.getX()+this.getWidth()*2, 200);
         this.viewFrame.setPreferredSize(new Dimension(100, 300));
-
         this.view.getLeftPanel().setToolTipText("");
         this.view.getRightPanel().setToolTipText("");
         this.view.getLeftPanel().getCanvas().setBackground(Color.LIGHT_GRAY);
         this.view.getRightPanel().getCanvas().setBackground(Color.LIGHT_GRAY);
-
         JPanel p1 = new JPanel(new BorderLayout());
-
         this.list = new JList();
         this.list.getSelectionModel().setSelectionMode(0);
         this.list.addListSelectionListener(this);
         this.list.addMouseMotionListener(this);
-
         JPanel opPanel = new JPanel(new GridBagLayout());
         opPanel.setPreferredSize(new Dimension(100, 300));
-
         this.andB = new JButton(new TextIcon("AND ", true));
         this.andB.setActionCommand("AND");
         this.andB.setToolTipText(" AND ");
         this.andB.addActionListener(this);
-
         this.orB = new JButton(new TextIcon("OR", true));
         this.orB.setToolTipText(" OR ");
         this.orB.setActionCommand("OR");
         this.orB.addActionListener(this);
-
         this.notB = new JButton(new TextIcon("NOT ", true));
         this.notB.setToolTipText(" NOT ");
         this.notB.setActionCommand("NOT");
         this.notB.addActionListener(this);
-
         this.existsB = new JButton("EXISTS");
         this.existsB.setToolTipText(" EXISTS ");
         this.existsB.setActionCommand("EXISTS");
         this.existsB.addActionListener(this);
-
         this.notexistsB = new JButton("NOT EXISTS");
         this.notexistsB.setToolTipText(" NOT EXISTS ");
         this.notexistsB.setActionCommand("NOTEXISTS");
         this.notexistsB.addActionListener(this);
-
         this.forallB = new JButton("FOR ALL");
         this.forallB.setToolTipText(" FOR ALL ");
         this.forallB.setActionCommand("FORALL");
         this.forallB.addActionListener(this);
-
         this.trueB = new JButton(new TextIcon(" T ", true));
         this.trueB.setActionCommand("TRUE");
         this.trueB.setToolTipText(" TRUE ");
         this.trueB.addActionListener(this);
-
         this.falseB = new JButton(new TextIcon(" F ", true));
         this.falseB.setActionCommand("FALSE");
         this.falseB.setToolTipText(" FALSE ");
         this.falseB.addActionListener(this);
-
         JButton sub1B = new JButton(new TextIcon(" ( ", true));
         sub1B.setActionCommand("(");
         sub1B.addActionListener(this);
-
         JButton sub2B = new JButton(new TextIcon(" ) ", true));
         sub2B.setActionCommand(")");
         sub2B.addActionListener(this);
-
         constrainBuild(opPanel, this.notB, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 0);
         constrainBuild(opPanel, this.andB, 0, 1, 1, 1, GridBagConstraints.BOTH,
@@ -174,20 +150,16 @@ public class FormulaGUI extends JDialog implements ActionListener,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 0);
         constrainBuild(opPanel, sub2B, 1, 5, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 0);
-
         JPanel labelP = new JPanel(new GridLayout(3, 0));
         labelP.add(new JLabel("     Select  an  application  condition     "));
         labelP.add(new JLabel("  and  an  operator  to  build  a  formula  "));
         labelP.add(new JLabel("                                      "));
-
         p1.add(labelP, BorderLayout.NORTH);
         p1.add(new JScrollPane(this.list), BorderLayout.CENTER);
         p1.add(opPanel, BorderLayout.EAST);
-
         this.text = new JTextField("true");
         this.text.setEditable(false);
         this.text.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-
         this.clear = new JButton("Clear");
         this.clear.addActionListener(this);
         this.clearLast = new JButton("Del");
@@ -205,25 +177,21 @@ public class FormulaGUI extends JDialog implements ActionListener,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(buttons, this.cancel, 3, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         JPanel p2 = new JPanel(new GridBagLayout());
         JLabel exmpl = new JLabel("Example: ( a & ( b | ! c ) )    ");
         constrainBuild(p2, exmpl, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
         constrainBuild(p2, this.text, 0, 1, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 5, 5, 5);
-
         // make common dialog panel
         this.dialogPanel = new JPanel(new GridBagLayout());
         this.dialogPanel.setPreferredSize(new Dimension(350, 350));
-
         constrainBuild(this.dialogPanel, p1, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 10, 10, 10, 10);
         constrainBuild(this.dialogPanel, p2, 0, 1, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 10, 10, 10, 10);
         constrainBuild(this.dialogPanel, buttons, 0, 2, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 10, 10, 10, 10);
-
         getContentPane().setLayout(new BorderLayout());
         JScrollPane scroll = new JScrollPane(this.dialogPanel);
         scroll.setPreferredSize(new Dimension(400, 400));
@@ -250,7 +218,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
             if (this.edit.size() > 0) {
                 this.t = null;
                 String last = delLastEdit();
-
                 if (last.equals(")")) {
                     this.n2--;
                 } else if (last.equals("(")) {
@@ -296,7 +263,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
                     this.p2exists = false;
                 }
             }
-
             addToFormula(e);
         }
     }
@@ -304,7 +270,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
     public String getFormula() {
         System.out.println(this.f);
         System.out.println(this.formula);
-
         if ("".equals(this.f)) {
             return "true";
         } else {
@@ -341,7 +306,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
             s.add(vars.get(i));
             this.objs.add(vars.get(i));
         }
-
         if (s.isEmpty()) {
             clear();
         } else {
@@ -358,12 +322,9 @@ public class FormulaGUI extends JDialog implements ActionListener,
             EdNestedApplCond obj = v.get(i);
 //			if (obj instanceof EdPAC) 
 //				s.add(((EdPAC)obj).getMorphism().getName());
-
             s.add(obj.getMorphism().getName());
-
             this.objs.add(obj);
         }
-
         if (s.isEmpty()) {
             clear();
         } else {
@@ -380,10 +341,8 @@ public class FormulaGUI extends JDialog implements ActionListener,
         int indx = this.list.getSelectionModel().getMinSelectionIndex();
         if (indx >= 0 && this.t == null) {
 //			this.showInView(indx, this.objs.get(indx));
-
             this.t = (String) this.list.getSelectedValue();
             addEdit(this.t, indx + 1);
-
             if (this.forall) {
                 if (!this.p2forall) {
                     addEdit(")", -1);
@@ -430,10 +389,8 @@ public class FormulaGUI extends JDialog implements ActionListener,
         } else {
             this.text.setText("");
         }
-
         this.edit.remove(this.edit.size() - 1); // " "
         this.edit.remove(this.edit.size() - 1); // element
-
         return last;
     }
 
@@ -482,7 +439,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
                     addEdit(this.t, -1);
                     this.t = ",";
                     addEdit(this.t, -1);
-
                     this.forall = true;
                     this.p1forall = true;
                     this.p2forall = false;
@@ -501,7 +457,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
                     addEdit(this.t, -1);
                     this.t = ",";
                     addEdit(this.t, -1);
-
                     this.exists = true;
                     this.p1exists = false;
                     this.p2exists = false;
@@ -524,7 +479,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
                     this.t = "(";
                     addEdit(this.t, -1);
                     this.n1++;
-
                 }
             } else if (e.getActionCommand().equals(")")) {
                 if (this.n2 < this.n1 && !last.equals("")
@@ -565,7 +519,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
                 if (v < 0 /*|| v >= list.getModel().getSize()*/) {
                     return;
                 }
-
                 int num = Integer.valueOf(cs).intValue();
                 if (this.objs.size() > 0) {
                     Object obj = this.objs.get(num - 1);
@@ -594,7 +547,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
                 cs = cs.concat(String.valueOf(i.next()));
                 addEdit(String.valueOf(cs), -1);
             }
-
             c = i.current();
         }
     }
@@ -633,7 +585,6 @@ public class FormulaGUI extends JDialog implements ActionListener,
                 }
             }
         }
-
         this.viewFrame.setVisible(true);
         this.viewFrame.toFront();
     }
@@ -654,5 +605,4 @@ public class FormulaGUI extends JDialog implements ActionListener,
 //				this.showInView(indx, this.nestedACs.get(indx));
         }
     }
-
 }

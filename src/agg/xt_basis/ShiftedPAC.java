@@ -1,33 +1,33 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
  */
 package agg.xt_basis;
 
-import java.util.List;
-import java.util.Vector;
-
 import agg.cons.Evaluable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author olga
  *
- * A shifted PAC (Positive Application Condition) can be created during creation a concurrent rule of two arbitrary
- * rules. A shifted PAC can contain one or more arbitrary PAC(s). In case of more then one PAC a shifted PAC is
+ * A shifted PAC (Positive Application Condition) can be created during creation
+ * a concurrent rule of two arbitrary rules. A shifted PAC can contain one or
+ * more arbitrary PAC(s). In case of more then one PAC a shifted PAC is
  * satisfied when at least one of the arbitrary PAC(s) is satisfied.
  */
 public class ShiftedPAC implements Evaluable {
 
-    final Vector<OrdinaryMorphism> pacs = new Vector<OrdinaryMorphism>();
+    final List<OrdinaryMorphism> pacs = new ArrayList<OrdinaryMorphism>();
 
     public ShiftedPAC(final List<OrdinaryMorphism> list) {
         this.pacs.addAll(list);
@@ -52,7 +52,6 @@ public class ShiftedPAC implements Evaluable {
                 }
             }
         }
-
         return false;
     }
 
@@ -88,5 +87,4 @@ public class ShiftedPAC implements Evaluable {
     public String getName() {
         return "ShiftedPAC";
     }
-
 }

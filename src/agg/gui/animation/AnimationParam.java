@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -20,13 +21,9 @@ package agg.gui.animation;
 public class AnimationParam {
 
     public int kind = NodeAnimation.JUMP;
-
     public int step = 5;
-
     public int delay = 10;
-
     public int plus = 0;
-
     public String targetEdgeTypeName;
 
     public AnimationParam(
@@ -46,7 +43,6 @@ public class AnimationParam {
             final int animationDelay,
             final int endPositionPlus,
             final String endEdgeTypeName) {
-
         this(animationKind, animationStep, animationDelay, endPositionPlus);
         setTargetEdgeTypeName(endEdgeTypeName);
     }
@@ -74,10 +70,10 @@ public class AnimationParam {
     public String getEndPlus() {
         return String.valueOf(this.plus);
     }
-
 //	public Type getTargetEdgeType() {
 //		return this.targetEdgeType;
 //	}
+
     public String getTargetEdgeTypeName() {
         return this.targetEdgeTypeName;
     }

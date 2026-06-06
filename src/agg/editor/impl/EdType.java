@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: EdType.java,v 1.23 2010/09/20 14:28:38 olga Exp $
 package agg.editor.impl;
@@ -14,7 +15,6 @@ package agg.editor.impl;
 import java.awt.Color;
 import java.util.List;
 import java.util.Vector;
-
 import agg.gui.animation.AnimationParam;
 import agg.gui.editor.EditorConstants;
 import agg.util.XMLHelper;
@@ -28,34 +28,23 @@ public class EdType implements XMLObject //, StateEditable
 {
 
     public String name = "";
-
     public int shape = EditorConstants.RECT;
-
     public Color color = Color.black;
-
     public boolean filled;
-
     public String imageFileName = "";
-
     public String resourcesPath = System.getProperty("user.dir");
-
     public final AnimationParam animationParameter = new AnimationParam(0, 0, 10, 0);
-
     protected boolean iconable;
-
     protected boolean animated;
-
     protected Type bType;
-
     protected String itsContextUsage;
-
     private boolean typeKeyChanged;
-
     private boolean attrTypeChanged;
 
     /**
-     * Creates a layout type specified by : String name, int shape, Color color for the used object bType. The bType is
-     * an instance of the class agg.xt_basis.Type
+     * Creates a layout type specified by : String name, int shape, Color color
+     * for the used object bType. The bType is an instance of the class
+     * agg.xt_basis.Type
      */
     public EdType(String name, int shape, Color color, String iconFileName,
             Type bType) {
@@ -85,28 +74,28 @@ public class EdType implements XMLObject //, StateEditable
             this.setAdditionalReprOfBasisType(this.shape, this.color, this.filled,
                     this.imageFileName);
         }
-
         this.itsContextUsage = "";
     }
 
     /**
-     * Creates default layout type : the name is empty, the shape is a rectangle, the color is black, the used object is
-     * NULL
+     * Creates default layout type : the name is empty, the shape is a
+     * rectangle, the color is black, the used object is NULL
      */
     public EdType() {
         this("", EditorConstants.RECT, Color.black, "", null);
     }
 
     /**
-     * Creates a layout type specified by String name, the shape is a rectangle, the color is black, the used object is
-     * NULL
+     * Creates a layout type specified by String name, the shape is a rectangle,
+     * the color is black, the used object is NULL
      */
     public EdType(String name) {
         this(name, EditorConstants.RECT, Color.black, "", null);
     }
 
     /**
-     * Creates a layout type specified by String name, int shape, Color color, the used object is NULL
+     * Creates a layout type specified by String name, int shape, Color color,
+     * the used object is NULL
      */
     public EdType(String name, int shape, Color color, String iconFileName) {
         this(name, shape, color, iconFileName, null);
@@ -117,23 +106,26 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Creates a layout type specified by String name for the used object bType of the class agg.xt_basis.Type; the
-     * shape is a rectangle, the color is black
+     * Creates a layout type specified by String name for the used object bType
+     * of the class agg.xt_basis.Type; the shape is a rectangle, the color is
+     * black
      */
     public EdType(String name, Type bType) {
         this(name, EditorConstants.RECT, Color.black, "", bType);
     }
 
     /**
-     * Creates default layout type for the used object bType of the class agg.xt_basis.Type
+     * Creates default layout type for the used object bType of the class
+     * agg.xt_basis.Type
      */
     public EdType(Type bType) {
         this(bType, EditorConstants.RECT, Color.black, "");
     }
 
     /**
-     * Creates a layout type specified by int shape, Color color for the used object bType of the class
-     * agg.xt_basis.Type (the name is defined in the bType)
+     * Creates a layout type specified by int shape, Color color for the used
+     * object bType of the class agg.xt_basis.Type (the name is defined in the
+     * bType)
      */
     public EdType(Type bType, int shape, Color color, String iconFileName) {
         this((bType != null) ? bType.getStringRepr() : "", shape, color,
@@ -147,9 +139,6 @@ public class EdType implements XMLObject //, StateEditable
 
     public void dispose() {
         this.bType = null;
-    }
-
-    public void finalize() {
     }
 
     // /**
@@ -196,7 +185,8 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Returns true when the graphic of the node type is filled or the line of the edge type is bold, otherwise - false.
+     * Returns true when the graphic of the node type is filled or the line of
+     * the edge type is bold, otherwise - false.
      */
     public boolean hasFilledShape() {
         return this.filled;
@@ -230,7 +220,6 @@ public class EdType implements XMLObject //, StateEditable
         if (this.bType != null) {
             return this.bType.getStringRepr();
         }
-
         return this.name;
     }
 
@@ -238,7 +227,6 @@ public class EdType implements XMLObject //, StateEditable
         if (this.bType.getAdditionalRepr().indexOf(":[NODE]:") >= 0) {
             return true;
         }
-
         return false;
     }
 
@@ -246,7 +234,6 @@ public class EdType implements XMLObject //, StateEditable
         if (this.bType.getAdditionalRepr().indexOf(":[EDGE]:") >= 0) {
             return true;
         }
-
         return false;
     }
 
@@ -268,8 +255,8 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * If the specified parameter is TRUE, the shape of this type will be filled with its color, otherwise only its
-     * border is colored.
+     * If the specified parameter is TRUE, the shape of this type will be filled
+     * with its color, otherwise only its border is colored.
      */
     public void setFilledShape(boolean b) {
         this.filled = b;
@@ -297,16 +284,17 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Sets additional graphical representation of my base type. The features of additional representation are: shape,
-     * color, image filename.
+     * Sets additional graphical representation of my base type. The features of
+     * additional representation are: shape, color, image filename.
      */
     public void setAdditionalReprOfBasisType() {
         setAdditionalReprOfBasisType(this.shape, this.color, this.filled, this.imageFileName);
     }
 
     /**
-     * Sets additional graphical representation of my base type. The features of additional representation are: shape,
-     * color, filled shape, image filename.
+     * Sets additional graphical representation of my base type. The features of
+     * additional representation are: shape, color, filled shape, image
+     * filename.
      *
      */
     public void setAdditionalReprOfBasisType(int sh, Color col) {
@@ -314,25 +302,24 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Sets additional graphical representation of my base type. The features of additional representation are: shape,
-     * color, image filename.
+     * Sets additional graphical representation of my base type. The features of
+     * additional representation are: shape, color, image filename.
      */
     public void setAdditionalReprOfBasisType(int sh, Color col, String imgFilename) {
         this.setAdditionalReprOfBasisType(sh, col, this.filled, imgFilename);
     }
 
     /**
-     * Sets additional representation of my base type. The features of additional representation are: shape, color,
-     * filled shape, image filename.
+     * Sets additional representation of my base type. The features of
+     * additional representation are: shape, color, filled shape, image
+     * filename.
      */
     public void setAdditionalReprOfBasisType(int sh, Color col,
             boolean filledShape, String imgFilename) {
-
         this.shape = sh;
         this.color = col;
         this.filled = filledShape;
         this.imageFileName = imgFilename;
-
         String shapeStr = "";
         String colorStr = this.color.toString();
         String markStr = "[]";
@@ -374,7 +361,6 @@ public class EdType implements XMLObject //, StateEditable
                 markStr = "[NODE]";
                 break;
         }
-
         String filledStr = "";
         if (this.filled) {
             if ("[NODE]".equals(markStr)) {
@@ -383,7 +369,6 @@ public class EdType implements XMLObject //, StateEditable
                 filledStr = "BOLD";
             }
         }
-
         String addRepr = ":";
         addRepr = addRepr.concat(shapeStr).concat(":");
         addRepr = addRepr.concat(colorStr).concat(":");
@@ -393,7 +378,6 @@ public class EdType implements XMLObject //, StateEditable
         addRepr = addRepr.concat(markStr).concat(":");
         // additional representation in the basis type does not contain the image file name
         this.bType.setAdditionalRepr(addRepr);
-
         // store the image file name separately
         this.bType.setImageFilename(this.imageFileName);
     }
@@ -409,22 +393,20 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Returns a list with five features of the additional graphical representation of its base type: a shape string (by
-     * default RECT), a color string (by default java.awt.Color[r=0,g=0,b=0]), a filled shape string (by default empty
-     * or FILLED resp. BOLD), an image filename string (by default empty or place.jpg), a marking string ( [NODE] or
-     * [EDGE]).
+     * Returns a list with five features of the additional graphical
+     * representation of its base type: a shape string (by default RECT), a
+     * color string (by default java.awt.Color[r=0,g=0,b=0]), a filled shape
+     * string (by default empty or FILLED resp. BOLD), an image filename string
+     * (by default empty or place.jpg), a marking string ( [NODE] or [EDGE]).
      */
     public List<String> getAdditionalReprOfBasisType() {
 //		 System.out.println("EdType.getAdditionalReprOfBasisType() : "+this.bType.getAdditionalRepr());
-
         String addRepr = this.bType.getAdditionalRepr();
-
         String shapeStr = "";
         String colorStr = "";
         String filledStr = "";
         String imageFileNameStr = "";
         String markStr = "[]";
-
         String[] test = addRepr.split(":");
         for (int i = 0; i < test.length; i++) {
             String testStr = test[i];
@@ -451,16 +433,13 @@ public class EdType implements XMLObject //, StateEditable
                 markStr = testStr;
             }
         }
-
         this.imageFileName = this.bType.getImageFilename();
-
         final Vector<String> v = new Vector<String>(5);
         v.add(shapeStr);
         v.add(colorStr);
         v.add(filledStr);
         v.add(imageFileNameStr);
         v.add(markStr);
-
         return v;
     }
 
@@ -487,7 +466,8 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Allows to show nodes like icons, if the node type has an icon representation.
+     * Allows to show nodes like icons, if the node type has an icon
+     * representation.
      */
     public void setIconable(boolean iconable) {
         this.iconable = iconable;
@@ -500,7 +480,6 @@ public class EdType implements XMLObject //, StateEditable
         if (!this.imageFileName.equals("") && this.iconable) {
             return true;
         }
-
         return false;
     }
 
@@ -539,20 +518,18 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Redefines this layout type. Returns TRUE if its name, shape, color or image filename was changed, otherwise -
-     * FALSE.
+     * Redefines this layout type. Returns TRUE if its name, shape, color or
+     * image filename was changed, otherwise - FALSE.
      */
     public boolean redefineType(String newName, int newShape, Color newColor, boolean filledshape,
             String newImageFileName) {
 //		System.out.println("EdType.redefineType: this.name, this.shape, this.color, image  "+newImageFileName+"  "+this.imageFileName );
-
         if (!this.name.equals(newName)
                 || (this.shape != newShape)
                 || !this.color.equals(newColor)
                 || (this.filled != filledshape)) {
             this.typeKeyChanged = true;
         }
-
         if (this.typeKeyChanged
                 || !this.imageFileName.equals(newImageFileName)) {
             this.name = newName;
@@ -560,7 +537,6 @@ public class EdType implements XMLObject //, StateEditable
             this.color = newColor;
             this.filled = filledshape;
             this.imageFileName = newImageFileName;
-
 //			System.out.println("image  "+newImageFileName+"  "+this.imageFileName );
             if (this.bType != null) {
                 this.bType.setStringRepr(this.name);
@@ -581,12 +557,12 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Redefines this layout type. Returns TRUE if its name, shape, color or image filename was changed, otherwise -
-     * FALSE. The comment is set in each case.
+     * Redefines this layout type. Returns TRUE if its name, shape, color or
+     * image filename was changed, otherwise - FALSE. The comment is set in each
+     * case.
      */
     public boolean redefineType(String newName, int newShape, Color newColor,
             String newImageFileName, String newComment) {
-
         boolean result = redefineType(newName, newShape, newColor, false,
                 newImageFileName);
         if (this.bType != null) {
@@ -596,12 +572,12 @@ public class EdType implements XMLObject //, StateEditable
     }
 
     /**
-     * Redefines this layout type. Returns TRUE if its name, shape, color or image filename was changed, otherwise -
-     * FALSE. The comment is set in each case.
+     * Redefines this layout type. Returns TRUE if its name, shape, color or
+     * image filename was changed, otherwise - FALSE. The comment is set in each
+     * case.
      */
     public boolean redefineType(String newName, int newShape, Color newColor, boolean filledshape,
             String newImageFileName, String newComment) {
-
         boolean result = redefineType(newName, newShape, newColor, filledshape,
                 newImageFileName);
         if (this.bType != null) {
@@ -617,19 +593,17 @@ public class EdType implements XMLObject //, StateEditable
         if (this.bType.compareTo(t.getBasisType())) {
             return true;
         }
-
         return false;
     }
 
     /**
-     * Finds out if there is any relation between this type and the given one. Two types are related if they have one
-     * common ancestor.
+     * Finds out if there is any relation between this type and the given one.
+     * Two types are related if they have one common ancestor.
      */
     public boolean isParentOf(EdType t) {
         if (this.bType.isParentOf(t.getBasisType())) {
             return true;
         }
-
         return false;
     }
 
@@ -643,7 +617,6 @@ public class EdType implements XMLObject //, StateEditable
 //						+animationParameter.getEndPlus()+"   "
 //						+animationParameter.getTargetEdgeTypeName()
 //				);
-
                 h.addAttr("animated", "true");
                 h.openSubTag("Animation");
                 h.addAttr("kind", this.animationParameter.getKind());
@@ -666,30 +639,24 @@ public class EdType implements XMLObject //, StateEditable
                 if (!"".equals(par1)) {
                     this.animationParameter.setDelay(par1);
                 }
-
                 String par2 = h.readAttr("kind");
                 if (!"".equals(par2)) {
                     this.animationParameter.setKind(par2);
                 }
-
                 String par3 = h.readAttr("step");
                 if (!"".equals(par3)) {
                     this.animationParameter.setStep(par3);
                 }
-
                 String par4 = h.readAttr("plus");
                 if (!"".equals(par4)) {
                     this.animationParameter.setEndPlus(par4);
                 }
-
                 String par5 = h.readAttr("edge");
                 if (!"".equals(par5)) {
                     this.animationParameter.setTargetEdgeTypeName(par5);
                 }
-
 //				System.out.println(this.getName()+"::  "+animationParameter.kind+"   "+animationParameter.step+"   "+animationParameter.delay+"   "+this.animationParameter.targetEdgeTypeName);
             }
         }
     }
-
 }

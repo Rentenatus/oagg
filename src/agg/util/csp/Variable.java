@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: Variable.java,v 1.25 2010/09/23 08:26:52 olga Exp $
 // $Log: Variable.java,v $
@@ -161,7 +161,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 //import java.util.LinkedHashSet;
 import java.util.Vector;
-
 import agg.util.OrderedSet;
 import agg.xt_basis.Arc;
 import agg.xt_basis.GraphObject;
@@ -175,36 +174,26 @@ public class Variable {
 
     public final static int NODE = 0;
     public final static int ARC = 1;
-
     private final static BinaryPredicate theirQueryOrder = new QueryOrder();
-
     final private OrderedSet<Object> itsConstraints;
     final private OrderedSet<Query> itsOutgoingQueries;
     final private OrderedSet<Query> itsIncomingQueries;
-
     private Object itsInstance;
-
     private Iterator<?> itsDomain;
-
 //	private boolean randomizedDomain;
     private boolean enabled;
-
     final private Vector<InstantiationHook> itsInstantiationHooks;
-
     private Object LHSgo; // node or arc from LHS of a rule
 //	private boolean isEdge;
     private String convertedTypeString;
-
     private int kind = -1; // 0 is Node, 1 is Arc, otherwise is -1;
     private int domainsize;
     private int itsWeight;
-
     private Query_Type itsTypeQuery;
 
     public Variable() {
 //		randomizedDomain = true;
         this.enabled = true;
-
         this.itsConstraints = new OrderedSet<Object>();
         this.itsOutgoingQueries = new OrderedSet<Query>(theirQueryOrder);
         this.itsIncomingQueries = new OrderedSet<Query>(theirQueryOrder);
@@ -242,9 +231,7 @@ public class Variable {
                 en.nextElement().uninstantiate(this);
             }
         }
-
         this.itsInstance = value;
-
         if (this.itsInstance != null) {
             en = this.itsInstantiationHooks.elements();
             while (en.hasMoreElements()) {
@@ -254,13 +241,14 @@ public class Variable {
     }
 
     /**
-     * Check all my applicable constraints, i.e., check the consistency of my current instantiation with all previously
-     * instantiated variables.
+     * Check all my applicable constraints, i.e., check the consistency of my
+     * current instantiation with all previously instantiated variables.
      * <p>
      * <b>Pre:</b> <code>getInstance() != null</code>.
      *
-     * @return An Enumeration of all the Variables whose instantiations conflict with my current instantiation. If all
-     * applicable constraints are satisfied, the Enumeration is empty. Enumeration elements are of type
+     * @return An Enumeration of all the Variables whose instantiations conflict
+     * with my current instantiation. If all applicable constraints are
+     * satisfied, the Enumeration is empty. Enumeration elements are of type
      * <code>Variable</code>.
      */
     public final Enumeration<Variable> checkConstraints() {
@@ -276,8 +264,9 @@ public class Variable {
     }
 
     /**
-     * Add <code>hook</code> to the set of my InstantiationHooks. I will call the encapsulated operations at the
-     * respective times of instantiation/uninstantiation, with myself as an argument.
+     * Add <code>hook</code> to the set of my InstantiationHooks. I will call
+     * the encapsulated operations at the respective times of
+     * instantiation/uninstantiation, with myself as an argument.
      *
      * @see agg.util.csp.InstantiationHook
      */
@@ -286,8 +275,9 @@ public class Variable {
     }
 
     /**
-     * Return next object of the enumeration of my domain. This enumeration continues at the position where a previous
-     * access left off. The type of enumeration elements is dependent on the concrete domain.
+     * Return next object of the enumeration of my domain. This enumeration
+     * continues at the position where a previous access left off. The type of
+     * enumeration elements is dependent on the concrete domain.
      */
     public final Object getNext() {
 //		try {
@@ -302,25 +292,25 @@ public class Variable {
     }
 
     /**
-     * Set my domain in an enumeration representation. This very same enumeration is returned from a subsequent call of
+     * Set my domain in an enumeration representation. This very same
+     * enumeration is returned from a subsequent call of
      * <code>getDomainEnum()</code>.
      */
     public final void setDomainEnum(final HashSet<?> dom) {
         // NOTE: randomization will be done in Query_Type.setObjects(List<GraphObject> objects)
-
         this.itsDomain = dom.iterator();
     }
-
 //	public void setRandomizedDomain(boolean randomized) {
 //		this.randomizedDomain = randomized;
 //	}
+
     public int getDomainSize() {
         return this.domainsize;
     }
 
     /**
-     * Return my weight. It is computed as the sum of the weights of all constraints attached and of all outgoing
-     * queries.
+     * Return my weight. It is computed as the sum of the weights of all
+     * constraints attached and of all outgoing queries.
      */
     public final int getWeight() {
         return this.itsWeight;
@@ -331,8 +321,8 @@ public class Variable {
     }
 
     /**
-     * Return an enumeration of all the constraints I'm involved in. Enumeration elements are of type
-     * <code>BinaryConstraint</code>.
+     * Return an enumeration of all the constraints I'm involved in. Enumeration
+     * elements are of type <code>BinaryConstraint</code>.
      *
      * @see agg.util.csp.BinaryConstraint
      */
@@ -345,7 +335,8 @@ public class Variable {
     }
 
     /**
-     * Return an anumeration of all my outgoing queries. Elements are of type <code>Query</code>.
+     * Return an anumeration of all my outgoing queries. Elements are of type
+     * <code>Query</code>.
      *
      * @see agg.util.csp.Query
      */
@@ -358,7 +349,8 @@ public class Variable {
     }
 
     /**
-     * Return an enumeration of all my incoming queries. Enumeration elements are of type <code>Query</code>.
+     * Return an enumeration of all my incoming queries. Enumeration elements
+     * are of type <code>Query</code>.
      *
      * @see agg.util.csp.Query
      */
@@ -457,8 +449,8 @@ public class Variable {
     }
 
     /**
-     * Set 0, if an object behind this variable is of type Node, set 1, if an object behind this variable is of type
-     * Arc, otherwise -1. Default is -1.
+     * Set 0, if an object behind this variable is of type Node, set 1, if an
+     * object behind this variable is of type Arc, otherwise -1. Default is -1.
      */
     public void setKind(int kind) {
         this.kind = kind;
@@ -473,7 +465,6 @@ public class Variable {
         if (this.kind == 0 || this.kind == 1) {
             return this.kind;
         }
-
         return -1;
     }
 
@@ -484,5 +475,4 @@ public class Variable {
     public boolean isEnabled() {
         return this.enabled;
     }
-
 }

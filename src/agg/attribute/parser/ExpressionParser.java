@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.parser;
 
@@ -18,11 +19,8 @@ import agg.attribute.impl.ValueMember;
 public class ExpressionParser {
 
     private static String classpath = "";
-
     private static boolean addMethodCall;
-
     private static String errStr = "";
-
     private static String expression;
 
     public final static boolean parse(String className,
@@ -39,7 +37,6 @@ public class ExpressionParser {
         } else {
             exprStr = expr1;
         }
-
         JavaClassCreation jcc = new JavaClassCreation();
         File file = jcc.createClass(className, attrContext, member, exprStr,
                 addMethodCall);
@@ -137,5 +134,4 @@ public class ExpressionParser {
         // System.out.println("isAddMethodCall: "+result);
         return result;
     }
-
 }

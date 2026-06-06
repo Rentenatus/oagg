@@ -2,16 +2,16 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import java.util.Vector;
-
 import agg.attribute.AttrConditionMember;
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerExpr;
@@ -19,8 +19,8 @@ import agg.attribute.AttrEvent;
 import agg.util.XMLHelper;
 
 /**
- * Class for members of condition tuples that are used as application conditions in a context. This is an extension of
- * ValueMember.
+ * Class for members of condition tuples that are used as application conditions
+ * in a context. This is an extension of ValueMember.
  *
  * @author Boris Melamed (bm) + $Author: olga $
  * @version $Id: CondMember.java,v 1.22 2010/08/23 07:30:49 olga Exp $
@@ -29,28 +29,17 @@ import agg.util.XMLHelper;
 public class CondMember extends ValueMember implements AttrConditionMember {
 
     static final long serialVersionUID = 1922931197917082378L;
-
     /* possible mark of a condition */
     public static final int LHS = 0;
-
     public static final int RHS = 1;
-
     public static final int NAC = 20;
-
     public static final int NAC_LHS = 21;
-
     public static final int NAC_PAC = 22;
-
     public static final int NAC_PAC_LHS = 23;
-
     public static final int PAC = 30;
-
     public static final int PAC_LHS = 31;
-
     private int mark;
-
     private boolean enabled = true;
-
     private boolean shifted;
 
     //
@@ -88,7 +77,6 @@ public class CondMember extends ValueMember implements AttrConditionMember {
     public boolean areVariablesSet() {
         if (getContext() != null) {
             VarTuple varTuple = (VarTuple) getContext().getVariables();
-
             HandlerExpr ex = getExpr();
             Vector<String> v = new Vector<String>();
             ex.getAllVariables(v);
@@ -107,7 +95,6 @@ public class CondMember extends ValueMember implements AttrConditionMember {
             }
             return true;
         }
-
         return false;
     }
 
@@ -121,7 +108,6 @@ public class CondMember extends ValueMember implements AttrConditionMember {
         {
             return false;
         }
-
         boolean result = true;
         try {
             HandlerExpr ex = getExpr().getCopy();
@@ -146,7 +132,6 @@ public class CondMember extends ValueMember implements AttrConditionMember {
             if (areVariablesSet()) {
                 return true;
             }
-
             result = false;
         }
         return result;
@@ -159,7 +144,6 @@ public class CondMember extends ValueMember implements AttrConditionMember {
         if (!isDefinite()) {
             return false;
         }
-
         HandlerExpr ex = getExpr().getCopy();
         /*
 		 * Falls in der Expression eine Variable vorkommt, die ersetzt werden
@@ -204,7 +188,6 @@ public class CondMember extends ValueMember implements AttrConditionMember {
         if (isDefinite() && !isTrue()) {
             return true;
         }
-
         return false;
     }
 
@@ -275,16 +258,18 @@ public class CondMember extends ValueMember implements AttrConditionMember {
         }
         return resultVector;
     }
-
 //	private Class<?> getClass(String name) {
 //		ClassResolver classResolver = new ClassResolver();
 //		Class<?> c = classResolver.forName(name);
 //		return c;
 //	}
+
     /**
-     * A mark describes the reference of this condition member, for example, to a NAC.<br>
-     * The possible marks are: CondMember.LHS, CondMember.NAC, CondMember.PAC, CondMember.NAC_LHS, CondMember.PAC_LHS,
-     * CondMember.NAC_PAC, CondMember.NAC_PAC_LHS.
+     * A mark describes the reference of this condition member, for example, to
+     * a NAC.<br>
+     * The possible marks are: CondMember.LHS, CondMember.NAC, CondMember.PAC,
+     * CondMember.NAC_LHS, CondMember.PAC_LHS, CondMember.NAC_PAC,
+     * CondMember.NAC_PAC_LHS.
      *
      * @see CondMember
      */

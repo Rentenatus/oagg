@@ -1,39 +1,40 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.termination;
 
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Hashtable;
-
+import java.util.HashMap;
+import java.util.Map;
 import agg.xt_basis.Type;
 
 /**
- * Type layer is a set of type layer of a given layered graph grammar. The set is backed by a hash table.
+ * Type layer is a set of type layer of a given layered graph grammar. The set
+ * is backed by a hash table.
  *
  * @author $Author: olga $
  * @version $ID
  */
 public class TypeLayer {
 
-    private Hashtable<Type, Integer> typeLayer;
-
-    private Hashtable<Type, Integer> types;
+    private Map<Type, Integer> typeLayer;
+    private Map<Type, Integer> types;
 
     /**
      * Creates a new set of type layers for a given layered graph grammar.
      *
      * @param types The types of a graph grammar.
      */
-    public TypeLayer(Hashtable<Type, Integer> types) {
+    public TypeLayer(Map<Type, Integer> types) {
         this.types = types;
         initTypeLayer();
     }
@@ -45,13 +46,11 @@ public class TypeLayer {
         this.typeLayer.put(type, Integer.valueOf(layer));
         // System.out.println("type layer: "+((Integer)
         // this.typeLayer.get(type)).toString());
-
     }
 
     private void initTypeLayer() {
-        this.typeLayer = new Hashtable<Type, Integer>();
-        for (Enumeration<Type> keys = this.types.keys(); keys.hasMoreElements();) {
-            Type t = keys.nextElement();
+        this.typeLayer = new HashMap<Type, Integer>();
+        for (Type t : this.types.keySet()) { 
             this.typeLayer.put(t, this.types.get(t));
             // System.out.println("type layer: "+((Integer)
             // this.typeLayer.get(t)).toString());
@@ -63,7 +62,7 @@ public class TypeLayer {
      *
      * @return The type layer.
      */
-    public Hashtable<Type, Integer> getTypeLayer() {
+    public Map<Type, Integer> getTypeLayer() {
         return this.typeLayer;
     }
 
@@ -75,8 +74,7 @@ public class TypeLayer {
     public Integer getStartLayer() {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Type> keys = getTypeLayer().keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Type key : getTypeLayer().keySet()) {
             Integer layer = getTypeLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -91,10 +89,9 @@ public class TypeLayer {
      *
      * @return The inverted layer function.
      */
-    public Hashtable<Integer, HashSet<Object>> invertLayer() {
-        Hashtable<Integer, HashSet<Object>> inverted = new Hashtable<Integer, HashSet<Object>>();
-        for (Enumeration<Type> keys = this.typeLayer.keys(); keys.hasMoreElements();) {
-            Type key = keys.nextElement();
+    public Map<Integer, HashSet<Object>> invertLayer() {
+        Map<Integer, HashSet<Object>> inverted = new HashMap<Integer, HashSet<Object>>();
+        for (Type key : this.typeLayer.keySet()) {
             // System.out.println("TypeLayer:: "+key);
             Integer value = this.typeLayer.get(key);
             // System.out.println("TypeLayer:: "+value);
@@ -117,8 +114,7 @@ public class TypeLayer {
      */
     public String toString() {
         String resultString = "Type:\t\tLayer:\n";
-        for (Enumeration<Type> keys = this.typeLayer.keys(); keys.hasMoreElements();) {
-            Type key = keys.nextElement();
+        for (Type key : this.typeLayer.keySet()) {
             Integer value = this.typeLayer.get(key);
             resultString += key.getStringRepr() + "\t\t" + value.toString()
                     + "\n";

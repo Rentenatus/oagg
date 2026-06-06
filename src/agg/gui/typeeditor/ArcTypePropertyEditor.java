@@ -2,16 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.typeeditor;
 
 import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.awt.Color;
 import java.awt.Point;
@@ -23,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -41,13 +42,13 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.undo.*;
-
 import agg.editor.impl.EdType;
 import agg.editor.impl.EditUndoManager;
 import agg.editor.impl.TypeReprData;
 import agg.gui.editor.EditorConstants;
 import agg.gui.event.TypeEvent;
 import agg.util.Pair;
+import java.util.Hashtable;
 
 @SuppressWarnings("serial")
 public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
@@ -57,16 +58,12 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             TypePalette palette) {
         super(new BorderLayout());
         this.setBorder(new TitledBorder(" Edge Type Properties "));
-
         this.applFrame = aggappl;
         this.typeEditor = typeEditor;
         this.palette = palette;
-
         this.colorChooser = new ColorChooserDialog();
         this.colorChooser.addChangeListener(this);
-
         this.dialog = new JDialog(this.applFrame, " Edge Type Editor ");
-
         this.nameEditor = new JTextField(this.typeName);
         this.colorGroup = new ButtonGroup();
         this.moreColor = new JCheckBox("Other", null);
@@ -78,7 +75,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         this.deleteButton = new JButton();
         this.closeButton = new JButton();
         this.cancelButton = new JButton();
-
         initComponents();
     }
 
@@ -117,7 +113,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         String kind = "";
         Vector<TypeReprData> gos = new Vector<TypeReprData>(1);
         gos.add(new TypeReprData(type));
-
         if (first.equals(EditUndoManager.CREATE_DELETE)) {
             kind = EditUndoManager.DELETE_CREATE;
         } else if (first.equals(EditUndoManager.DELETE_CREATE)) {
@@ -127,7 +122,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         } else if (first.equals(EditUndoManager.CHANGE)) {
             kind = EditUndoManager.CHANGE;
         }
-
         this.undoObj = new Pair<String, Vector<?>>(kind, gos);
         this.undoManager.end(this.newEdit);
         // System.out.println("ArcTypePropertyEditor.undoManagerEndEdit
@@ -135,8 +129,8 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
     }
 
     /**
-     * Implements the interface <EM>StateEditable</EM>. The type representation data <EM>TypeReprData</EM> is stored
-     * into <EM>state</EM>.
+     * Implements the interface <EM>StateEditable</EM>. The type representation
+     * data <EM>TypeReprData</EM> is stored into <EM>state</EM>.
      */
     public void storeState(Hashtable<Object, Object> state) {
         if (this.undoObj.first != null && this.undoObj.second != null) {
@@ -148,8 +142,8 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
     }
 
     /**
-     * Implements the interface <EM>StateEditable</EM>. The type representation data <EM>TypeReprData</EM> is extracted
-     * out of <EM>state</EM>
+     * Implements the interface <EM>StateEditable</EM>. The type representation
+     * data <EM>TypeReprData</EM> is extracted out of <EM>state</EM>
      * and applyed to this type.
      */
     @SuppressWarnings("rawtypes")
@@ -167,11 +161,9 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         if (obj.first == null || obj.second == null) {
             return;
         }
-
         String op = (String) (obj).first;
         Vector<?> vec = (Vector) (obj).second;
         TypeReprData data = (TypeReprData) vec.firstElement();
-
         if (op.equals(EditUndoManager.CHANGE)) {
             // changing
             int hc = data.getTypeHashCode();
@@ -269,24 +261,19 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         final JPanel p1 = new JPanel(new BorderLayout());
         final JPanel namePanel = initName();
         p1.add(namePanel, BorderLayout.CENTER);
-
         final JPanel p2 = new JPanel(new GridLayout(1, 0, 5, 5));
         final JPanel colorPanel = initColors();
         final JPanel shapePanel = initShapes();
         p2.add(colorPanel);
         p2.add(shapePanel);
-
         final JPanel commentPanel = initComment();
         final JPanel closePanel = initButtons();
-
         final JPanel p3 = new JPanel(new BorderLayout());
         p3.add(commentPanel, BorderLayout.CENTER);
         p3.add(closePanel, BorderLayout.SOUTH);
-
         this.add(p1, BorderLayout.NORTH);
         this.add(p2, BorderLayout.CENTER);
         this.add(p3, BorderLayout.SOUTH);
-
         this.dialog.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 // close();
@@ -302,7 +289,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
     private JPanel initName() {
         final JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new TitledBorder(" Name "));
-
         this.nameEditor.setForeground(this.typeColor);
         this.nameEditor.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -323,7 +309,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         final JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.setBorder(new TitledBorder(" Color "));
         // colorGroup = new ButtonGroup();
-
         final JCheckBox black = new JCheckBox("Black", null, true);
         this.colorGroup.add(black);
         black.setForeground(Color.black);
@@ -340,7 +325,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(black);
-
         final JCheckBox red = new JCheckBox("Red", null);
         this.colorGroup.add(red);
         red.setForeground(Color.red);
@@ -357,7 +341,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(red);
-
         final JCheckBox orange = new JCheckBox("Orange", null);
         this.colorGroup.add(orange);
         orange.setForeground(Color.orange);
@@ -374,7 +357,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(orange);
-
         final JCheckBox blue = new JCheckBox("Blue", null);
         this.colorGroup.add(blue);
         blue.setForeground(Color.blue);
@@ -391,7 +373,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(blue);
-
         final JCheckBox pink = new JCheckBox("Pink", null);
         this.colorGroup.add(pink);
         pink.setForeground(Color.pink);
@@ -408,7 +389,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             }
         });
         panel.add(pink);
-
         // moreColor = new JCheckBox("Other", null);
         this.colorGroup.add(this.moreColor);
         if (!this.colorGroup.isSelected(this.colorGroup.getSelection())) {
@@ -422,7 +402,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 ArcTypePropertyEditor.this.colorChooser.showColorDialog(ArcTypePropertyEditor.this.dialog, ArcTypePropertyEditor.this.location);
             }
         });
-
         panel.add(this.moreColor);
         return panel;
     }
@@ -431,7 +410,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         final JPanel panel = new JPanel(new GridLayout(0, 1));
         panel.setBorder(new TitledBorder(" Style "));
         // shapeGroup = new ButtonGroup();
-
         final JCheckBox solid = new JCheckBox("Solid", null, true);
         this.shapeGroup.add(solid);
         if (this.typeShape == EditorConstants.SOLID) {
@@ -440,7 +418,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             solid.setSelected(false);
         }
         panel.add(solid);
-
         final JCheckBox dot = new JCheckBox("Dot", null);
         this.shapeGroup.add(dot);
         if (this.typeShape == EditorConstants.DOT) {
@@ -449,7 +426,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             dot.setSelected(false);
         }
         panel.add(dot);
-
         final JCheckBox dash = new JCheckBox("Dash", null);
         this.shapeGroup.add(dash);
         if (this.typeShape == EditorConstants.DASH) {
@@ -458,17 +434,14 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             dash.setSelected(false);
         }
         panel.add(dash);
-
         panel.add(new JLabel("      "));
         panel.add(this.boldCB);
-
         return panel;
     }
 
     private JPanel initComment() {
         final JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new TitledBorder(" Comment "));
-
         // commentEditor = new JEditorPane();
         // DefaultEditorKit kit = (DefaultEditorKit)
         // JEditorPane.createEditorKitForContentType("text/plain");
@@ -484,7 +457,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         final JPanel p = new JPanel(new GridLayout(2, 0, 10, 10));
         final JPanel p1 = new JPanel(new GridLayout(0, 3, 10, 10));
         final JPanel p2 = new JPanel(new GridLayout(0, 2, 10, 10));
-
         // addButton = new JButton();
         this.addButton.setActionCommand("add");
         this.addButton.setText("Add");
@@ -496,7 +468,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 ArcTypePropertyEditor.this.deleteButton.setEnabled(true);
             }
         });
-
         // modifyButton = new JButton();
         this.modifyButton.setActionCommand("change");
         this.modifyButton.setText("Modify");
@@ -506,7 +477,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 changeType();
             }
         });
-
         // deleteButton = new JButton();
         this.deleteButton.setActionCommand("delete");
         this.deleteButton.setText("Delete");
@@ -516,11 +486,9 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 deleteType();
             }
         });
-
         p1.add(this.addButton);
         p1.add(this.modifyButton);
         p1.add(this.deleteButton);
-
         // closeButton = new JButton();
         this.closeButton.setActionCommand("close");
         this.closeButton.setText("Close");
@@ -530,7 +498,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 close();
             }
         });
-
         // cancelButton = new JButton();
         this.cancelButton.setActionCommand("cancel");
         this.cancelButton.setText("Cancel");
@@ -540,10 +507,8 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 cancel();
             }
         });
-
         p2.add(this.closeButton);
         p2.add(this.cancelButton);
-
         p.add(p1);
         p.add(p2);
         return p;
@@ -563,7 +528,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
             this.changed = true;
             this.typeName = this.nameEditor.getText().replaceAll(" ", "");
         }
-
         Enumeration<AbstractButton> en = this.colorGroup.getElements();
         while (en.hasMoreElements()) {
             JCheckBox cb = (JCheckBox) en.nextElement();
@@ -597,13 +561,11 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 }
             }
         }
-
         // bold 
         if (this.boldStyle != this.boldCB.isSelected()) {
             this.changed = true;
             this.boldStyle = this.boldCB.isSelected();
         }
-
         if (!this.typeComment.equals(this.commentEditor.getText())) {
             this.typeComment = this.commentEditor.getText();
             // changed = true;
@@ -714,7 +676,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
     private void setTypeProperty() {
         this.nameEditor.setText(this.typeName);
         this.nameEditor.setForeground(this.typeColor);
-
         String colorStr = getTypeColorStr(this.typeColor);
         Enumeration<AbstractButton> en = this.colorGroup.getElements();
         while (en.hasMoreElements()) {
@@ -727,7 +688,6 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 break;
             }
         }
-
         String shapeStr = getTypeShapeStr(this.typeShape);
         en = this.shapeGroup.getElements();
         while (en.hasMoreElements()) {
@@ -736,9 +696,7 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
                 cb.setSelected(true);
             }
         }
-
         this.boldCB.setSelected(this.boldStyle);
-
         this.commentEditor.setText(this.typeComment);
     }
 
@@ -859,48 +817,28 @@ public class ArcTypePropertyEditor extends JPanel implements ChangeListener,
         }
         return icon;
     }
-
     private EditUndoManager undoManager;
-
     private StateEdit newEdit;
-
 //	private TypeReprData typeReprData;
     private Pair<String, Vector<?>> undoObj;
-
 //	private int undoID;
     private final JFrame applFrame;
-
     private final TypePalette palette;
-
     private final TypeEditor typeEditor;
-
     private String typeName = "";
-
     private String typeComment = "";
-
 //	private JLabel typeIconLabel;
     private Color typeColor = Color.black;
-
     private int typeShape = EditorConstants.SOLID;
-
     protected boolean boldStyle;
-
     protected Point location;
-
     protected final ColorChooserDialog colorChooser;
-
     private final ButtonGroup colorGroup, shapeGroup;
-
     protected final JTextField nameEditor;
-
     private final JEditorPane commentEditor;
-
     protected final JButton addButton, modifyButton, deleteButton, closeButton,
             cancelButton;
-
     private final JCheckBox moreColor, boldCB;
-
     protected final JDialog dialog;
-
     boolean changed = false;
 }

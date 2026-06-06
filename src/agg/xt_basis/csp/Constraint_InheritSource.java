@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis.csp;
 
@@ -26,8 +27,8 @@ public class Constraint_InheritSource extends BinaryConstraint {
     }
 
     /**
-     * Return true iff the current instance of <code>src</code> is the source object of the instance of
-     * <code>arc</code>.
+     * Return true iff the current instance of <code>src</code> is the source
+     * object of the instance of <code>arc</code>.
      * <p>
      * Pre: (1) src.getInstance(), arc.getInstance() instanceof GraphObject.
      */
@@ -43,7 +44,6 @@ public class Constraint_InheritSource extends BinaryConstraint {
 //					 +((GraphObject)getVar1().getGraphObject()).getType().getName()+"   "
 //					 +((Arc) getVar2().getInstance()).getSource().getType().getName());
 //		}
-
         return result;
     }
 }

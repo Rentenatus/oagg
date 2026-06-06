@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.options;
 
@@ -18,9 +19,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Vector;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -29,13 +29,14 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
 //import agg.gui.parser.event.StatusMessageEvent;
 import agg.gui.parser.event.StatusMessageListener;
+import java.util.Hashtable;
 
 /**
- * This is the main class for all option. This class holds a tabbed pane to provide different option panels. At the
- * moment there are parser, layer and critical pair option.
+ * This is the main class for all option. This class holds a tabbed pane to
+ * provide different option panels. At the moment there are parser, layer and
+ * critical pair option.
  *
  * @version $Id: OptionGUI.java,v 1.4 2010/09/23 08:20:39 olga Exp $
  * @author $Author: olga $
@@ -49,17 +50,11 @@ public class OptionGUI extends JDialog implements ActionListener,
     public final static int PARSER = 2;
     public final static int CRITICAL_PAIRS = 3;
     public final static int LAYOUTER = 4;
-
     private Vector<StatusMessageListener> listener;
-
     private JButton closeButton;
-
     private JTabbedPane tabbedPane;
-
     private JPanel dialogPanel;
-
     private WindowAdapter wl;
-
     private final Hashtable<String, AbstractOptionGUI> title2optiongui;
 
     /**
@@ -75,32 +70,24 @@ public class OptionGUI extends JDialog implements ActionListener,
         setTitle(title);
         // setSize(400, 500);
         setLocation(200, 100);
-
         this.listener = new Vector<StatusMessageListener>();
-
         this.wl = new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 // System.out.println("windowClosing");
                 setVisible(false);
             }
         };
-
         this.addWindowListener(this.wl);
-
         this.title2optiongui = new Hashtable<String, AbstractOptionGUI>();
-
         this.tabbedPane = new JTabbedPane();
         this.tabbedPane.addChangeListener(this);
-
         this.closeButton = new JButton("Close");
         this.closeButton.addActionListener(this);
-
         this.dialogPanel = new JPanel(new BorderLayout());
         this.dialogPanel.setBackground(Color.cyan);
         this.dialogPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         this.dialogPanel.add(this.tabbedPane, BorderLayout.CENTER);
         this.dialogPanel.add(this.closeButton, BorderLayout.SOUTH);
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(this.dialogPanel, BorderLayout.CENTER);
         this.pack();
@@ -111,8 +98,8 @@ public class OptionGUI extends JDialog implements ActionListener,
     }
 
     /**
-     * Adds a new option panel to the main window to a special position. If the position is negative the option are
-     * added at the end.
+     * Adds a new option panel to the main window to a special position. If the
+     * position is negative the option are added at the end.
      *
      * @param gui The added gui
      * @param pos The position of the option.
@@ -139,7 +126,6 @@ public class OptionGUI extends JDialog implements ActionListener,
                 }
             }
         }
-
         return null;
     }
 
@@ -188,7 +174,8 @@ public class OptionGUI extends JDialog implements ActionListener,
     }
 
     /**
-     * If a listener doesn't want to receive anymore messages. The listener has to quit here.
+     * If a listener doesn't want to receive anymore messages. The listener has
+     * to quit here.
      *
      * @param sml The listener to remove.
      */
@@ -203,7 +190,6 @@ public class OptionGUI extends JDialog implements ActionListener,
 		for (int i = 0; i < listener.size(); i++)
 			listener.elementAt(i).newMessage(sme);
 	}
-
 	private void updateAllTabs() {
 		for (int i = 0; i < tabbedPane.getTabCount(); i++)
 			((AbstractOptionGUI) tabbedPane.getComponentAt(i)).update();
@@ -236,7 +222,6 @@ public class OptionGUI extends JDialog implements ActionListener,
                 this.tabbedPane.setSelectedComponent(this.title2optiongui.get("Layouter"));
                 break;
         }
-
     }
 
     protected void executeOnClose() {
@@ -247,7 +232,6 @@ public class OptionGUI extends JDialog implements ActionListener,
             }
         }
     }
-
 }
 /*
  * $Log: OptionGUI.java,v $

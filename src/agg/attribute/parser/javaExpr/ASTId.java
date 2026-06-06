@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -13,7 +15,6 @@ package agg.attribute.parser.javaExpr;
 
 /* JJT: 0.2.2 */
 import java.util.Vector;
-
 import agg.attribute.handler.HandlerExpr;
 import agg.attribute.handler.HandlerType;
 
@@ -24,9 +25,7 @@ import agg.attribute.handler.HandlerType;
 public class ASTId extends SimpleNode {
 
     static final long serialVersionUID = 1L;
-
     String name;
-
     boolean isClass = false;
 
     ASTId(String id) {
@@ -50,7 +49,6 @@ public class ASTId extends SimpleNode {
     public String toString() {
         Class<?> clazz = getNodeClass();
         String cname = "";
-
         if (this.isClass) {
             cname += "(Class name) ";
         }
@@ -64,7 +62,6 @@ public class ASTId extends SimpleNode {
     public void checkContext() {
         Class<?> clazz = null;
         HandlerType tabEntry = null;
-
         if (classResolver != null) {
             clazz = classResolver.forName(this.name);
         } else {
@@ -77,7 +74,6 @@ public class ASTId extends SimpleNode {
                  */
             }
         }
-
         if (clazz == null) {
             this.isClass = false;
             if (symtab == null) {
@@ -85,7 +81,6 @@ public class ASTId extends SimpleNode {
 //						"ASTId: symtab is null.");
                 throw new ASTIdNotDeclaredException(this.name);
             }
-
             if ((tabEntry = symtab.getType(this.name)) == null) {
 //				AttrSession.logPrintln(VerboseControl.logJexParser,
 //						"ASTId: symtab.getType(" + this.name + ") is null.");
@@ -106,16 +101,13 @@ public class ASTId extends SimpleNode {
     public void interpret() {
         Object value = null;
         HandlerExpr tabEntry = null;
-
         checkContext();
-
         if (this.isClass) {
             value = getNodeClass();
         } else {
             if (symtab == null
                     || ((tabEntry = symtab.getExpr(this.name)) == null)
                     || ((value = tabEntry.getValue()) == null)) {
-
 //				if (symtab == null) {
 //						AttrSession.logPrintln(VerboseControl.logJexParser,
 //								"ASTId: symtab is null.");
@@ -130,7 +122,6 @@ public class ASTId extends SimpleNode {
                 throw new ASTMissingValueException("Missing value exception for: " + this.name);
             }
         }
-
         top++;
         Node obj = ObjectConstNode
                 .jjtCreate(this.identifier + " to ObjectConstNode");
@@ -165,7 +156,7 @@ public class ASTId extends SimpleNode {
         if ((newTree instanceof ASTExpression)
                 && (jjtGetParent() instanceof ASTExpression)) {
             Node tmp = newTree.jjtGetChild(0);
-            ((ASTExpression) newTree).children.remove (tmp);
+            ((ASTExpression) newTree).children.remove(tmp);
             tmp.jjtSetParent(null);
             newTree = tmp;
         }
@@ -179,7 +170,8 @@ public class ASTId extends SimpleNode {
     }
 
     /**
-     * fills the vector with the names of all variables which occur in this abstract syntax tree
+     * fills the vector with the names of all variables which occur in this
+     * abstract syntax tree
      */
     public void getAllVariablesinExpression(Vector<String> v) {
         v.addElement(this.name);

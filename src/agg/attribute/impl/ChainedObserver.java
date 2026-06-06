@@ -2,18 +2,18 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.attribute.impl;
 
 import java.lang.ref.WeakReference;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import agg.attribute.AttrEvent;
 import agg.attribute.AttrObserver;
 import agg.attribute.AttrTuple;
@@ -32,13 +32,12 @@ public abstract class ChainedObserver extends ManagedObject implements
     //
     // Static variables and constants.
     protected static final int MAX_SIZE_OF_EVENT_STACK = 100;
-
     protected static int sizeOfEventStack = 0;
-
     //
     // Protected instance variables.
     /**
-     * Container with observers of this instance, all of which implement the AttrObserver interface.
+     * Container with observers of this instance, all of which implement the
+     * AttrObserver interface.
      *
      * @see agg.attribute.AttrObserver
      */
@@ -46,7 +45,6 @@ public abstract class ChainedObserver extends ManagedObject implements
 
     public ChainedObserver(AttrTupleManager m) {
         super(m);
-
         this.observers = new Vector<WeakReference<AttrObserver>>();
     }
 
@@ -118,14 +116,12 @@ public abstract class ChainedObserver extends ManagedObject implements
         if ((attrObs == null) || (this.observers.isEmpty())) {
             return false;
         }
-
         for (int i = 0; i < this.observers.size(); i++) {
             WeakReference<AttrObserver> wr = this.observers.elementAt(i);
             if ((wr.get() != null) && wr.get() == attrObs) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -148,7 +144,6 @@ public abstract class ChainedObserver extends ManagedObject implements
         if (attrObs == null || this.observers.isEmpty()) {
             return;
         }
-
         for (int i = 0; i < this.observers.size(); i++) {
             WeakReference<AttrObserver> wr = this.observers.elementAt(i);
             if (wr.get() == attrObs) {
@@ -170,7 +165,6 @@ public abstract class ChainedObserver extends ManagedObject implements
         if (evt == null) {
             return;
         }
-
         for (Enumeration<WeakReference<AttrObserver>> en = this.observers.elements(); en.hasMoreElements();) {
             WeakReference<AttrObserver> wr = en.nextElement();
             if (wr.get() != null) {
@@ -188,9 +182,10 @@ public abstract class ChainedObserver extends ManagedObject implements
     protected abstract void propagateEvent(TupleEvent e);
 
     /**
-     * This method should be overridden by classes that wish to customize or filter the actual event depending on the
-     * respective observer and/or its own framework (index transformation, id change). If [null] is returned, the
-     * specified observer will not get any notification this time.
+     * This method should be overridden by classes that wish to customize or
+     * filter the actual event depending on the respective observer and/or its
+     * own framework (index transformation, id change). If [null] is returned,
+     * the specified observer will not get any notification this time.
      */
     protected TupleEvent filterEvent(AttrObserver obs, TupleEvent e) {
         return e;
@@ -200,16 +195,18 @@ public abstract class ChainedObserver extends ManagedObject implements
     // Being an observer oneself. Implementation of
     // agg.attribute.AttrObserver.
     /**
-     * Per default, always save observer dependencies within the attribute component.
+     * Per default, always save observer dependencies within the attribute
+     * component.
      */
     public boolean isPersistentFor(AttrTuple at) {
         return true;
     }
 
     /**
-     * Checks if an endless event recursion took place. If so, a runtime exception with a warning text is thrown, as
-     * this indicates an error in the implementation. Otherwise, it calls the one of the respective updating methods
-     * which can be overridden by subclasses .
+     * Checks if an endless event recursion took place. If so, a runtime
+     * exception with a warning text is thrown, as this indicates an error in
+     * the implementation. Otherwise, it calls the one of the respective
+     * updating methods which can be overridden by subclasses .
      */
     public void attributeChanged(AttrEvent evt) {
         if (++sizeOfEventStack > MAX_SIZE_OF_EVENT_STACK) {
@@ -236,73 +233,80 @@ public abstract class ChainedObserver extends ManagedObject implements
         } else {
             updateUnknownChange(event);
         }
-
         sizeOfEventStack--;
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateGeneralChange(TupleEvent event) {
         propagateEvent(event);
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateMemberAdded(TupleEvent event) {
         propagateEvent(event);
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateMemberDeleted(TupleEvent event) {
         propagateEvent(event);
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateMemberModified(TupleEvent event) {
         propagateEvent(event);
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateMemberRenamed(TupleEvent event) {
         propagateEvent(event);
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateMemberRetyped(TupleEvent event) {
         propagateEvent(event);
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateValueModified(TupleEvent event) {
         propagateEvent(event);
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateValueCorrectness(TupleEvent event) {
         propagateEvent(event);
     }
 
     /**
-     * Fires the same event. Subclasses should override this method for customized behaviour.
+     * Fires the same event. Subclasses should override this method for
+     * customized behaviour.
      */
     protected void updateUnknownChange(TupleEvent event) {
         propagateEvent(event);
     }
-
     /*
 	 * sets a vector of AttrObserver. This is only needed for reading objects.
 	 * The old this.observers will be replaced.
@@ -312,10 +316,8 @@ public abstract class ChainedObserver extends ManagedObject implements
 		// System.out.println("ChainedObserver.setObservers ");
 		// System.out.println("observer : "+observer);
 		this.observers = new Vector<WeakReference<AttrObserver>>();
-
 		if ((observer == null) || (observer.size() == 0))
 			return;
-
 		Enumeration<AttrObserver> en = observer.elements();
 		while (en.hasMoreElements()) {
 			AttrObserver e = en.nextElement();

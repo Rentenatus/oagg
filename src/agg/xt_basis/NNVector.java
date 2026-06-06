@@ -9,5 +9,4 @@ public interface NNVector {
     public boolean nullOutAtAttrChange();
 
     public NNVector copyNNVector();
-
 }

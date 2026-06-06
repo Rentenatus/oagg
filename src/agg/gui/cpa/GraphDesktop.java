@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -25,13 +27,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseAdapter;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
-
 import javax.swing.JFrame;
 import javax.swing.SwingConstants;
 import javax.swing.JMenuItem;
@@ -50,7 +52,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.tree.TreePath;
-
 import agg.xt_basis.Arc;
 import agg.xt_basis.BadMappingException;
 import agg.xt_basis.BaseFactory;
@@ -88,7 +89,8 @@ import agg.parser.CriticalPair;
 import agg.util.Pair;
 
 /**
- * The graph desktop shows many overlapping graphs at the critical pair analysis. The internal frames can be configured.
+ * The graph desktop shows many overlapping graphs at the critical pair
+ * analysis. The internal frames can be configured.
  *
  * @version $Id: GraphDesktop.java,v 1.26 2010/12/21 13:40:34 olga Exp $
  * @author $Author: olga $
@@ -97,97 +99,54 @@ public class GraphDesktop implements InternalFrameListener {
 
     int dx = 0;
     int dy = 0;
-
     protected final JFrame parentFrame;
-
     protected JDesktopPane desktop;
-
     protected JScrollPane jsp;
-
     protected ImageIcon internalFrameIcon;
-
     protected int nextX, nextY;
-
     protected EdGraGra layout;
-
-    protected Hashtable<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings;
-
-    protected Hashtable<Graph, EdGraph> internalLayoutGraphs;
-
-    protected Hashtable<Graph, JInternalFrame> internalGraphFrames;
-
+    protected Map<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings;
+    protected Map<Graph, EdGraph> internalLayoutGraphs;
+    protected Map<Graph, JInternalFrame> internalGraphFrames;
     protected Dimension internalFrameSize;
-
     protected ParserGUIOption option;
-
     protected Vector<ParserGUIListener> listener;
-
     protected JInternalFrame cpaGraphFrame, conflictFrame, dependFrame, activeGraphFrame;
-
     final protected MouseListener ml;
-
     final protected JPopupMenu graphMenu = new JPopupMenu("Graph");
-
     final protected JMenu miShapeC = new JMenu();
-
     final protected JMenu miShapeD = new JMenu();
-
     final protected JPopupMenu cpaGraphMenu = new JPopupMenu("CPA Graph");
-
     final protected JMenuItem miC = new JMenuItem("Show Conflicts");
-
     final protected JMenuItem miD = new JMenuItem("Show Dependencies");
-
     final protected JMenuItem miAll = new JMenuItem("Show All");
-
     final protected JMenuItem miRefresh = new JMenuItem("Refresh");
-
     final protected JMenuItem miStraightEdges = new JMenuItem("Straight Edges");
-
     final protected JMenuItem miHide = new JMenuItem("Hide Node/Edge");
-
     final protected JMenuItem miLayoutGraph = new JMenuItem("Layout Graph");
-
     final protected JMenuItem miGraphExportJPG = new JMenuItem("Export JPEG");
-
     final protected JMenuItem miExportJPG_graphMenu = new JMenuItem("Export JPEG");
-
     final protected JMenuItem miAddToGraphs_graphMenu = new JMenuItem("Add To Host Graphs");
-
     final protected JMenu miAddToNACs_graphMenu = new JMenu("Add To NACs");
-
     final protected JMenuItem miLayout_graphMenu = new JMenuItem("Layout Graph");
-
     final protected JMenuItem miVarEqual_graphMenu = new JMenuItem("Variable Equalities");
-
     final JMenu confsMenu = new JMenu(" Show ");
-
     final JMenu depsMenu = new JMenu(" Show ");
-
     protected JMenuItem miFirstRule, miSecondRule, miAllConfs, miAllDeps;
-
     protected CriticalPairPanel conflictPanel, dependPanel;
-
     protected int myW, myH;
-
     protected RuleEditor ruleEdit1;
-
     protected RuleEditor ruleEdit2;
-
     protected JInternalFrame ruleFrame1, ruleFrame2;
-
     protected EdRule layoutRule1, layoutRule2;
-
     protected GraphPanel activeGraphPanel;
-
     protected GraphicsExportJPEG exportJPEG;
-
-    final protected Hashtable<EdGraph, VariableEqualityDialog> varEqualityDialogs;
+    final protected Map<EdGraph, VariableEqualityDialog> varEqualityDialogs;
     protected Point locationOnScreen;
 
     /**
-     * Creates a new desktop. The layout is given by a graph grammar. The display settings are given by user defined
-     * options.
+     * Creates a new desktop. The layout is given by a graph grammar. The
+     * display settings are given by user defined options.
      *
      * @param layout The layout for graphs.
      * @param option The options for display settings.
@@ -196,10 +155,10 @@ public class GraphDesktop implements InternalFrameListener {
         setLayout(layout);
         this.parentFrame = parFrame;
         this.listener = new Vector<ParserGUIListener>();
-        this.overlappings = new Hashtable<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
-        this.internalGraphFrames = new Hashtable<Graph, JInternalFrame>();
-        this.internalLayoutGraphs = new Hashtable<Graph, EdGraph>();
-        this.varEqualityDialogs = new Hashtable<EdGraph, VariableEqualityDialog>();
+        this.overlappings = new HashMap<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
+        this.internalGraphFrames = new HashMap<Graph, JInternalFrame>();
+        this.internalLayoutGraphs = new HashMap<Graph, EdGraph>();
+        this.varEqualityDialogs = new HashMap<EdGraph, VariableEqualityDialog>();
         this.desktop = new JDesktopPane();
         this.myW = 500;
         this.myH = 500;
@@ -210,17 +169,14 @@ public class GraphDesktop implements InternalFrameListener {
         this.jsp.setBackground(Color.white);
         this.jsp.getHorizontalScrollBar().getModel().setValueIsAdjusting(true);
         this.jsp.getVerticalScrollBar().getModel().setValueIsAdjusting(true);
-
         this.internalFrameIcon = IconResource.getIconFromURL(IconResource
                 .getURLOverlapGraph());
         this.internalFrameSize = new Dimension(200, 200);
         this.option = option;
         this.nextX = 5;
         this.nextY = 5;
-
         makeGraphMenu();
         makeCPAGraphMenu();
-
         this.ml = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 showGraphMenu(e);
@@ -459,41 +415,31 @@ public class GraphDesktop implements InternalFrameListener {
                 || (this.option.getNumberOfCriticalPair() <= this.desktop.getComponentCount())) {
             return null;
         }
-
         GraphEditor gege = null;
-
         JInternalFrame newGraph = new JInternalFrame(g.getName(), true, false,
                 true, true);
         this.internalGraphFrames.put(g, newGraph);
-
         newGraph.addInternalFrameListener(this);
         newGraph.setSize(this.internalFrameSize);
         newGraph.setFrameIcon(this.internalFrameIcon);
-
         EdGraph eg = new EdGraph(g, this.layout.getTypeSet());
         this.internalLayoutGraphs.put(g, eg);
         eg.setEditable(false);
         eg.setDrawingStyleOfCriticalObjects(this.option.getDrawingStyleOfCriticalObjects());
-
         gege = new GraphEditor();
         gege.setGraph(eg);
-
         eg.makeInitialUpdateOfNodes();
         eg.doDefaultEvolutionaryGraphLayout(10);
-
         gege.setExportJPEG(this.exportJPEG);
         ((JPanel) gege.getGraphPanel().getCanvas()).addMouseListener(this.ml);
         gege.setEditMode(agg.gui.editor.EditorConstants.MOVE);
         gege.setTitle("    ");
-
         newGraph.getContentPane().add(gege);
         this.desktop.add(newGraph);
-
         try {
             newGraph.setIcon(true);
             newGraph.setSelected(false);
             newGraph.setVisible(true);
-
             newGraph.getDesktopIcon().setLocation(this.nextX, this.nextY);
             if ((this.nextX + newGraph.getDesktopIcon().getSize().width) >= this.desktop
                     .getSize().width) {
@@ -509,7 +455,6 @@ public class GraphDesktop implements InternalFrameListener {
             this.nextX = this.nextX + newGraph.getDesktopIcon().getSize().width;
         } catch (java.beans.PropertyVetoException pve) {
         }
-
         return newGraph;
     }
 
@@ -519,33 +464,25 @@ public class GraphDesktop implements InternalFrameListener {
                 || this.option.getNumberOfCriticalPair() <= this.desktop.getComponentCount()) {
             return null;
         }
-
         boolean newFrame = true;
         GraphEditor gege = null;
-
         eg.setEditable(false);
         eg.setDrawingStyleOfCriticalObjects(this.option.getDrawingStyleOfCriticalObjects());
-
         JInternalFrame graphFrame = this.internalGraphFrames.get(eg.getBasisGraph());
         if (graphFrame == null) {
             graphFrame = new JInternalFrame(eg.getBasisGraph().getName(), true,
                     true, true, true);
             this.internalGraphFrames.put(eg.getBasisGraph(), graphFrame);
             this.internalLayoutGraphs.put(eg.getBasisGraph(), eg);
-
             graphFrame.addInternalFrameListener(this);
             graphFrame.setSize(new Dimension(w1, h1));
             graphFrame.setFrameIcon(this.internalFrameIcon);
-
             if (!eg.isCPAgraph()) {
                 eg.updateGraph();
             }
-
             gege = new GraphEditor();
             gege.setExportJPEG(this.exportJPEG);
-
             graphFrame.getContentPane().add(gege);
-
             if (eg.isCPAgraph()) {
                 if (!eg.getBasisGraph().isEmpty()) {
                     int fw = eg.getGraphDimension().width;
@@ -564,14 +501,11 @@ public class GraphDesktop implements InternalFrameListener {
                 } else {
                     graphFrame.setSize(new Dimension(300, 200));
                 }
-
                 this.cpaGraphFrame = graphFrame;
                 this.cpaGraphFrame.addMouseListener(this.ml);
             }
-
             ((JPanel) gege.getGraphPanel().getCanvas())
                     .addMouseListener(this.ml);
-
         } else {
             newFrame = false;
             if (eg.isCPAgraph()) {
@@ -603,15 +537,12 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
         }
-
         if (gege != null) {
             gege.setGraph(eg);
             gege.setEditMode(agg.gui.editor.EditorConstants.MOVE);
             gege.setTitle("    ");
         }
-
         this.desktop.add(graphFrame);
-
         try {
             if (!eg.isCPAgraph()) {
                 graphFrame.setIcon(true);
@@ -621,7 +552,6 @@ public class GraphDesktop implements InternalFrameListener {
         } catch (java.beans.PropertyVetoException pve) {
             System.out.println("GraphDesktop.addGraph:: java.beans.PropertyVetoException:  " + pve.getMessage());
         }
-
         if (newFrame) {
             graphFrame.getDesktopIcon().setLocation(this.nextX, this.nextY);
             this.nextX = this.nextX + graphFrame.getDesktopIcon().getSize().width;
@@ -646,7 +576,6 @@ public class GraphDesktop implements InternalFrameListener {
                 || (this.option.getNumberOfCriticalPair() <= this.desktop.getComponentCount())) {
             return null;
         }
-
         if (!(rule instanceof RuleScheme)) {
             if (this.layout != null) {
                 this.layoutRule1 = this.layout.getRule(rule);
@@ -673,7 +602,6 @@ public class GraphDesktop implements InternalFrameListener {
         } else {
             this.layoutRule1 = null;
         }
-
         if (this.ruleFrame1 == null) {
             createRuleEditor1();
             this.ruleFrame1 = new JInternalFrame("", true, true, true, true);
@@ -684,13 +612,11 @@ public class GraphDesktop implements InternalFrameListener {
             this.ruleFrame1.setSize(new Dimension(w1, h1));
             this.desktop.add(this.ruleFrame1);
         }
-
         this.ruleEdit1.setRule(this.layoutRule1);
         this.ruleEdit1.setNAC(null);
         this.ruleEdit1.setEditMode(agg.gui.editor.EditorConstants.MOVE);
         this.ruleEdit1.setRuleTitle(rule.getQualifiedName(), "");
         this.ruleEdit1.enableSynchronMoveOfMappedObjects(false);
-
         this.ruleFrame1.setVisible(false);
         try {
             this.ruleFrame1.setIcon(true);
@@ -698,7 +624,6 @@ public class GraphDesktop implements InternalFrameListener {
             this.ruleFrame1.setVisible(true);
         } catch (java.beans.PropertyVetoException pve) {
         }
-
         this.nextX = this.ruleFrame1.getDesktopIcon().getSize().width;
         this.nextY = 5;
         this.ruleFrame1.getDesktopIcon().setLocation(this.nextX, this.nextY);
@@ -711,7 +636,6 @@ public class GraphDesktop implements InternalFrameListener {
                 ) {
             return null;
         }
-
         if (!(rule instanceof RuleScheme)) {
             if (this.layout != null) {
                 this.layoutRule2 = this.layout.getRule(rule);
@@ -741,7 +665,6 @@ public class GraphDesktop implements InternalFrameListener {
         } else {
             this.layoutRule2 = null;
         }
-
         if (this.ruleFrame2 == null) {
             createRuleEditor2();
             this.ruleFrame2 = new JInternalFrame("", true, true, true, true);
@@ -752,13 +675,11 @@ public class GraphDesktop implements InternalFrameListener {
             this.ruleFrame2.setSize(new Dimension(w1, h1));
             this.desktop.add(this.ruleFrame2);
         }
-
         this.ruleEdit2.setRule(this.layoutRule2);
         this.ruleEdit2.setNAC(null);
         this.ruleEdit2.setEditMode(agg.gui.editor.EditorConstants.MOVE);
         this.ruleEdit2.setRuleTitle(rule.getQualifiedName(), "");
         this.ruleEdit2.enableSynchronMoveOfMappedObjects(false);
-
         this.ruleFrame2.setVisible(false);
         try {
             this.ruleFrame2.setIcon(true);
@@ -766,7 +687,6 @@ public class GraphDesktop implements InternalFrameListener {
             this.ruleFrame2.setVisible(true);
         } catch (java.beans.PropertyVetoException pve) {
         }
-
         this.nextX = this.ruleFrame1.getDesktopIcon().getSize().width * 2;
         this.nextY = 5;
         this.ruleFrame2.getDesktopIcon().setLocation(this.nextX, this.nextY);
@@ -821,7 +741,6 @@ public class GraphDesktop implements InternalFrameListener {
         if (rule == null || nacName == null || nacName.length() == 0) {
             return null;
         }
-
         EdNAC nacGraph = null;
         if (rule.getNACs().isEmpty()) {
             edit.setNAC(null);
@@ -844,7 +763,6 @@ public class GraphDesktop implements InternalFrameListener {
         if (rule == null || pacName == null || pacName.length() == 0) {
             return null;
         }
-
         EdPAC pacGraph = null;
         if (rule.getPACs().isEmpty()) {
             edit.setPAC(null);
@@ -883,7 +801,8 @@ public class GraphDesktop implements InternalFrameListener {
     }
 
     /**
-     * Shows a little internal frame with a message that two rule are not critic.
+     * Shows a little internal frame with a message that two rule are not
+     * critic.
      *
      * @param first The first rule.
      * @param second The second rule.
@@ -893,7 +812,8 @@ public class GraphDesktop implements InternalFrameListener {
     }
 
     /**
-     * Shows a little internal frame with a message that two rule are not critic.
+     * Shows a little internal frame with a message that two rule are not
+     * critic.
      *
      * @param first the first rule
      * @param second the second rule
@@ -904,7 +824,6 @@ public class GraphDesktop implements InternalFrameListener {
         this.ruleEdit1.setDividerLocation(0, 0);
         resetNAC(this.ruleEdit2, this.layoutRule2, null, Color.WHITE);
         this.ruleEdit2.setDividerLocation(0, 0);
-
         Report.trace("starte notCriticFrame", 1);
         JInternalFrame newGraph = new JInternalFrame("not critic rules", false,
                 false, false, false);
@@ -922,7 +841,6 @@ public class GraphDesktop implements InternalFrameListener {
             JLabel l = new JLabel(scaledIcon);
             newGraph.getContentPane().add(l, BorderLayout.WEST);
         }
-
         JPanel messagePanel = new JPanel();
         messagePanel.setLayout(new GridBagLayout());
         JLabel message1 = new JLabel("r1: " + first.getName());
@@ -932,9 +850,7 @@ public class GraphDesktop implements InternalFrameListener {
         if (text.length() != 0) {
             message4 = new JLabel(text);
         }
-
         GridBagConstraints c = new GridBagConstraints();
-
         c.gridwidth = GridBagConstraints.REMAINDER;
         messagePanel.add(message1, c);
         messagePanel.add(message2, c);
@@ -946,16 +862,13 @@ public class GraphDesktop implements InternalFrameListener {
         Report.println("DesktopSize " + this.desktop.getSize(), Report.TRACE);
         int posX = (int) this.desktop.getSize().getWidth();
         int posY = (int) this.desktop.getSize().getHeight();
-
         posX = posX / 2;
         posY = posY / 2;
         int width = (int) newGraph.getSize().getWidth();
         int height = (int) newGraph.getSize().getHeight();
-
         width = width / 2;
         height = height / 2;
         newGraph.setLocation(posX - width, posY - height);
-
         this.desktop.add(newGraph);
         Report.trace("beende notCriticFrame", -1);
     }
@@ -1010,7 +923,8 @@ public class GraphDesktop implements InternalFrameListener {
     }
 
     /**
-     * Returns the component to display the desktop. This component can be set in a frame, panel or something like that.
+     * Returns the component to display the desktop. This component can be set
+     * in a frame, panel or something like that.
      *
      * @return The desktop
      */
@@ -1111,8 +1025,7 @@ public class GraphDesktop implements InternalFrameListener {
      */
     public void removeAllGraphFrames() {
         removeVarEqualityDialogs();
-        this.overlappings = new Hashtable<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
-
+        this.overlappings = new HashMap<Graph, Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>();
         for (int i = this.desktop.getAllFrames().length - 1; i >= 0; i--) {
             JInternalFrame f = this.desktop.getAllFrames()[i];
             if (f == this.cpaGraphFrame) {
@@ -1135,7 +1048,6 @@ public class GraphDesktop implements InternalFrameListener {
                 this.desktop.remove(f);
             }
         }
-
         this.nextX = 5;
         this.nextY = 5;
         this.nextX = this.nextX + 160 * 3;
@@ -1313,17 +1225,15 @@ public class GraphDesktop implements InternalFrameListener {
     // Internal Frame Listener
     // ======================================================================
     /**
-     * This method is invoked when a internal frame is activated. This method is responsible for the update of the
-     * morphism.
+     * This method is invoked when a internal frame is activated. This method is
+     * responsible for the update of the morphism.
      *
      * @param e The event from the internal frame
      */
     public void internalFrameActivated(InternalFrameEvent e) {
         // Invoked when an internal frame is activated.	
-
         JInternalFrame jif = (JInternalFrame) e.getSource();
         Component c = jif.getContentPane().getComponent(0);
-
         if (jif == this.cpaGraphFrame
                 && this.activeGraphFrame != this.cpaGraphFrame) {
             if (this.ruleFrame1 != null && this.ruleFrame2 != null) {
@@ -1334,9 +1244,7 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
             if (!this.internalGraphFrames.isEmpty()) {
-                Enumeration<JInternalFrame> en = this.internalGraphFrames.elements();
-                while (en.hasMoreElements()) {
-                    JInternalFrame item = en.nextElement();
+                for (JInternalFrame item : this.internalGraphFrames.values()) {
                     if (item != this.cpaGraphFrame) {
                         try {
                             item.setIcon(true);
@@ -1345,7 +1253,6 @@ public class GraphDesktop implements InternalFrameListener {
                     }
                 }
             }
-
             this.activeGraphFrame = jif;
         } else if (c instanceof GraphEditor) {
             // first deactivate last active frame
@@ -1367,7 +1274,6 @@ public class GraphDesktop implements InternalFrameListener {
                         this.ruleEdit2.getLeftPanel().setBackground(bgcolor);
                         this.ruleEdit2.setNAC(null);
                     }
-
                     EdGraph eg = gege.getGraph();
                     eg.clearMarks();
                 }
@@ -1384,33 +1290,27 @@ public class GraphDesktop implements InternalFrameListener {
             if (morphs == null) {
                 return;
             }
-
 //			if (this.varEqualityDialogs.get(eg) != null
 //					&& this.varEqualityDialogs.get(eg).isVisible()) {
 //				this.varEqualityDialogs.get(eg).setEnabled(true);
 //			}
             String nacName = eg.getBasisGraph().getHelpInfoAboutNAC();
             String pacName = eg.getBasisGraph().getHelpInfoAboutPAC();
-
             OrdinaryMorphism o1 = morphs.first.first;
             OrdinaryMorphism o2 = morphs.first.second;
-
             // set background color of overlapping panels
             Color bgcolor = new Color(255, 255, 165);
             gege.getGraphPanel().setBackground(bgcolor);
-
             if (CriticalPairData.isSwitchDependency(eg.getBasisGraph().getName())) {
                 if (o1.getSource() == this.layoutRule2.getBasisRule().getLeft()) {
                     this.ruleEdit2.getLeftPanel().setBackground(bgcolor);
                 } else if (o1.getSource() == this.layoutRule2.getBasisRule().getRight()) {
                     this.ruleEdit2.getRightPanel().setBackground(bgcolor);
                 }
-
                 EdNAC nac1 = resetNAC(this.ruleEdit1, this.layoutRule1, nacName, bgcolor);
                 if (nac1 != null) {
                     this.ruleEdit1.getNACPanel().setBackground(bgcolor);
                 }
-
                 if (morphs.second != null) {
                     if (morphs.second.first.getSource() == this.layoutRule1.getBasisRule().getLeft()) {
                         this.ruleEdit1.getLeftPanel().setBackground(bgcolor);
@@ -1422,7 +1322,6 @@ public class GraphDesktop implements InternalFrameListener {
                 } else {
                     this.ruleEdit1.getRightPanel().setBackground(bgcolor);
                 }
-
 //				set morphism marks
                 int indx = 0;
                 EdMorphism numbers = new EdMorphism(null);
@@ -1433,28 +1332,23 @@ public class GraphDesktop implements InternalFrameListener {
                 if (nac1 != null) {
                     indx = numbers.completeMorphismMarks(nac1.getMorphism(), numbers.getFirstTarget(), indx);
                 }
-
                 eg.setMorphismMarks(numbers.getSourceOfMorphism(), true);
                 setMorphismMarks(this.layoutRule2, null, numbers.getTargetOfMorphism(1), indx);
                 setMorphismMarks(this.layoutRule1, nac1, numbers.getTargetOfMorphism(2), indx);
-
                 fireParserGUIEvent(numbers);
                 fireParserGUIEvent(eg.getBasisGraph());
             } else if (eg.getBasisGraph().getName().indexOf("produceEdge-deleteNode-") >= 0) {
                 this.ruleEdit1.getLeftPanel().setBackground(bgcolor);
                 this.ruleEdit2.getLeftPanel().setBackground(bgcolor);
-
                 // set morphism marks
                 int indx = 0;
                 EdMorphism numbers = new EdMorphism(null);
                 indx = numbers.makeVDiagram(this.layoutRule1.getBasisRule(),
                         this.layoutRule2.getBasisRule(),
                         o1, o2, indx);
-
                 eg.setMorphismMarks(numbers.getSourceOfMorphism(), true);
                 setMorphismMarks(this.layoutRule1, null, numbers.getTargetOfMorphism(1), indx);
                 setMorphismMarks(this.layoutRule2, null, numbers.getTargetOfMorphism(2), indx);
-
                 fireParserGUIEvent(numbers);
                 fireParserGUIEvent(eg.getBasisGraph());
             } else {
@@ -1465,32 +1359,25 @@ public class GraphDesktop implements InternalFrameListener {
                 } else if (o1.getSource() == this.layoutRule1.getBasisRule().getRight()) {
                     this.ruleEdit1.getRightPanel().setBackground(bgcolor);
                 }
-
                 nac2 = resetNAC(this.ruleEdit2, this.layoutRule2, nacName, bgcolor);
                 if (nac2 != null) {
                     this.ruleEdit2.getNACPanel().setBackground(bgcolor);
                 }
-
                 pac2 = resetPAC(this.ruleEdit2, this.layoutRule2, pacName, bgcolor);
                 if (pac2 != null) {
                     this.ruleEdit2.getPACPanel().setBackground(bgcolor);
                 }
-
                 this.ruleEdit2.getLeftPanel().setBackground(bgcolor);
-
                 // set morphism marks
                 EdMorphism numbers = new EdMorphism(null);
                 int indx = 0;
-
                 Pair<OrdinaryMorphism, OrdinaryMorphism> condMorph2 = morphs.second;
-
                 if (pac2 != null) {
                     indx = numbers.makeVDiagram_PAC(
                             this.layoutRule1.getBasisRule(),
                             this.layoutRule2.getBasisRule(),
                             o1, o2, condMorph2, pac2.getMorphism(), indx);
                 }
-
                 if (nac2 != null) {
                     indx = numbers.makeVDiagram_NAC(
                             this.layoutRule1.getBasisRule(),
@@ -1501,29 +1388,22 @@ public class GraphDesktop implements InternalFrameListener {
                             this.layoutRule2.getBasisRule(),
                             o1, o2, indx);
                 }
-
                 eg.setMorphismMarks(numbers.getSourceOfMorphism(), true);
                 setMorphismMarks(this.layoutRule1, null, numbers.getTargetOfMorphism(1), indx);
-
                 if (pac2 != null) {
                     setMorphismMarks(this.layoutRule2, pac2, numbers.getTargetOfMorphism(2), indx);
                 }
-
                 if (nac2 != null) {
                     setMorphismMarks(this.layoutRule2, nac2, numbers.getTargetOfMorphism(2), indx);
                 } else {
                     setMorphismMarks(this.layoutRule2, pac2, numbers.getTargetOfMorphism(2), indx);
                 }
-
                 fireParserGUIEvent(numbers);
                 fireParserGUIEvent(eg.getBasisGraph());
-
                 // test CP-Data content
 //				testCPData(this.layoutRule1.getBasisRule(), this.layoutRule2.getBasisRule());
             }
-
             gege.updateGraphics();
-
             // deactivate critical pair panels
             JInternalFrame[] allFrames = this.desktop.getAllFrames();
             if (allFrames != null) {
@@ -1683,7 +1563,6 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
         }
-
     }
 
     /**
@@ -1699,24 +1578,19 @@ public class GraphDesktop implements InternalFrameListener {
         this.cpaGraphMenu.add(this.miD);
         this.cpaGraphMenu.add(this.miAll);
         this.cpaGraphMenu.addSeparator();
-
         this.cpaGraphMenu.add(this.miHide);
         this.cpaGraphMenu.addSeparator();
         this.cpaGraphMenu.add(this.miStraightEdges);
         this.cpaGraphMenu.addSeparator();
-
         makeCPAEdgeShapeMenu(this.miShapeC, "Conflict Edge Style", "Conflict");
         this.cpaGraphMenu.add(this.miShapeC);
         makeCPAEdgeShapeMenu(this.miShapeD, "Dependency Edge Style", "Dependency");
         this.cpaGraphMenu.add(this.miShapeD);
         this.cpaGraphMenu.addSeparator();
-
         this.cpaGraphMenu.add(this.miLayoutGraph);
         this.cpaGraphMenu.addSeparator();
-
         this.cpaGraphMenu.add(this.miRefresh);
         this.cpaGraphMenu.addSeparator();
-
         this.cpaGraphMenu.add(this.miGraphExportJPG);
         this.miGraphExportJPG.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1726,7 +1600,6 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
         });
-
         this.cpaGraphMenu.pack();
         this.cpaGraphMenu.setBorderPainted(true);
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
@@ -1738,15 +1611,12 @@ public class GraphDesktop implements InternalFrameListener {
             public void actionPerformed(ActionEvent e) {
                 if (GraphDesktop.this.activeGraphPanel != null
                         && GraphDesktop.this.activeGraphPanel.getGraph() != null) {
-
                     showVarEqualityDialog(GraphDesktop.this.activeGraphPanel.getGraph(),
                             GraphDesktop.this.locationOnScreen);
                 }
             }
         });
-
         this.graphMenu.addSeparator();
-
         this.graphMenu.add(this.miAddToGraphs_graphMenu);
         this.miAddToGraphs_graphMenu.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1757,7 +1627,6 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
         });
-
         this.graphMenu.add(this.miAddToNACs_graphMenu);
         this.miFirstRule = this.miAddToNACs_graphMenu.add(new JMenuItem("Of First Rule"));
         this.miFirstRule.addActionListener(new ActionListener() {
@@ -1771,9 +1640,7 @@ public class GraphDesktop implements InternalFrameListener {
                 addGraphToNACs(false);
             }
         });
-
         this.graphMenu.addSeparator();
-
         this.graphMenu.add(this.miLayout_graphMenu);
         this.miLayout_graphMenu.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1785,9 +1652,7 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
         });
-
         this.graphMenu.addSeparator();
-
         this.graphMenu.add(this.miExportJPG_graphMenu);
         this.miExportJPG_graphMenu.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -1799,7 +1664,6 @@ public class GraphDesktop implements InternalFrameListener {
                 }
             }
         });
-
         this.graphMenu.pack();
         this.graphMenu.setBorderPainted(true);
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
@@ -1808,14 +1672,11 @@ public class GraphDesktop implements InternalFrameListener {
     void addGraphToHostGraphs() {
         int levelOfTGcheck = this.layout.getLevelOfTypeGraphCheck();
         this.layout.getTypeSet().getBasisTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
-
         EdGraph g = this.activeGraphPanel.getGraph().copy();
         g.unsetAttributeValueWhereVariable();
         // because g should be added to host graphs,
         // remove all variables of node / edge attributes
-
         if (this.layout.addGraph(g)) {
-
             Collection<TypeError> errors = this.layout.setLevelOfTypeGraphCheck(levelOfTGcheck);
             if (errors == null || errors.isEmpty()) {
                 if (this.parentFrame instanceof agg.gui.AGGAppl) {
@@ -1871,7 +1732,6 @@ public class GraphDesktop implements InternalFrameListener {
                             this.layout.setEditable(false);
                         }
                     }
-
                     JOptionPane.showMessageDialog(
                             this.parentFrame,
                             "<html><body>"
@@ -1905,25 +1765,21 @@ public class GraphDesktop implements InternalFrameListener {
         if (this.activeGraphPanel != null
                 && this.activeGraphPanel.getGraph() != null
                 && this.layout != null) {
-
             int levelOfTGcheck = this.layout.getLevelOfTypeGraphCheck();
             this.layout.getTypeSet().getBasisTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
-
             // get the rule
             EdRule r = firstRule ? this.ruleEdit1.getRule() : this.ruleEdit2.getRule();
             // get the critical graph 
             EdGraph g = this.activeGraphPanel.getGraph();
             // get attr variable names equality
-            Hashtable<String, String> varEqualName = VariableEqualityDialog.getVarNameEquality(g.getBasisGraph().getHelpInfoAboutVariableEquality());
+            Map<String, String> varEqualName = VariableEqualityDialog.getVarNameEquality(g.getBasisGraph().getHelpInfoAboutVariableEquality());
             // get critical pair
             Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>> cp = this.overlappings.get(g.getBasisGraph());
             boolean mapOK = true;
             JLabel errMsg = new JLabel();
-
             OrdinaryMorphism bnac = this.makeNAC(cp, r.getBasisRule(), g.getBasisGraph(), firstRule, errMsg);
 //			OrdinaryMorphism bnac = CriticalPairData.makeNACFromGraph(cp, r.getBasisRule(), g.getBasisGraph(), firstRule);
             mapOK = (bnac != null && !bnac.isEmpty());
-
             if (mapOK) {
                 insertNACIntoGrammar(bnac, g, r, varEqualName, firstRule);
             } else {
@@ -1944,13 +1800,11 @@ public class GraphDesktop implements InternalFrameListener {
             final Graph g,
             boolean firstRule,
             JLabel errMsg) {
-
         // make help iso-morphism
         OrdinaryMorphism iso = g.isoCopy();
         if (iso == null) {
             return null;
         }
-
         iso.getTarget().setName(iso.getTarget().getName().replace("_copy", ""));
         // create a nac morphism : r.LHS --> iso.target
         OrdinaryMorphism bnac = BaseFactory.theFactory().createMorphism(
@@ -2011,7 +1865,6 @@ public class GraphDesktop implements InternalFrameListener {
             bnac.dispose(false, true);
             return null;
         }
-
         return bnac;
     }
 
@@ -2019,13 +1872,11 @@ public class GraphDesktop implements InternalFrameListener {
             final OrdinaryMorphism bnac,
             final EdGraph g,
             final EdRule r,
-            final Hashtable<String, String> varEqualName,
+            final Map<String, String> varEqualName,
             boolean firstRule) {
-
         // make layout nac and add it to layout rule
         EdNAC nac = new EdNAC(bnac);
         nac.setLayoutByIndex(g, true);
-
         if (this.parentFrame instanceof agg.gui.AGGAppl) {
             TreePath path = ((agg.gui.AGGAppl) this.parentFrame).getGraGraTreeView()
                     .getTreePathOfGrammarElement(r);
@@ -2037,7 +1888,6 @@ public class GraphDesktop implements InternalFrameListener {
                 // adjust attr variables 
                 renameEqualVar(nac.getBasisGraph(), r.getBasisRule().getAttrContext().getVariables(), varEqualName, firstRule);
                 r.getBasisRule().addToAttrContext(nac.getBasisGraph().getAttrContext());
-
                 JOptionPane.showMessageDialog(
                         this.parentFrame,
                         "<html><body>"
@@ -2054,7 +1904,6 @@ public class GraphDesktop implements InternalFrameListener {
             // adjust attr variables 
             renameEqualVar(nac.getBasisGraph(), r.getBasisRule().getAttrContext().getVariables(), varEqualName, false);
             r.getBasisRule().addToAttrContext(nac.getBasisGraph().getAttrContext());
-
             JOptionPane.showMessageDialog(
                     null,
                     "<html><body>"
@@ -2068,7 +1917,7 @@ public class GraphDesktop implements InternalFrameListener {
         }
     }
 
-    private void renameEqualVar(Graph g, AttrVariableTuple attrCont, Hashtable<String, String> varEqualName, boolean firstRule) {
+    private void renameEqualVar(Graph g, AttrVariableTuple attrCont, Map<String, String> varEqualName, boolean firstRule) {
         Iterator<Node> nodes = g.getNodesCollection().iterator();
         while (nodes.hasNext()) {
             Node go = nodes.next();
@@ -2085,7 +1934,7 @@ public class GraphDesktop implements InternalFrameListener {
         }
     }
 
-    private void renameEqualVar(GraphObject go, AttrVariableTuple attrCont, Hashtable<String, String> varEqualName, boolean firstRule) {
+    private void renameEqualVar(GraphObject go, AttrVariableTuple attrCont, Map<String, String> varEqualName, boolean firstRule) {
         AttrTuple attr = go.getAttribute();
         for (int i = 0; i < attr.getNumberOfEntries(); i++) {
             ValueMember m = (ValueMember) attr.getMemberAt(i);
@@ -2096,9 +1945,8 @@ public class GraphDesktop implements InternalFrameListener {
                         String vR = vnameG.replace("r1_", "");
                         m.setExprAsText(vR);
                     } else {
-                        Enumeration<String> names1 = varEqualName.keys();
-                        while (names1.hasMoreElements()) {
-                            String n1 = names1.nextElement().replace("[", "");
+                        for (String n1 : varEqualName.keySet()) {
+                            n1 = n1.replace("[", "");
                             if (vnameG.contains(n1)) {
                                 String vR = n1.replace("r1_", "");
                                 m.setExprAsText(vR);
@@ -2127,7 +1975,6 @@ public class GraphDesktop implements InternalFrameListener {
     protected void makeLayout(EdGraph g, Dimension d) {
         g.updateVisibility();
         final List<EdNode> visiblenodes = g.getVisibleNodes();
-
         g.setCurrentLayoutToDefault(false);
         g.getDefaultGraphLayouter().setEnabled(true);
         Dimension dim = g.getDefaultGraphLayouter().getNeededPanelSize(visiblenodes);
@@ -2158,12 +2005,10 @@ public class GraphDesktop implements InternalFrameListener {
         miSolid.setHorizontalTextPosition(SwingConstants.RIGHT);
         miSolid.setIcon((new agg.gui.icons.ColorSolidLineIcon(Color.black)));
         miSolid.setActionCommand(kind + "Solid");
-
         final JMenuItem miDot = shape.add(new JMenuItem("Dot Line"));
         miDot.setHorizontalTextPosition(SwingConstants.RIGHT);
         miDot.setIcon(new agg.gui.icons.ColorDotLineIcon(Color.black));
         miDot.setActionCommand(kind + "Dot");
-
         final JMenuItem miDash = shape.add(new JMenuItem("Dash Line"));
         miDash.setHorizontalTextPosition(SwingConstants.RIGHT);
         miDash.setIcon(new agg.gui.icons.ColorDashLineIcon(Color.black));
@@ -2207,7 +2052,6 @@ public class GraphDesktop implements InternalFrameListener {
         final JMenuBar mb = new JMenuBar();
         mb.add(m);
         this.conflictFrame.setJMenuBar(mb);
-
         JMenuItem item = makeConflictMenuItem("delete - use conflict", m);
         item.setActionCommand(CriticalPairData.DELETE_USE_C_TXT);
         item = makeConflictMenuItem("delete - need ( PAC ) conflict", m);
@@ -2228,7 +2072,6 @@ public class GraphDesktop implements InternalFrameListener {
         item = makeConflictMenuItem("All Conflicts", m);
         item.setActionCommand("ALL");
         this.miAllConfs = item;
-
         m.addSeparator();
         m.addSeparator();
         final JMenuItem mi = m.add(new JMenuItem(" Export JPEG "));
@@ -2299,7 +2142,6 @@ public class GraphDesktop implements InternalFrameListener {
         final JMenuBar mb = new JMenuBar();
         mb.add(m);
         this.dependFrame.setJMenuBar(mb);
-
         JMenuItem item = makeDependMenuItem("produce - use dependency", m);
         item.setActionCommand(CriticalPairData.PRODUCE_USE_D_TXT);
         item = makeDependMenuItem("produce - <use & delete> dependency", m);
@@ -2321,10 +2163,8 @@ public class GraphDesktop implements InternalFrameListener {
         item = makeDependMenuItem("All Dependencies", m);
         item.setActionCommand("ALL");
         this.miAllDeps = item;
-
         m.addSeparator();
         m.addSeparator();
-
         final JMenuItem mi = m.add(new JMenuItem(" Export JPEG "));
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -2345,7 +2185,6 @@ public class GraphDesktop implements InternalFrameListener {
         if (panel == null) {
             return;
         }
-
         CriticalPairData cpdata = panel.getPairContainer().getCriticalPairData(r1, r2);
         List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> delUse = cpdata.getDeleteUseConflicts();
         List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> delNeed = cpdata.getDeleteNeedConflicts();
@@ -2356,10 +2195,8 @@ public class GraphDesktop implements InternalFrameListener {
             Graph g = cpdata.getCriticalGraph();
             String gname = g.getName();
             System.out.println(gname);
-
             String ghelpNAC = g.getHelpInfoAboutNAC();
             String ghelpPAC = g.getHelpInfoAboutPAC();
-
             OrdinaryMorphism duetoNAC = cpdata.getMorph2DueToNAC();
             if (duetoNAC != null) {
                 List<GraphObject> out = duetoNAC.getDomainObjects();
@@ -2377,9 +2214,7 @@ public class GraphDesktop implements InternalFrameListener {
             }
         }
     }
-
 }
-
 /*
  * $Log: GraphDesktop.java,v $
  * Revision 1.26  2010/12/21 13:40:34  olga

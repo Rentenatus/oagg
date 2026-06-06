@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -19,7 +21,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.util.Hashtable;
 import java.util.Vector;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -27,7 +28,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 //import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.options.ParserGUIOption;
 import agg.gui.parser.event.GUIOptionEvent;
@@ -53,11 +53,13 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.util.Pair;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Holds the whole GUI for the critical pair analysis
  *
- * @version $Id: CriticalPairAnalysisGUI.java,v 1.13 2006/12/13 13:33:05 enrico Exp $
+ * @version $Id: CriticalPairAnalysisGUI.java,v 1.13 2006/12/13 13:33:05 enrico
+ * Exp $
  * @author $Author: olga $
  */
 public class CriticalPairAnalysisGUI implements ParserGUIListener,
@@ -67,85 +69,64 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
      * The text for critical pairs
      */
     public static final String CRITICALPAIRS = "Critical Pairs";
-
     /**
      * The text for dependency pairs
      */
     public static final String CINFLICTSPAIRS = "Minimal Conflicts";
-
     /**
      * The text for dependency pairs
      */
     public static final String DEPENDENCYPAIRS = "Minimal Dependencies";
-
     /**
      * the text for the parser
      */
     public static final String PARSER = "Parser";
-
     /**
      * the load text
      */
     public static final String LOAD = "Load Pairs";
-
     /**
      * the save text
      */
     public static final String SAVE = "Save Pairs";
-
     /**
      * the exclude text
      */
     public static final String EXCLUDE = "Exclude";
-
     /**
      * the before text
      */
     public static final String BEFORE = "Before";
-
     /**
      * the pane for rules and critical pairs
      */
     JSplitPane mainPane;
-
     /**
      * this pane holds the two tree views
      */
     JSplitPane treePane;
-
     /**
      * this pane holds the the graphs
      */
     JSplitPane graphPane;
-
     /**
      * the grammar which belongs to the current critical pairs
      */
     GraGra grammar;
-
     GraphDesktop gDesktop;
-
     Rule links, rechts;
-
     /**
-     * the tables of conflicts and dependencies which show progress of critical pairs
+     * the tables of conflicts and dependencies which show progress of critical
+     * pairs
      */
     CriticalPairPanel pairPanel, pairPanel2;
-
     boolean isPanel2 = false;
-
     Thread threadCP;
-
     boolean threadCPisAlive;
-
     List<StatusMessageListener> listener;
-
     EdGraGra layout;
-
     PairContainer beo, beo2;
-
     ParserGUIOption option;
-
     IntNumberDialog fromToDialog;
 
     /**
@@ -167,17 +148,13 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
     public CriticalPairAnalysisGUI(JFrame applFrame, GraGra gragra, EdGraGra layout,
             ParserGUIOption option) {
         setGrammar(gragra);
-
         this.gDesktop = new GraphDesktop(applFrame, layout, option);
         this.gDesktop.addParserGUIListener(this);
-
         setLayout(layout);
-
         this.option = option;
         if (option != null) {
             option.addOptionListener(this);
         }
-
         this.listener = new Vector<StatusMessageListener>();
         if (option != null) {
             this.gDesktop.setOverlappingGraphWindowSize(option
@@ -185,20 +162,17 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
         } else {
             this.gDesktop.setOverlappingGraphWindowSize(new Dimension(250, 200));
         }
-
         this.graphPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         this.graphPane.setOneTouchExpandable(false); // true);
         this.graphPane.setTopComponent(null); // gBrowser.getComponent());
         this.graphPane.setBottomComponent(this.gDesktop.getComponent());
         this.graphPane.setDividerLocation(0);
-
         this.mainPane = new JSplitPane();
         this.mainPane.setOneTouchExpandable(false);
         this.mainPane.setLeftComponent(null);
         this.mainPane.setRightComponent(this.graphPane);
         this.mainPane.setDividerLocation(0);
         this.mainPane.revalidate();
-
         fromToDialog = new IntNumberDialog(null); //applFrame);
     }
 
@@ -227,13 +201,11 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                 || pairs.getGrammar().getListOfRules().isEmpty()) {
             return;
         }
-
         if (pairs.getKindOfConflict() == CriticalPair.TRIGGER_DEPENDENCY
                 || pairs.getKindOfConflict() == CriticalPair.TRIGGER_SWITCH_DEPENDENCY) {
             setCriticalPairs2(pairs);
             return;
         }
-
         this.beo = pairs;
         if (this.pairPanel == null) {
             String cpTableName = "Minimal Conflicts";
@@ -271,7 +243,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                 || (pairs.getGrammar().getListOfRules().isEmpty())) {
             return;
         }
-
         this.beo2 = pairs;
         if (this.pairPanel2 == null) {
             String cpTableName = "Minimal Dependencies";
@@ -320,10 +291,13 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
     }
 
     /**
-     * Returns the critical pairs. If the given parameter <code>kindOfConflict</code> is
-     * <code>CriticalPair.CONFLICT</code> returns the conflict critical pairs, if the given parameter
-     * <code>kindOfConflict</code> is <code>CriticalPair.TRIGGER_DEPENDENCY</code> or
-     * <code>CriticalPair.TRIGGER_SWITCH_DEPENDENCY</code> returns the dependency critical pairs, otherwise - null.
+     * Returns the critical pairs. If the given parameter
+     * <code>kindOfConflict</code> is <code>CriticalPair.CONFLICT</code> returns
+     * the conflict critical pairs, if the given parameter
+     * <code>kindOfConflict</code> is
+     * <code>CriticalPair.TRIGGER_DEPENDENCY</code> or
+     * <code>CriticalPair.TRIGGER_SWITCH_DEPENDENCY</code> returns the
+     * dependency critical pairs, otherwise - null.
      */
     public PairContainer getCriticalPairs(int kindOfConflict) {
         if (kindOfConflict == CriticalPair.CONFLICT) {
@@ -439,14 +413,11 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                 }
             }
             setLayout(edgragra);
-
             this.links = null;
             this.rechts = null;
-
             this.gDesktop.removeAllGraphFrames();
             this.gDesktop.removeRuleFrames();
         }
-
         return "";
     }
 
@@ -475,26 +446,21 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
      */
     public JMenu createMenu() {
         JMenu m = new JMenu("Parse");
-
         m.add(new JCheckBoxMenuItem(CRITICALPAIRS, false));
         m.add(new JMenuItem(PARSER));
         m.addSeparator();
         JMenuItem load = new JMenuItem(LOAD);
         JMenuItem save = new JMenuItem(SAVE);
-
         load.setEnabled(false);
         save.setEnabled(false);
         m.add(load);
         m.add(save);
         m.addSeparator();
         JMenu beforeExcludeList = new JMenu("Mode");
-
         m.add(beforeExcludeList);
         JCheckBoxMenuItem exclude = new JCheckBoxMenuItem(EXCLUDE, true);
-
         exclude.addActionListener(this);
         JCheckBoxMenuItem before = new JCheckBoxMenuItem(BEFORE, false);
-
         before.addActionListener(this);
         beforeExcludeList.add(exclude);
         beforeExcludeList.add(before);
@@ -506,7 +472,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
         if (pguie.getSource() == this.pairPanel) {
             this.gDesktop.setIconOfCPAGraph(true);
             this.gDesktop.setIconOfRules(true);
-
             if (pguie.getData() instanceof Pair) {
                 if ((((Pair<?, ?>) pguie.getData()).first instanceof Rule)
                         && (((Pair<?, ?>) pguie.getData()).second instanceof Rule)) {
@@ -544,7 +509,7 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
     List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>
             getOverlappingsByEvent(final ParserGUIEvent pguie) {
         List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = null;
-        Hashtable<Graph, List<Hashtable<GraphObject, GraphObject>>> overlappingsForGraph = null;
+        Map<Graph, List<Map<GraphObject, GraphObject>>> overlappingsForGraph = null;
         try {
             if (!CriticalPairAnalysisGUI.this.isPanel2) { // conflicts
                 if (pguie.getData() instanceof Pair) {
@@ -590,7 +555,8 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
     }
 
     /**
-     * this gui listens for <CODE>ParserGUIEvents</CODE>. So it must implement the listener
+     * this gui listens for <CODE>ParserGUIEvents</CODE>. So it must implement
+     * the listener
      *
      * @param pguie the event
      */
@@ -605,7 +571,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                 == CriticalPairEvent.REMOVE_RELATION_ENTRY)) {
             return;
         }
-
         if (pguie.getData() == null) {
             this.gDesktop.removeAllGraphFrames();
             this.gDesktop.removeRuleFrames();
@@ -613,36 +578,28 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
             this.mainPane.repaint();
             return;
         }
-
         if (pguie.getSource() == this.gDesktop) {
             return;
         }
-
         if ((this.threadCP == null) || !this.threadCPisAlive) {
             this.mainPane.revalidate();
             this.mainPane.repaint();
-
             getRulesByEvent(pguie);
-
             this.mainPane.revalidate();
             this.mainPane.repaint();
-
             if (this.links != null && this.rechts != null) {
                 StatusMessageEvent sme = new StatusMessageEvent(this, "",
                         "Overlapping graphs of rules  [  " + this.links.getName()
                         + "  ,  " + this.rechts.getName() + "  ]");
                 fireStatusMessageEvent(sme);
-
                 this.gDesktop.removeAllGraphFrames();
                 this.mainPane.revalidate();
                 this.mainPane.repaint();
-
                 if (!this.isPanel2) {
                     ((ExcludePairContainer) this.beo).setStop(false);
                 } else {
                     ((ExcludePairContainer) this.beo2).setStop(false);
                 }
-
                 // run thread when a button pressed
                 this.threadCP = runCPairThread(pguie);
                 this.threadCP.setPriority(4);
@@ -661,9 +618,7 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                         + CriticalPairAnalysisGUI.this.links.getName() + "  ,  "
                         + CriticalPairAnalysisGUI.this.rechts.getName()
                         + "  ]  -  is running ..."));
-
                 List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>> overlappings = getOverlappingsByEvent(pguie);
-
                 if (overlappings != null && overlappings.size() > 0) {
                     int x0 = 0;
                     int xn = overlappings.size() - 1;
@@ -711,7 +666,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                         ExcludePairContainer.Entry entry = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo)
                                 .getEntry(
                                         CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, true);
-
                         if (entry.getState() == ExcludePairContainer.Entry.COMPUTED) {
                             if (hostGraphCheck) {
                                 CriticalPairAnalysisGUI.this.gDesktop.notCriticFrame(
@@ -728,7 +682,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                         ExcludePairContainer.Entry entry = ((ExcludePairContainer) CriticalPairAnalysisGUI.this.beo2)
                                 .getEntry(
                                         CriticalPairAnalysisGUI.this.links, CriticalPairAnalysisGUI.this.rechts, true);
-
                         int state = entry.getState();
                         if (state == ExcludePairContainer.Entry.COMPUTED
                                 || state == ExcludePairContainer.Entry.COMPUTED2
@@ -748,18 +701,15 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                         }
                     }
                 }
-
                 fireStatusMessageEvent(new StatusMessageEvent(this, "",
                         "Thread  -  Computing overlapping graphs of rules  [  "
                         + CriticalPairAnalysisGUI.this.links.getName() + "  ,  "
                         + CriticalPairAnalysisGUI.this.rechts.getName() + "  ]  -  finished"));
-
                 CriticalPairAnalysisGUI.this.threadCPisAlive = false;
             }
         };
         return th;
     }
-
     boolean showGACsWarn = true;
 
     void showWarningWhenGACsUsed(final Rule r1, final Rule r2) {
@@ -780,7 +730,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
                     options, options[1]);
             this.showGACsWarn = (answer == 0);
-
 //			JOptionPane.showMessageDialog(null,	
 //				"The result of this critical pair may be incomplete! \n"
 //				+what+"\nmakes use of General Application Conditions.\n" 
@@ -815,7 +764,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
         if ((this.threadCP != null) && this.threadCPisAlive) {
             return true;
         }
-
         return false;
     }
 
@@ -824,7 +772,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
         if (p != null) {
             return p.getPairContainer();
         }
-
         return null;
     }
 
@@ -857,7 +804,8 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
 
     // Implementing of ActionListeners 
     /**
-     * this GUI listens for <CODE>ActionEvents</CODE> which are created from Buttons and other GUI typical stuff
+     * this GUI listens for <CODE>ActionEvents</CODE> which are created from
+     * Buttons and other GUI typical stuff
      *
      * @param e the event
      */
@@ -879,7 +827,6 @@ public class CriticalPairAnalysisGUI implements ParserGUIListener,
         }
     }
 }
-
 /*
  * $Log: CriticalPairAnalysisGUI.java,v $
  * Revision 1.14  2010/12/21 16:34:02  olga

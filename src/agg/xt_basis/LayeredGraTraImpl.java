@@ -1,80 +1,58 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Vector;
-import java.util.Date;
-import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
-
 import agg.cons.AtomConstraint;
-import agg.util.IntComparator;
-import agg.util.OrderedSet;
 import agg.util.Pair;
 import agg.xt_basis.agt.RuleScheme;
+import de.jare.ndimcol.ref.SortedSeasonSet;
+import de.jare.ndimcol.utils.BiPredicateInteger;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class LayeredGraTraImpl extends GraTra {
 
     Random ran = new Random();
-
     private boolean appliedOnce;
-
     private boolean stopLayerAndWait;
-
     private int layerToStop;
-
 //	private boolean stopLayerOpt, stopLayer;
     private boolean breakLayerOpt, breakLayer;
-
     private boolean breakAllLayerOpt, breakAllLayer;
-
     private boolean applyContinue;
-
     private boolean nextLayerExists;
-
     private boolean waitAfterLayer;
-
     private boolean waitingAfterLayer;
-
     private boolean layeredLoop, resetGraphBeforeLoop;
-
     private Integer startLayer;
-
     private RuleLayer layer;
-
-    private Hashtable<Integer, HashSet<Rule>> invertedRuleLayer;
-
-    private OrderedSet<Integer> ruleLayer;
-
+    private Map<Integer, HashSet<Rule>> invertedRuleLayer;
+    private SortedSeasonSet<Integer> ruleLayer;
     private Integer currentLayer;
-
     private boolean startTransform;
-
     private boolean grammarChecked;
-
     private long time0; //, time=0; 
-
     File f;
-
     FileOutputStream os;
-
     String protocolFileName = "";
+    int i;
 
     public LayeredGraTraImpl() {
         this.nextLayerExists = true;
@@ -90,11 +68,10 @@ public class LayeredGraTraImpl extends GraTra {
         if (this.ruleLayer != null) {
             this.ruleLayer.clear();
         }
-
         super.dispose();
     }
 
-    public void setGraTraOptions(Vector<String> newOptions) {
+    public void setGraTraOptions(List<String> newOptions) {
         super.setGraTraOptions(newOptions);
         if (newOptions.contains(GraTraOptions.BREAK_ALL_LAYER)) {
             this.breakAllLayerOpt = true;
@@ -134,7 +111,6 @@ public class LayeredGraTraImpl extends GraTra {
 //	        breakLayer = true;	
 //			breakAllLayer = true;
 //	    } 
-
     }
 
     public void unsetStop() {
@@ -152,7 +128,6 @@ public class LayeredGraTraImpl extends GraTra {
         if (this.currentLayer != null) {
             return this.currentLayer.intValue();
         }
-
         return -1;
     }
 
@@ -175,43 +150,36 @@ public class LayeredGraTraImpl extends GraTra {
         // if(!allRulesEnabled) {
         // // remove disabled rules from currentRuleSet
         // for(int j=0; j<currentRuleSet.size(); j++) {
-        // if(!((Rule) currentRuleSet.elementAt(j)).isEnabled()) {
+        // if(!((Rule) currentRuleSet.get(j)).isEnabled()) {
         // currentRuleSet.removeElementAt(j);
         // j--;
         // }
         // }
         // allRulesEnabled = true;
         // }
-
         if (this.currentRuleSet.isEmpty()) {
             return false;
         }
-
         boolean applied = false;
         // first try to apply a trigger rule
         int i;
         String trigger = "";
-        this.currentRule = this.currentRuleSet.elementAt(0);
+        this.currentRule = this.currentRuleSet.get(0);
         if (this.currentRule.isTriggerOfLayer()) {
             if (this.currentRule.isEnabled()) {
                 // System.out.println("trigger rule: "+currentRule.getName());
                 trigger = "(trigger of layer)";
-
                 applied = this.currentRule.canMatch(this.hostgraph, this.strategy)
                         && apply(this.currentRule);
-
 //				System.out.println(currentRule.getName() + " \t applied:  "+ applied);
                 if (applied) {
                     System.out.println(this.currentRule.getName() + " \t applied:  " + applied);
-
                     this.appliedOnce = true;
                     if (!isGraphConsistent()) {
                         this.stopping = true;
                     }
-
                     this.currentRule.setEnabled(false);
-                    this.currentRuleSet.removeElement(this.currentRule);
-
+                    this.currentRuleSet.remove(this.currentRule);
                     if (this.os != null) {
                         writeTransformProtocol(this.currentRule.getName() + " "
                                 + trigger + " \t applied:  " + applied);
@@ -223,42 +191,35 @@ public class LayeredGraTraImpl extends GraTra {
                         writeTransformProtocol(getErrorMsg());
                         writeTransformProtocol("The trigger rule of the current layer failed. \nContinue with the next layer.");
                     }
-                    this.currentRuleSet.removeAllElements();
+                    this.currentRuleSet.clear();
                 }
-
                 applied = false;
             } else {
-                this.currentRuleSet.removeElement(this.currentRule);
+                this.currentRuleSet.remove(this.currentRule);
             }
         }
-
         while (!this.stopping && !this.breakLayer && !applied
                 && this.currentRuleSet.size() > 0) {
-
             i = this.ran.nextInt(this.currentRuleSet.size());
-            this.currentRule = this.currentRuleSet.elementAt(i);
-
+            this.currentRule = this.currentRuleSet.get(i);
             if (this.currentRule instanceof RuleScheme) {
                 applied = apply((RuleScheme) this.currentRule);
             } else {
                 applied = this.currentRule.canMatch(this.hostgraph, this.strategy)
                         && apply(this.currentRule);
             }
-
             if (this.os != null) {
                 writeTransformProtocol(this.currentRule.getName() + " \t applied:  "
                         + applied);
             }
             if (!applied) {
                 this.currentRuleSet.remove(this.currentRule);
-
                 if (this.os != null) {
                     writeTransformProtocol(getErrorMsg());
                     writeTransformProtocol(getRuleNames(this.currentRuleSet));
                 }
             } else {
 //				System.out.println(this.currentRule.getName() + " \t applied:  "+ applied);
-
                 this.appliedOnce = true;
                 if (!isGraphConsistent()) {
                     this.stopping = true;
@@ -272,13 +233,10 @@ public class LayeredGraTraImpl extends GraTra {
         this.layer = new RuleLayer(ruleSet);
         this.startLayer = this.layer.getStartLayer();
         this.invertedRuleLayer = this.layer.invertLayer();
-
-        this.ruleLayer = new OrderedSet<Integer>(new IntComparator<Integer>());
-        for (Enumeration<Integer> en = invertedRuleLayer.keys(); en
-                .hasMoreElements();) {
-            this.ruleLayer.add(en.nextElement());
+        this.ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        for (Integer key : invertedRuleLayer.keySet()) {
+            this.ruleLayer.add(key);
         }
-
         this.startTransform = true;
         transformLayers(true);
     }
@@ -287,13 +245,10 @@ public class LayeredGraTraImpl extends GraTra {
         this.applyContinue = true;
         this.pauseRule = false;
         this.breakLayer = false;
-
         transformCurrentLayer();
-
         if (this.pauseRule) {
             return;
         }
-
         if (this.layeredLoop && !this.stopping) {
             if (this.currentLayer == null
                     && (!this.resetGraphBeforeLoop //|| noMoreStopBeforeResetGraph
@@ -310,13 +265,10 @@ public class LayeredGraTraImpl extends GraTra {
 
     public void transformContinueWithNextLayer() {
         this.breakLayer = false;
-
         if (this.stoppingRule) {
             this.stoppingRule = false;
         }
-
         transformCurrentLayer();
-
         if (this.layeredLoop && !this.stopping) {
             if (this.currentLayer == null && !this.resetGraphBeforeLoop) {
                 this.startTransform = true;
@@ -329,13 +281,10 @@ public class LayeredGraTraImpl extends GraTra {
 
     public void transformContinueWithNextStep() {
         this.breakLayer = false;
-
         if (this.stoppingRule) {
             this.stoppingRule = false;
         }
-
         transformCurrentLayer();
-
         if (this.layeredLoop && !this.stopping) {
             if (this.currentLayer == null && !this.resetGraphBeforeLoop) {
                 this.startTransform = true;
@@ -349,8 +298,6 @@ public class LayeredGraTraImpl extends GraTra {
         this.startTransform = b;
     }
 
-    int i;
-
     @SuppressWarnings({"unused", "rawtypes"})
     private void transformCurrentLayer() {
         boolean oneApplied = false;
@@ -360,12 +307,10 @@ public class LayeredGraTraImpl extends GraTra {
             i = 0;
         }
 //		System.out.println("LayeredGraTraImpl.transformCurrentLayer()... "+this.currentLayer);
-
         this.startTransform = false;
         this.nextLayerExists = true;
-
         if (!this.stopping && this.nextLayerExists && (this.currentLayer != null)) {
-            Vector<Rule> rules = new Vector<Rule>();
+            List<Rule> rules = new ArrayList<Rule>();
             if (!this.applyContinue) {
                 // get rules of the current this.layer
                 HashSet rulesForLayer = this.invertedRuleLayer.get(this.currentLayer);
@@ -379,33 +324,26 @@ public class LayeredGraTraImpl extends GraTra {
                         rules.add(rule);
                     }
                 }
-
                 writeTransformProtocol("\n");
                 writeTransformProtocol("Layer: " + this.currentLayer.toString());
-
                 System.out.println("Layer " + this.currentLayer.toString() + ":  "
                         + getRuleNames(rules) + "{*}");
             } else {
                 rules = this.currentRuleSet;
             }
-
             boolean applied = true;
             while (!this.stopping && applied) {
                 if (this.breakLayer) {
                     break;
                 }
-
                 if (!this.applyContinue) {
                     this.currentRuleSet.clear();
                     this.currentRuleSet.addAll(rules);
                 }
-
                 applied = apply();
-
                 if (applied) {
                     oneApplied = true;
                 }
-
 //				 in case of input parameter
                 if (this.pauseRule) {
                     return;
@@ -413,18 +351,15 @@ public class LayeredGraTraImpl extends GraTra {
                 if (this.breakLayer) {
                     break;
                 }
-
                 if (applied && this.waitAfterStep) {
                     return;
                 }
             }
-
             if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
                 if (!this.checkGraphConsistencyForLayer(this.currentLayer.intValue())) {
                     this.stopping = true;
                 }
             }
-
             if (!this.breakLayer) {
                 System.out.println("Layer " + this.currentLayer.toString()
                         + "  used time: " + (System.currentTimeMillis() - this.time0) + "ms");
@@ -433,11 +368,8 @@ public class LayeredGraTraImpl extends GraTra {
                         + "   broken");
                 this.breakLayer = false;
             }
-
             writeUsedTimeToProtocol("used time: ", this.time0);
-
             enableTriggerRuleOfLayer(rules);
-
             // get next Layer
             i++;
             if (i < this.ruleLayer.size()) {
@@ -445,15 +377,12 @@ public class LayeredGraTraImpl extends GraTra {
             } else {
                 this.nextLayerExists = false;
             }
-
             this.breakLayer = false;
             this.waitingAfterLayer = true;
-
             if (this.nextLayerExists && this.currentLayer != null) {
                 fireGraTra(new GraTraEvent(this, GraTraEvent.LAYER_FINISHED));
             } else if (this.layeredLoop && !this.resetGraphBeforeLoop && this.appliedOnce) {
                 this.startTransform = true;
-
                 fireGraTra(new GraTraEvent(this,
                         GraTraEvent.LAYER_FINISHED));
             } else {
@@ -469,14 +398,12 @@ public class LayeredGraTraImpl extends GraTra {
 //		System.out.println("LayeredGraTraImpl:: this.layeredLoop: "+this.layeredLoop
 //				+"   anApply: "+anApply+"  this.startTransform: "+this.startTransform
 //				+"   reset graph: "+resetGraph);
-
         boolean oneApplied = anApply;
         String layerStr = "";
         while (oneApplied) {
             if (this.startTransform) {
                 fireGraTra(new GraTraEvent(this,
                         GraTraEvent.TRANSFORM_START));
-
                 this.currentLayer = this.startLayer;
                 i = 0;
                 this.appliedOnce = false;
@@ -484,13 +411,11 @@ public class LayeredGraTraImpl extends GraTra {
             this.startTransform = false;
             oneApplied = false;
             this.nextLayerExists = true;
-
             while (!this.stopping && this.nextLayerExists && this.currentLayer != null) {
                 layerStr = String.valueOf(this.currentLayer.intValue());
-
                 // get rules of the current this.layer
                 HashSet rulesForLayer = this.invertedRuleLayer.get(this.currentLayer);
-                Vector<Rule> rules = new Vector<Rule>();
+                List<Rule> rules = new ArrayList<Rule>();
                 Iterator<?> en = rulesForLayer.iterator();
                 while (en.hasNext()) {
                     Rule rule = (Rule) en.next();
@@ -501,23 +426,17 @@ public class LayeredGraTraImpl extends GraTra {
                         rules.add(rule);
                     }
                 }
-
                 writeTransformProtocol("\n");
                 writeTransformProtocol("Layer: " + this.currentLayer.toString());
-
                 System.out.println("Layer " + this.currentLayer.toString() + ":  "
                         + getRuleNames(rules) + "{*}");
-
                 boolean applied = true;
                 while (!this.stopping && applied) {
                     String s = getRuleNames(rules);
                     writeTransformProtocol(s);
-
                     this.currentRuleSet.clear();
                     this.currentRuleSet.addAll(rules);
-
                     applied = apply();
-
                     if (applied) {
                         oneApplied = true;
                     }
@@ -529,13 +448,11 @@ public class LayeredGraTraImpl extends GraTra {
                         break;
                     }
                 }
-
                 if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
                     if (!this.checkGraphConsistencyForLayer(this.currentLayer.intValue())) {
                         this.stopping = true;
                     }
                 }
-
                 if (!this.breakLayer) {
                     System.out.println("Layer " + this.currentLayer.toString()
                             + "  used time: " + (System.currentTimeMillis() - this.time0) + "ms");
@@ -544,12 +461,9 @@ public class LayeredGraTraImpl extends GraTra {
                             + "   broken");
                     this.breakLayer = false;
                 }
-
 //				time = time+this.time0;
                 writeUsedTimeToProtocol("used time: ", this.time0);
-
                 enableTriggerRuleOfLayer(rules);
-
                 // get next Layer
                 i++;
                 if (i < this.ruleLayer.size()) {
@@ -557,7 +471,6 @@ public class LayeredGraTraImpl extends GraTra {
                 } else {
                     this.nextLayerExists = false;
                 }
-
                 if (!this.nextLayerExists || this.currentLayer == null) {
                     this.nextLayerExists = false;
                     if (this.layeredLoop) {
@@ -572,20 +485,16 @@ public class LayeredGraTraImpl extends GraTra {
                         }
                     }
                 }
-
                 if (stopLayerAndWait(Integer.valueOf(layerStr).intValue())) {
                     break;
                 }
-
 //				fireGraTra(new GraTraEvent(this, GraTraEvent.LAYER_FINISHED, layerStr));										
             }
-
             if ((!"".equals(layerStr) && stopLayerAndWait(Integer.valueOf(layerStr).intValue()))
                     || !this.layeredLoop) {
                 break;
             }
         }
-
         if ((!"".equals(layerStr) && stopLayerAndWait(Integer.valueOf(layerStr).intValue()))
                 && this.nextLayerExists && !this.stopping) {
             fireGraTra(new GraTraEvent(this, GraTraEvent.LAYER_FINISHED, layerStr));
@@ -608,18 +517,15 @@ public class LayeredGraTraImpl extends GraTra {
 
     public void transform() {
         this.stopping = false;
-
         if (!this.grammar.getListOfRules().isEmpty() && this.currentRuleSet.isEmpty()) {
             setRuleSet();
         }
-
         if (this.time0 > 0
                 && this.options.hasOption(GraTraOptions.RESET_GRAPH)
                 && this.options.hasOption(GraTraOptions.LOOP_OVER_LAYER)) {
             this.transformWhenResetGraph();
             return;
         }
-
         if (this.writeLogFile) {
             String dirName = this.grammar.getDirName();
             String fileName = this.grammar.getFileName();
@@ -636,7 +542,6 @@ public class LayeredGraTraImpl extends GraTra {
             writeTransformProtocol(s1);
             writeTransformProtocol(s2);
         }
-
         // first check the rules, the graph
         if (!this.grammarChecked) {
             Pair<Object, String> checkpair = this.grammar.isReadyToTransform(true);
@@ -644,7 +549,6 @@ public class LayeredGraTraImpl extends GraTra {
                 Object test = checkpair.first;
                 if (test != null) {
                     String s0 = checkpair.second + "\nTransformation stopped.";
-
                     if (test instanceof Type) {
                         ((GraTra) this).fireGraTra(new GraTraEvent(this,
                                 GraTraEvent.ATTR_TYPE_FAILED, s0));
@@ -679,49 +583,36 @@ public class LayeredGraTraImpl extends GraTra {
             }
             this.grammarChecked = true;
         }
-
 //		System.out.println(this.options.getOptions());
         // stop start time
         long startTime = System.currentTimeMillis();
         this.time0 = startTime;
-
-        Vector<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
-
+        List<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
         transform(ruleSet);
-
         if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
             this.checkGraphConsistency();
         }
-
         System.out.println("Used time for graph transformation:  "
                 + (System.currentTimeMillis() - startTime) + "ms");
-
         if (this.writeLogFile) {
             writeUsedTimeToProtocol("Used time for graph transformation: ", startTime);
             writeTransformProtocol("\nGraph transformation finished");
             closeTransformProtocol();
         }
-
     }
 
     private void transformWhenResetGraph() {
 //		System.out.println(this.options.getOptions());
-
         // stop start time
         long startTime = System.currentTimeMillis();
         this.time0 = startTime;
-
-        Vector<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
-
+        List<Rule> ruleSet = getEnabledRules(this.currentRuleSet);
         transform(ruleSet);
-
         if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
             this.checkGraphConsistency();
         }
-
         System.out.println("Used time for graph transformation:  "
                 + (System.currentTimeMillis() - startTime) + "ms");
-
         if (this.writeLogFile) {
             writeUsedTimeToProtocol("Used time for graph transformation: ", startTime);
             writeTransformProtocol("\nGraph transformation finished");
@@ -729,11 +620,11 @@ public class LayeredGraTraImpl extends GraTra {
         }
     }
 
-    private Vector<Rule> getEnabledRules(Vector<Rule> ruleSet) {
-        Vector<Rule> vec = new Vector<Rule>(ruleSet.size());
+    private List<Rule> getEnabledRules(List<Rule> ruleSet) {
+        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
-            if (ruleSet.elementAt(j).isEnabled()) {
-                vec.add(ruleSet.elementAt(j));
+            if (ruleSet.get(j).isEnabled()) {
+                vec.add(ruleSet.get(j));
             }
         }
         return vec;
@@ -753,7 +644,6 @@ public class LayeredGraTraImpl extends GraTra {
     private void writeUsedTimeToProtocol(String text, long beginTime) {
         writeTransformProtocol(text
                 + +(System.currentTimeMillis() - beginTime) + "ms");
-
         this.time0 = System.currentTimeMillis();
     }
 
@@ -795,13 +685,13 @@ public class LayeredGraTraImpl extends GraTra {
     public String getProtocolName() {
         return this.protocolFileName;
     }
-
 //	public long getUsedTime() {
 //		return time;
 //	}
-    private void enableTriggerRuleOfLayer(Vector<Rule> rules) {
+
+    private void enableTriggerRuleOfLayer(List<Rule> rules) {
         for (int j = 0; j < rules.size(); j++) {
-            Rule r = rules.elementAt(j);
+            Rule r = rules.get(j);
             if (r.isTriggerOfLayer()) {
                 r.setEnabled(true);
                 break;
@@ -856,14 +746,12 @@ public class LayeredGraTraImpl extends GraTra {
         } else {
             this.f = new File(fName);
         }
-
         try {
             this.os = new FileOutputStream(this.f);
             this.protocolFileName = this.f.getName();
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }
-
         writeTransformProtocol((new Date()).toString());
     }
 
@@ -874,7 +762,6 @@ public class LayeredGraTraImpl extends GraTra {
         if (!this.os.getChannel().isOpen()) {
             return;
         }
-
         try {
             if (!s.equals("\n")) {
                 this.os.write(s.getBytes());
@@ -895,5 +782,4 @@ public class LayeredGraTraImpl extends GraTra {
             ex.printStackTrace();
         }
     }
-
 }

@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -29,7 +31,6 @@ import agg.attribute.impl.CondMember;
 import agg.attribute.impl.CondTuple;
 import agg.attribute.impl.TupleMapping;
 import agg.attribute.impl.ContextView;
-
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.Arc;
@@ -49,31 +50,25 @@ public class AtomConstraint extends OrdinaryMorphism
         implements Evaluable, XMLObject {
 
     private boolean valid;
-
     private int old_tick;
-
     private boolean old_val;
-
     private boolean evaluable;
-
     private String atomicName = "";
-
     private AtomConstraint parent;
-
     final private Vector<AtomConstraint> conclusions = new Vector<AtomConstraint>();
-
     private int indxOfValidConclusion = -1;
-
     private MorphCompletionStrategy strategy;
-
     final private Vector<GraphObject> failedObjs = new Vector<GraphObject>();
 
     /**
-     * Creates the parent object of a new atomic graph constraint with one conclusion. The parent is an empty morphism
-     * with premise as source and target and it is not visible and is not used for any edit and evaluation. The first
-     * conclusion morphism consists of premise and conclusion. It is available from the list of conclusions by
-     * <code>getConsclusions()</code> or by <code>getConsclusion(0)</code>. This constructor must be used only once. To
-     * add a new conclusion to this atomic constraint the method <code>createNextConclusion(Graph)</code> must be use.
+     * Creates the parent object of a new atomic graph constraint with one
+     * conclusion. The parent is an empty morphism with premise as source and
+     * target and it is not visible and is not used for any edit and evaluation.
+     * The first conclusion morphism consists of premise and conclusion. It is
+     * available from the list of conclusions by <code>getConsclusions()</code>
+     * or by <code>getConsclusion(0)</code>. This constructor must be used only
+     * once. To add a new conclusion to this atomic constraint the method
+     * <code>createNextConclusion(Graph)</code> must be use.
      *
      * @param premise
      * @param conclusion
@@ -83,23 +78,18 @@ public class AtomConstraint extends OrdinaryMorphism
     public AtomConstraint(final Graph premise, final Graph conclusion,
             final AttrContext context,
             final String name) {
-
 //		super(premise, conclusion, context);
         super(premise, premise, context);
-
         // the parent instance, hidden
         this.parent = this;
         getOriginal().setAttrContext(getAttrManager().newLeftContext(context));
         getOriginal().setKind(GraphKind.PREMISE);
-
         this.old_tick = -1;
         this.old_val = false;
-
         if ((name != null) && !name.equals("")) {
             this.atomicName = name;
             this.itsName = name;
         }
-
         // the first conclusion
         this.createNextConclusion(conclusion);
     }
@@ -111,17 +101,12 @@ public class AtomConstraint extends OrdinaryMorphism
      */
     private AtomConstraint(final Graph premise, final Graph conclusion, final AttrContext context,
             final String name, final AtomConstraint parent) {
-
         super(premise, conclusion, context);
-
         this.parent = parent;
-
         getImage().setAttrContext(getAttrManager().newRightContext(context));
         getImage().setKind(GraphKind.CONCLUSION);
-
         this.old_tick = -1;
         this.old_val = false;
-
         if ((name != null) && !name.equals("")) {
             this.atomicName = name;
         }
@@ -154,14 +139,11 @@ public class AtomConstraint extends OrdinaryMorphism
 
     public boolean isValid() {
         this.failedObjs.clear();
-
         this.valid = true;
-
         for (int j = 0; j < this.conclusions.size() && this.valid; j++) {
             AtomConstraint concl = this.conclusions.elementAt(j);
             this.valid = doIsValidCheck(concl);
         }
-
         return this.valid;
     }
 
@@ -172,19 +154,15 @@ public class AtomConstraint extends OrdinaryMorphism
         VarTuple lhsVars = (VarTuple) concl.getTarget().getAttrContext()
                 .getVariables();
         concl.addToAttrContext(lhsVars);
-
         if (!concl.isInjective() || !concl.isTotal()) {
             return false;
         }
-
         if (!doIsValidElemCheck(concl, concl.getOriginal().getNodesSet().iterator())) {
             return false;
         }
-
         if (!doIsValidElemCheck(concl, concl.getOriginal().getArcsSet().iterator())) {
             return false;
         }
-
         concl.markAttrConditions();
         // check attr context
         CondTuple conds = (CondTuple) concl.getAttrContext().getConditions();
@@ -241,7 +219,6 @@ public class AtomConstraint extends OrdinaryMorphism
                             || expr1.isVariable()) {
                         continue;
                     }
-
                     return false;
                 }
             }
@@ -255,7 +232,6 @@ public class AtomConstraint extends OrdinaryMorphism
 
     public void setMorphismCompletionStrategy(MorphCompletionStrategy s) {
         this.strategy = s;
-
         for (int i = 0; i < this.conclusions.size(); i++) {
             this.conclusions.get(i).setMorphismCompletionStrategy(this.strategy);
         }
@@ -263,11 +239,9 @@ public class AtomConstraint extends OrdinaryMorphism
 
     private void setEvaluable(OrdinaryMorphism m, Graph g) {
         this.evaluable = true;
-
         VarTuple vars = (VarTuple) m.getAttrContext().getVariables();
         List<String> varnames = g.getVariableNamesOfAttributes();
         CondTuple conds = (CondTuple) m.getAttrContext().getConditions();
-
         for (int i = 0; i < conds.getSize() && this.evaluable; i++) {
             CondMember cond = conds.getCondMemberAt(i);
             if (cond.isEnabled() && !cond.isEvaluable(vars)) {
@@ -281,7 +255,6 @@ public class AtomConstraint extends OrdinaryMorphism
                 }
             }
         }
-
         // check constants
         if (this.evaluable) {
             doCheckConstantOfImage(m, g.getNodesSet().iterator());
@@ -294,7 +267,6 @@ public class AtomConstraint extends OrdinaryMorphism
     private void doCheckConstantOfImage(
             final OrdinaryMorphism m,
             final Iterator<?> elems) {
-
         while (elems.hasNext()) {
             GraphObject o = (GraphObject) elems.next();
             if (o.getAttribute() == null) {
@@ -353,63 +325,49 @@ public class AtomConstraint extends OrdinaryMorphism
 
     private boolean eval(Graph g, boolean negation) {
 //		System.out.println("AtomConstraint.eval(Graph):: "+getAtomicName()+"  negation: "+negation);
-
         this.failedObjs.clear();
-
         if (!this.valid || this.conclusions.isEmpty()) {
             return false;
         }
-
         Graph p = this.conclusions.get(0).getOriginal();
         if (!p.isEmpty() && g.isEmpty()) {
             return true;
         }
-
         // this.strategy.showProperties();
         // for Premise
         final Completion_InjCSP strategy1 = new Completion_InjCSP(false); // do not randomize domain
         // for Conclusion
         final Completion_InjCSP strategy2 = new Completion_InjCSP(false); // do not randomize domain
-
         this.indxOfValidConclusion = -1;
         boolean result = true;
-
         BaseFactory bf = BaseFactory.theFactory();
         ((AttrTupleManager) agg.attribute.impl.AttrTupleManager
                 .getDefaultManager()).setVariableContext(false);
         this.adoptEntriesWhereEmpty();
-
         // do morphism s: P --> G as matchP
         AtomConstraint conclusion0 = this.conclusions.elementAt(0);
         OrdinaryMorphism s = bf.createMorphism(conclusion0.getOriginal(), g,
                 true);
         OrdinaryMorphism matchP = bf.createMatchfromMorph(s, conclusion0
                 .getAttrContext());
-
 //		System.out.println("matchP : P --s--> G: "+matchP+" isTotal:  "+matchP.isTotal());
         // ((VarTuple)matchP.getAttrContext().getVariables()).showVariables();
         if ((matchP.getImage().getVariableNamesOfAttributes().size() != 0)) {
             ((ContextView) matchP.getAttrContext()).setVariableContext(true);
         }
-
         OrdinaryMorphism t = null, t2 = null, t2match = null;
-
         // For each morphism P --s--> G ...
         matchP.setCompletionStrategy(strategy1, true);
-
         while (matchP.nextCompletionWithConstantsChecking()) {
             // test output
 //			this.showMorphismData(matchP);
-
             setEvaluable(matchP, matchP.getSource());
             result = false;
-
             /* try create t: C --> G of each conclusion */
             boolean allConclusionsOK = false;
             for (int i = 0; i < this.conclusions.size(); i++) {
                 boolean conclusionOK = false;
                 AtomConstraint atom = this.conclusions.elementAt(i);
-
                 if (t == null) {
                     t = matchP.completeDiagram(atom);
                     if (t != null) {
@@ -424,11 +382,9 @@ public class AtomConstraint extends OrdinaryMorphism
                         t = null;
                     }
                 }
-
                 // there must be a C--t-->G, such that t o atom = s
                 if (t != null) {
                     t.adaptAttrContextValues(matchP.getAttrContext());
-
                     List<String> varNames = t.getImage().getVariableNamesOfAttributes();
                     if ((varNames.size() != 0)) {
                         ((ContextView) t.getAttrContext())
@@ -437,7 +393,6 @@ public class AtomConstraint extends OrdinaryMorphism
                     // test output
 //					this.showMorphismData(t);
 //					((VarTuple) t.getAttrContext().getVariables()).showVariables();
-
                     // now t is constructed on the part identically to s
                     // so we only need to try to do it total if needed
                     if (t.isTotal() || t.nextCompletionWithConstantsChecking()) {
@@ -452,7 +407,6 @@ public class AtomConstraint extends OrdinaryMorphism
                                 t2 = null;
                             }
                         }
-
                         if (t2 != null) {
                             // use attr. context of atom							
                             if (t2match == null) {
@@ -473,21 +427,18 @@ public class AtomConstraint extends OrdinaryMorphism
                                 }
                             }
                             // System.out.println("t2match: "+t2match);
-
                             if (t2match != null) {
                                 if ((t2match.getImage()
                                         .getVariableNamesOfAttributes().size() != 0)) {
                                     ((ContextView) t2match.getAttrContext())
                                             .setVariableContext(true);
                                 }
-
                                 AttrContext ac1 = t2match.getAttrContext();
                                 for (int k = 0; k < ac1.getConditions().getNumberOfEntries(); k++) {
                                     AttrInstanceMember am = (AttrInstanceMember) ac1
                                             .getConditions().getMemberAt(k);
                                     ((CondMember) am).setMark(CondMember.LHS);
                                 }
-
                                 if (t2match.isTotal()
                                         || t2match.nextCompletionWithConstantsChecking()) {
                                     for (int k = 0; k < ac1.getConditions().getNumberOfEntries(); k++) {
@@ -507,7 +458,6 @@ public class AtomConstraint extends OrdinaryMorphism
                             } else {
                                 conclusionOK = false;
                             }
-
                         } // if (t2 != null
                         else {
                             conclusionOK = false;
@@ -520,7 +470,6 @@ public class AtomConstraint extends OrdinaryMorphism
                 else {
                     conclusionOK = false;
                 }
-
                 allConclusionsOK = allConclusionsOK || conclusionOK;
                 if (conclusionOK && !negation) {
                     break;
@@ -533,7 +482,6 @@ public class AtomConstraint extends OrdinaryMorphism
             }
             // matchP.setCompletionStrategy(strategy1);
         } // while (matchP.nextCompletion
-
         unsetAllTransientAttrValuesOfOverlapGrah(matchP);
         matchP.dispose();
         matchP = null;
@@ -543,7 +491,6 @@ public class AtomConstraint extends OrdinaryMorphism
         t = null;
         t2 = null;
         t2match = null;
-
         return result;
     }
 
@@ -562,16 +509,12 @@ public class AtomConstraint extends OrdinaryMorphism
         final AtomConstraint conclusion = new AtomConstraint(this.getOriginal(), img,
                 agg.attribute.impl.AttrTupleManager.getDefaultManager()
                         .newContext(AttrMapping.PLAIN_MAP), this.atomicName, this);
-
         // enrich attr context by variables from source graph	
         VarTuple lhsVars = (VarTuple) conclusion.getSource()
                 .getAttrContext().getVariables();
         conclusion.addToAttrContext(lhsVars);
-
         conclusion.setName("Conclusion" + this.conclusions.size());
-
         this.conclusions.addElement(conclusion);
-
         return conclusion;
     }
 
@@ -610,7 +553,6 @@ public class AtomConstraint extends OrdinaryMorphism
         if ((indx >= 0) && (indx < this.conclusions.size())) {
             return this.conclusions.elementAt(indx);
         }
-
         return null;
     }
 
@@ -619,7 +561,6 @@ public class AtomConstraint extends OrdinaryMorphism
                 && (this.indxOfValidConclusion < this.conclusions.size())) {
             return this.conclusions.elementAt(this.indxOfValidConclusion);
         }
-
         return null;
     }
 
@@ -638,7 +579,6 @@ public class AtomConstraint extends OrdinaryMorphism
         if (!this.atomicName.equals(a.getAtomicName())) {
             return false;
         }
-
         Enumeration<AtomConstraint> e = a.getConclusions();
         Vector<AtomConstraint> another = new Vector<AtomConstraint>(10);
         while (e.hasMoreElements()) {
@@ -647,7 +587,6 @@ public class AtomConstraint extends OrdinaryMorphism
         if (this.conclusions.size() != another.size()) {
             return false;
         }
-
         for (int i = 0; i < this.conclusions.size(); i++) {
             AtomConstraint c = this.conclusions.elementAt(i);
             for (int j = another.size() - 1; j >= 0; j--) {
@@ -674,7 +613,6 @@ public class AtomConstraint extends OrdinaryMorphism
                 if (obj.getAttribute() == null) {
                     continue;
                 }
-
                 GraphObject img = morph.getImage(obj);
                 ContextView context = (ContextView) morph.getAttrContext();
                 Vector<TupleMapping> mappings = context.getMappingsToTarget((ValueTuple) img
@@ -719,10 +657,8 @@ public class AtomConstraint extends OrdinaryMorphism
 
     private void unsetAllTransientAttrValuesOfOverlapGrah(OrdinaryMorphism m) {
         // remove all transient variables in m.getImage()
-
         doUnsetAllTransientAttrValuesOfOverlapGrah(m.getImage().getNodesSet().iterator());
         doUnsetAllTransientAttrValuesOfOverlapGrah(m.getImage().getArcsSet().iterator());
-
     }
 
     private void doUnsetAllTransientAttrValuesOfOverlapGrah(final Iterator<?> elems) {
@@ -781,7 +717,6 @@ public class AtomConstraint extends OrdinaryMorphism
                 atom = this.conclusions.elementAt(i);
                 h.addObjectSub(atom.getImage());
                 atom.writeMorphism(h);
-
                 AttrConditionTuple condt = atom.getAttrContext().getConditions();
                 int num = condt.getNumberOfEntries();
                 if (num > 0) {
@@ -789,7 +724,6 @@ public class AtomConstraint extends OrdinaryMorphism
                     h.addObject("", condt, true);
                     h.close();
                 }
-
                 h.close();
             }
         }
@@ -799,21 +733,16 @@ public class AtomConstraint extends OrdinaryMorphism
     public void XreadObject(XMLHelper h) {
         if (h.isTag("Graphconstraint_Atomic", this)) {
             setAtomicName(h.readAttr("name"));
-
             if (h.readSubTag("Premise")) {
                 Graph orig = (Graph) h.getObject("", this.itsOrig, true);
                 orig.setName("Premise of " + this.atomicName);
                 h.close();
-
                 this.parent = this;
-
                 // clear this.conclusions because one empty conclusion is created by default!
                 this.conclusions.clear();
-
                 Iterator<Element> en = h.getEnumeration("", null, true, "Conclusion");
                 while (en.hasNext()) {
                     h.peekElement(en.next());
-
                     Graph target = BaseFactory.theFactory().createGraph(getSource().getTypeSet());
                     AtomConstraint concl = createNextConclusion(target);
                     h.getObject("", target, true);
@@ -826,10 +755,8 @@ public class AtomConstraint extends OrdinaryMorphism
                         }
                         h.close();
                     }
-
                     h.close();
                 }
-
             } else {
                 h.getObject("", getSource(), true);
                 h.getObject("", getTarget(), true);
@@ -841,7 +768,6 @@ public class AtomConstraint extends OrdinaryMorphism
 
     private void markAttrConditions() {
         markUsedVariables();
-
         final AttrVariableTuple avt = this.itsAttrContext.getVariables();
 //		((VarTuple) avt).showVariables();
         final AttrConditionTuple act = this.itsAttrContext.getConditions();
@@ -901,7 +827,6 @@ public class AtomConstraint extends OrdinaryMorphism
                 }
             }
         }
-
         for (Iterator<Node> e1 = getSource().getNodesSet().iterator(); e1.hasNext();) {
             final GraphObject o = e1.next();
             if (o.getAttribute() == null) {
@@ -944,7 +869,6 @@ public class AtomConstraint extends OrdinaryMorphism
         // TODO Auto-generated method stub
         return false;
     }
-
 
     /*
 	private void showMorphismData(final OrdinaryMorphism m) {

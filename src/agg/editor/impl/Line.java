@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: Line.java,v 1.6 2010/09/23 08:15:51 olga Exp $
 package agg.editor.impl;
@@ -16,7 +17,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
-
 import agg.gui.editor.EditorConstants;
 
 /**
@@ -32,15 +32,10 @@ public class Line {
 //	public final static Color MOVE_ANCHOR_COLOR = new Color(185, 180, 180);
     public final static Color MOVE_ANCHOR_COLOR = new Color(0, 200, 0);
 //    public final static Color MOVE_ANCHOR_COLOR = new Color(130, 255, 150);
-
     public int x1, y1; // begin of line
-
     public int x2, y2; // end of line
-
     public int xh, yh; // center of line
-
     private Point anchor;
-
     private Color col = new Color(0, 0, 0);
 
     /**
@@ -51,7 +46,6 @@ public class Line {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-
         this.xh = x1 - ((x1 - x2) / 2);
         this.yh = y2 + ((y1 - y2) / 2);
         this.anchor = new Point(this.xh, this.yh);
@@ -120,7 +114,8 @@ public class Line {
     }
 
     /**
-     * Draws a colored dotted line : dot and space are specified by the arguments int dots, int space
+     * Draws a colored dotted line : dot and space are specified by the
+     * arguments int dots, int space
      */
     public void drawColorDotLine(Graphics grs, int dots, int space) {
         Graphics2D g = (Graphics2D) grs;
@@ -137,7 +132,8 @@ public class Line {
     }
 
     /**
-     * Draws a colored dashed line : dash and space are specified by the arguments int dots, int space
+     * Draws a colored dashed line : dash and space are specified by the
+     * arguments int dots, int space
      */
     public void drawColorDashLine(Graphics grs, int dots, int space) {
         Graphics2D g = (Graphics2D) grs;
@@ -154,7 +150,8 @@ public class Line {
     }
 
     /**
-     * Draws a black dotted line : dot and space are specified by the arguments int dots, int space
+     * Draws a black dotted line : dot and space are specified by the arguments
+     * int dots, int space
      */
     public void drawDotLine(Graphics grs, int dots, int space) {
         Graphics2D g = (Graphics2D) grs;
@@ -225,7 +222,6 @@ public class Line {
         if (this.anchor == null) {
             return new Point(this.xh, this.yh);
         }
-
         return this.anchor;
     }
 

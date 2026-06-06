@@ -1,33 +1,34 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.xt_basis;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Vector;
+import java.util.Map;
 
 /**
- * Rule layer is a set of rule layer of a given layered graph grammar. The set is backed by a hash table.
+ * Rule layer is a set of rule layer of a given layered graph grammar. The set
+ * is backed by a hash table.
  *
  * @author $Author: olga $
  * @version $ID
  */
 public class RuleLayer {
 
-    private Hashtable<Rule, Integer> ruleLayer;
-
+    private Map<Rule, Integer> ruleLayer;
 //	private Enumeration<Rule> rules;
-    private Vector<Rule> rulesVec;
+    private List<Rule> rulesVec;
 
     /**
      * Creates a new set of rule layers for a given layered graph grammar.
@@ -36,24 +37,18 @@ public class RuleLayer {
      */
     public RuleLayer(Enumeration<Rule> rules) {
 //		this.rules = rules;
-        this.rulesVec = new Vector<Rule>(0);
+        this.rulesVec = new ArrayList<Rule>(0);
         while (rules.hasMoreElements()) {
-            this.rulesVec.addElement(rules.nextElement());
+            this.rulesVec.add(rules.nextElement());
         }
         initRuleLayer();
     }
 
     public RuleLayer(List<Rule> rules) {
-        this.rulesVec = new Vector<Rule>(0);
+        this.rulesVec = new ArrayList<Rule>(0);
         for (int i = 0; i < rules.size(); i++) {
             this.rulesVec.add(rules.get(i));
         }
-//		this.rules = this.rulesVec.elements();
-        initRuleLayer();
-    }
-
-    public RuleLayer(Vector<Rule> rules) {
-        this.rulesVec = rules;
 //		this.rules = this.rulesVec.elements();
         initRuleLayer();
     }
@@ -73,9 +68,9 @@ public class RuleLayer {
     }
 
     private void initRuleLayer() {
-        this.ruleLayer = new Hashtable<Rule, Integer>();
+        this.ruleLayer = new HashMap<Rule, Integer>();
         for (int i = 0; i < this.rulesVec.size(); i++) {
-            Rule rule = this.rulesVec.elementAt(i);
+            Rule rule = this.rulesVec.get(i);
             this.ruleLayer.put(rule, Integer.valueOf(rule.getLayer()));
         }
     }
@@ -89,7 +84,7 @@ public class RuleLayer {
      *
      * @return The rule layer.
      */
-    public Hashtable<Rule, Integer> getRuleLayer() {
+    public Map<Rule, Integer> getRuleLayer() {
         return this.ruleLayer;
     }
 
@@ -101,8 +96,7 @@ public class RuleLayer {
     public Integer getStartLayer() {
         int startLayer = Integer.MAX_VALUE;
         Integer result = null;
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
+        for (Rule key : this.ruleLayer.keySet()) {
             Integer layer = getRuleLayer().get(key);
             if (layer.intValue() < startLayer) {
                 startLayer = layer.intValue();
@@ -117,10 +111,9 @@ public class RuleLayer {
      *
      * @return The inverted layer function.
      */
-    public Hashtable<Integer, HashSet<Rule>> invertLayer() {
-        Hashtable<Integer, HashSet<Rule>> inverted = new Hashtable<Integer, HashSet<Rule>>();
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+    public Map<Integer, HashSet<Rule>> invertLayer() {
+        Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
+        for (Rule key : this.ruleLayer.keySet()) {
             Integer value = this.ruleLayer.get(key);
             HashSet<Rule> invertedValue = inverted.get(value);
             if (invertedValue == null) {
@@ -141,8 +134,7 @@ public class RuleLayer {
      */
     public String toString() {
         String resultString = "Rule:\t\tLayer:\n";
-        for (Enumeration<Rule> keys = this.ruleLayer.keys(); keys.hasMoreElements();) {
-            Rule key = keys.nextElement();
+        for (Rule key : this.ruleLayer.keySet()) {
             Integer value = this.ruleLayer.get(key);
             resultString += key.getName() + "\t\t" + value.toString() + "    "
                     + key.getLayer() + "\n";

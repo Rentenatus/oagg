@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -28,7 +29,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -39,7 +39,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Rule;
 import agg.xt_basis.agt.RuleScheme;
@@ -53,32 +52,21 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
         ListSelectionListener {
 
     protected JFrame parentFrame;
-
     protected GraGra gragra;
-
     protected final List<String> ruleNames1 = new Vector<String>();	 // columns
-
     protected final List<String> ruleNames2 = new Vector<String>();	// rows
-
     protected List<Rule> list1, list2;
-
     protected int first1, last1, first2, last2;
-
     protected JTable ruleTable1, ruleTable2;
-
     protected JScrollPane scroll, scrollRule1, scrollRule2;
-
     protected JButton selectAll, deselectAll, apply, close;
-
     protected final String title = " Rules for Critical Pair Analysis ";
 
     public SelectRulesForCPAnalysisDialog(
             final JFrame parent,
             final GraGra gragra,
             final Point location) {
-
         super(parent);
-
         makeDialog(parent, gragra, null, null, location);
     }
 
@@ -88,9 +76,7 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
             final List<Rule> rules1,
             final List<Rule> rules2,
             final Point location) {
-
         super(parent);
-
         makeDialog(parent, gragra, rules1, rules2, location);
     }
 
@@ -99,7 +85,6 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
             this.first1 = -1;
             this.first2 = -1;
         }
-
         super.setVisible(b);
     }
 
@@ -109,26 +94,20 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
             final List<Rule> rules1,
             final List<Rule> rules2,
             final Point location) {
-
         setModal(true);
         setTitle(this.title);
 //		extendTitle("");
-
         this.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent evt) {
                 setVisible(false);
             }
         });
-
         this.parentFrame = parent;
         this.gragra = gra;
-
         int rows = (this.gragra != null) ? this.gragra.getEnabledRules().size() : 2;
-
         JPanel textPanel = makeTextPanel();
         JPanel rulePanel = makeRuleListPanel(rows);
         JPanel buttonPanel = makeButtonsPanel();
-
         if (this.gragra != null) {
             if (rules1 != null && rules2 != null) {
                 this.updateRules(this.gragra, rules1, rules2);
@@ -136,12 +115,10 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
                 this.updateRules(this.gragra);
             }
         }
-
         JPanel p = new JPanel(new BorderLayout());
         p.add(textPanel, BorderLayout.NORTH);
         p.add(rulePanel, BorderLayout.CENTER);
         p.add(buttonPanel, BorderLayout.SOUTH);
-
         this.scroll = new JScrollPane(p);
         int n = this.ruleTable1.getRowCount() + 1;
         if (n * 25 <= 300) {
@@ -149,31 +126,25 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
         } else {
             this.scroll.setPreferredSize(new Dimension(450, 500));
         }
-
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(this.scroll, BorderLayout.CENTER);
         validate();
-
         setLocation(location);
         pack();
     }
 
     private JPanel makeRuleListPanel(int rows) {
         final JPanel p = new JPanel(new GridBagLayout());
-
         this.ruleTable1 = new JTable(0, 1);
         this.scrollRule1 = new JScrollPane(this.ruleTable1);
         final JPanel p1 = this.makeRuleList("   Rule of column", this.ruleTable1, rows, this.scrollRule1);
-
         this.ruleTable2 = new JTable(0, 1);
         this.scrollRule2 = new JScrollPane(this.ruleTable2);
         final JPanel p2 = this.makeRuleList("   Rule of row", this.ruleTable2, rows, this.scrollRule2);
-
         constrainBuild(p, p1, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 10, 10, 10, 10);
         constrainBuild(p, p2, 1, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 10, 10, 10, 10);
-
         return p;
     }
 
@@ -185,13 +156,11 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
         p.add(new JLabel("     the right selected rules - the rows of the table."));
         p.add(new JLabel("     "));
         p.add(new JLabel("     By default, all rules will be used to build the table."));
-
         return p;
     }
 
     private JPanel makeButtonsPanel() {
         final JPanel p = new JPanel(new GridBagLayout());
-
         this.selectAll = new JButton("Select All");
         this.selectAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -199,7 +168,6 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
                 SelectRulesForCPAnalysisDialog.this.ruleTable2.selectAll();
             }
         });
-
         this.deselectAll = new JButton("Deselect All");
         this.deselectAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -207,7 +175,6 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
                 SelectRulesForCPAnalysisDialog.this.ruleTable2.clearSelection();
             }
         });
-
         this.apply = new JButton("Apply");
         this.apply.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -215,14 +182,12 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
                 setVisible(false);
             }
         });
-
         this.close = new JButton("Close");
         this.close.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
             }
         });
-
         constrainBuild(p, this.selectAll, 0, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 10, 10, 10);
         constrainBuild(p, this.deselectAll, 1, 0, 1, 1, GridBagConstraints.BOTH,
@@ -231,7 +196,6 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 10, 10, 10);
         constrainBuild(p, this.close, 3, 0, 1, 1, GridBagConstraints.BOTH,
                 GridBagConstraints.CENTER, 1.0, 0.0, 5, 10, 10, 10);
-
         return p;
     }
 
@@ -240,7 +204,6 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
             final JTable ruleList,
             int rows,
             final JScrollPane scrollRuleList) {
-
         int maxrows = 20;
         final JLabel l = new JLabel(titleStr);
         int h = l.getFontMetrics(l.getFont()).getHeight();
@@ -249,11 +212,9 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
         } else {
             scrollRuleList.setPreferredSize(new Dimension(200, maxrows * h));
         }
-
         final JPanel p = new JPanel(new BorderLayout());
         p.add(l, BorderLayout.NORTH);
         p.add(scrollRuleList, BorderLayout.CENTER);
-
         return p;
     }
 
@@ -278,40 +239,33 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
     public void updateRules(final GraGra gra) {
         this.ruleNames1.clear();
         this.ruleNames2.clear();
-
         this.gragra = gra;
-
         List<Rule> list = gra.getEnabledRules();
         for (int i = 0; i < list.size(); i++) {
             String name = list.get(i).getName();
             this.ruleNames1.add(name);
             this.ruleNames2.add(name);
         }
-
         if (this.ruleTable1 != null) {
             this.scrollRule1.getViewport().remove(this.ruleTable1);
         }
         this.ruleTable1 = new JTable(this.ruleNames1.size(), 1);
         this.scrollRule1.getViewport().setView(this.ruleTable1);
         this.ruleTable1.getSelectionModel().addListSelectionListener(this);
-
         if (this.ruleTable2 != null) {
             this.scrollRule2.getViewport().remove(this.ruleTable2);
         }
         this.ruleTable2 = new JTable(this.ruleNames2.size(), 1);
         this.scrollRule2.getViewport().setView(this.ruleTable2);
         this.ruleTable2.getSelectionModel().addListSelectionListener(this);
-
         for (int i = 0; i < this.ruleNames1.size(); i++) {
             this.ruleTable1.getModel().setValueAt(this.ruleNames1.get(i), i, 0);
             ((DefaultCellEditor) this.ruleTable1.getCellEditor(i, 0))
                     .getComponent().setEnabled(false);
-
             this.ruleTable2.getModel().setValueAt(this.ruleNames1.get(i), i, 0);
             ((DefaultCellEditor) this.ruleTable2.getCellEditor(i, 0))
                     .getComponent().setEnabled(false);
         }
-
         if (this.list1 != null) {
             this.list1.clear();
         }
@@ -324,12 +278,9 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
             final GraGra gra,
             final List<Rule> rules1,
             final List<Rule> rules2) {
-
         this.ruleNames1.clear();
         this.ruleNames2.clear();
-
         this.gragra = gra;
-
         for (int i = 0; i < rules1.size(); i++) {
             String name = rules1.get(i).getName();
             this.ruleNames1.add(name);
@@ -338,21 +289,18 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
             String name = rules2.get(i).getName();
             this.ruleNames2.add(name);
         }
-
         if (this.ruleTable1 != null) {
             this.scrollRule1.getViewport().remove(this.ruleTable1);
         }
         this.ruleTable1 = new JTable(this.ruleNames1.size(), 1);
         this.scrollRule1.getViewport().setView(this.ruleTable1);
         this.ruleTable1.getSelectionModel().addListSelectionListener(this);
-
         if (this.ruleTable2 != null) {
             this.scrollRule2.getViewport().remove(this.ruleTable2);
         }
         this.ruleTable2 = new JTable(this.ruleNames2.size(), 1);
         this.scrollRule2.getViewport().setView(this.ruleTable2);
         this.ruleTable2.getSelectionModel().addListSelectionListener(this);
-
         for (int i = 0; i < this.ruleNames1.size(); i++) {
             this.ruleTable1.getModel().setValueAt(this.ruleNames1.get(i), i, 0);
             ((DefaultCellEditor) this.ruleTable1.getCellEditor(i, 0))
@@ -363,7 +311,6 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
             ((DefaultCellEditor) this.ruleTable2.getCellEditor(i, 0))
                     .getComponent().setEnabled(false);
         }
-
         if (this.list1 != null) {
             this.list1.clear();
         }
@@ -382,12 +329,10 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
         List<Rule> list = this.gragra.getEnabledRules();
         this.list1 = new Vector<Rule>();
         this.list2 = new Vector<Rule>();
-
         this.first1 = this.ruleTable1.getSelectionModel().getMinSelectionIndex();
         this.last1 = this.ruleTable1.getSelectionModel().getMaxSelectionIndex();
         this.first2 = this.ruleTable2.getSelectionModel().getMinSelectionIndex();
         this.last2 = this.ruleTable2.getSelectionModel().getMaxSelectionIndex();
-
         if (this.first1 >= 0) {
             for (int i = this.first1; i <= this.last1; i++) {
                 if (this.ruleTable1.getSelectionModel().isSelectedIndex(i)) {
@@ -397,7 +342,6 @@ public class SelectRulesForCPAnalysisDialog extends JDialog implements
         } else {
             this.list1.addAll(list);
         }
-
         if (this.first2 >= 0) {
             for (int i = this.first2; i <= this.last2; i++) {
                 if (this.ruleTable2.getSelectionModel().isSelectedIndex(i)) {

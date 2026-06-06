@@ -2,19 +2,21 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.parser;
 
 import agg.xt_basis.Rule;
-
 //****************************************************************************+
+
 /**
- * CriticalPair provides an algorithm to compute a critical pair. This algorithm is than used in a container.
+ * CriticalPair provides an algorithm to compute a critical pair. This algorithm
+ * is than used in a container.
  *
  * @author $Author: olga $
  * @version $Id: CriticalPair.java,v 1.7 2010/08/12 14:53:28 olga Exp $
@@ -25,12 +27,10 @@ public interface CriticalPair {
      * Exclude constant used to specify the exclude algorithm.
      */
     public static final int EXCLUDE = 0;
-
     /**
      * Conflict constant used to specify exclude algorithm, too.
      */
     public static final int CONFLICT = EXCLUDE;
-
     /**
      * Dependency constant used to specify dependency kind.
      */
@@ -40,7 +40,6 @@ public interface CriticalPair {
      * @deprecated replaced by TRIGGER_DEPENDENCY
      */
     public static final int DEPENDENCY = TRIGGER_DEPENDENCY;
-
     /**
      * Conflict free constant used to specify the conflict free algorithm.
      */
@@ -48,8 +47,9 @@ public interface CriticalPair {
 
     // ****************************************************************************+
     /**
-     * Returns the number of kind of pairs which will be distinguished. There must be at least two kind of pairs. That
-     * means one kind has no conflicts and the second kind has conflicts.
+     * Returns the number of kind of pairs which will be distinguished. There
+     * must be at least two kind of pairs. That means one kind has no conflicts
+     * and the second kind has conflicts.
      *
      * @return The number of algorithm this object can compute.
      */
@@ -57,22 +57,23 @@ public interface CriticalPair {
 
     // ****************************************************************************+
     /**
-     * computes if there is a critical pair of a special kind. Remenber if ther isn null is returned if the pair is not
-     * critical otherwiser a object which can explain in which way this pair is critical. One possible object can be a
-     * <code>Vector</code> of overlaping graphs. If a kind kind is requested which cannot be computed a
+     * computes if there is a critical pair of a special kind. Remenber if ther
+     * isn null is returned if the pair is not critical otherwiser a object
+     * which can explain in which way this pair is critical. One possible object
+     * can be a <code>Vector</code> of overlaping graphs. If a kind kind is
+     * requested which cannot be computed a
      * <code>InvalidAlgorithmException</code> is thrown.
      *
      * @param kind specifies the kind of critical pair
      * @param r1 defines the first part which can be critical
      * @param r2 the second part which can be critical
-     * @throws InvalidAlgorithmException Is thrown if a desired algorithm is not provided.
+     * @throws InvalidAlgorithmException Is thrown if a desired algorithm is not
+     * provided.
      * @return The critical object of two rules.
      */
     public Object isCritical(int kind, Rule r1, Rule r2)
             throws InvalidAlgorithmException;
-
 }
-
 // End of CriticalPair.java
 /*
  * $Log: CriticalPair.java,v $

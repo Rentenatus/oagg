@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.gui.typeeditor;
 
@@ -33,7 +34,6 @@ import javax.swing.Icon;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.TitledBorder;
 import javax.swing.SwingUtilities;
-
 import agg.editor.impl.EdType;
 import agg.gui.editor.EditorConstants;
 import agg.gui.editor.GraphPanel;
@@ -42,23 +42,15 @@ import agg.gui.editor.GraphPanel;
 public class TypePalette extends JPanel implements MouseListener, MouseMotionListener {
 
     final Vector<JLabel> nodeTypes, edgeTypes;
-
     @SuppressWarnings("rawtypes")
     final JList nodeTypeList, edgeTypeList; // element: String
-
     private final JSplitPane splitPane;
-
     private final JPanel panel1, panel2, editNodeTypeP, editEdgeTypeP;
-
     final JButton modifyNodeTypeB, newNodeTypeB, deleteNodeTypeB,
             modifyEdgeTypeB, newEdgeTypeB, deleteEdgeTypeB;
-
     final TypeEditor typeEditor;
-
     private int dividerLocation = 0;
-
     private int width = 220;
-
     private boolean selectionDone;
     private int indxN = -1, indxE = -1;
     private Point p = new Point(0, 0);
@@ -69,31 +61,25 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
     public TypePalette(final TypeEditor typeeditor) {
         super();
         this.typeEditor = typeeditor;
-
         this.nodeTypes = new Vector<JLabel>();
         this.nodeTypeList = new JList();
         this.nodeTypeList.setToolTipText("Double click to get attribute editor.");
-
         this.edgeTypes = new Vector<JLabel>();
         this.edgeTypeList = new JList();
         this.edgeTypeList.setToolTipText("Double click to get attribute editor.");
-
         this.panel1 = new JPanel(new BorderLayout());
         this.newNodeTypeB = new JButton("New");
         this.modifyNodeTypeB = new JButton("Edit");
         this.deleteNodeTypeB = new JButton("Del");
         this.editNodeTypeP = handleNodeTypeButtons();
-
         this.panel2 = new JPanel(new BorderLayout());
         this.newEdgeTypeB = new JButton("New");
         this.modifyEdgeTypeB = new JButton("Edit");
         this.deleteEdgeTypeB = new JButton("Del");
         this.editEdgeTypeP = handleArcTypeButtons();
-
         this.splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, null, null);
         this.splitPane.setDividerSize(15);
         add(this.splitPane, BorderLayout.CENTER);
-
         validate();
     }
 
@@ -105,7 +91,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
             this.newNodeTypeB.setEnabled(b);
             this.modifyNodeTypeB.setEnabled(b);
             this.deleteNodeTypeB.setEnabled(b);
-
             this.newEdgeTypeB.setEnabled(b);
             this.modifyEdgeTypeB.setEnabled(b);
             this.deleteEdgeTypeB.setEnabled(b);
@@ -126,51 +111,42 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
                 this.modifyEdgeTypeB.setEnabled(false);
                 this.deleteEdgeTypeB.setEnabled(false);
             }
-
         }
     }
 
     private JPanel handleNodeTypeButtons() {
         final JPanel p = new JPanel();
-
         this.newNodeTypeB.setToolTipText(" Create Node Type ");
         this.newNodeTypeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TypePalette.this.typeEditor.getNodeTypePropertyEditor()
                         .setNewTypeDefaultProperty();
-
                 TypePalette.this.typeEditor.getNodeTypePropertyEditor()
                         .enableChangeButton(false);
                 TypePalette.this.typeEditor.getNodeTypePropertyEditor()
                         .enableDeleteButton(false);
-
                 Point point = ((JButton) e.getSource()).getLocationOnScreen();
                 TypePalette.this.typeEditor.showNodeTypePropertyEditorl(point.x, point.y);
             }
         });
-
         this.modifyNodeTypeB.setToolTipText(" Modify Node Type ");
         this.modifyNodeTypeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TypePalette.this.typeEditor.getNodeTypePropertyEditor().enableChangeButton(true);
                 TypePalette.this.typeEditor.getNodeTypePropertyEditor().enableDeleteButton(true);
-
                 EdType type = TypePalette.this.typeEditor.getSelectedNodeType();
                 TypePalette.this.typeEditor.getNodeTypePropertyEditor().setSelectedTypeProperty(
                         type);
-
                 Point point = ((JButton) e.getSource()).getLocationOnScreen();
                 TypePalette.this.typeEditor.showNodeTypePropertyEditorl(point.x, point.y);
             }
         });
-
         this.deleteNodeTypeB.setToolTipText(" Delete Node Type ");
         this.deleteNodeTypeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TypePalette.this.typeEditor.deleteSelectedNodeType(true);
             }
         });
-
         p.add(this.newNodeTypeB);
         p.add(this.modifyNodeTypeB);
         p.add(this.deleteNodeTypeB);
@@ -179,43 +155,35 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
 
     private JPanel handleArcTypeButtons() {
         final JPanel p = new JPanel();
-
         this.newEdgeTypeB.setToolTipText("Create Edge Type");
         this.newEdgeTypeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TypePalette.this.typeEditor.getArcTypePropertyEditor()
                         .setNewTypeDefaultProperty();
-
                 TypePalette.this.typeEditor.getArcTypePropertyEditor().enableChangeButton(false);
                 TypePalette.this.typeEditor.getArcTypePropertyEditor().enableDeleteButton(false);
-
                 Point point = ((JButton) e.getSource()).getLocationOnScreen();
                 TypePalette.this.typeEditor.showArcTypePropertyEditorl(point.x, point.y);
             }
         });
-
         this.modifyEdgeTypeB.setToolTipText("Modify Edge Type");
         this.modifyEdgeTypeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TypePalette.this.typeEditor.getArcTypePropertyEditor().enableChangeButton(true);
                 TypePalette.this.typeEditor.getArcTypePropertyEditor().enableDeleteButton(true);
-
                 EdType type = TypePalette.this.typeEditor.getSelectedArcType();
                 TypePalette.this.typeEditor.getArcTypePropertyEditor().setSelectedTypeProperty(
                         type);
-
                 Point point = ((JButton) e.getSource()).getLocationOnScreen();
                 TypePalette.this.typeEditor.showArcTypePropertyEditorl(point.x, point.y);
             }
         });
-
         this.deleteEdgeTypeB.setToolTipText("Delete Edge Type");
         this.deleteEdgeTypeB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 TypePalette.this.typeEditor.deleteSelectedArcType(true);
             }
         });
-
         p.add(this.newEdgeTypeB);
         p.add(this.modifyEdgeTypeB);
         p.add(this.deleteEdgeTypeB);
@@ -225,12 +193,10 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
     public void setTypes(Vector<JLabel> nodetypes, Vector<JLabel> edgetypes) {
         this.panel1.removeAll();
         this.panel2.removeAll();
-
         indxN = (nodetypes.size() > 0) ? 0 : -1;
         indxE = (edgetypes.size() > 0) ? 0 : -1;
         setNodeTypes(nodetypes);
         setArcTypes(edgetypes);
-
         // nodeTypeList = createTypeList(nodetypes);
         createTypeList(this.nodeTypeList, nodetypes);
         try {
@@ -245,7 +211,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
             }
         } catch (IllegalArgumentException ex) {
         }
-
         // this.edgeTypeList = createTypeList(edgetypes);
         createTypeList(this.edgeTypeList, edgetypes);
         try {
@@ -260,7 +225,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
             }
         } catch (IllegalArgumentException ex) {
         }
-
         this.splitPane.revalidate();
         if (this.dividerLocation == 0) {
             this.splitPane.setDividerLocation(getHeight() / 2);
@@ -271,7 +235,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
         if (this.nodeTypes.isEmpty() && this.edgeTypes.isEmpty()) {
             return true;
         }
-
         return false;
     }
 
@@ -279,7 +242,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
         if (this.nodeTypes.isEmpty()) {
             return true;
         }
-
         return false;
     }
 
@@ -287,7 +249,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
         if (this.edgeTypes.isEmpty()) {
             return true;
         }
-
         return false;
     }
 
@@ -311,7 +272,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
         if (this.splitPane.getWidth() > 0) {
             return true;
         }
-
         return false;
     }
 
@@ -430,7 +390,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
         if (i < 0) {
             return new JLabel("");
         }
-
         return this.edgeTypes.get(i);
     }
 
@@ -564,7 +523,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
         for (int i = 0; i < types.size(); i++) {
             v.add(types.get(i).getText());
         }
-
         list.setModel(new DefaultListModel());
         list.getSelectionModel().setSelectionMode(
                 ListSelectionModel.SINGLE_SELECTION);
@@ -581,8 +539,9 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
     }
 
     /**
-     * An node/edge type is selected, if the mouse is clicked inside of the node/edge type list. The edit mode of the
-     * gragra editor will change to DRAW.
+     * An node/edge type is selected, if the mouse is clicked inside of the
+     * node/edge type list. The edit mode of the gragra editor will change to
+     * DRAW.
      */
     @SuppressWarnings("rawtypes")
     public void mouseClicked(MouseEvent e) {
@@ -590,7 +549,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
             this.transferFocusBackward();
             return;
         }
-
         if (SwingUtilities.isLeftMouseButton(e)) {
             if (!this.selectionDone) {
                 selectType(e);
@@ -625,8 +583,8 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
     }
 
     /**
-     * A type is selected, if the mouse is clicked inside of the node/edge type list. The edit mode of the gragra editor
-     * will change to DRAW.
+     * A type is selected, if the mouse is clicked inside of the node/edge type
+     * list. The edit mode of the gragra editor will change to DRAW.
      */
     public void mouseReleased(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
@@ -651,8 +609,9 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
     }
 
     /**
-     * An node/edge type is selected, if the mouse is clicked inside of the node/edge type list. The edit mode of the
-     * gragra editor will change to DRAW.
+     * An node/edge type is selected, if the mouse is clicked inside of the
+     * node/edge type list. The edit mode of the gragra editor will change to
+     * DRAW.
      */
     public void mousePressed(MouseEvent e) {
         dragged = false;
@@ -672,18 +631,15 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
                     if (index == -1 || index >= this.nodeTypes.size()) {
                         return;
                     }
-
                     indxN = index;
                     //				JLabel tlabel = this.nodeTypes.get(index);
                     EdType type = this.typeEditor.selectNodeTypeAtIndex(index);
                     this.typeEditor.getNodeTypePropertyEditor().setSelectedTypeProperty(
                             type);
-
                     this.modifyNodeTypeB.setEnabled(true);
                     this.deleteNodeTypeB.setEnabled(true);
                     this.typeEditor.getNodeTypePropertyEditor().enableChangeButton(true);
                     this.typeEditor.getNodeTypePropertyEditor().enableDeleteButton(true);
-
                     // set DRAW mode of the gragra editor
                     this.typeEditor.getGraGraEditor().setEditMode(EditorConstants.DRAW);
                     this.typeEditor.getGraGraEditor().forwardModeCommand("Draw");
@@ -695,19 +651,15 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
                     if (index == -1 || index >= this.edgeTypes.size()) {
                         return;
                     }
-
                     indxE = index;
                     //				JLabel tlabel = this.edgeTypes.get(index);
                     EdType type = this.typeEditor.selectArcTypeAtIndex(index);
-
                     this.typeEditor.getArcTypePropertyEditor().setSelectedTypeProperty(
                             type);
-
                     this.modifyEdgeTypeB.setEnabled(true);
                     this.deleteEdgeTypeB.setEnabled(true);
                     this.typeEditor.getArcTypePropertyEditor().enableChangeButton(true);
                     this.typeEditor.getArcTypePropertyEditor().enableDeleteButton(true);
-
                     // set DRAW mode of the gragra editor
                     this.typeEditor.getGraGraEditor().setEditMode(EditorConstants.DRAW);
                     this.typeEditor.getGraGraEditor().forwardModeCommand("Draw");
@@ -720,9 +672,9 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
     // Display an icon and a string for each object in the list.
     @SuppressWarnings("rawtypes")
     class MyCellRenderer extends JLabel implements ListCellRenderer {
+
         // This is the only method defined by ListCellRenderer.
         // We just reconfigure the JLabel each time we're called.
-
         public Component getListCellRendererComponent(JList list, Object value, // value
                 // to
                 // display
@@ -730,7 +682,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
                 boolean isSelected, // is the cell selected
                 boolean cellHasFocus) // the list and the cell have the focus
         {
-
             String str = value.toString();
             setText(str);
             if (list == TypePalette.this.nodeTypeList && !TypePalette.this.nodeTypes.isEmpty()) {
@@ -755,10 +706,8 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
             setEnabled(list.isEnabled());
             setFont(list.getFont());
             setOpaque(true);
-
             return this;
         }
-
     }
 
     @Override
@@ -793,8 +742,6 @@ public class TypePalette extends JPanel implements MouseListener, MouseMotionLis
         Point pt = new Point(20, 20);
         pt.x = pointOnScreen.x - panel.getLocationOnScreen().x + panel.getHorizontalScrollBar().getValue();
         pt.y = pointOnScreen.y - panel.getLocationOnScreen().y + panel.getVerticalScrollBar().getValue();
-
         return pt;
     }
-
 }

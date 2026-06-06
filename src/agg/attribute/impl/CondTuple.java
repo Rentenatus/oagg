@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -13,7 +15,6 @@ package agg.attribute.impl;
 
 import java.util.Enumeration;
 import java.util.Vector;
-
 import agg.attribute.AttrConditionMember;
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrInstance;
@@ -24,10 +25,11 @@ import agg.attribute.handler.impl.javaExpr.JexHandler;
 import agg.util.XMLHelper;
 import java.util.Iterator;
 import org.w3c.dom.Element;
-
 //import agg.util.Debug;
+
 /**
- * Application conditions. Every instance of ContextCore has exactly one instance of this class.
+ * Application conditions. Every instance of ContextCore has exactly one
+ * instance of this class.
  *
  * @author $Author: olga $
  * @version $Id: CondTuple.java,v 1.16 2010/11/28 22:11:36 olga Exp $
@@ -41,39 +43,33 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
      * Name of the handler for the boolean type.
      */
     protected static String boolHandlerName = JexHandler.getLabelName();
-
     /**
      * Constant for the boolean type name.
      */
     final protected static String boolTypeName = "boolean";
-
     /**
      * Constant for the true value.
      */
     final protected static String trueVal = "true";
-
     /**
      * Constant for the false value.
      */
     final protected static String falseVal = "false";
-
     /**
      * Constant prefix for the condition entry names.
      */
     final protected static String namePrefix = "c";
-
     /**
      * Attribute handler for condition expressions.
      */
     protected AttrHandler condHandler = null;
-
     /**
      * Boolean type.
      */
     protected HandlerType boolType = null;
-
     /**
-     * Current condition number, is used to compose unique names within one condition tuple.
+     * Current condition number, is used to compose unique names within one
+     * condition tuple.
      */
     protected int condNum = 0;
 
@@ -84,7 +80,6 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
         getContextView().setAllowVarDeclarations(true);
         getContextView().setAllowComplexExpr(true);
         initClass();
-
         if (parent != null) {
             if (this.getSize() == 0 && this.parent.getSize() > 0) {
                 for (int i = 0; i < this.parent.getSize(); i++) {
@@ -178,7 +173,6 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
         if (expr.equals("")) {
             return null;
         }
-
         getTupleType().addMember(this.condHandler, boolTypeName, getNextName());
         CondMember cm = getCondMemberAt(getSize() - 1);
         cm.setExprAsText(expr);
@@ -192,7 +186,6 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
         if (expr.equals("")) {
             return null;
         }
-
         getTupleType().addMember(indx, this.condHandler, boolTypeName, getNextName());
         CondMember cm = getCondMemberAt(indx);
         cm.setExprAsText(expr);
@@ -229,7 +222,8 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
     }
 
     /**
-     * Test, if the given <code>String expr</code> is a member of this condition tuple.
+     * Test, if the given <code>String expr</code> is a member of this condition
+     * tuple.
      */
     public boolean contains(String expr) {
         for (int i = 0; i < getSize(); i++) {
@@ -242,7 +236,8 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
     }
 
     /**
-     * Check, if each enabled member is evaluable at the given <code>VarTuple vars</code>.
+     * Check, if each enabled member is evaluable at the given
+     * <code>VarTuple vars</code>.
      */
     public boolean isEvaluable(VarTuple vars) {
         for (int i = 0; i < getSize(); i++) {
@@ -255,7 +250,6 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
         }
         return true;
     }
-
     String failedCondAsString;
 
     /**
@@ -296,7 +290,8 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
     }
 
     /**
-     * Returns true, if the tuple contains members which can be evaluated and yield 'false'. Otherwise - false.
+     * Returns true, if the tuple contains members which can be evaluated and
+     * yield 'false'. Otherwise - false.
      */
     public boolean isFalse() {
         this.failedCondAsString = "";
@@ -314,8 +309,9 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
     }
 
     /**
-     * Returns true, if the tuple contains enabled members with a variable named by the given
-     * <code>String varname</code> and which can be evaluated and yield 'false'. Otherwise returns false.
+     * Returns true, if the tuple contains enabled members with a variable named
+     * by the given <code>String varname</code> and which can be evaluated and
+     * yield 'false'. Otherwise returns false.
      */
     public boolean isFalse(String varname) {
         this.failedCondAsString = "";
@@ -464,7 +460,6 @@ public class CondTuple extends LoneTuple implements AttrConditionTuple,
             h.close();
         }
     }
-
 }
 /*
  * $Log: CondTuple.java,v $

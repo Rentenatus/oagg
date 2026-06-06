@@ -1,25 +1,27 @@
 /**
- **
- * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
- ******************************************************************************
  */
 package agg.xt_basis;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
-
 import agg.attribute.AttrType;
 import agg.util.XMLObject;
+import java.util.HashMap;
+import java.util.List;
 
 /**
- * Instances of this class are used for dynamic typing of graph objects. Each type is associated with a name (also
- * called "string representation"). Note that two types with the same name need not be equal.
+ * Instances of this class are used for dynamic typing of graph objects. Each
+ * type is associated with a name (also called "string representation"). Note
+ * that two types with the same name need not be equal.
  *
  * @version $Id: Type.java,v 1.27 2010/10/07 20:04:26 olga Exp $
  */
@@ -39,7 +41,7 @@ public interface Type extends XMLObject {
      */
     public Type getParent();
 
-    public Vector<Type> getParents();
+    public List<Type> getParents();
 
     public void removeChild(final Type t);
 
@@ -67,7 +69,7 @@ public interface Type extends XMLObject {
     /**
      * Returns its direct children only.
      */
-    public Vector<Type> getChildren();
+    public List<Type> getChildren();
 
     /**
      * Returns the associated attribute type.
@@ -77,16 +79,21 @@ public interface Type extends XMLObject {
     /**
      * compares the given type with this object.
      *
-     * @return true, if the given type has the same name, attributes and additional string
+     * @return true, if the given type has the same name, attributes and
+     * additional string
      */
     public boolean compareTo(Type t);
 
     /**
-     * set an additional graphical string, which is saved together with the name string representation. Here you can
-     * save additional information used in another layer. Predefined additional string: if the specified String repr is
-     * "NODE" or "[NODE]", then additionalRepr = ":RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:" , if the specified String
-     * repr is "EDGE" or "[EDGE]", then additionalRepr = ":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:" . This
-     * format of additional type information is used for the graphical layout information of nodes and edges.
+     * set an additional graphical string, which is saved together with the name
+     * string representation. Here you can save additional information used in
+     * another layer. Predefined additional string: if the specified String repr
+     * is "NODE" or "[NODE]", then additionalRepr =
+     * ":RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:" , if the specified String
+     * repr is "EDGE" or "[EDGE]", then additionalRepr =
+     * ":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:" . This format of
+     * additional type information is used for the graphical layout information
+     * of nodes and edges.
      */
     public void setAdditionalRepr(String repr);
 
@@ -124,8 +131,8 @@ public interface Type extends XMLObject {
     public List<Type> getClan();
 
     /**
-     * Returns true when this node type is in inheritance clan of the defined node type t. The type t can be a parent or
-     * a child of the clan.
+     * Returns true when this node type is in inheritance clan of the defined
+     * node type t. The type t can be a parent or a child of the clan.
      */
     public boolean isInClanOf(final Type t);
 
@@ -134,97 +141,113 @@ public interface Type extends XMLObject {
     /**
      * compares the given type with this object and its ancestors
      *
-     * @return true, if the given type or one of its ancestors has the same name, attributes and additional string
+     * @return true, if the given type or one of its ancestors has the same
+     * name, attributes and additional string
      */
     public boolean isChildOf(Type t);
 
     /**
      * compares the given type and its ancestors with this object
      *
-     * @return true, if the given type has the same name, attributes and additional string as t or one of its ancestors
+     * @return true, if the given type has the same name, attributes and
+     * additional string as t or one of its ancestors
      */
     public boolean isParentOf(Type t);
 
     /**
-     * Finds out if there is any relation between this type and the given one. Two types are related if they have one
-     * common ancestor.
+     * Finds out if there is any relation between this type and the given one.
+     * Two types are related if they have one common ancestor.
      */
     public boolean isRelatedTo(Type t);
 
     /**
-     * returns a list with all the parents of the current type and itself as first element
+     * returns a list with all the parents of the current type and itself as
+     * first element
      *
      * @return list of all parents
      */
-    public Vector<Type> getAllParents();
+    public List<Type> getAllParents();
 
     public void addChild(final Type t);
 
     public List<Type> getCommonParentWith(final Type t);
 
     /**
-     * returns a list with all the children of the current type and itself as first element
+     * returns a list with all the children of the current type and itself as
+     * first element
      *
      * @return list of all children
      */
-    public Vector<Type> getAllChildren();
+    public List<Type> getAllChildren();
 
     /**
-     * returns a new string containing the name, all attributes and the additional string separated by ":" if the key
-     * string was null otherwise returns the old key.
+     * returns a new string containing the name, all attributes and the
+     * additional string separated by ":" if the key string was null otherwise
+     * returns the old key.
      */
     public String convertToKey();
 
     /**
-     * returns a new string containing the name, all attributes and the additional string separated by ":".
+     * returns a new string containing the name, all attributes and the
+     * additional string separated by ":".
      */
     public String resetKey();
 
     /**
-     * returns if the given GraphObject is valid typed as defined in the type graph. Before this can be checked, all
-     * edges and nodes of the type graph must be added to theire types. The given object will not tested if this is its
-     * type.
+     * returns if the given GraphObject is valid typed as defined in the type
+     * graph. Before this can be checked, all edges and nodes of the type graph
+     * must be added to theire types. The given object will not tested if this
+     * is its type.
      *
      * @param graphObject the object to test
-     * @param level a type graph check level, as defined in {@link TypeSet#setLevelOfTypeGraphCheck}
-     * @return null, if the graphobject is valid typed otherwise a {@link TypeError} if there was a mismatch
+     * @param level a type graph check level, as defined in
+     * {@link TypeSet#setLevelOfTypeGraphCheck}
+     * @return null, if the graphobject is valid typed otherwise a
+     * {@link TypeError} if there was a mismatch
      */
     public TypeError check(GraphObject graphObject, int level);
 
     /**
-     * returns if the given node could be removed. This check makes only sense, if the minimum multiplicity check is
-     * activated.
+     * returns if the given node could be removed. This check makes only sense,
+     * if the minimum multiplicity check is activated.
      *
      * @param node the node which will be removed.
-     * @param level the actual level. If not set to {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
-     * @return null, if the node will be valid typed even after removing the arc otherwise a {@link TypeError}
-     * containing the possible fault.
+     * @param level the actual level. If not set to
+     * {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
+     * @return null, if the node will be valid typed even after removing the arc
+     * otherwise a {@link TypeError} containing the possible fault.
      */
     TypeError checkIfRemovable(Node node, int level);
 
     /**
-     * returns if the given arc could be removed from the given node so the node would be valid typed. This check makes
-     * only sense, if the minimum multiplicity check is activated.
+     * returns if the given arc could be removed from the given node so the node
+     * would be valid typed. This check makes only sense, if the minimum
+     * multiplicity check is activated.
      *
-     * @param node the node which will be modified. This node has to be the source of the arc and has to have this type.
+     * @param node the node which will be modified. This node has to be the
+     * source of the arc and has to have this type.
      * @param arc the arc which will be removed
-     * @param level the actual level. If not set to {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
-     * @return null, if the node will be valid typed even after removing the arc otherwise a {@link TypeError}
-     * containing the possible fault.
+     * @param level the actual level. If not set to
+     * {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
+     * @return null, if the node will be valid typed even after removing the arc
+     * otherwise a {@link TypeError} containing the possible fault.
      */
     TypeError checkIfRemovableFromSource(GraphObject node, Arc arc, int level);
 
     TypeError checkIfRemovableFromSource(GraphObject node, Arc arc, boolean deleteSrc, boolean deleteTar, int level);
 
     /**
-     * returns if the given arc could be removed from the given node so the node would be valid typed. This check makes
-     * only sense, if the minimum multiplicity check is activated.
+     * returns if the given arc could be removed from the given node so the node
+     * would be valid typed. This check makes only sense, if the minimum
+     * multiplicity check is activated.
      *
-     * @param node the node which will be modified. This node has to be the target of the arc and has to have this type.
+     * @param node the node which will be modified. This node has to be the
+     * target of the arc and has to have this type.
      * @param arc the arc which will be removed
-     * @param level the actual level. If not set to {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
-     * @return null, if the node will be valid typed even after removing the arc otherwise a {@link TypeError}
-     * containing the possible fault.
+     * @param level the actual level. If not set to
+     * {@link TypeSet#ENABLED_MAX_MIN} this method will do nothing.
+     * @return null, if the node will be valid typed even after removing the arc
+     * otherwise a {@link TypeError} containing the possible fault.
      */
     TypeError checkIfRemovableFromTarget(final GraphObject node, final Arc arc, int level);
 
@@ -232,24 +255,26 @@ public interface Type extends XMLObject {
             boolean deleteSrc, boolean deleteTar, int level);
 
     /**
-     * Add the given GraphObject to this type. The GraphObject is a node or an arc of a TypeGraph. Only one GraphObject
-     * of each type is allowed.
+     * Add the given GraphObject to this type. The GraphObject is a node or an
+     * arc of a TypeGraph. Only one GraphObject of each type is allowed.
      *
      * @return true, if the graph object could be added.
      */
     public boolean addTypeGraphObject(GraphObject nodeOrArc);
 
     /**
-     * Remove the given GraphObject of the type graph from this type. The GraphObject must be added before. Returns true
-     * if this type graph object is removed, otherwise false (esp. if the type is in use and the type graph check is
-     * activated).
+     * Remove the given GraphObject of the type graph from this type. The
+     * GraphObject must be added before. Returns true if this type graph object
+     * is removed, otherwise false (esp. if the type is in use and the type
+     * graph check is activated).
      */
     public boolean removeTypeGraphObject(GraphObject nodeOrArc);
 
     public boolean removeTypeGraphObject(GraphObject nodeOrArc, boolean forceToRemove);
 
     /**
-     * returns true, if there is at least one object in the type graph for this type.
+     * returns true, if there is at least one object in the type graph for this
+     * type.
      */
     public boolean isTypeGraphObjectDefined();
 
@@ -326,7 +351,7 @@ public interface Type extends XMLObject {
 
     public boolean isEdgeCreatable(final Type sourceType, final Type targetType, final int level);
 
-    public Vector<Type> getTargetsOfArc(final Type sourceType);
+    public List<Type> getTargetsOfArc(final Type sourceType);
 
     public int getMaxMultiplicityOfAllChildren();
 
@@ -340,11 +365,11 @@ public interface Type extends XMLObject {
 
     public List<Arc> getOwnIncomingArcs();
 
-    public Vector<Type> getOwnIncomingArcTypes();
+    public List<Type> getOwnIncomingArcTypes();
 
     public List<Arc> getOwnOutgoingArcs();
 
-    public Vector<Type> getOwnOutgoingArcTypes();
+    public List<Type> getOwnOutgoingArcTypes();
 
     public void checkDoubleAttributeType();
 
@@ -363,5 +388,4 @@ public interface Type extends XMLObject {
     public boolean compareTypeGraphArcsMultiplicity(final Type t);
 
     public void dispose();
-
 }

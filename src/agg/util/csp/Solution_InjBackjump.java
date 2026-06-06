@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 // $Id: Solution_InjBackjump.java,v 1.3 2010/02/22 14:43:23 olga Exp $
 // $Log: Solution_InjBackjump.java,v $
@@ -39,7 +39,8 @@
 package agg.util.csp;
 
 /**
- * A CSP solution strategy using the backjumping technique. Only injective solutions are considered.
+ * A CSP solution strategy using the backjumping technique. Only injective
+ * solutions are considered.
  *
  * @deprecated	replaced by <code>Solution_Backjump(true)</code>
  */

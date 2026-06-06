@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -14,7 +16,6 @@ package agg.attribute.handler.impl.javaExpr;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Vector;
-
 import agg.attribute.AttrVariableMember;
 import agg.attribute.handler.AttrHandlerException;
 import agg.attribute.handler.HandlerExpr;
@@ -33,24 +34,18 @@ import java.util.List;
 public class JexExpr extends Object implements HandlerExpr {
 
     static protected Jex parser = new Jex();
-
     protected JexHandler handler;
-
     protected JexType type;
-
 //	protected String text;
     /**
      * The value of an attribute
      */
     protected Object value;
-
     /**
      * Represents the abstract syntax tree of an expression
      */
     protected Node ast;
-
     protected int property = Jex.PARSE_ERROR;
-
     public static final long serialVersionUID = 268212822469784946L;
 
     public JexExpr() {
@@ -60,7 +55,6 @@ public class JexExpr extends Object implements HandlerExpr {
             throws AttrHandlerException {
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"JexExpr:\n->Constructor");
-
         if (asValue) {
             this.assignValue(exprString, type);
         } else {
@@ -68,7 +62,6 @@ public class JexExpr extends Object implements HandlerExpr {
 //			this.text = exprString.trim();
             this.property = parser.parse(exprString.trim());
             this.ast = parser.getAST();
-
 //			if (VerboseControl.logTrace) {
 //				AttrSession.logPrintln(VerboseControl.logTrace, "konstant: "
 //						+ isConstant() + "\nvariable: " + isVariable()
@@ -92,9 +85,7 @@ public class JexExpr extends Object implements HandlerExpr {
             throws AttrHandlerException {
 //		AttrSession.logPrintln(VerboseControl.logTrace,
 //				"JexExpr:\n->assignValue");
-
         Class<?> clazz = atype.getClazz();
-
         if (this.value != null && !clazz.isInstance(this.value)) {
 //			System.out.println("JexExpr.assignValue:  "
 //					+this.value.toString() 
@@ -105,16 +96,13 @@ public class JexExpr extends Object implements HandlerExpr {
                     + " is not an instance of "
                     + clazz.toString());
         }
-
         this.type = atype;
         this.value = avalue;
-
         // this.text = (this.value == null ? "null" : this.value.toString());
         // if( this.value != null && this.value instanceof String ) {
         // 		this.text = "\"" + this.text + "\"";
         // }
         this.property = Jex.IS_CONSTANT;
-
 //		if (this.value instanceof HandlerExpr) {
 //			System.out.println("JexExpr.assignValue::  "+ value);
 //		}
@@ -130,12 +118,12 @@ public class JexExpr extends Object implements HandlerExpr {
         if (this.type != null) {
             return this.type.handler;
         }
-
         return null;
     }
 
     /**
-     * Getting the string representation of this value. Overrides the "toString()" method of the "Object" class.
+     * Getting the string representation of this value. Overrides the
+     * "toString()" method of the "Object" class.
      */
     public String toString() {
         return getString();
@@ -152,7 +140,6 @@ public class JexExpr extends Object implements HandlerExpr {
         } else {
             if (this.value == null && testObject.value == null) {
                 // result = text.equals( testObject.text );
-
                 /* Dieser Fall tritt ein wenn null als Value eingegeben wird. */
                 if (this.ast == null && testObject.ast == null) {
                     return true;
@@ -237,7 +224,6 @@ public class JexExpr extends Object implements HandlerExpr {
                     + this.value + " vor interpret aufruf");
             AttrSession.logPrintln(VerboseControl.logTrace, "JexExpr: symtab "
                     + symtab + " vor interpret aufruf");
-
             if (symtab instanceof ContextView) {
                 ContextView context = (ContextView) symtab;
                 AttrSession.logAttrInstance(context.getVariables(),
@@ -255,7 +241,6 @@ public class JexExpr extends Object implements HandlerExpr {
                 AttrSession.logPrintln("JexExpr: symtab ist kein ContextView");
             }
         }
-
         // falls ein matchmapping existiert, nur dann soll ausgewertet werden.
         // boolean matchMapping = true;
         // ContextView contextView = null;
@@ -284,7 +269,6 @@ public class JexExpr extends Object implements HandlerExpr {
 //						AttrSession.logPrintln(VerboseControl.logJexParser,
 //								"JexExpr.evaluate:  rewriting failed. "
 //										+ ex.getMessage());
-
                         throw new AttrHandlerException(
                                 "JexExpr.evaluate::  required type: "
                                 + this.type.toString()
@@ -324,7 +308,7 @@ public class JexExpr extends Object implements HandlerExpr {
      * Checks the expression if there is any variable which must be rewritten
      */
     protected boolean mustRewrite(SymbolTable symtab) {
-        List<String> v = new Vector< >();
+        List<String> v = new Vector<>();
         getAllVariables(v);
         boolean result = false;
         for (int i = 0; i < v.size() && !result; i++) {
@@ -353,7 +337,6 @@ public class JexExpr extends Object implements HandlerExpr {
         if (expr == null || symtab == null) {
             return false;
         }
-
         if (this.isConstant() && expr.isVariable()) {
             JexExpr currentAssignment = (JexExpr) symtab.getExpr(expr
                     .getString());
@@ -373,7 +356,6 @@ public class JexExpr extends Object implements HandlerExpr {
         if (this.type == null) {
             return false;
         }
-
         JexExpr testObject = (JexExpr) expr;
         if (testObject == null
                 || getHandler() != testObject.getHandler()
@@ -392,10 +374,8 @@ public class JexExpr extends Object implements HandlerExpr {
         result = result && isConstant();
         result = result && expr.isConstant();
         result = result && equals(expr);
-
         result = result || isAssignableTo(testObject, symtab);
         result = result || testObject.isAssignableTo(this, symtab);
-
         return result;
     }
 
@@ -427,31 +407,30 @@ public class JexExpr extends Object implements HandlerExpr {
     }
 
     /**
-     * fills the vector with the names of all variables which occur in this abstract syntax tree
+     * fills the vector with the names of all variables which occur in this
+     * abstract syntax tree
      */
     public void getAllVariables(List<String> v) {
         if (getAST() != null) {
-            getAST().getAllVariablesinExpression(v); 
+            getAST().getAllVariablesinExpression(v);
         }
     }
 
     /**
      * *************************************************************************
-     * LOAD - SAVE *********************************************************************
+     * LOAD - SAVE
+     * *********************************************************************
      */
     private void readObject(ObjectInputStream ois) throws IOException,
             ClassNotFoundException {
         ObjectInputStream.GetField gf = ois.readFields();
         /* reading fields */
         this.handler = (JexHandler) gf.get("handler", null);
-
         this.type = (JexType) gf.get("type", null);
-
         /**
          * The value of an attribute
          */
         this.value = gf.get("value", null);
-
         this.property = gf.get("property", Jex.PARSE_ERROR);
         /**
          * Represents the abstract syntax tree of an expression
@@ -470,10 +449,8 @@ public class JexExpr extends Object implements HandlerExpr {
                 this.property = newExpr.property;
             }
         }
-
     }
 }
-
 /*
  * $Log: JexExpr.java,v $
  * Revision 1.16  2010/09/23 08:13:35  olga

@@ -1,23 +1,14 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
- */
-/**
- *
+ * *****************************************************************************
  */
 package agg.ruleappl;
-
-import java.io.File;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
 
 import agg.parser.CriticalPairOption;
 import agg.util.Pair;
@@ -27,6 +18,12 @@ import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.Rule;
+import java.io.File;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author olga
@@ -35,14 +32,11 @@ import agg.xt_basis.Rule;
 public class ApplRuleSequence implements XMLObject {
 
     private String dirName;
-
     private GraGra gragra;
-
     private CriticalPairOption cpOption;
-
     private final List<RuleSequence> ruleSequences = new Vector<RuleSequence>();
-
 //	private final List<Rule> concurrentRules = new Vector<Rule>();
+
     /**
      *
      */
@@ -106,7 +100,6 @@ public class ApplRuleSequence implements XMLObject {
         }
         return false;
     }
-
 //	private List<Rule> makeRuleList(final List<String> sequence) {
 //		final List<Rule> ruleList = new Vector<Rule>();
 //		for (int j=0; j<sequence.size(); j++) {
@@ -115,6 +108,7 @@ public class ApplRuleSequence implements XMLObject {
 //		}
 //		return ruleList;
 //	}
+
     public void setRuleSequences(final List<RuleSequence> list) {
         this.ruleSequences.clear();
         for (int i = 0; i < list.size(); i++) {
@@ -131,7 +125,6 @@ public class ApplRuleSequence implements XMLObject {
         if (this.gragra == null) {
             return null;
         }
-
         final RuleSequence rseq = new RuleSequence(
                 this.gragra,
                 "RuleSequence",
@@ -202,7 +195,6 @@ public class ApplRuleSequence implements XMLObject {
         RuleSequence seq = this.ruleSequences.get(from);
         this.ruleSequences.remove(from);
         this.ruleSequences.add(to, seq);
-
     }
 
     public void moveRuleInsideSequence(int seqIndx, int from, int to) {
@@ -221,7 +213,6 @@ public class ApplRuleSequence implements XMLObject {
             final int indx,
             final String ruleName,
             final String criterion) {
-
         RuleSequence seq = this.ruleSequences.get(seqIndx);
         return seq.getRuleResult(indx, ruleName, criterion);
     }
@@ -236,7 +227,6 @@ public class ApplRuleSequence implements XMLObject {
 
     public boolean check(final RuleSequence sequence) {
         boolean result = sequence.check();
-
 //		sequence.saveConcurrentRules();
         return result;
     }
@@ -256,7 +246,6 @@ public class ApplRuleSequence implements XMLObject {
                 outfileName = outfileName.concat(rsx);
             }
         }
-
         XMLHelper xmlh = new XMLHelper();
         xmlh.addTopObject(this);
         xmlh.save_to_xml(outfileName);
@@ -267,11 +256,9 @@ public class ApplRuleSequence implements XMLObject {
         if (f.exists()) {
             if (filename.endsWith(".rsx")) {
                 this.gragra = BaseFactory.theFactory().createGraGra(false);
-
                 XMLHelper h = new XMLHelper();
                 if (h.read_from_xml(filename)) {
                     h.getTopObject(this);
-
                     if (f.getParent() == null) {
                         this.dirName = "." + File.separator;
                     } else {
@@ -289,7 +276,6 @@ public class ApplRuleSequence implements XMLObject {
             throw new Exception("File  \"" + filename
                     + "\"  doesn't exist!");
         }
-
         return this.gragra;
     }
 
@@ -298,10 +284,8 @@ public class ApplRuleSequence implements XMLObject {
         if (f.exists()) {
             if (filename.endsWith(".rsx")) {
                 this.gragra = BaseFactory.theFactory().createGraGra(false);
-
                 if (h.read_from_xml(filename)) {
                     h.getTopObject(this);
-
                     String fileName = f.getName();
                     if (f.getParent() == null) {
                         this.dirName = "." + File.separator;
@@ -322,23 +306,19 @@ public class ApplRuleSequence implements XMLObject {
             throw new Exception("File  \"" + filename
                     + "\"  doesn't exist!");
         }
-
         return this.gragra;
     }
 
     public void XwriteObject(XMLHelper h) {
         h.openNewElem("RuleSequenceApplicability", this);
         h.addObject("GraGra", this.gragra, true);
-
         h.openSubTag("RuleSequences");
         for (int i = 0; i < this.ruleSequences.size(); i++) {
             RuleSequence seq = this.ruleSequences.get(i);
-
             boolean result = seq.getApplicabilityResult().first.booleanValue();
             String text = seq.getApplicabilityResult().second;
             boolean result2 = seq.getNonApplicabilityResult().first.booleanValue();
             String text2 = seq.getNonApplicabilityResult().second;
-
             h.openSubTag("Sequence");
             h.addAttr("name", seq.getName());
             // save options
@@ -370,16 +350,14 @@ public class ApplRuleSequence implements XMLObject {
                 h.close();
             }
             // save each rule result
-            Hashtable<String, Pair<Boolean, List<String>>> ruleRes = seq.getRuleResults();
+            Map<String, Pair<Boolean, List<String>>> ruleRes = seq.getRuleResults();
             for (int j = 0; j < seq.getRules().size(); j++) {
                 Rule rule = seq.getRules().get(j);
                 String ruleName = rule.getName();
                 h.openSubTag("Rule");
                 h.addObject("id", rule, false);
                 if (ruleRes != null) {
-                    Enumeration<String> keys = ruleRes.keys();
-                    while (keys.hasMoreElements()) {
-                        String key = keys.nextElement();
+                    for (String key : ruleRes.keySet()) {
                         if (key.indexOf(String.valueOf(j).concat(ruleName)) == 0) {
                             Pair<Boolean, List<String>> resultpair = ruleRes.get(key);
                             if (resultpair != null) {
@@ -396,13 +374,11 @@ public class ApplRuleSequence implements XMLObject {
                     h.addAttr("criterion", "undefined");
                     h.addAttr("text", "undefined");
                 }
-
                 h.close();
             }
             h.close();
         }
         h.close();
-
         h.close();
     }
 
@@ -418,12 +394,10 @@ public class ApplRuleSequence implements XMLObject {
     public void XreadObject(XMLHelper h) {
         if (h.isTag("RuleSequenceApplicability", this)) {
             h.getObject("", this.gragra, true);
-
             this.ruleSequences.clear();
             if (!this.gragra.getRuleSequences().isEmpty()) {
                 this.setRuleSequences(this.gragra.getRuleSequences());
             }
-
 //			int i = -1;
             if (h.readSubTag("RuleSequences")) {
                 while (h.readSubTag("Sequence")) {
@@ -442,7 +416,6 @@ public class ApplRuleSequence implements XMLObject {
                         this.ruleSequences.add(seq);
                         newSequence = true;
                     }
-
                     if (h.readSubTag("ConcurrentRule")) {
                         String depthstr = h.readAttr("depth");
                         if ("undefined".equals(depthstr)) {
@@ -458,14 +431,12 @@ public class ApplRuleSequence implements XMLObject {
                         seq.setIgnoreDanglingEdgeOfDelNode(Boolean.valueOf(danglingedgestr).booleanValue());
                         h.close();
                     }
-
                     Pair<Boolean, Boolean> result = new Pair<Boolean, Boolean>(null, null);
                     Pair<String, String> criterion = new Pair<String, String>(null, null);
                     while (h.readSubTag("Item")) {
                         String kind = h.readAttr("kind");
                         String res = h.readAttr("result");
                         String str = h.readAttr("criterion");
-
                         if ("applicable".equals(kind)) {
                             result.first = Boolean.valueOf(res);
                             criterion.first = str;
@@ -475,7 +446,6 @@ public class ApplRuleSequence implements XMLObject {
                         }
                         h.close();
                     }
-
                     if (newSequence) {
                         if (h.readSubTag("Graph")) {
                             Graph g = (Graph) h.getObject("id", null, false);
@@ -485,7 +455,6 @@ public class ApplRuleSequence implements XMLObject {
                             h.close();
                         }
                     }
-
                     int indx = -1;
                     while (h.readSubTag("Rule")) {
                         final Rule r = (Rule) h.getObject("id", null, false);
@@ -494,7 +463,6 @@ public class ApplRuleSequence implements XMLObject {
                             seq.addRule(r);
                         }
                         indx++;
-
                         while (h.readSubTag("Item")) {
                             String criterionStr = h.readAttr("criterion");
                             String res = h.readAttr("result");
@@ -506,11 +474,9 @@ public class ApplRuleSequence implements XMLObject {
                         h.close();
                     }
 //					System.out.println(seq.getRuleNames()+"\n");
-
                     seq.setApplicabilityResult(result.first.booleanValue(), criterion.first);
                     seq.setNonApplicabilityResult(result.second.booleanValue(), criterion.second);
                     seq.checked = !"undefined".equals(criterion.first) && !"undefined".equals(criterion.second);
-
 //					System.out.println(result.first.booleanValue()+"   "+ criterion.first);
 //					System.out.println(result.second.booleanValue() +"   "+ criterion.second+"\n");
                     h.close();
@@ -520,5 +486,4 @@ public class ApplRuleSequence implements XMLObject {
             h.close();
         }
     }
-
 }

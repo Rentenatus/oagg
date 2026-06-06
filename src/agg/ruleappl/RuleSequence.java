@@ -1,22 +1,17 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * reserved. This program and the accompanying materials are made available
+ * under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.ruleappl;
-
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import agg.parser.CriticalPairOption;
 import agg.util.Pair;
@@ -35,34 +30,50 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
 import agg.xt_basis.agt.KernelRule;
 import agg.xt_basis.agt.RuleScheme;
+import java.util.Enumeration;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
- * This class implements a rule sequence and checking applicability and non-applicability criteria of this sequence.
+ * This class implements a rule sequence and checking applicability and
+ * non-applicability criteria of this sequence.
  *
- * The constructor needs a grammar <code>agg.xt_basis.GraGra</code> and CPA options
- * <code>agg.parser.CriticalPairOption</code> instances.
+ * The constructor needs a grammar <code>agg.xt_basis.GraGra</code> and CPA
+ * options <code>agg.parser.CriticalPairOption</code> instances.
  *
- * Adding a rule which belongs to the given gragra can be done by the method <code>add(agg.xt_basis.Rule)</code> or
- * <code>addRule(String)</code> where a string is a rule name, but also by using  <code>setRules(List<String></code> with
- * list of rule names.
+ * Adding a rule which belongs to the given gragra can be done by the method
+ * <code>add(agg.xt_basis.Rule)</code> or <code>addRule(String)</code> where a
+ * string is a rule name, but also by using  <code>setRules(List<String></code>
+ * with list of rule names.
  *
- * To set a graph on which the rule sequence should be checked is available by <code>setGraph(agg.xt_basis.Graph</code>.
- * The given graph must belong to the gragra.<br>
+ * To set a graph on which the rule sequence should be checked is available by
+ * <code>setGraph(agg.xt_basis.Graph</code>. The given graph must belong to the
+ * gragra.<br>
  *
- * To check applicability of the rule sequence is possible by calling the method <code>check</code>.
+ * To check applicability of the rule sequence is possible by calling the method
+ * <code>check</code>.
  *
- * There are two results of this check: applicability and non-applicability result.
+ * There are two results of this check: applicability and non-applicability
+ * result.
  *
- * Applicability result can be asked by <code>Pair<Boolean, String> getApplicabilityResult()</code>. The returned pair
- * is (true, ApplicabilityConstants.UNDEFINED) or (false, criterion).
+ * Applicability result can be asked by <code>Pair<Boolean, String>
+ * getApplicabilityResult()</code>. The returned pair is (true,
+ * ApplicabilityConstants.UNDEFINED) or (false, criterion).
  *
- * Non-Applicability result can be asked by <code>Pair<Boolean, String> getNonApplicabilityResult()</code>. The returned
- * pair is (false, ApplicabilityConstants.UNDEFINED) or (true, criterion).<br>
+ * Non-Applicability result can be asked by <code>Pair<Boolean, String>
+ * getNonApplicabilityResult()</code>. The returned pair is (false,
+ * ApplicabilityConstants.UNDEFINED) or (true, criterion).<br>
  *
- * @see agg.ruleappl.ApplicabilityConstants for the possible meaning of applicability and non-applicability
- * criterion.<br>
+ * @see agg.ruleappl.ApplicabilityConstants for the possible meaning of
+ * applicability and non-applicability criterion.<br>
  *
- * Used in <code>agg.xt_basis.RuleSequencesGraTraImpl.setRuleSequence(RuleSequence)</code>.
+ * Used in
+ * <code>agg.xt_basis.RuleSequencesGraTraImpl.setRuleSequence(RuleSequence)</code>.
  *
  * @author olga
  *
@@ -71,65 +82,46 @@ public class RuleSequence implements GraTraEventListener {
 
     public static final int OBJECT_FLOW_TRANSITIVE_CLOSURE_FAILED = 0;
     public static final int OBJECT_FLOW_PERSISTENT_FAILED = 1;
-
     public static final String TRAFO_BY_OBJECT_FLOW = "trafoByOF";
     public static final String TRAFO_BY_ARS = "trafoByARS";
     @SuppressWarnings("unused")
     private static final String TRAFO_BY_IN_OUT_PARAM = "trafoByIOP";
-
     private String name = "RuleSequence";
     private GraGra gragra;
     private CriticalPairOption cpOption;
     private Graph graph;
-
     private List<Pair<List<Pair<String, String>>, String>> subSequenceList = new Vector<Pair<List<Pair<String, String>>, String>>();
-
     private final Vector<Rule> rules = new Vector<Rule>();
     private final Vector<String> ruleNames = new Vector<String>(); // flattened rule sequence
-
-    private final Pair<Boolean, String> applResult = new Pair<Boolean, String>(new Boolean(false), ApplicabilityConstants.UNDEFINED);
-
-    private final Pair<Boolean, String> nonapplResult = new Pair<Boolean, String>(new Boolean(false), ApplicabilityConstants.UNDEFINED);
-
-    private final Hashtable<String, Pair<Boolean, List<String>>> ruleResults = new Hashtable<String, Pair<Boolean, List<String>>>();
-
+    private final Pair<Boolean, String> applResult = new Pair<Boolean, String>(Boolean.FALSE, ApplicabilityConstants.UNDEFINED);
+    private final Pair<Boolean, String> nonapplResult = new Pair<Boolean, String>(Boolean.FALSE, ApplicabilityConstants.UNDEFINED);
+    private final Map<String, Pair<Boolean, List<String>>> ruleResults = new HashMap<String, Pair<Boolean, List<String>>>();
     final private ApplicabilityChecker checker;
-
     protected boolean checked;
     protected boolean checkAtGraph;
-
-    private final Map<String, List<List<ConcurrentRule>>> concurrentRules = new Hashtable<String, List<List<ConcurrentRule>>>();
+    private final Map<String, List<List<ConcurrentRule>>> concurrentRules = new HashMap<String, List<List<ConcurrentRule>>>();
     // key String is "rule.hashCode:ruleIndex"
-
-    protected final Hashtable<String, ObjectFlow> objectFlow;
-
+    protected final Map<String, ObjectFlow> objectFlow;
     private boolean enabledObjectFlow;
     private boolean completeNodesOF;
     private int objectFlowError = -1;
-
     private boolean trafoByOF, trafoByARS;
-
     private int startIndx;
-
     private boolean usePreviousSequenceResults = true;
-
     protected MatchSequence matchSequence;
 
     public RuleSequence(final GraGra gra, final String name) {
         this.gragra = gra;
         this.name = name;
-
         this.checker = new ApplicabilityChecker(this, this.gragra);
         this.enabledObjectFlow = true;
         this.usePreviousSequenceResults = true;
-
         this.checkAtGraph = true;
         if (this.gragra != null) {
             this.graph = this.gragra.getGraph();
         }
-
         this.subSequenceList = new Vector<Pair<List<Pair<String, String>>, String>>();
-        this.objectFlow = new Hashtable<String, ObjectFlow>();
+        this.objectFlow = new HashMap<String, ObjectFlow>();
         this.matchSequence = new MatchSequence(this);
         this.matchSequence.setObjectFlow(this.objectFlow);
         this.completeNodesOF = false;
@@ -137,7 +129,6 @@ public class RuleSequence implements GraTraEventListener {
 
     public RuleSequence(final GraGra gra, final String name, final CriticalPairOption option) {
         this(gra, name);
-
         this.cpOption = option;
     }
 
@@ -146,7 +137,6 @@ public class RuleSequence implements GraTraEventListener {
             final String name,
             final CriticalPairOption option,
             final List<Pair<List<Pair<String, String>>, String>> ruleSubSequenceList) {
-
         this(gra, name, option);
         this.makeFlatSequence();
     }
@@ -155,7 +145,6 @@ public class RuleSequence implements GraTraEventListener {
             final GraGra gra,
             final String name,
             final List<Pair<List<Pair<String, String>>, String>> ruleSubSequenceList) {
-
         this(gra, name);
         this.makeFlatSequence();
     }
@@ -164,7 +153,7 @@ public class RuleSequence implements GraTraEventListener {
         return !this.objectFlow.isEmpty();
     }
 
-    public Hashtable<String, ObjectFlow> getObjectFlow() {
+    public Map<String, ObjectFlow> getObjectFlow() {
         return this.objectFlow;
     }
 
@@ -200,17 +189,13 @@ public class RuleSequence implements GraTraEventListener {
 
     private void copySubsequenceList(final List<Pair<List<Pair<String, String>>, String>> list) {
         this.subSequenceList.clear();
-
         for (int i = 0; i < list.size(); i++) {
             Pair<List<Pair<String, String>>, String> pseg = list.get(i);
-
             List<Pair<String, String>> sublist = new Vector<Pair<String, String>>();
-
             for (int j = 0; j < pseg.first.size(); j++) {
                 Pair<String, String> pRule = pseg.first.get(j);
                 sublist.add(new Pair<String, String>(pRule.first, pRule.second));
             }
-
             this.subSequenceList.add(
                     new Pair<List<Pair<String, String>>, String>(sublist, pseg.second));
         }
@@ -225,7 +210,6 @@ public class RuleSequence implements GraTraEventListener {
             if (!pseg.second.equals("*")) {
                 seqIters = Integer.valueOf(pseg.second).intValue();
             }
-
             List<Pair<String, String>> rList = pseg.first;
             for (int its = 0; its < seqIters; its++) {
                 for (int j = 0; j < rList.size(); j++) {
@@ -300,7 +284,6 @@ public class RuleSequence implements GraTraEventListener {
 
     public void reinit() {
         this.clearResult();
-
         for (int i = 0; i < this.rules.size(); i++) {
             Rule r = this.rules.get(i);
             if (r.getMatch() != null) {
@@ -308,7 +291,6 @@ public class RuleSequence implements GraTraEventListener {
                 r.setMatch(null);
             }
         }
-
         this.matchSequence.reinit(this);
         this.removeEmptyObjFlow();
     }
@@ -333,13 +315,13 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     private void clearApplResult() {
-        this.applResult.first = new Boolean(false);
+        this.applResult.first = Boolean.FALSE;
         this.applResult.second = ApplicabilityConstants.UNDEFINED;
         this.checked = false;
     }
 
     private void clearNonApplResult() {
-        this.nonapplResult.first = new Boolean(false);
+        this.nonapplResult.first = Boolean.FALSE;
         this.nonapplResult.second = ApplicabilityConstants.UNDEFINED;
         this.checked = false;
     }
@@ -359,7 +341,6 @@ public class RuleSequence implements GraTraEventListener {
     public void setGraph(final Graph g) {
         this.removeObjFlowOfGraph();
         this.clearResult();
-
         this.graph = g;
     }
 
@@ -404,10 +385,8 @@ public class RuleSequence implements GraTraEventListener {
             if (this.startIndx >= 0 && this.startIndx < this.rules.size()) {
                 return this.rules.get(this.startIndx);
             }
-
             return this.rules.get(0);
         }
-
         return null;
     }
 
@@ -416,7 +395,8 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     /**
-     * Returns true if the object flow of <code>this</code> is enabled, otherwise false.
+     * Returns true if the object flow of <code>this</code> is enabled,
+     * otherwise false.
      */
     public boolean isObjFlowEnabled() {
         return this.enabledObjectFlow;
@@ -431,16 +411,15 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     /**
-     * Returns true if its object flow is enabled and not empty, otherwise false.
+     * Returns true if its object flow is enabled and not empty, otherwise
+     * false.
      */
     public boolean isObjFlowActive() {
         return this.enabledObjectFlow && !this.objectFlow.isEmpty();
     }
 
     public boolean isGraphUsedInObjFlow() {
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (keyItems[0].equals("0")) {
                 return true;
@@ -491,20 +470,17 @@ public class RuleSequence implements GraTraEventListener {
                 return true;
             }
         }
-
         return false;
     }
 
     public void addRule(final Rule r) {
         this.rules.add(r);
         this.ruleNames.add(r.getName());
-
         if (this.subSequenceList.isEmpty()) {
             List<Pair<String, String>> l = new Vector<Pair<String, String>>();
             Pair<List<Pair<String, String>>, String> p = new Pair<List<Pair<String, String>>, String>(l, "1");
             this.subSequenceList.add(p);
         }
-
         this.subSequenceList.get(0).first.add(new Pair<String, String>(r.getName(), "1"));
     }
 
@@ -676,7 +652,6 @@ public class RuleSequence implements GraTraEventListener {
             } else if (grpRules.size() > 1 || grpIters > 1) {
                 grpStr = grpStr.concat(")");
             }
-
             if (grpRules.size() > 0) {
                 if (grpItersStr.equals("*")) {
                     grpStr = grpStr.concat("{");
@@ -691,11 +666,9 @@ public class RuleSequence implements GraTraEventListener {
             grpStr = grpStr.concat("\n");
             text = text.concat(grpStr);
         }
-
         if (this.graph != null) {
             text = this.graph.getName().concat(" <= ").concat(text);
         }
-
         return text;
     }
 
@@ -739,7 +712,6 @@ public class RuleSequence implements GraTraEventListener {
         if (indx >= 0 && indx < this.rules.size()) {
             Rule r = this.rules.get(indx);
             removeObjFlowOfRule(r, indx);
-
             this.rules.remove(indx);
             this.ruleNames.remove(indx);
             this.clearResult();
@@ -749,12 +721,9 @@ public class RuleSequence implements GraTraEventListener {
     public void removeRule(final Rule r) {
         if (this.rules.contains(r)) {
             int indx = this.rules.indexOf(r);
-
             removeObjFlowOfRule(r, indx);
-
             this.rules.remove(r);
             this.ruleNames.remove(indx);
-
             this.clearResult();
         }
     }
@@ -764,34 +733,32 @@ public class RuleSequence implements GraTraEventListener {
         if (this.graph != null) {
             ind++;
         }
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        Iterator<String> keys = this.objectFlow.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = keys.next();
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == ind
                     || Integer.valueOf(keyItems[1]).intValue() == ind) {
                 this.objectFlow.remove(key);
-
-                keys = this.objectFlow.keys();
+                keys = this.objectFlow.keySet().iterator();
                 break;
             }
         }
     }
 
     /**
-     * Creates a new RuleSequence as a copy of the current RuleSequence instance inclusive its object flow and
-     * applicability resp. non-applicability results. In case when the new copied sequence will be extended the start
+     * Creates a new RuleSequence as a copy of the current RuleSequence instance
+     * inclusive its object flow and applicability resp. non-applicability
+     * results. In case when the new copied sequence will be extended the start
      * index of check should be set to the index of the first added rule:
      * <code>copiedSeq.setStartIndexOfCheck(indxOfExtention)</code>
      *
      */
     public RuleSequence getCopy() {
-
         final RuleSequence seq = new RuleSequence(
                 this.gragra,
                 this.name.concat("_copy"),
                 this.cpOption);
-
         seq.setCriticalPairOption(this.cpOption);
         seq.setRules(this.getRules().iterator());
         seq.setGraph(this.graph);
@@ -802,23 +769,18 @@ public class RuleSequence implements GraTraEventListener {
         seq.copyObjFlow(this.getObjectFlow());
         seq.enableCompleteObjFlowOfNodes(this.completeNodesOF);
         seq.tryToApplyResultsOfRuleSequence(this);
-
         return seq;
     }
 
-    private void copyObjFlow(final Hashtable<String, ObjectFlow> objFlow) {
-        Enumeration<String> keys = objFlow.keys();
-        while (keys.hasMoreElements()) {
-            final String k = keys.nextElement();
+    private void copyObjFlow(final Map<String, ObjectFlow> objFlow) {
+        for (final String k : objFlow.keySet()) {
             final ObjectFlow flow = objFlow.get(k);
-
             final ObjectFlow f = new ObjectFlow(
                     flow.srcOfOutput,
                     flow.srcOfInput,
                     flow.indxOfOutput,
                     flow.indxOfInput,
-                    new Hashtable<Object, Object>(flow.outputInputMap));
-
+                    new HashMap<Object, Object>(flow.outputInputMap));
             this.objectFlow.put(k, f);
         }
     }
@@ -835,7 +797,6 @@ public class RuleSequence implements GraTraEventListener {
     private void move(final Rule r, final int from, final int to) {
         this.rules.remove(from);
         this.ruleNames.remove(from);
-
         this.rules.add(to, r);
         this.ruleNames.add(to, r.getName());
     }
@@ -861,8 +822,9 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     /**
-     * If the specified parameter is true, only maximal intersection of rhs and lhs of base rules is taken into account
-     * for building a concurrent rule, otherwise all possible intersections are used.
+     * If the specified parameter is true, only maximal intersection of rhs and
+     * lhs of base rules is taken into account for building a concurrent rule,
+     * otherwise all possible intersections are used.
      */
     public void setCompleteConcurrency(boolean b) {
         this.checker.setCompleteConcurrency(b);
@@ -883,7 +845,6 @@ public class RuleSequence implements GraTraEventListener {
     public void setCompleteCPAOfConcurrency(boolean b) {
         this.checker.setCompleteCPAOfConcurrency(b);
     }
-
 //	public void setConsistentConcurrency(boolean b) {
 //		this.checker.setConsistentConcurrency(b);
 //	}
@@ -891,15 +852,18 @@ public class RuleSequence implements GraTraEventListener {
 //	public boolean getConsistentConcurrency() {
 //		return this.checker.getConsistentConcurrency();
 //	}
+
     /**
-     * Set the value of the local variable for checking the dangling edge condition when a rule is node-deleting.
+     * Set the value of the local variable for checking the dangling edge
+     * condition when a rule is node-deleting.
      */
     public void setIgnoreDanglingEdgeOfDelNode(boolean b) {
         this.checker.setIgnoreDanglingEdgeOfDelNode(b);
     }
 
     /**
-     * Returns the value of the local variable for checking the dangling edge condition when a rule is node-deleting.
+     * Returns the value of the local variable for checking the dangling edge
+     * condition when a rule is node-deleting.
      */
     public boolean getIgnoreDanglingEdgeOfDelNode() {
         return this.checker.getIgnoreDanglingEdgeOfDelNode();
@@ -909,22 +873,22 @@ public class RuleSequence implements GraTraEventListener {
      * Checks the current rule sequence. Do not forget to call
      * <code>this.setCriticalPairOption(CriticalPairOption)</code> before.
      *
-     * This method starts with checking of validity of the defined object flow of this sequence. Use the method
+     * This method starts with checking of validity of the defined object flow
+     * of this sequence. Use the method
      * <code>int getMessageOfInvalidObjectFlow</code> to get the error message:
      * <code>RuleSequence.OBJECT_FLOW_TRANSITIVE_CLOSURE_FAILED = 0</code>
-     * <code>RuleSequence.OBJECT_FLOW_PERSISTENT_FAILED = 1</code>, otherwise (-1). When the object flow is valid or not
-     * defined the applicability criteria will be checked.
+     * <code>RuleSequence.OBJECT_FLOW_PERSISTENT_FAILED = 1</code>, otherwise
+     * (-1). When the object flow is valid or not defined the applicability
+     * criteria will be checked.
      */
     public boolean check() {
         if (this.checked) {
             this.reinit();
             this.matchSequence.reinit(this);
         }
-
         if (!this.isObjFlowValid()) {
             return false;
         }
-
 //		this.tryCompleteObjFlowTransClosure();
         boolean result = this.checker.check();
         this.checked = true;
@@ -963,7 +927,6 @@ public class RuleSequence implements GraTraEventListener {
             XMLHelper xmlh = new XMLHelper();
             xmlh.addTopObject(this.gragra);
             xmlh.save_to_xml(aname);
-
             //remove concurrent rules from grammar
             for (int i = 0; i < nn; i++) {
                 int indx = this.gragra.getListOfRules().size() - 1;
@@ -972,7 +935,7 @@ public class RuleSequence implements GraTraEventListener {
         }
     }
 
-    public Hashtable<String, Pair<Boolean, List<String>>> getRuleResults() {
+    public Map<String, Pair<Boolean, List<String>>> getRuleResults() {
         return this.ruleResults;
     }
 
@@ -980,7 +943,6 @@ public class RuleSequence implements GraTraEventListener {
             final int indx,
             final String ruleName,
             final String criterion) {
-
         String key = this.makeRuleKey(indx, ruleName, criterion);
 //		System.out.println("\nRuleSequence.getRuleResult   "+key+"   "+this.ruleResults.get(key));
         return this.ruleResults.get(key);
@@ -1081,8 +1043,7 @@ public class RuleSequence implements GraTraEventListener {
     public void setApplicabilityResult(final boolean result, final String criterion) {
         if (ApplicabilityConstants.UNDEFINED.equals(this.applResult.second)
                 || (this.applResult.first.booleanValue() && !result)) {
-
-            this.applResult.first = new Boolean(result);
+            this.applResult.first = Boolean.valueOf(result);
             this.applResult.second = criterion;
         }
     }
@@ -1092,7 +1053,7 @@ public class RuleSequence implements GraTraEventListener {
 		if (ApplicabilityConstants.UNDEFINED.equals(this.nonapplResult.second)
 				|| (this.nonapplResult.first.booleanValue() && !result)) {
 			
-			this.nonapplResult.first = new Boolean(result);
+			this.nonapplResult.first = Boolean.valueOf(result);
 			this.nonapplResult.second = criterion;
 		}
 	}
@@ -1100,8 +1061,7 @@ public class RuleSequence implements GraTraEventListener {
     public void setNonApplicabilityResult(final boolean result, final String criterion) {
         if (ApplicabilityConstants.UNDEFINED.equals(this.nonapplResult.second)
                 || (!this.nonapplResult.first.booleanValue() && result)) {
-
-            this.nonapplResult.first = new Boolean(result);
+            this.nonapplResult.first = Boolean.valueOf(result);
             this.nonapplResult.second = criterion;
         }
     }
@@ -1117,14 +1077,13 @@ public class RuleSequence implements GraTraEventListener {
         }
     }
 
-    public boolean containsObjFlow(final Hashtable<String, ObjectFlow> objFlow) {
+    public boolean containsObjFlow(final Map<String, ObjectFlow> objFlow) {
         List<Object> keys1 = new Vector<Object>(this.objectFlow.keySet());
         List<Object> keys2 = new Vector<Object>(objFlow.keySet());
         if ((keys1.isEmpty() && !keys2.isEmpty())
                 || (!keys1.isEmpty() && keys2.isEmpty())) {
             return false;
         }
-
         if (keys1.containsAll(keys2)) {
             for (int i = 0; i < keys2.size(); i++) {
                 final ObjectFlow flow2 = objFlow.get(keys2.get(i));
@@ -1144,21 +1103,20 @@ public class RuleSequence implements GraTraEventListener {
         if (this.ruleNames.size() < ruleList.size()) {
             return false;
         }
-
         for (int i = 0; i < ruleList.size(); i++) {
             if (!ruleList.get(i).equals(this.ruleNames.get(i))) {
                 return false;
             }
         }
-
         return true;
     }
 
     /**
-     * Returns true when these three conditions are satisfied : 1) the graph (name) of this sequence is equal to the
-     * graph (name) of the specified sequence or both graphs are undefined, 2) the rule list of this sequence extends
-     * the rule list of the specified sequence, 3) this sequence contains the object flow of the specified sequence,
-     * otherwise - false.
+     * Returns true when these three conditions are satisfied : 1) the graph
+     * (name) of this sequence is equal to the graph (name) of the specified
+     * sequence or both graphs are undefined, 2) the rule list of this sequence
+     * extends the rule list of the specified sequence, 3) this sequence
+     * contains the object flow of the specified sequence, otherwise - false.
      *
      */
     public boolean extendsRuleSequence(final RuleSequence ruleSeq) {
@@ -1167,18 +1125,19 @@ public class RuleSequence implements GraTraEventListener {
                 || (this.graph == null && ruleSeq.getGraph() == null))
                 && this.extendsRuleList(ruleSeq.getRuleNames())
                 && this.containsObjFlow(ruleSeq.getObjectFlow())) {
-
             return true;
         }
         return false;
     }
 
     /**
-     * When results of the specified rule sequence, which is already checked, are applied, returns the index of the next
-     * rule to check, otherwise - 0;
+     * When results of the specified rule sequence, which is already checked,
+     * are applied, returns the index of the next rule to check, otherwise - 0;
      *
-     * The specified rule sequence must be : - shorter then current sequence, - all its rules in given order are at
-     * beginning of the current sequence, - using the same host graph, - using similar object flow, - already checked.
+     * The specified rule sequence must be : - shorter then current sequence, -
+     * all its rules in given order are at beginning of the current sequence, -
+     * using the same host graph, - using similar object flow, - already
+     * checked.
      *
      */
     public int tryToApplyResultsOfRuleSequence(final RuleSequence ruleSeq) {
@@ -1191,28 +1150,21 @@ public class RuleSequence implements GraTraEventListener {
                 && this.getDepthOfConcurrentRule() == ruleSeq.getDepthOfConcurrentRule()
                 && this.getCompleteConcurrency() == ruleSeq.getCompleteConcurrency()
                 && this.getCompleteCPAOfConcurrency() == ruleSeq.getCompleteCPAOfConcurrency()) {
-
-            final Hashtable<String, Pair<Boolean, List<String>>> table = ruleSeq.getRuleResults();
-            Enumeration<String> keys = table.keys();
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
+            final Map<String, Pair<Boolean, List<String>>> table = ruleSeq.getRuleResults();
+            for (String key : table.keySet()) {
                 Pair<Boolean, List<String>> p = table.get(key);
                 Pair<Boolean, List<String>> p1 = new Pair<Boolean, List<String>>(
                         Boolean.valueOf(p.first.booleanValue()),
                         new Vector<String>(p.second));
                 this.getRuleResults().put(key, p1);
             }
-
             final Pair<Boolean, String> applRes = ruleSeq.getApplicabilityResult();
             this.applResult.first = applRes.first;
             this.applResult.second = applRes.second;
-
             final Pair<Boolean, String> nonapplRes = ruleSeq.getNonApplicabilityResult();
             this.nonapplResult.first = nonapplRes.first;
             this.nonapplResult.second = nonapplRes.second;
-
             tryToApplyDoneMatchesOfRuleSequence(ruleSeq);
-
             res = ruleSeq.getRules().size();
         }
         return res;
@@ -1223,11 +1175,9 @@ public class RuleSequence implements GraTraEventListener {
         for (int i = 0; i < otherRules.size(); i++) {
             final Rule r = otherRules.get(i);
             final Rule preRule = (i == 0) ? null : otherRules.get(i - 1);
-
-            final Hashtable<GraphObject, GraphObject> match = new Hashtable<GraphObject, GraphObject>(ruleSeq.matchSequence.matches.get(i));
+            final Map<GraphObject, GraphObject> match = new HashMap<GraphObject, GraphObject>(ruleSeq.matchSequence.matches.get(i));
             this.matchSequence.matches.add(match);
             this.matchSequence.rules.add(r);
-
             if (preRule != null) {
                 if (ruleSeq.matchSequence.imgObj2Rule.get(Integer.valueOf(i - 1)) != null) {
                     this.matchSequence.imgObj2Rule.put(Integer.valueOf(i - 1), preRule);
@@ -1242,34 +1192,28 @@ public class RuleSequence implements GraTraEventListener {
         }
     }
 
-    public Hashtable<GraphObject, GraphObject> getInput2outputMapIntoGraphAbovePreRule(
+    public Map<GraphObject, GraphObject> getInput2outputMapIntoGraphAbovePreRule(
             final Rule targetRule,
             int targetIndx,
             final List<ObjectFlow> targetObjFlowList,
             final Rule rule,
             int ruleIndx,
-            final Hashtable<GraphObject, GraphObject> input2postInput,
+            final Map<GraphObject, GraphObject> input2postInput,
             final Graph g) {
-
-        final Hashtable<GraphObject, GraphObject> map = new Hashtable<GraphObject, GraphObject>();
+        final Map<GraphObject, GraphObject> map = new HashMap<GraphObject, GraphObject>();
         final Rule preRule = this.getRule(ruleIndx - 1);
         if (preRule != null) {
             final List<ObjectFlow> preObjFlowList = this.getObjFlowForRule(preRule, ruleIndx - 1);
             if (preObjFlowList.isEmpty()) {
                 return map;
             }
-
             boolean alreadyChecked = (rule == targetRule);
-
             List<ObjectFlow> objFlowList = this.getObjFlowForRule(rule, ruleIndx);
-
             if (objFlowList.isEmpty() && rule != targetRule) {
                 objFlowList = targetObjFlowList;
                 alreadyChecked = true;
             }
-
             boolean done = reflectObjFlow(preObjFlowList, objFlowList, map, input2postInput, g);
-
             if (!done && !alreadyChecked) {
                 objFlowList = targetObjFlowList;
                 reflectObjFlow(preObjFlowList, objFlowList, map, input2postInput, g);
@@ -1281,23 +1225,19 @@ public class RuleSequence implements GraTraEventListener {
     private boolean reflectObjFlow(
             final List<ObjectFlow> preObjFlowList,
             final List<ObjectFlow> objFlowList,
-            final Hashtable<GraphObject, GraphObject> map,
-            final Hashtable<GraphObject, GraphObject> input2postInput,
+            final Map<GraphObject, GraphObject> map,
+            final Map<GraphObject, GraphObject> input2postInput,
             final Graph g) {
-
         boolean result = false;
         if (!objFlowList.isEmpty()) {
             if (!preObjFlowList.isEmpty()) {
                 for (int i = 0; i < objFlowList.size(); i++) {
                     ObjectFlow objFlow = objFlowList.get(i);
-
                     List<Object> inputObjs = objFlow.getInputs();
                     for (int k = 0; k < inputObjs.size(); k++) {
                         GraphObject inObj = (GraphObject) inputObjs.get(k);
-
                         for (int j = 0; j < preObjFlowList.size(); j++) {
                             ObjectFlow preObjFlow = preObjFlowList.get(j);
-
                             GraphObject connectedInObj = (GraphObject) objFlow.getConnectedInput(preObjFlow, inObj);
                             GraphObject connectedOutObj = (GraphObject) objFlow.getConnectedOutput(preObjFlow, inObj);
                             if (connectedOutObj != null) {
@@ -1325,35 +1265,28 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     //TODO: to optimize
-    public Hashtable<GraphObject, GraphObject> getReflectedObjectFlowOfGraphAndPreRule(
+    public Map<GraphObject, GraphObject> getReflectedObjectFlowOfGraphAndPreRule(
             final ConcurrentRule cr,
             final List<ObjectFlow> targetObjFlowList,
             final Rule rule,
             int ruleIndx,
-            final Hashtable<GraphObject, GraphObject> input2postInput,
+            final Map<GraphObject, GraphObject> input2postInput,
             final Graph g) {
-
-        final Hashtable<GraphObject, GraphObject> map = new Hashtable<GraphObject, GraphObject>();
-
+        final Map<GraphObject, GraphObject> map = new HashMap<GraphObject, GraphObject>();
         final Rule preRule = this.getRule(ruleIndx - 1);
         if (preRule != null) {
             final List<ObjectFlow> preObjFlowList = this.getObjFlowForRule(preRule, ruleIndx - 1);
             if (preObjFlowList.isEmpty()) {
                 return map;
             }
-
             boolean alreadyChecked = false;
-
             List<ObjectFlow> objFlowList = this.getObjFlowForRule(rule, ruleIndx);
-
             if (objFlowList.isEmpty()) {
                 objFlowList = targetObjFlowList;
                 alreadyChecked = true;
             }
-
             boolean done = reflectObjFlow(cr, preRule, preObjFlowList, objFlowList,
                     map, input2postInput, g);
-
             if (!done && !alreadyChecked) {
                 objFlowList = targetObjFlowList;
                 reflectObjFlow(cr, preRule, preObjFlowList, objFlowList,
@@ -1364,13 +1297,13 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     public void removeEmptyObjFlow() {
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        Iterator<String> keys = this.objectFlow.keySet().iterator();
+        while (keys.hasNext()) {
+            String key = keys.next();
             ObjectFlow objFlow = this.objectFlow.get(key);
             if (objFlow.isEmpty()) {
                 this.objectFlow.remove(key);
-                keys = this.objectFlow.keys();
+                keys = this.objectFlow.keySet().iterator();
             }
         }
     }
@@ -1380,35 +1313,28 @@ public class RuleSequence implements GraTraEventListener {
             final Rule preRule,
             final List<ObjectFlow> preObjFlowList,
             final List<ObjectFlow> objFlowList,
-            final Hashtable<GraphObject, GraphObject> map,
-            final Hashtable<GraphObject, GraphObject> input2postInput,
+            final Map<GraphObject, GraphObject> map,
+            final Map<GraphObject, GraphObject> input2postInput,
             final Graph g) {
-
         boolean result = false;
         if (!objFlowList.isEmpty()
                 && !preObjFlowList.isEmpty()) {
             for (int i = 0; i < objFlowList.size(); i++) {
                 ObjectFlow objFlow = objFlowList.get(i);
-                Hashtable<Object, Object> outInMap = objFlow.getMapping();
-                Enumeration<Object> outs = outInMap.keys();
-                while (outs.hasMoreElements()) {
-                    Object out = outs.nextElement();
+                Map<Object, Object> outInMap = objFlow.getMapping();
+                for (Object out : outInMap.keySet()) {
                     if (out instanceof GraphObject
                             && preRule.getRight().isElement((GraphObject) out)) {
                         Iterator<GraphObject> inverse = preRule.getInverseImage((GraphObject) out);
                         while (inverse.hasNext()) {
                             GraphObject prein = inverse.next();
-
                             for (int j = 0; j < preObjFlowList.size(); j++) {
                                 ObjectFlow preObjFlow = preObjFlowList.get(j);
-                                Hashtable<Object, Object> preOutInMap = preObjFlow.getMapping();
-                                Enumeration<Object> preOuts = preOutInMap.keys();
-                                while (preOuts.hasMoreElements()) {
-                                    Object preOut = preOuts.nextElement();
+                                Map<Object, Object> preOutInMap = preObjFlow.getMapping();
+                                for (Object preOut : preOutInMap.keySet()) {
                                     if (preOut instanceof GraphObject
                                             && (prein == preObjFlow.getMapping().get(preOut))) {
                                         GraphObject inObj = (GraphObject) objFlow.getMapping().get(out);
-
                                         GraphObject crInObj = cr.getLeftEmbedding(inObj);
                                         if (crInObj != null) {
                                             if (g.isElement((GraphObject) preOut)) {
@@ -1463,13 +1389,13 @@ public class RuleSequence implements GraTraEventListener {
     public void removeObjFlowOfGraph() {
         // remove graph outputs from object flow
         if (this.graph != null) {
-            Enumeration<String> keys = this.objectFlow.keys();
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
+            Iterator<String> keys = this.objectFlow.keySet().iterator();
+            while (keys.hasNext()) {
+                String key = keys.next();
                 String[] keyItems = key.split(":");
                 if (keyItems[0].equals("0")) {
                     this.objectFlow.remove(key);
-                    keys = this.objectFlow.keys();
+                    keys = this.objectFlow.keySet().iterator();
                 }
             }
         }
@@ -1480,7 +1406,8 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     /**
-     * Returns an object flow which is defined for the given rule r1 as output and the rule r2 as input.
+     * Returns an object flow which is defined for the given rule r1 as output
+     * and the rule r2 as input.
      *
      * @param r1	output of an object flow
      * @param indx_r1 index in the rule sequence
@@ -1494,10 +1421,7 @@ public class RuleSequence implements GraTraEventListener {
             i1++;
             i2++;
         }
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
-
+        for (String key : this.objectFlow.keySet()) {
             ObjectFlow objFlow = this.objectFlow.get(key);
             if (objFlow.getSourceOfOutput() == r1
                     && objFlow.getIndexOfOutput() == i1
@@ -1514,11 +1438,8 @@ public class RuleSequence implements GraTraEventListener {
         if (this.graph == null) {
             return null;
         }
-
         i++;
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
 //			System.out.println(key);
             ObjectFlow objFlow = this.objectFlow.get(key);
             if (objFlow.getSourceOfOutput() == this.graph
@@ -1541,15 +1462,11 @@ public class RuleSequence implements GraTraEventListener {
         if (indx < 0) {
             return list;
         }
-
         int i = indx;
         if (this.graph != null) {
             i++;
         }
-
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[1]).intValue() == i) {
                 list.add(this.objectFlow.get(key));
@@ -1560,11 +1477,8 @@ public class RuleSequence implements GraTraEventListener {
 
     public List<ObjectFlow> getObjFlowFromGraph() {
         final List<ObjectFlow> list = new Vector<ObjectFlow>();
-
         if (this.graph != null) {
-            Enumeration<String> keys = this.objectFlow.keys();
-            while (keys.hasMoreElements()) {
-                String key = keys.nextElement();
+            for (String key : this.objectFlow.keySet()) {
                 String[] keyItems = key.split(":");
                 if (Integer.valueOf(keyItems[0]).intValue() == 0) {
                     list.add(this.objectFlow.get(key));
@@ -1579,15 +1493,11 @@ public class RuleSequence implements GraTraEventListener {
         if (indx < 0) {
             return list;
         }
-
         int i = indx;
         if (this.graph != null) {
             i++;
         }
-
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == i) {
                 list.add(this.objectFlow.get(key));
@@ -1600,16 +1510,12 @@ public class RuleSequence implements GraTraEventListener {
         if (indx < 0) {
             return 0;
         }
-
         int i = indx;
         if (this.graph != null) {
             i++;
         }
-
         int size = 0;
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[1]).intValue() == i) {
                 size = size + this.objectFlow.get(key).getSizeOfInput();
@@ -1635,9 +1541,7 @@ public class RuleSequence implements GraTraEventListener {
 			return list;
 		}
 		
-		Enumeration<String> keys = this.objectFlow.keys();
-		while (keys.hasMoreElements()) {
-			String key = keys.nextElement();
+		for (String key : this.objectFlow.keySet()) {
 			String[] keyItems  = key.split(":");
 			if (Integer.valueOf(keyItems[0]).intValue() == itsIndx
 					&& this.objectFlow.get(key).getSourceOfOutput() == outputSource) {
@@ -1657,9 +1561,7 @@ public class RuleSequence implements GraTraEventListener {
         if (itsIndx < 0) {
             return list;
         }
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == itsIndx
                     && this.objectFlow.get(key).getSourceOfOutput() == outputSource) {
@@ -1675,14 +1577,10 @@ public class RuleSequence implements GraTraEventListener {
             int itsIndx,
             final GraphObject out,
             final Rule r2) {
-
         if (itsIndx < 0) {
             return null;
         }
-
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == itsIndx
                     && this.objectFlow.get(key).getSourceOfOutput() == ouputSource
@@ -1696,24 +1594,17 @@ public class RuleSequence implements GraTraEventListener {
     private List<GraphObject> getOutputObjsOfOutput(
             final Object output,
             int itsIndx) {
-
         final List<GraphObject> list = new Vector<GraphObject>();
         if (itsIndx < 0) {
             return list;
         }
-
-        final Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+        for (String key : this.objectFlow.keySet()) {
             String[] keyItems = key.split(":");
             if (Integer.valueOf(keyItems[0]).intValue() == itsIndx
                     && this.objectFlow.get(key).getSourceOfOutput() == output) {
-
                 final ObjectFlow objFlow = this.objectFlow.get(key);
                 if (objFlow.getSourceOfOutput() == output) {
-                    final Enumeration<Object> outputs = objFlow.getMapping().keys();
-                    while (outputs.hasMoreElements()) {
-                        final Object obj = outputs.nextElement();
+                    for (final Object obj : objFlow.getMapping().keySet()) {
                         if (!list.contains(obj)) {
                             list.add((GraphObject) obj);
                         }
@@ -1729,22 +1620,17 @@ public class RuleSequence implements GraTraEventListener {
             int itsIndx,
             final GraphObject outObj,
             final List<Triple<GraphObject, Rule, Integer>> closures) {
-
         if (itsIndx < 0) {
             return;
         }
-
         final List<Pair<Rule, Integer>> nextRule = this.getNextRuleOfObjFlow(outputSource, itsIndx);
-
         for (int r = 0; r < nextRule.size(); r++) {
             final Pair<Rule, Integer> pair = nextRule.get(r);
             final Rule rule = pair.first;
-
             final GraphObject inputObj = getConnectedInputForOutput(
                     outputSource, itsIndx, outObj, rule);
             if (inputObj != null) {
                 closures.add(new Triple<GraphObject, Rule, Integer>(inputObj, rule, pair.second));
-
                 final GraphObject rhsObj = rule.getImage(inputObj);
                 if (rhsObj != null) {
                     getClosuresOfObjFlow(rule, pair.second.intValue(), rhsObj, closures);
@@ -1758,8 +1644,9 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     /**
-     * Returns <code>true</code> if the transitive closure of the object flow for this rule sequence exists and the
-     * object flow is persistent, otherwise <code>false</code>.
+     * Returns <code>true</code> if the transitive closure of the object flow
+     * for this rule sequence exists and the object flow is persistent,
+     * otherwise <code>false</code>.
      *
      * @see #getMessageOfInvalidObjectFlow() for error kind like:
      * <code> RuleSequence.OBJECT_FLOW_TRANSITIVE_CLOSURE_FAILED</code> or
@@ -1772,29 +1659,23 @@ public class RuleSequence implements GraTraEventListener {
             if (this.graph != null) {
                 tmp.add(0, this.graph);
             }
-
             boolean closureOK = true;
             for (int i = 0; i < tmp.size() && closureOK; i++) {
                 final Object outputSource = tmp.get(i);
-
                 final List<GraphObject> rOutputs = getOutputObjsOfOutput(outputSource, i);
                 if (rOutputs.isEmpty()) {
                     continue;
                 }
-
                 for (int j = 0; j < rOutputs.size() && closureOK; j++) {
                     final GraphObject outObj = rOutputs.get(j);
 //					System.out.println("\n  out object: "+outObj);
-
                     final List<Triple<GraphObject, Rule, Integer>> closures = new Vector<Triple<GraphObject, Rule, Integer>>();
-
                     // collect recursively closure input objects of an output object
                     // outputSource - Graph or Rule
                     // i - index of this rule sequence
                     // outObj - GraphObject as output
                     // closures - container to fill
                     getClosuresOfObjFlow(outputSource, i, outObj, closures);
-
                     if (!this.isObjFlowTransitive(closures)) {
                         this.objectFlowError = RuleSequence.OBJECT_FLOW_TRANSITIVE_CLOSURE_FAILED;
                         closureOK = false;
@@ -1806,12 +1687,12 @@ public class RuleSequence implements GraTraEventListener {
             }
             return closureOK;
         }
-
         return true;
     }
 
     /**
-     * Checks whether the transitive closure of the object flow for this rule sequence exists.
+     * Checks whether the transitive closure of the object flow for this rule
+     * sequence exists.
      */
     private boolean isObjFlowTransitive(
             final List<Triple<GraphObject, Rule, Integer>> closures) {
@@ -1833,7 +1714,6 @@ public class RuleSequence implements GraTraEventListener {
 
     public void tryCompleteObjFlowTransClosure() {
         tryCompleteArcsOF();
-
         final Vector<Object> tmp = new Vector<Object>(this.rules);
         boolean withGraph = false;
         if (this.graph != null) {
@@ -1842,7 +1722,6 @@ public class RuleSequence implements GraTraEventListener {
             }
             withGraph = true;
         }
-
         completeNodeTC(tmp, withGraph);
         completeNodeTC1(tmp, withGraph);
     }
@@ -1873,14 +1752,12 @@ public class RuleSequence implements GraTraEventListener {
             final Object outSrc = tmp.get(i);
             int j = i + 1;
             final Object inSrc = tmp.get(j);
-
             ObjectFlow of = null;
             if (outSrc instanceof Rule) {
                 of = this.getObjFlowForRules((Rule) outSrc, i + c, (Rule) inSrc, j + c);
             } else if (outSrc instanceof Graph) {
                 of = this.getObjFlowForGraphAndRule((Rule) inSrc, j + c);
             }
-
             if (of != null && i >= 1
                     && tmp.get(i - 1) instanceof Rule) {
                 Iterator<GraphObject> elems = ((Rule) inSrc).getLeft().iteratorOfElems();
@@ -1928,22 +1805,18 @@ public class RuleSequence implements GraTraEventListener {
             final Object inSrc,
             int inIndx,
             final List<Object> tmp) {
-
         ObjectFlow of = null;
         int c = 0;
         if (this.graph != null && tmp.get(0) == this.graph) {
             c--;
         }
-
         for (int i = tmp.size() - 1; i >= 0; i--) {
             final Object outSrc = tmp.get(i);
-
             if (outSrc instanceof Rule) {
                 of = this.getObjFlowForRules((Rule) outSrc, i + c, (Rule) inSrc, inIndx + c);
             } else if (outSrc instanceof Graph) {
                 of = this.getObjFlowForGraphAndRule((Rule) inSrc, inIndx + c);
             }
-
             GraphObject go_out = null;
             if (outSrc instanceof Rule) {
                 List<GraphObject> objs = ((Rule) outSrc).getElementsToCreate();
@@ -1986,7 +1859,6 @@ public class RuleSequence implements GraTraEventListener {
             Rule r_in,
             int i,
             boolean withGraph) {
-
         int c = withGraph ? -1 : 0;
         Iterator<GraphObject> en = r_in.getInverseImage(go_out);
         if (en.hasNext()) {
@@ -2005,7 +1877,6 @@ public class RuleSequence implements GraTraEventListener {
             final Rule r_in1, int i1,
             final Rule r_in2, int i2,
             boolean withGraph) {
-
         int c = withGraph ? -1 : 0;
         if (i2 > i1) {
             ObjectFlow of1 = this.getObjFlowForRules(r_out, j + c, r_in1, i1 + c);
@@ -2071,9 +1942,8 @@ public class RuleSequence implements GraTraEventListener {
     }
 
     private void tryCompleteArcsOF() {
-        Enumeration<String> keys = this.objectFlow.keys();
-        while (keys.hasMoreElements()) {
-            ObjectFlow of = this.objectFlow.get(keys.nextElement());
+        for (String key : this.objectFlow.keySet()) {
+            ObjectFlow of = this.objectFlow.get(key);
             int indxR1 = of.getIndexOfOutput();
             if (this.graph != null) {
                 indxR1--;
@@ -2187,7 +2057,6 @@ public class RuleSequence implements GraTraEventListener {
 
     private boolean isObjFlowPersistent(
             final List<Triple<GraphObject, Rule, Integer>> closures) {
-
         for (int k = 0; k < closures.size() - 1; k++) {
             Triple<GraphObject, Rule, Integer> triple = closures.get(k);
             GraphObject go1 = triple.first;
@@ -2220,7 +2089,7 @@ public class RuleSequence implements GraTraEventListener {
 
     public static void printObjFlow(final RuleSequence currentSequence) {
         System.out.println();
-        final Hashtable<String, ObjectFlow> objectFlows = currentSequence.getObjectFlow();
+        final Map<String, ObjectFlow> objectFlows = currentSequence.getObjectFlow();
         for (int i = 0; i <= currentSequence.getRules().size() - 1; i++) {
             for (int j = i + 1; j <= currentSequence.getRules().size(); j++) {
                 ObjectFlow of = objectFlows.get(i + ":" + j);

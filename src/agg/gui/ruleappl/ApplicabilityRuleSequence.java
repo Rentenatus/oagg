@@ -1,12 +1,12 @@
 /**
- **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 /**
  *
@@ -21,12 +21,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-
 import agg.editor.impl.EdGraGra;
 import agg.gui.AGGAppl;
 import agg.gui.event.TreeViewEvent;
@@ -49,27 +47,22 @@ public class ApplicabilityRuleSequence implements
         TreeViewEventListener {
 
     private final static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
 //	private AGGAppl parent;
     private Vector<JMenu> menus;
     private JMenu arsMenu;
     private JMenuItem validateARS, loadARS;
 //	private JMenuItem startARS, stopARS, saveARS, showARS;
-
     protected ApplRuleSequence ars;
     protected ApplRuleSequenceDialog arsGUI;
     protected ApplicabilityAtGraphResultTable arsAtGraphResultTable;
     protected ApplicabilityWithoutGraphResultTable arsWioGraphResultTable;
-
     protected GraGraTreeView gragraTree;
     protected EdGraGra gragra;
     protected CriticalPairOption cpOption;
-
     protected String graphName = "NULL";
     protected JFileChooser chooser;
     protected String dirName = "";
     protected String fileName;
-
     private int d = -50;
 
     public ApplicabilityRuleSequence(final AGGAppl appl,
@@ -78,10 +71,8 @@ public class ApplicabilityRuleSequence implements
 //		this.parent = appl;
         this.gragraTree = graTreeView;
         this.cpOption = cpOption;
-
         this.menus = new Vector<JMenu>(2);
         createApplRuleSequnceMenu();
-
         this.ars = new ApplRuleSequence(this.cpOption);
         this.arsGUI = new ApplRuleSequenceDialog(appl, this, new Point(100, 10));
         this.arsAtGraphResultTable = new ApplicabilityAtGraphResultTable(this.ars);
@@ -134,7 +125,6 @@ public class ApplicabilityRuleSequence implements
         if (this.gragra == null) {
             this.gragra = this.gragraTree.getGraGra();
         }
-
         return this.gragra;
     }
 
@@ -209,10 +199,8 @@ public class ApplicabilityRuleSequence implements
         /* create Critical pair menu */
         this.arsMenu = new JMenu("Applicability of Rule Sequence");
 //		arsMenu.setMnemonic('S');
-
         makeValidateMenu();
         makeLoadMenu();
-
         this.menus.addElement(this.arsMenu);
     }
 
@@ -227,23 +215,18 @@ public class ApplicabilityRuleSequence implements
                             && ApplicabilityRuleSequence.this.gragraTree.getCurrentGraGra().getBasisGraGra() != ApplicabilityRuleSequence.this.ars.getGraGra()) {
                         ApplicabilityRuleSequence.this.arsGUI.loadWarning();
                     }
-
                     if (ApplicabilityRuleSequence.this.gragraTree.getCurrentGraGra().getBasisGraGra()
                             != ApplicabilityRuleSequence.this.ars.getGraGra()) {
                         ApplicabilityRuleSequence.this.arsGUI.clear();
-
                         ApplicabilityRuleSequence.this.gragra = ApplicabilityRuleSequence.this.gragraTree.getGraGra();
                         ApplicabilityRuleSequence.this.ars.setGraGra(ApplicabilityRuleSequence.this.gragra.getBasisGraGra());
                     } else if (ApplicabilityRuleSequence.this.arsGUI.isVisible()) {
                         ApplicabilityRuleSequence.this.arsGUI.clear();
                     }
-
                     ApplicabilityRuleSequence.this.ars.setRuleSequences(ApplicabilityRuleSequence.this.gragra.getBasisGraGra().getRuleSequences());
-
                     ApplicabilityRuleSequence.this.graphName = ApplicabilityRuleSequence.this.gragra.getBasisGraGra().getGraph().getName();
                     ApplicabilityRuleSequence.this.arsGUI.updateRuleSequences(ApplicabilityRuleSequence.this.gragra.getBasisGraGra().getRuleSequences());
                     ApplicabilityRuleSequence.this.arsGUI.extendTitle(ApplicabilityRuleSequence.this.gragra.getName());
-
                     int indx = ApplicabilityRuleSequence.this.gragra.getBasisGraGra().getIndexOfCurrentRuleSequence();
                     if (indx >= 0) {
                         ApplicabilityRuleSequence.this.arsGUI.selectRuleSequence(indx);
@@ -262,20 +245,15 @@ public class ApplicabilityRuleSequence implements
             public void actionPerformed(ActionEvent e) {
                 try {
                     ApplicabilityRuleSequence.this.arsGUI.loadWarning();
-
                     ApplRuleSequenceSaveLoad arsLoad = new ApplRuleSequenceSaveLoad();
                     arsLoad.load(ApplicabilityRuleSequence.this.ars);
-
                     ApplicabilityRuleSequence.this.gragra = arsLoad.layout;
-
                     GraGra basegra = ApplicabilityRuleSequence.this.gragra.getBasisGraGra();
                     basegra.setDirName(arsLoad.dirName);
                     basegra.setFileName(arsLoad.fname);
                     ApplicabilityRuleSequence.this.gragra.getTypeSet().setResourcesPath(arsLoad.dirName);
-
                     ApplicabilityRuleSequence.this.gragraTree.addGraGra(ApplicabilityRuleSequence.this.gragra);
                     ApplicabilityRuleSequence.this.gragra.setChanged(false);
-
                     ApplicabilityRuleSequence.this.arsGUI.extendTitle(arsLoad.fname);
                     ApplicabilityRuleSequence.this.arsGUI.loadRuleSequences(
                             basegra.getEnabledRules(),
@@ -340,7 +318,6 @@ public class ApplicabilityRuleSequence implements
                 }
             }
         }
-
         if (this.arsGUI.isVisible()) {
             if (msgkey == TreeViewEvent.DELETED) {
                 if (e.getData().isGraGra()) {
@@ -420,7 +397,6 @@ public class ApplicabilityRuleSequence implements
         if (this.gragra != null) {
             boolean grammarchanged = this.gragra.isChanged();
             this.gragra.setChanged(false);
-
 //			Object[] options = { "Close", "Cancel" };
             int answer = 1;
 //						JOptionPane
@@ -502,6 +478,5 @@ public class ApplicabilityRuleSequence implements
         Point location = new Point(50 + this.d, 100 + this.d);
         this.arsWioGraphResultTable.showNonApplicabilityResult(location, indx);
     }
-
 //	public void actionPerformed(ActionEvent e) {}
 }

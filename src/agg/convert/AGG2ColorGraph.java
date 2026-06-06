@@ -2,11 +2,12 @@
  **
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  * </copyright>
- ******************************************************************************
+ * *****************************************************************************
  */
 package agg.convert;
 
@@ -15,13 +16,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
 import agg.xt_basis.Node;
-
 import agg.xt_basis.Arc;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
@@ -32,10 +31,10 @@ import agg.attribute.impl.ValueTuple;
 //import agg.util.XMLHelper;
 
 public class AGG2ColorGraph {
-
 //	private static XMLHelper h;
 //	private static GraGra gragra;
 //	private static String fileName;
+
     /**
      * Save an AGG graph in GraphColor format.
      *
@@ -51,8 +50,9 @@ public class AGG2ColorGraph {
      * @param nodetype
      * @param edgetype
      *
-     * public static void exportAGG2ColorGraph( final GraGra gra, final String outFileName, final String nodetype, final
-     * String edgetype ) { exportAGG2ColorGraph(gra.getGraph(), outFileName, nodetype, edgetype); }
+     * public static void exportAGG2ColorGraph( final GraGra gra, final String
+     * outFileName, final String nodetype, final String edgetype ) {
+     * exportAGG2ColorGraph(gra.getGraph(), outFileName, nodetype, edgetype); }
      */
     /**
      * Export the host graph of the specified GraGra in GraphColor format.
@@ -79,11 +79,12 @@ public class AGG2ColorGraph {
      * @param nodeType
      * @param edgeType
      *
-     * public static void exportAGG2ColorGraph( final Graph graph, final String outFileName, final String nodeType,
-     * final String edgeType) {
+     * public static void exportAGG2ColorGraph( final Graph graph, final String
+     * outFileName, final String nodeType, final String edgeType) {
      *
-     * final Type ntype = graph.getTypeSet().getTypeByName(nodeType); final Type etype =
-     * graph.getTypeSet().getTypeByName(edgeType); exportAGG2ColorGraph(graph, outFileName, ntype, etype); }
+     * final Type ntype = graph.getTypeSet().getTypeByName(nodeType); final Type
+     * etype = graph.getTypeSet().getTypeByName(edgeType);
+     * exportAGG2ColorGraph(graph, outFileName, ntype, etype); }
      */
     /**
      * Export the specified Graph in GraphColor format.
@@ -98,26 +99,20 @@ public class AGG2ColorGraph {
             final String outFileName,
             final Type nodeType,
             final Type edgeType) {
-
 //		System.out.println(outFileName+"   "+nodeType+"   "+edgeType);	
         if (outFileName.endsWith(".col")) {
             boolean NODE_TYPE = false;
             boolean EDGE_TYPE = false;
-
-            final Hashtable<GraphObject, GraphObject> map = new Hashtable<GraphObject, GraphObject>();
-
+            final HashMap<GraphObject, GraphObject> map = new HashMap<GraphObject, GraphObject>();
             final List<Arc> edges = new Vector<Arc>();
             edges.addAll(graph.getArcsSet());
-
             final List<Node> nodes = new Vector<Node>();
             nodes.addAll(graph.getNodesSet());
-
             final File f = new File(outFileName);
             ByteArrayOutputStream baOut = null;
             FileOutputStream fos = null;
             try {
                 fos = new FileOutputStream(f);
-
                 // write comment
                 baOut = new ByteArrayOutputStream();
                 String commentPart1 = "c AGG graph (.ggx) ";
@@ -132,17 +127,14 @@ public class AGG2ColorGraph {
                     commentEdgeType = "EDGE_TYPE:" + edgeType.getName();
                     EDGE_TYPE = true;
                 }
-
                 String comment = commentPart1
                         .concat(commentNodeType)
                         .concat(commentEdgeType)
                         .concat(commentPart2);
-
                 if (NODE_TYPE) {
                     nodes.clear();
                     nodes.addAll(getNodes(graph, nodeType));
                 }
-
                 final List<Arc> edgeList = new Vector<Arc>();
                 if (EDGE_TYPE) {
                     if (NODE_TYPE) {
@@ -155,7 +147,6 @@ public class AGG2ColorGraph {
                 } else {
                     edgeList.addAll(edges);
                 }
-
                 edges.clear();
                 for (int i = 0; i < edgeList.size(); i++) {
                     final Arc a = edgeList.get(i);
@@ -165,12 +156,10 @@ public class AGG2ColorGraph {
                         edges.add(a);
                     }
                 }
-
                 // put in out stream and file						
                 baOut.write(comment.getBytes());
                 fos.write(baOut.toByteArray());
                 baOut.flush();
-
                 // write edge problem
                 baOut = new ByteArrayOutputStream();
                 String problem = "p edge ";
@@ -182,16 +171,13 @@ public class AGG2ColorGraph {
                 baOut.write(problem.getBytes());
                 fos.write(baOut.toByteArray());
                 baOut.flush();
-
                 for (int i = 0; i < edges.size(); i++) {
                     final Arc a = edges.get(i);
                     int src = nodes.indexOf(a.getSource()) + 1;
                     int tar = nodes.indexOf(a.getTarget()) + 1;
-
                     String str = "e ";
                     str = str.concat(String.valueOf(src)).concat(" ");
                     str = str.concat(String.valueOf(tar).concat("\n"));
-
                     // write edge line				
                     baOut = new ByteArrayOutputStream();
                     baOut.write(str.getBytes());
@@ -238,7 +224,8 @@ public class AGG2ColorGraph {
     }
 
     /**
-     * Import a ColorGraph which is specified by String colorFileName into the specified Graph of the specified GraGra.
+     * Import a ColorGraph which is specified by String colorFileName into the
+     * specified Graph of the specified GraGra.
      *
      * @param gra
      * @param graph
@@ -250,22 +237,17 @@ public class AGG2ColorGraph {
             final String colorFileName,
             final Type nodeType,
             final Type edgeType) {
-
 //		System.out.println(colorFileName);	
         if (colorFileName.endsWith(".res")
                 && gra.isElement(graph)) {
-
             boolean result = false;
             int size = 0;
-
             final List<Node> nodes = new Vector<Node>();
-
             if (nodeType != null) {
                 nodes.addAll(getNodes(graph, nodeType));
             } else {
                 nodes.addAll(graph.getNodesSet());
             }
-
             FileInputStream fos = null;
             byte b[] = new byte[2048];
             int count = 0;
@@ -295,13 +277,10 @@ public class AGG2ColorGraph {
                             if (str.startsWith("CLRS")) {
                                 continue;
                             }
-
                             while (str.charAt(0) == ' ') {
                                 str = str.substring(1, str.length());
                             }
-
                             String[] str_e = str.split("   ");
-
                             for (int i = 0; i < str_e.length; i++) {
                                 String color = str_e[i].trim();
                                 int indx = i + size;
@@ -322,7 +301,6 @@ public class AGG2ColorGraph {
                                                     || mem.getDeclaration().getTypeName().equals("java.lang.String")) {
                                                 mem.setExprAsObject(color);
                                             }
-
 //											System.out.println(indx+"  color: "+mem.getExprAsText());
 //											System.out.println("AGG2ColorGraph.importColorGraph2AGG::  color attribute set of node");
 //											if (val.getValueMemberAt("name") != null) {
@@ -336,17 +314,14 @@ public class AGG2ColorGraph {
                                     }
                                 }
                             }
-
                             size = size + str_e.length;
                         }
                     }
                 }
             } catch (IOException e) {
             }
-
             return result;
         }
-
         return false;
     }
 
@@ -357,7 +332,6 @@ public class AGG2ColorGraph {
 			System.out.println("WARNING : Swing must be run with the "
 					+ "1.5 version of the JVM.");
 		}
-
 		if (args.length == 1) {	
 			fileName = args[0];
 			if (fileName.indexOf(".ggx") > 0) {
@@ -395,14 +369,11 @@ public class AGG2ColorGraph {
         System.out.println("Usage aliased:");
         System.out.println("agg2color grammar");
         System.out.println("Output file: grammar.ggx.col");
-
         System.out.println("other usage:");
         System.out
                 .println("agg2color grammar.ggx colorResultImport.res ");
         System.out.println("Overwritten file: grammar.ggx");
-
     }
-
     /*
 	private static GraGra load(String fName) {
 		if (fName.endsWith(".ggx")) {

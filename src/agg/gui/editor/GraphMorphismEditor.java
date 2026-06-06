@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -19,14 +21,12 @@ import java.awt.event.ActionListener;
 import java.awt.Insets;
 import java.util.Enumeration;
 import java.util.Iterator;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
-
 import agg.attribute.impl.ContextView;
 import agg.editor.impl.EdArc;
 import agg.editor.impl.EdGraph;
@@ -40,7 +40,8 @@ import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.GraphObject;
 
 /**
- * This class specifies a graph morphism editor which allows to set mappings of an morphism.
+ * This class specifies a graph morphism editor which allows to set mappings of
+ * an morphism.
  *
  * @author $Author: olga $
  */
@@ -55,26 +56,20 @@ public class GraphMorphismEditor extends JPanel {
      */
     public GraphMorphismEditor(final JFrame parentFrame) {
         super(new BorderLayout());
-
         this.applFrame = parentFrame;
-
         this.mainPanel = this;
-
         this.mouseAdapter = new GraphMorphismEditorMouseAdapter(this);
         this.mouseMotionAdapter = new GraphMorphismEditorMouseMotionAdapter(this);
-
         this.leftPanel = new GraphPanel(this);
         this.leftPanel.setName("Source Graph");
         final JPanel lPanel = new JPanel(new BorderLayout());
         lPanel.setPreferredSize(new Dimension(250, 150));
         lPanel.add(this.leftPanel, BorderLayout.CENTER);
-
         this.rightPanel = new GraphPanel(this);
         this.rightPanel.setName("Target Graph");
         final JPanel rPanel = new JPanel(new BorderLayout());
         rPanel.setPreferredSize(new Dimension(500, 150));
         rPanel.add(this.rightPanel, BorderLayout.CENTER);
-
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, lPanel,
                 rPanel);
         this.splitPane.setDividerSize(10);
@@ -82,11 +77,9 @@ public class GraphMorphismEditor extends JPanel {
         this.splitPane.setOneTouchExpandable(true);
         this.dividerLocation = 250;
         this.splitPane.setDividerLocation(this.dividerLocation);
-
         final JPanel morphPanel = new JPanel(new BorderLayout());
         morphPanel.setPreferredSize(new Dimension(500, 150));
         this.title = new JLabel("    ");
-
         this.exportJPEGButton = createExportJPEGButton();
         final JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.add(this.title, BorderLayout.CENTER);
@@ -94,27 +87,21 @@ public class GraphMorphismEditor extends JPanel {
             titlePanel.add(this.exportJPEGButton, BorderLayout.EAST);
         }
         morphPanel.add(titlePanel, BorderLayout.NORTH);
-
         morphPanel.add(this.splitPane, BorderLayout.CENTER);
-
         add(morphPanel, BorderLayout.CENTER);
-
         this.leftPanel.getCanvas().addMouseListener(this.mouseAdapter);
         this.rightPanel.getCanvas().addMouseListener(this.mouseAdapter);
-
         this.leftPanel.getCanvas().addMouseMotionListener(this.mouseMotionAdapter);
         this.rightPanel.getCanvas().addMouseMotionListener(this.mouseMotionAdapter);
-
         String tooltipLeft = "Connect: click object left and object right.";
         String tooltipRight = "Disconnect: click object left and background right.";
-
         this.leftPanel.getCanvas().setToolTipText(tooltipLeft);
         this.rightPanel.getCanvas().setToolTipText(tooltipRight);
     }
-
 //	public JFrame getApplFrame() {
 //		return this.applFrame;
 //	}
+
     private JButton createExportJPEGButton() {
         java.net.URL url = ClassLoader.getSystemClassLoader()
                 .getResource("agg/lib/icons/print.gif");
@@ -183,7 +170,6 @@ public class GraphMorphismEditor extends JPanel {
                 System.out.println("add mapping of object flow:  FAILED!  " + ex.getMessage());
                 mapOK = false;
             }
-
             if (mapOK) {
                 if (this.isoLeft != null && this.isoRight != null) {
                     this.objFlow.addMapping(
@@ -192,14 +178,12 @@ public class GraphMorphismEditor extends JPanel {
                 } else {
                     this.objFlow.addMapping(leftobj, rightobj);
                 }
-
                 if (((ContextView) this.morphism.getAttrContext()).getAllowedMapping()
                         != currentlyAllowedMapping) {
                     ((ContextView) this.morphism.getAttrContext()).changeAllowedMapping(currentlyAllowedMapping);
                 }
             }
         }
-
         return mapOK;
     }
 
@@ -328,19 +312,15 @@ public class GraphMorphismEditor extends JPanel {
 
     public void setLeftGraph(EdGraph g) {
         this.leftGraph = g;
-
         if (this.leftGraph == null) {
             setLeftTitle("    ");
             this.leftPanel.setGraph(null);
 //			this.rightPanel.setGraph(null);
-
 //			if (this.exportJPEGButton != null)
 //				this.exportJPEGButton.setEnabled(false);
             return;
         }
-
         this.leftPanel.setGraph(g, true);
-
 //		if (this.exportJPEGButton != null
 //				&& this.exportJPEG != null) {
 //			this.exportJPEGButton.setEnabled(true);
@@ -349,19 +329,15 @@ public class GraphMorphismEditor extends JPanel {
 
     public void setRightGraph(EdGraph g) {
         this.rightGraph = g;
-
         if (this.rightGraph == null) {
             setRightTitle("    ");
 //			this.leftPanel.setGraph(null);
             this.rightPanel.setGraph(null);
-
 //			if (this.exportJPEGButton != null)
 //				this.exportJPEGButton.setEnabled(false);
             return;
         }
-
         this.rightPanel.setGraph(g, true);
-
 //		if (this.exportJPEGButton != null
 //				&& this.exportJPEG != null) {
 //			this.exportJPEGButton.setEnabled(true);
@@ -382,27 +358,22 @@ public class GraphMorphismEditor extends JPanel {
     public void updateGraphs() {
         this.getLeftGraph().clearMarks();
         this.getRightGraph().clearMarks();
-
         EdNode enL = null;
         EdNode enR = null;
         EdArc eaL = null;
         EdArc eaR = null;
-
         if (this.morphism == null) {
             return;
         }
-
         Iterator<GraphObject> domain = this.morphism.getDomain();
         while (domain.hasNext()) {
             GraphObject bOrig = domain.next();
             GraphObject bImage = this.morphism.getImage(bOrig);
-
             enL = this.getLeftGraph().findNode(bOrig);
             if (enL != null) {
                 if (enL.isMorphismMarkEmpty()) {
                     enL.addMorphismMark(enL.getMyKey());
                 }
-
                 enR = this.getRightGraph().findNode(bImage);
                 if (enR != null) {
                     enR.addMorphismMark(enL.getMorphismMark());
@@ -410,13 +381,11 @@ public class GraphMorphismEditor extends JPanel {
                     enL.clearMorphismMark();
                 }
             }
-
             eaL = this.getLeftGraph().findArc(bOrig);
             if (eaL != null) {
                 if (eaL.isMorphismMarkEmpty()) {
                     eaL.addMorphismMark(eaL.getMyKey());
                 }
-
                 eaR = this.getRightGraph().findArc(bImage);
                 if (eaR != null) {
                     eaR.addMorphismMark(eaL.getMorphismMark());
@@ -523,7 +492,6 @@ public class GraphMorphismEditor extends JPanel {
         } else {
             this.activePanel = null;
         }
-
         return this.activePanel;
     }
 
@@ -531,27 +499,19 @@ public class GraphMorphismEditor extends JPanel {
         this.leftPanel.setEditMode(mode);
         this.rightPanel.setEditMode(mode);
     }
-
     private final JFrame applFrame;
     final JPanel mainPanel;
     private final JLabel title;
-
     private final JSplitPane splitPane;
     private int dividerLocation;
-
     private final GraphPanel leftPanel;
     private final GraphPanel rightPanel;
     private GraphPanel activePanel;
-
 //	private String msg = "";
     private EdGraph leftGraph, rightGraph;
-
     private OrdinaryMorphism morphism;
     private OrdinaryMorphism isoLeft, isoRight;
     private ObjectFlow objFlow;
-
     GraphicsExportJPEG exportJPEG;
-
     private final JButton exportJPEGButton;
-
 }

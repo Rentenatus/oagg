@@ -1,11 +1,13 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universität Berlin. All rights reserved. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * 
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -13,15 +15,16 @@ package agg.editor.impl;
 
 import java.util.Vector;
 import java.util.Enumeration;
-
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.GraphObject;
 import java.util.Iterator;
 
 /**
- * An EdNAC specifies the NAC layout for the used object as an object of the class agg.xt_basis.OrdinaryMorphism. The
- * class EdNAC is a subclass of the class EdGraph. The used object is a morphism between the left hand side of the rule
- * and the NAC graph. The morphism mappings are shown through the same number.
+ * An EdNAC specifies the NAC layout for the used object as an object of the
+ * class agg.xt_basis.OrdinaryMorphism. The class EdNAC is a subclass of the
+ * class EdGraph. The used object is a morphism between the left hand side of
+ * the rule and the NAC graph. The morphism mappings are shown through the same
+ * number.
  *
  * @author $Author: olga $
  * @version $Id: EdNAC.java,v 1.6 2010/09/20 14:28:38 olga Exp $
@@ -29,9 +32,7 @@ import java.util.Iterator;
 public class EdNAC extends EdGraph {
 
     private OrdinaryMorphism morphism; // NAC morphism
-
     private String name;
-
     transient private EdRule myRule;
 
     /**
@@ -62,7 +63,8 @@ public class EdNAC extends EdGraph {
     }
 
     /**
-     * Creates a NAC layout of the morphism specified by the OrdinaryMorphism m and with specified type set
+     * Creates a NAC layout of the morphism specified by the OrdinaryMorphism m
+     * and with specified type set
      */
     public EdNAC(OrdinaryMorphism m, EdTypeSet types) {
         super(m.getImage(), types); // base graph is m.getImage()
@@ -122,7 +124,8 @@ public class EdNAC extends EdGraph {
     }
 
     /**
-     * Returns my graph object that is the image to the specified graph object which is an object of the LHS of my rule.
+     * Returns my graph object that is the image to the specified graph object
+     * which is an object of the LHS of my rule.
      */
     public EdGraphObject getImage(EdGraphObject orig) {
         GraphObject im = this.morphism.getImage(orig.getBasisObject());
@@ -130,8 +133,9 @@ public class EdNAC extends EdGraph {
     }
 
     /**
-     * Returns a vector with graph objects of the LHS of my rule. The specified graph object belongs to this NAC graph
-     * and is the image object of the graph objects to return.
+     * Returns a vector with graph objects of the LHS of my rule. The specified
+     * graph object belongs to this NAC graph and is the image object of the
+     * graph objects to return.
      */
     public Vector<EdGraphObject> getOriginal(EdGraphObject image) {
         Vector<EdGraphObject> vec = new Vector<EdGraphObject>(2);
