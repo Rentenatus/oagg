@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Implementation of the Type interface for edge graph objects.
- * This class represents the type information for arcs/edges in graphs.
+ * Implementation of the Type interface for edge graph objects. This class
+ * represents the type information for arcs/edges in graphs.
  *
  * @see Type
  * @see TypeImpl
@@ -48,7 +48,6 @@ public class ArcTypeImpl implements Type {
      * {@link agg.editor.EdType}.
      */
     String additionalRepr;
-    String imageFileName = "";
     /**
      * a map to a list of types. This map will only created for edge types. If
      * there is an edge between sourceType and targetType
@@ -64,8 +63,9 @@ public class ArcTypeImpl implements Type {
     String keyStr = null;
 
     /**
-     * Creates a new arc type with default settings.
-     * This creates a non-attributable arc type with empty name and default visual representation.
+     * Creates a new arc type with default settings. This creates a
+     * non-attributable arc type with empty name and default visual
+     * representation.
      */
     protected ArcTypeImpl() {
         this.itsAttrType = null;
@@ -75,8 +75,8 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Creates a new arc type with the given name.
-     * This creates a non-attributable arc type with default visual representation.
+     * Creates a new arc type with the given name. This creates a
+     * non-attributable arc type with default visual representation.
      *
      * @param name the name of the arc type
      */
@@ -108,6 +108,7 @@ public class ArcTypeImpl implements Type {
         this.itsAttrType = at;
     }
 
+    @Override
     public void dispose() {
         this.itsAttrType = null;
         if (this.edgeTypeGraphObjects != null) {
@@ -125,6 +126,7 @@ public class ArcTypeImpl implements Type {
         this.typeGraphObjectDefined = false;
     }
 
+    @Override
     public void createAttributeType() {
         this.itsAttrType = agg.attribute.impl.AttrTupleManager.getDefaultManager()
                 .newType();
@@ -134,6 +136,7 @@ public class ArcTypeImpl implements Type {
         this.itsAttrType = at;
     }
 
+    @Override
     public void removeAttributeType() {
         if (this.itsAttrType != null) {
             ((DeclTuple) this.itsAttrType).dispose();
@@ -141,20 +144,24 @@ public class ArcTypeImpl implements Type {
         }
     }
 
+    @Override
     public boolean isAttrTypeEmpty() {
         return (this.getAttrType() == null //					|| this.getAttrType().getNumberOfEntries() == 0
                 );
     }
 
+    @Override
     public boolean hasAnyAttrMember() {
         return (this.getAttrType() != null
                 && this.getAttrType().getNumberOfEntries() != 0);
     }
 
+    @Override
     public boolean isNodeType() {
         return false;
     }
 
+    @Override
     public boolean isArcType() {
         return true;
     }
@@ -165,6 +172,7 @@ public class ArcTypeImpl implements Type {
      *
      * @see <code>getStringRepr()</code> and <code>getAdditionalRepr()</code>
      */
+    @Override
     public String convertToKey() {
         if (this.keyStr == null) {
             this.keyStr = this.itsStringRepr.concat("%").concat(this.additionalRepr);
@@ -173,6 +181,7 @@ public class ArcTypeImpl implements Type {
         return this.keyStr;
     }
 
+    @Override
     public String resetKey() {
         this.keyStr = this.itsStringRepr.concat("%").concat(this.additionalRepr);
 //		this.keyStr = String.valueOf(this.hashCode());
@@ -186,6 +195,7 @@ public class ArcTypeImpl implements Type {
      * name of the existing attribute member will be extended by "?" and then
      * the new attribute member will be added.
      */
+    @Override
     public void adaptTypeAttribute(final Type type) {
         if (type.getAttrType() == null) {
             return;
@@ -234,9 +244,9 @@ public class ArcTypeImpl implements Type {
                                 .self().getJavaHandler(), otherType, otherName);
             }
         }
-        return;
     }
 
+    @Override
     public void checkDoubleAttributeType() {
         if (this.itsAttrType == null) {
             return;
@@ -267,6 +277,7 @@ public class ArcTypeImpl implements Type {
     /**
      * Returns TRUE if this type is equal to the type t.
      */
+    @Override
     public boolean compareTo(final Type t) {
         if (!getStringRepr().equals(t.getStringRepr())) {
             return false;
@@ -275,25 +286,23 @@ public class ArcTypeImpl implements Type {
             return false;
         }
         if (this.itsAttrType != null) {
-            if (t.getAttrType() == null
+            return !(t.getAttrType() == null
                     || ((DeclTuple) this.itsAttrType).getSize()
                     != ((DeclTuple) t.getAttrType()).getSize()
-                    || !((DeclTuple) this.itsAttrType).weakcompareTo(t.getAttrType())) {
-                return false;
-            }
-            return true;
+                    || !((DeclTuple) this.itsAttrType).weakcompareTo(t.getAttrType()));
         }
-        if (t.getAttrType() != null) {
-            return false;
-        }
-        return true;
+        return t.getAttrType() == null;
     }
 
     /**
-     * Returns TRUE if this type is different to the type t. The list difference
+     * Returns TRUE if this type is different to the type t.The list difference
      * will contain all found differences between the types, otherwise it is
-     * empty. This method should be used sooner for information about
-     * differences of types.
+     * empty.This method should be used sooner for information about differences
+     * of types.
+     *
+     * @param t
+     * @param difference
+     * @return
      */
     public boolean differentTo(final Type t, final List<String> difference) {
         String diff = "";
@@ -337,15 +346,13 @@ public class ArcTypeImpl implements Type {
                     + "defined (is not null)";
             difference.add(diff);
         }
-        if (difference.isEmpty()) {
-            return false;
-        }
-        return true;
+        return !difference.isEmpty();
     }
 
     /**
      * Returns the string representation. Mostly used as the name of a type.
      */
+    @Override
     public final String getStringRepr() {
         return this.itsStringRepr;
     }
@@ -353,6 +360,7 @@ public class ArcTypeImpl implements Type {
     /**
      * Sets the string representation. Mostly used as the name of the type
      */
+    @Override
     public final void setStringRepr(final String n) {
         this.itsStringRepr = n;
         this.resetKey();
@@ -360,7 +368,10 @@ public class ArcTypeImpl implements Type {
 
     /**
      * Set textual comments for this type.
+     *
+     * @param text
      */
+    @Override
     public void setTextualComment(final String text) {
         this.comment = text;
     }
@@ -368,12 +379,13 @@ public class ArcTypeImpl implements Type {
     /**
      * Return textual comments of this type.
      */
+    @Override
     public String getTextualComment() {
         return this.comment;
     }
 
     public List<String> checkDoubleAttributeName(final Type otherType) {
-        List<String> v = new ArrayList<String>(5);
+        List<String> v = new ArrayList<>(5);
         if (this.itsAttrType == null || otherType.getAttrType() == null) {
             return v;
         }
@@ -393,6 +405,7 @@ public class ArcTypeImpl implements Type {
     /**
      * Returns the associated attribute type.
      */
+    @Override
     public final AttrType getAttrType() {
         return this.itsAttrType;
     }
@@ -402,6 +415,7 @@ public class ArcTypeImpl implements Type {
      *
      * @see #setAdditionalRepr
      */
+    @Override
     public String getAdditionalRepr() {
         return this.additionalRepr;
     }
@@ -411,6 +425,7 @@ public class ArcTypeImpl implements Type {
      * together with its name. Predefined minimal additional representation
      * string of an Arc - ":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:".
      */
+    @Override
     public void setAdditionalRepr(final String repr) {
         if (repr.equals("EDGE") || repr.equals("[EDGE]")) {
             this.additionalRepr = ":SOLID_LINE:java.awt.Color[r=0,g=0,b=0]:[EDGE]:";
@@ -420,13 +435,14 @@ public class ArcTypeImpl implements Type {
         this.resetKey();
     }
 
+    @Override
     public void XwriteObject(XMLHelper h) {
         String n = getStringRepr();
 //		System.out.println("TypeImpl.XwriteObject: " +getAdditionalRepr());
         if ((getAdditionalRepr() != null) && (!getAdditionalRepr().equals(""))) {
             n += ("%" + getAdditionalRepr());
         }
-        if (n.indexOf("[EDGE]") >= 0) {
+        if (n.contains("[EDGE]")) {
             h.openNewElem("EdgeType", this);
         } else {
             h.openNewElem("Type", this);
@@ -444,6 +460,7 @@ public class ArcTypeImpl implements Type {
         h.close();
     }
 
+    @Override
     public void XreadObject(XMLHelper h) {
         if (h.isTag("NodeType", this) || h.isTag("EdgeType", this)
                 || h.isTag("Type", this)) {
@@ -452,7 +469,7 @@ public class ArcTypeImpl implements Type {
 //			System.out.println("TypeImpl.XreadObject: " +n);
             String str = h.readAttr("comment");
             if (!str.equals("")) {
-                this.comment = str.toString();
+                this.comment = str;
             }
             h.readAttr("abstract");
             int i = n.indexOf('%');
@@ -492,6 +509,7 @@ public class ArcTypeImpl implements Type {
      * otherwise the string representation of the type
      * ({@link #getStringRepr()})
      */
+    @Override
     public String getName() {
         String stringRepr = this.getStringRepr();
         if ("".equals(stringRepr)) {
@@ -502,20 +520,22 @@ public class ArcTypeImpl implements Type {
 
     /**
      * returns if the given GraphObject is valid typed as defined in the type
-     * graph. Before this can be checked, all edges and nodes of the type graph
+     * graph.Before this can be checked, all edges and nodes of the type graph
      * must be added to their types. The given object is not taken in account
      * when this is its type.
      *
+     * @param nodeOrArc
      * @return null, if the graph object is valid typed otherwise a
      * {@link TypeError} if there was a mismatch
      *
      */
+    @Override
     public TypeError check(final GraphObject nodeOrArc, final int level) {
         if (level == TypeSet.DISABLED) {
             return null;
         }
-        if (nodeOrArc instanceof Arc) {
-            return check((Arc) nodeOrArc, level);
+        if (nodeOrArc instanceof Arc arc) {
+            return check(arc, level);
         }
         throw new IllegalArgumentException(
                 "parameter must be of Arc type.");
@@ -525,6 +545,7 @@ public class ArcTypeImpl implements Type {
      * Returns true if at least one edge exists from the specified source type
      * to any other type, otherwise false.
      */
+    @Override
     public boolean hasTypeGraphArc(final Type sourceType) {
         if (this.edgeTypeGraphObjects != null) {
             List<Type> mySrcParents = sourceType.getAllParents();
@@ -545,8 +566,9 @@ public class ArcTypeImpl implements Type {
      * otherwise empty list.
      *
      */
+    @Override
     public List<Type> getTargetsOfArc(final Type sourceType) {
-        final List<Type> v = new ArrayList<Type>();
+        final List<Type> v = new ArrayList<>();
         // try to find any edge between any pair of src-tar parents
         if (this.edgeTypeGraphObjects != null) {
             List<Type> mySrcParents = sourceType.getAllParents();
@@ -567,6 +589,7 @@ public class ArcTypeImpl implements Type {
         return v;
     }
 
+    @Override
     public boolean isEdgeCreatable(final Type sourceType, final Type targetType, final int level) {
         // iterator for the parents of the src and target type of the current
         // arc
@@ -621,9 +644,11 @@ public class ArcTypeImpl implements Type {
 
     /**
      * Returns null, if the specified arc is valid typed as defined in the type
-     * graph. Before this can be checked, all edges and nodes of the type graph
+     * graph.Before this can be checked, all edges and nodes of the type graph
      * must be added to theire types.
      *
+     * @param arc
+     * @param level
      * @return null, if the Arc is valid typed otherwise a {@link TypeError} if
      * there was a mismatch
      */
@@ -757,10 +782,12 @@ public class ArcTypeImpl implements Type {
         return null;
     }
 
+    @Override
     public TypeError checkIfEdgeCreatable(final Node src, final Node tar, final int level) {
         return checkIfEdgeCreatable(null, src, tar, level);
     }
 
+    @Override
     public TypeError checkIfEdgeCreatable(final Graph g, final Node src, final Node tar, final int level) {
         if ((level == TypeSet.DISABLED)
                 || (level == TypeSet.ENABLED_INHERITANCE)
@@ -778,6 +805,7 @@ public class ArcTypeImpl implements Type {
 	 * Source Max Multiplicity means how many ( at most ) nodes of the source node type
 	 * are incoming into the target node. 
      */
+    @Override
     public TypeError checkSourceMax(final Graph g, final Node src, final Node tar) {
         String graphName = "";
         if (g != null) {
@@ -822,6 +850,7 @@ public class ArcTypeImpl implements Type {
      * Target Max Multiplicity means how many ( at most ) nodes of the target
      * node type are outgoing from the source node.
      */
+    @Override
     public TypeError checkTargetMax(final Graph g, final Node src, final Node tar) {
         String graphName = "";
         if (g != null) {
@@ -863,12 +892,15 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Add the given GraphObject of a type graph to this type. The GraphObject
+     * Add the given GraphObject of a type graph to this type.The GraphObject
      * nodeOrArc must be of this type: it is a Node if this is a node type, it
      * is an Arc if this is an edge type. In case of it is a node type and a
      * node object inside of a type graph is already exist, it should to be
      * removed first.
+     *
+     * @param arc
      */
+    @Override
     public boolean addTypeGraphObject(final GraphObject arc) {
         if (arc instanceof Arc && arc.getContext().isTypeGraph()) {
             Type sourceType = ((Arc) arc).getSource().getType();
@@ -884,10 +916,13 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Remove the given GraphObject from the type graph and from this type.
-     * Returns true if remove is done, otherwise false. To remove an GraphObject
-     * is not possible when the type graph check is activated.
+     * Remove the given GraphObject from the type graph and from this
+     * type.Returns true if remove is done, otherwise false. To remove an
+     * GraphObject is not possible when the type graph check is activated.
+     *
+     * @param arc
      */
+    @Override
     public boolean removeTypeGraphObject(final GraphObject arc, final boolean forceToRemove) {
         if (arc == null
                 || !arc.isArc()
@@ -946,10 +981,13 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Remove the given GraphObject from the type graph and from this type.
-     * Returns true if remove is done, otherwise false. To remove an GraphObject
-     * is not possible when the type graph check is activated.
+     * Remove the given GraphObject from the type graph and from this
+     * type.Returns true if remove is done, otherwise false. To remove an
+     * GraphObject is not possible when the type graph check is activated.
+     *
+     * @param arc
      */
+    @Override
     public boolean removeTypeGraphObject(final GraphObject arc) {
         return removeTypeGraphObject(arc, false);
     }
@@ -959,6 +997,7 @@ public class ArcTypeImpl implements Type {
      * edge type is defined by the node type sourceType and the node type
      * targetType.
      */
+    @Override
     public void setSourceMin(final Type sourceType, final Type targetType, final int value) {
         this.getTypeGraphArc(sourceType, targetType).setSourceMin(value);
     }
@@ -968,6 +1007,7 @@ public class ArcTypeImpl implements Type {
      * edge type is defined by the node type sourceType and the node type
      * targetType.
      */
+    @Override
     public void setSourceMax(final Type sourceType, final Type targetType, final int value) {
         this.getTypeGraphArc(sourceType, targetType).setSourceMax(value);
     }
@@ -977,6 +1017,7 @@ public class ArcTypeImpl implements Type {
      * edge type is defined by the node type sourceType and the node type
      * targetType.
      */
+    @Override
     public void setTargetMin(final Type sourceType, final Type targetType, final int value) {
         this.getTypeGraphArc(sourceType, targetType).setTargetMin(value);
     }
@@ -986,6 +1027,7 @@ public class ArcTypeImpl implements Type {
      * edge type is defined by the node type sourceType and the node type
      * targetType.
      */
+    @Override
     public void setTargetMax(final Type sourceType, final Type targetType, final int value) {
         this.getTypeGraphArc(sourceType, targetType).setTargetMax(value);
     }
@@ -994,6 +1036,7 @@ public class ArcTypeImpl implements Type {
      * Return the min of the source multiplicity of an edge type. The edge type
      * is defined by the node type sourceType and the node type targetType.
      */
+    @Override
     public int getSourceMin(final Type sourceType, final Type targetType) {
         return this.getTypeGraphArc(sourceType, targetType).getSourceMin();
     }
@@ -1002,6 +1045,7 @@ public class ArcTypeImpl implements Type {
      * Return the max of the source multiplicity of an edge type. The edge type
      * is defined by the node type sourceType and the node type targetType.
      */
+    @Override
     public int getSourceMax(final Type sourceType, final Type targetType) {
         return this.getTypeGraphArc(sourceType, targetType).getSourceMax();
     }
@@ -1010,6 +1054,7 @@ public class ArcTypeImpl implements Type {
      * Return the min of the target multiplicity of an edge type. The edge type
      * is defined by the node type sourceType and the node type targetType.
      */
+    @Override
     public int getTargetMin(final Type sourceType, final Type targetType) {
         return this.getTypeGraphArc(sourceType, targetType).getTargetMin();
     }
@@ -1018,10 +1063,12 @@ public class ArcTypeImpl implements Type {
      * Return the max of the target multiplicity of an edge type. The edge type
      * is defined by the node type sourceType and the node type targetType.
      */
+    @Override
     public int getTargetMax(final Type sourceType, final Type targetType) {
         return this.getTypeGraphArc(sourceType, targetType).getTargetMax();
     }
 
+    @Override
     public void setVisibityOfObjectsOfTypeGraphArc(final Type sourceType, final Type targetType, boolean vis) {
         TypeGraphArc tgarc = getTypeGraphArc(sourceType, targetType);
         if (tgarc != null) {
@@ -1029,11 +1076,13 @@ public class ArcTypeImpl implements Type {
         }
     }
 
+    @Override
     public boolean isObjectOfTypeGraphArcVisible(final Type sourceType, final Type targetType) {
         TypeGraphArc tgarc = getTypeGraphArc(sourceType, targetType);
         return (tgarc == null) || tgarc.isVisible();
     }
 
+    @Override
     public Arc getTypeGraphArcObject(final Type sourceType, final Type targetType) {
         TypeGraphArc tgarc = getTypeGraphArc(sourceType, targetType);
         if (tgarc != null) {
@@ -1046,6 +1095,7 @@ public class ArcTypeImpl implements Type {
      * Returns the subtype object for this source and target combination. The
      * subtype will be created, if it does not exist.
      */
+    @Override
     public TypeGraphArc getTypeGraphArc(final Type sourceType, final Type targetType) {
         // iterator for the parents of the src and target type of the current
         // arc
@@ -1077,7 +1127,7 @@ public class ArcTypeImpl implements Type {
         }
         targets = this.edgeTypeGraphObjects.get(sourceType);
         if (targets == null) {
-            targets = new HashMap<Type, TypeGraphArc>();
+            targets = new HashMap<>();
             this.edgeTypeGraphObjects.put(sourceType, targets);
             subType = new TypeGraphArc();
             targets.put(targetType, subType);
@@ -1089,6 +1139,7 @@ public class ArcTypeImpl implements Type {
         return subType;
     }
 
+    @Override
     public TypeGraphArc getSimilarTypeGraphArc(final Type sourceType,
             final Type targetType) {
         Iterator<Type> sourceIter = this.edgeTypeGraphObjects.keySet().iterator();
@@ -1123,10 +1174,12 @@ public class ArcTypeImpl implements Type {
         return null;
     }
 
+    @Override
     public boolean hasTypeGraphArc() {
-        return (this.edgeTypeGraphObjects == null) ? false : true;
+        return (this.edgeTypeGraphObjects != null);
     }
 
+    @Override
     public boolean hasTypeGraphArc(final Type sourceType, final Type targetType) {
         if (this.edgeTypeGraphObjects == null) {
             return false;
@@ -1157,16 +1210,19 @@ public class ArcTypeImpl implements Type {
         return (subType != null);
     }
 
+    @Override
     public boolean hasTypeGraphArc(
             final GraphObject sourceType,
             final GraphObject targetType) {
         return hasTypeGraphArc(sourceType.getType(), targetType.getType());
     }
 
+    @Override
     public HashMap<Type, HashMap<Type, TypeGraphArc>> getArcTypeGraphObjects() {
         return this.edgeTypeGraphObjects;
     }
 
+    @Override
     public boolean compareTypeGraphArcs(final Type t) {
         if (this.edgeTypeGraphObjects == null
                 && ((ArcTypeImpl) t).getArcTypeGraphObjects() == null) {
@@ -1198,6 +1254,7 @@ public class ArcTypeImpl implements Type {
         }
     }
 
+    @Override
     public boolean compareTypeGraphArcsMultiplicity(final Type t) {
         if (this.edgeTypeGraphObjects == null
                 && ((ArcTypeImpl) t).getArcTypeGraphObjects() == null) {
@@ -1249,6 +1306,7 @@ public class ArcTypeImpl implements Type {
     /**
      * Disable type graph object of this type.
      */
+    @Override
     public void disableTypeGraphObject() {
         if (this.edgeTypeGraphObjects != null) {
             Iterator<HashMap<Type, TypeGraphArc>> iter = this.edgeTypeGraphObjects.values().iterator();
@@ -1277,6 +1335,7 @@ public class ArcTypeImpl implements Type {
      * returns true, if there is at least one object in the type graph for this
      * type.
      */
+    @Override
     public boolean isTypeGraphObjectDefined() {
         return this.typeGraphObjectDefined;
     }
@@ -1287,6 +1346,7 @@ public class ArcTypeImpl implements Type {
 	 * @see agg.xt_basis.Type#checkIfRemovableFromSource(agg.xt_basis.Node,
 	 *      agg.xt_basis.Arc, int)
      */
+    @Override
     public TypeError checkIfRemovableFromSource(final GraphObject node, final Arc arc,
             final int level) {
         if (arc.getContext().isCompleteGraph()
@@ -1296,6 +1356,7 @@ public class ArcTypeImpl implements Type {
         return null;
     }
 
+    @Override
     public TypeError checkIfRemovableFromSource(
             final GraphObject node, final Arc arc,
             boolean deleteSrc, boolean deleteTar,
@@ -1339,6 +1400,7 @@ public class ArcTypeImpl implements Type {
 	 * @see agg.xt_basis.Type#checkIfRemovableFromTarget(agg.xt_basis.Node,
 	 *      agg.xt_basis.Arc, int)
      */
+    @Override
     public TypeError checkIfRemovableFromTarget(final GraphObject node, final Arc arc,
             final int level) {
         if (arc.getContext().isCompleteGraph()
@@ -1348,6 +1410,7 @@ public class ArcTypeImpl implements Type {
         return null;
     }
 
+    @Override
     public TypeError checkIfRemovableFromTarget(final GraphObject node, final Arc arc,
             boolean deleteSrc, boolean deleteTar,
             final int level) {
@@ -1387,6 +1450,7 @@ public class ArcTypeImpl implements Type {
     /**
      * @see agg.xt_basis.Type#isParentOf(agg.xt_basis.Type)
      */
+    @Override
     public boolean isParentOf(Type t) {
         return t.compareTo(this);
     }
@@ -1394,6 +1458,7 @@ public class ArcTypeImpl implements Type {
     /**
      * @see agg.xt_basis.Type#isRelatedTo(agg.xt_basis.Type)
      */
+    @Override
     public boolean isRelatedTo(Type t) {
         return t.compareTo(this);
     }
@@ -1401,12 +1466,14 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#addParent(agg.xt_basis.Type)
      */
+    @Override
     public void addParent(Type t) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#checkIfNodeCreatable(agg.xt_basis.Graph, int)
      */
+    @Override
     public TypeError checkIfNodeCreatable(Graph basisGraph,
             int levelOfTypeGraphCheck) {
         return null;
@@ -1415,6 +1482,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#checkIfRemovable(agg.xt_basis.Node, int)
      */
+    @Override
     public TypeError checkIfRemovable(Node node, int level) {
         return null;
     }
@@ -1422,34 +1490,39 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getAllChildren()
      */
+    @Override
     public List<Type> getAllChildren() {
-        return new ArrayList<Type>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getAllParents()
      */
+    @Override
     public List<Type> getAllParents() {
-        return new ArrayList<Type>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getChildren()
      */
+    @Override
     public List<Type> getChildren() {
-        return new ArrayList<Type>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getCommonParentWith(agg.xt_basis.Type)
      */
+    @Override
     public List<Type> getCommonParentWith(Type t) {
-        return new ArrayList<Type>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getImageFilename()
      */
+    @Override
     public String getImageFilename() {
         return "";
     }
@@ -1457,6 +1530,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getParent()
      */
+    @Override
     public Type getParent() {
         return null;
     }
@@ -1464,13 +1538,15 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getParents()
      */
+    @Override
     public List<Type> getParents() {
-        return new ArrayList<Type>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getSourceMax()
      */
+    @Override
     public int getSourceMax() {
         return 0;
     }
@@ -1478,6 +1554,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getSourceMin()
      */
+    @Override
     public int getSourceMin() {
         return 0;
     }
@@ -1485,6 +1562,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getTypeGraphNodeObject()
      */
+    @Override
     public Node getTypeGraphNodeObject() {
         return null;
     }
@@ -1492,6 +1570,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#hasTypeGraphNode()
      */
+    @Override
     public boolean hasTypeGraphNode() {
         return false;
     }
@@ -1499,6 +1578,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#isAbstract()
      */
+    @Override
     public boolean isAbstract() {
         return false;
     }
@@ -1506,6 +1586,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#isChildOf(agg.xt_basis.Type)
      */
+    @Override
     public boolean isChildOf(Type t) {
         return false;
     }
@@ -1513,6 +1594,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#isObjectOfTypeGraphNodeVisible()
      */
+    @Override
     public boolean isObjectOfTypeGraphNodeVisible() {
         return false;
     }
@@ -1520,48 +1602,56 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#removeParent(agg.xt_basis.Type)
      */
+    @Override
     public void removeParent(Type t) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#setAbstract(boolean)
      */
+    @Override
     public void setAbstract(boolean b) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#setImageFilename(java.lang.String)
      */
+    @Override
     public void setImageFilename(String imageFilename) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#setParent(agg.xt_basis.Type)
      */
+    @Override
     public void setParent(Type t) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#setSourceMax(int)
      */
+    @Override
     public void setSourceMax(int value) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#setSourceMin(int)
      */
+    @Override
     public void setSourceMin(int value) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#setVisibilityOfObjectsOfTypeGraphNode(boolean)
      */
+    @Override
     public void setVisibilityOfObjectsOfTypeGraphNode(boolean vis) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#hasInheritedAttribute()
      */
+    @Override
     public boolean hasInheritedAttribute() {
         return false;
     }
@@ -1569,6 +1659,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getMaxMultiplicityOfAllChildren()
      */
+    @Override
     public int getMaxMultiplicityOfAllChildren() {
         return 0;
     }
@@ -1576,6 +1667,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getMinMultiplicityOfAllChildren()
      */
+    @Override
     public int getMinMultiplicityOfAllChildren() {
         return 0;
     }
@@ -1597,46 +1689,53 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#addChild(agg.xt_basis.Type)
      */
+    @Override
     public void addChild(Type t) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getOwnIncomingArcs()
      */
+    @Override
     public List<Arc> getOwnIncomingArcs() {
-        return new ArrayList<Arc>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getOwnIncomingArcTypes()
      */
+    @Override
     public List<Type> getOwnIncomingArcTypes() {
-        return new ArrayList<Type>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getOwnOutgoingArcTypes()
      */
+    @Override
     public List<Type> getOwnOutgoingArcTypes() {
-        return new ArrayList<Type>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getOwnOutgoingArcs()
      */
+    @Override
     public List<Arc> getOwnOutgoingArcs() {
-        return new ArrayList<Arc>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#removeChild(agg.xt_basis.Type)
      */
+    @Override
     public void removeChild(Type t) {
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getTypeGraphNode()
      */
+    @Override
     public TypeGraphNode getTypeGraphNode() {
         return null;
     }
@@ -1644,13 +1743,15 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#getClan()
      */
+    @Override
     public List<Type> getClan() {
-        return new ArrayList<Type>(0);
+        return new ArrayList<>(0);
     }
 
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#hasCommonParentWith(agg.xt_basis.Type)
      */
+    @Override
     public boolean hasCommonParentWith(Type t) {
         return false;
     }
@@ -1658,6 +1759,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#isInClanOf(agg.xt_basis.Type)
      */
+    @Override
     public boolean isInClanOf(Type t) {
         return false;
     }
@@ -1665,6 +1767,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#hasChild()
      */
+    @Override
     public boolean hasChild() {
         return false;
     }
@@ -1672,6 +1775,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#hasParent()
      */
+    @Override
     public boolean hasParent() {
         return false;
     }
@@ -1679,6 +1783,7 @@ public class ArcTypeImpl implements Type {
     /* (non-Javadoc)
 	 * @see agg.xt_basis.Type#isParentAttrTypeEmpty()
      */
+    @Override
     public boolean isParentAttrTypeEmpty() {
         return true;
     }

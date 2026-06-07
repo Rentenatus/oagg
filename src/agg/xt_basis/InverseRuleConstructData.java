@@ -69,7 +69,7 @@ public class InverseRuleConstructData {
     public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getNACsStore() {
         if (this.leftNAC2extLeft == null) {
-            this.leftNAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftNAC2extLeft = new HashMap<>();
         }
         return this.leftNAC2extLeft;
     }
@@ -77,7 +77,7 @@ public class InverseRuleConstructData {
     public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getPACsStore() {
         if (this.leftPAC2extLeft == null) {
-            this.leftPAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftPAC2extLeft = new HashMap<>();
         }
         return this.leftPAC2extLeft;
     }
@@ -85,7 +85,7 @@ public class InverseRuleConstructData {
     public Map<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>
             getACsStor() {
         if (this.leftAC2extLeft == null) {
-            this.leftAC2extLeft = new HashMap<OrdinaryMorphism, Pair<OrdinaryMorphism, OrdinaryMorphism>>();
+            this.leftAC2extLeft = new HashMap<>();
         }
         return this.leftAC2extLeft;
     }

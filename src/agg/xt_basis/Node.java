@@ -32,9 +32,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
- * Represents a node in a graph. Nodes are the fundamental building blocks of graphs
- * and can have incoming and outgoing arcs (edges) connecting them to other nodes.
- * Each node has a type, a context (the graph it belongs to), and optionally attributes.
+ * Represents a node in a graph. Nodes are the fundamental building blocks of
+ * graphs and can have incoming and outgoing arcs (edges) connecting them to
+ * other nodes. Each node has a type, a context (the graph it belongs to), and
+ * optionally attributes.
  */
 @SuppressWarnings("serial")
 public class Node extends GraphObject implements XMLObject {
@@ -67,7 +68,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Creates a new node with the specified attribute instance, type, and graph context.
+     * Creates a new node with the specified attribute instance, type, and graph
+     * context.
      *
      * @param attr the attribute instance for this node
      * @param type the type of this node
@@ -86,7 +88,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Adds XY position attributes to this node if the context graph has XY attributes enabled.
+     * Adds XY position attributes to this node if the context graph has XY
+     * attributes enabled.
      *
      * @param xyPosAttrs true if XY position attributes should be added
      */
@@ -137,8 +140,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Disposes this node and releases all resources. Clears all arcs and removes
-     * observers from attributes.
+     * Disposes this node and releases all resources. Clears all arcs and
+     * removes observers from attributes.
      */
     public void dispose() {
         this.itsOutgoingArcs.clear();
@@ -190,7 +193,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns the total number of arcs connected to this node (both incoming and outgoing).
+     * Returns the total number of arcs connected to this node (both incoming
+     * and outgoing).
      *
      * @return the total number of arcs
      */
@@ -199,8 +203,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns an iterator through all incoming arcs to this node.
-     * The iterator returns arcs in the order they were created.
+     * Returns an iterator through all incoming arcs to this node. The iterator
+     * returns arcs in the order they were created.
      *
      * @return an iterator of incoming arcs
      * @see Arc
@@ -210,8 +214,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns an iterator through all incoming arcs to this node.
-     * The order of arcs may differ from the creation order.
+     * Returns an iterator through all incoming arcs to this node. The order of
+     * arcs may differ from the creation order.
      *
      * @return an iterator of incoming arcs
      */
@@ -220,8 +224,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns a set of all incoming arcs to this node.
-     * The order of arcs may differ from the creation order.
+     * Returns a set of all incoming arcs to this node. The order of arcs may
+     * differ from the creation order.
      *
      * @return a set of incoming arcs
      */
@@ -256,7 +260,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns the number of incoming arcs of the specified type from nodes of the specified source type.
+     * Returns the number of incoming arcs of the specified type from nodes of
+     * the specified source type.
      *
      * @param aType the arc type to count
      * @param srcType the source node type to filter by
@@ -275,7 +280,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns the number of incoming arcs of the specified type from nodes of the specified source type.
+     * Returns the number of incoming arcs of the specified type from nodes of
+     * the specified source type.
      *
      * @param aType the arc type to count
      * @param src the (parent) type of the source node of incoming arcs
@@ -297,7 +303,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns a list of incoming arcs of the specified type from nodes of the specified source type.
+     * Returns a list of incoming arcs of the specified type from nodes of the
+     * specified source type.
      *
      * @param aType the arc type to filter by
      * @param src the (parent) type of the source node of incoming arcs
@@ -319,10 +326,12 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Checks if this node has an incoming arc from a node of the specified type.
+     * Checks if this node has an incoming arc from a node of the specified
+     * type.
      *
      * @param aType the (parent) type of the source node of an incoming arc
-     * @return true if an incoming arc from the specified type exists, false otherwise
+     * @return true if an incoming arc from the specified type exists, false
+     * otherwise
      */
     public boolean hasIncomingArcFrom(Type aType) {
         for (Arc a : this.itsIncomingArcs) {
@@ -335,8 +344,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns an iterator through all outgoing arcs from this node.
-     * The iterator returns arcs in the order they were created.
+     * Returns an iterator through all outgoing arcs from this node. The
+     * iterator returns arcs in the order they were created.
      *
      * @return an iterator of outgoing arcs
      * @see Arc
@@ -356,8 +365,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns a set of all outgoing arcs from this node.
-     * The order of arcs may differ from the creation order.
+     * Returns a set of all outgoing arcs from this node. The order of arcs may
+     * differ from the creation order.
      *
      * @return a set of outgoing arcs
      */
@@ -366,8 +375,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns an iterator through all outgoing arcs from this node.
-     * The order of arcs may differ from the creation order.
+     * Returns an iterator through all outgoing arcs from this node. The order
+     * of arcs may differ from the creation order.
      *
      * @return an iterator of outgoing arcs
      */
@@ -392,7 +401,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns the number of outgoing arcs of the specified type to nodes of the specified target type.
+     * Returns the number of outgoing arcs of the specified type to nodes of the
+     * specified target type.
      *
      * @param aType the arc type to count
      * @param tarType the target node type to filter by
@@ -411,7 +421,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns the number of outgoing arcs of the specified type to nodes of the specified target type.
+     * Returns the number of outgoing arcs of the specified type to nodes of the
+     * specified target type.
      *
      * @param aType the arc type to count
      * @param tar the (parent) type of the target node of outgoing arcs
@@ -433,7 +444,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Checks if this node has an outgoing arc of the specified type to the specified target node.
+     * Checks if this node has an outgoing arc of the specified type to the
+     * specified target node.
      *
      * @param arct the arc type to check
      * @param tar the target node to check
@@ -444,7 +456,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns a list of outgoing arcs of the specified type to nodes of the specified target type.
+     * Returns a list of outgoing arcs of the specified type to nodes of the
+     * specified target type.
      *
      * @param aType the arc type to filter by
      * @param tar the (parent) type of the target node of outgoing arcs
@@ -466,7 +479,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns the outgoing arc of the specified type to the specified target node.
+     * Returns the outgoing arc of the specified type to the specified target
+     * node.
      *
      * @param t the arc type to search for
      * @param tar the target node to search for
@@ -486,7 +500,8 @@ public class Node extends GraphObject implements XMLObject {
      * Checks if this node has an outgoing arc to a node of the specified type.
      *
      * @param targetType the (parent) type of the target node of an outgoing arc
-     * @return true if an outgoing arc to the specified type exists, false otherwise
+     * @return true if an outgoing arc to the specified type exists, false
+     * otherwise
      */
     public boolean hasOutgoingArcTo(Type targetType) {
         for (Arc arc : this.itsOutgoingArcs) {
@@ -499,7 +514,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Returns the total number of incoming and outgoing arcs connected to this node.
+     * Returns the total number of incoming and outgoing arcs connected to this
+     * node.
      *
      * @return the total number of arcs
      */
@@ -510,7 +526,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Converts this node's type to a type key string that is used for search operations.
+     * Converts this node's type to a type key string that is used for search
+     * operations.
      *
      * @return the type key string
      */
@@ -544,17 +561,13 @@ public class Node extends GraphObject implements XMLObject {
         if (!this.itsType.isParentOf(otherNode.getType())) {
             return false;
         }
-        if ((this.itsAttr == null && otherNode.getAttribute() == null)
+        final boolean okay = (this.itsAttr == null && otherNode.getAttribute() == null)
                 || ((this.attrExists() && otherNode.attrExists())
-                && this.itsAttr.compareTo(otherNode.getAttribute()))) {
-            ;
-        } else {
+                && this.itsAttr.compareTo(otherNode.getAttribute()));
+        if (!okay) {
             return false;
         }
-        if (!this.compareMultiplicityTo(otherNode)) {
-            return false;
-        }
-        return true;
+        return this.compareMultiplicityTo(otherNode);
     }
 
     /**
@@ -742,8 +755,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Propagates attribute value changes to child nodes in the type graph.
-     * This is used for inheritance of attribute values.
+     * Propagates attribute value changes to child nodes in the type graph. This
+     * is used for inheritance of attribute values.
      */
     private void propagateAttrValueToChildNode() {
         for (Type cht : this.getType().getChildren()) {
@@ -777,8 +790,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Propagates attribute values from parent nodes to this node.
-     * This is used for inheritance of attribute values in type graphs.
+     * Propagates attribute values from parent nodes to this node. This is used
+     * for inheritance of attribute values in type graphs.
      */
     public void propagateAttrValueFromParentNode() {
         if (!this.itsContext.isTypeGraph()) {
@@ -796,8 +809,8 @@ public class Node extends GraphObject implements XMLObject {
     }
 
     /**
-     * Sets attribute values from parent node to this node.
-     * Used for attribute inheritance in type graphs.
+     * Sets attribute values from parent node to this node. Used for attribute
+     * inheritance in type graphs.
      *
      * @param parentNode the parent node to copy attributes from
      */

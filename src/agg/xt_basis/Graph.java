@@ -47,12 +47,15 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * Represents a graph in the AGG system that extends simple graphs with the capability
- * to have arcs between nodes. A graph contains nodes and arcs, and can have attributes
- * associated with both nodes and arcs through an attribute context.
+ * Represents a graph in the AGG system that extends simple graphs with the
+ * capability to have arcs between nodes. A graph contains nodes and arcs, and
+ * can have attributes associated with both nodes and arcs through an attribute
+ * context.
  *
- * <p>This class supports various graph operations including creating, modifying, and
- * querying graph elements, as well as managing type information and constraints.
+ * <p>
+ * This class supports various graph operations including creating, modifying,
+ * and querying graph elements, as well as managing type information and
+ * constraints.
  *
  * @see Node
  * @see Arc
@@ -72,7 +75,7 @@ import java.util.Observer;
 // * @see agg.xt_basis.Graph_Change_ObjectDestroyed
 // * @see agg.xt_basis.Graph_Change_ObjectModified
 // * @see agg.util.Change_ObservableGone
-public   class Graph extends ExtObservable
+public class Graph extends ExtObservable
         implements Observer, XMLObject {
 
     // test: node XY-position as attribute
@@ -98,8 +101,9 @@ public   class Graph extends ExtObservable
     protected boolean completeGraph;
 
     /**
-     * Creates an empty graph with an empty type set and the specified orientation.
-     * Use {@link #Graph(boolean)} to create a complete graph (a host graph).
+     * Creates an empty graph with an empty type set and the specified
+     * orientation. Use {@link #Graph(boolean)} to create a complete graph (a
+     * host graph).
      *
      * @param orientation the graph orientation (directed or undirected)
      */
@@ -111,8 +115,9 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Creates an empty graph with the specified type set and orientation.
-     * Use {@link #Graph(TypeSet, boolean)} to create a complete graph (a host graph).
+     * Creates an empty graph with the specified type set and orientation. Use
+     * {@link #Graph(TypeSet, boolean)} to create a complete graph (a host
+     * graph).
      *
      * @param orientation the graph orientation (directed or undirected)
      * @param aTypeSet the type set to use for this graph
@@ -125,7 +130,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Creates an empty graph with an empty type set, specified orientation and completeness flag.
+     * Creates an empty graph with an empty type set, specified orientation and
+     * completeness flag.
      *
      * @param orientation the graph orientation (directed or undirected)
      * @param completeGraph true to create a host graph, false otherwise
@@ -138,7 +144,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Creates an empty graph with the specified type set, orientation and completeness flag.
+     * Creates an empty graph with the specified type set, orientation and
+     * completeness flag.
      *
      * @param orientation the graph orientation (directed or undirected)
      * @param aTypeSet the type set to use for this graph
@@ -204,9 +211,11 @@ public   class Graph extends ExtObservable
 
     /**
      * Adds an observer to this graph.
+     *
      * @see java.util.Observable#addObserver(java.util.Observer)
      * @param observer the observer to add
      */
+    @Override
     public synchronized void addObserver(Observer observer) {
         if (!this.observer.contains(observer)) {
             this.observer.add(observer);
@@ -217,9 +226,11 @@ public   class Graph extends ExtObservable
 
     /**
      * Removes an observer from this graph.
+     *
      * @see java.util.Observable#deleteObserver(java.util.Observer)
      * @param observer the observer to remove
      */
+    @Override
     public synchronized void deleteObserver(Observer observer) {
         if (this.observer.contains(observer)) {
             this.observer.remove(observer);
@@ -254,6 +265,7 @@ public   class Graph extends ExtObservable
 
     /**
      * Sets the observers for this graph.
+     *
      * @param observers the list of observers to set
      */
     public void setObservers(List<?> observers) {
@@ -292,7 +304,9 @@ public   class Graph extends ExtObservable
 
     /**
      * Sets whether notification is required for this graph.
-     * @param notificationRequired true if notification is required, false otherwise
+     *
+     * @param notificationRequired true if notification is required, false
+     * otherwise
      */
     public void setNotificationRequired(boolean notificationRequired) {
         this.notificationRequired = notificationRequired;
@@ -327,8 +341,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Tries to add a copy of the specified graph to this graph's elements.
-     * The existing type graph should be disabled.
+     * Tries to add a copy of the specified graph to this graph's elements. The
+     * existing type graph should be disabled.
      *
      * @param g The graph to copy.
      * @param disabledTypeGraph If true, the type graph check is disabled.
@@ -631,8 +645,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a copy of this graph using the specified type set.
-     * The specified type set should be compatible with this graph's type set.
+     * Returns a copy of this graph using the specified type set. The specified
+     * type set should be compatible with this graph's type set.
      *
      * @param types The type set to use for the copied graph.
      * @return The new copy of this graph.
@@ -762,8 +776,8 @@ public   class Graph extends ExtObservable
      * Returns a copy of this graph.
      *
      * @param orig2copy The specified table is used to store pairs (original,
-     *                copy), where an original is a node/edge of this graph and a copy is the
-     *                appropriate node/edge of the graph copy.
+     * copy), where an original is a node/edge of this graph and a copy is the
+     * appropriate node/edge of the graph copy.
      * @return A copy of this graph or null if an error occurred.
      */
     public Graph copy(final Map<GraphObject, GraphObject> orig2copy) {
@@ -921,9 +935,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Copies the specified graph into this graph.
-     * Pre-condition: this graph has to be empty and has to use the same type
-     * set as the specified graph.
+     * Copies the specified graph into this graph. Pre-condition: this graph has
+     * to be empty and has to use the same type set as the specified graph.
      *
      * @param g The graph to copy into this graph.
      * @return This graph after copying.
@@ -1078,12 +1091,13 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns help information about variable equality from the stored help info.
+     * Returns help information about variable equality from the stored help
+     * info.
      *
      * @return The help information about variable equality.
      */
     public String getHelpInfoAboutVariableEquality() {
-        if (this.info.indexOf(":VariableEquality:") != -1) {
+        if (this.info.contains(":VariableEquality:")) {
             final String[] array = this.info.split(":VariableEquality:");
             if (array.length == 1) {
                 return array[0];
@@ -1100,14 +1114,14 @@ public   class Graph extends ExtObservable
      * @return The help information about PAC.
      */
     public String getHelpInfoAboutPAC() {
-        if (this.info.indexOf(":VariableEquality:") != -1) {
+        if (this.info.contains(":VariableEquality:")) {
             final String[] array = this.info.split(":VariableEquality:");
             if (array.length == 2) {
-                if (array[0].indexOf("PAC") != -1) {
+                if (array[0].contains("PAC")) {
                     return array[0].replaceFirst("PAC:", "");
                 }
             }
-        } else if (this.info.indexOf("PAC") != -1) {
+        } else if (this.info.contains("PAC")) {
             return this.info.replaceFirst("PAC:", "");
         }
         return "";
@@ -1119,22 +1133,22 @@ public   class Graph extends ExtObservable
      * @return The help information about NAC.
      */
     public String getHelpInfoAboutNAC() {
-        if (this.info.indexOf(":VariableEquality:") != -1) {
+        if (this.info.contains(":VariableEquality:")) {
             final String[] array = this.info.split(":VariableEquality:");
             if (array.length == 2) {
-                if (array[0].indexOf("NAC:") != -1) {
+                if (array[0].contains("NAC:")) {
                     return array[0].replaceFirst("NAC:", "");
                 }
             }
-        } else if (this.info.indexOf("NAC:") != -1) {
+        } else if (this.info.contains("NAC:")) {
             return this.info.replaceFirst("NAC:", "");
         }
         return "";
     }
 
     /**
-     * Sets textual comments (description) for this graph.
-     * This description can be used in AGG GUI.
+     * Sets textual comments (description) for this graph. This description can
+     * be used in AGG GUI.
      *
      * @param text The textual comment to set.
      */
@@ -1173,7 +1187,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a list of all used types in this graph, including inherited types.
+     * Returns a list of all used types in this graph, including inherited
+     * types.
      *
      * @return List of used and inherited types.
      */
@@ -1206,8 +1221,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Adds the specified node to this graph.
-     * The type of the specified node has to be in this graph's type set.
+     * Adds the specified node to this graph. The type of the specified node has
+     * to be in this graph's type set.
      *
      * @param node The node to add.
      */
@@ -1252,8 +1267,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Adds the specified arc to this graph.
-     * The type of the specified arc has to be in this graph's type set.
+     * Adds the specified arc to this graph. The type of the specified arc has
+     * to be in this graph's type set.
      *
      * @param arc The arc to add.
      */
@@ -1363,9 +1378,9 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Creates a new node as a copy of the specified original.
-     * Only type and attributes are copied, the structural context (incoming/outgoing
-     * arcs) is not.
+     * Creates a new node as a copy of the specified original. Only type and
+     * attributes are copied, the structural context (incoming/outgoing arcs) is
+     * not.
      *
      * @param originalNode The node to copy.
      * @return The copied node.
@@ -1393,27 +1408,27 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Deletes a node. Dangling arcs are deleted implicitly.
-     * The node is removed from this graph and from all morphism mappings using this node.
+     * Deletes a node. Dangling arcs are deleted implicitly. The node is removed
+     * from this graph and from all morphism mappings using this node.
      *
      * @param node The node to destroy.
      * @throws TypeException If this graph is a type graph, and there are nodes
-     *                of this type node in one of other graphs, an exception is thrown.
+     * of this type node in one of other graphs, an exception is thrown.
      */
     public void destroyNode(Node node) throws TypeException {
         destroyNode(node, true);
     }
 
     /**
-     * Deletes a node. Dangling arcs are deleted implicitly.
-     * The node is removed from this graph and from all morphism mappings using this node.
-     * If the specified parameter checkFirst is false, the node is destroyed
-     * without any checks.
+     * Deletes a node. Dangling arcs are deleted implicitly. The node is removed
+     * from this graph and from all morphism mappings using this node. If the
+     * specified parameter checkFirst is false, the node is destroyed without
+     * any checks.
      *
      * @param node The node to destroy.
      * @param checkFirst If true, performs checks before destroying.
      * @throws TypeException If this graph is a type graph, and there are nodes
-     *                of this type node in one of other graphs, an exception is thrown.
+     * of this type node in one of other graphs, an exception is thrown.
      */
     public synchronized void destroyNode(Node node, boolean checkFirst)
             throws TypeException {
@@ -1421,17 +1436,18 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Deletes a node. Dangling arcs are deleted implicitly.
-     * The node is removed from this graph and from all morphism mappings using this node.
-     * If the specified parameter checkFirst is false, the node is destroyed
-     * without any checks.
+     * Deletes a node. Dangling arcs are deleted implicitly. The node is removed
+     * from this graph and from all morphism mappings using this node. If the
+     * specified parameter checkFirst is false, the node is destroyed without
+     * any checks.
      *
      * @param node The node to destroy.
      * @param checkFirst If true, performs checks before destroying.
-     * @param forceDestroy If true, forces destruction without throwing exceptions.
+     * @param forceDestroy If true, forces destruction without throwing
+     * exceptions.
      * @throws TypeException If this graph is a type graph, and there are nodes
-     *                of this type node in one of other graphs, an exception is thrown when
-     *                forceDestroy is false, otherwise no exception is thrown.
+     * of this type node in one of other graphs, an exception is thrown when
+     * forceDestroy is false, otherwise no exception is thrown.
      */
     public synchronized void destroyNode(final Node node, boolean checkFirst,
             boolean forceDestroy) throws TypeException {
@@ -1471,8 +1487,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Destroys a node quickly without performing type checks.
-     * Dangling arcs are deleted implicitly.
+     * Destroys a node quickly without performing type checks. Dangling arcs are
+     * deleted implicitly.
      *
      * @param node The node to destroy quickly.
      */
@@ -1497,7 +1513,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Removes mapping of the specified object from all morphisms using this graph.
+     * Removes mapping of the specified object from all morphisms using this
+     * graph.
      *
      * @param anObject The graph object whose mapping should be removed.
      */
@@ -1559,8 +1576,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Creates and adds a new arc of the specified type, source and target nodes,
-     * which must be part of this graph.
+     * Creates and adds a new arc of the specified type, source and target
+     * nodes, which must be part of this graph.
      *
      * @param type The type for the new arc.
      * @param src The source node.
@@ -1583,7 +1600,7 @@ public   class Graph extends ExtObservable
             if (arcType == null) {
                 arcType = this.itsTypes.addType(type);
             }
-            if (arcType.getAdditionalRepr().indexOf("[EDGE]") == -1) {
+            if (!arcType.getAdditionalRepr().contains("[EDGE]")) {
                 arcType.setAdditionalRepr("[EDGE]");
             }
         }
@@ -1620,9 +1637,10 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Creates a new arc as a copy of the specified original arc.
-     * Only its type and attributes are copied, the structural context (source, target) is not.
-     * The specified source and target objects must be part of this graph, but this is not checked here.
+     * Creates a new arc as a copy of the specified original arc. Only its type
+     * and attributes are copied, the structural context (source, target) is
+     * not. The specified source and target objects must be part of this graph,
+     * but this is not checked here.
      *
      * @param orig The original arc to copy.
      * @param src The source node for the new arc.
@@ -1665,7 +1683,7 @@ public   class Graph extends ExtObservable
      *
      * @param arc The arc to destroy.
      * @throws TypeException If this graph is a type graph, and there are arcs
-     *                of this type arc in one of other graphs, an exception is thrown.
+     * of this type arc in one of other graphs, an exception is thrown.
      */
     public void destroyArc(Arc arc) throws TypeException {
         destroyArc(arc, true, false);
@@ -1673,14 +1691,13 @@ public   class Graph extends ExtObservable
 
     /**
      * Deletes the specified arc. The arc will be removed from this graph and
-     * from all morphism mappings with this arc.
-     * If the specified parameter checkFirst is false, the arc is destroyed
-     * without any checks.
+     * from all morphism mappings with this arc. If the specified parameter
+     * checkFirst is false, the arc is destroyed without any checks.
      *
      * @param arc The arc to destroy.
      * @param checkFirst If true, performs checks before destroying.
      * @throws TypeException If this graph is a type graph, and there are arcs
-     *                of this type arc in one of other graphs, an exception is thrown.
+     * of this type arc in one of other graphs, an exception is thrown.
      */
     public synchronized void destroyArc(Arc arc, boolean checkFirst)
             throws TypeException {
@@ -1689,16 +1706,16 @@ public   class Graph extends ExtObservable
 
     /**
      * Deletes the specified arc. The arc will be removed from this graph and
-     * from all morphism mappings with this arc.
-     * If the specified parameter checkFirst is false, the arc is destroyed
-     * without any checks.
+     * from all morphism mappings with this arc. If the specified parameter
+     * checkFirst is false, the arc is destroyed without any checks.
      *
      * @param arc The arc to destroy.
      * @param checkFirst If true, performs checks before destroying.
-     * @param forceDestroy If true, forces destruction without throwing exceptions.
+     * @param forceDestroy If true, forces destruction without throwing
+     * exceptions.
      * @throws TypeException If this graph is a type graph, and there are arcs
-     *                of this type arc in one of other graphs, an exception is thrown when
-     *                forceDestroy is false, otherwise no exception is thrown.
+     * of this type arc in one of other graphs, an exception is thrown when
+     * forceDestroy is false, otherwise no exception is thrown.
      */
     public void destroyArc(
             final Arc arc,
@@ -1749,7 +1766,8 @@ public   class Graph extends ExtObservable
      * Destroys the specified graph object (node or arc).
      *
      * @param obj The graph object to destroy.
-     * @throws TypeException If the object cannot be destroyed due to type errors.
+     * @throws TypeException If the object cannot be destroyed due to type
+     * errors.
      */
     public void destroyObject(GraphObject obj) throws TypeException {
         if (obj.isNode()) {
@@ -1760,10 +1778,12 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Forces destruction of the specified graph object (node or arc) without checks.
+     * Forces destruction of the specified graph object (node or arc) without
+     * checks.
      *
      * @param obj The graph object to force destroy.
-     * @throws TypeException If the object cannot be destroyed due to type errors.
+     * @throws TypeException If the object cannot be destroyed due to type
+     * errors.
      */
     public void forceDestroyObject(GraphObject obj) throws TypeException {
         if (obj.isNode()) {
@@ -1817,7 +1837,8 @@ public   class Graph extends ExtObservable
      * Destroys all objects of the specified types in this graph.
      *
      * @param types The list of types of objects to destroy.
-     * @return null if destroy was successful, otherwise a list with failed types.
+     * @return null if destroy was successful, otherwise a list with failed
+     * types.
      */
     public List<String> destroyObjectsOfTypes(List<Type> types) {
         List<String> failed = null;
@@ -1885,7 +1906,8 @@ public   class Graph extends ExtObservable
      *
      * @param attrType The attribute type to search for.
      * @param mem The value member to search for.
-     * @return The node with the specified attribute member, or null if not found.
+     * @return The node with the specified attribute member, or null if not
+     * found.
      */
     public Node getNodeWithAttrMember(AttrType attrType, ValueMember mem) {
         GraphObject go = null;
@@ -1909,7 +1931,8 @@ public   class Graph extends ExtObservable
      *
      * @param attrType The attribute type to search for.
      * @param mem The value member to search for.
-     * @return The arc with the specified attribute member, or null if not found.
+     * @return The arc with the specified attribute member, or null if not
+     * found.
      */
     public Arc getEdgeWithAttrMember(AttrType attrType, ValueMember mem) {
         GraphObject go = null;
@@ -1980,7 +2003,8 @@ public   class Graph extends ExtObservable
      *
      * @param src The source graph object.
      * @param tar The target graph object.
-     * @return List of arcs between the specified objects, or null if none found.
+     * @return List of arcs between the specified objects, or null if none
+     * found.
      */
     public List<Arc> getArcs(final GraphObject src, final GraphObject tar) {
         List<Arc> res = null;
@@ -2019,7 +2043,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Iterates through nodes to find related nodes of the specified parent type.
+     * Iterates through nodes to find related nodes of the specified parent
+     * type.
      *
      * @param t The parent type to search for.
      * @return List of nodes whose type is a child of the specified type.
@@ -2040,10 +2065,12 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Iterates through nodes to find nodes with type equal to the specified type.
+     * Iterates through nodes to find nodes with type equal to the specified
+     * type.
      *
      * @param t The type to compare against.
-     * @return List of nodes with type exactly equal to the specified type, or null if none found.
+     * @return List of nodes with type exactly equal to the specified type, or
+     * null if none found.
      */
     public List<Node> getNodesByCompareType(final Type t) {
         List<Node> res = null;
@@ -2108,9 +2135,9 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns type names of nodes and edges of this graph.
-     * If a type is unnamed, returns "[UNNAMED_NODE]" or "[UNNAMED_EDGE]".
-     * The order of the type names is the order of the nodes and edges of this graph.
+     * Returns type names of nodes and edges of this graph. If a type is
+     * unnamed, returns "[UNNAMED_NODE]" or "[UNNAMED_EDGE]". The order of the
+     * type names is the order of the nodes and edges of this graph.
      *
      * @return List of type names.
      */
@@ -2221,7 +2248,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a list of graph objects which are parent objects of the given type.
+     * Returns a list of graph objects which are parent objects of the given
+     * type.
      *
      * @param type The type to search for parent objects.
      * @return List of parent graph objects of the specified type.
@@ -2235,7 +2263,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a list of graph objects which are objects or parent objects of the given type.
+     * Returns a list of graph objects which are objects or parent objects of
+     * the given type.
      *
      * @param type The type to search for.
      * @return List of graph objects of the specified type or its parent types.
@@ -2249,7 +2278,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a list of graph objects which are child objects of the given type.
+     * Returns a list of graph objects which are child objects of the given
+     * type.
      *
      * @param type The parent type to search for child objects.
      * @return List of child graph objects of the specified type.
@@ -2263,7 +2293,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a list of graph objects which are objects or child objects of the given type.
+     * Returns a list of graph objects which are objects or child objects of the
+     * given type.
      *
      * @param type The type to search for.
      * @return List of graph objects of the specified type or its child types.
@@ -2307,7 +2338,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a list of elements of the specified type, optionally including children.
+     * Returns a list of elements of the specified type, optionally including
+     * children.
      *
      * @param type The type to search for.
      * @param withChildren If true, includes child types.
@@ -2351,8 +2383,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Iterates through edges to find all edges of the specified type.
-     * For all these edges holds: the source is of the specified src type and the target
+     * Iterates through edges to find all edges of the specified type. For all
+     * these edges holds: the source is of the specified src type and the target
      * is of the specified tar type.
      *
      * @param type The arc type to search for.
@@ -2379,7 +2411,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Iterates through nodes and arcs to find all elements of the specified type.
+     * Iterates through nodes and arcs to find all elements of the specified
+     * type.
      *
      * @param type The graph object whose type to search for.
      * @return Iterator of graph objects matching the type.
@@ -2390,7 +2423,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Iterates through nodes and arcs to find all elements of the specified type.
+     * Iterates through nodes and arcs to find all elements of the specified
+     * type.
      *
      * @param type The graph object whose type to search for.
      * @return List of graph objects matching the type.
@@ -2463,7 +2497,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Creates attribute instances where needed for nodes and arcs of the specified type.
+     * Creates attribute instances where needed for nodes and arcs of the
+     * specified type.
      *
      * @param t The type for which to create attribute instances.
      */
@@ -2543,11 +2578,7 @@ public   class Graph extends ExtObservable
         if (this.itsNodes == null) {
             System.out.println(this.itsName);
         }
-        if (obj.getContext() == this) {
-            return true;
-        } else {
-            return false;
-        }
+        return obj.getContext() == this;
     }
 
     /**
@@ -2580,7 +2611,7 @@ public   class Graph extends ExtObservable
         if (t.isArc()) {
             boolean hasTypeGraphArc = this.getTypeSet().getTypeGraphArc(
                     t.getType(), ((Arc) t).getSource().getType(),
-                    ((Arc) t).getTarget().getType()) != null ? true : false;
+                    ((Arc) t).getTarget().getType()) != null;
             Iterator<Arc> iter = this.itsArcs.iterator();
             while (iter.hasNext()) {
                 Arc o = iter.next();
@@ -2723,10 +2754,10 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Tries to glue two graph objects with a target object.
-     * The context of the graph object to keep will be extended by out- and in-edges
-     * of the glue object. The unset attributes of the keep object will get the
-     * attribute value of the glue object if it is a constant.
+     * Tries to glue two graph objects with a target object. The context of the
+     * graph object to keep will be extended by out- and in-edges of the glue
+     * object. The unset attributes of the keep object will get the attribute
+     * value of the glue object if it is a constant.
      *
      * @param keep The object to keep.
      * @param glue The object to glue into the keep object.
@@ -2856,6 +2887,8 @@ public   class Graph extends ExtObservable
     /**
      * Returns false if not all attributes of its graph objects are set,
      * otherwise - true.
+     *
+     * @return
      */
     public boolean isReadyForTransform() {
         return (isAttributeSet(this.itsNodes.iterator(), null)
@@ -2919,7 +2952,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Checks if this graph has objects with variables or constants in their attributes.
+     * Checks if this graph has objects with variables or constants in their
+     * attributes.
      *
      * @param withvar If true, checks for variables.
      * @param withconst If true, checks for constants.
@@ -3032,13 +3066,14 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Checks if this graph is ready for transformation.
-     * Returns false if not all attributes of its graph objects are set,
-     * otherwise true. The specified list will contain nodes and edges which
-     * are not initialized completely.
+     * Checks if this graph is ready for transformation. Returns false if not
+     * all attributes of its graph objects are set, otherwise true. The
+     * specified list will contain nodes and edges which are not initialized
+     * completely.
      *
      * @param storeOfFailedObjs The list to store objects that failed the check.
-     * @return true if all attributes are set and the graph is ready for transformation.
+     * @return true if all attributes are set and the graph is ready for
+     * transformation.
      */
     public boolean isReadyForTransform(final List<GraphObject> storeOfFailedObjs) {
         return isAttributeSet(this.itsNodes.iterator(), storeOfFailedObjs)
@@ -3053,10 +3088,7 @@ public   class Graph extends ExtObservable
      */
     public boolean isIsomorphicTo(Graph g) {
         final OrdinaryMorphism h = this.getIsomorphicWith(g);
-        if (h == null) {
-            return false;
-        }
-        return true;
+        return h != null;
     }
 
     /**
@@ -3311,11 +3343,14 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Makes the given empty graph to a copy of this graph. The attributes values are copied, too.
+     * Makes the given empty graph to a copy of this graph. The attributes
+     * values are copied, too.
      *
-     * @param inverse if true, the morphism is given by theCopy -> this, otherwise this -> theCopy
+     * @param inverse if true, the morphism is given by theCopy -> this,
+     * otherwise this -> theCopy
      * @param iso the morphism to be populated with mappings
-     * @param theCopy the empty graph to be filled with copies of this graph's elements
+     * @param theCopy the empty graph to be filled with copies of this graph's
+     * elements
      * @return true if the copy was created successfully, false otherwise
      */
     public boolean makeIsocopy(boolean inverse, OrdinaryMorphism iso, Graph theCopy) {
@@ -3395,7 +3430,8 @@ public   class Graph extends ExtObservable
      * Returns an isomorphism between this graph and its graph-structure copy.
      * The attributes values are not copied.
      *
-     * @param inverse if true, returns morphism copy --> this, otherwise this --> copy
+     * @param inverse if true, returns morphism copy --> this, otherwise this
+     * --> copy
      * @return morphism between this graph and its copy
      */
     public OrdinaryMorphism isomorphicGraph(boolean inverse) {
@@ -3465,8 +3501,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns an isomorphism between an ad-hoc-created copy and this graph.
-     * The attributes values are copied, too.
+     * Returns an isomorphism between an ad-hoc-created copy and this graph. The
+     * attributes values are copied, too.
      *
      * @return morphism copy --> this
      */
@@ -3480,7 +3516,7 @@ public   class Graph extends ExtObservable
             OrdinaryMorphism iso = BaseFactory.theFactory().createMorphism(
                     theCopy, this);
             iso.setName("IsoMorph");
-            final Map<Node, Node> memo1 = new HashMap<Node, Node>(this
+            final Map<Node, Node> memo1 = new HashMap<>(this
                     .getSize());
             while (vtxList.hasNext()) {
                 Node vtxOrig = vtxList.next();
@@ -3525,7 +3561,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Computes overlapping morphisms between this graph and the specified graph.
+     * Computes overlapping morphisms between this graph and the specified
+     * graph.
      *
      * @param g the target graph for overlap computation
      * @param withIsomorphic if true, computes isomorphic overlaps
@@ -3536,7 +3573,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Computes overlapping morphisms between this graph and the specified graph.
+     * Computes overlapping morphisms between this graph and the specified
+     * graph.
      *
      * @param g the target graph for overlap computation
      * @param disjunion if true, uses disjoint union for overlap computation
@@ -3549,7 +3587,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Computes overlapping morphisms between this graph and the specified graph.
+     * Computes overlapping morphisms between this graph and the specified
+     * graph.
      *
      * @param g the target graph for overlap computation
      * @param sizeOfInclusions the required size of inclusions
@@ -3562,7 +3601,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Computes overlapping morphisms between this graph and the specified graph.
+     * Computes overlapping morphisms between this graph and the specified
+     * graph.
      *
      * @param g the target graph for overlap computation
      * @param sizeOfInclusions the required size of inclusions
@@ -3580,6 +3620,7 @@ public   class Graph extends ExtObservable
      *
      * @param h the XML helper to use for writing
      */
+    @Override
     public void XwriteObject(XMLHelper h) {
         this.refreshAttributed();
         this.changed = false;
@@ -3605,17 +3646,18 @@ public   class Graph extends ExtObservable
      *
      * @param helper the XML helper to use for reading
      */
+    @Override
     public void XreadObject(XMLHelper helper) {
         if (helper.isTag("Graph", this)) {
             String str = helper.readAttr("name");
             setName(str.replaceAll(" ", ""));
             str = helper.readAttr("comment");
             if (!str.equals("")) {
-                this.comment = str.toString();
+                this.comment = str;
             }
             str = helper.readAttr("info");
             if (!str.equals("")) {
-                this.info = str.toString();
+                this.info = str;
             }
             Iterator<?> en = helper.getEnumeration("", null, true, "Node");
             while (en.hasNext()) {
@@ -3661,12 +3703,14 @@ public   class Graph extends ExtObservable
 //		this.showTypeMap(this.getTypeObjectsMap());	
     }
 
+    @Override
     public String toString() {
         return showGraph();
     }
 
     /**
-     * Returns a string representation of this graph including its name, arcs, and nodes.
+     * Returns a string representation of this graph including its name, arcs,
+     * and nodes.
      *
      * @return string representation of the graph
      */
@@ -3700,71 +3744,11 @@ public   class Graph extends ExtObservable
         return result;
     }
 
-    /*
-	protected String showNodes() {
-		String result = this.getName();
-		result = "\nGraph: " + this.getName() + "   Nodes::  "
-				+ getNodesCount() + "{\n";
-		Iterator<Node> e = this.itsNodes.iterator();
-		while (e.hasNext()) {
-			Node node = e.next();
-			result += node.toString();
-		}
-		result += " }\n";
-		return result;
-	}
-	protected String showArcs() {
-		String result = this.getName();
-		result = "\nGraph: " + this.getName() + " Edges::  " + getArcsCount()
-				+ "{\n";
-		Iterator<Arc> e = this.itsArcs.iterator();
-		while (e.hasNext()) {
-			Arc arc = e.next();
-			result += ((Node) arc.getSource()).toString() + arc.toString()
-					+ ((Node) arc.getTarget()).toString();
-		}
-		if (this.isTypeGraph()) {
-			List<Arc> inheritArcs = this.getTypeSet().getInheritanceArcs();
-			e = inheritArcs.iterator();
-			while (e.hasNext()) {
-				Arc arc = e.next();
-				result += ((Node) arc.getSource()).toString()
-				// +arc.toString()
-						+ "--inherits-->" + ((Node) arc.getTarget()).toString();
-			}
-		}
-		result += " }\n";
-		return result;
-	}
-	
-	private String attributesToString() {
-		String result = "\nGraph: " + this.getName() + " {\n";
-		Iterator<Node> e = this.itsNodes.iterator();
-		while (e.hasNext()) {
-			Node node = e.next();
-			// if(!node.getIncomingArcs().hasNext()
-			// && !node.getOutgoingArcs().hasNext())
-			{
-				result += node.toString();
-				result += attributeToString(node);
-			}
-		}
-//		
-//		  e = getArcs(); while(e.hasNext()) { Arc arc = (Arc)
-//		  e.next(); result += arc.toString(); result +=
-//		  attributeToString(arc); }
-//		 	
- 		result += "\n}";
-		return result;
-	}
-     */
-//	private String attributeToString(GraphObject gob) {
-//		return gob.attributeToString();
-//	}
     /**
      * Returns true if the given set of graph objects represents a valid graph.
      *
      * @param goSet a List of GraphObjects
+     * @return
      *
      * @see GraphObject
      * @see TypeSet#checkType(Graph)
@@ -3783,8 +3767,10 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns true if this graph is used as a type graph. This works only if
+     * Returns true if this graph is used as a type graph.This works only if
      * this graph is registered as type graph in its own {@link TypeSet}.
+     *
+     * @return
      */
     public boolean isTypeGraph() {
         if (this.itsTypes == null) {
@@ -3845,9 +3831,9 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Checks if this graph is a complete graph. A complete graph is not allowed to use
-     * variables in attributes of its nodes and edges. The host graph of a gragra is
-     * always a complete graph.
+     * Checks if this graph is a complete graph. A complete graph is not allowed
+     * to use variables in attributes of its nodes and edges. The host graph of
+     * a gragra is always a complete graph.
      *
      * @return true if this graph is a complete graph, false otherwise
      */
@@ -3856,8 +3842,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Sets whether this graph is a complete graph. A complete graph is not allowed to use
-     * variables in attributes of its nodes and edges.
+     * Sets whether this graph is a complete graph. A complete graph is not
+     * allowed to use variables in attributes of its nodes and edges.
      *
      * @param complete true to set this graph as complete, false otherwise
      */
@@ -3871,7 +3857,7 @@ public   class Graph extends ExtObservable
      * @return true if this graph is a NAC graph, false otherwise
      */
     public boolean isNacGraph() {
-        return (this.kind == GraphKind.NAC) ? true : false;
+        return (this.kind == GraphKind.NAC);
     }
 
     /**
@@ -3880,22 +3866,23 @@ public   class Graph extends ExtObservable
      * @return true if this graph is a PAC graph, false otherwise
      */
     public boolean isPacGraph() {
-        return (this.kind == GraphKind.PAC) ? true : false;
+        return (this.kind == GraphKind.PAC);
     }
 
     /**
      * Checks if this graph is a nested Application Condition graph.
      *
-     * @return true if this graph is an Application Condition graph, false otherwise
+     * @return true if this graph is an Application Condition graph, false
+     * otherwise
      */
     public boolean isApplCondGraph() {
-        return (this.kind == GraphKind.AC) ? true : false;
+        return (this.kind == GraphKind.AC);
     }
 
     /**
-     * Compares this graph with another graph for equality.
-     * Two graphs are considered equal if they have the same structure and
-     * corresponding elements are equal according to their compareTo methods.
+     * Compares this graph with another graph for equality. Two graphs are
+     * considered equal if they have the same structure and corresponding
+     * elements are equal according to their compareTo methods.
      *
      * @param g the graph to compare with
      * @return true if the graphs are equal, false otherwise
@@ -3962,8 +3949,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Checks if this graph contains the specified graph using a specific morphism
-     * completion strategy.
+     * Checks if this graph contains the specified graph using a specific
+     * morphism completion strategy.
      *
      * @param g the graph to check for containment
      * @param mcs the morphism completion strategy to use, or null for default
@@ -4038,7 +4025,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Checks if the specified edge to create is allowed according to the type system.
+     * Checks if the specified edge to create is allowed according to the type
+     * system.
      *
      * @param edgeType the type of edge to check
      * @param src the source node
@@ -4050,7 +4038,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Checks if parallel arcs of the specified type between the given nodes are allowed.
+     * Checks if parallel arcs of the specified type between the given nodes are
+     * allowed.
      *
      * @param edgeType the type of edge to check
      * @param src the source node
@@ -4062,10 +4051,12 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Checks if any node in this graph requires additional arcs according to the type graph.
+     * Checks if any node in this graph requires additional arcs according to
+     * the type graph.
      *
      * @param actTypeGraphLevel the current type graph level to check against
-     * @return TypeError if any node requires arcs that are not present, null otherwise
+     * @return TypeError if any node requires arcs that are not present, null
+     * otherwise
      */
     public TypeError checkNodeRequiresArc(final int actTypeGraphLevel) {
         if (this.itsTypes.getTypeGraph() == null
@@ -4093,7 +4084,8 @@ public   class Graph extends ExtObservable
      *
      * @param nodeType the type of node to check
      * @param currentTypeGraphLevel the current type graph level
-     * @return TypeError if the node cannot be created due to multiplicity constraints, null otherwise
+     * @return TypeError if the node cannot be created due to multiplicity
+     * constraints, null otherwise
      */
     public TypeError canCreateNode(
             final Type nodeType,
@@ -4110,7 +4102,8 @@ public   class Graph extends ExtObservable
      * @param source the source node
      * @param target the target node
      * @param currentTypeGraphLevel the current type graph level
-     * @return TypeError if the edge cannot be created due to multiplicity constraints, null otherwise
+     * @return TypeError if the edge cannot be created due to multiplicity
+     * constraints, null otherwise
      */
     public TypeError canCreateArc(
             final Type edgeType,
@@ -4121,7 +4114,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a list of all variable names used in attributes of this graph's nodes and arcs.
+     * Returns a list of all variable names used in attributes of this graph's
+     * nodes and arcs.
      *
      * @return list of variable names found in attributes
      */
@@ -4149,7 +4143,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a list of variable members that are used more than once in attributes of this graph.
+     * Returns a list of variable members that are used more than once in
+     * attributes of this graph.
      *
      * @return list of variable members that are duplicated in attributes
      */
@@ -4161,7 +4156,7 @@ public   class Graph extends ExtObservable
                 avt.getSize());
         for (int i = 0; i < avt.getSize(); i++) {
             VarMember var = avt.getVarMemberAt(i);
-            used.put(var, Boolean.valueOf(false));
+            used.put(var, false);
         }
         if (used.isEmpty()) {
             return result;
@@ -4197,7 +4192,7 @@ public   class Graph extends ExtObservable
                         VarMember var = avt.getVarMemberAt(vm.getExprAsText());
                         if (!var.isInputParameter()) {
                             if (used.get(var).booleanValue() == false) {
-                                used.put(var, Boolean.valueOf(true));
+                                used.put(var, true);
                             } else {
                                 if (!result.contains(var)) {
                                     result.add(var);
@@ -4210,30 +4205,6 @@ public   class Graph extends ExtObservable
         }
     }
 
-    /*
-	 * 
-	 * @deprecated use {@link #copyNode} or {@link #copyArc}, this method
-	 *             cannot work properly in case a type graph is defined and in
-	 *             use.
-	 *
-	public final Object execute(Object obj) {
-		try {
-			if (((GraphObject) obj).isNode()) {
-				return copyNode((Node) obj);
-			} else {
-				return copyArc((Arc) obj, (Node) ((Arc) obj).getSource(),
-						(Node) ((Arc) obj).getTarget());
-			}
-		} catch (TypeException e) {
-			// Whoever use this function, could not
-			// recieve the Exception in case of type mismatch.
-			// so this method is deprecated.
-			System.out.println(e);
-			e.printStackTrace();
-			return null;
-		}
-	}
-     */
     /**
      * Notifies listeners that this graph has been modified.
      */
@@ -4358,8 +4329,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Returns a map of object domains for used types. The key of a node type is built by
-     * <code>type.convertToKey()</code>, the key of an arc type by
+     * Returns a map of object domains for used types. The key of a node type is
+     * built by <code>type.convertToKey()</code>, the key of an arc type by
      * <code>srcNodeType.convertToKey()+type.convertToKey()+tarNodeType.convertToKey()</code>.
      *
      * @return map from type keys to sets of graph objects of that type
@@ -4372,7 +4343,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Refreshes object domains for used types by clearing and refilling the type objects map.
+     * Refreshes object domains for used types by clearing and refilling the
+     * type objects map.
      */
     public void updateTypeObjectsMap() {
         this.itsTypeObjectsMap.clear();
@@ -4483,8 +4455,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Extends the type objects map for nodes and arcs of the specified child type
-     * to include mappings for the parent type.
+     * Extends the type objects map for nodes and arcs of the specified child
+     * type to include mappings for the parent type.
      *
      * @param childType the child type to extend from
      * @param parentType the parent type to extend to
@@ -4521,7 +4493,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Extends the type objects map with the specified node, including all its parent types.
+     * Extends the type objects map with the specified node, including all its
+     * parent types.
      *
      * @param node the node to add to the type map
      */
@@ -4532,7 +4505,7 @@ public   class Graph extends ExtObservable
                 String keystr = myParents.get(i).convertToKey();
                 HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
                 if (objSet == null) {
-                    objSet = new LinkedHashSet<GraphObject>();
+                    objSet = new LinkedHashSet<>();
                     this.itsTypeObjectsMap.put(keystr, objSet);
                 }
                 objSet.add(node);
@@ -4541,7 +4514,7 @@ public   class Graph extends ExtObservable
             String keystr = node.convertToKey();
             HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
             if (objSet == null) {
-                objSet = new LinkedHashSet<GraphObject>();
+                objSet = new LinkedHashSet<>();
                 this.itsTypeObjectsMap.put(keystr, objSet);
             }
             objSet.add(node);
@@ -4549,8 +4522,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Extends the type objects map with the specified arc, including all parent types
-     * of its source and target nodes if inheritance is enabled.
+     * Extends the type objects map with the specified arc, including all parent
+     * types of its source and target nodes if inheritance is enabled.
      *
      * @param anArc the arc to add to the type map
      */
@@ -4589,7 +4562,8 @@ public   class Graph extends ExtObservable
     }
 
     /**
-     * Refreshes the attributed flag based on the current attribute types of nodes and arcs.
+     * Refreshes the attributed flag based on the current attribute types of
+     * nodes and arcs.
      */
     public void refreshAttributed() {
         this.attributed = false;
