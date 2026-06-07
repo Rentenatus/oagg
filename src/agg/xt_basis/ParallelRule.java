@@ -34,19 +34,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Constructs a parallel rule based on some rules (as disjoint union).
+ * Represents a parallel rule constructed as a disjoint union of multiple rules.
+ * A parallel rule allows the simultaneous application of multiple transformation rules
+ * on different parts of a graph, where the rules do not overlap.
  *
- *
- * @author olga
- *
+ * @see Rule
  */
 public class ParallelRule extends Rule {
 
     /**
      * Accepts a visitor for this parallel rule.
      *
-     * @param visitor the visitor to accept
      * @param <T> the return type of the visitor
+     * @param visitor the visitor to accept
      * @return the result of visiting this parallel rule
      */
     @Override
@@ -60,6 +60,13 @@ public class ParallelRule extends Rule {
     List<OrdinaryMorphism> embeddingRight;
     private final List<OrdinaryMorphism> failedApplConds = new ArrayList<OrdinaryMorphism>();
 
+    /**
+     * Constructs a parallel rule from the specified type set and two source rules.
+     *
+     * @param types the type set to use for this parallel rule
+     * @param rule1 the first source rule
+     * @param rule2 the second source rule
+     */
     public ParallelRule(final TypeSet types, final Rule rule1, final Rule rule2) {
         super(types);
         if (rule1 != null && rule2 != null) {
@@ -72,6 +79,12 @@ public class ParallelRule extends Rule {
         }
     }
 
+    /**
+     * Constructs a parallel rule from the specified type set and a list of source rules.
+     *
+     * @param types the type set to use for this parallel rule
+     * @param rules the list of source rules to combine into a parallel rule
+     */
     public ParallelRule(final TypeSet types, final List<Rule> rules) {
         super(types);
         if (rules != null && !rules.isEmpty()) {
@@ -83,33 +96,61 @@ public class ParallelRule extends Rule {
         }
     }
 
+    /**
+     * Checks if this parallel rule is valid.
+     *
+     * @return true if this parallel rule has source rules, false otherwise
+     */
     public boolean isValid() {
         return (sources == null || sources.isEmpty()) ? false : true;
     }
 
+    /**
+     * Returns the list of left embedding morphisms for this parallel rule.
+     *
+     * @return the list of left embedding morphisms
+     */
     public List<OrdinaryMorphism> getLeftEmbedding() {
         return this.embeddingLeft;
     }
 
+    /**
+     * Returns the list of right embedding morphisms for this parallel rule.
+     *
+     * @return the list of right embedding morphisms
+     */
     public List<OrdinaryMorphism> getRightEmbedding() {
         return this.embeddingRight;
     }
 
+    /**
+     * Returns the left embedding morphism at the specified index.
+     *
+     * @param indx the index of the embedding morphism
+     * @return the left embedding morphism at the specified index, or null if not found
+     */
     public OrdinaryMorphism getLeftEmbeddingAtIndex(int indx) {
         return (this.embeddingLeft != null) ? this.embeddingLeft.get(indx)
                 : null;
     }
 
+    /**
+     * Returns the right embedding morphism at the specified index.
+     *
+     * @param indx the index of the embedding morphism
+     * @return the right embedding morphism at the specified index, or null if not found
+     */
     public OrdinaryMorphism getRightEmbeddingAtIndex(int indx) {
         return (this.embeddingRight != null) ? this.embeddingRight.get(indx)
                 : null;
     }
 
     /**
-     * The specified GraphObject is an object of its LHS graph.
+     * Returns the left embedding morphism that contains the specified graph object
+     * in its target graph.
      *
-     * @return the embedding morphism where the specified object is an object of
-     * the target graph
+     * @param go the graph object to find
+     * @return the left embedding morphism containing the object, or null if not found
      */
     public OrdinaryMorphism getLeftEmbeddingOfObject(final GraphObject go) {
         for (int i = 0; i < this.embeddingLeft.size(); i++) {
@@ -1514,9 +1555,9 @@ public class ParallelRule extends Rule {
      * Shift PACs of the Rule r over embedding morphism to this rule.
      *
      * Returns list = Shift(iL, cond) + L(this, Shift(iR, R(r, cond)))
-     * containing GACs.<br>
-     * NOTE: Each created shift PAC is replaced by a GAC. <br>
-     * Moreover, a Formula over GACs defined as<br>
+     * containing GACs.
+     * NOTE: Each created shift PAC is replaced by a GAC.
+     * Moreover, a Formula over GACs defined as
      * f = V{ci} (ci an element of list) as disjunction of the GACs.
      */
     private boolean shiftPACsOverEmbMorphOLD(

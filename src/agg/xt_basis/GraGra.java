@@ -58,15 +58,20 @@ import java.util.Map;
 import org.w3c.dom.Element;
 
 /**
- * This class provides functionality of a graph grammar, consisting of an
- * arbitrary number of graphs (the "host graphs"), an arbitrary number of rules,
- * an arbitrary number of match morphisms from the rules into the host graph.
- * <p>
- * The implementation serves as a factory to create instances of classes Type,
- * Graph, Rule and Match, AtomConstraint and Formula,
+ * Provides functionality of a graph grammar, consisting of an arbitrary number of graphs
+ * (the "host graphs"), an arbitrary number of rules, and an arbitrary number of match morphisms
+ * from the rules into the host graphs.
  *
- * @author $Author: olga $
- * @version $Id: GraGra.java,v 1.143 2010/12/16 17:31:39 olga Exp $
+ * <p>The implementation serves as a factory to create instances of classes Type, Graph, Rule,
+ * Match, AtomConstraint and Formula. It manages the complete graph transformation system
+ * including type definitions, graph structures, transformation rules, and matching operations.
+ *
+ * @see Type
+ * @see Graph
+ * @see Rule
+ * @see Match
+ * @see AtomConstraint
+ * @see Formula
  */
 public class GraGra implements Disposable, XMLObject {
 
@@ -145,7 +150,8 @@ public class GraGra implements Disposable, XMLObject {
 //														agg.attribute.AttrMapping.GRAPH_MAP);
 
     /**
-     * Construct a new graph grammar.
+     * Constructs a new graph grammar with default settings.
+     * Creates a new type set and a host graph with default configuration.
      */
     public GraGra() {
         this.dirName = "";
@@ -162,7 +168,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Construct a new graph grammar.
+     * Constructs a new graph grammar with the option to include a host graph.
+     *
+     * @param withGraph true to create a host graph, false otherwise
      */
     public GraGra(boolean withGraph) {
         this.dirName = "";
@@ -181,8 +189,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Construct a new graph grammar with a type set and/or type graph specified
-     * by the TypeSet newTypeSet
+     * Constructs a new graph grammar with the specified type set.
+     * Creates a host graph using the provided type set.
+     *
+     * @param newTypeSet the type set to use for this graph grammar
      */
     public GraGra(TypeSet newTypeSet) {
         this.dirName = "";
@@ -199,7 +209,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Construct a new graph grammar.
+     * Constructs a new graph grammar with the specified type set and option to include a host graph.
+     *
+     * @param newTypeSet the type set to use for this graph grammar
+     * @param withGraph true to create a host graph, false otherwise
      */
     public GraGra(TypeSet newTypeSet, boolean withGraph) {
         this.dirName = "";
@@ -219,6 +232,8 @@ public class GraGra implements Disposable, XMLObject {
 
     /**
      * Constructs a graph grammar with the given graph as host graph.
+     *
+     * @param g the graph to use as the host graph for this grammar
      */
     public GraGra(Graph g) {
         this.dirName = "";
@@ -921,6 +936,12 @@ public class GraGra implements Disposable, XMLObject {
         this.typeSet.dispose();
     }
 
+    /**
+     * Adds a rule to this graph grammar's rule list.
+     *
+     * @param r the rule to add
+     * @return true if the rule was added successfully, false if it was already present
+     */
     public boolean addRule(final Rule r) {
         boolean result = true;
         if (this.itsRules.contains(r)) {
@@ -937,6 +958,13 @@ public class GraGra implements Disposable, XMLObject {
         return result;
     }
 
+    /**
+     * Adds a rule to this graph grammar's rule list at the specified index.
+     *
+     * @param indx the index at which to insert the rule
+     * @param r the rule to add
+     * @return true if the rule was added successfully, false if it was already present
+     */
     public boolean addRuleAt(int indx, final Rule r) {
         boolean result = true;
         if (this.itsRules.contains(r)) {
@@ -1103,12 +1131,12 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Sets my start graph to Graph g. The type set of the graph g has to be
-     * similar to my type set.<br>
+     * Sets the start graph to Graph g. The type set of the graph g has to be
+     * similar to this type set.
      * The start graph should not be confused with a host graph. The start graph
      * is a copy of a (mostly first) host graph after a grammar loaded. A host
-     * graph is my current work graph. The start graph can be used to overwrite
-     * my current host graph <code>this.resetGraph()</code>.
+     * graph is the current work graph. The start graph can be used to overwrite
+     * the current host graph <code>this.resetGraph()</code>.
      */
     public void setStartGraph(final Graph g) {
         if (g == null) {
@@ -1474,7 +1502,9 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Create an empty rule.
+     * Creates an empty rule and adds it to this graph grammar's rule list.
+     *
+     * @return a new empty Rule instance
      */
     public Rule createRule() {
         final Rule r = new Rule(this.typeSet);
@@ -1488,10 +1518,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Create a rule scheme with an empty kernel rule and an empty list of multi
-     * rules. Add the new rule scheme at the end of the rule list.
+     * Creates a rule scheme with an empty kernel rule and an empty list of multi rules.
+     * The new rule scheme is added at the end of the rule list.
      *
-     * @return	RuleScheme
+     * @return a new RuleScheme instance
      */
     public RuleScheme createRuleScheme() {
         final RuleScheme rs = new RuleScheme("RuleScheme" + String.valueOf(this.itsRules.size()), this.typeSet);
@@ -1505,11 +1535,12 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Create a rule scheme with a kernel rule as a copy of the specified rule
-     * and an empty list of multi rules. Add the new rule scheme after the given
+     * Creates a rule scheme with a kernel rule as a copy of the specified rule
+     * and an empty list of multi rules. The new rule scheme is added after the given
      * rule in case it belongs to this grammar or at the end of the rule list.
      *
-     * @return	RuleScheme or null if creation failed
+     * @param r the rule to use as the basis for the kernel rule
+     * @return a new RuleScheme instance, or null if creation failed
      */
     public RuleScheme createRuleScheme(final Rule r) {
         final RuleScheme rs = BaseFactory.theBaseFactory.makeRuleScheme(r);
@@ -2137,10 +2168,10 @@ public class GraGra implements Disposable, XMLObject {
     }
 
     /**
-     * Create an empty match morphism between the left hand side of the given
+     * Creates an empty match morphism between the left hand side of the given
      * rule and the given graph. Note that this does not yield a valid match
      * (unless the left hand side of the given rule is empty), because a match
-     * has to be a total morphism.<br>
+     * has to be a total morphism.
      */
     public Match createMatchIndependent(Rule rule, Graph g) {
         Match m = new Match(rule, g);
@@ -3785,10 +3816,9 @@ public class GraGra implements Disposable, XMLObject {
 
     /**
      * If true, the ApplRuleSequencesGraTra - a transformation by validated rule
-     * sequence - will be started.<br>
+     * sequence - will be started.
      * Precondition: the current rule sequence exists and its applicability is
      * checked.
-     *
      */
     public boolean trafoByApplicableRuleSequence() {
         return (this.itsRuleSequence != null) && this.itsRuleSequence.isTrafoByARS();

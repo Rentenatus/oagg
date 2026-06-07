@@ -44,9 +44,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of a graph morphism. Note: This implementation is guaranteed
- * to keep morphism properties when objects are deleted/created/modified in the
- * original or image graphs.
+ * Implementation of a graph morphism between two graphs (original and image).
+ * This implementation guarantees to maintain morphism properties when objects
+ * are deleted, created, or modified in the original or image graphs.
+ *
+ * <p>A graph morphism maps elements from the original graph to the image graph
+ * while preserving the structure and relationships defined by the graphs.
+ *
+ * @see Graph
+ * @see Morphism
  */
 // Class OrdinaryMorphism is capable of passing the following change
 // informations as an argument to its observers' <code>update()</code> methods:
@@ -92,24 +98,30 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * @param ac my attribute context.
+     * Creates an ordinary morphism with default graphs and the specified attribute context.
+     *
+     * @param ac the attribute context for this morphism
      */
     protected OrdinaryMorphism(final AttrContext ac) {
         this(new Graph(), new Graph(), ac);
     }
 
     /**
-     * @param orig my original graph.
-     * @param img my image graph.
+     * Creates an ordinary morphism between the specified original and image graphs.
+     *
+     * @param orig the original graph (source) of this morphism
+     * @param img the image graph (target) of this morphism
      */
     public OrdinaryMorphism(final Graph orig, final Graph img) {
         this(orig, img, cKeepContext);
     }
 
     /**
-     * @param orig my original graph.
-     * @param img my image graph.
-     * @param ac my attribute context.
+     * Creates an ordinary morphism between the specified graphs with the given attribute context.
+     *
+     * @param orig the original graph (source) of this morphism
+     * @param img the image graph (target) of this morphism
+     * @param ac the attribute context for this morphism
      */
     public OrdinaryMorphism(final Graph orig, final Graph img, final AttrContext ac) {
         this.itsName = "OrdinaryMorphism";
@@ -594,11 +606,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * The current (this) morphism takes two morphisms with : <br>
-     * theFirst.source == theSecond.source, <br>
-     * this.source == theFirst.target, <br>
-     * this.target == theSecond.target.<br>
-     * Completes this morphism so that: <em>theFirst o this = theSecond</em> .
+     * The current (this) morphism takes two morphisms with:
+     * theFirst.source == theSecond.source,
+     * this.source == theFirst.target,
+     * this.target == theSecond.target.
+     * Completes this morphism so that: <em>theFirst o this = theSecond</em>.
      */
     //
     // [Graph X]------------>[Graph Y]
@@ -728,9 +740,9 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * <b>makeWeakDiagram</b>: fuer <em>DISAGG</em><br>
-     * Der vorliegende Homomorphismus (this) nimmt zwei weitere (theFirst,
-     * theSecond) als Input und wird selbst so vervollstaendigt, dass<br>
+     * <b>makeWeakDiagram</b>: for <em>DISAGG</em>
+     * The current morphism (this) takes two additional morphisms (theFirst,
+     * theSecond) as input and completes itself so that
      * <em>theFirst o this <= theSecond</em>
      */
     //
@@ -827,12 +839,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * The current Homomorphismus (this) morphism takes two morphisms with :
-     * <br>
-     * theFirst.source == theSecond.source, <br>
-     * this.source == theFirst.target, <br>
-     * this.target == theSecond.target.<br>
-     * Completes this morphism so that: <em>theFirst o this = theSecond</em> .
+     * The current morphism (this) takes two morphisms with:
+     * theFirst.source == theSecond.source,
+     * this.source == theFirst.target,
+     * this.target == theSecond.target.
+     * Completes this morphism so that: <em>theFirst o this = theSecond</em>.
      */
     //
     // [Graph X]------------------>[Graph Y]
@@ -969,7 +980,7 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * <b>makeWeakDiagram</b>: fuer <em>DISAGG</em><br>
+     * <b>makeWeakDiagram</b>: fuer <em>DISAGG</em>
      * Der vorliegende Homomorphismus (this) nimmt drei weitere (theFirst,
      * theSecond, theThird) als Input und wird selbst so vervollstaendigt, dass
      * Diagramm schwach kommutiert.
@@ -1518,10 +1529,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Add PLAIN morphism mapping without any checks. <br>
-     * Preconditions: <br>
-     * - to map Node to Node and Arc to Arc only,<br>
-     * - objects to map must be of the same type, <br>
+     * Add PLAIN morphism mapping without any checks. 
+     * Preconditions: 
+     * - to map Node to Node and Arc to Arc only,
+     * - objects to map must be of the same type, 
      * - source and target of an edge must be already mapped.
      *
      */
@@ -1873,7 +1884,7 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     /**
      * Remove the mapping of the given GraphObject. In case of node, any
      * mappings of incoming / outgoing arcs will be removed as well.
-     * Precondition: <br>
+     * Precondition: 
      * - if left is true, the obj belongs to the source graph - if left is
      * false, the obj belongs to the target graph
      */
@@ -2929,10 +2940,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
     }
 
     /**
-     * Constructs the composition of this morphism and the input morphism.<br>
-     * this.source == output.source, <br>
-     * this.target == input.source, <br>
-     * input.target == output.target.<br>
+     * Constructs the composition of this morphism and the input morphism.
+     * this.source == output.source, 
+     * this.target == input.source, 
+     * input.target == output.target.
      * .
      */
     public OrdinaryMorphism compose(final OrdinaryMorphism input) {
@@ -2955,10 +2966,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * Constructs composition of given morphisms morph1 and morph2 morphisms,
-     * where <br>
-     * this.source == morph1.source <br>
-     * this.target == morph2.target <br>
-     * morph1.target == morph2.source. <br>
+     * where 
+     * this.source == morph1.source 
+     * this.target == morph2.target 
+     * morph1.target == morph2.source. 
      * Returns true, if the source-target condition is satisfied, otherwise -
      * false.
      */
@@ -3011,11 +3022,11 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * Given an input morphism with input.getSource() == this.getSource() and
-     * <br>
-     * input.getTarget() == output.getSource() and <br>
-     * this.getTarget() == output.getTarget(). <br>
+     * 
+     * input.getTarget() == output.getSource() and 
+     * this.getTarget() == output.getTarget(). 
      * For each key try to complete output.addMapping(input.get(key),
-     * this.getImage(key)).<br>
+     * this.getImage(key)).
      * Returns true by success, otherwise true.
      */
     public OrdinaryMorphism completeDiagram(final OrdinaryMorphism input) {
@@ -3071,8 +3082,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * We have a diagram third = first o second with first: A->B, second: B->C,
-     * third: A->C,<br>
-     * second and third are complete.<br>
+     * third: A->C,
+     * second and third are complete.
      * Try to complete first. Note, first morphism is this morphism. Returns
      * true by success, otherwise false.
      */
@@ -3108,8 +3119,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * We have a diagram third = first o second with first: A->B, second: B->C,
-     * third: A->C,<br>
-     * first and third are complete.<br>
+     * third: A->C,
+     * first and third are complete.
      * Try to complete second. Note, second morphism is this morphism. Returns
      * true by success, otherwise false.
      */
@@ -3149,8 +3160,8 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
 
     /**
      * We have a diagram third = first o second with first: A->B, second: B->C,
-     * third: A->C,<br>
-     * first and second are complete.<br>
+     * third: A->C,
+     * first and second are complete.
      * Try to complete third. Note, third morphism is this morphism. Returns
      * true by success, otherwise false.
      */

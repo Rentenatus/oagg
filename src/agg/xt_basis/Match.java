@@ -30,17 +30,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is used to represent matches (morphism from the left side graph of
- * a rule into a host graph). Note that not every instance of this class is a
- * valid match in terms of theory, because in theory a match has to be a total
- * morphism satisfying all (nested) application conditions of the corresponding
- * rule. The methods <code>isTotal()</code> and <code>isValid()</code> can be
- * used to check for these additional properties dynamically.
+ * Represents a match (morphism from the left side graph of a rule into a host graph).
+ * Note that not every instance of this class is a valid match in terms of theory,
+ * because in theory a match has to be a total morphism satisfying all (nested)
+ * application conditions of the corresponding rule. The methods isTotal() and isValid()
+ * can be used to check for these additional properties dynamically.
  *
- * @see agg.xt_basis.Morphism#isTotal()
- * @see agg.xt_basis.Match#isValid()
- * @author $Author: olga $
- * @version $Id: Match.java,v 1.88 2010/11/28 22:16:06 olga Exp $
+ * @see OrdinaryMorphism#isTotal()
+ * @see #isValid()
  */
 public class Match extends OrdinaryMorphism implements XMLObject {
 
@@ -54,10 +51,19 @@ public class Match extends OrdinaryMorphism implements XMLObject {
     private boolean condsTIDGchecked = false;
     private boolean ignoreInParam;
 
+    /**
+     * Creates an empty match with default settings.
+     */
     protected Match() {
         super();
     }
 
+    /**
+     * Creates a match for the specified rule and target graph.
+     *
+     * @param rule the rule for which this match is created
+     * @param graph the target graph where the rule should be applied
+     */
     protected Match(final Rule rule, final Graph graph) {
         super(rule.getLeft(), graph);
         this.itsAttrContext = this.itsAttrManager.newContext(AttrMapping.MATCH_MAP,
@@ -501,7 +507,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
 
     /**
      *
-     * Checks if this is a valid match.<br>
+     * Checks if this is a valid match.
      * There are two cases to use this method:
      * <ol>
      * <li> After the method <code>nextCompletion()</code> is called and
@@ -519,7 +525,6 @@ public class Match extends OrdinaryMorphism implements XMLObject {
      * <code>post rule application conditions</code> - will be performed.
      * </li>
      * </ol>
-     * <br>
      * For each condition the appropriate matching option should be set.
      * <p>
      * The usage of variables in the work graph is not allowed.

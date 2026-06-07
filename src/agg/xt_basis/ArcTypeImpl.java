@@ -23,10 +23,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Implements the type of an edge graph object.
+ * Implementation of the Type interface for edge graph objects.
+ * This class represents the type information for arcs/edges in graphs.
  *
- * @author $Author: olga $
- * @version $Id: ArcTypeImpl.java,v 1.22 2010/11/06 18:34:59 olga Exp $
+ * @see Type
+ * @see TypeImpl
+ * @see NodeTypeImpl
  */
 public class ArcTypeImpl implements Type {
 
@@ -61,6 +63,10 @@ public class ArcTypeImpl implements Type {
     boolean typeGraphObjectDefined;
     String keyStr = null;
 
+    /**
+     * Creates a new arc type with default settings.
+     * This creates a non-attributable arc type with empty name and default visual representation.
+     */
     protected ArcTypeImpl() {
         this.itsAttrType = null;
         this.itsStringRepr = "";
@@ -69,10 +75,10 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Creates a new type with the given name. There is still not attributed
-     * type.
+     * Creates a new arc type with the given name.
+     * This creates a non-attributable arc type with default visual representation.
      *
-     * @param name the name of the type
+     * @param name the name of the arc type
      */
     protected ArcTypeImpl(String name) {
         this.itsAttrType = null;
@@ -82,10 +88,10 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * Creates a new type with the given attributes and the given name.
+     * Creates a new arc type with the given attributes and the given name.
      *
-     * @param at the declaration of the attributes
-     * @param name the name of the type
+     * @param at the attribute type declaration
+     * @param name the name of the arc type
      */
     protected ArcTypeImpl(AttrType at, String name) {
         this(name);
@@ -93,9 +99,9 @@ public class ArcTypeImpl implements Type {
     }
 
     /**
-     * creates a new type with the given attributes and an empty name.
+     * Creates a new arc type with the given attributes and an empty name.
      *
-     * @param at the declaration of the attributes
+     * @param at the attribute type declaration
      */
     protected ArcTypeImpl(AttrType at) {
         this();
