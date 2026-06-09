@@ -49,15 +49,16 @@ public class LayeredGraTraImpl extends GraTra {
     private boolean startTransform;
     private boolean grammarChecked;
     private long time0; //, time=0; 
-    File f;
+    File transformProtocolFile;
     FileOutputStream os;
     String protocolFileName = "";
-    int i;
+    private int layerIndex;
 
     public LayeredGraTraImpl() {
         this.nextLayerExists = true;
     }
 
+    @Override
     public void dispose() {
         if (this.layer != null) {
             this.layer.dispose();
@@ -71,6 +72,7 @@ public class LayeredGraTraImpl extends GraTra {
         super.dispose();
     }
 
+    @Override
     public void setGraTraOptions(List<String> newOptions) {
         super.setGraTraOptions(newOptions);
         if (newOptions.contains(GraTraOptions.BREAK_ALL_LAYER)) {
@@ -86,6 +88,7 @@ public class LayeredGraTraImpl extends GraTra {
         }
     }
 
+    @Override
     public void stop() {
         if (this.breakLayerOpt) {
             this.breakLayer = true;
@@ -113,6 +116,7 @@ public class LayeredGraTraImpl extends GraTra {
 //	    } 
     }
 
+    @Override
     public void unsetStop() {
         super.unsetStop();
         this.breakLayer = false;
@@ -126,7 +130,7 @@ public class LayeredGraTraImpl extends GraTra {
 
     public int getCurrentLayer() {
         if (this.currentLayer != null) {
-            return this.currentLayer.intValue();
+            return this.currentLayer;
         }
         return -1;
     }
@@ -140,12 +144,18 @@ public class LayeredGraTraImpl extends GraTra {
     }
 
     /**
-     * not implemented yet! *
+     * not implemented yet!
+     *
+     *
+     * @param m
+     * @return
      */
+    @Override
     public Pair<Morphism, Morphism> derivation(Match m) {
         return (null);
     }
 
+    @Override
     public boolean apply() {
         // if(!allRulesEnabled) {
         // // remove disabled rules from currentRuleSet
@@ -229,11 +239,12 @@ public class LayeredGraTraImpl extends GraTra {
         return applied;
     }
 
+    @Override
     public void transform(List<Rule> ruleSet) {
         this.layer = new RuleLayer(ruleSet);
         this.startLayer = this.layer.getStartLayer();
         this.invertedRuleLayer = this.layer.invertLayer();
-        this.ruleLayer = new SortedSeasonSet<Integer>(BiPredicateInteger.INSTANCE);
+        this.ruleLayer = new SortedSeasonSet<>(BiPredicateInteger.INSTANCE);
         for (Integer key : invertedRuleLayer.keySet()) {
             this.ruleLayer.add(key);
         }
@@ -304,13 +315,13 @@ public class LayeredGraTraImpl extends GraTra {
         this.waitingAfterLayer = false;
         if (this.startTransform) {
             this.currentLayer = this.startLayer;
-            i = 0;
+            layerIndex = 0;
         }
 //		System.out.println("LayeredGraTraImpl.transformCurrentLayer()... "+this.currentLayer);
         this.startTransform = false;
         this.nextLayerExists = true;
         if (!this.stopping && this.nextLayerExists && (this.currentLayer != null)) {
-            List<Rule> rules = new ArrayList<Rule>();
+            List<Rule> rules = new ArrayList<>();
             if (!this.applyContinue) {
                 // get rules of the current this.layer
                 HashSet rulesForLayer = this.invertedRuleLayer.get(this.currentLayer);
@@ -356,7 +367,7 @@ public class LayeredGraTraImpl extends GraTra {
                 }
             }
             if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
-                if (!this.checkGraphConsistencyForLayer(this.currentLayer.intValue())) {
+                if (!this.checkGraphConsistencyForLayer(this.currentLayer)) {
                     this.stopping = true;
                 }
             }
@@ -371,9 +382,9 @@ public class LayeredGraTraImpl extends GraTra {
             writeUsedTimeToProtocol("used time: ", this.time0);
             enableTriggerRuleOfLayer(rules);
             // get next Layer
-            i++;
-            if (i < this.ruleLayer.size()) {
-                this.currentLayer = this.ruleLayer.get(i);
+            layerIndex++;
+            if (layerIndex < this.ruleLayer.size()) {
+                this.currentLayer = this.ruleLayer.get(layerIndex);
             } else {
                 this.nextLayerExists = false;
             }
@@ -405,7 +416,7 @@ public class LayeredGraTraImpl extends GraTra {
                 fireGraTra(new GraTraEvent(this,
                         GraTraEvent.TRANSFORM_START));
                 this.currentLayer = this.startLayer;
-                i = 0;
+                layerIndex = 0;
                 this.appliedOnce = false;
             }
             this.startTransform = false;
@@ -415,7 +426,7 @@ public class LayeredGraTraImpl extends GraTra {
                 layerStr = String.valueOf(this.currentLayer.intValue());
                 // get rules of the current this.layer
                 HashSet rulesForLayer = this.invertedRuleLayer.get(this.currentLayer);
-                List<Rule> rules = new ArrayList<Rule>();
+                List<Rule> rules = new ArrayList<>();
                 Iterator<?> en = rulesForLayer.iterator();
                 while (en.hasNext()) {
                     Rule rule = (Rule) en.next();
@@ -449,7 +460,7 @@ public class LayeredGraTraImpl extends GraTra {
                     }
                 }
                 if (this.options.hasOption(GraTraOptions.CONSISTENCY_CHECK_AFTER_GRAPH_TRAFO)) {
-                    if (!this.checkGraphConsistencyForLayer(this.currentLayer.intValue())) {
+                    if (!this.checkGraphConsistencyForLayer(this.currentLayer)) {
                         this.stopping = true;
                     }
                 }
@@ -465,9 +476,9 @@ public class LayeredGraTraImpl extends GraTra {
                 writeUsedTimeToProtocol("used time: ", this.time0);
                 enableTriggerRuleOfLayer(rules);
                 // get next Layer
-                i++;
-                if (i < this.ruleLayer.size()) {
-                    this.currentLayer = this.ruleLayer.get(i);
+                layerIndex++;
+                if (layerIndex < this.ruleLayer.size()) {
+                    this.currentLayer = this.ruleLayer.get(layerIndex);
                 } else {
                     this.nextLayerExists = false;
                 }
@@ -485,17 +496,17 @@ public class LayeredGraTraImpl extends GraTra {
                         }
                     }
                 }
-                if (stopLayerAndWait(Integer.valueOf(layerStr).intValue())) {
+                if (stopLayerAndWait(Integer.valueOf(layerStr))) {
                     break;
                 }
 //				fireGraTra(new GraTraEvent(this, GraTraEvent.LAYER_FINISHED, layerStr));										
             }
-            if ((!"".equals(layerStr) && stopLayerAndWait(Integer.valueOf(layerStr).intValue()))
+            if ((!"".equals(layerStr) && stopLayerAndWait(Integer.valueOf(layerStr)))
                     || !this.layeredLoop) {
                 break;
             }
         }
-        if ((!"".equals(layerStr) && stopLayerAndWait(Integer.valueOf(layerStr).intValue()))
+        if ((!"".equals(layerStr) && stopLayerAndWait(Integer.valueOf(layerStr)))
                 && this.nextLayerExists && !this.stopping) {
             fireGraTra(new GraTraEvent(this, GraTraEvent.LAYER_FINISHED, layerStr));
         } else if (!this.startTransform) {
@@ -515,6 +526,7 @@ public class LayeredGraTraImpl extends GraTra {
         return false;
     }
 
+    @Override
     public void transform() {
         this.stopping = false;
         if (!this.grammar.getListOfRules().isEmpty() && this.currentRuleSet.isEmpty()) {
@@ -573,9 +585,10 @@ public class LayeredGraTraImpl extends GraTra {
                 transformFailed(s0);
                 return;
             } else if (!this.checkGraphConsistency()) {
-                String s = "Graph consistency failed."
-                        + "\nPlease check the host graph against the graph constraints."
-                        + "\nTransformation is stopped.";
+                String s = """
+                           Graph consistency failed.
+                           Please check the host graph against the graph constraints.
+                           Transformation is stopped.""";
                 ((GraTra) this).fireGraTra(new GraTraEvent(this,
                         GraTraEvent.GRAPH_FAILED, s));
                 transformFailed(s);
@@ -621,7 +634,7 @@ public class LayeredGraTraImpl extends GraTra {
     }
 
     private List<Rule> getEnabledRules(List<Rule> ruleSet) {
-        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
+        List<Rule> vec = new ArrayList<>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
             if (ruleSet.get(j).isEnabled()) {
                 vec.add(ruleSet.get(j));
@@ -678,6 +691,7 @@ public class LayeredGraTraImpl extends GraTra {
         this.breakAllLayerOpt = b;
     }
 
+    @Override
     public boolean transformationDone() {
         return this.appliedOnce;
     }
@@ -685,9 +699,6 @@ public class LayeredGraTraImpl extends GraTra {
     public String getProtocolName() {
         return this.protocolFileName;
     }
-//	public long getUsedTime() {
-//		return time;
-//	}
 
     private void enableTriggerRuleOfLayer(List<Rule> rules) {
         for (int j = 0; j < rules.size(); j++) {
@@ -726,29 +737,29 @@ public class LayeredGraTraImpl extends GraTra {
         }
         // System.out.println(fName);
         if ((dName != null) && !dName.equals("")) {
-            this.f = new File(dName);
-            if (this.f.exists()) {
-                if (this.f.isFile()) {
-                    if (this.f.getParent() != null) {
-                        dName = this.f.getParent() + File.separator;
+            this.transformProtocolFile = new File(dName);
+            if (this.transformProtocolFile.exists()) {
+                if (this.transformProtocolFile.isFile()) {
+                    if (this.transformProtocolFile.getParent() != null) {
+                        dName = this.transformProtocolFile.getParent() + File.separator;
                     } else {
                         dName = "." + File.separator;
                     }
-                } else if (this.f.isDirectory()) {
-                    dName = this.f.getPath() + File.separator;
+                } else if (this.transformProtocolFile.isDirectory()) {
+                    dName = this.transformProtocolFile.getPath() + File.separator;
                 } else {
                     dName = "." + File.separator;
                 }
             } else {
                 dName = "." + File.separator;
             }
-            this.f = new File(dirName + fName);
+            this.transformProtocolFile = new File(dirName + fName);
         } else {
-            this.f = new File(fName);
+            this.transformProtocolFile = new File(fName);
         }
         try {
-            this.os = new FileOutputStream(this.f);
-            this.protocolFileName = this.f.getName();
+            this.os = new FileOutputStream(this.transformProtocolFile);
+            this.protocolFileName = this.transformProtocolFile.getName();
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         }

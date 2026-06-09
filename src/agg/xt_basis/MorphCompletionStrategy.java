@@ -43,11 +43,12 @@ public class MorphCompletionStrategy implements StrategyProperties,
     public void dispose() {
     }
 
-    /*
-	 * Initialize myself. Workaround for subclasses to be able to perform
-	 * argument preparation before superclass initialization. @param
-	 * supported_properties specifies which properties I support. @param
-	 * active_properties specifies which properties are activated by default.
+    /**
+     * Initializes this strategy. Workaround for subclasses to be able to perform
+     * argument preparation before superclass initialization.
+     *
+     * @param supported_properties specifies which properties this strategy supports
+     * @param active_properties specifies which properties are activated by default
      */
     protected void initialize(BitSet supported_properties,
             BitSet active_properties) {
@@ -290,7 +291,7 @@ public class MorphCompletionStrategy implements StrategyProperties,
     /**
      * An additional object name constraint will be added for the CSP variable
      * of the given GraphObject anObj. This constraint requires equality of the
-     * object names.<br>
+     * object names.
      * Each subclass should implement this method.
      */
     public void addObjectNameConstraint(GraphObject anObj) {

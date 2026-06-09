@@ -26,10 +26,16 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * This class implements a direct graph transformation step in the single
- * pushout (SPO) approach to algebraic graph transformation. The transformation
- * is performed <i>in place</i>, i.e. the host graph is modified according to
- * the rule's instructions.
+ * Implements a direct graph transformation step using the single pushout (SPO) approach
+ * to algebraic graph transformation. The transformation is performed in-place,
+ * meaning the host graph is modified according to the rule's instructions.
+ *
+ * <p>This class provides an instance-based alternative to the static methods in
+ * {@link StaticStep} for graph transformation execution.
+ *
+ * @see StaticStep
+ * @see Match
+ * @see Morphism
  */
 public class Step {
 
@@ -38,11 +44,29 @@ public class Step {
     public Step() {
     }
 
+    /**
+     * Executes an in-place direct graph transformation step using the Colim library.
+     *
+     * @param match the match containing the rule and target graph for transformation
+     * @return the co-match morphism from the right hand side of the rule into the result graph,
+     *         or null if execution failed
+     * @throws TypeException if there is a type mismatch during transformation
+     */
     public final Morphism executeColimBased(final Match match) throws TypeException {
         this.computeColimitBasedPushout = true;
         return execute(match, false, false);
     }
 
+    /**
+     * Executes an in-place direct graph transformation step using the Colim library
+     * with the specified attribute variable setting.
+     *
+     * @param match the match containing the rule and target graph for transformation
+     * @param allowAttrVarsInGraph true to allow attribute variables in graph objects
+     * @return the co-match morphism from the right hand side of the rule into the result graph,
+     *         or null if execution failed
+     * @throws TypeException if there is a type mismatch during transformation
+     */
     public final Morphism executeColimBased(
             final Match match,
             boolean allowAttrVarsInGraph) throws TypeException {
@@ -85,12 +109,12 @@ public class Step {
     }
 
     /**
-     * Perform an in-place graph transformation step <br>
-     * with respecting of allowing usage variables for values of attributes of
-     * objects inside of a graph, <br>
-     * and when usage of variables is allowed <br>
-     * then do it respecting equal names of variables inside of graph and the
-     * right hand side if of the rule of the given match.
+     * Performs an in-place graph transformation step
+     * with respect to allowing variable usage for values of attributes of
+     * objects inside a graph,
+     * and when usage of variables is allowed,
+     * then it respects equal names of variables inside the graph and the
+     * right hand side of the rule of the given match.
      */
     public final Morphism execute(
             final Match match,
@@ -167,10 +191,10 @@ public class Step {
     }
 
     /*
-	 * Here <br>
-	 * Rule r = match.getRule() <br>
-	 * match:   rule.LHS -> G <br>
-	 * comatch: rule.RHS -> G <br>
+	 * Here
+	 * Rule r = match.getRule()
+	 * match:   rule.LHS -> G
+	 * comatch: rule.RHS -> G
 	 * G is changed after in-place trafo step
      */
     private final void computeAttributes(

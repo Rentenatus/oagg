@@ -30,17 +30,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Construct a concurrent rule based on two source rules and already computed
- * dependency critical pair of these rules. Additionally used, the inverse rule
- * of rule1 and two help isomorphisms: isoLeft1: LHS of rule1 --> LHScopy which
- * can be done by rule1.getLeft().isomorphicCopy(), isoRight1: RHS of rule1 -->
- * RHScopy which can be done by rule1.getRight().isomorphicCopy().
+ * Represents a concurrent rule constructed based on two source rules and their
+ * already computed dependency critical pairs. The construction uses the inverse rule
+ * of the first rule and two helper isomorphisms: isoLeft1 (LHS of rule1 to LHS copy)
+ * and isoRight1 (RHS of rule1 to RHS copy).
  *
- * NOT implemented jet: Shift of General ACs from from rule1 and rule2 to the
- * concurrent rule.
+ * <p>Note: Shift of General ACs from rule1 and rule2 to the concurrent rule
+ * is not yet implemented.
  *
- * @author olga
- *
+ * @see Rule
+ * @see OrdinaryMorphism
  */
 public class ConcurrentRule {
 //TODO  shift of General ACs
@@ -75,15 +74,19 @@ public class ConcurrentRule {
     public long freeM, usedM;
 
     /**
-     * Construct a concurrent rule based on two source rules and already
-     * computed dependency critical pair of these rules. Additionally used, the
-     * inverse rule of rule1 and two help isomorphisms: isoLeft1: LHS of rule1
-     * --> LHScopy of rule1 which can be done by
-     * rule1.getLeft().isomorphicCopy(), isoLeft1: RHS of rule1 --> RHScopy of
-     * rule1 which can be done by rule1.getRight().isomorphicCopy(). The target
-     * graph of the morphism isoLeft1 is the left graph of the inverse rule, The
-     * target graph of the morphism isoRight1 is the right graph of the inverse
-     * rule,
+     * Constructs a concurrent rule based on two source rules and their already computed
+     * dependency critical pairs. Uses the inverse rule of rule1 and two helper isomorphisms:
+     * isoLeft1 (LHS of rule1 to LHS copy) and isoRight1 (RHS of rule1 to RHS copy).
+     * The target graph of isoLeft1 is the left graph of the inverse rule.
+     * The target graph of isoRight1 is the right graph of the inverse rule.
+     *
+     * @param rule1 the first source rule
+     * @param inverseRule1 the inverse of the first rule
+     * @param rule2 the second source rule
+     * @param isoLeft1 isomorphism from LHS of rule1 to LHS copy
+     * @param isoRight1 isomorphism from RHS of rule1 to RHS copy
+     * @param overlapping1 the overlapping morphism for rule1
+     * @param overlapping2 the overlapping morphism for rule2
      */
     public ConcurrentRule(
             final Rule rule1,
@@ -109,10 +112,11 @@ public class ConcurrentRule {
     }
 
     /**
-     * Create disjoint concurrent (parallel) rule based on given rules.
+     * Creates a disjoint concurrent (parallel) rule based on the given rules.
+     * This creates a concurrent rule from two rules that do not overlap.
      *
-     * @param rule1
-     * @param rule2
+     * @param rule1 the first source rule
+     * @param rule2 the second source rule
      */
     public ConcurrentRule(final Rule rule1,
             final Rule rule2) {
@@ -128,6 +132,18 @@ public class ConcurrentRule {
         }
     }
 
+    /**
+     * Constructs a concurrent rule based on a concurrent source rule and a regular source rule.
+     * Uses the inverse rule of the concurrent rule and two helper isomorphisms.
+     *
+     * @param rule1 the concurrent source rule
+     * @param inverseRule1 the inverse of the concurrent rule
+     * @param rule2 the second source rule
+     * @param isoLeft1 isomorphism from LHS of rule1 to LHS copy
+     * @param isoRight1 isomorphism from RHS of rule1 to RHS copy
+     * @param overlapping1 the overlapping morphism for rule1
+     * @param overlapping2 the overlapping morphism for rule2
+     */
     public ConcurrentRule(
             final ConcurrentRule rule1,
             final Rule inverseRule1,
@@ -154,10 +170,10 @@ public class ConcurrentRule {
     }
 
     /**
-     * Make a concurrent rule by disjoint union of rule1 and rul2.
+     * Creates a concurrent rule by disjoint union of a concurrent rule and a regular rule.
      *
-     * @param rule1
-     * @param rule2
+     * @param rule1 the concurrent source rule
+     * @param rule2 the second source rule
      */
     public ConcurrentRule(
             final ConcurrentRule rule1,
@@ -218,13 +234,13 @@ public class ConcurrentRule {
      */
     /**
      * The given Rule <code>r</code> is a pre-rule of this rule and the
-     * ObjectFlow list contains all its output-input relations.<br>
+     * ObjectFlow list contains all its output-input relations.
      * Collects all output-input relations where the output is an object of
      * <code>r.RHS</code> and the input is an Object of
-     * <code>this.getRule().LHS</code>.<br>
+     * <code>this.getRule().LHS</code>.
      *
-     * @param r
-     * @param list
+     * @param r the pre-rule
+     * @param list the ObjectFlow list
      * @return map of collected output-input object pairs
      */
     public Map<GraphObject, GraphObject> getReflectedInputObjectFlowFromRule(
@@ -405,11 +421,21 @@ public class ConcurrentRule {
 		return null;
 	}
      */
+    /**
+     * Sets the first source concurrent rule and updates the depth.
+     *
+     * @param cr the concurrent rule to set as first source
+     */
     public void setFirstSourceConcurrentRule(final ConcurrentRule cr) {
         this.source1Concurrent = cr;
         this.depth = this.depth + cr.depth;
     }
 
+    /**
+     * Returns the first source rule if it is a concurrent rule.
+     *
+     * @return the first source concurrent rule, or null if source1 is not a ConcurrentRule
+     */
     public ConcurrentRule getFirstSourceConcurrentRule() {
         if (this.source1Concurrent instanceof ConcurrentRule) {
             return (ConcurrentRule) this.source1Concurrent;
@@ -417,6 +443,11 @@ public class ConcurrentRule {
         return null;
     }
 
+    /**
+     * Returns the first source rule if it is a regular rule.
+     *
+     * @return the first source rule, or null if source1 is not a Rule
+     */
     public Rule getFirstSourceRule() {
         if (this.source1 instanceof Rule) {
             return (Rule) this.source1;
@@ -424,19 +455,39 @@ public class ConcurrentRule {
         return null;
     }
 
+    /**
+     * Sets the index of the first source rule.
+     *
+     * @param indx the index to set
+     */
     public void setIndexOfFirstSourceRule(int indx) {
         this.indx1 = indx;
     }
 
+    /**
+     * Returns the index of the first source rule.
+     *
+     * @return the index of the first source rule
+     */
     public int getIndexOfFirstSourceRule() {
         return this.indx1;
     }
 
+    /**
+     * Sets the second source concurrent rule and updates the depth.
+     *
+     * @param cr the concurrent rule to set as second source
+     */
     public void setSecondSourceConcurrentRule(final ConcurrentRule cr) {
         this.source2Concurrent = cr;
         this.depth = this.depth + cr.depth;
     }
 
+    /**
+     * Returns the second source rule if it is a concurrent rule.
+     *
+     * @return the second source concurrent rule, or null if source2 is not a ConcurrentRule
+     */
     public ConcurrentRule getSecondSourceConcurrentRule() {
         if (this.source2Concurrent instanceof ConcurrentRule) {
             return (ConcurrentRule) this.source2Concurrent;
@@ -444,6 +495,11 @@ public class ConcurrentRule {
         return null;
     }
 
+    /**
+     * Returns the second source rule if it is a regular rule.
+     *
+     * @return the second source rule, or null if source2 is not a Rule
+     */
     public Rule getSecondSourceRule() {
         if (this.source2 instanceof Rule) {
             return (Rule) this.source2;
@@ -606,14 +662,19 @@ public class ConcurrentRule {
     }
 
     /**
-     * Returns constructed concurrent rule.
+     * Returns the constructed concurrent rule.
      *
-     * @return concurrent rule
+     * @return the concurrent Rule instance, or null if not yet constructed
      */
     public Rule getRule() {
         return this.concurrentRule;
     }
 
+    /**
+     * Checks if this concurrent rule is ready to be transformed.
+     *
+     * @return true if the concurrent rule is ready to transform, false otherwise
+     */
     public boolean isReadyToTransform() {
         if (this.concurrentRule != null) {
             boolean result = true;
@@ -624,6 +685,11 @@ public class ConcurrentRule {
         return false;
     }
 
+    /**
+     * Returns the depth of this concurrent rule composition.
+     *
+     * @return the depth value
+     */
     public int getDepth() {
         return this.depth;
     }

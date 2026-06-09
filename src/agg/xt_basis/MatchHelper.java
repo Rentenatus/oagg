@@ -1428,9 +1428,9 @@ public final class MatchHelper {
 
     /*
 	 * Checks whether the parallel arcs of the given Type 
-	 * and the specified source and target Node are possible.<br>
+	 * and the specified source and target Node are possible.
 	 * The nodes must be contained in the source graph of the given Match. 
-	 * The rule of the given Match creates the specified arc.<br>
+	 * The rule of the given Match creates the specified arc.
      */
     public boolean isParallelArcAllowed(
             final Match m, final Type arct, final Node src, final Node tar) {
