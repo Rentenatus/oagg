@@ -969,6 +969,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * Prepares this graph for garbage collection by cutting all connections to
      * other objects and disposing all graph objects contained.
      */
+    @Override
     public void dispose() {
         if (this.observer != null) {
             this.observer.clear();
@@ -1331,7 +1332,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * @return The created node copy.
      * @throws TypeException If the node cannot be created.
      */
-    public Node createNode(Node originalNode) throws TypeException {
+    Node createNode(Node originalNode) throws TypeException {
         Node node = createNode(originalNode.getType());
         if (node != null) {
             if (originalNode.getAttribute() != null) {
@@ -1646,6 +1647,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * Deletes the specified arc.The arc will be removed from this graph and
      * from all morphism mappings with this arc.
      *
+     * @param arc
      * @throws TypeException If this graph is a type graph, and there are arcs
      * of this type arc in one of other graphs, an exception is thrown.
      */
@@ -1837,26 +1839,6 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
     }
 
     /**
-     * Returns an enumeration of nodes in this graph.
-     *
-     * @deprecated Replaced by <code>HashSet<Node> getNodesSet()</code>.
-     * @return Enumeration of nodes.
-     */
-    public Enumeration<Node> getNodes() {
-        return Collections.enumeration(this.itsNodes);
-    }
-
-    /**
-     * Returns a list of nodes in this graph.
-     *
-     * @deprecated Replaced by <code>HashSet<Node> getNodesSet()</code>.
-     * @return List of nodes.
-     */
-    public List<Node> getNodesList() {
-        return this.itsNodes.list();
-    }
-
-    /**
      * Returns the count of nodes in this graph.
      *
      * @return The number of nodes.
@@ -1931,26 +1913,6 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      */
     public Collection<Arc> getArcsCollection() {
         return this.itsArcs;
-    }
-
-    /**
-     * Returns an enumeration of arcs in this graph.
-     *
-     * @deprecated Replaced by <code>HashSet<Arc> getArcsSet()</code>.
-     * @return Enumeration of arcs.
-     */
-    public Enumeration<Arc> getArcs() {
-        return Collections.enumeration(this.itsArcs);
-    }
-
-    /**
-     * Returns a list of arcs in this graph.
-     *
-     * @deprecated Replaced by <code>HashSet<Arc> getArcsSet()</code>.
-     * @return List of arcs.
-     */
-    public List<Arc> getArcsList() {
-        return this.itsArcs.list();
     }
 
     /**
@@ -3209,17 +3171,6 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
 
     /**
      * Returns an isomorphism between this graph and its ad-hoc-created copy.
-     *
-     * @param n
-     * @return
-     * @deprecated replaced by <code>isomorphicCopy()</code>
-     */
-    public OrdinaryMorphism isoToCopy(int n) {
-        return isomorphicCopy();
-    }
-
-    /**
-     * Returns an isomorphism between this graph and its ad-hoc-created copy.
      * The attributes values are copied, too.
      *
      * @return morphism this --> copy
@@ -4165,7 +4116,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
     }
 
     /**
-	 * 
+     *
      */
     public void graphDidChange() {
         propagateChange(new Change(Change.MODIFIED));
