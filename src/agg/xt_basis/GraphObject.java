@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GraphObject defines the common interface and implementations for Nodes and Arcs.
- * This abstract class provides the fundamental operations and attributes that are
- * shared across all graph elements.
+ * GraphObject defines the common interface and implementations for Nodes and
+ * Arcs. This abstract class provides the fundamental operations and attributes
+ * that are shared across all graph elements.
  */
 @SuppressWarnings("serial")
 public abstract class GraphObject implements GraphElement, XMLObject, AttrObserver {
@@ -70,8 +70,9 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     }
 
     /**
-     * Creates an attribute instance for this graph object if the type has an attribute type defined.
-     * This method also registers this object as an observer of the attribute instance.
+     * Creates an attribute instance for this graph object if the type has an
+     * attribute type defined. This method also registers this object as an
+     * observer of the attribute instance.
      */
     public final void createAttributeInstance() {
         if (this.itsType.getAttrType() == null) {
@@ -94,8 +95,8 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     }
 
     /**
-     * Disposes the attribute instance of this graph object.
-     * Removes this object as an observer and disposes the attribute tuple.
+     * Disposes the attribute instance of this graph object. Removes this object
+     * as an observer and disposes the attribute tuple.
      */
     public void disposeAttributeInstance() {
         if (this.itsAttr != null) {
@@ -108,7 +109,8 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     /**
      * Sets the name of this graph object.
      *
-     * @param name the name to set, can be null (will be converted to empty string)
+     * @param name the name to set, can be null (will be converted to empty
+     * string)
      */
     public final void setObjectName(final String name) {
         this.name = (name != null) ? name : "";
@@ -146,6 +148,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @return the graph context
      */
+    @Override
     public final Graph getContext() {
         return this.itsContext;
     }
@@ -191,6 +194,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @return the type of this object
      */
+    @Override
     public final Type getType() {
         return this.itsType;
     }
@@ -200,20 +204,21 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @param type the type to set
      */
+    @Override
     public final void setType(Type type) {
         this.itsType = type;
     }
 
     /**
-     * Converts this object's type to a type key string that can be used for search
-     * operations. For a node it is similar to
-     * <code>((Node) this).getType().convertToKey()</code>, for an edge to
-     * <code>((Arc) this).getSource().getType().convertToKey()
+     * Converts this object's type to a type key string that can be used for
+     * search operations. For a node it is similar to
+     * <code>((Node) this).getType().convertToKey()</code>, for an edge to      <code>((Arc) this).getSource().getType().convertToKey()
      * + ((Arc) this).getType().convertToKey()
      * + ((Arc) this).getTarget().getType().convertToKey()</code>
      *
      * @return a key string representation of this object's type
      */
+    @Override
     public abstract String convertToKey();
 
     /**
@@ -221,6 +226,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @return the reset type key
      */
+    @Override
     public abstract String resetTypeKey();
 
     /**
@@ -228,6 +234,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @return the attribute instance, or null if not set
      */
+    @Override
     public final AttrInstance getAttribute() {
         return this.itsAttr;
     }
@@ -237,6 +244,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @return true if attributes exist and have entries, false otherwise
      */
+    @Override
     public final boolean attrExists() {
         return this.itsAttr != null && this.itsAttr.getNumberOfEntries() > 0;
     }
@@ -256,7 +264,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      * @return a list of variable names, or an empty list if no attributes exist
      */
     public final List<String> getVariableNamesOfAttribute() {
-        return this.itsAttr == null ? new ArrayList<String>(0)
+        return this.itsAttr == null ? new ArrayList<>(0)
                 : ((ValueTuple) this.itsAttr).getAllVariableNames();
     }
 
@@ -303,8 +311,8 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     }
 
     /**
-     * Returns the number of incoming arcs for this graph object.
-     * Default implementation returns 0, subclasses should override.
+     * Returns the number of incoming arcs for this graph object. Default
+     * implementation returns 0, subclasses should override.
      *
      * @return the number of incoming arcs
      */
@@ -313,8 +321,8 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     }
 
     /**
-     * Returns the number of outgoing arcs for this graph object.
-     * Default implementation returns 0, subclasses should override.
+     * Returns the number of outgoing arcs for this graph object. Default
+     * implementation returns 0, subclasses should override.
      *
      * @return the number of outgoing arcs
      */
@@ -323,8 +331,8 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     }
 
     /**
-     * Returns the total number of incoming and outgoing arcs for this graph object.
-     * Default implementation returns 0, subclasses should override.
+     * Returns the total number of incoming and outgoing arcs for this graph
+     * object. Default implementation returns 0, subclasses should override.
      *
      * @return the total number of arcs
      */
@@ -357,7 +365,8 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     }
 
     /**
-     * Checks if attribute member values are different between this object and another.
+     * Checks if attribute member values are different between this object and
+     * another.
      *
      * @param otherObject the other graph object to compare with
      * @return true if attribute member values are different, false otherwise
@@ -381,10 +390,12 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     }
 
     /**
-     * Checks if attribute member constant values are different between this object and another.
+     * Checks if attribute member constant values are different between this
+     * object and another.
      *
      * @param otherObject the other graph object to compare with
-     * @return true if attribute member constant values are different, false otherwise
+     * @return true if attribute member constant values are different, false
+     * otherwise
      */
     public boolean isAttrMemConstantValDifferent(GraphObject otherObject) {
         if (this.attrExists() && otherObject.attrExists()) {
@@ -404,11 +415,13 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
     }
 
     /**
-     * Checks if attribute member constant values are different among three graph objects.
+     * Checks if attribute member constant values are different among three
+     * graph objects.
      *
      * @param first the first graph object to compare
      * @param second the second graph object to compare
-     * @return true if attribute member constant values are different, false otherwise
+     * @return true if attribute member constant values are different, false
+     * otherwise
      */
     public boolean isAttrMemConstantValDifferent(GraphObject first, GraphObject second) {
         if (this.attrExists() && first.attrExists() && second.attrExists()) {
@@ -437,6 +450,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @return true if this is an arc, false otherwise
      */
+    @Override
     public abstract boolean isArc();
 
     /**
@@ -444,6 +458,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @return true if this is a node, false otherwise
      */
+    @Override
     public abstract boolean isNode();
 
     /**
@@ -452,6 +467,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      * @param otherObject the graph object to compare with
      * @return true if the objects are equal, false otherwise
      */
+    @Override
     public abstract boolean compareTo(GraphObject otherObject);
 
     /**
@@ -459,6 +475,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @param xmlHelper the XML helper to write with
      */
+    @Override
     public abstract void XwriteObject(XMLHelper xmlHelper);
 
     /**
@@ -466,6 +483,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      *
      * @param xmlHelper the XML helper to read from
      */
+    @Override
     public abstract void XreadObject(XMLHelper xmlHelper);
 
     /**
@@ -475,6 +493,7 @@ public abstract class GraphObject implements GraphElement, XMLObject, AttrObserv
      * @param attrTuple the attribute tuple to check
      * @return false (default implementation always returns false)
      */
+    @Override
     public boolean isPersistentFor(AttrTuple attrTuple) {
         return false;
     }
