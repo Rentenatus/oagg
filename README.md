@@ -1,6 +1,11 @@
 # oagg
 Open Attributed Graph Grammar System
 
+## Support 🐾
+If you like my projects, consider [supporting my work](https://github.com/sponsors/Rentenatus) (and feeding Mistral 🐱)! 
+
+---
+
 ## History
 
 AGG is a development environment for attributed graph transformation systems supporting an algebraic approach to graph transformation.
