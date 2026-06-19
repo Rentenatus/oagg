@@ -1,13 +1,11 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License
- * v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
@@ -47,20 +45,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * At the moment, AGG implements the DPO approach by switching on the
- * dangling-edge condition by default. Switching off the dangling condition
- * allows AGG to simulate the SPO approach. (SG, Aug.1999)
+ * Represents a graph transformation rule in the AGG system. A rule consists of a left-hand side (LHS) graph and a
+ * right-hand side (RHS) graph, and defines how a subgraph matching the LHS can be transformed into a subgraph matching
+ * the RHS.
  *
- * @version $Id: Rule.java,v 1.121 2010/12/16 17:31:39 olga Exp $
- * @author $Author: olga $
+ * <p>
+ * AGG implements the DPO (Double Pushout) approach by enabling the dangling-edge condition by default. Disabling the
+ * dangling condition allows AGG to simulate the SPO (Single Pushout) approach.
+ *
+ * <p>
+ * A rule can have application conditions (ACs), negative application conditions (NACs), and positive application
+ * conditions (PACs) that constrain when and how the rule can be applied.
+ *
+ * @see OrdinaryMorphism
+ * @see Graph
+ * @see Match
  */
 public class Rule extends OrdinaryMorphism implements XMLObject {
 
     /**
-     * Accepts a visitor for this rule.
+     * Accepts a visitor for this rule as part of the Visitor design pattern.
      *
-     * @param visitor the visitor to accept
      * @param <T> the return type of the visitor
+     * @param visitor the visitor to accept
      * @return the result of visiting this rule
      */
     public <T> T accept(RuleVisitor<T> visitor) {
@@ -103,7 +110,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     private InverseRuleConstructData invConstruct;
 
     /**
-     * Create myself.
+     * Creates a new rule with default left and right graphs. Initializes the rule with default names for the graphs and
+     * sets up the attribute context.
      */
     protected Rule() {
         super();
@@ -120,7 +128,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Create myself.
+     * Creates a new rule with the specified type set. Creates new left and right graphs using the given type set and
+     * initializes the rule.
+     *
+     * @param types the type set to use for the left and right graphs
      */
     protected Rule(TypeSet types) {
         super(BaseFactory.theFactory().createGraph(types),
@@ -138,10 +149,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Create myself.
+     * Creates a new rule with the specified left and right graphs.
      *
-     * @param left my left graph.
-     * @param right my right graph.
+     * @param left the left-hand side graph of this rule
+     * @param right the right-hand side graph of this rule
      */
     protected Rule(Graph left, Graph right) {
         super(left, right);
@@ -157,6 +168,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         this.applicable = true;
     }
 
+    /**
+     * Creates a new rule with the specified left graph, right graph, and attribute context.
+     *
+     * @param left the left-hand side graph of this rule
+     * @param right the right-hand side graph of this rule
+     * @param cont the attribute context to use for this rule
+     */
     protected Rule(Graph left, Graph right, AttrContext cont) {
         super(left, right, cont);
         this.itsName = "Rule";
@@ -171,6 +189,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         this.applicable = true;
     }
 
+    /**
+     * Disposes the superclass resources and cleans up rule-specific references. This method should be called when the
+     * rule is no longer needed to free resources. It releases the current match and multiplicity check references, and
+     * resets the changed flag.
+     */
     public void disposeSuper() {
         super.dispose();
         this.itsMatch = null;
@@ -178,6 +201,17 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         this.changed = false;
     }
 
+    /**
+     * Disposes this rule and all its associated resources. This includes:
+     * <ul>
+     * <li>Disposing all NACs (Negative Application Conditions)</li>
+     * <li>Disposing all PACs (Positive Application Conditions)</li>
+     * <li>Disposing all ACs (Nested Application Conditions)</li>
+     * <li>Disposing the inverse rule construction data</li>
+     * <li>Disposing the left-hand side and right-hand side graphs</li>
+     * </ul>
+     * After disposal, the rule can no longer be used.
+     */
     public void dispose() {
         super.dispose();
         while (!this.itsNACs.isEmpty()) {
@@ -201,27 +235,41 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         this.itsMatch = null;
         this.typesWhichNeedMultiplicityCheck = null;
         this.changed = false;
-//		System.out.println("Rule.dispose:: DONE  "+this.hashCode());
     }
 
+    /**
+     * Sets the name of this rule and updates the associated formula name.
+     *
+     * @param n the new name for this rule
+     */
     public void setName(String n) {
         this.itsName = n;
         this.itsFormula.setName("Formula.".concat(n));
     }
 
     /**
-     * Returns its name
+     * Returns the qualified name of this rule.
+     *
+     * @return the name of this rule
      */
     public String getQualifiedName() {
         return super.getName();
     }
 
+    /**
+     * Checks if this rule or any of its components (LHS, RHS) has been modified.
+     *
+     * @return true if this rule or any of its graphs has changed, false otherwise
+     */
     public boolean hasChanged() {
         return this.changed
                 || this.itsOrig.hasChanged()
                 || this.itsImag.hasChanged();
     }
 
+    /**
+     * Disposes the current match associated with this rule.
+     */
     private void disposeMatch() {
         if (this.itsMatch != null) {
             this.itsMatch.dispose();
@@ -229,6 +277,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
+    /**
+     * Clears this rule by removing all application conditions and resetting the graphs. This method disposes all NACs,
+     * PACs, and nested ACs, clears the superclass morphism, and resets the left-hand side and right-hand side graphs to
+     * their initial empty state. The change flag is also reset.
+     */
     public void clearRule() {
         disposeMatch();
         while (!this.itsNACs.isEmpty()) {
@@ -253,37 +306,43 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
+    /**
+     * Disposes the results of all nested application conditions. This is useful for freeing memory when the results are
+     * no longer needed.
+     */
     public void disposeResultsOfNestedACs() {
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            ac.disposeResults();
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            NestedApplCond nestedApplCond = (NestedApplCond) this.itsACs.get(index);
+            nestedApplCond.disposeResults();
         }
-//		System.gc();
     }
 
     /**
-     * Checks if the specified graph is its LHS, RHS, target of a NAC, target of
-     * a PAC graph.
+     * Checks if the specified graph is part of this rule. A graph is considered part of this rule if it is the
+     * left-hand side, right-hand side, or the target of any NAC, PAC, or nested AC morphism.
+     *
+     * @param graph the graph to check
+     * @return true if the graph is part of this rule, false otherwise
      */
-    public boolean isElement(Graph g) {
-        if (this.itsOrig == g || this.itsImag == g) {
+    public boolean isElement(Graph graph) {
+        if (this.itsOrig == graph || this.itsImag == graph) {
             return true;
         }
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            OrdinaryMorphism om = this.itsNACs.get(i);
-            if (om.getTarget() == g) {
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            OrdinaryMorphism ordMorph = this.itsNACs.get(index);
+            if (ordMorph.getTarget() == graph) {
                 return true;
             }
         }
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            OrdinaryMorphism om = this.itsPACs.get(i);
-            if (om.getTarget() == g) {
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            OrdinaryMorphism ordMorph = this.itsPACs.get(index);
+            if (ordMorph.getTarget() == graph) {
                 return true;
             }
         }
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            OrdinaryMorphism om = this.itsACs.get(i);
-            if (om.getTarget() == g) {
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            OrdinaryMorphism ordMorph = this.itsACs.get(index);
+            if (ordMorph.getTarget() == graph) {
                 return true;
             }
         }
@@ -291,51 +350,75 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns its left graph.
+     * Returns the left-hand side graph of this rule.
+     *
+     * @return the left-hand side graph (LHS)
      */
     public final Graph getLeft() {
         return this.itsOrig;
     }
 
     /**
-     * Returns its right graph.
+     * Returns the right-hand side graph of this rule.
+     *
+     * @return the right-hand side graph (RHS)
      */
     public final Graph getRight() {
         return this.itsImag;
     }
 
+    /**
+     * Checks if this rule is explicitly marked as not applicable.
+     *
+     * @return true if this rule is marked as not applicable, false otherwise
+     */
     public boolean isNotApplicable() {
         return this.notApplicable;
     }
 
     /**
-     * Returns the value which is set after
-     * <code>setApplicable(boolean appl)</code> called.
+     * Checks if this rule is currently applicable. A rule is applicable if it is not explicitly marked as not
+     * applicable and the internal applicable flag is set to true.
+     *
+     * @return true if this rule is applicable, false otherwise
      */
     public boolean isApplicable() {
         return !this.notApplicable && this.applicable;
     }
 
     /**
-     * Checks whether this rule is applicable at the specified graph by the
-     * specified matching strategy or not.
+     * Checks whether this rule is applicable at the specified graph using the specified matching strategy.
      *
-     * <b>Pre:</b> check <code>isReadyToTransform()</code> should be done before
+     * <p>
+     * <b>Precondition:</b> {@link #isReadyToTransform()} should be called before invoking this method to ensure the
+     * rule is ready for transformation.
      *
+     * @param g the graph to check for applicability
+     * @param strategy the matching completion strategy to use
+     * @return true if this rule can be applied to the graph, false otherwise
+     * @see #isApplicable(Graph, MorphCompletionStrategy, boolean)
+     * @see #isReadyToTransform()
      */
     public boolean isApplicable(Graph g, MorphCompletionStrategy strategy) {
         return isApplicable(g, strategy, false);
     }
 
     /**
-     * Checks whether this rule is applicable at the specified graph by the
-     * specified matching strategy or not.
+     * Checks whether this rule is applicable at the specified graph using the specified matching strategy. This method
+     * optionally checks if the rule is ready to transform before checking applicability.
+     *
+     * @param g the graph to check for applicability
+     * @param strategy the matching completion strategy to use
+     * @param doCheckIfReadyToTransform if true, checks {@link #isReadyToTransform()} before checking applicability
+     * @return true if this rule can be applied to the graph, false otherwise
+     * @see #isApplicable(Graph, MorphCompletionStrategy)
+     * @see #isReadyToTransform()
      */
     public boolean isApplicable(
             final Graph g,
             final MorphCompletionStrategy strategy,
             final boolean doCheckIfReadyToTransform) {
-        boolean result = this.enabled; //true;
+        boolean result = this.enabled;
         if (result && doCheckIfReadyToTransform) {
             result = this.isReadyToTransform();
         }
@@ -345,20 +428,21 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             if (m != null) {
                 m.setCompletionStrategy(strategy, true);
                 m.enableInputParameter(false);
-//				((VarTuple) this.getAttrContext().getVariables()).showVariables();
-//				((VarTuple) m.getAttrContext().getVariables()).showVariables();
                 if (m.nextCompletion()) {
                     result = true;
                 }
-//				else {
-//					System.out.println("Rule.isApplicable:: ERROR: "+m.getErrorMsg()+"   "+this.errorMsg);
-//				}
                 m.dispose();
             }
         }
         return result;
     }
 
+    /**
+     * Enables or disables all input parameters in this rule's attribute context. Input parameters are variables that
+     * can be set from outside the rule to influence the rule's behavior during application.
+     *
+     * @param enable true to enable input parameters, false to disable them
+     */
     public void enableInputParameter(final boolean enable) {
         VarTuple vars = (VarTuple) this.getAttrContext().getVariables();
         for (int i = 0; i < vars.getNumberOfEntries(); i++) {
@@ -370,19 +454,32 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    private void enableAttrConditionWithInputParameter(final String ipName, final boolean enable) {
-        CondTuple conds = (CondTuple) this.getAttrContext().getConditions();
-        for (int i = 0; i < conds.getNumberOfEntries(); i++) {
-            CondMember cond = conds.getCondMemberAt(i);
-            if (cond.getAllVariables().contains(ipName)) {
-                cond.setEnabled(enable);
+    /**
+     * Enables or disables all attribute conditions that reference the specified input parameter.
+     *
+     * @param ipName the name of the input parameter
+     * @param enable true to enable conditions, false to disable them
+     */
+    private void enableAttrConditionWithInputParameter(final String inputParamName, final boolean enable) {
+        CondTuple condTuple = (CondTuple) this.getAttrContext().getConditions();
+        for (int index = 0; index < condTuple.getNumberOfEntries(); index++) {
+            CondMember condition = condTuple.getCondMemberAt(index);
+            if (condition.getAllVariables().contains(inputParamName)) {
+                condition.setEnabled(enable);
             }
         }
     }
 
     /**
-     * Checks whether the LHS of this rule is applicable at the specified graph
-     * by the specified matching strategy.
+     * Checks whether the left-hand side of this rule can be matched in the specified graph using the given matching
+     * completion strategy. This method temporarily disables all NACs, PACs, and nested ACs to check only the basic
+     * applicability of the LHS pattern without considering application conditions.
+     *
+     * @param g the graph to check for LHS applicability
+     * @param strategy the matching completion strategy to use
+     * @param doCheckIfReadyToTransform if true, checks whether the rule is ready to transform first
+     * @return true if the LHS pattern can be found in the graph, false otherwise
+     * @see #isApplicable(Graph, MorphCompletionStrategy)
      */
     public boolean isLeftApplicable(
             final Graph g,
@@ -397,22 +494,22 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             Map<OrdinaryMorphism, Boolean> applcond2enable = new HashMap<>(
                     this.itsNACs.size() + this.itsPACs.size() + this.itsACs.size());
             // store nac.isEnabled() setting and disable nac 
-            for (int i = 0; i < this.itsNACs.size(); i++) {
-                OrdinaryMorphism nac = this.itsNACs.get(i);
-                applcond2enable.put(nac, Boolean.valueOf(nac.isEnabled()));
-                nac.setEnabled(false);
+            for (int index = 0; index < this.itsNACs.size(); index++) {
+                OrdinaryMorphism negativeApplCond = this.itsNACs.get(index);
+                applcond2enable.put(negativeApplCond, Boolean.valueOf(negativeApplCond.isEnabled()));
+                negativeApplCond.setEnabled(false);
             }
-            // store pac.isEnabled() setting and disable nac 
-            for (int i = 0; i < this.itsPACs.size(); i++) {
-                OrdinaryMorphism pac = this.itsPACs.get(i);
-                applcond2enable.put(pac, Boolean.valueOf(pac.isEnabled()));
-                pac.setEnabled(false);
+            // store pac.isEnabled() setting and disable pac 
+            for (int index = 0; index < this.itsPACs.size(); index++) {
+                OrdinaryMorphism positiveApplCond = this.itsPACs.get(index);
+                applcond2enable.put(positiveApplCond, Boolean.valueOf(positiveApplCond.isEnabled()));
+                positiveApplCond.setEnabled(false);
             }
             // store ac.isEnabled() setting and disable ac 
-            for (int i = 0; i < this.itsACs.size(); i++) {
-                OrdinaryMorphism ac = this.itsACs.get(i);
-                applcond2enable.put(ac, Boolean.valueOf(ac.isEnabled()));
-                ac.setEnabled(false);
+            for (int index = 0; index < this.itsACs.size(); index++) {
+                OrdinaryMorphism nestedApplCond = this.itsACs.get(index);
+                applcond2enable.put(nestedApplCond, Boolean.valueOf(nestedApplCond.isEnabled()));
+                nestedApplCond.setEnabled(false);
             }
             Match m = BaseFactory.theFactory().createMatch(this, g);
             if (m != null) {
@@ -424,35 +521,57 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             }
             BaseFactory.theFactory().destroyMatch(m);
             // restore enable setting
-            for (int i = 0; i < this.itsNACs.size(); i++) {
-                this.itsNACs.get(i).setEnabled(applcond2enable.get(this.itsNACs.get(i)).booleanValue());
+            for (int index = 0; index < this.itsNACs.size(); index++) {
+                this.itsNACs.get(index).setEnabled(applcond2enable.get(this.itsNACs.get(index)).booleanValue());
             }
-            for (int i = 0; i < this.itsPACs.size(); i++) {
-                this.itsPACs.get(i).setEnabled(applcond2enable.get(this.itsPACs.get(i)).booleanValue());
+            for (int index = 0; index < this.itsPACs.size(); index++) {
+                this.itsPACs.get(index).setEnabled(applcond2enable.get(this.itsPACs.get(index)).booleanValue());
             }
-            for (int i = 0; i < this.itsACs.size(); i++) {
-                this.itsACs.get(i).setEnabled(applcond2enable.get(this.itsACs.get(i)).booleanValue());
+            for (int index = 0; index < this.itsACs.size(); index++) {
+                this.itsACs.get(index).setEnabled(applcond2enable.get(this.itsACs.get(index)).booleanValue());
             }
         }
         return result;
     }
 
+    /**
+     * Enables or disables all negative application conditions (NACs) of this rule.
+     *
+     * @param enable true to enable all NACs, false to disable them
+     */
     public void enableNACs(boolean enable) {
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            this.itsNACs.get(i).setEnabled(enable);
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            this.itsNACs.get(index).setEnabled(enable);
         }
     }
 
+    /**
+     * Enables or disables all positive application conditions (PACs) of this rule.
+     *
+     * @param enable true to enable all PACs, false to disable them
+     */
     public void enablePACs(boolean enable) {
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            this.itsPACs.get(i).setEnabled(enable);
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            this.itsPACs.get(index).setEnabled(enable);
         }
     }
 
+    /**
+     * Sets the applicability flag for this rule. This flag indicates whether the rule can currently be applied during
+     * graph transformation.
+     *
+     * @param appl true if the rule should be considered applicable, false otherwise
+     */
     public void setApplicable(boolean appl) {
         this.applicable = appl;
     }
 
+    /**
+     * Returns the type set associated with this rule. The type set is derived from the left-hand side graph of this
+     * rule.
+     *
+     * @return the type set of this rule
+     */
     public TypeSet getTypeSet() {
         return getLeft().getTypeSet();
     }
@@ -461,29 +580,29 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //	}
 
     /**
-     * Creates and adds a new (nested) application condition (GAC). Note,
-     * because a new morphism is empty and the LHS graph is not, it is not a
-     * morphism in terms of theory, which demands an application condition to be
-     * a total morphism.
+     * Creates and adds a new nested application condition (GAC) to this rule. Note: Because the new morphism is
+     * initially empty and the LHS graph is not, it is not a morphism in theoretical terms, which demands an application
+     * condition to be a total morphism.
      *
-     * @return an empty morphism <code>ac</code> with
-     * <code>ac.getOriginal() == this.getOriginal()</code>.
+     * @return an empty nested application condition with the original set to this rule's left-hand side graph
      */
     public NestedApplCond createNestedAC() {
-        final NestedApplCond ac = new NestedApplCond(
+        final NestedApplCond applicationCondition = new NestedApplCond(
                 getLeft(),
                 BaseFactory.theFactory().createGraph(getRight().getTypeSet()),
                 getRight().getAttrContext());
-        this.itsACs.add(ac);
-        AttrContext acContext = ac.getAttrContext(); //getLeft().getAttrContext();
-        ac.getImage().setAttrContext(acContext);
-        ac.getImage().setKind(GraphKind.AC);
-        return ac;
+        this.itsACs.add(applicationCondition);
+        AttrContext acContext = applicationCondition.getAttrContext(); //getLeft().getAttrContext();
+        applicationCondition.getImage().setAttrContext(acContext);
+        applicationCondition.getImage().setKind(GraphKind.AC);
+        return applicationCondition;
     }
 
     /**
-     * Creates and adds a new (nested) application condition (GAC). The target
-     * graph of the new GAC is constructed due to RHS of this rule.
+     * Creates and adds a new nested application condition (GAC) to this rule. The target graph of the new GAC is
+     * constructed based on the RHS of this rule.
+     *
+     * @return a new nested application condition with target graph constructed from the RHS
      */
     public NestedApplCond createNestedACDuetoRHS() {
         final NestedApplCond nac = createNestedAC();
@@ -493,16 +612,24 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 
     /**
      * Adds the specified morphism representing a nested application condition.
-     * <b>Pre:</b> <code>ac.getOriginal() == this.getOriginal()</code>.
+     * <p>
+     * <b>Precondition:</b> The AC's original graph must be this rule's left-hand side graph.
+     *
+     * @param ac the nested application condition morphism to add
+     * @return true if the AC was added successfully, false if it was already present
      */
     public boolean addNestedAC(final OrdinaryMorphism ac) {
         return this.addNestedAC(-1, ac);
     }
 
     /**
-     * Adds the specified morphism representing a nested application condition
-     * in the list at the specified index.
-     * <b>Pre:</b> <code>ac.getOriginal() == this.getOriginal()</code>.
+     * Adds the specified morphism representing a nested application condition at the specified index in the list.
+     * <p>
+     * <b>Precondition:</b> The AC's original graph must be this rule's left-hand side graph.
+     *
+     * @param indx the index at which to insert the AC, or -1 to append to the end
+     * @param ac the nested application condition morphism to add
+     * @return true if the AC was added successfully, false if it was already present
      */
     public boolean addNestedAC(int indx, final OrdinaryMorphism ac) {
         if (!this.itsACs.contains(ac)) {
@@ -518,15 +645,22 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return false;
     }
 
+    /**
+     * Enables or disables all nested application conditions (ACs) of this rule.
+     *
+     * @param enable true to enable all ACs, false to disable them
+     */
     public void enableNestedAC(boolean enable) {
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            this.itsACs.get(i).setEnabled(enable);
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            this.itsACs.get(index).setEnabled(enable);
         }
     }
 
     /**
-     * Destroys the specified application condition. The image graph of the
-     * <code>ac</code> morphism would be destroyed, too.
+     * Destroys the specified nested application condition and removes it from this rule. The target graph of the AC
+     * morphism is also disposed.
+     *
+     * @param ac the nested application condition morphism to destroy
      */
     public void destroyNestedAC(final OrdinaryMorphism ac) {
         this.itsACs.remove(ac);
@@ -534,79 +668,106 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true, if it contains nested application conditions.
+     * Checks if this rule contains any nested application conditions.
+     *
+     * @return true if the rule has at least one nested AC, false otherwise
      */
     public boolean hasNestedACs() {
         return !this.itsACs.isEmpty();
     }
 
     /**
-     * Return an enumeration of nested application conditions. An element is of
-     * type <code>OrdinaryMorphism</code>.
+     * Returns an iterator over all nested application conditions of this rule.
+     *
+     * @return an iterator of all nested AC morphisms
      */
     public Iterator<OrdinaryMorphism> getNestedACs() {
         return this.itsACs.iterator();
     }
 
+    /**
+     * Returns a list of all enabled nested application conditions of this rule.
+     *
+     * @return a list of all enabled nested AC morphisms
+     */
     public List<NestedApplCond> getEnabledACs() {
-        List<NestedApplCond> list = new ArrayList<>(this.itsACs.size());
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (ac.isEnabled()) {
-                list.add(ac);
+        List<NestedApplCond> nestedApplCondList = new ArrayList<>(this.itsACs.size());
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            NestedApplCond nestedApplCond = (NestedApplCond) this.itsACs.get(index);
+            if (nestedApplCond.isEnabled()) {
+                nestedApplCondList.add(nestedApplCond);
             }
         }
-        return list;
+        return nestedApplCondList;
     }
 
+    /**
+     * Returns the list of all nested application condition morphisms of this rule.
+     *
+     * @return the list of nested AC morphisms
+     */
     public List<OrdinaryMorphism> getNestedACsList() {
         return this.itsACs;
     }
 
+    /**
+     * Returns a list of all enabled nested application conditions as evaluable objects.
+     *
+     * @return a list of all enabled nested AC morphisms as evaluable objects
+     */
     public List<Evaluable> getEnabledGeneralACsAsEvaluable() {
-        List<Evaluable> list = new ArrayList<>(this.itsACs.size());
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (ac.isEnabled()) {
-                list.add(ac);
+        List<Evaluable> evaluableList = new ArrayList<>(this.itsACs.size());
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            NestedApplCond nestedApplCond = (NestedApplCond) this.itsACs.get(index);
+            if (nestedApplCond.isEnabled()) {
+                evaluableList.add(nestedApplCond);
             }
         }
-        return list;
+        return evaluableList;
     }
 
     /**
-     * Returns an OrdinaryMorphism representing a nested application condition
-     * with the specified name.
+     * Returns the nested application condition morphism with the specified name.
+     *
+     * @param name the name of the nested AC to find
+     * @return the nested AC morphism with the specified name, or null if not found
      */
     public OrdinaryMorphism getNestedAC(String name) {
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            OrdinaryMorphism ac = this.itsACs.get(i);
-            if (ac.getName().equals(name)) {
-                return ac;
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            OrdinaryMorphism nestedApplCond = this.itsACs.get(index);
+            if (nestedApplCond.getName().equals(name)) {
+                return nestedApplCond;
             }
         }
         return null;
     }
 
-    public OrdinaryMorphism getNestedAC(int indx) {
-        if (indx >= 0 && indx < this.itsACs.size()) {
-            return this.itsACs.get(indx);
+    /**
+     * Returns the nested application condition morphism at the specified index.
+     *
+     * @param index the index of the nested AC to retrieve
+     * @return the nested AC morphism at the specified index, or null if index is out of bounds
+     */
+    public OrdinaryMorphism getNestedAC(int index) {
+        if (index >= 0 && index < this.itsACs.size()) {
+            return this.itsACs.get(index);
         } else {
             return null;
         }
     }
 
     /**
-     * Removes the specified application condition.
+     * Removes the specified nested application condition from this rule.If the AC was enabled, this method also updates
+     * the formula by patching out the evaluable and refreshing the formula.
      *
-     * @return <code>false</code> if <code>ac</code> is not found, otherwise -
-     * <code>true</code>.
+     * @param applicationCondition the nested application condition morphism to remove
+     * @return false if the AC was not found, true if it was removed successfully
      */
-    public final boolean removeNestedAC(OrdinaryMorphism ac) {
-        boolean enAC = ac.isEnabled();
-        if (this.itsACs.remove(ac)) {
+    public final boolean removeNestedAC(OrdinaryMorphism applicationCondition) {
+        boolean enAC = applicationCondition.isEnabled();
+        if (this.itsACs.remove(applicationCondition)) {
             if (enAC) {
-                this.itsFormula.patchOutEvaluable((NestedApplCond) ac, true);
+                this.itsFormula.patchOutEvaluable((NestedApplCond) applicationCondition, true);
                 this.refreshFormula(new ArrayList<>(this.getEnabledACs()));
             }
             return true;
@@ -614,15 +775,23 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return false;
     }
 
+    /**
+     * Checks if any nested application condition in this rule is using the specified variable in the context of the
+     * specified attribute condition tuple.
+     *
+     * @param var the variable member to check for usage
+     * @param act the attribute condition tuple providing context
+     * @return true if any nested AC uses the variable in the given context, false otherwise
+     */
     public boolean nestedACIsUsingVariable(
             final VarMember var,
             final AttrConditionTuple act) {
         for (int i = 0; i < this.itsACs.size(); i++) {
-            final OrdinaryMorphism ac = this.itsACs.get(i);
-            if (ac.getTarget().isUsingVariable(var)) {
+            final OrdinaryMorphism applicationCondition = this.itsACs.get(i);
+            if (applicationCondition.getTarget().isUsingVariable(var)) {
                 return true;
             }
-            List<String> acVars = ac.getTarget()
+            List<String> acVars = applicationCondition.getTarget()
                     .getVariableNamesOfAttributes();
             for (int j = 0; j < acVars.size(); j++) {
                 String varName = acVars.get(j);
@@ -640,124 +809,141 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates a new negative application condition (NAC) and add it to its
-     * NACs. Note, because a new morphism is empty and the LHS graph is not, it
-     * is not a morphism in terms of theory, which demands a NAC to be a total
-     * morphism.
+     * Creates a new negative application condition (NAC) and adds it to this rule. Note: Because the new morphism is
+     * initially empty and the LHS graph is not, it is not a morphism in theoretical terms, which demands a NAC to be a
+     * total morphism.
      *
-     * @return an empty morphism <code>nac</code> with
-     * <code>nac.getOriginal() == this.getOriginal()</code>.
+     * @return an empty morphism with the original set to this rule's left-hand side graph
      */
     public OrdinaryMorphism createNAC() {
-        final OrdinaryMorphism nac = new OrdinaryMorphism(
+        final OrdinaryMorphism negativeApplCond = new OrdinaryMorphism(
                 getLeft(),
                 BaseFactory.theFactory().createGraph(getRight().getTypeSet()),
                 getRight().getAttrContext());
-        this.itsNACs.add(nac);
-        AttrContext nacContext = nac.getAttrContext(); //getLeft().getAttrContext();
-        nac.getImage().setAttrContext(nacContext);
-        nac.getImage().setKind(GraphKind.NAC);
-        return nac;
+        this.itsNACs.add(negativeApplCond);
+        AttrContext negativeApplCondContext = negativeApplCond.getAttrContext(); // getLeft().getAttrContext();
+        negativeApplCond.getImage().setAttrContext(negativeApplCondContext);
+        negativeApplCond.getImage().setKind(GraphKind.NAC);
+        return negativeApplCond;
     }
 
     /**
-     * Creates a new negative application condition (NAC) and add it to its
-     * NACs. The target graph of the new NAC is constructed due to RHS of this
-     * rule.
+     * Creates a new negative application condition (NAC) and adds it to this rule. The target graph of the new NAC is
+     * constructed based on the RHS of this rule.
+     *
+     * @return a new NAC with target graph constructed from the RHS
      */
     public OrdinaryMorphism createNACDuetoRHS() {
-        final OrdinaryMorphism nac = createNAC();
-        makeACDuetoRHS(nac);
-        return nac;
+        final OrdinaryMorphism negativeApplCond = createNAC();
+        makeACDuetoRHS(negativeApplCond);
+        return negativeApplCond;
     }
 
+    /**
+     * Constructs the target graph of the specified morphism based on the RHS of this rule. This method copies nodes and
+     * arcs from the RHS to create a target graph for application conditions (NACs, PACs, or nested ACs).
+     *
+     * @param morph the morphism whose target graph should be constructed
+     */
     public void makeACDuetoRHS(final OrdinaryMorphism morph) {
-        HashMap<Node, Node> map = new HashMap<>();
-        Iterator<Node> nodes = this.itsImag.getNodesSet().iterator();
-        while (nodes.hasNext()) {
-            Node nr = nodes.next();
-            Iterator<GraphObject> l = this.getInverseImage(nr);
-            if (l.hasNext()) {
-                Node nl = (Node) l.next();
+        var nodeMap = new HashMap<Node, Node>();
+        Iterator<Node> rightNodes = this.itsImag.getNodesSet().iterator();
+        while (rightNodes.hasNext()) {
+            Node rightNode = rightNodes.next();
+            Iterator<GraphObject> inverseImageIter = this.getInverseImage(rightNode);
+            if (inverseImageIter.hasNext()) {
+                Node leftNode = (Node) inverseImageIter.next();
                 try {
-                    Node n = morph.getTarget().copyNode(nl);
+                    Node targetNode = morph.getTarget().copyNode(leftNode);
                     try {
-                        morph.addMapping(nl, n);
-                        while (l.hasNext()) {
-                            morph.addMapping((Node) l.next(), n);
+                        morph.addMapping(leftNode, targetNode);
+                        while (inverseImageIter.hasNext()) {
+                            morph.addMapping((Node) inverseImageIter.next(), targetNode);
                         }
-                        map.put(nr, n);
+                        nodeMap.put(rightNode, targetNode);
                     } catch (BadMappingException ex) {
+                        // Intentionally empty
                     }
                 } catch (TypeException e) {
+                    // Intentionally empty
                 }
             } else {
                 try {
-                    Node n = morph.getTarget().copyNode(nr);
-                    if (n.getAttribute() != null) {
-                        ((agg.attribute.impl.ValueTuple) n.getAttribute()).unsetValueAsExpr();
+                    Node targetNode = morph.getTarget().copyNode(rightNode);
+                    if (targetNode.getAttribute() != null) {
+                        ((agg.attribute.impl.ValueTuple) targetNode.getAttribute()).unsetValueAsExpr();
                     }
-                    map.put(nr, n);
+                    nodeMap.put(rightNode, targetNode);
                 } catch (TypeException e) {
+                    // Intentionally empty
                 }
             }
         }
-        Iterator<Arc> arcs = this.itsImag.getArcsSet().iterator();
-        while (arcs.hasNext()) {
-            Arc ar = arcs.next();
-            Iterator<GraphObject> l = this.getInverseImage(ar);
-            if (l.hasNext()) {
-                Arc al = (Arc) l.next();
+        Iterator<Arc> arcIterator = this.itsImag.getArcsSet().iterator();
+        while (arcIterator.hasNext()) {
+            Arc rightArc = arcIterator.next();
+            Iterator<GraphObject> inverseImageIter = this.getInverseImage(rightArc);
+            if (inverseImageIter.hasNext()) {
+                Arc leftArc = (Arc) inverseImageIter.next();
                 try {
-                    Arc a = morph.getTarget().copyArc(al, (Node) morph.getImage(al.getSource()), (Node) morph.getImage(al.getTarget()));
+                    Arc targetArc = morph.getTarget().copyArc(leftArc, (Node) morph.getImage(leftArc.getSource()), (Node) morph.getImage(leftArc.getTarget()));
                     try {
-                        morph.addMapping(al, a);
-                        while (l.hasNext()) {
-                            morph.addMapping(l.next(), a);
+                        morph.addMapping(leftArc, targetArc);
+                        while (inverseImageIter.hasNext()) {
+                            morph.addMapping(inverseImageIter.next(), targetArc);
                         }
                     } catch (BadMappingException ex) {
+                        // Intentionally empty
                     }
                 } catch (TypeException e) {
+                    // Intentionally empty
                 }
             } else {
                 try {
-                    Node s = (Node) map.get(ar.getSource());
-                    Node t = (Node) map.get(ar.getTarget());
-                    Arc a = morph.getTarget().copyArc(ar, s, t);
-                    if (a.getAttribute() != null) {
-                        ((agg.attribute.impl.ValueTuple) a.getAttribute()).unsetValueAsExpr();
+                    Node sourceNode = nodeMap.get(rightArc.getSource());
+                    Node targetNode = nodeMap.get(rightArc.getTarget());
+                    Arc targetArc = morph.getTarget().copyArc(rightArc, sourceNode, targetNode);
+                    if (targetArc.getAttribute() != null) {
+                        ((agg.attribute.impl.ValueTuple) targetArc.getAttribute()).unsetValueAsExpr();
                     }
                 } catch (TypeException e) {
+                    // Intentionally empty
                 }
             }
         }
-        map.clear();
-        map = null;
+        nodeMap.clear();
+        nodeMap = null;
     }
 
     /**
-     * Adds the specified morphism representing a negative application condition
-     * (NAC).
+     * Adds the specified morphism representing a negative application condition (NAC).
      * <p>
-     * <b>Pre:</b> <code>nac.getOriginal() == this.getOriginal()</code>.
+     * <b>Precondition:</b> The NAC's original graph must be this rule's left-hand side graph.
+     *
+     * @param negativeApplCond the negative application condition morphism to add
+     * @return true if the NAC was added successfully, false if it was already present
      */
-    public boolean addNAC(final OrdinaryMorphism nac) {
-        return this.addNAC(-1, nac);
+    public boolean addNAC(final OrdinaryMorphism negativeApplCond) {
+        return this.addNAC(-1, negativeApplCond);
     }
 
     /**
-     * Adds the specified morphism representing a negative application condition
-     * (NAC) to the list at the specified index.
+     * Adds the specified morphism representing a negative application condition (NAC) at the specified index in the
+     * list.
      * <p>
-     * <b>Pre:</b> <code>nac.getOriginal() == this.getOriginal()</code>.
+     * <b>Precondition:</b> The NAC's original graph must be this rule's left-hand side graph.
+     *
+     * @param index the index at which to insert the NAC, or -1 to append to the end
+     * @param negativeApplCond the negative application condition morphism to add
+     * @return true if the NAC was added successfully, false if it was already present
      */
-    public boolean addNAC(int indx, final OrdinaryMorphism nac) {
-        if (!this.itsNACs.contains(nac)) {
-            nac.getTarget().setKind(GraphKind.NAC);
-            if (indx >= 0 && indx < this.itsNACs.size()) {
-                this.itsNACs.add(indx, nac);
+    public boolean addNAC(int index, final OrdinaryMorphism negativeApplCond) {
+        if (!this.itsNACs.contains(negativeApplCond)) {
+            negativeApplCond.getTarget().setKind(GraphKind.NAC);
+            if (index >= 0 && index < this.itsNACs.size()) {
+                this.itsNACs.add(index, negativeApplCond);
             } else {
-                this.itsNACs.add(nac);
+                this.itsNACs.add(negativeApplCond);
             }
             this.changed = true;
             return true;
@@ -766,27 +952,33 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Destroys the specified NAC from my NACs. The image graph of the nac
-     * morphism would be destroyed, too.
+     * Destroys the specified negative application condition and removes it from this rule. The target graph of the NAC
+     * morphism is also disposed.
+     *
+     * @param negativeApplCond the negative application condition morphism to destroy
      */
-    public void destroyNAC(OrdinaryMorphism nac) {
-        this.itsNACs.remove(nac);
-        nac.getImage().dispose();
+    public void destroyNAC(OrdinaryMorphism negativeApplCond) {
+        this.itsNACs.remove(negativeApplCond);
+        negativeApplCond.getImage().dispose();
     }
 
     /**
-     * Returns true if it contains a NAC.
+     * Checks if this rule contains any negative application conditions.
+     *
+     * @return true if the rule has at least one NAC, false otherwise
      */
     public boolean hasNACs() {
         return !this.itsNACs.isEmpty();
     }
 
     /**
-     * Returns true, if there is at least one enabled NAC.
+     * Checks if this rule has at least one enabled negative application condition.
+     *
+     * @return true if the rule has at least one enabled NAC, false otherwise
      */
     public boolean hasEnabledNACs() {
-        for (OrdinaryMorphism n : this.itsNACs) {
-            if (n.isEnabled()) {
+        for (OrdinaryMorphism negativeApplCond : this.itsNACs) {
+            if (negativeApplCond.isEnabled()) {
                 return true;
             }
         }
@@ -794,62 +986,79 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns an enumeration of my NACs.
+     * Returns an iterator over all negative application conditions of this rule.
+     *
+     * @return an iterator of all NAC morphisms
      */
     public Iterator<OrdinaryMorphism> getNACs() {
         return this.itsNACs.iterator();
     }
 
+    /**
+     * Returns the list of all negative application condition morphisms of this rule.
+     *
+     * @return the list of NAC morphisms
+     */
     public List<OrdinaryMorphism> getNACsList() {
         return this.itsNACs;
     }
 
     /**
-     * Returns an OrdinaryMorphism representing a NAC with the specified name.
+     * Returns the negative application condition morphism with the specified name.
+     *
+     * @param name the name of the NAC to find
+     * @return the NAC morphism with the specified name, or {@code null} if not found
      */
     public OrdinaryMorphism getNAC(String name) {
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            OrdinaryMorphism nac = this.itsNACs.get(i);
-            if (nac.getName().equals(name)) {
-                return nac;
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            OrdinaryMorphism negativeApplCond = this.itsNACs.get(index);
+            if (negativeApplCond.getName().equals(name)) {
+                return negativeApplCond;
             }
         }
         return null;
     }
 
     /**
-     * Returns an OrdinaryMorphism representing a NAC at the specified index.
+     * Returns the negative application condition morphism at the specified index.
+     *
+     * @param index the index of the NAC to retrieve
+     * @return the NAC morphism at the specified index, or {@code null} if index is out of bounds
      */
-    public OrdinaryMorphism getNAC(int indx) {
-        if (indx >= 0 && indx < this.itsNACs.size()) {
-            return this.itsNACs.get(indx);
+    public OrdinaryMorphism getNAC(int index) {
+        if (index >= 0 && index < this.itsNACs.size()) {
+            return this.itsNACs.get(index);
         } else {
             return null;
         }
     }
 
     /**
-     * Returns an OrdinaryMorphism representing a NAC with the target as
-     * specified graph.
+     * Returns the negative application condition morphism with the specified target graph.
+     *
+     * @param graph the target graph to search for
+     * @return the NAC morphism with the specified target graph, or {@code null} if not found
      */
-    public OrdinaryMorphism getNAC(final Graph g) {
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            OrdinaryMorphism ac = this.itsNACs.get(i);
-            if (ac.getTarget() == g) {
-                return ac;
+    public OrdinaryMorphism getNAC(final Graph graph) {
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            OrdinaryMorphism applCond = this.itsNACs.get(index);
+            if (applCond.getTarget() == graph) {
+                return applCond;
             }
         }
         return null;
     }
 
     /**
-     * Returns true if the specified Graph g is the target graph of an
-     * OrdinaryMorphism representing a NAC.
+     * Checks if the specified graph is the target graph of any negative application condition.
+     *
+     * @param graph the graph to check
+     * @return true if the graph is a target of any NAC, false otherwise
      */
-    public boolean hasNAC(final Graph g) {
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            OrdinaryMorphism ac = this.itsNACs.get(i);
-            if (ac.getTarget() == g) {
+    public boolean hasNAC(final Graph graph) {
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            OrdinaryMorphism applCond = this.itsNACs.get(index);
+            if (applCond.getTarget() == graph) {
                 return true;
             }
         }
@@ -857,57 +1066,63 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Removes a negative application condition.
+     * Removes the specified negative application condition from this rule.
      *
-     * @return <code>false</code> if <code>nac</code> is not found, otherwise -
-     * <code>true</code>.
+     * @param negativeApplCond the negative application condition morphism to remove
+     * @return false if the NAC was not found, true if it was removed successfully
      */
-    public final boolean removeNAC(OrdinaryMorphism nac) {
-        return this.itsNACs.remove(nac);
+    public final boolean removeNAC(OrdinaryMorphism negativeApplCond) {
+        return this.itsNACs.remove(negativeApplCond);
     }
 
     /**
-     * Creates a new positive application condition (PAC) and add it to its
-     * PACs. Note, because a new morphism is empty and the LHS is not, it is not
-     * a morphism in terms of theory, which demands a PAC to be a total
-     * morphism.
+     * Creates a new positive application condition (PAC) and adds it to this rule. Note: Because the new morphism is
+     * initially empty and the LHS graph is not, it is not a morphism in theoretical terms, which demands a PAC to be a
+     * total morphism.
      *
-     * @return an empty morphism <code>pac</code> with
-     * <code>pac.getOriginal() == this.getOriginal()</code>.
+     * @return an empty morphism with the original set to this rule's left-hand side graph
      */
     public OrdinaryMorphism createPAC() {
-        final OrdinaryMorphism pac = new OrdinaryMorphism(
+        final OrdinaryMorphism positiveApplCond = new OrdinaryMorphism(
                 getLeft(),
                 BaseFactory.theFactory().createGraph(getRight().getTypeSet()),
                 getRight().getAttrContext());
-        this.itsPACs.add(pac);
-        AttrContext pacContext = pac.getAttrContext(); //getLeft().getAttrContext();
-        pac.getImage().setAttrContext(pacContext);
-        pac.getImage().setKind(GraphKind.PAC);
-        return pac;
+        this.itsPACs.add(positiveApplCond);
+        AttrContext positiveApplCondContext = positiveApplCond.getAttrContext(); // getLeft().getAttrContext();
+        positiveApplCond.getImage().setAttrContext(positiveApplCondContext);
+        positiveApplCond.getImage().setKind(GraphKind.PAC);
+        return positiveApplCond;
     }
 
     /**
-     * Adds the specified morphism representing a positive application condition
-     * (PAC).
-     * <b>Pre:</b> <code>pac.getOriginal() == this.getOriginal()</code>.
+     * Adds the specified morphism representing a positive application condition (PAC).
+     * <p>
+     * <b>Precondition:</b> The PAC's original graph must be this rule's left-hand side graph.
+     *
+     * @param positiveApplCond the positive application condition morphism to add
+     * @return true if the PAC was added successfully, false if it was already present
      */
-    public boolean addPAC(final OrdinaryMorphism pac) {
-        return this.addPAC(-1, pac);
+    public boolean addPAC(final OrdinaryMorphism positiveApplCond) {
+        return this.addPAC(-1, positiveApplCond);
     }
 
     /**
-     * Adds the specified morphism representing a positive application condition
-     * (PAC) in the list at the specified index.
-     * <b>Pre:</b> <code>pac.getOriginal() == this.getOriginal()</code>.
+     * Adds the specified morphism representing a positive application condition (PAC) at the specified index in the
+     * list.
+     * <p>
+     * <b>Precondition:</b> The PAC's original graph must be this rule's left-hand side graph.
+     *
+     * @param index the index at which to insert the PAC, or -1 to append to the end
+     * @param positiveApplCond the positive application condition morphism to add
+     * @return true if the PAC was added successfully, false if it was already present
      */
-    public boolean addPAC(int indx, final OrdinaryMorphism pac) {
-        if (!this.itsPACs.contains(pac)) {
-            pac.getTarget().setKind(GraphKind.PAC);
-            if (indx >= 0 && indx < this.itsPACs.size()) {
-                this.itsPACs.add(indx, pac);
+    public boolean addPAC(int index, final OrdinaryMorphism positiveApplCond) {
+        if (!this.itsPACs.contains(positiveApplCond)) {
+            positiveApplCond.getTarget().setKind(GraphKind.PAC);
+            if (index >= 0 && index < this.itsPACs.size()) {
+                this.itsPACs.add(index, positiveApplCond);
             } else {
-                this.itsPACs.add(pac);
+                this.itsPACs.add(positiveApplCond);
             }
             this.changed = true;
             return true;
@@ -915,24 +1130,40 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return false;
     }
 
-    public void addShiftedPAC(final List<OrdinaryMorphism> list) {
-        final ShiftedPAC shiftedPAC = new ShiftedPAC(list);
+    /**
+     * Adds a new shifted positive application condition composed of the specified list of morphisms.
+     *
+     * @param morphismList the list of morphisms that form the shifted PAC
+     */
+    public void addShiftedPAC(final List<OrdinaryMorphism> morphismList) {
+        final ShiftedPAC newShiftedPac = new ShiftedPAC(morphismList);
         if (this.itsShiftedPACs == null) {
-            itsShiftedPACs = new ArrayList<>();
+            this.itsShiftedPACs = new ArrayList<>();
         }
-        this.itsShiftedPACs.add(shiftedPAC);
+        this.itsShiftedPACs.add(newShiftedPac);
     }
 
+    /**
+     * Returns the list of all shifted positive application conditions.
+     *
+     * @return the list of shifted PACs, may be {@code null} if none exist
+     */
     public List<ShiftedPAC> getShiftedPACs() {
         return this.itsShiftedPACs;
     }
 
-    public boolean isShiftedPAC(final OrdinaryMorphism pac) {
+    /**
+     * Checks if the specified morphism is part of any shifted positive application condition.
+     *
+     * @param positiveApplCond the morphism to check
+     * @return true if the morphism is part of a shifted PAC, false otherwise
+     */
+    public boolean isShiftedPAC(final OrdinaryMorphism positiveApplCond) {
         if (this.itsShiftedPACs == null) {
             return false;
         }
-        for (int i = 0; i < this.itsShiftedPACs.size(); i++) {
-            if (this.itsShiftedPACs.get(i).contains(pac)) {
+        for (int index = 0; index < this.itsShiftedPACs.size(); index++) {
+            if (this.itsShiftedPACs.get(index).contains(positiveApplCond)) {
                 return true;
             }
         }
@@ -940,27 +1171,33 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Destroys the specified pac from my set of PACs. The image graph of the
-     * pac morphism would be destroyed, too.
+     * Destroys the specified positive application condition and removes it from this rule. The target graph of the PAC
+     * morphism is also disposed.
+     *
+     * @param positiveApplCond the positive application condition morphism to destroy
      */
-    public void destroyPAC(final OrdinaryMorphism pac) {
-        this.itsPACs.remove(pac);
-        pac.getImage().dispose();
+    public void destroyPAC(final OrdinaryMorphism positiveApplCond) {
+        this.itsPACs.remove(positiveApplCond);
+        positiveApplCond.getImage().dispose();
     }
 
     /**
-     * Returns true, if there is at least one PAC.
+     * Checks if this rule contains any positive application conditions.
+     *
+     * @return true if the rule has at least one PAC, false otherwise
      */
     public boolean hasPACs() {
         return !this.itsPACs.isEmpty();
     }
 
     /**
-     * Returns true, if there is at least one enabled PAC.
+     * Checks if this rule has at least one enabled positive application condition.
+     *
+     * @return true if the rule has at least one enabled PAC, false otherwise
      */
     public boolean hasEnabledPACs() {
-        for (OrdinaryMorphism p : this.itsPACs) {
-            if (p.isEnabled()) {
+        for (OrdinaryMorphism positiveApplCond : this.itsPACs) {
+            if (positiveApplCond.isEnabled()) {
                 return true;
             }
         }
@@ -968,77 +1205,94 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Return an enumeration of my PACs with elements of type
-     * <code>OrdinaryMorphism</code>.
+     * Returns an iterator over all positive application conditions of this rule.
+     *
+     * @return an iterator of all PAC morphisms
      */
     public Iterator<OrdinaryMorphism> getPACs() {
         return this.itsPACs.iterator();
     }
 
     /**
-     * Return an enumeration of my enabled PACs with elements of type
-     * <code>OrdinaryMorphism</code>.
+     * Returns an iterator over all enabled positive application conditions of this rule.
+     *
+     * @return an iterator of all enabled PAC morphisms
      */
     public Iterator<OrdinaryMorphism> getEnabledPACs() {
-        List<OrdinaryMorphism> v = new ArrayList<>(2);
-        for (OrdinaryMorphism p : this.itsPACs) {
-            if (p.isEnabled()) {
-                v.add(p);
+        var enabledPacsList = new ArrayList<OrdinaryMorphism>(2);
+        for (OrdinaryMorphism positiveApplCond : this.itsPACs) {
+            if (positiveApplCond.isEnabled()) {
+                enabledPacsList.add(positiveApplCond);
             }
         }
-        return v.iterator();
+        return enabledPacsList.iterator();
     }
 
+    /**
+     * Returns the list of all positive application condition morphisms of this rule.
+     *
+     * @return the list of PAC morphisms
+     */
     public List<OrdinaryMorphism> getPACsList() {
         return this.itsPACs;
     }
 
     /**
-     * Returns an OrdinaryMorphism representing a PAC with the specified name.
+     * Returns the positive application condition morphism with the specified name.
+     *
+     * @param name the name of the PAC to find
+     * @return the PAC morphism with the specified name, or {@code null} if not found
      */
     public OrdinaryMorphism getPAC(String name) {
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            OrdinaryMorphism pac = this.itsPACs.get(i);
-            if (pac.getName().equals(name)) {
-                return pac;
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            OrdinaryMorphism positiveApplCond = this.itsPACs.get(index);
+            if (positiveApplCond.getName().equals(name)) {
+                return positiveApplCond;
             }
         }
         return null;
     }
 
     /**
-     * Returns an OrdinaryMorphism representing a PAC at the specified index.
+     * Returns the positive application condition morphism at the specified index.
+     *
+     * @param index the index of the PAC to retrieve
+     * @return the PAC morphism at the specified index, or {@code null} if index is out of bounds
      */
-    public OrdinaryMorphism getPAC(int indx) {
-        if (indx >= 0 && indx < this.itsPACs.size()) {
-            return this.itsPACs.get(indx);
+    public OrdinaryMorphism getPAC(int index) {
+        if (index >= 0 && index < this.itsPACs.size()) {
+            return this.itsPACs.get(index);
         } else {
             return null;
         }
     }
 
     /**
-     * Returns an OrdinaryMorphism representing a PAC with target as specified
-     * Graph.
+     * Returns the positive application condition morphism with the specified target graph.
+     *
+     * @param graph the target graph to search for
+     * @return the PAC morphism with the specified target graph, or {@code null} if not found
      */
-    public OrdinaryMorphism getPAC(final Graph g) {
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            OrdinaryMorphism ac = this.itsPACs.get(i);
-            if (ac.getTarget() == g) {
-                return ac;
+    public OrdinaryMorphism getPAC(final Graph graph) {
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            OrdinaryMorphism applCond = this.itsPACs.get(index);
+            if (applCond.getTarget() == graph) {
+                return applCond;
             }
         }
         return null;
     }
 
     /**
-     * Returns true if the specified Graph g is the target graph of an
-     * OrdinaryMorphism representing a PAC.
+     * Checks if the specified graph is the target graph of any positive application condition.
+     *
+     * @param graph the graph to check
+     * @return true if the graph is a target of any PAC, false otherwise
      */
-    public boolean hasPAC(final Graph g) {
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            OrdinaryMorphism ac = this.itsPACs.get(i);
-            if (ac.getTarget() == g) {
+    public boolean hasPAC(final Graph graph) {
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            OrdinaryMorphism applCond = this.itsPACs.get(index);
+            if (applCond.getTarget() == graph) {
                 return true;
             }
         }
@@ -1046,26 +1300,29 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Removes the specified positive application condition.
+     * Removes the specified positive application condition from this rule.
      *
-     * @return <code>false</code> if <code>pac</code> is not found, otherwise -
-     * <code>true</code>.
+     * @param positiveApplCond the positive application condition morphism to remove
+     * @return false if the PAC was not found, true if it was removed successfully
      */
-    public final boolean removePAC(OrdinaryMorphism pac) {
-        return this.itsPACs.remove(pac);
+    public final boolean removePAC(OrdinaryMorphism positiveApplCond) {
+        return this.itsPACs.remove(positiveApplCond);
     }
 
     // /////////////////////////////////////
     /**
-     * Returns FALSE if the specified nodeType is an abstract type and used in
-     * the RHS to create a node, otherwise - TRUE.
+     * Checks if the specified node type can be used to create a node in the RHS. Returns false if the node type is
+     * abstract and used in the RHS to create a node, otherwise returns true.
+     *
+     * @param nodeType the node type to check
+     * @return false if the node type is abstract and used in RHS, true otherwise
      */
     public boolean checkCreateAbstractNode(Type nodeType) {
-        Iterator<Node> en = getTarget().getNodesSet().iterator();
-        while (en.hasNext()) {
-            Node n = en.next();
-            if (n.getType().equals(nodeType)) {
-                if (!this.getInverseImage(n).hasNext()) {
+        Iterator<Node> nodeIter = getTarget().getNodesSet().iterator();
+        while (nodeIter.hasNext()) {
+            Node currentNode = nodeIter.next();
+            if (currentNode.getType().equals(nodeType)) {
+                if (!this.getInverseImage(currentNode).hasNext()) {
                     return false;
                 }
             }
@@ -1073,20 +1330,26 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return true;
     }
 
+    /**
+     * Checks if any node in the RHS that has no preimage in the LHS violates type constraints regarding required arcs.
+     * Returns a TypeError if such a violation is found, otherwise null.
+     *
+     * @return a TypeError describing the constraint violation, or {@code null} if all nodes satisfy constraints
+     */
     public TypeError checkNewNodeRequiresArc() {
-        final Iterator<Node> elems = this.getRight().getNodesSet().iterator();
-        while (elems.hasNext()) {
-            final GraphObject obj = elems.next();
-            if (!this.getInverseImage(obj).hasNext()) {
-                List<String> list = this.getRight().getTypeSet().nodeRequiresArc((Node) obj);
-                if (list != null && !list.isEmpty()) {
-                    TypeError actError = new TypeError(TypeError.TO_LESS_ARCS,
+        final Iterator<Node> nodeIter = this.getRight().getNodesSet().iterator();
+        while (nodeIter.hasNext()) {
+            final GraphObject currentObj = nodeIter.next();
+            if (!this.getInverseImage(currentObj).hasNext()) {
+                List<String> requiredArcTypes = this.getRight().getTypeSet().nodeRequiresArc((Node) currentObj);
+                if (requiredArcTypes != null && !requiredArcTypes.isEmpty()) {
+                    TypeError typeError = new TypeError(TypeError.TO_LESS_ARCS,
                             "Node type  "
-                            + "\"" + obj.getType().getName() + "\" \n"
+                            + "\"" + currentObj.getType().getName() + "\" \n"
                             + "requires edge(s) of type: \n"
-                            + list.toString(), obj.getType());
-                    actError.setContainingGraph(this.getRight());
-                    return actError;
+                            + requiredArcTypes.toString(), currentObj.getType());
+                    typeError.setContainingGraph(this.getRight());
+                    return typeError;
                 }
             }
         }
@@ -1094,46 +1357,49 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Try to destroy all graph objects of the specified type from its graphs
-     * (LHS, RHS, NACs, PACs, graph constraints).
+     * Attempts to destroy all graph objects of the specified type from all graphs associated with this rule (LHS, RHS,
+     * NACs, PACs, nested ACs).
+     *
+     * @param t the type of graph objects to destroy
+     * @return true if all objects of the specified type were successfully destroyed, false otherwise
      */
-    public boolean destroyObjectsOfType(Type t) {
-        if (getLeft().destroyObjectsOfType(t)) {
-            if (getRight().destroyObjectsOfType(t)) {
-                for (int j = 0; j < this.itsNACs.size(); j++) {
-                    OrdinaryMorphism nac = this.itsNACs.get(j);
-                    if (!nac.getTarget().destroyObjectsOfType(t)) {
+    public boolean destroyObjectsOfType(Type type) {
+        if (getLeft().destroyObjectsOfType(type)) {
+            if (getRight().destroyObjectsOfType(type)) {
+                for (int index = 0; index < this.itsNACs.size(); index++) {
+                    OrdinaryMorphism negativeApplCond = this.itsNACs.get(index);
+                    if (!negativeApplCond.getTarget().destroyObjectsOfType(type)) {
                         return false;
                     }
                 }
-                for (int j = 0; j < this.itsPACs.size(); j++) {
-                    OrdinaryMorphism pac = this.itsPACs.get(j);
-                    if (!pac.getTarget().destroyObjectsOfType(t)) {
+                for (int index = 0; index < this.itsPACs.size(); index++) {
+                    OrdinaryMorphism positiveApplCond = this.itsPACs.get(index);
+                    if (!positiveApplCond.getTarget().destroyObjectsOfType(type)) {
                         return false;
                     }
                 }
-                for (int j = 0; j < this.itsACs.size(); j++) {
-                    OrdinaryMorphism ac = this.itsACs.get(j);
-                    if (!ac.getTarget().destroyObjectsOfType(t)) {
+                for (int index = 0; index < this.itsACs.size(); index++) {
+                    OrdinaryMorphism nestedApplCond = this.itsACs.get(index);
+                    if (!nestedApplCond.getTarget().destroyObjectsOfType(type)) {
                         return false;
                     }
                 }
                 // delete from rule application conditions
-                List<EvalSet> atom_conds = getAtomApplConds();
-                for (int i = 0; i < atom_conds.size(); i++) {
-                    List<?> v = atom_conds.get(i).getSet();
-                    for (int j = 0; j < v.size(); j++) {
-                        List<?> v1 = ((EvalSet) v.get(j)).getSet();
-                        for (int k = 0; k < v1.size(); k++) {
-                            agg.cons.AtomApplCond aac = (agg.cons.AtomApplCond) v1
-                                    .get(k);
-                            OrdinaryMorphism cond = aac.getPreCondition();
-                            OrdinaryMorphism tm = aac.getT();
-                            OrdinaryMorphism qm = aac.getQ();
-                            cond.getSource().destroyObjectsOfType(t);
-                            cond.getTarget().destroyObjectsOfType(t);
-                            tm.getTarget().destroyObjectsOfType(t);
-                            qm.getSource().destroyObjectsOfType(t);
+                List<EvalSet> atomConds = getAtomApplConds();
+                for (int atomCondIndex = 0; atomCondIndex < atomConds.size(); atomCondIndex++) {
+                    List<?> evalSetList = atomConds.get(atomCondIndex).getSet();
+                    for (int nestedEvalSetIndex = 0; nestedEvalSetIndex < evalSetList.size(); nestedEvalSetIndex++) {
+                        List<?> nestedEvalSet = ((EvalSet) evalSetList.get(nestedEvalSetIndex)).getSet();
+                        for (int atomApplCondIndex = 0; atomApplCondIndex < nestedEvalSet.size(); atomApplCondIndex++) {
+                            agg.cons.AtomApplCond atomApplCond = (agg.cons.AtomApplCond) nestedEvalSet
+                                    .get(atomApplCondIndex);
+                            OrdinaryMorphism preCondition = atomApplCond.getPreCondition();
+                            OrdinaryMorphism tMorphism = atomApplCond.getT();
+                            OrdinaryMorphism qMorphism = atomApplCond.getQ();
+                            preCondition.getSource().destroyObjectsOfType(type);
+                            preCondition.getTarget().destroyObjectsOfType(type);
+                            tMorphism.getTarget().destroyObjectsOfType(type);
+                            qMorphism.getSource().destroyObjectsOfType(type);
                         }
                     }
                 }
@@ -1143,99 +1409,123 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Try to destroy all graph objects of the specified types from its graphs
-     * (LHS, RHS, NACs, PACs, graph constraints). Returns names of the failed
-     * types.
+     * Attempts to destroy all graph objects of the specified types from all graphs associated with this rule (LHS, RHS,
+     * NACs, PACs, nested ACs).
+     *
+     * @param types the list of types whose objects should be destroyed
+     * @return a list of names of types that could not be destroyed completely
      */
-    public List<String> destroyObjectsOfTypes(List<Type> types) {
+    public List<String> destroyObjectsOfTypes(List<Type> typeList) {
         List<String> failed = new ArrayList<>(5);
-        for (int i = 0; i < types.size(); i++) {
-            Type t = types.get(i);
-            if (!destroyObjectsOfType(t)) {
-                String s = "Rule:  " + getName() + "   Type:  " + t.getName();
-                failed.add(s);
+        for (int index = 0; index < typeList.size(); index++) {
+            Type currentType = typeList.get(index);
+            if (!destroyObjectsOfType(currentType)) {
+                String errorMsg = "Rule:  " + getName() + "   Type:  " + currentType.getName();
+                failed.add(errorMsg);
             }
         }
         return failed;
     }
 
     /**
-     * Returns a copy of this rule by using its types.
+     * Returns a copy of this rule using its current types.
+     *
+     * @return a new Rule instance that is a copy of this rule
      */
     public Rule getClone() {
         return BaseFactory.theFactory().cloneRule(this);
     }
 
     /**
-     * Returns a copy of this rule by using the specified types.
+     * Returns a copy of this rule using the specified types.
+     *
+     * @param types the type set to use for the cloned rule
+     * @return a new Rule instance that is a copy of this rule with the specified types
      */
     public Rule getClone(TypeSet types) {
         return BaseFactory.theFactory().cloneRule(this, types, true);
     }
 
     /**
-     * Return its morphism between the left and right graphs.
+     * Returns the morphism between the left and right graphs of this rule. This is the rule itself, as Rule extends
+     * OrdinaryMorphism.
+     *
+     * @return this rule as an OrdinaryMorphism
      */
     public final OrdinaryMorphism getMorphism() {
         return this;
     }
 
     /**
-     * Returns its graph constraints which can be converted to the post
-     * application constraints.
+     * Returns the list of graph constraints that can be converted to post-application constraints.
+     *
+     * @return the list of formula constraints, or an empty list if none exist
      */
     public List<Formula> getConstraints() {
         return (this.constraints != null) ? this.constraints : new ArrayList<>(0);
     }
 
     /**
-     * Checks the type compatibility of two graph objects. The first object
-     * should belong to the LHS, the second - to the RHS, to be used for a
-     * mapping of the rule morphism.
+     * Checks the type compatibility of two graph objects. The first object should belong to the LHS, the second to the
+     * RHS, to be used for a mapping of the rule morphism.
+     *
+     * @param orig the original type from the LHS
+     * @param image the image type from the RHS
+     * @return true if the types are compatible, false otherwise
      */
-    protected boolean checkType(Type orig, Type image) {
-        return orig.compareTo(image);
+    protected boolean checkType(Type originType, Type imageType) {
+        return originType.compareTo(imageType);
     }
 
+    /**
+     * Creates attribute instances where needed for all graphs in this rule (LHS, RHS, NACs, PACs, nested ACs).
+     */
     public void createAttrInstanceWhereNeeded() {
         this.itsOrig.createAttrInstanceWhereNeeded();
         this.itsImag.createAttrInstanceWhereNeeded();
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            this.itsNACs.get(i).getTarget().createAttrInstanceWhereNeeded();
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            this.itsNACs.get(index).getTarget().createAttrInstanceWhereNeeded();
         }
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            this.itsPACs.get(i).getTarget().createAttrInstanceWhereNeeded();
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            this.itsPACs.get(index).getTarget().createAttrInstanceWhereNeeded();
         }
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            this.itsACs.get(i).getTarget().createAttrInstanceWhereNeeded();
-        }
-    }
-
-    public void createAttrInstanceOfTypeWhereNeeded(final Type t) {
-        this.itsOrig.createAttrInstanceOfTypeWhereNeeded(t);
-        this.itsImag.createAttrInstanceOfTypeWhereNeeded(t);
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            this.itsNACs.get(i).getTarget().createAttrInstanceOfTypeWhereNeeded(t);
-        }
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            this.itsPACs.get(i).getTarget().createAttrInstanceOfTypeWhereNeeded(t);
-        }
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            this.itsACs.get(i).getTarget().createAttrInstanceOfTypeWhereNeeded(t);
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            this.itsACs.get(index).getTarget().createAttrInstanceWhereNeeded();
         }
     }
 
     /**
-     * Generates rule post application conditions from its
-     * constraints(formulas). Returns error message if something gone wrong,
-     * otherwise - empty.
+     * Creates attribute instances of the specified type where needed for all graphs in this rule (LHS, RHS, NACs, PACs,
+     * nested ACs).
+     *
+     * @param t the type for which to create attribute instances
+     */
+    public void createAttrInstanceOfTypeWhereNeeded(final Type type) {
+        this.itsOrig.createAttrInstanceOfTypeWhereNeeded(type);
+        this.itsImag.createAttrInstanceOfTypeWhereNeeded(type);
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            this.itsNACs.get(index).getTarget().createAttrInstanceOfTypeWhereNeeded(type);
+        }
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            this.itsPACs.get(index).getTarget().createAttrInstanceOfTypeWhereNeeded(type);
+        }
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            this.itsACs.get(index).getTarget().createAttrInstanceOfTypeWhereNeeded(type);
+        }
+    }
+
+    /**
+     * Generates rule post application conditions from its constraints (formulas). Returns an error message if something
+     * went wrong, otherwise an empty string.
+     *
+     * @return an error message if conversion failed, or empty string if successful
      */
     public String convertUsedFormulas() {
         if (this.itsUsedAtomics != null && this.itsUsedAtomics.size() > 0
                 && this.itsUsedFormulas != null && this.itsUsedFormulas.size() > 0) {
-            String msg = "";
-            List<EvalSet> fin = new ArrayList<>();
-            List<String> names = new ArrayList<>();
+            String errorMsg = "";
+            var finalEvalSets = new ArrayList<EvalSet>();
+            var atomicNames = new ArrayList<String>();
             // clear Post Appl. Conditions
             if (this.constraints == null) {
                 constraints = new ArrayList<>();
@@ -1243,126 +1533,118 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 this.constraints.clear();
             }
             setAtomApplConds(null, null);
-            final Map<AtomConstraint, EvalSet> atomic2set = new HashMap<>();
-            final Map<String, String> failedAtomic2error = new HashMap<>();
-            int tgLevel = this.getTypeSet().getLevelOfTypeGraphCheck();
-            if (tgLevel > TypeSet.ENABLED_MAX) {
+            final Map<AtomConstraint, EvalSet> atomicToEvalSet = new HashMap<>();
+            final Map<String, String> failedAtomicToError = new HashMap<>();
+            int typeGraphLevel = this.getTypeSet().getLevelOfTypeGraphCheck();
+            if (typeGraphLevel > TypeSet.ENABLED_MAX) {
                 this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
             }
-            for (int j = 0; j < this.itsUsedAtomics.size(); j++) {
-                AtomConstraint a = this.itsUsedAtomics.get(j);
-                if (!a.isValid()) {
-                    msg = "Atomic  \"" + a.getAtomicName() + "\"  is not valid. <br>";
+            for (int index = 0; index < this.itsUsedAtomics.size(); index++) {
+                AtomConstraint atomicConstraint = this.itsUsedAtomics.get(index);
+                if (!atomicConstraint.isValid()) {
+                    errorMsg = "Atomic  \"" + atomicConstraint.getAtomicName() + "\"  is not valid.";
                     this.itsUsedAtomics.clear();
                     this.itsUsedFormulas.clear();
-                    return msg;
+                    return errorMsg;
                 }
                 ((AttrTupleManager) AttrTupleManager.getDefaultManager())
                         .setVariableContext(true);
-                Convert conv = new Convert(this, a);
-                List<Object> v = conv.convert();
+                Convert converter = new Convert(this, atomicConstraint);
+                List<Object> evalList = converter.convert();
                 ((AttrTupleManager) AttrTupleManager.getDefaultManager())
                         .setVariableContext(false);
-                final EvalSet set = new EvalSet(v);
-                fin.add(set);
-                names.add(a.getAtomicName());
-                if (!v.isEmpty()) {
-                    atomic2set.put(a, set);
+                final EvalSet evalSet = new EvalSet(evalList);
+                finalEvalSets.add(evalSet);
+                atomicNames.add(atomicConstraint.getAtomicName());
+                if (!evalList.isEmpty()) {
+                    atomicToEvalSet.put(atomicConstraint, evalSet);
                 }
-                if (!"".equals(conv.getErrorMsg())) {
-                    failedAtomic2error.put(a.getAtomicName(), conv.getErrorMsg());
+                if (!"".equals(converter.getErrorMsg())) {
+                    failedAtomicToError.put(atomicConstraint.getAtomicName(), converter.getErrorMsg());
                 }
             }
-            this.getTypeSet().setLevelOfTypeGraph(tgLevel);
-            if (!failedAtomic2error.isEmpty()) {
-                msg = "Error(s) during creating Post Application Condition : <br>";
+            this.getTypeSet().setLevelOfTypeGraph(typeGraphLevel);
+            if (!failedAtomicToError.isEmpty()) {
+                errorMsg = "Error(s) during creating Post Application Condition:";
             }
-            for (int j = 0; j < this.itsUsedFormulas.size(); j++) {
-                Formula f = this.itsUsedFormulas.get(j);
-                if (!f.isEnabled()) {
+            for (int formulaIndex = 0; formulaIndex < this.itsUsedFormulas.size(); formulaIndex++) {
+                Formula formula = this.itsUsedFormulas.get(formulaIndex);
+                if (!formula.isEnabled()) {
                     continue;
                 }
-                List<Evaluable> v = new ArrayList<>();
-                String s = f.getAsString(v);
-                //			System.out.println(s);
-                //			System.out.println(v);
-                // In v the atomics used in f are noted.
-                // In fin the set of _all_new atomics are noted
+                List<Evaluable> evalList = new ArrayList<>();
+                String formulaStr = formula.getAsString(evalList);
+                // In evalList the atomics used in formula are noted.
+                // In finalEvalSets the set of _all_new atomics are noted
                 // (though they are real formulas now) in the original order.
                 // This means, we need a translation.
                 // I.e. we build a new List as the source of a new formula
                 // only containing the base formulas
                 // corresponding to the atomic at that index.
-                boolean formulaOK = true;
-                List<Evaluable> v2 = new ArrayList<>();
-                for (int k = 0; k < v.size(); k++) {
-                    Object e = v.get(k);
-                    boolean convertOK = false;
-                    int k2;
-                    for (k2 = 0; k2 < this.itsUsedAtomics.size(); k2++) {
-                        if (this.itsUsedAtomics.get(k2) == e) {
-                            final String atomicName = this.itsUsedAtomics.get(k2).getAtomicName();
+                boolean formulaOk = true;
+                List<Evaluable> newEvalList = new ArrayList<>();
+                for (int elementIndex = 0; elementIndex < evalList.size(); elementIndex++) {
+                    Object element = evalList.get(elementIndex);
+                    boolean convertOk = false;
+                    int atomicIndex;
+                    for (atomicIndex = 0; atomicIndex < this.itsUsedAtomics.size(); atomicIndex++) {
+                        if (this.itsUsedAtomics.get(atomicIndex) == element) {
+                            final String atomicName = this.itsUsedAtomics.get(atomicIndex).getAtomicName();
                             //						System.out.println(atomicName));
-                            Evaluable set = atomic2set.get(e);
-                            if (set != null) {
-                                v2.add(set);
-                                convertOK = true;
+                            Evaluable evalSet = atomicToEvalSet.get(element);
+                            if (evalSet != null) {
+                                newEvalList.add(evalSet);
+                                convertOk = true;
                                 break;
                             }
-                            int indx = names.indexOf(atomicName);
-                            fin.remove(indx);
-                            names.remove(indx);
+                            int nameIndex = atomicNames.indexOf(atomicName);
+                            finalEvalSets.remove(nameIndex);
+                            atomicNames.remove(nameIndex);
                         }
                     }
-                    if (!convertOK) {
-                        formulaOK = false;
+                    if (!convertOk) {
+                        formulaOk = false;
                         break;
                     }
                 }
-                if (formulaOK) {
-                    Formula f2 = new Formula(v2, s);
-                    this.constraints.add(f2);
+                if (formulaOk) {
+                    Formula newFormula = new Formula(newEvalList, formulaStr);
+                    this.constraints.add(newFormula);
                 }
             }
-            if (fin.isEmpty()) {
+            if (finalEvalSets.isEmpty()) {
                 this.itsUsedAtomics.clear();
                 this.itsUsedFormulas.clear();
             } else {
-                this.setAtomApplConds(fin, names);
+                this.setAtomApplConds(finalEvalSets, atomicNames);
             }
             deleteTransientContextVariables(getSource());
             deleteTransientContextVariables(getTarget());
             this.removeUnusedVariableOfAttrContext();
-            String msg1 = "Cannot convert atomic(s) :\n";
-            String msg2 = "";
-            final Iterator<String> failedAtomic = failedAtomic2error.keySet().iterator();
-            while (failedAtomic.hasNext()) {
-                String name = failedAtomic.next();
-                String error = failedAtomic2error.get(name);
-                msg2 = msg2.concat(" - ").concat(name).concat(" - ").concat("\n");
-                msg2 = msg2.concat(error).concat("\n");
+            String errorMsgPart1 = "Cannot convert atomic(s) :\n";
+            String errorMsgPart2 = "";
+            final Iterator<String> failedAtomicIter = failedAtomicToError.keySet().iterator();
+            while (failedAtomicIter.hasNext()) {
+                String atomicName = failedAtomicIter.next();
+                String atomicError = failedAtomicToError.get(atomicName);
+                errorMsgPart2 = errorMsgPart2.concat(" - ").concat(atomicName).concat(" - ").concat("\n");
+                errorMsgPart2 = errorMsgPart2.concat(atomicError).concat("\n");
             }
-            if (!"".equals(msg2)) {
-                msg1 = msg1.concat(msg2);
-                msg = msg.concat(msg1);
+            if (!"".equals(errorMsgPart2)) {
+                errorMsgPart1 = errorMsgPart1.concat(errorMsgPart2);
+                errorMsg = errorMsg.concat(errorMsgPart1);
             }
-            return msg;
+            return errorMsg;
         } else {
-            return "Cannot create post application conditions. There isn't any formula selected. <br>";
+            return "Cannot create post application conditions. There isn't any formula selected.";
         }
     }
 
     /**
-     * Set a List of atomic graph constraints used for generating post
-     * application conditions. Elements of the usedAtomic are of the type
-     * agg.cons.AtomConstraint .
+     * Sets the constraints (formulas) which will be used for generating post application conditions. This method also
+     * extracts any atomic constraints from the formulas.
      *
-     * private void setUsedAtomics(List usedAtomics) { itsUsedAtomics =
-     * usedAtomics; }
-     */
-    /**
-     * Set its constraints (formulas) which will be used for generating its post
-     * application conditions.
+     * @param formulasToUse the list of formulas to use for generating post application conditions
      */
     public void setUsedFormulas(List<Formula> formulasToUse) {
         if (!formulasToUse.isEmpty()) {
@@ -1377,18 +1659,18 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 this.itsUsedAtomics.clear();
             }
             this.itsUsedFormulas.addAll(formulasToUse);
-            for (int i = 0; i < this.itsUsedFormulas.size(); i++) {
-                Formula f = this.itsUsedFormulas.get(i);
-                List<Evaluable> vec = new ArrayList<>();
-                String form = f.getAsString(vec);
-                for (int j = 0; j < vec.size(); j++) {
-                    if (vec.get(j) instanceof AtomConstraint) {
-                        AtomConstraint ac = (AtomConstraint) vec.get(j);
-                        this.itsUsedAtomics.add(ac);
+            for (int index = 0; index < this.itsUsedFormulas.size(); index++) {
+                Formula formula = this.itsUsedFormulas.get(index);
+                List<Evaluable> evalVec = new ArrayList<>();
+                String formulaStr = formula.getAsString(evalVec);
+                for (int elementIndex = 0; elementIndex < evalVec.size(); elementIndex++) {
+                    if (evalVec.get(elementIndex) instanceof AtomConstraint) {
+                        AtomConstraint atomConstraint = (AtomConstraint) evalVec.get(elementIndex);
+                        this.itsUsedAtomics.add(atomConstraint);
                     } else {
                         System.out
                                 .println("Rule.setUsedFormulas(List<Formula> usedFormulas):  formula: "
-                                        + form + "   FAILED!");
+                                        + formulaStr + "   FAILED!");
                     }
                 }
             }
@@ -1396,45 +1678,51 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Return a List of atomic graph constraints used for generating post
-     * application conditions. Elements of the usedAtomic are of the type
-     * agg.cons.AtomConstraint .
+     * Returns a list of atomic graph constraints used for generating post application conditions. The elements are of
+     * type agg.cons.AtomConstraint.
+     *
+     * @return a list of atomic constraints, or an empty list if none exist
      */
     public List<AtomConstraint> getUsedAtomics() {
         return (this.itsUsedAtomics != null) ? this.itsUsedAtomics : new ArrayList<>(0);
     }
 
     /**
-     * Return the List of constraints (formulas) used for generating post
-     * application conditions. Elements of the usedFormulas are of the type
-     * agg.cons.Formula .
+     * Returns the list of constraints (formulas) used for generating post application conditions. The elements are of
+     * type agg.cons.Formula.
+     *
+     * @return a list of formulas, or an empty list if none exist
      */
     public List<Formula> getUsedFormulas() {
         return (this.itsUsedFormulas != null) ? this.itsUsedFormulas : new ArrayList<>(0);
     }
 
     /**
-     * Clears its lists of graph constraints only if the specified atomic graph
-     * constraint belongs to its constraints.
+     * Clears all lists of graph constraints if the specified atomic graph constraint belongs to this rule's
+     * constraints.
+     *
+     * @param atomConstraint the atomic constraint to check for presence before clearing
      */
-    public void clearConstraints(AtomConstraint ac) {
-        if (this.itsUsedAtomics != null && this.itsUsedAtomics.contains(ac)) {
+    public void clearConstraints(AtomConstraint atomConstraint) {
+        if (this.itsUsedAtomics != null && this.itsUsedAtomics.contains(atomConstraint)) {
             this.clearConstraints();
         }
     }
 
     /**
-     * Clears its lists of graph constraints only if the specified graph
-     * constraint belongs to its constraints.
+     * Clears all lists of graph constraints if the specified formula constraint belongs to this rule's constraints.
+     *
+     * @param formula the formula to check for presence before clearing
      */
-    public void clearConstraints(Formula f) {
-        if (this.itsUsedFormulas != null && this.itsUsedFormulas.contains(f)) {
+    public void clearConstraints(Formula formula) {
+        if (this.itsUsedFormulas != null && this.itsUsedFormulas.contains(formula)) {
             this.clearConstraints();
         }
     }
 
     /**
-     * Clears lists of its graph constraints.
+     * Clears all lists of graph constraints (used atomics, used formulas, constraints, and atom application
+     * conditions).
      */
     public void clearConstraints() {
         if (this.itsUsedAtomics != null) {
@@ -1450,122 +1738,121 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Set the specified post application conditions to its conditions.
+     * Sets the specified post application conditions to this rule's conditions.
+     *
+     * @param evalSetList the list of evaluation sets representing post application conditions
+     * @param constraintNames the list of names corresponding to the evaluation sets
      */
-    public void setAtomApplConds(List<EvalSet> v, List<String> names) {
+    public void setAtomApplConds(List<EvalSet> evalSetList, List<String> constraintNames) {
         if (this.atom_conditions == null) {
-            atom_conditions = new ArrayList<>();
+            this.atom_conditions = new ArrayList<>();
         } else {
             this.atom_conditions.clear();
         }
         if (this.constraintNameSet == null) {
-            constraintNameSet = new ArrayList<>();
+            this.constraintNameSet = new ArrayList<>();
         } else {
             this.constraintNameSet.clear();
         }
-        if (v != null) {
-            this.atom_conditions.addAll(v);
+        if (evalSetList != null) {
+            this.atom_conditions.addAll(evalSetList);
         }
-        if (names != null) {
-            this.constraintNameSet.addAll(names);
+        if (constraintNames != null) {
+            this.constraintNameSet.addAll(constraintNames);
         }
         if (this.constraintNameSet.size() < this.atom_conditions.size()) {
-            for (int i = this.constraintNameSet.size(); i < this.atom_conditions.size(); i++) {
-                this.constraintNameSet.add("Unknown Name " + i);
+            for (int index = this.constraintNameSet.size(); index < this.atom_conditions.size(); index++) {
+                this.constraintNameSet.add("Unknown Name " + index);
             }
         }
     }
 
+    /**
+     * Returns the list of atomic application conditions.
+     *
+     * @return the list of evaluation sets, or an empty list if none exist
+     */
     public List<EvalSet> getAtomApplConds() {
         return (this.atom_conditions != null) ? this.atom_conditions : new ArrayList<>(0);
     }
 
+    /**
+     * Returns the list of names for the constraint evaluation sets.
+     *
+     * @return the list of constraint names, or an empty list if none exist
+     */
     public List<String> getConstraintNames() {
         return (this.constraintNameSet != null) ? this.constraintNameSet : new ArrayList<>(0);
     }
 
     /**
-     * Removes the specified application condition from its post application
-     * conditions.
+     * Removes the specified evaluation set constraint from the post application conditions.
+     *
+     * @param evalSetConstraint the evaluation set constraint to remove
      */
-    public void removeConstraint(EvalSet constraint) {
-        if (this.atom_conditions != null && this.atom_conditions.contains(constraint)) {
-            int i = this.atom_conditions.indexOf(constraint);
-            this.atom_conditions.remove(constraint);
-            this.constraintNameSet.remove(i);
+    public void removeConstraint(EvalSet evalSetConstraint) {
+        if (this.atom_conditions != null && this.atom_conditions.contains(evalSetConstraint)) {
+            int constraintIndex = this.atom_conditions.indexOf(evalSetConstraint);
+            this.atom_conditions.remove(evalSetConstraint);
+            this.constraintNameSet.remove(constraintIndex);
         }
     }
 
     /**
-     * Removes the specified atomic application condition from its post
-     * application conditions.
+     * Removes the specified atomic application condition from the post application conditions. This method recursively
+     * searches through the nested structure of evaluation sets to find and remove the specified atomic condition.
+     *
+     * @param atomApplCond the atomic application condition to remove
      */
-    public void removeAtomApplCond(AtomApplCond atom) {
+    public void removeAtomApplCond(AtomApplCond atomApplCond) {
         if (this.atom_conditions != null) {
-            int i = 0;
-            while (i < this.atom_conditions.size()) {
-                List<?> v = this.atom_conditions.get(i).getSet();
-                int j = 0;
-                while (j < v.size()) {
-                    List<?> v1 = ((EvalSet) v.get(j)).getSet();
-                    int k = 0;
-                    while (k < v1.size()) {
-                        AtomApplCond aac = (AtomApplCond) v1.get(k);
-                        if (atom.equals(aac)) {
-                            v1.remove(atom);
+            int index = 0;
+            while (index < this.atom_conditions.size()) {
+                List<?> evalSet = this.atom_conditions.get(index).getSet();
+                int elementIndex = 0;
+                while (elementIndex < evalSet.size()) {
+                    List<?> nestedEvalSet = ((EvalSet) evalSet.get(elementIndex)).getSet();
+                    int nestedIndex = 0;
+                    while (nestedIndex < nestedEvalSet.size()) {
+                        AtomApplCond currentApplCond = (AtomApplCond) nestedEvalSet.get(nestedIndex);
+                        if (atomApplCond.equals(currentApplCond)) {
+                            nestedEvalSet.remove(atomApplCond);
                             // System.out.println("AtomApplCond: DONE");
-                            k = v1.size();
+                            nestedIndex = nestedEvalSet.size();
                         } else {
-                            k++;
+                            nestedIndex++;
                         }
                     }
-                    if (v1.isEmpty()) {
-                        v.remove(j);
-                        j = v.size();
+                    if (nestedEvalSet.isEmpty()) {
+                        evalSet.remove(elementIndex);
+                        elementIndex = evalSet.size();
                     } else {
-                        j++;
+                        elementIndex++;
                     }
                 }
-                if (v.isEmpty()) {
-                    this.atom_conditions.remove(i);
-                    this.constraintNameSet.remove(i);
-                    i = this.atom_conditions.size();
+                if (evalSet.isEmpty()) {
+                    this.atom_conditions.remove(index);
+                    this.constraintNameSet.remove(index);
+                    index = this.atom_conditions.size();
                 } else {
-                    i++;
+                    index++;
                 }
             }
         }
     }
 
     /**
-     * Clears its application constraints.
+     * Clears all application constraints (formulas, atomics, etc.) from this rule.
      */
     public void removeApplConditions() {
         clearConstraints();
     }
 
-    // /**
-    // * Enable or disable this rule to make it usable during graph
-    // transformation.
-    // */
-    // public void setEnabled(boolean enable) {
-    // enabled = enable;
-    // // System.out.println("Rule.setEnabled "+enabled);
-    // }
-    //
-    // /**
-    // * Returns TRUE if this rule is usable during graph transformation
-    // otherwise FALSE.
-    // */
-    // public boolean isEnabled() {
-    // return enabled;
-    // }
     /**
-     * Set this rule to be a trigger rule of its layer. That means: This rule
-     * will be the first rule to apply on its layer. It can be applyed one time
-     * only. All other rules on this layer can be applyed so long as possible.
+     * Sets this rule to be a trigger rule of its layer. A trigger rule will be the first rule to apply on its layer. It
+     * can be applied one time only. All other rules on this layer can be applied as long as possible.
      *
-     * @param trigger
+     * @param trigger true to set this rule as a trigger rule, false otherwise
      */
     public void setTriggerForLayer(boolean trigger) {
         this.triggerOfLayer = trigger;
@@ -1573,42 +1860,54 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 
     /**
      * Checks if this rule is a trigger rule of its layer.
+     *
+     * @return true if this rule is a trigger rule, false otherwise
      */
     public boolean isTriggerOfLayer() {
         return this.triggerOfLayer;
     }
 
     /**
-     * Returns its layer. The layer will be used by layered grammar.
+     * Returns the layer associated with this rule. The layer is used by layered grammars to organize rules in layers.
+     *
+     * @return the layer number of this rule
      */
     public int getLayer() {
         return this.layer;
     }
 
     /**
-     * Sets its layer. The layer is used by layered grammar.
+     * Sets the layer associated with this rule. The layer is used by layered grammars to organize rules in layers.
+     *
+     * @param l the layer number to assign to this rule
      */
     public void setLayer(int l) {
         this.layer = l;
     }
 
     /**
-     * Returns my priority. The priority cann be used during graph
-     * transformation.
+     * Returns the priority of this rule. The priority can be used during graph transformation to determine rule
+     * application order.
+     *
+     * @return the priority number of this rule
      */
     public int getPriority() {
         return this.priority;
     }
 
     /**
-     * Sets my priority. The priority cann be used during graph transformation.
+     * Sets the priority of this rule. The priority can be used during graph transformation to determine rule
+     * application order.
+     *
+     * @param p the priority number to assign to this rule
      */
     public void setPriority(int p) {
         this.priority = p;
     }
 
     /**
-     * Trims the capacity of used Lists to be the List's current size.
+     * Trims the capacity of used lists to match their current size. This method optimizes memory usage by reducing the
+     * internal capacity of the list of used atomic constraints.
      */
     public void trimToSize() {
         if (this.itsUsedAtomics != null) {
@@ -1618,6 +1917,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
+    /**
+     * Refreshes the attributed state for all graphs in this rule (LHS, RHS, NACs, PACs, nested ACs).
+     */
     public void refreshAttributed() {
         getLeft().refreshAttributed();
         getRight().refreshAttributed();
@@ -1633,8 +1935,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true if this rule, its NACs or PACs are using the specified type
-     * which is an element (node or edge) of a type graph.
+     * Checks if this rule or any of its application conditions (NACs, PACs, nested ACs) are using the specified type
+     * graph object (node or edge).
+     *
+     * @param typeObj the type graph object to check for usage
+     * @return true if the type object is used anywhere in this rule, false otherwise
      */
     public boolean isUsingType(GraphObject typeObj) {
         if (getLeft().isUsingType(typeObj)) {
@@ -1643,36 +1948,38 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         if (getRight().isUsingType(typeObj)) {
             return true;
         }
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            if (this.itsNACs.get(i).getTarget().isUsingType(typeObj)) {
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            if (this.itsNACs.get(index).getTarget().isUsingType(typeObj)) {
                 return true;
             }
         }
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            if (this.itsPACs.get(i).getTarget().isUsingType(typeObj)) {
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            if (this.itsPACs.get(index).getTarget().isUsingType(typeObj)) {
                 return true;
             }
         }
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            this.itsACs.get(i).getTarget().refreshAttributed();
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            if (this.itsACs.get(index).getTarget().isUsingType(typeObj)) {
+                return true;
+            }
         }
         return false;
     }
 
     @Override
     public void removeUnusedVariableOfAttrContext() {
-        DeclTuple vars = ((VarTuple) this.getAttrContext().getVariables()).getTupleType();
-        for (int i = 0; i < vars.getNumberOfEntries(); i++) {
-            DeclMember vm = (DeclMember) vars.getMemberAt(i);
-            String var = vm.getName();
-            if (!this.getSource().getVariableNamesOfAttributes().contains(var)) {
-                if (!this.getRight().getVariableNamesOfAttributes().contains(var)) {
-                    if (!isUsedInTargetGraph(this.getNACs(), var)) {
-                        if (!isUsedInTargetGraph(this.getPACs(), var)) {
-                            if (!isUsedInNestedGraphs(this.getNestedACs(), var)) {
-                                vars.getTupleType().deleteMemberAt(var);
+        DeclTuple varTuple = ((VarTuple) this.getAttrContext().getVariables()).getTupleType();
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            DeclMember varMember = (DeclMember) varTuple.getMemberAt(index);
+            String varName = varMember.getName();
+            if (!this.getSource().getVariableNamesOfAttributes().contains(varName)) {
+                if (!this.getRight().getVariableNamesOfAttributes().contains(varName)) {
+                    if (!isUsedInTargetGraph(this.getNACs(), varName)) {
+                        if (!isUsedInTargetGraph(this.getPACs(), varName)) {
+                            if (!isUsedInNestedGraphs(this.getNestedACs(), varName)) {
+                                varTuple.getTupleType().deleteMemberAt(varName);
                                 //							System.out.println("Rule.removeVariableOfAttrContext::  removed: "+var);
-                                i--;
+                                index--;
                             }
                         }
                     }
@@ -1681,28 +1988,28 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    private boolean isUsedInTargetGraph(Iterator<OrdinaryMorphism> iter, String varName) {
-        while (iter.hasNext()) {
-            Graph g = iter.next().getTarget();
-            if (g.getVariableNamesOfAttributes().contains(varName)) {
+    private boolean isUsedInTargetGraph(Iterator<OrdinaryMorphism> morphIterator, String variableName) {
+        while (morphIterator.hasNext()) {
+            Graph graph = morphIterator.next().getTarget();
+            if (graph.getVariableNamesOfAttributes().contains(variableName)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean isUsedInNestedGraphs(Iterator<OrdinaryMorphism> iter, String varName) {
-        while (iter.hasNext()) {
-            OrdinaryMorphism m = iter.next();
-            if (m.getTarget().getVariableNamesOfAttributes().contains(varName)) {
+    private boolean isUsedInNestedGraphs(Iterator<OrdinaryMorphism> morphIterator, String variableName) {
+        while (morphIterator.hasNext()) {
+            OrdinaryMorphism morphism = morphIterator.next();
+            if (morphism.getTarget().getVariableNamesOfAttributes().contains(variableName)) {
                 return true;
             }
-            if (m instanceof NestedApplCond) {
-                List<OrdinaryMorphism> nl = new ArrayList<>();
-                for (int i = 0; i < ((NestedApplCond) m).getNestedACs().size(); i++) {
-                    nl.add(((NestedApplCond) m).getNestedACs().get(i));
+            if (morphism instanceof NestedApplCond currentNestedApplCond) {
+                var nestedAcList = new ArrayList<OrdinaryMorphism>();
+                for (int index = 0; index < currentNestedApplCond.getNestedACs().size(); index++) {
+                    nestedAcList.add(currentNestedApplCond.getNestedACs().get(index));
                 }
-                if (isUsedInNestedGraphs(nl.iterator(), varName)) {
+                if (isUsedInNestedGraphs(nestedAcList.iterator(), variableName)) {
                     return true;
                 }
             }
@@ -1710,91 +2017,30 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return false;
     }
 
+    /**
+     * Sets whether to wait before applying this rule.
+     *
+     * @param b true to enable waiting before apply, false to disable it
+     */
     public void setWaitBeforeApplyEnabled(boolean b) {
         this.waitBeforeApply = b;
     }
 
+    /**
+     * Checks if waiting before apply is enabled for this rule.
+     *
+     * @return true if waiting before apply is enabled, false otherwise
+     */
     public boolean isWaitBeforeApplyEnabled() {
         return this.waitBeforeApply;
     }
 
-    /*
-	 * Create and return a new subrule. It is automatically added to my set of
-	 * subrules. The new subrule, the subrule's set of NACs, and its left and
-	 * right-hand side graphs which are newly created are initially empty.
-	 * <p>
-	 * Note that the newly created left and right side subgraphs are not
-	 * automatically removed when the subrule itself is destroyed.
-	 * 
-	 * @see agg.xt_basis.Rule#getSubRules
-     */
-//	public final SubRule createSubRule() {
-//		SubRule sr = new SubRule(this, getLeft().createSubGraph(), getRight()
-//				.createSubGraph());
-//		if (itsSubRules == null)
-//			itsSubRules = new List<SubRule>(5, 1);
-//		itsSubRules.add(sr);
-//		return sr;
-//	}
     /**
-     * Create and return a new subrule. It is automatically added to my set of
-     * subrules. The new subrule's left and right-hand side graphs are set to be
-     * <code>left</code> and <code>right</code>, respectively. The subrule is
-     * filled so that it maps all the objects of <code>left</code> in the same
-     * way I do. The set of NACs of the new subrule is initially empty.
-     * <p>
-     * <b>Pre:</b>
-     * <ol>
-     * <li> <code>left</code> is subgraph of <code>this.getLeft()</code>.
-     * <li> <code>right</code> is subgraph of <code>this.getRight()</code>.
-     * </ol>
+     * Implements the interface of XMLObject. Writes this rule to the specified XML helper.
      *
-     * @see agg.xt_basis.Rule#getSubRules
-     * @see agg.xt_basis.Rule#getLeft
-     * @see agg.xt_basis.Rule#getRight
+     * @param h the XML helper to write to
      */
-//	public final SubRule createSubRule(SubGraph left, SubGraph right) {
-//		SubRule sr = new SubRule(this, left, right);
-//		if (itsSubRules == null)
-//			itsSubRules = new List<SubRule>(5, 1);
-//		itsSubRules.add(sr);
-//		return sr;
-//
-//	}
-//
-//	public final SubRule createSubRule(SubGraGra sgg) {
-//		SubRule sr = new SubRule(this, new SubGraph(this.getLeft()),
-//				new SubGraph(this.getRight()));
-//		itsSubRules.add(sr);
-//		if (sgg != null)
-//			sgg.addRule(sr);
-//		return sr;
-//	}
-    /**
-     * Remove a subrule from my set of subrules.
-     *
-     * @return <code>false</code> iff <code>sr</code> was not an element of my
-     * set of subrules.
-     */
-//	public final boolean destroySubRule(SubRule sr) {
-//		if (sr != null) {
-//			if (itsSubRules.remove(sr)) {
-//				sr.dispose();
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-    /**
-     * Return an Enumeration of all of my subrules (not including myself).
-     * Enumeration elements are of type <code>SubRule</code>.
-     */
-//	public final Enumeration<SubRule> getSubRules() {
-//		return itsSubRules.elements();
-//	}
-    /**
-     * Implements the interface of XMLObject
-     */
+    @Override
     public void XwriteObject(XMLHelper h) {
         this.changed = false;
         h.openNewElem("Rule", this);
@@ -1817,81 +2063,81 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         if (this.waitBeforeApply) {
             h.addAttr("waitBeforeApply", "true");
         }
-        AttrContext context = getAttrContext();
-        h.addObject("", context.getVariables(), true);
+        AttrContext attrContext = getAttrContext();
+        h.addObject("", attrContext.getVariables(), true);
         getSource().setKind(GraphKind.LHS);
         h.addObject("", getSource(), true);
         getSource().setKind(GraphKind.RHS);
         h.addObject("", getTarget(), true);
-//		String namestr = this.getName();
+//		String nameStr = this.getName();
         writeMorphism(h);
         // NACs
-        Iterator<OrdinaryMorphism> nacs = getNACs();
+        Iterator<OrdinaryMorphism> nacIter = getNACs();
         // PACs
-        Iterator<OrdinaryMorphism> pacs = getPACs();
+        Iterator<OrdinaryMorphism> pacIter = getPACs();
         // nested ACs
-        Iterator<OrdinaryMorphism> nested = getNestedACs();
+        Iterator<OrdinaryMorphism> acIter = getNestedACs();
         // Attr context conditions
-        AttrConditionTuple condt = context.getConditions();
-        int num = condt.getNumberOfEntries();
-        if (nested.hasNext()
-                || nacs.hasNext()
-                || pacs.hasNext()
-                || (num > 0)
-                || (this.itsUsedAtomics != null && this.itsUsedAtomics.size() > 0)) {
+        AttrConditionTuple condTuple = attrContext.getConditions();
+        int condCount = condTuple.getNumberOfEntries();
+        if (acIter.hasNext()
+                || nacIter.hasNext()
+                || pacIter.hasNext()
+                || (condCount > 0)
+                || (this.itsUsedAtomics != null && !this.itsUsedAtomics.isEmpty())) {
             h.openSubTag("ApplCondition");
             // NACs
-            while (nacs.hasNext()) {
-                OrdinaryMorphism m = nacs.next();
-                m.getTarget().setKind(GraphKind.NAC);
+            while (nacIter.hasNext()) {
+                OrdinaryMorphism negativeApplCond = nacIter.next();
+                negativeApplCond.getTarget().setKind(GraphKind.NAC);
                 h.openSubTag("NAC");
-                if (!m.isEnabled()) {
+                if (!negativeApplCond.isEnabled()) {
                     h.addAttr("enabled", "false");
                 }
-                h.addObject("", m.getTarget(), true);
-                m.writeMorphism(h);
+                h.addObject("", negativeApplCond.getTarget(), true);
+                negativeApplCond.writeMorphism(h);
                 h.close();
             }
             // PACs
-            while (pacs.hasNext()) {
-                OrdinaryMorphism m = pacs.next();
-                m.getTarget().setKind(GraphKind.PAC);
+            while (pacIter.hasNext()) {
+                OrdinaryMorphism positiveApplCond = pacIter.next();
+                positiveApplCond.getTarget().setKind(GraphKind.PAC);
                 h.openSubTag("PAC");
-                if (!m.isEnabled()) {
+                if (!positiveApplCond.isEnabled()) {
                     h.addAttr("enabled", "false");
                 }
-                h.addObject("", m.getTarget(), true);
-                m.writeMorphism(h);
+                h.addObject("", positiveApplCond.getTarget(), true);
+                positiveApplCond.writeMorphism(h);
                 h.close();
             }
             // nested ACs
-            while (nested.hasNext()) {
-                OrdinaryMorphism m = nested.next();
-                m.getTarget().setKind(GraphKind.AC);
+            while (acIter.hasNext()) {
+                OrdinaryMorphism nestedApplCond = acIter.next();
+                nestedApplCond.getTarget().setKind(GraphKind.AC);
                 h.openSubTag("NestedAC");
-                if (!m.isEnabled()) {
+                if (!nestedApplCond.isEnabled()) {
                     h.addAttr("enabled", "false");
                 }
-                h.addObject("", m.getTarget(), true);
-                m.writeMorphism(h);
-                ((NestedApplCond) m).writeNestedApplConds(h);
+                h.addObject("", nestedApplCond.getTarget(), true);
+                nestedApplCond.writeMorphism(h);
+                ((NestedApplCond) nestedApplCond).writeNestedApplConds(h);
                 h.close();
             }
             // Attr context conditions
-            if (num > 0) {
+            if (condCount > 0) {
                 h.openSubTag("AttrCondition");
-                h.addObject("", condt, true);
+                h.addObject("", condTuple, true);
                 h.close();
             }
             // Post Application Constraints
-            if ((this.itsUsedAtomics != null && this.itsUsedAtomics.size() > 0)
-                    && (this.itsUsedFormulas != null && this.itsUsedFormulas.size() > 0)) {
+            if ((this.itsUsedAtomics != null && !this.itsUsedAtomics.isEmpty())
+                    && (this.itsUsedFormulas != null && !this.itsUsedFormulas.isEmpty())) {
                 h.openSubTag("PostApplicationCondition");
                 // save formulas
-                for (int i = 0; i < this.itsUsedFormulas.size(); i++) {
-                    Formula f = this.itsUsedFormulas.get(i);
+                for (int index = 0; index < this.itsUsedFormulas.size(); index++) {
+                    Formula formula = this.itsUsedFormulas.get(index);
                     h.openSubTag("FormulaRef");
-                    h.addObject("f", f, false);
+                    h.addObject("f", formula, false);
                     h.close();
                 }
                 h.close();
@@ -1912,8 +2158,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Implements the interface of XMLObject
+     * Implements the interface of XMLObject. Reads this rule from the specified XML helper.
+     *
+     * @param h the XML helper to read from
      */
+    @Override
     public void XreadObject(XMLHelper h) {
         if (h.isTag("Rule", this)) {
             String attrStr = h.readAttr("formula");
@@ -1963,80 +2212,80 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             this.itsImag.setName("RightOf_" + getName());
             this.itsImag.setKind(GraphKind.RHS);
             this.itsImag.setHelpInfo(this.getName());
-            List<Formula> tmpFormulas = new ArrayList<>(); // of PostApplicationCondition
+            var tempFormulas = new ArrayList<Formula>(); // of PostApplicationCondition
 //			List<NestedApplCond> nacs = new ArrayList< >();
 //			List<NestedApplCond> pacs = new ArrayList< >();
 //			boolean needConvertToFormula = false;
             if (h.readSubTag("ApplCondition")) {
                 while (h.readSubTag("NAC")) {
-                    boolean nacEnabled = true;
-                    Object nacattr_enabled = h.readAttr("enabled");
-                    if ((nacattr_enabled != null)
-                            && ((String) nacattr_enabled).equals("false")) {
-                        nacEnabled = false;
+                    boolean negativeApplCondEnabled = true;
+                    Object nacAttrEnabled = h.readAttr("enabled");
+                    if ((nacAttrEnabled != null)
+                            && ((String) nacAttrEnabled).equals("false")) {
+                        negativeApplCondEnabled = false;
                     }
-                    OrdinaryMorphism nac = createNAC();
+                    OrdinaryMorphism negativeApplCond = createNAC();
 //					NestedApplCond nac = createNestedAC();
 //					nacs.add(nac);
 //					needConvertToFormula = true;
-                    nac.getTarget().setHelpInfo(this.getName());
-                    nac.getTarget().xyAttr = this.getLeft().xyAttr;
-                    h.getObject("", nac.getTarget(), true);
-                    nac.readMorphism(h);
+                    negativeApplCond.getTarget().setHelpInfo(this.getName());
+                    negativeApplCond.getTarget().xyAttr = this.getLeft().xyAttr;
+                    h.getObject("", negativeApplCond.getTarget(), true);
+                    negativeApplCond.readMorphism(h);
                     h.close();
-                    nac.setEnabled(nacEnabled);
-                    nac.getTarget().setHelpInfo("");
-                    if (nac.getName().isEmpty()) {
-                        nac.setName("nac".concat(String.valueOf(this.itsNACs.size())));
+                    negativeApplCond.setEnabled(negativeApplCondEnabled);
+                    negativeApplCond.getTarget().setHelpInfo("");
+                    if (negativeApplCond.getName().isEmpty()) {
+                        negativeApplCond.setName("nac".concat(String.valueOf(this.itsNACs.size())));
                     }
                 }
                 while (h.readSubTag("PAC")) {
-                    boolean pacEnabled = true;
-                    Object pacattr_enabled = h.readAttr("enabled");
-                    if ((pacattr_enabled != null)
-                            && ((String) pacattr_enabled).equals("false")) {
-                        pacEnabled = false;
+                    boolean positiveApplCondEnabled = true;
+                    Object pacAttrEnabled = h.readAttr("enabled");
+                    if ((pacAttrEnabled != null)
+                            && ((String) pacAttrEnabled).equals("false")) {
+                        positiveApplCondEnabled = false;
                     }
-                    OrdinaryMorphism pac = createPAC();
+                    OrdinaryMorphism positiveApplCond = createPAC();
 //					NestedApplCond pac = createNestedAC();					
 //					pacs.add(pac);
 //					needConvertToFormula = true;
-                    pac.getTarget().setHelpInfo(this.getName());
-                    pac.getTarget().xyAttr = this.getLeft().xyAttr;
-                    h.getObject("", pac.getTarget(), true);
-                    pac.readMorphism(h);
+                    positiveApplCond.getTarget().setHelpInfo(this.getName());
+                    positiveApplCond.getTarget().xyAttr = this.getLeft().xyAttr;
+                    h.getObject("", positiveApplCond.getTarget(), true);
+                    positiveApplCond.readMorphism(h);
                     h.close();
-                    pac.setEnabled(pacEnabled);
-                    pac.getTarget().setHelpInfo("");
-                    if (pac.getName().isEmpty()) {
-                        pac.setName("pac".concat(String.valueOf(this.itsPACs.size())));
+                    positiveApplCond.setEnabled(positiveApplCondEnabled);
+                    positiveApplCond.getTarget().setHelpInfo("");
+                    if (positiveApplCond.getName().isEmpty()) {
+                        positiveApplCond.setName("pac".concat(String.valueOf(this.itsPACs.size())));
                     }
                 }
                 while (h.readSubTag("NestedAC")) {
 //					needConvertToFormula = false;
-                    boolean acEnabled = true;
-                    Object acattr_enabled = h.readAttr("enabled");
-                    if ((acattr_enabled != null)
-                            && ((String) acattr_enabled).equals("false")) {
-                        acEnabled = false;
+                    boolean nestedApplCondEnabled = true;
+                    Object acAttrEnabled = h.readAttr("enabled");
+                    if ((acAttrEnabled != null)
+                            && ((String) acAttrEnabled).equals("false")) {
+                        nestedApplCondEnabled = false;
                     }
-                    NestedApplCond ac = createNestedAC();
-                    ac.getTarget().setHelpInfo(this.getName());
-                    ac.getTarget().xyAttr = this.getLeft().xyAttr;
-                    h.getObject("", ac.getTarget(), true);
-                    ac.readMorphism(h);
-                    ac.readNestedApplConds(h);
+                    NestedApplCond nestedApplCond = createNestedAC();
+                    nestedApplCond.getTarget().setHelpInfo(this.getName());
+                    nestedApplCond.getTarget().xyAttr = this.getLeft().xyAttr;
+                    h.getObject("", nestedApplCond.getTarget(), true);
+                    nestedApplCond.readMorphism(h);
+                    nestedApplCond.readNestedApplConds(h);
                     h.close();
-                    ac.setEnabled(acEnabled);
-                    ac.getTarget().setHelpInfo("");
-                    if (ac.getName().isEmpty()) {
-                        ac.setName("gac".concat(String.valueOf(this.itsACs.size())));
+                    nestedApplCond.setEnabled(nestedApplCondEnabled);
+                    nestedApplCond.getTarget().setHelpInfo("");
+                    if (nestedApplCond.getName().isEmpty()) {
+                        nestedApplCond.setName("gac".concat(String.valueOf(this.itsACs.size())));
                     }
                 }
                 if (h.readSubTag("AttrCondition")) {
-                    AttrConditionTuple condt = getAttrContext().getConditions();
-                    if (condt != null) {
-                        h.enrichObject(condt);
+                    AttrConditionTuple condTuple = getAttrContext().getConditions();
+                    if (condTuple != null) {
+                        h.enrichObject(condTuple);
                     }
                     h.close();
                 }
@@ -2045,12 +2294,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                     // System.out.println("PostApplicationCondition");
                     // read formulas
                     while (h.readSubTag("FormulaRef")) {
-                        Formula f = new Formula(true);
-                        f.setName("");
-                        Formula f1 = (Formula) h.getObject("f", null, false);
-                        // System.out.println("Formula: "+f1);
-                        if (f1 != null) {
-                            tmpFormulas.add(f1);
+                        Formula formula = new Formula(true);
+                        formula.setName("");
+                        Formula readFormula = (Formula) h.getObject("f", null, false);
+                        // System.out.println("Formula: "+readFormula);
+                        if (readFormula != null) {
+                            tempFormulas.add(readFormula);
                         }
                         h.close();
                     }
@@ -2097,16 +2346,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 }
                 h.close();
             }
-            /*
-			 * alte Variante : NOT MORE USED! / read Post Application
-			 * Constraints generatePostConstraints = false;
-			 * if(h.readSubTag("TaggedValue")) { String t = h.readAttr("Tag");
-			 * int v = h.readIAttr("Value"); if(t.equals("post_constraints")) {
-			 * if(v != 0) generatePostConstraints = true; } h.close(); }
-             */
+
             h.close();
             this.applicable = true;
-            setUsedFormulas(tmpFormulas);
+            setUsedFormulas(tempFormulas);
             this.itsOrig.setHelpInfo("");
             this.itsImag.setHelpInfo("");
 //			if ( needConvertToFormula && "true".equals(this.formStr)) {
@@ -2122,7 +2365,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             final List<NestedApplCond> pacs,
             final List<NestedApplCond> nacs) {
         final List<Evaluable> vars = new ArrayList<>(this.itsACs.size());
-        if (this.itsACs.size() == 0) {
+        if (this.itsACs.isEmpty()) {
             this.formStr = "true";
             this.formReadStr = this.formStr;
             return true;
@@ -2130,10 +2373,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         String tmp = "";
         int indx = -1;
         for (int i = 0; i < pacs.size(); i++) {
-            NestedApplCond ac = pacs.get(i);
-            if (ac.isEnabled()) {
+            NestedApplCond applicationCondition = pacs.get(i);
+            if (applicationCondition.isEnabled()) {
                 indx++;
-                vars.add(ac);
+                vars.add(applicationCondition);
                 if (vars.size() == 1) {
                     tmp = tmp.concat(String.valueOf(indx + 1));
                 } else {
@@ -2142,10 +2385,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             }
         }
         for (int i = 0; i < nacs.size(); i++) {
-            NestedApplCond ac = nacs.get(i);
-            if (ac.isEnabled()) {
+            NestedApplCond applicationCondition = nacs.get(i);
+            if (applicationCondition.isEnabled()) {
                 indx++;
-                vars.add(ac);
+                vars.add(applicationCondition);
                 if (vars.size() == 1) {
                     tmp = tmp.concat("!".concat(String.valueOf(indx + 1)));
                 } else {
@@ -2170,215 +2413,221 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     // ------ additional methods according to Gabi's new AGG design ---------
     // ----------- attention: yet untested! (SG, Aug.1999) ------------------
     /**
-     * Returns an inverted rule. This rule has to be injective, otherwise -
-     * returns null. The attribute mappings are NOT inverted, thus: the
-     * resulting left and right-hand side graphs are not attributed anymore.
+     * Returns an inverted rule. This rule has to be injective, otherwise returns null. The attribute mappings are NOT
+     * inverted, thus the resulting left and right-hand side graphs are not attributed anymore.
+     *
+     * @return the inverted rule, or null if this rule is not injective
      */
     public Rule invertSimplex() {
         if (!this.isInjective()) {
-            return (null);
+            return null;
         }
-        Rule inverse = new Rule();
-        Graph lgraph = this.getLeft();
-        Graph rgraph = this.getRight();
-        Graph linverse = inverse.getLeft();
-        Graph rinverse = inverse.getRight();
-        OrdinaryMorphism lmorph = new OrdinaryMorphism(lgraph, rinverse);
-        OrdinaryMorphism rmorph = new OrdinaryMorphism(rgraph, linverse);
-        Iterator<Node> rnodes = rgraph.getNodesSet().iterator();
-        while (rnodes.hasNext()) {
-            Node rNode = rnodes.next();
-            Node linverseNode = null;
+        Rule inverseRule = new Rule();
+        Graph leftGraph = this.getLeft();
+        Graph rightGraph = this.getRight();
+        Graph leftInverse = inverseRule.getLeft();
+        Graph rightInverse = inverseRule.getRight();
+        OrdinaryMorphism leftMorphism = new OrdinaryMorphism(leftGraph, rightInverse);
+        OrdinaryMorphism rightMorphism = new OrdinaryMorphism(rightGraph, leftInverse);
+        Iterator<Node> rightNodes = rightGraph.getNodesSet().iterator();
+        while (rightNodes.hasNext()) {
+            Node rightNode = rightNodes.next();
+            Node leftInverseNode = null;
             try {
-                linverseNode = linverse.createNode(rNode.getType());
+                leftInverseNode = leftInverse.createNode(rightNode.getType());
             } catch (TypeException e) {
                 // if the old rule was well typed, the new
                 // rule should be also well typed
                 e.printStackTrace();
             }
-            rmorph.addMapping(rNode, linverseNode);
+            rightMorphism.addMapping(rightNode, leftInverseNode);
         }
-        Iterator<Node> lnodes = lgraph.getNodesSet().iterator();
-        while (lnodes.hasNext()) {
-            Node lNode = lnodes.next();
-            Node rinverseNode = null;
+        Iterator<Node> leftNodeIter = leftGraph.getNodesSet().iterator();
+        while (leftNodeIter.hasNext()) {
+            Node leftNode = leftNodeIter.next();
+            Node rightInverseNode = null;
             try {
-                rinverseNode = rinverse.createNode(lNode.getType());
+                rightInverseNode = rightInverse.createNode(leftNode.getType());
             } catch (TypeException e) {
                 // if the old rule was well typed, the new
                 // rule should be also well typed
                 e.printStackTrace();
             }
-            lmorph.addMapping(lNode, rinverseNode);
-            GraphObject rn = this.getImage(lNode);
-            if (rn != null) {
-                inverse.addMapping(rmorph.getImage(rn), rinverseNode);
+            leftMorphism.addMapping(leftNode, rightInverseNode);
+            GraphObject rightNodeObj = this.getImage(leftNode);
+            if (rightNodeObj != null) {
+                inverseRule.addMapping(rightMorphism.getImage(rightNodeObj), rightInverseNode);
             }
         }
-        Iterator<Arc> rarcs = rgraph.getArcsSet().iterator();
-        while (rarcs.hasNext()) {
-            Arc rArc = rarcs.next();
-            Node linverseSource = (Node) rmorph.getImage(rArc.getSource());
-            Node linverseTarget = (Node) rmorph.getImage(rArc.getTarget());
-            Arc linverseArc = null;
+        Iterator<Arc> rightArcIter = rightGraph.getArcsSet().iterator();
+        while (rightArcIter.hasNext()) {
+            Arc rightArc = rightArcIter.next();
+            Node leftInverseSource = (Node) rightMorphism.getImage(rightArc.getSource());
+            Node leftInverseTarget = (Node) rightMorphism.getImage(rightArc.getTarget());
+            Arc leftInverseArc = null;
             try {
-                linverseArc = linverse.createArc(rArc.getType(),
-                        linverseSource, linverseTarget);
-                rmorph.addMapping(rArc, linverseArc);
+                leftInverseArc = leftInverse.createArc(rightArc.getType(),
+                        leftInverseSource, leftInverseTarget);
+                rightMorphism.addMapping(rightArc, leftInverseArc);
             } catch (TypeException ex) {
+                // Intentionally empty
             }
         }
-        Iterator<Arc> larcs = lgraph.getArcsSet().iterator();
-        while (larcs.hasNext()) {
-            Arc lArc = larcs.next();
-            Node rinverseSource = (Node) lmorph.getImage(lArc.getSource());
-            Node rinverseTarget = (Node) lmorph.getImage(lArc.getTarget());
-            Arc rinverseArc = null;
+        Iterator<Arc> leftArcIter = leftGraph.getArcsSet().iterator();
+        while (leftArcIter.hasNext()) {
+            Arc leftArc = leftArcIter.next();
+            Node rightInverseSource = (Node) leftMorphism.getImage(leftArc.getSource());
+            Node rightInverseTarget = (Node) leftMorphism.getImage(leftArc.getTarget());
+            Arc rightInverseArc = null;
             try {
-                rinverseArc = rinverse.createArc(lArc.getType(),
-                        rinverseSource, rinverseTarget);
-                lmorph.addMapping(lArc, rinverseArc);
+                rightInverseArc = rightInverse.createArc(leftArc.getType(),
+                        rightInverseSource, rightInverseTarget);
+                leftMorphism.addMapping(leftArc, rightInverseArc);
             } catch (TypeException ex) {
+                // Intentionally empty
             }
-            GraphObject ra = this.getImage(lArc);
-            if (ra != null) {
-                inverse.addMapping(rmorph.getImage(ra), rinverseArc);
+            GraphObject rightArcObj = this.getImage(leftArc);
+            if (rightArcObj != null) {
+                inverseRule.addMapping(rightMorphism.getImage(rightArcObj), rightInverseArc);
             }
         }
-        return (inverse);
+        return inverseRule;
     }
 
     /**
-     * Tries to invert this rule. The rule has to be injective. The attribute
-     * mappings are NOT inverted, thus the resulting left and right-hand side
-     * graphs are not attributed anymore.
+     * Tries to invert this rule. The rule has to be injective. The attribute mappings are NOT inverted, thus the
+     * resulting left and right-hand side graphs are not attributed anymore.
+     * <p>
+     * Returns the pair with an inverted rule as the first element and a help pair of two graph morphisms as the second
+     * element. The first morphism is between the LHS of this and the RHS of the inverted rule, the second morphism is
+     * between the RHS of this and the LHS of the inverted rule. If this rule is not injective, returns null.
      *
-     * Returns the pair with an inverted rule as the first element and a help
-     * pair of two graph morphisms as the second element. The first morphism is
-     * between the LHS of this and the RHS of the inverted rule, the second
-     * morphism is between the RHS of this and the LHS of the inverted rule. If
-     * this rule is not injective - returns null.
+     * @return a pair containing the inverted rule and morphism information, or null if not injective
      */
     public Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>> invertComplex() {
         if (!this.isInjective()) {
-            return (null);
+            return null;
         }
-        Rule inverse = new Rule();
-        Graph lgraph = this.getLeft();
-        Graph rgraph = this.getRight();
-        Graph linverse = inverse.getLeft();
-        Graph rinverse = inverse.getRight();
-        OrdinaryMorphism lmorph = new OrdinaryMorphism(lgraph, rinverse);
-        OrdinaryMorphism rmorph = new OrdinaryMorphism(rgraph, linverse);
-        Iterator<Node> rnodes = rgraph.getNodesSet().iterator();
-        while (rnodes.hasNext()) {
-            Node rNode = rnodes.next();
-            Node linverseNode = null;
+        Rule inverseRule = new Rule();
+        Graph leftGraph = this.getLeft();
+        Graph rightGraph = this.getRight();
+        Graph leftInverse = inverseRule.getLeft();
+        Graph rightInverse = inverseRule.getRight();
+        OrdinaryMorphism leftMorphism = new OrdinaryMorphism(leftGraph, rightInverse);
+        OrdinaryMorphism rightMorphism = new OrdinaryMorphism(rightGraph, leftInverse);
+        Iterator<Node> rightNodes = rightGraph.getNodesSet().iterator();
+        while (rightNodes.hasNext()) {
+            Node rightNode = rightNodes.next();
+            Node leftInverseNode = null;
             try {
-                linverseNode = linverse.createNode(rNode.getType());
+                leftInverseNode = leftInverse.createNode(rightNode.getType());
             } catch (TypeException e) {
                 // if the old rule was well typed, the new
                 // rule should be also well typed
                 e.printStackTrace();
             }
-            rmorph.addMapping(rNode, linverseNode);
+            rightMorphism.addMapping(rightNode, leftInverseNode);
         }
-        Iterator<Node> lnodes = lgraph.getNodesSet().iterator();
-        while (lnodes.hasNext()) {
-            Node lNode = lnodes.next();
-            Node rinverseNode = null;
+        Iterator<Node> leftNodeIter = leftGraph.getNodesSet().iterator();
+        while (leftNodeIter.hasNext()) {
+            Node leftNode = leftNodeIter.next();
+            Node rightInverseNode = null;
             try {
-                rinverseNode = rinverse.createNode(lNode.getType());
+                rightInverseNode = rightInverse.createNode(leftNode.getType());
             } catch (TypeException e) {
                 // if the old rule was well typed, the new
                 // rule should be also well typed
                 e.printStackTrace();
             }
-            lmorph.addMapping(lNode, rinverseNode);
-            GraphObject rn = this.getImage(lNode);
-            if (rn != null) {
-                inverse.addMapping(rmorph.getImage(rn), rinverseNode);
+            leftMorphism.addMapping(leftNode, rightInverseNode);
+            GraphObject rightNodeObj = this.getImage(leftNode);
+            if (rightNodeObj != null) {
+                inverseRule.addMapping(rightMorphism.getImage(rightNodeObj), rightInverseNode);
             }
         }
-        Iterator<Arc> rarcs = rgraph.getArcsSet().iterator();
-        while (rarcs.hasNext()) {
-            Arc rArc = rarcs.next();
-            Node linverseSource = (Node) rmorph.getImage(rArc.getSource());
-            Node linverseTarget = (Node) rmorph.getImage(rArc.getTarget());
-            Arc linverseArc = null;
+        Iterator<Arc> rightArcIter = rightGraph.getArcsSet().iterator();
+        while (rightArcIter.hasNext()) {
+            Arc rightArc = rightArcIter.next();
+            Node leftInverseSource = (Node) rightMorphism.getImage(rightArc.getSource());
+            Node leftInverseTarget = (Node) rightMorphism.getImage(rightArc.getTarget());
+            Arc leftInverseArc = null;
             try {
-                linverseArc = linverse.createArc(rArc.getType(),
-                        linverseSource, linverseTarget);
-                rmorph.addMapping(rArc, linverseArc);
+                leftInverseArc = leftInverse.createArc(rightArc.getType(),
+                        leftInverseSource, leftInverseTarget);
+                rightMorphism.addMapping(rightArc, leftInverseArc);
             } catch (TypeException ex) {
+                // Intentionally empty
             }
         }
-        Iterator<Arc> larcs = lgraph.getArcsSet().iterator();
-        while (larcs.hasNext()) {
-            Arc lArc = larcs.next();
-            Node rinverseSource = (Node) lmorph.getImage(lArc.getSource());
-            Node rinverseTarget = (Node) lmorph.getImage(lArc.getTarget());
-            Arc rinverseArc = null;
+        Iterator<Arc> leftArcIter = leftGraph.getArcsSet().iterator();
+        while (leftArcIter.hasNext()) {
+            Arc leftArc = leftArcIter.next();
+            Node rightInverseSource = (Node) leftMorphism.getImage(leftArc.getSource());
+            Node rightInverseTarget = (Node) leftMorphism.getImage(leftArc.getTarget());
+            Arc rightInverseArc = null;
             try {
-                rinverseArc = rinverse.createArc(lArc.getType(),
-                        rinverseSource, rinverseTarget);
-                lmorph.addMapping(lArc, rinverseArc);
+                rightInverseArc = rightInverse.createArc(leftArc.getType(),
+                        rightInverseSource, rightInverseTarget);
+                leftMorphism.addMapping(leftArc, rightInverseArc);
             } catch (TypeException ex) {
+                // Intentionally empty
             }
-            GraphObject ra = this.getImage(lArc);
-            if (ra != null) {
-                inverse.addMapping(rmorph.getImage(ra), rinverseArc);
+            GraphObject rightArcObj = this.getImage(leftArc);
+            if (rightArcObj != null) {
+                inverseRule.addMapping(rightMorphism.getImage(rightArcObj), rightInverseArc);
             }
         }
-        Pair<OrdinaryMorphism, OrdinaryMorphism> information = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
-                lmorph, rmorph);
-        return (new Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>>(
-                inverse, information));
+        Pair<OrdinaryMorphism, OrdinaryMorphism> infoPair = new Pair<OrdinaryMorphism, OrdinaryMorphism>(
+                leftMorphism, rightMorphism);
+        return new Pair<Rule, Pair<OrdinaryMorphism, OrdinaryMorphism>>(
+                inverseRule, infoPair);
     }
 
     /**
-     * A plain rule returns null.<br>
-     * Its subclasses <code>KernelRule</code>, <code>MultiRule</code>,
-     * <code>RuleScheme</code>, <code>AmalgamatedRule</code> overide this method
-     * to return its <code>RuleScheme</code>.
+     * Returns the rule scheme for this rule. A plain rule returns null. Its subclasses <code>KernelRule</code>,
+     * <code>MultiRule</code>, <code>RuleScheme</code>, <code>AmalgamatedRule</code> override this method to return its
+     * <code>RuleScheme</code>.
+     *
+     * @return the rule scheme, or null for plain rules
      */
     public RuleScheme getRuleScheme() {
         return null;
     }
 
     /**
-     * Returns my current match
+     * Returns the current match for this rule.
+     *
+     * @return the current match, or null if no match exists
      */
     public Match getMatch() {
         return this.itsMatch;
     }
 
     /**
-     * Compares attribute value of the specified objects due to constant value
-     * of the first object. Failed attribute value of the second object will be
-     * unset. Checks all members of the attribute tuple.
+     * Compares attribute value of the specified objects due to constant value of the first object. Failed attribute
+     * value of the second object will be unset. Checks all members of the attribute tuple.
      *
      * @param src first object (an object of the LHS of a rule)
      * @param tgt second object (an object of a NAC, PAC of a rule)
-     * @return	true if attribute value is equal, otherwise false
+     * @return true if attribute value is equal, otherwise false
      */
     public boolean compareConstantAttributeValue(
-            final GraphObject src,
-            final GraphObject tgt) {
+            final GraphObject sourceObj,
+            final GraphObject targetObj) {
         boolean result = true;
-        if (src.getAttribute() != null
-                && tgt.getAttribute() != null) {
-            final ValueTuple tgtValue = (ValueTuple) tgt.getAttribute();
-            final ValueTuple srcValue = (ValueTuple) src.getAttribute();
-            for (int i = 0; i < srcValue.getNumberOfEntries(); i++) {
-                final ValueMember lhsvm = srcValue.getValueMemberAt(i);
-                final ValueMember tgtvm = tgtValue.getValueMemberAt(lhsvm.getName());
-                if (lhsvm.isSet()
-                        && lhsvm.getExpr().isConstant()
-                        && tgtvm != null && tgtvm.isSet()
-                        && !lhsvm.getExprAsText().equals(tgtvm.getExprAsText())) {
+        if (sourceObj.getAttribute() != null
+                && targetObj.getAttribute() != null) {
+            final ValueTuple targetValueTuple = (ValueTuple) targetObj.getAttribute();
+            final ValueTuple sourceValueTuple = (ValueTuple) sourceObj.getAttribute();
+            for (int index = 0; index < sourceValueTuple.getNumberOfEntries(); index++) {
+                final ValueMember leftHandSideValueMem = sourceValueTuple.getValueMemberAt(index);
+                final ValueMember targetValueMem = targetValueTuple.getValueMemberAt(leftHandSideValueMem.getName());
+                if (leftHandSideValueMem.isSet()
+                        && leftHandSideValueMem.getExpr().isConstant()
+                        && targetValueMem != null && targetValueMem.isSet()
+                        && !leftHandSideValueMem.getExprAsText().equals(targetValueMem.getExprAsText())) {
                     result = false;
-                    tgtvm.setExpr(null);
+                    targetValueMem.setExpr(null);
                 }
             }
         }
@@ -2386,28 +2635,27 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Compares attribute value of the specified objects due to constant value
-     * of the first object. Failed attribute value of the second object will be
-     * unset. The check broken after at least one attribute failed.
+     * Compares attribute value of the specified objects due to constant value of the first object. Failed attribute
+     * value of the second object will be unset. The check breaks after at least one attribute failed.
      *
-     * @param src first object (an object of the LHS of a rule)
-     * @param tgt second object (an object of a NAC, PAC of a rule)
-     * @return	true if attribute value is equal, otherwise false
+     * @param sourceObj first object (an object of the LHS of a rule)
+     * @param targetObj second object (an object of a NAC, PAC of a rule)
+     * @return true if attribute value is equal, otherwise false
      */
     public boolean compareConstAttrValueOfMapObjs(
-            final GraphObject src, final GraphObject tgt) {
-        if (src.getAttribute() != null
-                && tgt.getAttribute() != null) {
-            final ValueTuple tgtValue = (ValueTuple) tgt.getAttribute();
-            final ValueTuple srcValue = (ValueTuple) src.getAttribute();
-            for (int i = 0; i < srcValue.getNumberOfEntries(); i++) {
-                final ValueMember srcvm = srcValue.getValueMemberAt(i);
-                final ValueMember tgtvm = tgtValue.getValueMemberAt(srcvm.getName());
-                if (srcvm.isSet()
-                        && srcvm.getExpr().isConstant()
-                        && tgtvm.isSet()
-                        && !srcvm.getExprAsText().equals(tgtvm.getExprAsText())) {
-                    tgtvm.setExpr(null);
+            final GraphObject sourceObj, final GraphObject targetObj) {
+        if (sourceObj.getAttribute() != null
+                && targetObj.getAttribute() != null) {
+            final ValueTuple targetValueTuple = (ValueTuple) targetObj.getAttribute();
+            final ValueTuple sourceValueTuple = (ValueTuple) sourceObj.getAttribute();
+            for (int index = 0; index < sourceValueTuple.getNumberOfEntries(); index++) {
+                final ValueMember sourceValueMem = sourceValueTuple.getValueMemberAt(index);
+                final ValueMember targetValueMem = targetValueTuple.getValueMemberAt(sourceValueMem.getName());
+                if (sourceValueMem.isSet()
+                        && sourceValueMem.getExpr().isConstant()
+                        && targetValueMem.isSet()
+                        && !sourceValueMem.getExprAsText().equals(targetValueMem.getExprAsText())) {
+                    targetValueMem.setExpr(null);
                     return false;
                 }
             }
@@ -2416,47 +2664,49 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Compares its LHS, RHS, morphism, NACs, PACs and attribute context to the
-     * appropriate elements of the specified rule. Returns true if all elements
-     * are equal.
+     * Compares its LHS, RHS, morphism, NACs, PACs and attribute context to the appropriate elements of the specified
+     * rule. Returns true if all elements are equal.
+     *
+     * @param otherRule the rule to compare to
+     * @return true if all elements are equal, false otherwise
      */
-    public boolean compareTo(Rule r) {
+    public boolean compareTo(Rule otherRule) {
         // System.out.println("Rule.compareTo");
-        Pair<Boolean, String> errMsgHolder = null;
+        Pair<Boolean, String> errorMsgHolder = null;
         // compare rule morphism
-        if (!((OrdinaryMorphism) this).compareTo(r)) {
+        if (!((OrdinaryMorphism) this).compareTo(otherRule)) {
             // System.out.println("Rule: "+getName()+" :: Mapping failed!");
-            errMsgHolder = new Pair<Boolean, String>(Boolean.valueOf(true),
+            errorMsgHolder = new Pair<>(true,
                     "Rule content is different.");
             return false;
         }
         // compare NACs
-        errMsgHolder = compareApplConds(this.getNACsList(), r.getNACsList(), "NAC");
-        if (errMsgHolder != null) {
+        errorMsgHolder = compareApplConds(this.getNACsList(), otherRule.getNACsList(), "NAC");
+        if (errorMsgHolder != null) {
             return false;
         }
         // compare PACs
-        errMsgHolder = compareApplConds(this.getPACsList(), r.getPACsList(), "PAC");
-        if (errMsgHolder != null) {
+        errorMsgHolder = compareApplConds(this.getPACsList(), otherRule.getPACsList(), "PAC");
+        if (errorMsgHolder != null) {
             return false;
         }
         // compare nested ACs
-        errMsgHolder = compareApplConds(this.getNestedACsList(), r.getNestedACsList(), "nested AC");
-        if (errMsgHolder != null) {
+        errorMsgHolder = compareApplConds(this.getNestedACsList(), otherRule.getNestedACsList(), "nested AC");
+        if (errorMsgHolder != null) {
             return false;
         }
         // compare rule context
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        VarTuple varOther = (VarTuple) r.getAttrContext().getVariables();
-        if (!var.compareTo(varOther)) {
-            errMsgHolder = new Pair<Boolean, String>(Boolean.valueOf(true),
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        VarTuple otherVarTuple = (VarTuple) otherRule.getAttrContext().getVariables();
+        if (!varTuple.compareTo(otherVarTuple)) {
+            errorMsgHolder = new Pair<>(true,
                     "Variable rule context is different.");
             return false;
         }
-        CondTuple cond = (CondTuple) getAttrContext().getConditions();
-        CondTuple condOther = (CondTuple) r.getAttrContext().getConditions();
-        if (!cond.compareTo(condOther)) {
-            errMsgHolder = new Pair<Boolean, String>(Boolean.valueOf(true),
+        CondTuple condTuple = (CondTuple) getAttrContext().getConditions();
+        CondTuple otherCondTuple = (CondTuple) otherRule.getAttrContext().getConditions();
+        if (!condTuple.compareTo(otherCondTuple)) {
+            errorMsgHolder = new Pair<>(true,
                     "Conditional rule context is different.");
             return false;
         }
@@ -2466,205 +2716,253 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     private Pair<Boolean, String> compareApplConds(
             final List<OrdinaryMorphism> applConds,
             final List<OrdinaryMorphism> otherApplConds,
-            String what) {
+            String applCondType) {
         // compare ACs
-        List<OrdinaryMorphism> another = new ArrayList<>();
-        another.addAll(otherApplConds);
-        if (applConds.size() != another.size()) {
+        List<OrdinaryMorphism> otherList = new ArrayList<>();
+        otherList.addAll(otherApplConds);
+        if (applConds.size() != otherList.size()) {
             // System.out.println("Rule: "+getName()+" NACs discrepancy!");
-            Pair<Boolean, String> errMsgHolder = new Pair<Boolean, String>(
-                    Boolean.valueOf(true),
-                    "Number of " + what + "s is different.");
-            return errMsgHolder;
+            Pair<Boolean, String> errorMsgHolder = new Pair<>(
+                    true,
+                    "Number of " + applCondType + "s is different.");
+            return errorMsgHolder;
         }
-        OrdinaryMorphism ac = null;
-        for (int i = 0; i < applConds.size(); i++) {
-            ac = applConds.get(i);
-            for (int j = another.size() - 1; j >= 0; j--) {
-                OrdinaryMorphism ac1 = another.get(j);
-                if (ac.compareTo(ac1)) {
-                    another.remove(ac1);
+        OrdinaryMorphism currentApplCond = null;
+        for (int index = 0; index < applConds.size(); index++) {
+            currentApplCond = applConds.get(index);
+            for (int otherIndex = otherList.size() - 1; otherIndex >= 0; otherIndex--) {
+                OrdinaryMorphism otherApplCond = otherList.get(otherIndex);
+                if (currentApplCond.compareTo(otherApplCond)) {
+                    otherList.remove(otherApplCond);
                     break;
                 }
             }
         }
-        if (another.size() != 0 && ac != null) {
-            Pair<Boolean, String> errMsgHolder = new Pair<Boolean, String>(
-                    Boolean.valueOf(true),
-                    what + ":  " + ac.getName() + "  is different.");
-            return errMsgHolder;
+        if (!otherList.isEmpty() && currentApplCond != null) {
+            Pair<Boolean, String> errorMsgHolder = new Pair<>(
+                    true,
+                    applCondType + ":  " + currentApplCond.getName() + "  is different.");
+            return errorMsgHolder;
         }
         return null;
     }
 
+    /**
+     * Returns all graph objects from the left-hand side graph that use the specified input parameters.
+     *
+     * @param inputParams the list of input parameter names to filter by
+     * @return a list of graph objects from the LHS that use the specified input parameters
+     */
     public List<GraphObject> getInputParameterObjectsLeft(final List<String> inputParams) {
         return getInputParameterObjects(this.getLeft(), inputParams);
     }
 
+    /**
+     * Returns all graph objects from the right-hand side graph that use the specified input parameters.
+     *
+     * @param inputParams the list of input parameter names to filter by
+     * @return a list of graph objects from the RHS that use the specified input parameters
+     */
     public List<GraphObject> getInputParameterObjectsRight(final List<String> inputParams) {
         return getInputParameterObjects(this.getRight(), inputParams);
     }
 
-    private List<GraphObject> getInputParameterObjects(final Graph g, final List<String> inputParams) {
-        List<GraphObject> goIP = new ArrayList<>();
-        Iterator<GraphObject> elems = g.iteratorOfElems();
-        while (elems.hasNext()) {
-            GraphObject go = elems.next();
-            if (go.getAttribute() != null) {
-                ValueTuple val = (ValueTuple) go.getAttribute();
-                for (int i = 0; i < val.getNumberOfEntries(); i++) {
-                    ValueMember mem = val.getEntryAt(i);
-                    if (mem.isSet() && mem.getExpr().isVariable()) {
-                        if (inputParams.contains(mem.getExprAsText())) {
-                            goIP.add(go);
+    private List<GraphObject> getInputParameterObjects(final Graph graph, final List<String> inputParamNames) {
+        var graphObjWithInputParam = new ArrayList<GraphObject>();
+        Iterator<GraphObject> elemIter = graph.iteratorOfElems();
+        while (elemIter.hasNext()) {
+            GraphObject currentObj = elemIter.next();
+            if (currentObj.getAttribute() != null) {
+                ValueTuple valueTuple = (ValueTuple) currentObj.getAttribute();
+                for (int index = 0; index < valueTuple.getNumberOfEntries(); index++) {
+                    ValueMember valueMem = valueTuple.getEntryAt(index);
+                    if (valueMem.isSet() && valueMem.getExpr().isVariable()) {
+                        if (inputParamNames.contains(valueMem.getExprAsText())) {
+                            graphObjWithInputParam.add(currentObj);
                         }
                     }
                 }
             }
         }
-        return goIP;
-    }
-
-    public List<GraphObject> getLeftInputParameterObjects() {
-        List<GraphObject> list = new ArrayList<>();
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        Iterator<GraphObject> elems = this.itsOrig.iteratorOfElems();
-        while (elems.hasNext()) {
-            GraphObject go = elems.next();
-            if (go.getAttribute() != null) {
-                ValueTuple val = (ValueTuple) go.getAttribute();
-                for (int i = 0; i < val.getNumberOfEntries(); i++) {
-                    ValueMember mem = val.getValueMemberAt(i);
-                    if (mem.isSet() && mem.getExpr().isVariable()) {
-                        if (var.getVarMemberAt(mem.getExprAsText()) != null
-                                && var.getVarMemberAt(mem.getExprAsText()).isInputParameter()) {
-                            list.add(go);
-                        }
-                    }
-                }
-            }
-        }
-//		System.out.println(list);
-        return list;
-    }
-
-    public List<GraphObject> getRightInputParameterObjects() {
-        List<GraphObject> list = new ArrayList<>();
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        Iterator<GraphObject> elems = this.itsImag.iteratorOfElems();
-        while (elems.hasNext()) {
-            GraphObject go = elems.next();
-            if (go.getAttribute() != null) {
-                ValueTuple val = (ValueTuple) go.getAttribute();
-                for (int i = 0; i < val.getNumberOfEntries(); i++) {
-                    ValueMember mem = val.getValueMemberAt(i);
-                    if (mem.isSet() && mem.getExpr().isVariable()) {
-                        if (var.getVarMemberAt(mem.getExprAsText()) != null
-                                && var.getVarMemberAt(mem.getExprAsText()).isInputParameter()) {
-                            list.add(go);
-                        }
-                    }
-                }
-            }
-        }
-        return list;
-    }
-
-    public List<String> getInputParameterNames() {
-        List<String> inputParams = new ArrayList<>(1);
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        for (int i = 0; i < var.getNumberOfEntries(); i++) {
-            VarMember varm = var.getVarMemberAt(i);
-            if (varm.isInputParameter()) {
-                inputParams.add(varm.getName());
-            }
-        }
-        return inputParams;
+        return graphObjWithInputParam;
     }
 
     /**
-     * Returns variables of the attribute context of this rule which are used as
-     * input parameter for the rule application.
+     * Returns all graph objects from the left-hand side graph that use any input parameter.
+     *
+     * @return a list of graph objects from the LHS that use input parameters
+     */
+    public List<GraphObject> getLeftInputParameterObjects() {
+        var resultList = new ArrayList<GraphObject>();
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        Iterator<GraphObject> elemIter = this.itsOrig.iteratorOfElems();
+        while (elemIter.hasNext()) {
+            GraphObject currentObj = elemIter.next();
+            if (currentObj.getAttribute() != null) {
+                ValueTuple valueTuple = (ValueTuple) currentObj.getAttribute();
+                for (int index = 0; index < valueTuple.getNumberOfEntries(); index++) {
+                    ValueMember valueMem = valueTuple.getValueMemberAt(index);
+                    if (valueMem.isSet() && valueMem.getExpr().isVariable()) {
+                        if (varTuple.getVarMemberAt(valueMem.getExprAsText()) != null
+                                && varTuple.getVarMemberAt(valueMem.getExprAsText()).isInputParameter()) {
+                            resultList.add(currentObj);
+                        }
+                    }
+                }
+            }
+        }
+//		System.out.println(resultList);
+        return resultList;
+    }
+
+    /**
+     * Returns all graph objects from the right-hand side graph that use any input parameter.
+     *
+     * @return a list of graph objects from the RHS that use input parameters
+     */
+    public List<GraphObject> getRightInputParameterObjects() {
+        var resultList = new ArrayList<GraphObject>();
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        Iterator<GraphObject> elemIter = this.itsImag.iteratorOfElems();
+        while (elemIter.hasNext()) {
+            GraphObject currentObj = elemIter.next();
+            if (currentObj.getAttribute() != null) {
+                ValueTuple valueTuple = (ValueTuple) currentObj.getAttribute();
+                for (int index = 0; index < valueTuple.getNumberOfEntries(); index++) {
+                    ValueMember valueMem = valueTuple.getValueMemberAt(index);
+                    if (valueMem.isSet() && valueMem.getExpr().isVariable()) {
+                        if (varTuple.getVarMemberAt(valueMem.getExprAsText()) != null
+                                && varTuple.getVarMemberAt(valueMem.getExprAsText()).isInputParameter()) {
+                            resultList.add(currentObj);
+                        }
+                    }
+                }
+            }
+        }
+        return resultList;
+    }
+
+    /**
+     * Returns the names of all input parameters in this rule's attribute context.
+     *
+     * @return a list of input parameter names
+     */
+    public List<String> getInputParameterNames() {
+        var inputParamNames = new ArrayList<String>(1);
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = varTuple.getVarMemberAt(index);
+            if (varMem.isInputParameter()) {
+                inputParamNames.add(varMem.getName());
+            }
+        }
+        return inputParamNames;
+    }
+
+    /**
+     * Returns variables of the attribute context of this rule which are used as input parameter for the rule
+     * application.
+     *
+     * @return a list of input parameter variable members
      */
     public List<VarMember> getInputParameters() {
-        List<VarMember> inputParams = new ArrayList<>(1);
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        for (int i = 0; i < var.getNumberOfEntries(); i++) {
-            VarMember varm = var.getVarMemberAt(i);
-            if (varm.isInputParameter()) {
-                inputParams.add(varm);
-            }
-        }
-        return inputParams;
-    }
-
-    public List<VarMember> getInputParametersLeft() {
-        List<VarMember> inputParams = new ArrayList<>(1);
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        for (int i = 0; i < var.getNumberOfEntries(); i++) {
-            VarMember vm = var.getVarMemberAt(i);
-            if (vm.isInputParameter()
-                    && vm.getMark() == VarMember.LHS) {
-                inputParams.add(vm);
-            }
-        }
-        return inputParams;
-    }
-
-    public List<VarMember> getInputParametersRight() {
-        List<VarMember> inputParams = new ArrayList<>(1);
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        for (int i = 0; i < var.getNumberOfEntries(); i++) {
-            VarMember vm = var.getVarMemberAt(i);
-            if (vm.isInputParameter()
-                    && (vm.getMark() == VarMember.RHS
-                    || vm.getMark() == VarMember.NAC)) {
-                inputParams.add(vm);
+        var inputParams = new ArrayList<VarMember>(1);
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = varTuple.getVarMemberAt(index);
+            if (varMem.isInputParameter()) {
+                inputParams.add(varMem);
             }
         }
         return inputParams;
     }
 
     /**
-     * Returns variables of the attribute context of this rule which are used by
-     * attributes of the specified graph object as an input parameter for the
-     * rule application.
+     * Returns input parameters from the attribute context that are marked for the left-hand side.
+     *
+     * @return a list of input parameter variable members marked for LHS
      */
-    public List<VarMember> getInputParametersOfGraphObject(final GraphObject go, final VarTuple var) {
-        if (go.getAttribute() == null) {
+    public List<VarMember> getInputParametersLeft() {
+        var inputParams = new ArrayList<VarMember>(1);
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = varTuple.getVarMemberAt(index);
+            if (varMem.isInputParameter()
+                    && varMem.getMark() == VarMember.LHS) {
+                inputParams.add(varMem);
+            }
+        }
+        return inputParams;
+    }
+
+    /**
+     * Returns input parameters from the attribute context that are marked for the right-hand side or NACs.
+     *
+     * @return a list of input parameter variable members marked for RHS or NAC
+     */
+    public List<VarMember> getInputParametersRight() {
+        var inputParams = new ArrayList<VarMember>(1);
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = varTuple.getVarMemberAt(index);
+            if (varMem.isInputParameter()
+                    && (varMem.getMark() == VarMember.RHS
+                    || varMem.getMark() == VarMember.NAC)) {
+                inputParams.add(varMem);
+            }
+        }
+        return inputParams;
+    }
+
+    /**
+     * Returns variables of the attribute context of this rule which are used by attributes of the specified graph
+     * object as an input parameter for the rule application.
+     *
+     * @param go the graph object to check
+     * @param var the variable tuple containing the variables to check
+     * @return a list of input parameter variable members used by the graph object's attributes
+     */
+    public List<VarMember> getInputParametersOfGraphObject(final GraphObject graphObj, final VarTuple varTuple) {
+        if (graphObj.getAttribute() == null) {
             return new ArrayList<>();
         }
-        List<VarMember> inputParams = new ArrayList<>(1);
-        ValueTuple attrVal = (ValueTuple) go.getAttribute();
-        for (int i = 0; i < attrVal.getNumberOfEntries(); i++) {
-            ValueMember vm = attrVal.getValueMemberAt(i);
-            if (vm.isSet() && vm.getExpr().isVariable()) {
-                VarMember varm = var.getVarMemberAt(vm.getExprAsText());
-                if (varm != null && varm.isInputParameter()) {
-                    inputParams.add(varm);
+        var inputParams = new ArrayList<VarMember>(1);
+        ValueTuple attrVal = (ValueTuple) graphObj.getAttribute();
+        for (int index = 0; index < attrVal.getNumberOfEntries(); index++) {
+            ValueMember valueMem = attrVal.getValueMemberAt(index);
+            if (valueMem.isSet() && valueMem.getExpr().isVariable()) {
+                VarMember varMem = varTuple.getVarMemberAt(valueMem.getExprAsText());
+                if (varMem != null && varMem.isInputParameter()) {
+                    inputParams.add(varMem);
                 }
             }
         }
         return inputParams;
     }
 
+    /**
+     * Returns all non-input parameters used by newly created graph objects in the RHS. Newly created objects are those
+     * that have no preimage in the LHS.
+     *
+     * @return a list of non-input parameter variable members used by new graph objects
+     */
     public List<VarMember> getNonInputParametersOfNewGraphObjects() {
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        List<VarMember> params = new ArrayList<>(1);
-        final Iterator<GraphObject> objs = this.itsImag.iteratorOfElems();
-        while (objs.hasNext()) {
-            GraphObject go = objs.next();
-            if (go.getAttribute() == null
-                    || this.itsCodomObjects.contains(go)) {
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        var params = new ArrayList<VarMember>(1);
+        final Iterator<GraphObject> objIter = this.itsImag.iteratorOfElems();
+        while (objIter.hasNext()) {
+            GraphObject currentObj = objIter.next();
+            if (currentObj.getAttribute() == null
+                    || this.itsCodomObjects.contains(currentObj)) {
                 continue;
             }
-            ValueTuple attrVal = (ValueTuple) go.getAttribute();
-            for (int i = 0; i < attrVal.getNumberOfEntries(); i++) {
-                ValueMember vm = attrVal.getValueMemberAt(i);
-                if (vm.isSet() && vm.getExpr().isVariable()) {
-                    VarMember varm = var.getVarMemberAt(vm.getExprAsText());
-                    if (varm != null && !varm.isInputParameter()) {
-                        params.add(varm);
+            ValueTuple attrVal = (ValueTuple) currentObj.getAttribute();
+            for (int index = 0; index < attrVal.getNumberOfEntries(); index++) {
+                ValueMember valueMem = attrVal.getValueMemberAt(index);
+                if (valueMem.isSet() && valueMem.getExpr().isVariable()) {
+                    VarMember varMem = varTuple.getVarMemberAt(valueMem.getExprAsText());
+                    if (varMem != null && !varMem.isInputParameter()) {
+                        params.add(varMem);
                     }
                 }
             }
@@ -2672,20 +2970,27 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return params;
     }
 
+    /**
+     * Returns all non-input parameters from this rule's attribute context.
+     *
+     * @return a list of all variable members that are not input parameters
+     */
     public List<VarMember> getNonInputParameters() {
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        List<VarMember> params = new ArrayList<>(1);
-        for (int i = 0; i < var.getNumberOfEntries(); i++) {
-            VarMember v = var.getVarMemberAt(i);
-            if (!v.isInputParameter()) {
-                params.add(v);
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        var params = new ArrayList<VarMember>(1);
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = varTuple.getVarMemberAt(index);
+            if (!varMem.isInputParameter()) {
+                params.add(varMem);
             }
         }
         return params;
     }
 
     /**
-     * always returns TRUE. It is not yet implemented!
+     * Checks if all NACs in this rule are valid. Currently always returns true as it is not yet fully implemented.
+     *
+     * @return true if all NACs are valid, false otherwise
      */
     public boolean areNACsValid() {
 //		for (int i = 0; i < itsNACs.size(); i++) {
@@ -2705,15 +3010,21 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //	}
 
     /**
-     * always returns TRUE. It is not yet implemented!
+     * Checks if the specified NAC is valid. Currently always returns true as it is not yet fully implemented.
+     *
+     * @param nac the negative application condition to validate
+     * @return true if the NAC is valid, false otherwise
      */
     public boolean isNACValid(OrdinaryMorphism nac) {
         return true;
     }
 
     /**
-     * Shift of an application condition is not possible when it may cause a
-     * dangling edge.
+     * Checks if shifting of an application condition is possible. Shift is not possible when it may cause a dangling
+     * edge.
+     *
+     * @param ac the application condition to check
+     * @return true if the AC can be shifted, false otherwise
      */
     public boolean isACShiftPossible(OrdinaryMorphism ac) {
         Iterator<Arc> arcs = ac.getTarget().getArcsCollection().iterator();
@@ -2736,8 +3047,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks dangling edges of the given pac. Returns true if no dangling edge
-     * exists, otherwise false.
+     * Checks dangling edges of the given PAC. Returns true if no dangling edge exists, otherwise false.
+     *
+     * @param ac the positive application condition to validate
+     * @return true if the PAC has no dangling edges, false otherwise
      */
     public boolean isPACValid(OrdinaryMorphism ac) {
         if (ac.isEnabled()) {
@@ -2759,13 +3072,14 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks dangling edges of the its pacs. Returns true if no dangling edge
-     * exists, otherwise false.
+     * Checks dangling edges of all PACs in this rule. Returns true if no dangling edge exists, otherwise false.
+     *
+     * @return true if all PACs have no dangling edges, false otherwise
      */
     public boolean arePACsValid() {
         for (int i = 0; i < this.itsPACs.size(); i++) {
-            OrdinaryMorphism ac = this.itsPACs.get(i);
-            if (!this.isPACValid(ac)) {
+            OrdinaryMorphism applicationCondition = this.itsPACs.get(i);
+            if (!this.isPACValid(applicationCondition)) {
                 return false;
             }
         }
@@ -2773,8 +3087,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks dangling edges of the given general application condition ac.
-     * Returns true if no dangling edge exists, otherwise false.
+     * Checks dangling edges of the given nested application condition. Returns true if no dangling edge exists,
+     * otherwise false.
+     *
+     * @param ac the nested application condition to validate
+     * @return true if the GAC has no dangling edges, false otherwise
      */
     public boolean isGACValid(NestedApplCond ac) {
         if (ac.isEnabled()) {
@@ -2784,13 +3101,15 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks dangling edges of the its general application conditions. Returns
-     * true if no dangling edge exists, otherwise false.
+     * Checks dangling edges of all nested application conditions in this rule. Returns true if no dangling edge exists,
+     * otherwise false.
+     *
+     * @return true if all GACs have no dangling edges, false otherwise
      */
     public boolean areGACsValid() {
         for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (!this.isGACValid(ac)) {
+            NestedApplCond applicationCondition = (NestedApplCond) this.itsACs.get(i);
+            if (!this.isGACValid(applicationCondition)) {
                 return false;
             }
         }
@@ -2798,19 +3117,21 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks dangling edges of the its pacs and general acs. Returns true if no
-     * dangling edge exists, otherwise false.
+     * Checks dangling edges of all PACs and nested ACs in this rule. Returns true if no dangling edge exists, otherwise
+     * false.
+     *
+     * @return true if all application conditions have no dangling edges, false otherwise
      */
     public boolean areApplCondsValid() {
         for (int i = 0; i < this.itsPACs.size(); i++) {
-            OrdinaryMorphism ac = this.itsPACs.get(i);
-            if (!this.isPACValid(ac)) {
+            OrdinaryMorphism applicationCondition = this.itsPACs.get(i);
+            if (!this.isPACValid(applicationCondition)) {
                 return false;
             }
         }
         for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (!ac.isValid()) {
+            NestedApplCond applicationCondition = (NestedApplCond) this.itsACs.get(i);
+            if (!applicationCondition.isValid()) {
                 return false;
             }
         }
@@ -2818,8 +3139,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Copies nodes and edges of its PACs in the LHS resp. RHS and extends the
-     * rule mapping. The PACs will be disabled.<br>
+     * Copies nodes and edges of its PACs in the LHS resp. RHS and extends the rule mapping. The PACs will be disabled.
+     *
+     * @return true if the extension was successful, false otherwise
      */
     public boolean extendByPacs() {
         for (int i = 0; i < this.itsPACs.size(); i++) {
@@ -2900,8 +3222,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Undo the copy of its PACs done by <code>extendByPacs</code>. The PACs
-     * will be enabled.<br>
+     * Undo the copy of its PACs done by <code>extendByPacs</code>. The PACs will be enabled.
      */
     public boolean extendByPacsUndo() {
         for (int i = 0; i < this.itsPACs.size(); i++) {
@@ -2949,9 +3270,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks existing variables of the attribute context against the attribute
-     * context of its current match and adjusts the attribute context of its
-     * match, if needed.
+     * Checks existing variables of the attribute context against the attribute context of its current match and adjusts
+     * the attribute context of its match, if needed.
      */
     public void adjustAttrContextOfMatch(boolean inputParameterOnly) {
         if (this.itsMatch != null) {
@@ -2964,104 +3284,103 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * Set the value of variables of rule attribute context to null.
      */
     public void unsetValueOfContextVariable(boolean inputParameterOnly) {
-        VarTuple vt = (VarTuple) getAttrContext().getVariables();
-        for (int i = 0; i < vt.getNumberOfEntries(); i++) {
-            VarMember vm = vt.getVarMemberAt(i);
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = varTuple.getVarMemberAt(index);
             if (inputParameterOnly) {
-                if (vm.isInputParameter()) {
-                    vm.setExpr(null);
+                if (varMem.isInputParameter()) {
+                    varMem.setExpr(null);
                 }
             } else {
-                vm.setExpr(null);
+                varMem.setExpr(null);
             }
         }
     }
 
     /**
-     * Attribute context variable which is an input parameter is no more input
-     * parameter after this method applied.
+     * Attribute context variable which is an input parameter is no more input parameter after this method applied.
      */
     public void unsetInputParameter() {
-        AttrVariableTuple avt = getAttrContext().getVariables();
-        for (int i = 0; i < avt.getNumberOfEntries(); i++) {
-            VarMember vm = (VarMember) avt.getMemberAt(i);
-            if (vm.isInputParameter()) {
-                vm.setInputParameter(false);
+        AttrVariableTuple attrVariableTuple = getAttrContext().getVariables();
+        for (int index = 0; index < attrVariableTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = (VarMember) attrVariableTuple.getMemberAt(index);
+            if (varMem.isInputParameter()) {
+                varMem.setInputParameter(false);
             }
         }
     }
 
     /**
-     * Returns the name of an input parameter whithout value, otherwise - null.
+     * Returns the name of an input parameter without value, otherwise null.
+     *
+     * @return the name of the first unset input parameter, or null if all are set
      */
     public String getInputParameterWithoutValue() {
-        AttrVariableTuple avt = getAttrContext().getVariables();
-        for (int i = 0; i < avt.getNumberOfEntries(); i++) {
-            VarMember vm = (VarMember) avt.getMemberAt(i);
-            if (vm.isInputParameter() && !vm.isSet()) {
-                return vm.getName();
+        AttrVariableTuple attrVariableTuple = getAttrContext().getVariables();
+        for (int index = 0; index < attrVariableTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = (VarMember) attrVariableTuple.getMemberAt(index);
+            if (varMem.isInputParameter() && !varMem.isSet()) {
+                return varMem.getName();
             }
         }
         return null;
     }
 
     /**
-     * Returns name(s) of the variables of the attribute context which are used
-     * as input parameter(s) of this rule and they are not set. If the specified
-     * parameter is TRUE then the LHS (NACs, PACs) with an input parameter for
-     * matching are taken in account. If the specified parameter is FALSE then
-     * the RHS (NACs, PACs) with an input parameter for matching are taken in
-     * acount.
+     * Returns the name of an unset input parameter variable from the attribute context. If the specified parameter is
+     * true, the LHS (NACs, PACs) with an input parameter for matching are taken into account. If false, the RHS (NACs,
+     * PACs) with an input parameter for matching are taken into account.
      *
-     * Returns null if all input parameter are set.
+     * @param left true to check LHS, false to check RHS
+     * @return the name of the first unset input parameter in the specified context, or null if all are set
      */
     public String getInputParameterWithoutValue(boolean left) {
-        AttrVariableTuple avt = getAttrContext().getVariables();
-        for (int i = 0; i < avt.getNumberOfEntries(); i++) {
-            VarMember vm = (VarMember) avt.getMemberAt(i);
-            if (vm.isInputParameter() && !vm.isSet()) {
+        AttrVariableTuple attrVariableTuple = getAttrContext().getVariables();
+        for (int index = 0; index < attrVariableTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = (VarMember) attrVariableTuple.getMemberAt(index);
+            if (varMem.isInputParameter() && !varMem.isSet()) {
                 if (left) {
-                    List<String> vars = getLeft().getVariableNamesOfAttributes();
-                    for (int j = 0; j < vars.size(); j++) {
-                        if (vars.get(j).equals(vm.getName())) {
-                            return vm.getName();
+                    List<String> varNames = getLeft().getVariableNamesOfAttributes();
+                    for (int nameIndex = 0; nameIndex < varNames.size(); nameIndex++) {
+                        if (varNames.get(nameIndex).equals(varMem.getName())) {
+                            return varMem.getName();
                         }
                     }
                 } else {
-                    List<String> vars = getRight().getVariableNamesOfAttributes();
-                    for (int j = 0; j < vars.size(); j++) {
-                        if (vars.get(j).equals(vm.getName())) {
-                            return vm.getName();
+                    List<String> varNames = getRight().getVariableNamesOfAttributes();
+                    for (int nameIndex = 0; nameIndex < varNames.size(); nameIndex++) {
+                        if (varNames.get(nameIndex).equals(varMem.getName())) {
+                            return varMem.getName();
                         }
                     }
                 }
-                for (int j = 0; j < this.itsNACs.size(); j++) {
-                    OrdinaryMorphism nac = this.itsNACs.get(j);
-                    List<String> vars = nac.getTarget()
+                for (int nacIndex = 0; nacIndex < this.itsNACs.size(); nacIndex++) {
+                    OrdinaryMorphism negativeApplCond = this.itsNACs.get(nacIndex);
+                    List<String> varNames = negativeApplCond.getTarget()
                             .getVariableNamesOfAttributes();
-                    for (int k = 0; k < vars.size(); k++) {
-                        if (vars.get(k).equals(vm.getName())) {
-                            return vm.getName();
+                    for (int nameIndex = 0; nameIndex < varNames.size(); nameIndex++) {
+                        if (varNames.get(nameIndex).equals(varMem.getName())) {
+                            return varMem.getName();
                         }
                     }
                 }
-                for (int j = 0; j < this.itsPACs.size(); j++) {
-                    OrdinaryMorphism pac = this.itsPACs.get(j);
-                    List<String> vars = pac.getTarget()
+                for (int pacIndex = 0; pacIndex < this.itsPACs.size(); pacIndex++) {
+                    OrdinaryMorphism positiveApplCond = this.itsPACs.get(pacIndex);
+                    List<String> varNames = positiveApplCond.getTarget()
                             .getVariableNamesOfAttributes();
-                    for (int k = 0; k < vars.size(); k++) {
-                        if (vars.get(k).equals(vm.getName())) {
-                            return vm.getName();
+                    for (int nameIndex = 0; nameIndex < varNames.size(); nameIndex++) {
+                        if (varNames.get(nameIndex).equals(varMem.getName())) {
+                            return varMem.getName();
                         }
                     }
                 }
-                for (int j = 0; j < this.itsACs.size(); j++) {
-                    OrdinaryMorphism ac = this.itsACs.get(j);
-                    List<String> vars = ac.getTarget()
+                for (int acIndex = 0; acIndex < this.itsACs.size(); acIndex++) {
+                    OrdinaryMorphism nestedApplCond = this.itsACs.get(acIndex);
+                    List<String> varNames = nestedApplCond.getTarget()
                             .getVariableNamesOfAttributes();
-                    for (int k = 0; k < vars.size(); k++) {
-                        if (vars.get(k).equals(vm.getName())) {
-                            return vm.getName();
+                    for (int nameIndex = 0; nameIndex < varNames.size(); nameIndex++) {
+                        if (varNames.get(nameIndex).equals(varMem.getName())) {
+                            return varMem.getName();
                         }
                     }
                 }
@@ -3071,20 +3390,19 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private void deleteUnusedVars(List<VarMember> used) {
-        VarTuple vars = (VarTuple) this.getAttrContext().getVariables();
-        for (int i = 0; i < vars.getNumberOfEntries(); i++) {
-            VarMember vm = vars.getVarMemberAt(i);
-            if (!used.contains(vm)) {
-                vars.getTupleType().deleteMemberAt(vm.getName());
-//				vars.showVariables();
+        VarTuple varTuple = (VarTuple) this.getAttrContext().getVariables();
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = varTuple.getVarMemberAt(index);
+            if (!used.contains(varMem)) {
+                varTuple.getTupleType().deleteMemberAt(varMem.getName());
+//				varTuple.showVariables();
             }
         }
     }
 
     /**
-     * Checks attribute setting of RHS, variable declarations and attribute
-     * conditions. If all checks successful, it prepares infos about this rule.
-     * The method getErrorMessage() gives more information about fails.
+     * Checks attribute setting of RHS, variable declarations and attribute conditions. If all checks successful, it
+     * prepares infos about this rule. The method getErrorMessage() gives more information about fails.
      */
     public boolean isReadyToTransform() {
         this.isReady = true;
@@ -3092,13 +3410,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             return true;
         }
         // check usage of abstract types of the RHS
-        final List<String> abstractTypesOfRHS = new ArrayList<>(1);
-        Iterator<Node> enumer = this.itsImag.getNodesSet().iterator();
-        while (enumer.hasNext()) {
-            GraphObject o = enumer.next();
-            Iterator<GraphObject> inverse = getInverseImage(o);
-            if (!inverse.hasNext() && o.getType().isAbstract()) {
-                abstractTypesOfRHS.add(o.getType().getName());
+        final var abstractTypesOfRHS = new ArrayList<String>(1);
+        Iterator<Node> nodeIter = this.itsImag.getNodesSet().iterator();
+        while (nodeIter.hasNext()) {
+            GraphObject graphObj = nodeIter.next();
+            Iterator<GraphObject> inverseIter = getInverseImage(graphObj);
+            if (!inverseIter.hasNext() && graphObj.getType().isAbstract()) {
+                abstractTypesOfRHS.add(graphObj.getType().getName());
             }
         }
         this.isReady = abstractTypesOfRHS.isEmpty();
@@ -3107,8 +3425,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             return false;
         }
         // check  PAC is valid: check dangling edge of nodes to delete which are used in a PAC
-        for (int l = 0; l < this.itsPACs.size(); l++) {
-            this.isReady = this.isPACValid(this.itsPACs.get(l));
+        for (int pacIndex = 0; pacIndex < this.itsPACs.size(); pacIndex++) {
+            this.isReady = this.isPACValid(this.itsPACs.get(pacIndex));
             if (!this.isReady) {
                 return false;
             }
@@ -3118,37 +3436,37 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             return true;
         }
         this.applyDefaultAttrValuesOfTypeGraph(this.itsImag);
-        AttrVariableTuple avt = this.itsAttrContext.getVariables();
-        AttrConditionTuple act = this.itsAttrContext.getConditions();
+        AttrVariableTuple attrVariableTuple = this.itsAttrContext.getVariables();
+        AttrConditionTuple attrConditionTuple = this.itsAttrContext.getConditions();
         this.errorMsg = "";
         // get used variable and its declaration: (type, name)
-        List<Pair<String, String>> varDecls = getVariableDeclarations();
-        // add vars of NACs to varDecls
-        for (int l = 0; l < this.itsNACs.size(); l++) {
-            addVarDecl(this.itsNACs.get(l).getImage(), varDecls);
+        List<Pair<String, String>> varDeclPairs = getVariableDeclarations();
+        // add vars of NACs to varDeclPairs
+        for (int nacIndex = 0; nacIndex < this.itsNACs.size(); nacIndex++) {
+            addVarDecl(this.itsNACs.get(nacIndex).getImage(), varDeclPairs);
         }
-        // add vars of PACs to varDecls
-        for (int l = 0; l < this.itsPACs.size(); l++) {
-            addVarDecl(this.itsPACs.get(l).getImage(), varDecls);
+        // add vars of PACs to varDeclPairs
+        for (int pacIndex2 = 0; pacIndex2 < this.itsPACs.size(); pacIndex2++) {
+            addVarDecl(this.itsPACs.get(pacIndex2).getImage(), varDeclPairs);
         }
-        // add vars of nested ACs to varDecls
-        for (int l = 0; l < this.itsACs.size(); l++) {
-            addVarDecl(this.itsACs.get(l).getImage(), varDecls);
+        // add vars of nested ACs to varDeclPairs
+        for (int acIndex = 0; acIndex < this.itsACs.size(); acIndex++) {
+            addVarDecl(this.itsACs.get(acIndex).getImage(), varDeclPairs);
         }
         // check: same variable name , different type :: should not happen!
-        this.isReady = checkDoubleVarDecl(varDecls);
+        this.isReady = checkDoubleVarDecl(varDeclPairs);
         if (!this.isReady) {
             return false;
         }
         // check used variables
-        this.isReady = checkUsedVariables(avt, varDecls);
+        this.isReady = checkUsedVariables(attrVariableTuple, varDeclPairs);
         if (!this.isReady) {
             return false;
         }
         // mark used variables: RHS, NAC, PAC, LHS
-        markUsedVariables(avt);
+        markUsedVariables(attrVariableTuple);
         // check and mark the attr. conditions
-        this.isReady = markAttrConditions(avt, act);
+        this.isReady = markAttrConditions(attrVariableTuple, attrConditionTuple);
         if (!this.isReady) {
             return false;
         }
@@ -3166,7 +3484,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             }
         }
         // check attribute settings of the new objects
-        this.isReady = this.checkAttributesOfNewObjects(avt);
+        this.isReady = this.checkAttributesOfNewObjects(attrVariableTuple);
         if (!this.isReady) {
             return false;
         }
@@ -3224,24 +3542,24 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     protected void applyDefaultAttrValuesOfTypeGraph(
-            final Graph g,
+            final Graph graph,
             final Iterator<?> iter) {
-        boolean right = g == this.getRight();
+        boolean isRight = graph == this.getRight();
         while (iter.hasNext()) {
-            GraphObject o = (GraphObject) iter.next();
-            if (o.getAttribute() == null) {
-                if ((o.getType().getAttrType() != null)
-                        && (o.getType().getAttrType().getNumberOfEntries() != 0)) {
-                    o.createAttributeInstance();
+            GraphObject currentObj = (GraphObject) iter.next();
+            if (currentObj.getAttribute() == null) {
+                if ((currentObj.getType().getAttrType() != null)
+                        && (currentObj.getType().getAttrType().getNumberOfEntries() != 0)) {
+                    currentObj.createAttributeInstance();
                 } else {
                     continue;
                 }
             }
-            if (right && !this.getInverseImage(o).hasNext()) {
-                if (o.isNode()) {
-                    g.applyDefaultAttrValuesOfTypeGraph((Node) o, null);
+            if (isRight && !this.getInverseImage(currentObj).hasNext()) {
+                if (currentObj.isNode()) {
+                    graph.applyDefaultAttrValuesOfTypeGraph((Node) currentObj, null);
                 } else {
-                    g.applyDefaultAttrValuesOfTypeGraph((Arc) o, null);
+                    graph.applyDefaultAttrValuesOfTypeGraph((Arc) currentObj, null);
                 }
             }
         }
@@ -3251,9 +3569,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	 * Use the attribute values of the nodes and edges of the Type Graph as default values
 	 * for the attributes of the specified graph.
      */
-    public void applyDefaultAttrValuesOfTypeGraph(final Graph g) {
-        this.applyDefaultAttrValuesOfTypeGraph(g, g.getNodesSet().iterator());
-        this.applyDefaultAttrValuesOfTypeGraph(g, g.getArcsSet().iterator());
+    public void applyDefaultAttrValuesOfTypeGraph(final Graph graph) {
+        this.applyDefaultAttrValuesOfTypeGraph(graph, graph.getNodesSet().iterator());
+        this.applyDefaultAttrValuesOfTypeGraph(graph, graph.getArcsSet().iterator());
     }
 
     protected boolean isAttributed() {
@@ -3271,34 +3589,34 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return attributed;
     }
 
-    private void addVarDecl(final Graph g, final List<Pair<String, String>> varDecls) {
-        addVarDecl(g.getNodesSet().iterator(), varDecls);
-        addVarDecl(g.getArcsSet().iterator(), varDecls);
+    private void addVarDecl(final Graph graph, final List<Pair<String, String>> varDeclPairs) {
+        addVarDecl(graph.getNodesSet().iterator(), varDeclPairs);
+        addVarDecl(graph.getArcsSet().iterator(), varDeclPairs);
     }
 
-    private void addVarDecl(final Iterator<?> elems, final List<Pair<String, String>> varDecls) {
-        while (elems.hasNext()) {
-            GraphObject o = (GraphObject) elems.next();
-            if (o.getAttribute() != null) {
-                AttrInstance attr = o.getAttribute();
+    private void addVarDecl(final Iterator<?> elementsIter, final List<Pair<String, String>> varDeclPairs) {
+        while (elementsIter.hasNext()) {
+            GraphObject currentObj = (GraphObject) elementsIter.next();
+            if (currentObj.getAttribute() != null) {
+                AttrInstance attr = currentObj.getAttribute();
                 ValueTuple vt = (ValueTuple) attr;
-                for (int k = 0; k < vt.getSize(); k++) {
-                    ValueMember vm = vt.getValueMemberAt(k);
-                    if (vm.isSet() && vm.getExpr().isVariable()) {
-                        String n = vm.getExprAsText();
-                        String t = vm.getDeclaration().getTypeName();
-//						System.out.println(o.getContext().getName()+"   "+n+"    "+t);
-                        Pair<String, String> p = new Pair<String, String>(t, n);
+                for (int index = 0; index < vt.getSize(); index++) {
+                    ValueMember valueMem = vt.getValueMemberAt(index);
+                    if (valueMem.isSet() && valueMem.getExpr().isVariable()) {
+                        String varName = valueMem.getExprAsText();
+                        String typeName = valueMem.getDeclaration().getTypeName();
+//						System.out.println(currentObj.getContext().getName()+"   "+varName+"    "+typeName);
+                        Pair<String, String> varDeclPair = new Pair<String, String>(typeName, varName);
                         boolean found = false;
-                        for (int j = 0; j < varDecls.size(); j++) {
-                            Pair<String, String> pj = varDecls.get(j);
-                            if (t.equals(pj.first) && n.equals(pj.second)) {
+                        for (int pairIndex = 0; pairIndex < varDeclPairs.size(); pairIndex++) {
+                            Pair<String, String> existingPair = varDeclPairs.get(pairIndex);
+                            if (typeName.equals(existingPair.first) && varName.equals(existingPair.second)) {
                                 found = true;
                                 break;
                             }
                         }
                         if (!found) {
-                            varDecls.add(p);
+                            varDeclPairs.add(varDeclPair);
                         }
                     }
                 }
@@ -3306,19 +3624,19 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    private boolean checkDoubleVarDecl(final List<Pair<String, String>> varDecls) {
+    private boolean checkDoubleVarDecl(final List<Pair<String, String>> varDeclPairs) {
         boolean result = true;
         // check: same variable name , different type :: should not happen!
-        for (int j = 0; result && j < varDecls.size(); j++) {
-            Pair<String, String> pj = varDecls.get(j);
-            for (int jj = j + 1; result && jj < varDecls.size(); jj++) {
-                Pair<String, String> pjj = varDecls.get(jj);
-                if (pj.second.equals(pjj.second) && !pj.first.equals(pjj.first)) {
-                    if (!("Object".equals(pj.first)
-                            || "java.lang.Object".equals(pj.first))
-                            && !("Object".equals(pjj.first)
-                            || "java.lang.Object".equals(pjj.first))) {
-                        this.errorMsg = "Variable has multiple declaration : ".concat(pj.second);
+        for (int outerIndex = 0; result && outerIndex < varDeclPairs.size(); outerIndex++) {
+            Pair<String, String> outerPair = varDeclPairs.get(outerIndex);
+            for (int innerIndex = outerIndex + 1; result && innerIndex < varDeclPairs.size(); innerIndex++) {
+                Pair<String, String> innerPair = varDeclPairs.get(innerIndex);
+                if (outerPair.second.equals(innerPair.second) && !outerPair.first.equals(innerPair.first)) {
+                    if (!("Object".equals(outerPair.first)
+                            || "java.lang.Object".equals(outerPair.first))
+                            && !("Object".equals(innerPair.first)
+                            || "java.lang.Object".equals(innerPair.first))) {
+                        this.errorMsg = "Variable has multiple declaration : ".concat(outerPair.second);
                         result = false;
                     }
                 }
@@ -3443,64 +3761,64 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private boolean checkUsedVariables(
-            final AttrVariableTuple avt,
-            final List<Pair<String, String>> varDecls) {
+            final AttrVariableTuple attrVariableTuple,
+            final List<Pair<String, String>> varDeclPairs) {
         List<VarMember> used = new ArrayList<>(5);
         boolean result = true;
-        for (int i = 0; i < varDecls.size(); i++) {
-            final Pair<String, String> p = varDecls.get(i);
-            String typeName1 = p.first;
+        for (int index = 0; index < varDeclPairs.size(); index++) {
+            final Pair<String, String> varDeclPair = varDeclPairs.get(index);
+            String declaredTypeName = varDeclPair.first;
             boolean isClass1 = false;
-            final String className1 = isClassName(typeName1);
-            if (className1 != null) {
+            final String declaredClassName = isClassName(declaredTypeName);
+            if (declaredClassName != null) {
                 isClass1 = true;
             }
             boolean isClass2 = false;
-            String className2 = null;
-            String typeName2 = "";
-            final String varName = p.second;
-            VarMember varm = ((VarTuple) avt).getVarMemberAt(varName);
-            if (varm == null) {
-                className2 = isClassName(varName);
-                if (className2 != null) {
-                    typeName2 = className2;
+            String actualClassName = null;
+            String actualTypeName = "";
+            final String variableName = varDeclPair.second;
+            VarMember varMember = ((VarTuple) attrVariableTuple).getVarMemberAt(variableName);
+            if (varMember == null) {
+                actualClassName = isClassName(variableName);
+                if (actualClassName != null) {
+                    actualTypeName = actualClassName;
                 }
-            } else if (varm.getDeclaration() == null) {
-                this.errorMsg = "Variable: ".concat(varName).concat("  isn't declared!");
+            } else if (varMember.getDeclaration() == null) {
+                this.errorMsg = "Variable: ".concat(variableName).concat("  isn't declared!");
                 return false;
             } else {
-                typeName2 = varm.getDeclaration().getTypeName();
-                className2 = isClassName(typeName2);
+                actualTypeName = varMember.getDeclaration().getTypeName();
+                actualClassName = isClassName(actualTypeName);
             }
-            if (className2 != null) {
+            if (actualClassName != null) {
                 isClass2 = true;
             }
-            if (className1 != null && className2 != null) {
-                if (!className1.equals(className2)) {
-                    if (!className1.equals("java.lang.Object")
-                            && !className2.equals("java.lang.Object")) {
-                        this.errorMsg = "Variable: " + varName
+            if (declaredClassName != null && actualClassName != null) {
+                if (!declaredClassName.equals(actualClassName)) {
+                    if (!declaredClassName.equals("java.lang.Object")
+                            && !actualClassName.equals("java.lang.Object")) {
+                        this.errorMsg = "Variable: " + variableName
                                 + "  has wrong type." + "\nIt should be :  "
-                                + className1 + " .";
+                                + declaredClassName + " .";
                         return false;
                     }
-                } else if (!typeName1.equals(typeName2)) {
-                    final String packageName = className1.substring(0, className1.lastIndexOf("."));
-                    if (packageName.equals("java.lang") && varm != null) {
-                        varm.getDeclaration().setType(typeName1);
+                } else if (!declaredTypeName.equals(actualTypeName)) {
+                    final String packageName = declaredClassName.substring(0, declaredClassName.lastIndexOf("."));
+                    if (packageName.equals("java.lang") && varMember != null) {
+                        varMember.getDeclaration().setType(declaredTypeName);
                     } else {
-                        this.errorMsg = "Variable: " + varName
+                        this.errorMsg = "Variable: " + variableName
                                 + "  has wrong type." + "\nIt should be :  "
-                                + typeName1 + " .";
+                                + declaredTypeName + " .";
                         return false;
                     }
                 }
-            } else if (!isClass1 && !isClass2 && !typeName1.equals(typeName2)) {
-                this.errorMsg = "Variable: " + varName + "  has wrong type."
-                        + "\nIt should be :  " + typeName1 + " .";
+            } else if (!isClass1 && !isClass2 && !declaredTypeName.equals(actualTypeName)) {
+                this.errorMsg = "Variable: " + variableName + "  has wrong type."
+                        + "\nIt should be :  " + declaredTypeName + " .";
                 return false;
             }
-            used.add(varm);
+            used.add(varMember);
         }
         this.deleteUnusedVars(used);
         return result;
@@ -3697,11 +4015,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Prepares info about this rule: node, edges to preserve, change, delete,
-     * create; types which should be checked due to node resp. edge type
-     * multiplicity. These infos can be called by methods:
-     * getElementsToPreserve(), getElementsToChange(), getElementsToDelete(),
-     * getElementsToCreate(), getTypesWhichNeedMultiplicityCheck.
+     * Prepares info about this rule: node, edges to preserve, change, delete, create; types which should be checked due
+     * to node resp. edge type multiplicity. These infos can be called by methods: getElementsToPreserve(),
+     * getElementsToChange(), getElementsToDelete(), getElementsToCreate(), getTypesWhichNeedMultiplicityCheck.
      */
     public void prepareRuleInfo() {
         this.preserved = this.findElementsToPreserve();
@@ -3755,8 +4071,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	}
      */
     /**
-     * Return true if its left and right graphs are empty and there aren't any
-     * application conditions, otherwise - false.
+     * Return true if its left and right graphs are empty and there aren't any application conditions, otherwise -
+     * false.
      */
     public boolean isEmptyRule() {
         return (this.itsOrig.isEmpty()
@@ -3767,58 +4083,58 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public List<Type> getTypesOfLeftGraph() {
-        final List<Type> list = new ArrayList<>();
-        for (final Iterator<Node> en = getLeft().getNodesSet().iterator(); en.hasNext();) {
-            final Node o = en.next();
-            if (!list.contains(o.getType())) {
-                list.add(o.getType());
+        final List<Type> typeList = new ArrayList<>();
+        for (final Iterator<Node> nodeIter = getLeft().getNodesSet().iterator(); nodeIter.hasNext();) {
+            final Node currentNode = nodeIter.next();
+            if (!typeList.contains(currentNode.getType())) {
+                typeList.add(currentNode.getType());
             }
         }
-        for (final Iterator<Arc> en = getLeft().getArcsSet().iterator(); en.hasNext();) {
-            final Arc o = en.next();
-            if (!list.contains(o.getType())) {
-                list.add(o.getType());
+        for (final Iterator<Arc> arcIter = getLeft().getArcsSet().iterator(); arcIter.hasNext();) {
+            final Arc currentArc = arcIter.next();
+            if (!typeList.contains(currentArc.getType())) {
+                typeList.add(currentArc.getType());
             }
         }
-        return list;
+        return typeList;
     }
 
     public List<Type> getTypeOfObjectToDelete() {
-        final List<Type> list = new ArrayList<>();
-        for (final Iterator<Node> en = getLeft().getNodesSet().iterator(); en.hasNext();) {
-            final Node o = en.next();
-            if (getImage(o) == null
-                    && !list.contains(o.getType())) {
-                list.add(o.getType());
+        final List<Type> typeList = new ArrayList<>();
+        for (final Iterator<Node> nodeIter = getLeft().getNodesSet().iterator(); nodeIter.hasNext();) {
+            final Node currentNode = nodeIter.next();
+            if (getImage(currentNode) == null
+                    && !typeList.contains(currentNode.getType())) {
+                typeList.add(currentNode.getType());
             }
         }
-        for (final Iterator<Arc> en = getLeft().getArcsSet().iterator(); en.hasNext();) {
-            final Arc o = en.next();
-            if (getImage(o) == null
-                    && !list.contains(o.getType())) {
-                list.add(o.getType());
+        for (final Iterator<Arc> arcIter = getLeft().getArcsSet().iterator(); arcIter.hasNext();) {
+            final Arc currentArc = arcIter.next();
+            if (getImage(currentArc) == null
+                    && !typeList.contains(currentArc.getType())) {
+                typeList.add(currentArc.getType());
             }
         }
-        return list;
+        return typeList;
     }
 
     public List<Type> getTypeOfObjectToCreate() {
-        final List<Type> list = new ArrayList<>();
-        for (Iterator<Node> en = getRight().getNodesSet().iterator(); en.hasNext();) {
-            GraphObject o = en.next();
-            if (!getInverseImage(o).hasNext()
-                    && !list.contains(o.getType())) {
-                list.add(o.getType());
+        final List<Type> typeList = new ArrayList<>();
+        for (Iterator<Node> nodeIter = getRight().getNodesSet().iterator(); nodeIter.hasNext();) {
+            GraphObject currentObj = nodeIter.next();
+            if (!getInverseImage(currentObj).hasNext()
+                    && !typeList.contains(currentObj.getType())) {
+                typeList.add(currentObj.getType());
             }
         }
-        for (Iterator<Arc> en = getRight().getArcsSet().iterator(); en.hasNext();) {
-            GraphObject o = en.next();
-            if (!getInverseImage(o).hasNext()
-                    && !list.contains(o.getType())) {
-                list.add(o.getType());
+        for (Iterator<Arc> arcIter = getRight().getArcsSet().iterator(); arcIter.hasNext();) {
+            GraphObject currentObj = arcIter.next();
+            if (!getInverseImage(currentObj).hasNext()
+                    && !typeList.contains(currentObj.getType())) {
+                typeList.add(currentObj.getType());
             }
         }
-        return list;
+        return typeList;
     }
 
     /*
@@ -3835,45 +4151,45 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private List<String> findTypesWhichNeedMultiplicityCheck() {
-        final List<String> list = new ArrayList<>();
-        final List<GraphObject> list1 = new ArrayList<>();
-        list1.addAll(this.getElementsToCreate());
-        list1.addAll(this.getElementsToDelete());
-        for (int i = 0; i < list1.size(); i++) {
-            final GraphObject go = list1.get(i);
-            final String typekey = go.convertToKey();
-            if (!list.contains(typekey)) {
-                if (go.isNode()) {
-                    int min = go.getType().getSourceMin();
-                    int max = go.getType().getSourceMax();
+        final var typeKeyList = new ArrayList<String>();
+        final var graphObjList = new ArrayList<GraphObject>();
+        graphObjList.addAll(this.getElementsToCreate());
+        graphObjList.addAll(this.getElementsToDelete());
+        for (int index = 0; index < graphObjList.size(); index++) {
+            final GraphObject graphObj = graphObjList.get(index);
+            final String typeKey = graphObj.convertToKey();
+            if (!typeKeyList.contains(typeKey)) {
+                if (graphObj.isNode()) {
+                    int min = graphObj.getType().getSourceMin();
+                    int max = graphObj.getType().getSourceMax();
                     if (min > 0 || max > 0) {
-                        list.add(typekey);
-                        final List<Type> children = go.getType().getChildren();
-                        for (int ch = 0; ch < children.size(); ch++) {
-                            list.add(children.get(ch).convertToKey());
+                        typeKeyList.add(typeKey);
+                        final List<Type> children = graphObj.getType().getChildren();
+                        for (int childIndex = 0; childIndex < children.size(); childIndex++) {
+                            typeKeyList.add(children.get(childIndex).convertToKey());
                         }
                     }
                 } else {
-                    int srcMin = go.getType().getSourceMin(((Arc) go).getSource().getType(),
-                            ((Arc) go).getTarget().getType());
-                    int srcMax = go.getType().getSourceMax(((Arc) go).getSource().getType(),
-                            ((Arc) go).getTarget().getType());
-                    int tarMin = go.getType().getTargetMin(((Arc) go).getSource().getType(),
-                            ((Arc) go).getTarget().getType());
-                    int tarMax = go.getType().getTargetMax(((Arc) go).getSource().getType(),
-                            ((Arc) go).getTarget().getType());
+                    Arc arc = (Arc) graphObj;
+                    int srcMin = graphObj.getType().getSourceMin(arc.getSource().getType(),
+                            arc.getTarget().getType());
+                    int srcMax = graphObj.getType().getSourceMax(arc.getSource().getType(),
+                            arc.getTarget().getType());
+                    int tarMin = graphObj.getType().getTargetMin(arc.getSource().getType(),
+                            arc.getTarget().getType());
+                    int tarMax = graphObj.getType().getTargetMax(arc.getSource().getType(),
+                            arc.getTarget().getType());
                     if (srcMin > 0 || tarMin > 0 || srcMax > 0 || tarMax > 0) {
-                        list.add(typekey);
+                        typeKeyList.add(typeKey);
                     }
                 }
             }
         }
-        return list;
+        return typeKeyList;
     }
 
     /**
-     * Returns true if this rule will create new graph elements, otherwise -
-     * false.
+     * Returns true if this rule will create new graph elements, otherwise - false.
      */
     public boolean isCreating() {
         // LHS graph size > rule mapping size
@@ -3885,8 +4201,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true if this rule will delete some graph elements, otherwise -
-     * false.
+     * Returns true if this rule will delete some graph elements, otherwise - false.
      */
     public boolean isDeleting() {
         // LHS graph size > rule mapping size
@@ -3911,48 +4226,48 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true if rule is deleting on nodes and after deleting a
-     * dangling-edge problem may occurred.
+     * Checks if this rule may cause a dangling edge problem. Returns true if the rule is deleting nodes and after
+     * deleting a dangling-edge problem may occur.
      *
-     * Otherwise returns false.
+     * @return true if the rule may cause dangling edges, false otherwise
      */
     public boolean mayCauseDanglingEdge() {
-        final List<Node> delNodes = this.findNodesToDelete();
-        if (delNodes.isEmpty()) {
+        final List<Node> deletedNodes = this.findNodesToDelete();
+        if (deletedNodes.isEmpty()) {
             return false;
         }
         boolean result = false;
-        for (int i = 0; i < delNodes.size() && !result; i++) {
-            final Node n = delNodes.get(i);
-            final List<Arc> inheritedArcs = this.getTypeSet().getInheritedArcs(n.getType());
-            if (inheritedArcs.size() > 0) {
-                // TypeGraph exists and arcs at Node of type n.getType()
-                for (int j = 0; j < inheritedArcs.size() && !result; j++) {
-                    final Arc a = inheritedArcs.get(j);
-                    if (a.getSourceType().isParentOf(n.getType())) {
-                        int number = n.getNumberOfOutgoingArcsOfTypeToTargetType(a.getType(), a.getTarget().getType());
+        for (int nodeIndex = 0; nodeIndex < deletedNodes.size() && !result; nodeIndex++) {
+            final Node currentNode = deletedNodes.get(nodeIndex);
+            final List<Arc> inheritedArcs = this.getTypeSet().getInheritedArcs(currentNode.getType());
+            if (!inheritedArcs.isEmpty()) {
+                // TypeGraph exists and arcs at Node of type currentNode.getType()
+                for (int arcIndex = 0; arcIndex < inheritedArcs.size() && !result; arcIndex++) {
+                    final Arc currentArc = inheritedArcs.get(arcIndex);
+                    if (currentArc.getSourceType().isParentOf(currentNode.getType())) {
+                        int number = currentNode.getNumberOfOutgoingArcsOfTypeToTargetType(currentArc.getType(), currentArc.getTarget().getType());
                         if (number > 0) {
-                            int tarMax = a.getType().getTargetMax(a.getSource().getType(),
-                                    a.getTarget().getType());
+                            int tarMax = currentArc.getType().getTargetMax(currentArc.getSource().getType(),
+                                    currentArc.getTarget().getType());
                             if (tarMax != TypeSet.UNDEFINED
                                     && number != tarMax) {
                                 result = true;
                             }
-                        } else if (!this.hasNacWhichForbidsArc(a, n)) {
+                        } else if (!this.hasNacWhichForbidsArc(currentArc, currentNode)) {
                             result = true;
                         }
 //						else
 //							result = true;
-                    } else if (a.getTargetType().isParentOf(n.getType())) {
-                        int number = n.getNumberOfIncomingArcsOfTypeFromSourceType(a.getType(), a.getSource().getType());
+                    } else if (currentArc.getTargetType().isParentOf(currentNode.getType())) {
+                        int number = currentNode.getNumberOfIncomingArcsOfTypeFromSourceType(currentArc.getType(), currentArc.getSource().getType());
                         if (number > 0) {
-                            int srcMax = a.getType().getSourceMax(a.getSource().getType(),
-                                    a.getTarget().getType());
+                            int srcMax = currentArc.getType().getSourceMax(currentArc.getSource().getType(),
+                                    currentArc.getTarget().getType());
                             if (srcMax != TypeSet.UNDEFINED
                                     && number != srcMax) {
                                 result = true;
                             }
-                        } else if (!this.hasNacWhichForbidsArc(a, n)) {
+                        } else if (!this.hasNacWhichForbidsArc(currentArc, currentNode)) {
                             result = true;
                         }
 //						else
@@ -3965,20 +4280,20 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private boolean hasNacWhichForbidsArc(Arc typeArc, Node lhsNode) {
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            OrdinaryMorphism nac = this.itsNACs.get(i);
-            if (!nac.isEnabled()) {
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            OrdinaryMorphism negativeApplCond = this.itsNACs.get(index);
+            if (!negativeApplCond.isEnabled()) {
                 continue;
             }
-            Iterator<Arc> arcs = nac.getTarget().getArcsCollection().iterator();
-            while (arcs.hasNext()) {
-                Arc a = arcs.next();
-                if (!nac.getInverseImage(a).hasNext()
-                        && a.getType() == typeArc.getType()) {
-                    Node n = (Node) nac.getImage(lhsNode);
-                    if (n == a.getSource()) {
+            Iterator<Arc> arcIterator = negativeApplCond.getTarget().getArcsCollection().iterator();
+            while (arcIterator.hasNext()) {
+                Arc currentArc = arcIterator.next();
+                if (!negativeApplCond.getInverseImage(currentArc).hasNext()
+                        && currentArc.getType() == typeArc.getType()) {
+                    Node currentNode = (Node) negativeApplCond.getImage(lhsNode);
+                    if (currentNode == currentArc.getSource()) {
                         return true;
-                    } else if (n == a.getTarget()) {
+                    } else if (currentNode == currentArc.getTarget()) {
                         return true;
                     }
                 }
@@ -3989,8 +4304,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 
     public boolean isArcDeleting() {
         if (this.isDeleting) {
-            for (final Iterator<Arc> en = getLeft().getArcsSet().iterator(); en.hasNext();) {
-                if (getImage(en.next()) == null) {
+            for (final Iterator<Arc> arcIter = getLeft().getArcsSet().iterator(); arcIter.hasNext();) {
+                if (getImage(arcIter.next()) == null) {
                     return true;
                 }
             }
@@ -4003,11 +4318,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	 * and the specified source and target nodes.
 	 * The nodes must be contained in the LHS of this rule. 
      */
-    public boolean isArcDeleting(final Node src, final Type arct, final Node tar) {
-        if (this.itsOrig.getNodesSet().contains(src)
-                && this.itsOrig.getNodesSet().contains(tar)) {
-            for (final Iterator<Arc> en = src.getOutgoingArcs(arct, tar.getType()).iterator(); en.hasNext();) {
-                if (getImage(en.next()) == null) {
+    public boolean isArcDeleting(final Node source, final Type arcType, final Node target) {
+        if (this.itsOrig.getNodesSet().contains(source)
+                && this.itsOrig.getNodesSet().contains(target)) {
+            for (final Iterator<Arc> arcIter = source.getOutgoingArcs(arcType, target.getType()).iterator(); arcIter.hasNext();) {
+                if (getImage(arcIter.next()) == null) {
                     return true;
                 }
             }
@@ -4019,9 +4334,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	 * Checks whether this rule deletes the specified edge.
 	 * The edge must be contained in the LHS of this rule. 
      */
-    public boolean isArcDeleting(final Arc a) {
-        if (this.itsOrig.getArcsSet().contains(a)
-                && this.getImage(a) == null) {
+    public boolean isArcDeleting(final Arc arc) {
+        if (this.itsOrig.getArcsSet().contains(arc)
+                && this.getImage(arc) == null) {
             return true;
         }
         return false;
@@ -4032,18 +4347,18 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	 * and the specified source and target nodes.
 	 * The nodes must be contained in the LHS of this rule. 
      */
-    public boolean isArcCreating(final Node src, final Type arct, final Node tar) {
+    public boolean isArcCreating(final Node source, final Type arcType, final Node target) {
         if (this.isCreating
-                && this.itsOrig.getNodesSet().contains(src)
-                && this.itsOrig.getNodesSet().contains(tar)) {
-            for (final Iterator<Arc> en = this.itsImag.getArcsSet().iterator(); en.hasNext();) {
-                Arc a = en.next();
-                if (a.getType().compareTo(arct)
-                        && !this.getInverseImage(a).hasNext()) {
-                    List<GraphObject> inv1 = this.getInverseImageList(a.getSource());
-                    if (inv1.contains(src)) {
-                        List<GraphObject> inv2 = this.getInverseImageList(a.getTarget());
-                        if (inv2.contains(tar)) {
+                && this.itsOrig.getNodesSet().contains(source)
+                && this.itsOrig.getNodesSet().contains(target)) {
+            for (final Iterator<Arc> arcIter = this.itsImag.getArcsSet().iterator(); arcIter.hasNext();) {
+                Arc currentArc = arcIter.next();
+                if (currentArc.getType().compareTo(arcType)
+                        && !this.getInverseImage(currentArc).hasNext()) {
+                    List<GraphObject> inv1 = this.getInverseImageList(currentArc.getSource());
+                    if (inv1.contains(source)) {
+                        List<GraphObject> inv2 = this.getInverseImageList(currentArc.getTarget());
+                        if (inv2.contains(target)) {
                             return true;
                         }
                     }
@@ -4058,11 +4373,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	 * The edge must be contained in the RHS of this rule. 
 	 * The source and target nodes must be preserved by this rule. 
      */
-    public boolean isArcCreating(final Arc a) {
-        if (//this.itsImag.getArcsSet().contains(a) &&
-                !this.getInverseImage(a).hasNext()
-                && this.getInverseImage(a.getSource()).hasNext()
-                && this.getInverseImage(a.getTarget()).hasNext()) {
+    public boolean isArcCreating(final Arc currentArc) {
+        if (//this.itsImag.getArcsSet().contains(currentArc) &&
+                !this.getInverseImage(currentArc).hasNext()
+                && this.getInverseImage(currentArc.getSource()).hasNext()
+                && this.getInverseImage(currentArc.getTarget()).hasNext()) {
             return true;
         }
         return false;
@@ -4102,8 +4417,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns preserved elements which attributes should be changed. The key is
-     * an object of the LHS, the value - its image of the RHS.
+     * Returns preserved elements which attributes should be changed. The key is an object of the LHS, the value - its
+     * image of the RHS.
      */
     public Map<GraphObject, GraphObject> getElementsToChange() {
         if (this.changedPreserved == null
@@ -4114,76 +4429,75 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     private List<GraphObject> findElementsToPreserve() {
-        List<GraphObject> vec = new ArrayList<>();
-        vec.addAll(this.itsDomObjects);
-        return vec;
+        var resultList = new ArrayList<GraphObject>();
+        resultList.addAll(this.itsDomObjects);
+        return resultList;
     }
 
     private List<GraphObject> findElementsToCreate() {
-        List<GraphObject> vec = new ArrayList<>();
-        vec.addAll(this.findNodesToCreate());
-        vec.addAll(this.findArcsToCreate());
-        this.isCreating = !vec.isEmpty();
-        return vec;
+        var resultList = new ArrayList<GraphObject>();
+        resultList.addAll(this.findNodesToCreate());
+        resultList.addAll(this.findArcsToCreate());
+        this.isCreating = !resultList.isEmpty();
+        return resultList;
     }
 
     private List<Node> findNodesToCreate() {
-        List<Node> vec = new ArrayList<>();
-        for (Iterator<Node> en = getRight().getNodesSet().iterator(); en.hasNext();) {
-            Node o = en.next();
-            if (!getInverseImage(o).hasNext()) {
-                vec.add(o);
+        var resultList = new ArrayList<Node>();
+        for (Iterator<Node> nodeIter = getRight().getNodesSet().iterator(); nodeIter.hasNext();) {
+            Node currentNode = nodeIter.next();
+            if (!getInverseImage(currentNode).hasNext()) {
+                resultList.add(currentNode);
             }
         }
-        return vec;
+        return resultList;
     }
 
     private List<Arc> findArcsToCreate() {
-        List<Arc> vec = new ArrayList<>();
-        for (Iterator<Arc> en = getRight().getArcsSet().iterator(); en.hasNext();) {
-            Arc o = en.next();
-            if (!getInverseImage(o).hasNext()) {
-                vec.add(o);
+        var resultList = new ArrayList<Arc>();
+        for (Iterator<Arc> arcIter = getRight().getArcsSet().iterator(); arcIter.hasNext();) {
+            Arc currentArc = arcIter.next();
+            if (!getInverseImage(currentArc).hasNext()) {
+                resultList.add(currentArc);
             }
         }
-        return vec;
+        return resultList;
     }
 
     private List<GraphObject> findElementsToDelete() {
-        final List<GraphObject> vec = new ArrayList<>();
-        vec.addAll(findNodesToDelete());
-        vec.addAll(findArcsToDelete());
-        return vec;
+        final var resultList = new ArrayList<GraphObject>();
+        resultList.addAll(findNodesToDelete());
+        resultList.addAll(findArcsToDelete());
+        return resultList;
     }
 
     private List<Node> findNodesToDelete() {
-        final List<Node> vec = new ArrayList<>();
-        for (final Iterator<Node> en = getLeft().getNodesSet().iterator(); en.hasNext();) {
-            final Node o = en.next();
-            if (getImage(o) == null) {
-                vec.add(o);
+        final var resultList = new ArrayList<Node>();
+        for (final Iterator<Node> nodeIter = getLeft().getNodesSet().iterator(); nodeIter.hasNext();) {
+            final Node currentNode = nodeIter.next();
+            if (getImage(currentNode) == null) {
+                resultList.add(currentNode);
             }
         }
-        this.isDeleting = !vec.isEmpty();
+        this.isDeleting = !resultList.isEmpty();
         this.isNodeDeleting = this.isDeleting;
-        return vec;
+        return resultList;
     }
 
     private List<Arc> findArcsToDelete() {
-        final List<Arc> vec = new ArrayList<>();
-        for (final Iterator<Arc> en = getLeft().getArcsSet().iterator(); en.hasNext();) {
-            final Arc o = en.next();
-            if (getImage(o) == null) {
-                vec.add(o);
+        final var resultList = new ArrayList<Arc>();
+        for (final Iterator<Arc> arcIter = getLeft().getArcsSet().iterator(); arcIter.hasNext();) {
+            final Arc currentArc = arcIter.next();
+            if (getImage(currentArc) == null) {
+                resultList.add(currentArc);
             }
         }
-        this.isDeleting = this.isDeleting || !vec.isEmpty();
-        return vec;
+        this.isDeleting = this.isDeleting || !resultList.isEmpty();
+        return resultList;
     }
 
     /**
-     * Returns true if this rule will change some attributes of the graph
-     * elements, otherwise - false.
+     * Returns true if this rule will change some attributes of the graph elements, otherwise - false.
      */
     public boolean isChanging() {
         for (int i = 0; i < this.itsDomObjects.size(); i++) {
@@ -4201,32 +4515,32 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	 * of the LHS, the value is its image object of the RHS
      */
     private Map<GraphObject, GraphObject> findElementsToChange() {
-        Map<GraphObject, GraphObject> set = new HashMap<>();
-        for (int i = 0; i < this.itsDomObjects.size(); i++) {
-            GraphObject go = this.itsDomObjects.get(i);
-            if (isChangingAttribute(go, getImage(go))) {
-                set.put(go, getImage(go));
+        var resultMap = new HashMap<GraphObject, GraphObject>();
+        for (int index = 0; index < this.itsDomObjects.size(); index++) {
+            GraphObject graphObj = this.itsDomObjects.get(index);
+            if (isChangingAttribute(graphObj, getImage(graphObj))) {
+                resultMap.put(graphObj, getImage(graphObj));
             }
         }
-        this.isChanging = !set.isEmpty();
-        return set;
+        this.isChanging = !resultMap.isEmpty();
+        return resultMap;
     }
 
-    private boolean isChangingAttribute(GraphObject obj,
-            GraphObject img) {
-        if (img.getAttribute() == null
-                || img.getAttribute().getNumberOfEntries() == 0) {
+    private boolean isChangingAttribute(GraphObject sourceObj,
+            GraphObject targetObj) {
+        if (targetObj.getAttribute() == null
+                || targetObj.getAttribute().getNumberOfEntries() == 0) {
             return false;
         }
-        ValueTuple vtObj = (ValueTuple) obj.getAttribute();
-        ValueTuple vtImg = (ValueTuple) img.getAttribute();
-        for (int i = 0; i < vtObj.getNumberOfEntries(); i++) {
-            ValueMember vmObj = vtObj.getValueMemberAt(i);
-            ValueMember vmImg = vtImg.getValueMemberAt(vmObj.getName());
-            if (vmImg != null && vmImg.isSet()) {
-                if (!vmObj.isSet()) {
+        ValueTuple sourceValueTuple = (ValueTuple) sourceObj.getAttribute();
+        ValueTuple targetValueTuple = (ValueTuple) targetObj.getAttribute();
+        for (int index = 0; index < sourceValueTuple.getNumberOfEntries(); index++) {
+            ValueMember sourceValueMem = sourceValueTuple.getValueMemberAt(index);
+            ValueMember targetValueMem = targetValueTuple.getValueMemberAt(sourceValueMem.getName());
+            if (targetValueMem != null && targetValueMem.isSet()) {
+                if (!sourceValueMem.isSet()) {
                     return true;
-                } else if (!vmImg.getExprAsText().equals(vmObj.getExprAsText())) {
+                } else if (!targetValueMem.getExprAsText().equals(sourceValueMem.getExprAsText())) {
                     return true;
                 }
             }
@@ -4234,52 +4548,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return false;
     }
 
-    /*
-	 * protected boolean differentVariablesUsed(Graph g, Enumeration nacs) {
-	 * AttrContext ac = getAttrContext(); VarTuple avt = (VarTuple)
-	 * ac.getVariables(); Map<VarMember,Boolean> used = new Map<VarMember,Boolean>(avt.getSize());
-	 * for (int i = 0; i < avt.getSize(); i++) { VarMember var =
-	 * avt.getVarMemberAt(i); used.put(var, Boolean.valueOf(false)); } Enumeration e =
-	 * g.getElements(); while (nacs.hasNext()) { used = new Map<VarMember,Boolean>(avt.getSize());
-	 * for (int i = 0; i < avt.getSize(); i++) { VarMember var =
-	 * avt.getVarMemberAt(i); used.put(var, Boolean.valueOf(false)); }
-	 * OrdinaryMorphism m = (OrdinaryMorphism) nacs.next(); e =
-	 * m.getTarget().getElements(); while (e.hasNext()) { GraphObject o =
-	 * (GraphObject) e.next(); if(o.getAttribute() == null) continue;
-	 * AttrInstance attr = o.getAttribute(); ValueTuple vt = (ValueTuple) attr;
-	 * if (m.getInverseImage(o).hasNext()) { GraphObject orig =
-	 * (GraphObject) m.getInverseImage(o).next(); ValueTuple vtOrig =
-	 * (ValueTuple) orig.getAttribute(); for (int k = 0; k < vt.getSize(); k++) {
-	 * ValueMember vm = vt.getValueMemberAt(k); ValueMember vmOrig =
-	 * vtOrig.getValueMemberAt(k); if (vmOrig.isSet() && vm.isSet()) { if
-	 * (vmOrig.getExpr().isVariable() && vm.getExpr().isVariable()) { //
-	 * System.out.println(vm.getExpr()); if
-	 * (!vmOrig.getExprAsText().equals(vm.getExprAsText())) return false; } } } } } }
-	 * return true; }
-	 * 
-	 * 
-	 * protected boolean areSameVariablesUsed() { AttrContext ac =
-	 * getAttrContext(); VarTuple avt = (VarTuple) ac.getVariables(); Map<VarMember,Boolean>
-	 * used = new Map<VarMember,Boolean>(avt.getSize()); for (int i = 0;
-	 * i < avt.getSize(); i++) { VarMember var = avt.getVarMemberAt(i);
-	 * used.put(var, Boolean.valueOf(false)); } List<VarMember> result = new
-	 * List<VarMember>(); Enumeration e = getLeft().getElements(); while
-	 * (e.hasNext()) { GraphObject o = (GraphObject) e.next();
-	 * if(o.getAttribute() == null) continue; AttrInstance attr =
-	 * o.getAttribute(); ValueTuple vt = (ValueTuple) attr; for (int k = 0; k <
-	 * vt.getSize(); k++) { ValueMember vm = vt.getValueMemberAt(k); if
-	 * (vm.isSet()) { if (vm.getExpr().isVariable()) { //
-	 * System.out.println(vm.getExpr()); VarMember var =
-	 * avt.getVarMemberAt(vm.getExprAsText()); if (((Boolean)
-	 * used.get(var)).booleanValue() == false) used.put(var, Boolean.valueOf(true));
-	 * else { if (!result.contains(var)) result.add(var); } } } } } if
-	 * (result.size() != 0) return true; else return false; }
-     */
     /**
-     * Restores variable declarations of the RHS, NACs and PACs. The reason is:
-     * the variables declarations can be lost after a step. Before the next
-     * application of this rule can be done the lost variable declarations have
-     * to be restored. This method is called during Critical Pair Analysis.
+     * Restores variable declarations of the RHS, NACs and PACs. The reason is: the variables declarations can be lost
+     * after a step. Before the next application of this rule can be done the lost variable declarations have to be
+     * restored. This method is called during Critical Pair Analysis.
      */
     protected void restoreVariableDeclaration() {
         VarTuple vart = (VarTuple) getAttrContext().getVariables();
@@ -4303,9 +4575,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
         // check vars of nested ACs
         for (int l = 0; l < this.itsACs.size(); l++) {
-            OrdinaryMorphism ac = this.itsACs.get(l);
-            if (ac.getImage().isAttributed()) {
-                this.restoreVarDecl(ac.getImage(), vart);
+            OrdinaryMorphism applicationCondition = this.itsACs.get(l);
+            if (applicationCondition.getImage().isAttributed()) {
+                this.restoreVarDecl(applicationCondition.getImage(), vart);
             }
         }
     }
@@ -4343,38 +4615,38 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     @Override
     public ArrayMovie<Type> getUsedTypes() {
         // get types of LHS and RHS
-        final ArrayMovie<Type> vec = super.getUsedTypes();
+        final ArrayMovie<Type> typeVec = super.getUsedTypes();
         // add types of NACs
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            OrdinaryMorphism om = this.itsNACs.get(i);
-            addUsedTypes(om.getTarget(), vec);
+        for (int index = 0; index < this.itsNACs.size(); index++) {
+            OrdinaryMorphism ordMorph = this.itsNACs.get(index);
+            addUsedTypes(ordMorph.getTarget(), typeVec);
         }
         // add types of PACs
-        for (int i = 0; i < this.itsPACs.size(); i++) {
-            OrdinaryMorphism om = this.itsPACs.get(i);
-            addUsedTypes(om.getTarget(), vec);
+        for (int index = 0; index < this.itsPACs.size(); index++) {
+            OrdinaryMorphism ordMorph = this.itsPACs.get(index);
+            addUsedTypes(ordMorph.getTarget(), typeVec);
         }
         // add types of nested ACs
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            OrdinaryMorphism om = this.itsACs.get(i);
-            addUsedTypes(om.getTarget(), vec);
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            OrdinaryMorphism ordMorph = this.itsACs.get(index);
+            addUsedTypes(ordMorph.getTarget(), typeVec);
         }
-        return vec;
+        return typeVec;
     }
 
-    private void addUsedTypes(final Graph g, final ArrayMovie<Type> vec) {
-        Iterator<Node> nodes = g.getNodesSet().iterator();
+    private void addUsedTypes(final Graph graph, final ArrayMovie<Type> typeVec) {
+        Iterator<Node> nodes = graph.getNodesSet().iterator();
         while (nodes.hasNext()) {
-            GraphObject o = nodes.next();
-            if (!vec.contains(o.getType())) {
-                vec.add(o.getType());
+            GraphObject currentObj = nodes.next();
+            if (!typeVec.contains(currentObj.getType())) {
+                typeVec.add(currentObj.getType());
             }
         }
-        Iterator<Arc> arcs = g.getArcsSet().iterator();
+        Iterator<Arc> arcs = graph.getArcsSet().iterator();
         while (arcs.hasNext()) {
-            GraphObject o = arcs.next();
-            if (!vec.contains(o.getType())) {
-                vec.add(o.getType());
+            GraphObject currentObj = arcs.next();
+            if (!typeVec.contains(currentObj.getType())) {
+                typeVec.add(currentObj.getType());
             }
         }
     }
@@ -4389,8 +4661,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true if this rule can make a match basically. It works for
-     * INJECTIVE matching, only.
+     * Returns true if this rule can make a match basically. It works for INJECTIVE matching, only.
      */
     public boolean canMatch(Graph g, MorphCompletionStrategy strategy) {
         // check graph size if injective morphism
@@ -4445,40 +4716,37 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Allows to define the CSP solver has to do next match completion starting
-     * always by first CSP variable.<br>
-     * This works for parallel match only. The method
-     * <code>setParallelMatchingEnabled(true)</code> should be called before.
+     * Allows to define the CSP solver has to do next match completion starting always by first CSP variable. This works
+     * for parallel match only. The method <code>setParallelMatchingEnabled(true)</code> should be called before.
      */
     public void setStartParallelMatchingByFirst(boolean b) {
         this.startParallelMatchByFirstCSPVar = b;
     }
 
     /**
-     * Set value of the input parameter of its attribute context. The specified
-     * parameters contain: String - is a name of an input parameter, first
-     * Object of a List - is the value, second Object of a List - is the type of
-     * this input parameter.
+     * Set value of the input parameter of its attribute context. The specified parameters contain: String - is a name
+     * of an input parameter, first Object of a List - is the value, second Object of a List - is the type of this input
+     * parameter.
      */
     public void setInputParameters(HashMap<String, List<Object>> parameters) {
-        VarTuple var = (VarTuple) getAttrContext().getVariables();
-        int j = 0;
-        for (int i = 0; i < var.getNumberOfEntries(); i++) {
-            VarMember varm = var.getVarMemberAt(i);
-            if (varm.isInputParameter()) {
-                List<Object> valuePair = parameters.get(varm.getName());
+        VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
+        int paramCount = 0;
+        for (int index = 0; index < varTuple.getNumberOfEntries(); index++) {
+            VarMember varMem = varTuple.getVarMemberAt(index);
+            if (varMem.isInputParameter()) {
+                List<Object> valuePair = parameters.get(varMem.getName());
                 Object value = valuePair.get(0);
                 String type = (String) valuePair.get(1);
                 if (type.equals("int") || type.equals("boolean")
                         || type.equals("float") || type.equals("double")
                         || type.equals("short") || type.equals("long")) {
-                    varm.setExprAsEvaluatedText(value.toString());
+                    varMem.setExprAsEvaluatedText(value.toString());
                 } else {
-                    varm.setExprAsObject(value);
+                    varMem.setExprAsObject(value);
                 }
-                j++;
+                paramCount++;
             }
-            if (j > parameters.size()) {
+            if (paramCount > parameters.size()) {
                 break;
             }
         }
@@ -4488,70 +4756,70 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         if (this.itsMatch == null) {
             return false;
         }
-        if (this.itsACs.size() == 0) {
+        if (this.itsACs.isEmpty()) {
             return true;
         }
-        int n = this.itsACs.size();
-        final List<Evaluable> vars = new ArrayList<>(n);
-        String tmp = "";
-        int indx = -1;
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (ac.isEnabled()) {
-                indx++;
-                ac.setRelatedMorphism(this.itsMatch);
-                vars.add(ac);
-                if (indx == 0) {
+        int acCount = this.itsACs.size();
+        final List<Evaluable> evalList = new ArrayList<>(acCount);
+        String formulaStr = "";
+        int enabledIndex = -1;
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            NestedApplCond nestedApplCond = (NestedApplCond) this.itsACs.get(index);
+            if (nestedApplCond.isEnabled()) {
+                enabledIndex++;
+                nestedApplCond.setRelatedMorphism(this.itsMatch);
+                evalList.add(nestedApplCond);
+                if (enabledIndex == 0) {
                     if (this.formStr.equals("false")) {
-                        tmp = tmp.concat("!".concat(String.valueOf(vars.size())));
+                        formulaStr = formulaStr.concat("!".concat(String.valueOf(evalList.size())));
                     } else {
-                        tmp = tmp.concat(String.valueOf(vars.size()));
+                        formulaStr = formulaStr.concat(String.valueOf(evalList.size()));
                     }
                 } else {
                     if (this.formStr.equals("false")) {
-                        tmp = tmp.concat("&!").concat(String.valueOf(vars.size()));
+                        formulaStr = formulaStr.concat("&!").concat(String.valueOf(evalList.size()));
                     } else {
-                        tmp = tmp.concat("&").concat(String.valueOf(vars.size()));
+                        formulaStr = formulaStr.concat("&").concat(String.valueOf(evalList.size()));
                     }
                 }
             }
         }
-//		System.out.println("Test formula of (nested) appl conds:  " + tmp);
-        boolean res = this.itsFormula.setFormula(vars, tmp)
+//		System.out.println("Test formula of (nested) appl conds:  " + formulaStr);
+        boolean result = this.itsFormula.setFormula(evalList, formulaStr)
                 && this.itsFormula.eval(this.itsMatch.getImage());
-        if (!res) {
-            this.itsMatch.setErrorMsg("Formula:  " + tmp + "  is violated!");
+        if (!result) {
+            this.itsMatch.setErrorMsg("Formula:  " + formulaStr + "  is violated!");
         }
-        return res;
+        return result;
     }
 
     public boolean setDefaultFormulaTrue() {
-        if (this.itsACs.size() == 0) {
+        if (this.itsACs.isEmpty()) {
             this.formStr = "true";
             this.formReadStr = "true";
             return true;
         }
-        final List<Evaluable> vars = new ArrayList<>(this.itsACs.size());
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (ac.isEnabled()) {
-                vars.add(ac);
+        final List<Evaluable> evalList = new ArrayList<>(this.itsACs.size());
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            NestedApplCond nestedApplCond = (NestedApplCond) this.itsACs.get(index);
+            if (nestedApplCond.isEnabled()) {
+                evalList.add(nestedApplCond);
             }
         }
-        String tmp = "";
-        for (int i = 0; i < vars.size(); i++) {
-            String tmp1 = (i == 0) ? tmp.concat(String.valueOf(i + 1))
-                    : tmp.concat("&").concat(String.valueOf(i + 1));
-            tmp = tmp1;
+        String formulaStr = "";
+        for (int index = 0; index < evalList.size(); index++) {
+            String tempStr = (index == 0) ? formulaStr.concat(String.valueOf(index + 1))
+                    : formulaStr.concat("&").concat(String.valueOf(index + 1));
+            formulaStr = tempStr;
         }
-        if ("".equals(tmp)) {
+        if ("".equals(formulaStr)) {
             this.formStr = "true";
             this.formReadStr = "true";
             return true;
         }
-        if (this.itsFormula.setFormula(vars, tmp)) {
-            this.formStr = this.itsFormula.getAsString(vars);
-            this.formReadStr = this.itsFormula.getAsString(vars, this.getNameOfEnabledACs());
+        if (this.itsFormula.setFormula(evalList, formulaStr)) {
+            this.formStr = this.itsFormula.getAsString(evalList);
+            this.formReadStr = this.itsFormula.getAsString(evalList, this.getNameOfEnabledACs());
 //			System.out.println(this.formReadStr);
 //			this.setTextualComment("Formula: ".concat(this.formReadStr));
             return true;
@@ -4560,34 +4828,34 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public boolean setDefaultFormulaFalse() {
-        if (this.itsACs.size() == 0) {
+        if (this.itsACs.isEmpty()) {
             this.formStr = "true";
             this.formReadStr = "true";
             return true;
         }
-        final List<Evaluable> vars = new ArrayList<>(this.itsACs.size());
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (ac.isEnabled()) {
-                vars.add(ac);
+        final List<Evaluable> evalList = new ArrayList<>(this.itsACs.size());
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            NestedApplCond nestedApplCond = (NestedApplCond) this.itsACs.get(index);
+            if (nestedApplCond.isEnabled()) {
+                evalList.add(nestedApplCond);
             }
         }
-        String tmp = "";
-        for (int i = 0; i < vars.size(); i++) {
-            String tmp1 = (i == 0) ? tmp.concat(String.valueOf(i + 1))
-                    : tmp.concat("&").concat(String.valueOf(i + 1));
-            tmp = tmp1;
+        String formulaStr = "";
+        for (int index = 0; index < evalList.size(); index++) {
+            String tempStr = (index == 0) ? formulaStr.concat(String.valueOf(index + 1))
+                    : formulaStr.concat("&").concat(String.valueOf(index + 1));
+            formulaStr = tempStr;
         }
-        if ("".equals(tmp)) {
+        if ("".equals(formulaStr)) {
             this.formStr = "true";
             this.formReadStr = "true";
             return true;
         } else {
-            tmp = "!(".concat(tmp).concat(")");
+            formulaStr = "!(".concat(formulaStr).concat(")");
         }
-        if (this.itsFormula.setFormula(vars, tmp)) {
-            this.formStr = this.itsFormula.getAsString(vars);
-            this.formReadStr = this.itsFormula.getAsString(vars, this.getNameOfEnabledACs());
+        if (this.itsFormula.setFormula(evalList, formulaStr)) {
+            this.formStr = this.itsFormula.getAsString(evalList);
+            this.formReadStr = this.itsFormula.getAsString(evalList, this.getNameOfEnabledACs());
 //			System.out.println(this.formReadStr);
 //			this.setTextualComment("Formula: ".concat(this.formReadStr));
             return true;
@@ -4598,10 +4866,10 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     public boolean evalFormula() {
         boolean result = true;
         if (this.itsMatch != null && this.itsACs.size() != 0) {
-            for (int i = 0; i < this.itsACs.size(); i++) {
-                NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-                if (ac.isEnabled()) {
-                    ac.setRelatedMorphism(this.itsMatch);
+            for (int index = 0; index < this.itsACs.size(); index++) {
+                NestedApplCond nestedApplCond = (NestedApplCond) this.itsACs.get(index);
+                if (nestedApplCond.isEnabled()) {
+                    nestedApplCond.setRelatedMorphism(this.itsMatch);
                 }
             }
             if (this.formStr.equals("true")) {
@@ -4620,57 +4888,56 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
     }
 
-    public void setFormula(Formula f) {
-//		this.itsFormula = f;
+    public void setFormula(Formula formula) {
+//		this.itsFormula = formula;
 //		this.formulaStr = this.itsFormula.getAsString(this.getEnabledGeneralACsAsEvaluable());
 //		this.setTextualComment("Formula: ".concat(this.formulaStr));
-        this.setFormula(f.getAsString(this.getEnabledGeneralACsAsEvaluable()), this.getEnabledACs());
+        this.setFormula(formula.getAsString(this.getEnabledGeneralACsAsEvaluable()), this.getEnabledACs());
     }
 
     /**
-     * Set a boolean formula represented by the specified bnf string above
-     * nested application conditions.
+     * Set a boolean formula represented by the specified bnf string above nested application conditions.
      *
-     * @param bnf
+     * @param bnfFormula the boolean formula string to set
      */
-    public boolean setFormula(String bnf) {
+    public boolean setFormula(String bnfFormula) {
 //		final List<NestedApplCond> vars = new List<NestedApplCond>(this.itsACs.size());
 //		for (int i=0; i<this.itsACs.size(); i++) {	
 //			vars.add((NestedApplCond) this.itsACs.get(i));
 //		}		
-        return this.setFormula(bnf, this.getEnabledACs());
+        return this.setFormula(bnfFormula, this.getEnabledACs());
     }
 
     /**
-     * Set a boolean formula represented by the specified bnf string above
-     * nested application conditions.
+     * Set a boolean formula represented by the specified bnf string above nested application conditions.
      *
-     * @param bnf
+     * @param bnfFormula the boolean formula string to set
+     * @param nestedApplCondList the list of nested application conditions
      */
-    public boolean setFormula(String bnf, final List<NestedApplCond> list) {
-        if (bnf.equals("true")) {
-//			this.formStr = bnf;
-//			this.formReadStr = bnf;
+    public boolean setFormula(String bnfFormula, final List<NestedApplCond> nestedApplCondList) {
+        if (bnfFormula.equals("true")) {
+//			this.formStr = bnfFormula;
+//			this.formReadStr = bnfFormula;
 //			return true;
             return this.setDefaultFormulaTrue();
-        } else if (bnf.equals("false")) {
+        } else if (bnfFormula.equals("false")) {
             return this.setDefaultFormulaFalse();
         }
-        final List<Evaluable> vars = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            NestedApplCond ac = list.get(i);
-            if (ac.isEnabled()) {
-                vars.add(ac);
+        final List<Evaluable> evalList = new ArrayList<>();
+        for (int index = 0; index < nestedApplCondList.size(); index++) {
+            NestedApplCond nestedApplCond = nestedApplCondList.get(index);
+            if (nestedApplCond.isEnabled()) {
+                evalList.add(nestedApplCond);
             }
         }
-        if (vars.isEmpty()) {
+        if (evalList.isEmpty()) {
             this.formStr = "true";
             this.formReadStr = "true";
             return true;
         }
-        if (this.itsFormula.setFormula(vars, bnf)) {
-            this.formStr = this.itsFormula.getAsString(vars);
-            this.formReadStr = this.itsFormula.getAsString(vars, this.getNameOfEnabledACs());
+        if (this.itsFormula.setFormula(evalList, bnfFormula)) {
+            this.formStr = this.itsFormula.getAsString(evalList);
+            this.formReadStr = this.itsFormula.getAsString(evalList, this.getNameOfEnabledACs());
 //			System.out.println(this.formReadStr);
             this.setTextualComment("Formula: ".concat(this.formReadStr));
             return true;
@@ -4694,18 +4961,16 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the formula string as internal represantation like this:
-     * (1&2).>br> This method shoud be used for all actions relationg to Formula
-     * objects.
+     * Returns the formula string as internal represantation like this: (1&2).>br> This method shoud be used for all
+     * actions relationg to Formula objects.
      */
     public String getFormulaStr() {
         return this.formStr;
     }
 
     /**
-     * Returns the formula string as readable represantation like this: (nameOf1
-     * & nameOf2).<br>
-     * This method shoud be used for messages.
+     * Returns the formula string as readable representation like this: (nameOf1 & nameOf2). This method should be used
+     * for messages.
      */
     public String getFormulaText() {
         return this.formReadStr;
@@ -4722,8 +4987,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         if (checkBefore) {
             this.hasEnabledGACs = false;
             for (int i = 0; i < this.itsACs.size(); i++) {
-                NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-                if (ac.isEnabled()) {
+                NestedApplCond applicationCondition = (NestedApplCond) this.itsACs.get(i);
+                if (applicationCondition.isEnabled()) {
                     this.hasEnabledGACs = true;
                     break;
                 }
@@ -4738,57 +5003,57 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     public List<String> getNameOfEnabledACs() {
         final List<String> vars = new ArrayList<>();
         for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (ac.isEnabled()) {
-                vars.add(ac.getName());
+            NestedApplCond applicationCondition = (NestedApplCond) this.itsACs.get(i);
+            if (applicationCondition.isEnabled()) {
+                vars.add(applicationCondition.getName());
             }
         }
         return vars;
     }
 
     /**
-     * Returns a list with names of enabled general application conditions and
-     * its nested ACs inclusively.
+     * Returns a list with names of enabled general application conditions and its nested ACs inclusively.
      */
     public List<String> getNameOfEnabledNestedACs() {
         final List<String> vars = new ArrayList<>();
         for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            if (ac.isEnabled()) {
-                vars.add(ac.getName());
+            NestedApplCond applicationCondition = (NestedApplCond) this.itsACs.get(i);
+            if (applicationCondition.isEnabled()) {
+                vars.add(applicationCondition.getName());
             }
-            vars.addAll(ac.getNameOfEnabledNestedACs());
+            vars.addAll(applicationCondition.getNameOfEnabledNestedACs());
         }
         return vars;
     }
 
     /**
-     * Returns a list with names of all general application conditions and its
-     * nested ACs inclusively.
+     * Returns a list with names of all general application conditions and its nested ACs inclusively.
      */
     public List<String> getNameOfNestedACs() {
         final List<String> vars = new ArrayList<>();
         for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond ac = (NestedApplCond) this.itsACs.get(i);
-            vars.add(ac.getName());
-            vars.addAll(ac.getNameOfEnabledNestedACs());
+            NestedApplCond applicationCondition = (NestedApplCond) this.itsACs.get(i);
+            vars.add(applicationCondition.getName());
+            vars.addAll(applicationCondition.getNameOfEnabledNestedACs());
         }
         return vars;
     }
 
     /**
-     * Makes the minimal rule from the given rule. A minimal rule comprises the
-     * effects of a given rule in a minimal context.
+     * Makes the minimal rule from the given rule.A minimal rule comprises the effects of a given rule in a minimal
+     * context.
+     *
+     * @return
      */
     public Rule getMinimalRule() {
         return BaseFactory.theBaseFactory.makeMinimalOfRule(this);
     }
 
     /**
-     * Returns an inverse construction of this rule.<br>
-     * This rule has to be injective, otherwise returns null.<br>
-     * <br>
-     * Note: This method is mainly used during critical pair analysis.
+     * Returns an inverse construction of this rule.This rule has to be injective, otherwise returns null. Note: This
+     * method is mainly used during critical pair analysis.
+     *
+     * @return
      */
     public InverseRuleConstructData getInverseConstructData() {
         if (this.isInjective()) {
@@ -4801,9 +5066,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * This method does not destroy the Rule and OrdinaryMorphism instances of
-     * the inverse construction. They must be disposed by the user object
-     * explicitly. The local pair references set to null, only.
+     * This method does not destroy the Rule and OrdinaryMorphism instances of the inverse construction. They must be
+     * disposed by the user object explicitly. The local pair references set to null, only.
      */
     public void disposeInverseConstruct() {
         if (this.invConstruct != null) {
@@ -4813,8 +5077,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Destroys the Rule and OrdinaryMorphism instances of the inverse
-     * construction. The local pair references set to null.
+     * Destroys the Rule and OrdinaryMorphism instances of the inverse construction. The local pair references set to
+     * null.
      */
     public void destroyInverseConstruct() {
         if (this.invConstruct != null) {
@@ -4836,61 +5100,61 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     public String getSignatur() {
-        VarTuple vars = (VarTuple) this.getAttrContext().getVariables();
-        String s = this.getName().concat("(");
-        String s1 = "";
-        ArrayMovieInt order = vars.getSignaturOrder();
-        for (int i = 0; i < order.size(); i++) {
-            VarMember m = (VarMember) vars.getMemberAt(order.get(i));
-            String nt = m.getName().concat(":").concat(m.getDeclaration().getTypeName());
-            s1 = s1.concat(nt);
-            if (i < (order.size() - 1)) {
-                s1 = s1.concat(", ");
+        VarTuple varTuple = (VarTuple) this.getAttrContext().getVariables();
+        String signatureStr = this.getName().concat("(");
+        String inParamsStr = "";
+        ArrayMovieInt order = varTuple.getSignaturOrder();
+        for (int index = 0; index < order.size(); index++) {
+            VarMember varMem = (VarMember) varTuple.getMemberAt(order.get(index));
+            String nameType = varMem.getName().concat(":").concat(varMem.getDeclaration().getTypeName());
+            inParamsStr = inParamsStr.concat(nameType);
+            if (index < (order.size() - 1)) {
+                inParamsStr = inParamsStr.concat(", ");
             }
         }
-        String s2 = "";
-        for (int i = 0; i < vars.getSize(); i++) {
-            VarMember m = (VarMember) vars.getMemberAt(i);
-            if (m.isOutputParameter()) {
-                if (!s1.isEmpty()) {
-                    s2 = s2.concat(", ");
+        String outParamsStr = "";
+        for (int index = 0; index < varTuple.getSize(); index++) {
+            VarMember varMem = (VarMember) varTuple.getMemberAt(index);
+            if (varMem.isOutputParameter()) {
+                if (!inParamsStr.isEmpty()) {
+                    outParamsStr = outParamsStr.concat(", ");
                 }
-                s2 = s2.concat("out ");
-                String nt = m.getName().concat(":").concat(m.getDeclaration().getTypeName());
-                s2 = s2.concat(nt);
+                outParamsStr = outParamsStr.concat("out ");
+                String nameType = varMem.getName().concat(":").concat(varMem.getDeclaration().getTypeName());
+                outParamsStr = outParamsStr.concat(nameType);
                 break;
             }
         }
-        s = s.concat(s1).concat(s2);
-        s = s.concat(")");
-        return s;
+        signatureStr = signatureStr.concat(inParamsStr).concat(outParamsStr);
+        signatureStr = signatureStr.concat(")");
+        return signatureStr;
     }
 
-    public void addInToSignatur(int indxOfVar) {
-        ((VarTuple) this.getAttrContext().getVariables()).addToSignaturOrder(indxOfVar);
+    public void addInToSignatur(int indexOfVar) {
+        ((VarTuple) this.getAttrContext().getVariables()).addToSignaturOrder(indexOfVar);
     }
 
-    public void removeInFromSignatur(int indxOfVar) {
-        ((VarTuple) this.getAttrContext().getVariables()).removeFromSignaturOrder(indxOfVar);
+    public void removeInFromSignatur(int indexOfVar) {
+        ((VarTuple) this.getAttrContext().getVariables()).removeFromSignaturOrder(indexOfVar);
     }
 
-    public void addOutToSignatur(int indxOfVar) {
-        VarTuple vars = (VarTuple) this.getAttrContext().getVariables();
-        for (int i = 0; i < vars.getSize(); i++) {
-            VarMember m = (VarMember) vars.getMemberAt(i);
-            if (i == indxOfVar) {
-                m.setOutputParameter(true);
+    public void addOutToSignatur(int indexOfVar) {
+        VarTuple varTuple = (VarTuple) this.getAttrContext().getVariables();
+        for (int index = 0; index < varTuple.getSize(); index++) {
+            VarMember varMem = (VarMember) varTuple.getMemberAt(index);
+            if (index == indexOfVar) {
+                varMem.setOutputParameter(true);
             } else {
-                m.setOutputParameter(false);
+                varMem.setOutputParameter(false);
             }
         }
     }
 
-    public void removeOutFromSignatur(int indxOfVar) {
-        VarTuple vars = (VarTuple) this.getAttrContext().getVariables();
-        VarMember m = (VarMember) vars.getMemberAt(indxOfVar);
-        if (m != null) {
-            m.setOutputParameter(false);
+    public void removeOutFromSignatur(int indexOfVar) {
+        VarTuple varTuple = (VarTuple) this.getAttrContext().getVariables();
+        VarMember varMem = (VarMember) varTuple.getMemberAt(indexOfVar);
+        if (varMem != null) {
+            varMem.setOutputParameter(false);
         }
     }
 }

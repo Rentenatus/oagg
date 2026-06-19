@@ -37,7 +37,7 @@ public class RuleLayer {
      */
     public RuleLayer(Enumeration<Rule> rules) {
 //		this.rules = rules;
-        this.rulesVec = new ArrayList<Rule>(0);
+        this.rulesVec = new ArrayList<>(0);
         while (rules.hasMoreElements()) {
             this.rulesVec.add(rules.nextElement());
         }
@@ -45,7 +45,7 @@ public class RuleLayer {
     }
 
     public RuleLayer(List<Rule> rules) {
-        this.rulesVec = new ArrayList<Rule>(0);
+        this.rulesVec = new ArrayList<>(0);
         for (int i = 0; i < rules.size(); i++) {
             this.rulesVec.add(rules.get(i));
         }
@@ -61,17 +61,19 @@ public class RuleLayer {
 
     /**
      * Sets the layer of the specified rule
+     * @param rule
+     * @param layer
      */
     public void setLayer(Rule rule, int layer) {
         rule.setLayer(layer);
-        this.ruleLayer.put(rule, Integer.valueOf(layer));
+        this.ruleLayer.put(rule, layer);
     }
 
     private void initRuleLayer() {
-        this.ruleLayer = new HashMap<Rule, Integer>();
+        this.ruleLayer = new HashMap<>();
         for (int i = 0; i < this.rulesVec.size(); i++) {
             Rule rule = this.rulesVec.get(i);
-            this.ruleLayer.put(rule, Integer.valueOf(rule.getLayer()));
+            this.ruleLayer.put(rule, rule.getLayer());
         }
     }
 
@@ -98,8 +100,8 @@ public class RuleLayer {
         Integer result = null;
         for (Rule key : this.ruleLayer.keySet()) {
             Integer layer = getRuleLayer().get(key);
-            if (layer.intValue() < startLayer) {
-                startLayer = layer.intValue();
+            if (layer < startLayer) {
+                startLayer = layer;
                 result = layer;
             }
         }
@@ -112,12 +114,12 @@ public class RuleLayer {
      * @return The inverted layer function.
      */
     public Map<Integer, HashSet<Rule>> invertLayer() {
-        Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
+        Map<Integer, HashSet<Rule>> inverted = new HashMap<>();
         for (Rule key : this.ruleLayer.keySet()) {
             Integer value = this.ruleLayer.get(key);
             HashSet<Rule> invertedValue = inverted.get(value);
             if (invertedValue == null) {
-                invertedValue = new HashSet<Rule>();
+                invertedValue = new HashSet<>();
                 invertedValue.add(key);
                 inverted.put(value, invertedValue);
             } else {

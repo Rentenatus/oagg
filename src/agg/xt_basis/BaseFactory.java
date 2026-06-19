@@ -1,6 +1,6 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische UniversitÃƒÂ¤t Berlin. All rights
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights
  * reserved. This program and the accompanying materials are made available
  * under the terms of the Eclipse Public License v1.0 which accompanies this
  * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
@@ -59,7 +59,13 @@ import agg.xt_basis.agt.RuleScheme;
 import agg.xt_basis.csp.Completion_InheritCSP;
 
 /**
- * A factory class for Graphs, Morphisms, Rules, Matches.
+ * A factory class for creating and managing AGG system components such as Graphs, Morphisms, Rules, and Matches.
+ * This class follows the singleton pattern and provides methods for creating various AGG objects.
+ *
+ * @see GraGra
+ * @see Graph
+ * @see Rule
+ * @see Match
  */
 public class BaseFactory {
 
@@ -69,6 +75,12 @@ public class BaseFactory {
     private final List<GraGra> itsGraGras = new ArrayList<GraGra>();
     protected static BaseFactory theBaseFactory;
 
+    /**
+     * Returns the singleton instance of the BaseFactory.
+     * Creates a new instance if one does not already exist.
+     *
+     * @return the singleton BaseFactory instance
+     */
     public static BaseFactory theFactory() {
         if (theBaseFactory != null) {
             return (theBaseFactory);
@@ -78,7 +90,9 @@ public class BaseFactory {
     }
 
     /**
-     * Create a new gragra with its own type set and a host graph inclusive.
+     * Creates a new GraGra with its own type set and including a host graph.
+     *
+     * @return a new GraGra instance
      */
     public GraGra createGraGra() {
         GraGra gg = new GraGra(new TypeSet());
@@ -87,7 +101,10 @@ public class BaseFactory {
     }
 
     /**
-     * Create a new gragra with its own type set and a host graph optionally.
+     * Creates a new GraGra with its own type set and optionally including a host graph.
+     *
+     * @param withGraph true to include a host graph, false otherwise
+     * @return a new GraGra instance
      */
     public GraGra createGraGra(boolean withGraph) {
         GraGra gg = new GraGra(withGraph);
@@ -96,8 +113,12 @@ public class BaseFactory {
     }
 
     /**
-     * Create a new gragra with its own type set and a host graph optionally.
-     * The second parameter defines whether the graphs are directed or not.
+     * Creates a new GraGra with a type set configured for the specified graph characteristics.
+     *
+     * @param withGraph true to include a host graph, false otherwise
+     * @param directedArcs true if arcs should be directed, false otherwise
+     * @param parallelArcs true if parallel arcs should be allowed, false otherwise
+     * @return a new GraGra instance
      */
     public GraGra createGraGra(boolean withGraph, boolean directedArcs, boolean parallelArcs) {
         GraGra gg = new GraGra(new TypeSet(directedArcs, parallelArcs), withGraph);
@@ -106,8 +127,9 @@ public class BaseFactory {
     }
 
     /**
-     * Disposes the specified gragra and removes it from the gragra list.
-     * @param graGra the gragra to destroy
+     * Disposes the specified GraGra and removes it from the factory's list.
+     *
+     * @param graGra the GraGra to destroy and remove
      */
     public void destroyGraGra(GraGra graGra) {
         if (this.itsGraGras.contains(graGra)) {
@@ -117,8 +139,9 @@ public class BaseFactory {
     }
 
     /**
-     * Removes the specified gragra from the gragra list.
-     * @param graGra the gragra to remove
+     * Removes the specified GraGra from the factory's list without disposing it.
+     *
+     * @param graGra the GraGra to remove from the list
      */
     public void removeGraGra(GraGra graGra) {
         if (this.itsGraGras.contains(graGra)) {
@@ -127,24 +150,27 @@ public class BaseFactory {
     }
 
     /**
-     * Returns an enumeration of all gragras.
-     * @return enumeration of gragras
+     * Returns an enumeration of all GraGras managed by this factory.
+     *
+     * @return an enumeration of all GraGras
      */
     public Enumeration<GraGra> getGraGras() {
         return Collections.enumeration(this.itsGraGras);
     }
 
     /**
-     * Returns the count of gragras.
-     * @return the number of gragras
+     * Returns the count of GraGras managed by this factory.
+     *
+     * @return the number of GraGras
      */
     public int getCountOfGraGras() {
         return this.itsGraGras.size();
     }
 
     /**
-     * Notifies the factory about a gragra.
-     * @param graGra the gragra to notify about
+     * Notifies the factory about a GraGra that was created externally.
+     *
+     * @param graGra the GraGra to register with the factory
      */
     public void notify(GraGra graGra) {
         if (!this.isElement(graGra)) {
@@ -160,21 +186,29 @@ public class BaseFactory {
     }
 
     /**
-     * Create a new graph transformation unit GraTra
+     * Creates a new graph transformation unit (GraTra).
+     *
+     * @return a new DefaultGraTraImpl instance
      */
     public GraTra createGraTra() {
         return (new DefaultGraTraImpl());
     }
 
     /**
-     * Create a new graph
+     * Creates a new graph with default type set and orientation.
+     *
+     * @return a new Graph instance
      */
     public final Graph createGraph() {
         return new Graph();
     }
 
     /**
-     * Create a new graph
+     * Creates a new graph with the specified type set.
+     * The graph will be directed or undirected based on the type set configuration.
+     *
+     * @param types the type set to use for the graph
+     * @return a new Graph instance
      */
     public final Graph createGraph(TypeSet types) {
         return types.isArcDirected() 
@@ -183,7 +217,12 @@ public class BaseFactory {
     }
 
     /**
-     * Create a new graph
+     * Creates a new graph with the specified type set and completeness flag.
+     * The graph will be directed or undirected based on the type set configuration.
+     *
+     * @param types the type set to use for the graph
+     * @param complete true if the graph should be initially complete, false otherwise
+     * @return a new Graph instance
      */
     public final Graph createGraph(TypeSet types, boolean complete) {
         return types.isArcDirected() 
@@ -220,10 +259,8 @@ public class BaseFactory {
     }
 
     /**
-     * There are graphs L, R, G and given morphisms r: L --> R and m: L -->
-     * G.<br>
-     * Computes PO as the colimit graph H with morphisms f: G --> H and g: R -->
-     * H.<br>
+     * There are graphs L, R, G and given morphisms r: L --> R and m: L --> G.
+     * Computes PO as the colimit graph H with morphisms f: G --> H and g: R --> H.
      *
      * The attributes of nodes and edges of the graph L are still unset.
      *
@@ -243,10 +280,8 @@ public class BaseFactory {
     }
 
     /**
-     * There are graphs K, L, G and given morphisms l: K --> L and g: L -->
-     * G.<br>
-     * Computes PO-complement: the graph C with morphisms k: K --> C and c: C
-     * --> G.<br>
+     * There are graphs K, L, G and given morphisms l: K --> L and g: L --> G.
+     * Computes PO-complement: the graph C with morphisms k: K --> C and c: C --> G.
      *
      * @return a pair (c,k) or NULL
      */
@@ -373,9 +408,9 @@ public class BaseFactory {
 
     /*
 	 * There are graphs K, L, G and given morphisms
-	 * l: K --> L and g: L --> G.<br>
+	 * l: K --> L and g: L --> G.
 	 * Computes PO-complement: the graph C with morphisms
-	 * k: K --> C and c: C --> G.<br>
+	 * k: K --> C and c: C --> G.
 	 * 
 	 * @return a pair (c,k) or NULL
 	 *
@@ -455,9 +490,9 @@ public class BaseFactory {
      */
  /*
 	 * There are graphs R, G, H with given morphisms
-	 * g: R --> H and f: G --> H.<br>
+	 * g: R --> H and f: G --> H.
 	 * Computes the PB as the limit graph L with morphisms
-	 * r: L --> R and m: L --> G.<br>
+	 * r: L --> R and m: L --> G.
 	 * 
 	 * The attributes of nodes and edges of the graph L are still unset.
 	 * 
@@ -518,9 +553,9 @@ public class BaseFactory {
     }
 
     /**
-     * Given morphism g: D --> G.<br>
+     * Given morphism g: D --> G.
      * Computes Initial Pushout (IPO) as a triple of morphisms:
-     * b1: B --> D, b2: B --> L, b3: L --> G. 
+     * b1: B --> D, b2: B --> L, b3: L --> G.
      * 
      * The attributes of nodes and edges of the graphs B and L are still unset.
      * @param morphism the morphism g: D --> G
@@ -623,7 +658,7 @@ public class BaseFactory {
     }
 
     /*
-	 * Given morphism t: G --> H.<br>
+	 * Given morphism t: G --> H.
 	 * Computes the span G <-- D --> H with g: D --> G and f: D --> H.
 	 * 
 	 * The attributes of nodes and edges of the graph D are still unset.
@@ -678,7 +713,7 @@ public class BaseFactory {
     }
 
     /*
-	 * Given transformation G --t-> H.<br>
+	 * Given transformation G --t-> H.
 	 * Computes the graph modification G <-g-- D --h-> H and then
 	 * the minimal rule L --r->R with induced match L --m-> G.
 	 * 
@@ -732,8 +767,8 @@ public class BaseFactory {
     }
 
     /*
-	 * Given two transformations G --t1-> H1 and G --t2-> H2. <br>
-	 * Computes two graph modifications G <-g1-- D1 --h1-> H1 and G <-g2-- D2 --h2-> H2 and then <br>
+	 * Given two transformations G --t1-> H1 and G --t2-> H2.
+	 * Computes two graph modifications G <-g1-- D1 --h1-> H1 and G <-g2-- D2 --h2-> H2 and then
 	 * the merge graph X and the merge graph modification G <-d-- D --x-> X.
 	 * 
 	 * @return a pair (d,x) or NULL
@@ -973,9 +1008,9 @@ public class BaseFactory {
     }
 
     /*
-	 * Check attributes of the specified elements:<br>
-	 * - replace expression value by a variable<br>
-	 * - set unset attribute by a variable<br> 
+	 * Check attributes of the specified elements:
+	 * - replace expression value by a variable
+	 * - set unset attribute by a variable
      */
     private int doCheckAndFillUnsetAttrs(
             final Rule rule,
@@ -1334,20 +1369,20 @@ public class BaseFactory {
 
     /**
      * Returns an inverse rule construction of the given rule by success,
-     * otherwise null.<br>
-     * The rule of the result is the inverse rule r_1 with:<br>
-     * - r_1.LHS is a copy of this.RHS,<br>
-     * - r_1.RHS is a copy of this.LHS, <br>
-     * - r_1 morphism is the converted rule morphism. <br>
+     * otherwise null.
+     * The rule of the result is the inverse rule r_1 with:
+     * - r_1.LHS is a copy of this.RHS,
+     * - r_1.RHS is a copy of this.LHS,
+     * - r_1 morphism is the converted rule morphism. 
      *
      * The Boolean value is true, when no application conditions (NACs, PACs,
      * GACs, attribute conditions) of the original rule exist, otherwise
-     * false<br>
+     * false
      *
      * Note: the specified Rule r has to be injective, otherwise returns
-     * null.<br>
-     * The first morphism of the second pair is r.LHS -> r_1.RHS,<br>
-     * The second morphism of the second pair is r.RHS -> r_1.LHS. <br>
+     * null.
+     * The first morphism of the second pair is r.LHS -> r_1.RHS,
+     * The second morphism of the second pair is r.RHS -> r_1.LHS. 
      */
     public Pair<Pair<Rule, Boolean>, Pair<OrdinaryMorphism, OrdinaryMorphism>> makeAbstractInverseRule(
             final Rule r) {
@@ -1376,20 +1411,20 @@ public class BaseFactory {
 
     /**
      * Returns an inverse rule construction of the given rule by success,
-     * otherwise null.<br>
-     * The rule of the result is the inverse rule r_1 with:<br>
-     * - r_1.LHS is a copy of this.RHS,<br>
-     * - r_1.RHS is a copy of this.LHS, <br>
-     * - r_1 morphism is the converted rule morphism. <br>
+     * otherwise null.
+     * The rule of the result is the inverse rule r_1 with:
+     * - r_1.LHS is a copy of this.RHS,
+     * - r_1.RHS is a copy of this.LHS,
+     * - r_1 morphism is the converted rule morphism. 
      *
      * The Boolean value is true, when no application conditions (NACs, PACs,
      * GACs, attribute conditions) of the original rule exist, or they are exist
-     * and converted to the inverse rule, otherwise false<br>
+     * and converted to the inverse rule, otherwise false
      *
      * Note: the specified Rule r has to be injective, otherwise returns
-     * null.<br>
-     * The first morphism of the second pair is r.LHS -> r_1.RHS,<br>
-     * The second morphism of the second pair is r.RHS -> r_1.LHS. <br>
+     * null.
+     * The first morphism of the second pair is r.LHS -> r_1.RHS,
+     * The second morphism of the second pair is r.RHS -> r_1.LHS. 
      */
     public Pair<Pair<Rule, Boolean>, Pair<OrdinaryMorphism, OrdinaryMorphism>> reverseRule(final Rule r) {
         boolean failed = false;
@@ -1613,8 +1648,8 @@ public class BaseFactory {
 
     /*
 	 * Returns true if the Match m1 does not delete or changed objects of the Match m2,
-	 * or vice versa. Otherwise returns false.<br>
-	 * The given matches must be complete and valid.<br> 
+	 * or vice versa. Otherwise returns false.
+	 * The given matches must be complete and valid. 
 	 * Potential produce-forbid conflicts would not be checked. 
      */
     public boolean checkWeakParallelMatches(final Match m1, final Match m2) {
@@ -1679,9 +1714,9 @@ public class BaseFactory {
 
     /**
      * Creates a new concurrent rule which is constructed as a disjoint union of
-     * LHS1 and LHS2 (resp. RHS1 and RHS2) of the given two rules.<br>
+     * LHS1 and LHS2 (resp. RHS1 and RHS2) of the given two rules.
      * The application conditions (NACs, PACs, attr. condition) of the input
-     * rules will be shifted to the new concurrent rule.<br>
+     * rules will be shifted to the new concurrent rule.
      *
      * @param r1 first rule
      * @param r2	second rule
@@ -1704,13 +1739,13 @@ public class BaseFactory {
     /**
      * Creates a new jointly concurrent rule. The given object flow
      * (r1.RHS.object -> r2.LHS2.object) defines the jointly usable objects of
-     * the RHS of the first rule and the LHS of the second rule.<br>
+     * the RHS of the first rule and the LHS of the second rule.
      * The application conditions (NACs, attr. condition) of the input rules
-     * will be shifted to the new concurrent rule.<br>
+     * will be shifted to the new concurrent rule.
      * The PACs of rules r1 and r2 are integrated in the r1.LHS resp. r2.LHS at
-     * the begin of the creating process.<br>
+     * the begin of the creating process.
      * The application conditions (NACs, attr. condition) of the input rules
-     * will be shifted to the new concurrent rule.<br>
+     * will be shifted to the new concurrent rule.
      *
      * @param r1 first rule
      * @param r2	second rule
@@ -1779,14 +1814,14 @@ public class BaseFactory {
     }
 
     /**
-     * Creates a concurrent rule based on the given RuleSequence.<br>
+     * Creates a concurrent rule based on the given RuleSequence.
      * If the second parameter is <code>false</code>, the left and right graphs
      * of the returned concurrent rule are constructed as disjoint unions of the
-     * left and right graphs of the rules of the sequence.<br>
+     * left and right graphs of the rules of the sequence.
      * If the second parameter is <code>true</code> and an ObjectFlow of the
      * given rule sequence is defined, the left and right graphs of the
-     * concurrent rule are overlapping graphs above the ObjectFlow,<br>
-     * otherwise it returns null.<br>
+     * concurrent rule are overlapping graphs above the ObjectFlow,
+     * otherwise it returns null.
      * The backward construction starts with the two last rules of the
      * RuleSequence. The next previous rule will be used at the next building
      * step.
@@ -2679,8 +2714,8 @@ public class BaseFactory {
 
     /**
      * Given a complete morphism g: A->B with the plain morphism context of
-     * object mapping and <br>
-     * an empty morphism f: A->B with the Match context of object mapping.<br>
+     * object mapping and 
+     * an empty morphism f: A->B with the Match context of object mapping.
      * Try to set mappings of f along g.
      *
      * @param f
@@ -3297,7 +3332,11 @@ public class BaseFactory {
     }
 
     /**
-     * Returns a clone of the rule.
+     * Creates and returns a clone of the specified rule.
+     * The cloned rule uses the same type set as the original rule.
+     *
+     * @param rule the rule to clone
+     * @return a new Rule instance that is a copy of the specified rule
      */
     public Rule cloneRule(final Rule rule) {
         Rule ruleClone = new Rule(rule.getOriginal().getTypeSet());
@@ -3310,7 +3349,11 @@ public class BaseFactory {
     }
 
     /**
-     * Returns a clone of the rule.
+     * Copies the contents of one rule to another existing rule.
+     *
+     * @param from the source rule to copy from
+     * @param to the target rule to copy to
+     * @return true if the copy was successful
      */
     public boolean cloneRule(final Rule from, final Rule to) {
         final Map<GraphObject, GraphObject> table = new HashMap<GraphObject, GraphObject>();
@@ -3320,7 +3363,12 @@ public class BaseFactory {
     }
 
     /**
-     * Returns a clone of the given rule using specified types.
+     * Creates and returns a clone of the specified rule using the specified types.
+     *
+     * @param rule the rule to clone
+     * @param types the type set to use for the cloned rule
+     * @param withApplConds true to include application conditions, false otherwise
+     * @return a new Rule instance that is a copy of the specified rule with the specified types
      */
     public Rule cloneRule(Rule rule, TypeSet types, boolean withApplConds) {
         Rule ruleClone = new Rule(types);
@@ -3336,8 +3384,14 @@ public class BaseFactory {
     }
 
     /**
-     * Copies the given rule into the given ruleClone. The TypeSet of the given
+     * Copies the given rule into the given rule clone. The TypeSet of the given
      * rules must be the same set.
+     *
+     * @param rule the source rule to copy
+     * @param ruleClone the target rule to copy into
+     * @param table the mapping table for graph objects
+     * @param withApplConds whether to include application conditions in the copy
+     * @return the copied rule
      */
     private Rule copyRule(
             final Rule rule,
@@ -3847,7 +3901,11 @@ public class BaseFactory {
     }
 
     /**
-     * Create an ordinary morphism.
+     * Creates an ordinary morphism between the specified original and image graphs.
+     *
+     * @param orig the original graph (source)
+     * @param img the image graph (target)
+     * @return a new OrdinaryMorphism instance
      */
     public final OrdinaryMorphism createMorphism(final Graph orig, final Graph img) {
         AttrContext context = agg.attribute.impl.AttrTupleManager
@@ -3869,7 +3927,11 @@ public class BaseFactory {
     }
 
     /**
-     * Create an general (nested) morphism.
+     * Creates a general nested morphism between the specified original and image graphs.
+     *
+     * @param orig The original graph.
+     * @param img The image graph.
+     * @return The new nested application condition representing the general morphism.
      */
     public final NestedApplCond createGeneralMorphism(Graph orig, Graph img) {
         AttrContext context = agg.attribute.impl.AttrTupleManager
@@ -3891,14 +3953,14 @@ public class BaseFactory {
     }
 
     /**
-     * Create an ordinary morphism. The original or image graph objects can have
-     * unset attribute members. If implicit is TRUE a variable will be used as
+     * Creates an ordinary morphism. The original or image graph objects can have
+     * unset attribute members. If implicit is true, a variable will be used as
      * value of those attribute members.
      *
      * @param orig The original graph.
      * @param img The image graph.
      * @param implicit If true, all unset attributes of the target graph will
-     * get a variable as value.
+     *                get a variable as value.
      * @return The new ordinary morphism.
      */
     public final OrdinaryMorphism createMorphism(final Graph orig, final Graph img, boolean implicit) {
@@ -3906,14 +3968,14 @@ public class BaseFactory {
     }
 
     /**
-     * Create an ordinary morphism. The original or image graph objects can have
-     * unset attribute members. If implicit is TRUE a variable will be used as
+     * Creates an ordinary morphism. The original or image graph objects can have
+     * unset attribute members. If implicit is true, a variable will be used as
      * value of those attribute members.
      *
      * @param orig The original graph.
      * @param img The image graph.
      * @param implicit If true, all unset attributes of the target graph will
-     * get a variable as value.
+     *                get a variable as value.
      * @param helpMarkOfVars The help name of the implicitly set variables.
      * @return The new ordinary morphism.
      */
@@ -3968,6 +4030,15 @@ public class BaseFactory {
         return m;
     }
 
+    /**
+     * Declares a variable in the specified variable tuple.
+     *
+     * @param attrHandler The attribute handler for the variable.
+     * @param typeName The type name of the variable.
+     * @param name The name of the variable.
+     * @param tuple The variable tuple to declare the variable in.
+     * @return The declared variable member.
+     */
     public VarMember declareVariable(
             AttrHandler attrHandler, String typeName,
             String name, VarTuple tuple) {
@@ -3984,11 +4055,11 @@ public class BaseFactory {
     }
 
     /**
-     * Adds not declared variable of attributes to the specified variable tuple.
+     * Adds undeclared variables of attributes to the specified variable tuple.
+     * Searches through all nodes and arcs in the graph for variables that need to be declared.
      *
-     * @param g graph which nodes and edges are searched for not declared
-     * variables
-     * @param tuple variable tuple to declare new variables
+     * @param g The graph whose nodes and arcs are searched for undeclared variables.
+     * @param tuple The variable tuple to declare new variables in.
      */
     public void declareVariable(Graph g, VarTuple tuple) {
         for (Iterator<Node> elements = g.getNodesSet().iterator(); elements.hasNext();) {
@@ -4062,6 +4133,14 @@ public class BaseFactory {
         }
     }
 
+    /**
+     * Creates a match morphism from the specified base morphism and attribute context.
+     * Copies the mappings from the base morphism to the new match.
+     *
+     * @param base The base morphism whose mappings are copied.
+     * @param base_context The base attribute context.
+     * @return The new match morphism.
+     */
     public final OrdinaryMorphism createMatchfromMorph(
             final OrdinaryMorphism base,
             final AttrContext base_context) {
@@ -4101,6 +4180,15 @@ public class BaseFactory {
         return match;
     }
 
+    /**
+     * Creates a match morphism from the specified base morphism and populates the target match.
+     * Copies the mappings from the base morphism to the target match.
+     *
+     * @param baseMorph The base morphism whose mappings are copied.
+     * @param targetMatch The target morphism to be populated with mappings.
+     * @param base_context The base attribute context.
+     * @return true if the match was created successfully, false otherwise.
+     */
     public final boolean createMatchfromMorph(
             final OrdinaryMorphism baseMorph,
             final OrdinaryMorphism targetMatch,
@@ -4143,6 +4231,14 @@ public class BaseFactory {
         return true;
     }
 
+    /**
+     * Creates a morphism from the specified base morphism and attribute context.
+     * Copies the mappings from the base morphism to the new morphism.
+     *
+     * @param base The base morphism whose mappings are copied.
+     * @param base_context The base attribute context.
+     * @return The new morphism.
+     */
     public final OrdinaryMorphism createMorphfromMorph(
             final OrdinaryMorphism base,
             final AttrContext base_context) {
@@ -4178,7 +4274,9 @@ public class BaseFactory {
     }
 
     /**
-     * Dispose the specified morphism.
+     * Disposes the specified morphism, releasing its resources.
+     *
+     * @param morph The morphism to dispose.
      */
     public final void destroyMorphism(OrdinaryMorphism morph) {
         if (morph != null) {
@@ -4187,8 +4285,8 @@ public class BaseFactory {
     }
 
     /**
-     * Create an empty match morphism between the left side of the given rule
-     * and my start graph. Note that this does not yield a valid match (unless
+     * Creates an empty match morphism between the left side of the given rule
+     * and the specified graph. Note that this does not yield a valid match (unless
      * the left side of the given rule is empty), because matches have to be
      * total morphisms.
      *
@@ -4205,14 +4303,15 @@ public class BaseFactory {
     }
 
     /**
-     * Create an empty match between the left side of the given rule and a start
+     * Creates an empty match between the left side of the given rule and a start
      * graph. Note that this does not yield a valid match (unless the left side
      * of the given rule is empty), because matches have to be total morphisms.
-     * The graph objects can have unset attribute members. If implicit is TRUE a
-     * variable will be used as value of those attribute members.
+     * The graph objects can have unset attribute members. If implicit is true,
+     * a variable will be used as value of those attribute members.
      *
      * @param rule The rule.
      * @param graph The graph.
+     * @param implicit If true, variables will be used for unset attribute members.
      * @return The new match.
      */
     public final Match createMatch(Rule rule, Graph graph, boolean implicit) {
@@ -4220,14 +4319,16 @@ public class BaseFactory {
     }
 
     /**
-     * Create an empty match between the left side of the given rule and a start
+     * Creates an empty match between the left side of the given rule and a start
      * graph. Note that this does not yield a valid match (unless the left side
      * of the given rule is empty), because matches have to be total morphisms.
-     * The graph objects can have unset attribute members. If implicit is TRUE a
-     * variable will be used as value of those attribute members.
+     * The graph objects can have unset attribute members. If implicit is true,
+     * a variable will be used as value of those attribute members.
      *
      * @param rule The rule.
      * @param graph The graph.
+     * @param implicit If true, variables will be used for unset attribute members.
+     * @param helpMarkOfVars The help name of the implicitly set variables.
      * @return The new match.
      */
     public final Match createMatch(
@@ -4288,8 +4389,8 @@ public class BaseFactory {
 
     /**
      * Makes a match for a rule and a morphism from the left hand side to a
-     * graph. The mapping of the morphism will be to a mapping of the match. The
-     * graph objects can have unset attribute members. A variable will be used
+     * graph. The mapping of the morphism will be copied to the match mapping.
+     * The graph objects can have unset attribute members. A variable will be used
      * as value of those attribute members.
      *
      * @param rule The rule.
@@ -4302,12 +4403,13 @@ public class BaseFactory {
 
     /**
      * Makes a match for a rule and a morphism from the left hand side of a rule
-     * to the target graph of a morphism. The mapping of the morphism will be to
-     * a mapping of the match. The graph objects can have unset attribute
+     * to the target graph of a morphism. The mapping of the morphism will be copied
+     * to the match mapping. The graph objects can have unset attribute
      * members. A variable will be used as value of those attribute members.
      *
      * @param rule The rule.
      * @param morph The morphism.
+     * @param helpMarkOfVars The help name of the implicitly set variables.
      * @return The new match.
      */
     public Match makeMatch(
@@ -4397,7 +4499,9 @@ public class BaseFactory {
     }
 
     /**
-     * Dispose the specified match morphism.
+     * Disposes the specified match morphism, releasing its resources.
+     *
+     * @param match The match morphism to dispose.
      */
     public final void destroyMatch(OrdinaryMorphism match) {
         if (match != null) {
@@ -4406,10 +4510,13 @@ public class BaseFactory {
     }
 
     /**
-     * Here:<br>
-     * cond.getSource() == morph.getSource()<br>
-     * Returns morphism :<br>
-     * m = morph.getTarget() -> cond.getTargetCopy()
+     * Shifts an application condition to the right by composing it with the specified morphism.
+     * Requires that cond.getSource() equals morph.getSource().
+     * Returns a morphism from morph.getTarget() to cond.getTargetCopy().
+     *
+     * @param cond The application condition morphism.
+     * @param morph The morphism to shift the condition with.
+     * @return The shifted morphism, or null if the condition cannot be satisfied.
      */
     public OrdinaryMorphism shiftApplCondRight(
             final OrdinaryMorphism cond,
@@ -4486,9 +4593,13 @@ public class BaseFactory {
     }
 
     /**
-     * Here:<br>
-     * cond.getSource() == morph.getTarget()<br>
-     * Returns morphism : morph.getSource() -> cond.getTarget()
+     * Shifts an application condition to the left by composing it with the specified morphism.
+     * Requires that cond.getSource() equals morph.getTarget().
+     * Returns a morphism from morph.getSource() to cond.getTarget().
+     *
+     * @param cond The application condition morphism.
+     * @param morph The morphism to shift the condition with.
+     * @return The shifted morphism, or null if the condition cannot be satisfied.
      */
     public OrdinaryMorphism shiftApplCondLeft(
             final OrdinaryMorphism cond,
@@ -4509,13 +4620,13 @@ public class BaseFactory {
 
     /**
      * Given a list of PACs. This method replaces each PAC by a General AC and
-     * builds a boolean formula over GACs defined as<br>
+     * builds a boolean formula over GACs defined as
      * <code>f = OR{ci}</code> as disjunction with <code>ci</code> as an element
      * of GACs. After that the given list contains the GACs and the PACs are
      * disposed.
      *
-     * @param list A list with PACs
-     * @return A formula over GACs
+     * @param list a list with PACs
+     * @return a formula over GACs
      */
     public Formula replacePACsByGACs(final List<OrdinaryMorphism> list) {
         // replace PACs by GACs and build formula = GAC1 || GAC2 || ... 
@@ -4544,13 +4655,13 @@ public class BaseFactory {
 
     /**
      * Given a list of NACs. This method replaces each NAC by a General AC and
-     * builds a boolean formula over GACs defined as<br>
+     * builds a boolean formula over GACs defined as
      * <code>f = NOT(OR{ci})</code> as disjunction with <code>ci</code> as an
      * element of GACs. After that the given list contains the GACs and the NACs
      * are disposed.
      *
-     * @param list A list with NACs
-     * @return A formula over GACs
+     * @param list a list with NACs
+     * @return a formula over GACs
      */
     public Formula replaceNACsByGACs(final List<OrdinaryMorphism> list) {
         // replace NACs by GACs and build formula = !(GAC1 || GAC2 || ...) 
@@ -4577,6 +4688,14 @@ public class BaseFactory {
         return f;
     }
 
+    /**
+     * Extends the attribute context variables of a rule by adding the specified prefix.
+     * Variables that already start with the prefix or its opposite are skipped.
+     *
+     * @param rule The rule whose variables are to be extended.
+     * @param prefix The prefix to add to variable names.
+     * @param oppositePrefix The opposite prefix to check against (variables starting with this are skipped).
+     */
     public void extendAttrContextVariableByPrefix(final Rule rule, final String prefix, final String oppositePrefix) {
         VarTuple varsm = (VarTuple) rule.getAttrContext().getVariables();
         for (int i = 0; i < varsm.getSize(); i++) {
@@ -4610,6 +4729,14 @@ public class BaseFactory {
         }
     }
 
+    /**
+     * Trims the specified prefix from attribute context variables of a rule.
+     * Variables that start with the prefix or its opposite have the prefix removed.
+     *
+     * @param rule The rule whose variables are to be trimmed.
+     * @param prefix The prefix to remove from variable names.
+     * @param oppositePrefix The opposite prefix to check against.
+     */
     public void trimAttrContextVariableByPrefix(final Rule rule, final String prefix, final String oppositePrefix) {
         VarTuple varsm = (VarTuple) rule.getAttrContext().getVariables();
         for (int i = 0; i < varsm.getSize(); i++) {
@@ -4643,10 +4770,15 @@ public class BaseFactory {
     }
 
     /**
-     * Rename variable in the attribute context of the Rule r2, if a similar
-     * variable is already used in the attribute context of the Rule r1. Use
-     * defined prefix to rename variable. Store old name by new name into
-     * defined store container.
+     * Renames variables in the attribute context of rule r2 if similar variables
+     * are already used in the attribute context of rule r1. Uses the defined prefix
+     * to rename variables and stores the mapping from old name to new name in the
+     * specified container.
+     *
+     * @param r1 The first rule whose variables are used for comparison.
+     * @param r2 The second rule whose variables will be renamed if conflicts exist.
+     * @param prefix The prefix to use for renaming conflicting variables.
+     * @param storeNewName2OldName The map to store the mapping from new names to old names.
      */
     public void renameSimilarVariable(
             final Rule r1,
@@ -4696,10 +4828,10 @@ public class BaseFactory {
     }
 
     /**
-     * Restores renamed variable of the defined rule.
+     * Restores renamed variables of the specified rule to their original names.
      *
-     * @param r
-     * @param storeNewName2OldName
+     * @param r The rule whose variables are to be restored.
+     * @param storeNewName2OldName The map containing the mapping from new names to old names.
      */
     public void restoreVariableNameOfRule(
             final Rule r,
@@ -4735,8 +4867,11 @@ public class BaseFactory {
     }
 
     /**
-     * Rename variable in the attribute context of the Rule r2, if a similar
-     * variable is already used in the attribute context of the Rule r1.
+     * Renames variables in the attribute context of rule r2 if similar variables
+     * are already used in the attribute context of rule r1.
+     *
+     * @param r1 The first rule whose variables are used for comparison.
+     * @param r2 The second rule whose variables will be renamed if conflicts exist.
      */
     public void renameSimilarVariable(Rule r1, Rule r2) {
         int index = 1;
@@ -4785,9 +4920,11 @@ public class BaseFactory {
     }
 
     /**
-     * Rename variable in the attribute context of the OrdinaryMorphism m2, if a
-     * similar variable is already used in the attribute context of the
-     * OrdinaryMorphism m1.
+     * Renames variables in the attribute context of morphism m2 if similar variables
+     * are already used in the attribute context of morphism m1.
+     *
+     * @param m1 The first morphism whose variables are used for comparison.
+     * @param m2 The second morphism whose variables will be renamed if conflicts exist.
      */
     public void renameSimilarVariable(OrdinaryMorphism m1, OrdinaryMorphism m2) {
         int index = 1;
@@ -4821,6 +4958,14 @@ public class BaseFactory {
         }
     }
 
+    /**
+     * Renames a variable in the specified condition tuple.
+     *
+     * @param ac The attribute context.
+     * @param conds The condition tuple containing conditions to update.
+     * @param from The variable name to replace.
+     * @param to The new variable name.
+     */
     public void renameVariableOfCondition(
             final AttrContext ac,
             CondTuple conds,
@@ -4854,6 +4999,14 @@ public class BaseFactory {
         }
     }
 
+    /**
+     * Renames a variable in the specified value tuple expressions.
+     *
+     * @param ac The attribute context.
+     * @param value The value tuple containing expressions to update.
+     * @param from The variable name to replace.
+     * @param to The new variable name.
+     */
     public void renameVariableOfExpression(
             final AttrContext ac,
             ValueTuple value, String from,
@@ -4884,6 +5037,15 @@ public class BaseFactory {
         }
     }
 
+    /**
+     * Sets attribute variables in the specified graph, replacing variable names.
+     *
+     * @param g The graph whose attributes are to be updated.
+     * @param from The variable name to replace.
+     * @param to The new variable name.
+     * @param ac The attribute context.
+     * @param vars The variable tuple.
+     */
     protected void setAttributeVariable(
             final Graph g,
             final String from,
@@ -5089,10 +5251,17 @@ public class BaseFactory {
 
     /*  Graph overlappings */
     /**
-     * Computes possible overlappings with defined size of inclusion of this and
-     * another graph g. The return value is an enumeration of pairs of
-     * morphisms. Each pair consists of a morphism from thisGraph to the overlap
-     * graph and a morphism from the other graph to the overlap graph.
+     * Computes possible overlappings with defined size of inclusion between this graph
+     * and another graph. The return value is an enumeration of pairs of morphisms.
+     * Each pair consists of a morphism from thisGraph to the overlap graph and a
+     * morphism from the other graph to the overlap graph.
+     *
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The second graph to compute overlaps with.
+     * @param sizeOfInclusion The minimum size of inclusion for the overlap.
+     * @param union If true, computes union overlaps.
+     * @param withIsomorphic If true, considers isomorphic graphs.
+     * @return Iterator of pairs of morphisms representing the overlaps.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlappingSet(
             final Graph thisGraph,
@@ -5132,6 +5301,20 @@ public class BaseFactory {
         return (oSet.iterator());
     }
 
+    /**
+     * Computes possible overlappings with defined size of inclusion between this graph
+     * and another graph, using a custom object map. The return value is an enumeration
+     * of pairs of morphisms. Each pair consists of a morphism from thisGraph to the
+     * overlap graph and a morphism from the other graph to the overlap graph.
+     *
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The second graph to compute overlaps with.
+     * @param sizeOfInclusion The minimum size of inclusion for the overlap.
+     * @param objectMap Custom object map to use for overlapping computation.
+     * @param union If true, computes union overlaps.
+     * @param withIsomorphic If true, considers isomorphic graphs.
+     * @return Enumeration of pairs of morphisms representing the overlaps.
+     */
     public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlappingSet(
             final Graph thisGraph,
             final Graph g,
@@ -5485,10 +5668,15 @@ public class BaseFactory {
     }
 
     /**
-     * Computes all possible overlappings (withoutdisjoint union) of this and
-     * another graph g. The return value is an enumeration of pairs of
+     * Computes all possible overlappings (without disjoint union) of this and
+     * another graph. The return value is an enumeration of pairs of
      * morphisms. Each pair consists of a morphism from thisGraph to the overlap
      * graph and a morphism from the other graph to the overlap graph.
+     *
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The second graph to compute overlaps with.
+     * @param withIsomorphic If true, isomorphic overlappings are preserved.
+     * @return Iterator of pairs of morphisms representing the overlaps.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapSet(
             final Graph thisGraph,
@@ -5498,10 +5686,16 @@ public class BaseFactory {
     }
 
     /**
-     * Compute all possible overlappings of this and another graph g. The return
-     * value is an eneration of pairs of morphisms. Each pair consists of a
+     * Computes all possible overlappings of this and another graph. The return
+     * value is an enumeration of pairs of morphisms. Each pair consists of a
      * morphism from thisGraph to the overlap graph and a morphism from the
      * other graph to the overlap graph.
+     *
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The second graph to compute overlaps with.
+     * @param union If true, computes union overlaps.
+     * @param withIsomorphic If true, isomorphic overlappings are preserved.
+     * @return Iterator of pairs of morphisms representing the overlaps.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> overlapSet(
             final Graph thisGraph,
@@ -5514,10 +5708,10 @@ public class BaseFactory {
     /**
      * Computes an overlapping set.
      *
-     * @param g The graph to overlap with
-     * @param withIsomorphic true if isomorphic overlappings should be
-     * preserved, otherwise only one of isomorphic overlappings preserved, the
-     * other will be deleted
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The graph to overlap with.
+     * @param withIsomorphic If true, isomorphic overlappings are preserved.
+     * @return Iterator of pairs of morphisms representing the overlaps.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
@@ -5528,11 +5722,11 @@ public class BaseFactory {
     /**
      * Computes an overlapping set.
      *
-     * @param g The graph to overlap with
-     * @param disjunion true if disjoint union
-     * @param withIsomorphic true if isomorphic overlappings should be
-     * preserved, otherwise only one of isomorphic overlappings preserved, the
-     * other will be deleted
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The graph to overlap with.
+     * @param disjunion If true, uses disjoint union.
+     * @param withIsomorphic If true, isomorphic overlappings are preserved.
+     * @return Iterator of pairs of morphisms representing the overlaps.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
@@ -5544,14 +5738,11 @@ public class BaseFactory {
     /**
      * Computes an overlapping set.
      *
-     * @param thisGraph A given graph
-     * @param g A graph to overlap with
-     * @param sizeOfInclusion The number of elements of an overlapping part
-     * @param withIsomorphic It is <code>true</code> if isomorphic overlappings
-     * should be preserved, otherwise only one of isomorphic overlappings
-     * preserved, the other will be ignored.
-     *
-     * @return An enumeration with pairs of the overlapping morphisms
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The graph to overlap with.
+     * @param sizeOfInclusion The number of elements in the overlapping part.
+     * @param withIsomorphic If true, isomorphic overlappings are preserved.
+     * @return Iterator of pairs of morphisms representing the overlaps.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
@@ -5564,12 +5755,12 @@ public class BaseFactory {
     /**
      * Computes an overlapping set.
      *
-     * @param g The graph to overlap with
-     * @param sizeOfInclusions size of elements of the overlapping part
-     * @param disjunion true if disjoint union
-     * @param withIsomorphic true if isomorphic overlappings should be
-     * preserved, otherwise only one of isomorphic overlappings preserved, the
-     * other will be deleted
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The graph to overlap with.
+     * @param sizeOfInclusions The size of elements in the overlapping part.
+     * @param disjunion If true, uses disjoint union.
+     * @param withIsomorphic If true, isomorphic overlappings are preserved.
+     * @return Iterator of pairs of morphisms representing the overlaps.
      */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
@@ -5580,6 +5771,17 @@ public class BaseFactory {
         return overlappingSet(thisGraph, g, sizeOfInclusions, disjunion, withIsomorphic);
     }
 
+    /**
+     * Computes an overlapping set with a custom object map.
+     *
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The graph to overlap with.
+     * @param sizeOfInclusion The size of elements in the overlapping part.
+     * @param objectMap Custom object map to use for overlapping computation.
+     * @param disjunion If true, uses disjoint union.
+     * @param withIsomorphic If true, isomorphic overlappings are preserved.
+     * @return Enumeration of pairs of morphisms representing the overlaps.
+     */
     public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(
             final Graph thisGraph,
             final Graph g,
@@ -5590,6 +5792,14 @@ public class BaseFactory {
         return overlappingSet(thisGraph, g, sizeOfInclusion, objectMap, disjunion, withIsomorphic);
     }
 
+    /**
+     * Computes overlappings by predefined intersection.
+     *
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The graph to overlap with.
+     * @param intersection The predefined intersection map.
+     * @return Enumeration of pairs of morphisms representing the overlaps.
+     */
     public Enumeration<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingByPredefinedIntersection(
             final Graph thisGraph,
             final Graph g,
@@ -5625,6 +5835,16 @@ public class BaseFactory {
         return null;
     }
 
+    /**
+     * Computes overlappings by partial predefined intersection.
+     *
+     * @param thisGraph The first graph to compute overlaps for.
+     * @param g The graph to overlap with.
+     * @param requiredInsideSubgraphs The list of required objects inside subgraphs.
+     * @param partialIntersection The partial intersection map.
+     * @param onlyRequiredObjectsInsideSubgraphs If true, only uses required objects inside subgraphs.
+     * @return Iterator of pairs of morphisms representing the overlaps.
+     */
     public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappingByPartialPredefinedIntersection(
             final Graph thisGraph,
             final Graph g,
@@ -5652,9 +5872,15 @@ public class BaseFactory {
     }
 
     /**
-     * Returns a set of OrdinaryMorphism with the source graph is a subgraph of
-     * the given Graph <code>thisGraph</code> and the target graph is the given
-     * Graph <code>thisGraph</code>.
+     * Generates all subgraphs of the given graph with the specified size of inclusion.
+     * Returns a list of morphisms where the source graph is a subgraph of the given graph
+     * and the target graph is the given graph itself.
+     *
+     * @param thisGraph The graph to generate subgraphs from.
+     * @param sizeOfInclusions The size of inclusions for the subgraphs.
+     * @param union If true, includes union subgraphs.
+     * @param withIsomorphic If true, includes isomorphic subgraphs.
+     * @return List of morphisms representing the subgraphs.
      */
     public List<OrdinaryMorphism> generateAllSubgraphs(
             final Graph thisGraph,
@@ -5693,11 +5919,19 @@ public class BaseFactory {
     }
 
     /**
-     * Returns a set of OrdinaryMorphism with the source graph is a subgraph of
-     * the given Graph <code>thisGraph</code> and the target graph is the given
-     * Graph <code>thisGraph</code>.<br>
-     * Additionally, the objects of the given List
-     * <code>requiredObjectsInsideSubgraphs</code> contained in all subgraphs.
+     * Generates all subgraphs with the specified inclusion size from the given graph.
+     * Returns a set of morphisms where the source graph is a subgraph of the given graph
+     * and the target graph is the given graph itself.
+     * Additionally, the objects of the given list are contained in all subgraphs.
+     *
+     * @param thisGraph The graph to generate subgraphs from.
+     * @param i The size of inclusions for the subgraphs.
+     * @param itsGOSet The set of graph objects to consider.
+     * @param inclusions The list to add the generated inclusions to.
+     * @param withIsomorphic If true, includes isomorphic subgraphs.
+     * @param requiredObjectsInsideSubgraphs The list of objects that must be contained in all subgraphs.
+     * @param onlyRequiredObjectsInsideSubgraphs If true, only uses required objects inside subgraphs.
+     * @return List of morphisms representing the subgraphs.
      */
     public List<OrdinaryMorphism> generateAllSubgraphsWithInclusionsOfSize(
             final Graph thisGraph,
@@ -5936,6 +6170,12 @@ public class BaseFactory {
         return inclusion;
     }
 
+    /**
+     * Checks and removes isomorphic inclusions from the list.
+     * If two inclusions have isomorphic source graphs, one of them is removed.
+     *
+     * @param inclusions The list of inclusions to check for isomorphism.
+     */
     protected void checkIsomorphicInclusions(List<OrdinaryMorphism> inclusions) {
         int size = inclusions.size();
         for (int i = 0; i < size; i++) {
@@ -5954,19 +6194,18 @@ public class BaseFactory {
     }
 
     /**
-     * Here the given morphism <code>matchMorph</code> can contain a mapping
-     * from a source node of a child type in the inheritance relation to a
-     * target node of its parent type. In this case the target (parent) node
-     * will be replaced by a copy of the source (child) node.<br>
-     * The source graph of the <code>matchMorph</code> is the source graph of
-     * the <code>ruleMorph</code>, the target graph of the
-     * <code>matchMorph</code> is the target graph of the <code>isoMorph</code>.
-     * The edges from / to the parent node are copied, too.
+     * Replaces parent nodes with child nodes in the given morphisms.
+     * The given morphism matchMorph can contain a mapping from a source node of a
+     * child type in the inheritance relation to a target node of its parent type.
+     * In this case the target (parent) node will be replaced by a copy of the
+     * source (child) node. The source graph of the matchMorph is the source graph
+     * of the ruleMorph, the target graph of the matchMorph is the target graph
+     * of the isoMorph. The edges from/to the parent node are copied, too.
      *
-     * @param ruleMorph
-     * @param matchMorph
-     * @param isoMorph
-     * @return true by success, otherwise false
+     * @param ruleMorph The rule morphism.
+     * @param matchMorph The match morphism.
+     * @param isoMorph The isomorphism morphism.
+     * @return true if successful, otherwise false.
      */
     public boolean replaceParentByChild(
             final OrdinaryMorphism ruleMorph,
@@ -6122,19 +6361,19 @@ public class BaseFactory {
     }
 
     /**
-     * Here the given morphism <code>morph2</code> can contain mapping from a
-     * source node with a child type of an inheritance relation to a target node
-     * with a parent type. The given morphism <code>morph1</code> maps a source
-     * node with a parent type of an inheritance relation to the same target
-     * node of the morphism <code>morph2</code>. In this case this target node
-     * will be replaced by a copy of the child node. All in-/out-edges of the
-     * (parent) node are copied, too.<br>
-     * The target graph of the morphism <code>morph2</code> is the same target
-     * graph of the <code>morph1</code>, the source graphs are different.
+     * Replaces parent nodes with child nodes in the given morphisms.
+     * The given morphism morph2 can contain mapping from a source node with a
+     * child type of an inheritance relation to a target node with a parent type.
+     * The given morphism morph1 maps a source node with a parent type of an
+     * inheritance relation to the same target node of the morphism morph2.
+     * In this case this target node will be replaced by a copy of the child node.
+     * All in-/out-edges of the (parent) node are copied, too.
+     * The target graph of the morphism morph2 is the same target graph of the
+     * morph1, the source graphs are different.
      *
-     * @param morph1
-     * @param morph2
-     * @return true by success, otherwise false
+     * @param morph1 The first morphism.
+     * @param morph2 The second morphism.
+     * @return true if successful, otherwise false.
      */
     public boolean replaceParentByChild(
             final OrdinaryMorphism morph1,

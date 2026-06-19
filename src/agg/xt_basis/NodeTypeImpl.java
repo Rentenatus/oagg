@@ -23,10 +23,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Implements the type of a node graph object.
+ * Implementation of the Type interface for node graph objects.
+ * This class represents the type information for nodes in graphs, including
+ * support for inheritance relationships between node types.
  *
- * @author $Author: olga $
- * @version $Id: NodeTypeImpl.java,v 1.19 2010/11/06 18:34:59 olga Exp $
+ * @see Type
+ * @see TypeImpl
+ * @see ArcTypeImpl
  */
 public class NodeTypeImpl implements Type {
 
@@ -68,6 +71,10 @@ public class NodeTypeImpl implements Type {
     TypeGraphNode typeGraphNode;
     String keyStr = null;
 
+    /**
+     * Creates a new node type with default settings.
+     * This creates a non-attributable node type with empty name and default visual representation.
+     */
     protected NodeTypeImpl() {
         this.itsAttrType = null;
         this.itsStringRepr = "";
@@ -76,10 +83,10 @@ public class NodeTypeImpl implements Type {
     }
 
     /**
-     * Creates a new type with the given name. There is still not attributed
-     * type.
+     * Creates a new node type with the given name.
+     * This creates a non-attributable node type with default visual representation.
      *
-     * @param name the name of the type
+     * @param name the name of the node type
      */
     protected NodeTypeImpl(String name) {
         this.itsAttrType = null;
@@ -89,10 +96,10 @@ public class NodeTypeImpl implements Type {
     }
 
     /**
-     * Creates a new type with the given attributes and the given name.
+     * Creates a new node type with the given attributes and the given name.
      *
-     * @param at the declaration of the attributes
-     * @param name the name of the type
+     * @param at the attribute type declaration
+     * @param name the name of the node type
      */
     protected NodeTypeImpl(AttrType at, String name) {
         this(name);
@@ -100,15 +107,19 @@ public class NodeTypeImpl implements Type {
     }
 
     /**
-     * creates a new type with the given attributes and an empty name.
+     * Creates a new node type with the given attributes and an empty name.
      *
-     * @param at the declaration of the attributes
+     * @param at the attribute type declaration
      */
     protected NodeTypeImpl(AttrType at) {
         this();
         this.itsAttrType = at;
     }
 
+    /**
+     * Disposes this node type and releases all associated resources.
+     * This includes clearing attribute types and type relationships.
+     */
     public void dispose() {
         this.itsAttrType = null;
         this.itsChildren.clear();

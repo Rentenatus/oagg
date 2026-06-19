@@ -23,17 +23,16 @@ import agg.util.XMLHelper;
 import java.util.ArrayList;
 
 /**
- * The type of a graph object is here defined. Each graph object has a type.
- * Types can be used for nodes as well as for edges. Even if there is no
- * protection in the methods a node type should be used only for nodes and a
- * edge type should be only used for edges.
+ * Implementation of the Type interface for graph objects.
+ * Each graph object has a type, which can be used for both nodes and edges.
+ * Although there is no protection in the methods, a node type should be used only
+ * for nodes and an edge type should be used only for edges.
  *
- * @deprecated replaced by <code>NodeTypeImpl</code> to create a node type for
- * nodes of a graph and <code>ArcTypeImpl</code> to create an edge type for
- * edges of a graph
- *
- * @author $Author: olga $
- * @version $Id: TypeImpl.java,v 1.87 2010/10/07 20:04:26 olga Exp $
+ * @deprecated Use {@link NodeTypeImpl} to create node types for graph nodes
+ *             and {@link ArcTypeImpl} to create edge types for graph edges
+ * @see Type
+ * @see NodeTypeImpl
+ * @see ArcTypeImpl
  */
 public class TypeImpl implements Type {
 
@@ -83,6 +82,10 @@ public class TypeImpl implements Type {
     TypeGraphNode typeGraphNode; // should be in NodeTypeImpl
     String keyStr = null;
 
+    /**
+     * Creates a new type with default settings.
+     * This creates a non-attributable type with empty name.
+     */
     protected TypeImpl() {
         this.itsAttrType = null;
         this.itsStringRepr = "";
@@ -91,7 +94,7 @@ public class TypeImpl implements Type {
     }
 
     /**
-     * Creates a new type with the given name. There is non-attributable type.
+     * Creates a new type with the given name. This creates a non-attributable type.
      *
      * @param stringRepr the name of the type
      */
@@ -105,7 +108,7 @@ public class TypeImpl implements Type {
     /**
      * Creates a new type with the given attributes and the given name.
      *
-     * @param at the declaration of the attributes
+     * @param at the attribute type declaration
      * @param stringRepr the name of the type
      */
     protected TypeImpl(AttrType at, String stringRepr) {
@@ -114,15 +117,19 @@ public class TypeImpl implements Type {
     }
 
     /**
-     * creates a new type with the given attributes and an empty name.
+     * Creates a new type with the given attributes and an empty name.
      *
-     * @param at the declaration of the attributes
+     * @param at the attribute type declaration
      */
     protected TypeImpl(AttrType at) {
         this();
         this.itsAttrType = at;
     }
 
+    /**
+     * Disposes this type and releases all associated resources.
+     * This includes clearing attribute types, type relationships, and type graph information.
+     */
     public void dispose() {
         this.itsAttrType = null;
         if (this.edgeTypeGraphObjects != null) {
@@ -908,10 +915,10 @@ public class TypeImpl implements Type {
     }
 
     /**
-     * internal function to convert a type into a string. If the type contains
-     * an empty string representation, this function will return "unnamed"
-     * otherwise the string representation of the type
-     * ({@link #getStringRepr()})
+     * Returns the name of this type. If the string representation is empty,
+     * returns "unnamed".
+     *
+     * @return the name of this type, or "unnamed" if the string representation is empty
      */
     public String getName() {
         String stringRepr = this.getStringRepr();
@@ -930,14 +937,13 @@ public class TypeImpl implements Type {
     }
 
     /**
-     * returns if the given GraphObject is valid typed as defined in the type
-     * graph. Before this can be checked, all edges and nodes of the type graph
-     * must be added to theire types. The given object will not tested if this
-     * is its type.
+     * Checks if the given graph object is valid typed as defined in the type graph.
+     * Before this can be checked, all edges and nodes of the type graph must be
+     * added to their types. The given object will not be tested if this is its type.
      *
-     * @return null, if the graphobject is valid typed otherwise a
-     * {@link TypeError} if there was a mismatch
-     *
+     * @param nodeOrArc the graph object to check
+     * @param level the checking level to use
+     * @return null if the graph object is valid typed, otherwise a TypeError describing the mismatch
      */
     public TypeError check(final GraphObject nodeOrArc, final int level) {
         if (level == TypeSet.DISABLED) {

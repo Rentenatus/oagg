@@ -34,15 +34,16 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 /**
- * Manages the node/edge types of graphs. Especially the rules and host graphs
- * of a graph transformation system (gratra) should use the same type set.
+ * Manages the node and edge types of graphs. Especially the rules and host graphs
+ * of a graph transformation system (GraTra) should use the same type set.
  *
- * Implements methods for creation, deletion and manipulation of node/edge
- * types, a type graph, inheritance relations between node types, checking type
- * validity.
+ * <p>This class implements methods for creation, deletion and manipulation of node/edge
+ * types, a type graph, inheritance relations between node types, and checking type validity.
+ * It provides the type system foundation for the AGG graph transformation framework.
  *
- * @version $Id: TypeSet.java,v 1.87 2010/12/02 19:37:59 olga Exp $
- * @author $Author: olga $
+ * @see Type
+ * @see TypeGraph
+ * @see Graph
  */
 public class TypeSet {
 
@@ -165,12 +166,11 @@ public class TypeSet {
     }
 
     /**
-     * Creates a new Type instance without attribute type. It is useful for
-     * non-attributed graphs.
+     * Creates a new Type instance without attribute type. Useful for non-attributed graphs.
      *
-     * @deprecated replaced by
-     * <code>Type createNodeType(boolean withAttributes)</code> for node type
-     * and <code>Type createArcType(boolean withAttributes)</code> for edge type
+     * @deprecated Use {@link #createNodeType(boolean)} for node types
+     *             or {@link #createArcType(boolean)} for arc types instead
+     * @return a new Type instance without attributes
      */
     public final Type createType() {
         Type aType = createType(false);
@@ -199,6 +199,12 @@ public class TypeSet {
         return aType;
     }
 
+    /**
+     * Creates a new node type with or without attributes.
+     *
+     * @param withAttributes true to create with attributes, false otherwise
+     * @return a new node Type instance
+     */
     public final Type createNodeType(final boolean withAttributes) {
         if (withAttributes) {
             Type aType = new NodeTypeImpl(this.attrManager.newType());
@@ -210,6 +216,12 @@ public class TypeSet {
         return aType;
     }
 
+    /**
+     * Creates a new arc type with or without attributes.
+     *
+     * @param withAttributes true to create with attributes, false otherwise
+     * @return a new arc Type instance
+     */
     public final Type createArcType(final boolean withAttributes) {
         if (withAttributes) {
             Type aType = new ArcTypeImpl(this.attrManager.newType());
@@ -909,14 +921,14 @@ public class TypeSet {
 
     /**
      * This method does only work if a type graph does not exist or empty,
-     * otherwise returns existing type graph. <br>
-     * Creates a new type graph, if it does not already exist. <br>
+     * otherwise returns existing type graph.
+     * Creates a new type graph, if it does not already exist.
      * Tries to create a unique type graph node for each node of the specified
      * node list. If the node list is empty, tries to create a unique type graph
      * node for each existing node type. Creates an inheritance edge for already
-     * existing inheritance relations.<br>
+     * existing inheritance relations.
      * Tries to create a unique type graph edge for each edge of the specified
-     * edge list. If the edge list is empty, no edges are created.<br>
+     * edge list. If the edge list is empty, no edges are created.
      * The level for the type graph check of the already existing type graph
      * should be set to <code>TypeSet.DISABLED</code>.
      *
@@ -977,13 +989,13 @@ public class TypeSet {
     }
 
     /**
-     * Creates a new type graph, if it does not already exist. <br>
+     * Creates a new type graph, if it does not already exist.
      * Tries to create a unique type graph node for each node of the specified
      * node list. If the node list is empty, tries to create a unique type graph
      * node for each existing node type. Creates an inheritance edge for already
-     * existing inheritance relations.<br>
+     * existing inheritance relations.
      * Tries to create a unique type graph edge for each edge of the specified
-     * edge list. If the edge list is empty, no edges are created.<br>
+     * edge list. If the edge list is empty, no edges are created.
      * The level for the type graph check of the already existing type graph
      * should be set to <code>TypeSet.DISABLED</code>.
      *

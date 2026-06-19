@@ -8,7 +8,6 @@
 package test_agg.xt_basis.tictactoe;
 
 import agg.xt_basis.Graph;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import static org.testng.Assert.*;
@@ -74,7 +73,7 @@ public class GraGraTicTacToeNGTest {
     }
 
     protected void checkRedu(AggRuleSystem ars) {
-        Map<String, Object> returnMap = new TreeMap<String, Object>();
+        Map<String, Object> returnMap = new TreeMap<>();
         ars.reduce("reduNaechsterZug", returnMap);
 
         returnMap.forEach((s, ob) -> System.out.println("    > " + s + " :    " + ob));

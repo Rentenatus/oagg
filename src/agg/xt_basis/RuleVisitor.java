@@ -1,18 +1,17 @@
 /**
  * <copyright>
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License
- * v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis;
 
 /**
- * Visitor interface for the Rule hierarchy.
- * This allows operations on rules without using instanceof checks.
+ * Visitor interface for the Rule hierarchy.This allows operations on rules without using instanceof checks.
  *
  * @author Janusch Rentenatus
+ * @param <T>
  */
 public interface RuleVisitor<T> {
 

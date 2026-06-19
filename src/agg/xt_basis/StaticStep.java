@@ -28,24 +28,32 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * This class implements a direct graph transformation step in the single
- * pushout (SPO) approach to algebraic graph transformation. The transformation
- * is performed <i>in-place</i>, i.e. the host graph is modified according to
- * the rule's instructions.
+ * Implements a direct graph transformation step using the single pushout (SPO) approach
+ * to algebraic graph transformation. The transformation is performed in-place,
+ * meaning the host graph is modified according to the rule's instructions.
+ *
+ * <p>This class provides methods for executing graph transformations using different
+ * approaches, including the DPO (Double Pushout) approach with dangling edge conditions
+ * and the SPO (Single Pushout) approach.
+ *
+ * @see Match
+ * @see Morphism
+ * @see Rule
  */
 public final class StaticStep {
 
     private static boolean computeColimitBasedPushout = false;
 
     /**
-     * Perform an in-place direct graph transformation step using Colim library:
-     * apply the rule given by <code>match.getRule()</code> via
-     * <code>match</code> at the host graph given by
-     * <code>match.getImage()</code>. The host graph is modified to represent
-     * the result of the rule application.
+     * Performs an in-place direct graph transformation step using the Colim library.
+     * Applies the rule given by match.getRule() via match at the host graph
+     * given by match.getImage(). The host graph is modified to represent the result
+     * of the rule application.
      *
-     * @return the co-match morphism from the right hand side of the rule into
-     * the result graph, or NULL if execution failed.
+     * @param match the match containing the rule and target graph for transformation
+     * @return the co-match morphism from the right hand side of the rule into the result graph,
+     *         or null if execution failed
+     * @throws TypeException if there is a type mismatch during transformation
      */
     public final static Morphism executeColimBased(final Match match) throws TypeException {
         computeColimitBasedPushout = true;
@@ -53,8 +61,8 @@ public final class StaticStep {
     }
 
     /**
-     * Perform an in-place direct graph transformation step using Colim
-     * library.<br>
+     * Performs an in-place direct graph transformation step using Colim
+     * library.
      * It is done with respect to allowing usage of variables for values of the
      * attributes of the graph objects in a graph to be transformed.
      *
@@ -69,16 +77,17 @@ public final class StaticStep {
     }
 
     /**
-     * Perform an in-place direct graph transformation step using Colim
-     * library.<br>
-     * It is done with respect to allowing usage of variables for values of the
-     * attributes of the graph objects inside of a graph, <br>
-     * and when usage of variables is allowed <br>
-     * then do it due to equal names of variables inside of the graph and the
-     * right hand side of the rule of the given match.
+     * Performs an in-place direct graph transformation step using the Colim library.
+     * This method considers whether to allow usage of variables for attribute values
+     * of graph objects, and when allowed, uses variables with equal names from the graph
+     * and the right hand side of the rule.
      *
-     * @return the co-match morphism from the right hand side of the rule into
-     * the result graph, or NULL if execution failed.
+     * @param match the match containing the rule and target graph for transformation
+     * @param allowAttrVarsInGraph true to allow attribute variables in graph objects
+     * @param wrtEqualAttrVarName true to use equal attribute variable names
+     * @return the co-match morphism from the right hand side of the rule into the result graph,
+     *         or null if execution failed
+     * @throws TypeException if there is a type mismatch during transformation
      */
     public final static Morphism executeColimBased(
             final Match match,
@@ -89,25 +98,28 @@ public final class StaticStep {
     }
 
     /**
-     * Perform an in-place direct graph transformation step: apply the rule
-     * given by <code>match.getRule()</code> via <code>match</code> at the host
-     * graph given by <code>match.getImage()</code>. The host graph is modified
-     * to represent the result of the rule application.
+     * Performs an in-place direct graph transformation step. Applies the rule
+     * given by match.getRule() via match at the host graph given by match.getImage().
+     * The host graph is modified to represent the result of the rule application.
      *
-     * @return the co-match morphism from the right hand side of the rule into
-     * the result graph, or NULL if execution failed.
+     * @param match the match containing the rule and target graph for transformation
+     * @return the co-match morphism from the right hand side of the rule into the result graph,
+     *         or null if execution failed
+     * @throws TypeException if there is a type mismatch during transformation
      */
     public final static Morphism execute(final Match match) throws TypeException {
         return execute(match, false, false);
     }
 
     /**
-     * Perform an in-place direct graph transformation step with respecting of
-     * allowing usage of variables for values of the attributes of the graph
-     * objects in a graph to be transformed.
+     * Performs an in-place direct graph transformation step considering whether to
+     * allow usage of variables for attribute values of graph objects.
      *
-     * @return the co-match morphism from the right hand side of the rule into
-     * the result graph, or NULL if execution failed.
+     * @param match the match containing the rule and target graph for transformation
+     * @param allowAttrVarsInGraph true to allow attribute variables in graph objects
+     * @return the co-match morphism from the right hand side of the rule into the result graph,
+     *         or null if execution failed
+     * @throws TypeException if there is a type mismatch during transformation
      */
     public final static Morphism execute(
             final Match match,
@@ -116,16 +128,16 @@ public final class StaticStep {
     }
 
     /**
-     * Perform an in-place direct graph transformation step <br>
-     * with respect to allowing usage of variables for values of the attributes
-     * of the graph objects inside of a graph,
-     * <br>
-     * and when usage of variables is allowed <br>
-     * then do it due to equal names of variables inside of the graph and the
-     * right hand side of the rule of the given match.
+     * Performs an in-place direct graph transformation step considering whether to
+     * allow usage of variables for attribute values of graph objects, and when allowed,
+     * uses variables with equal names from the graph and the right hand side of the rule.
      *
-     * @return the co-match morphism from the right hand side of the rule into
-     * the result graph, or NULL if execution failed.
+     * @param match the match containing the rule and target graph for transformation
+     * @param allowAttrVarsInGraph true to allow attribute variables in graph objects
+     * @param wrtEqualAttrVarName true to use equal attribute variable names
+     * @return the co-match morphism from the right hand side of the rule into the result graph,
+     *         or null if execution failed
+     * @throws TypeException if there is a type mismatch during transformation
      */
     public final static Morphism execute(
             final Match match,
@@ -206,12 +218,12 @@ public final class StaticStep {
     }
 
     /**
-     * Perform an out-place direct graph transformation step: G -> H via Match
-     * match using Colim library.<br>
-     * It is done with respect to allowing usage variables for values of
-     * attributes of objects inside of a graph, <br>
-     * and when usage of variables is allowed <br>
-     * then do it due to equal names of variables inside of the graph and the
+     * Performs an out-place direct graph transformation step: G -> H via Match
+     * match using Colim library.
+     * It is done with respect to allowing usage of variables for values of
+     * attributes of objects inside a graph,
+     * and when usage of variables is allowed,
+     * then it respects equal names of variables inside the graph and the
      * right hand side of the rule of the given match.
      *
      * @return a pair of morphisms (ruleStar: G -> H, matchStar: rhs -> H) or
@@ -285,10 +297,10 @@ public final class StaticStep {
     }
 
     /*
-	 * Here <br>
-	 * Rule r = match.getRule() <br>
-	 * match:   rule.LHS -> G <br>
-	 * comatch: rule.RHS -> G <br>
+	 * Here
+	 * Rule r = match.getRule()
+	 * match:   rule.LHS -> G
+	 * comatch: rule.RHS -> G
 	 * G is changed after in-place trafo step
      */
     private static final void computeAttributes(
@@ -374,10 +386,10 @@ public final class StaticStep {
     }
 
     /*
-	 * Here <br>
-	 * Rule r = match.getRule() <br>
-	 * match:   rule.LHS -> G <br>
-	 * co-match: rule.RHS -> H <br>
+	 * Here
+	 * Rule r = match.getRule()
+	 * match:   rule.LHS -> G
+	 * co-match: rule.RHS -> H
 	 * and there exists direct trafo G ==> H via r and match
 	 *
      */
@@ -479,7 +491,7 @@ public final class StaticStep {
 
     /*
 	 * Calculates the pushout of two morphisms:
-	 * r: L --> R and m: L --> G. <br>
+	 * r: L --> R and m: L --> G.
 	 * The result co-morphism p: R --> G.
 	 * Returns the resulting co-morphism p.
      */

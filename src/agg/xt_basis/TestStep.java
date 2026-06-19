@@ -29,7 +29,7 @@ import java.util.Map;
  * This class implements a direct graph transformation (test)step in the single
  * pushout (SPO) approach to algebraic graph transformation. The transformation
  * is performed <i>in-place</i>, i.e. the host graph is modified according to
- * the rule's instructions.<br>
+ * the rule's instructions.
  * Its functionality is similar to <code>Step</code> with some more checks of
  * graph object types compatibility.
  */
@@ -62,10 +62,10 @@ public final class TestStep {
     }
 
     /**
-     * Perform an in-place graph transformation step <br>
+     * Perform an in-place graph transformation step 
      * with respecting of allowing usage variables for values of attributes of
-     * objects inside of a graph, <br>
-     * and when usage of variables is allowed <br>
+     * objects inside of a graph, 
+     * and when usage of variables is allowed 
      * then do it respecting equal names of variables inside of graph and the
      * right hand side if of the rule of the given match.
      */
@@ -133,10 +133,10 @@ public final class TestStep {
     }
 
     /*
-	 * Here <br>
-	 * Rule r = match.getRule() <br>
-	 * match:   rule.LHS -> G <br>
-	 * comatch: rule.RHS -> G <br>
+	 * Here 
+	 * Rule r = match.getRule() 
+	 * match:   rule.LHS -> G 
+	 * comatch: rule.RHS -> G 
 	 * G is changed after in-place trafo step
      */
     private static final void computeAttributes(
