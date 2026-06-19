@@ -1,18 +1,16 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License
- * v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis;
- 
+
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrInstance;
@@ -47,20 +45,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a graph transformation rule in the AGG system. A rule consists of
- * a left-hand side (LHS) graph and a right-hand side (RHS) graph, and defines
- * how a subgraph matching the LHS can be transformed into a subgraph matching
+ * Represents a graph transformation rule in the AGG system. A rule consists of a left-hand side (LHS) graph and a
+ * right-hand side (RHS) graph, and defines how a subgraph matching the LHS can be transformed into a subgraph matching
  * the RHS.
  *
  * <p>
- * AGG implements the DPO (Double Pushout) approach by enabling the
- * dangling-edge condition by default. Disabling the dangling condition allows
- * AGG to simulate the SPO (Single Pushout) approach.
+ * AGG implements the DPO (Double Pushout) approach by enabling the dangling-edge condition by default. Disabling the
+ * dangling condition allows AGG to simulate the SPO (Single Pushout) approach.
  *
  * <p>
- * A rule can have application conditions (ACs), negative application conditions
- * (NACs), and positive application conditions (PACs) that constrain when and
- * how the rule can be applied.
+ * A rule can have application conditions (ACs), negative application conditions (NACs), and positive application
+ * conditions (PACs) that constrain when and how the rule can be applied.
  *
  * @see OrdinaryMorphism
  * @see Graph
@@ -115,8 +110,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     private InverseRuleConstructData invConstruct;
 
     /**
-     * Creates a new rule with default left and right graphs. Initializes the
-     * rule with default names for the graphs and sets up the attribute context.
+     * Creates a new rule with default left and right graphs. Initializes the rule with default names for the graphs and
+     * sets up the attribute context.
      */
     protected Rule() {
         super();
@@ -133,8 +128,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates a new rule with the specified type set. Creates new left and
-     * right graphs using the given type set and initializes the rule.
+     * Creates a new rule with the specified type set. Creates new left and right graphs using the given type set and
+     * initializes the rule.
      *
      * @param types the type set to use for the left and right graphs
      */
@@ -174,8 +169,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates a new rule with the specified left graph, right graph, and
-     * attribute context.
+     * Creates a new rule with the specified left graph, right graph, and attribute context.
      *
      * @param left the left-hand side graph of this rule
      * @param right the right-hand side graph of this rule
@@ -196,9 +190,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Disposes the superclass resources and cleans up rule-specific references.
-     * This method should be called when the rule is no longer needed to free resources.
-     * It releases the current match and multiplicity check references, and resets the changed flag.
+     * Disposes the superclass resources and cleans up rule-specific references. This method should be called when the
+     * rule is no longer needed to free resources. It releases the current match and multiplicity check references, and
+     * resets the changed flag.
      */
     public void disposeSuper() {
         super.dispose();
@@ -284,10 +278,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Clears this rule by removing all application conditions and resetting the graphs.
-     * This method disposes all NACs, PACs, and nested ACs, clears the superclass morphism,
-     * and resets the left-hand side and right-hand side graphs to their initial empty state.
-     * The change flag is also reset.
+     * Clears this rule by removing all application conditions and resetting the graphs. This method disposes all NACs,
+     * PACs, and nested ACs, clears the superclass morphism, and resets the left-hand side and right-hand side graphs to
+     * their initial empty state. The change flag is also reset.
      */
     public void clearRule() {
         disposeMatch();
@@ -314,8 +307,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Disposes the results of all nested application conditions.
-     * This is useful for freeing memory when the results are no longer needed.
+     * Disposes the results of all nested application conditions. This is useful for freeing memory when the results are
+     * no longer needed.
      */
     public void disposeResultsOfNestedACs() {
         for (int index = 0; index < this.itsACs.size(); index++) {
@@ -325,9 +318,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks if the specified graph is part of this rule.
-     * A graph is considered part of this rule if it is the left-hand side, right-hand side,
-     * or the target of any NAC, PAC, or nested AC morphism.
+     * Checks if the specified graph is part of this rule. A graph is considered part of this rule if it is the
+     * left-hand side, right-hand side, or the target of any NAC, PAC, or nested AC morphism.
      *
      * @param graph the graph to check
      * @return true if the graph is part of this rule, false otherwise
@@ -385,9 +377,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks if this rule is currently applicable.
-     * A rule is applicable if it is not explicitly marked as not applicable
-     * and the internal applicable flag is set to true.
+     * Checks if this rule is currently applicable. A rule is applicable if it is not explicitly marked as not
+     * applicable and the internal applicable flag is set to true.
      *
      * @return true if this rule is applicable, false otherwise
      */
@@ -396,12 +387,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks whether this rule is applicable at the specified graph using the
-     * specified matching strategy.
+     * Checks whether this rule is applicable at the specified graph using the specified matching strategy.
      *
      * <p>
-     * <b>Precondition:</b> {@link #isReadyToTransform()} should be called
-     * before invoking this method to ensure the rule is ready for transformation.
+     * <b>Precondition:</b> {@link #isReadyToTransform()} should be called before invoking this method to ensure the
+     * rule is ready for transformation.
      *
      * @param g the graph to check for applicability
      * @param strategy the matching completion strategy to use
@@ -414,14 +404,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks whether this rule is applicable at the specified graph using the
-     * specified matching strategy. This method optionally checks if the rule is
-     * ready to transform before checking applicability.
+     * Checks whether this rule is applicable at the specified graph using the specified matching strategy. This method
+     * optionally checks if the rule is ready to transform before checking applicability.
      *
      * @param g the graph to check for applicability
      * @param strategy the matching completion strategy to use
-     * @param doCheckIfReadyToTransform if true, checks {@link #isReadyToTransform()}
-     *        before checking applicability
+     * @param doCheckIfReadyToTransform if true, checks {@link #isReadyToTransform()} before checking applicability
      * @return true if this rule can be applied to the graph, false otherwise
      * @see #isApplicable(Graph, MorphCompletionStrategy)
      * @see #isReadyToTransform()
@@ -450,9 +438,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Enables or disables all input parameters in this rule's attribute context.
-     * Input parameters are variables that can be set from outside the rule
-     * to influence the rule's behavior during application.
+     * Enables or disables all input parameters in this rule's attribute context. Input parameters are variables that
+     * can be set from outside the rule to influence the rule's behavior during application.
      *
      * @param enable true to enable input parameters, false to disable them
      */
@@ -468,8 +455,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Enables or disables all attribute conditions that reference the specified
-     * input parameter.
+     * Enables or disables all attribute conditions that reference the specified input parameter.
      *
      * @param ipName the name of the input parameter
      * @param enable true to enable conditions, false to disable them
@@ -485,16 +471,13 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks whether the left-hand side of this rule can be matched in the
-     * specified graph using the given matching completion strategy.
-     * This method temporarily disables all NACs, PACs, and nested ACs to check
-     * only the basic applicability of the LHS pattern without considering
-     * application conditions.
+     * Checks whether the left-hand side of this rule can be matched in the specified graph using the given matching
+     * completion strategy. This method temporarily disables all NACs, PACs, and nested ACs to check only the basic
+     * applicability of the LHS pattern without considering application conditions.
      *
      * @param g the graph to check for LHS applicability
      * @param strategy the matching completion strategy to use
-     * @param doCheckIfReadyToTransform if true, checks whether the rule is ready
-     *        to transform first
+     * @param doCheckIfReadyToTransform if true, checks whether the rule is ready to transform first
      * @return true if the LHS pattern can be found in the graph, false otherwise
      * @see #isApplicable(Graph, MorphCompletionStrategy)
      */
@@ -574,8 +557,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Sets the applicability flag for this rule.
-     * This flag indicates whether the rule can currently be applied during graph transformation.
+     * Sets the applicability flag for this rule. This flag indicates whether the rule can currently be applied during
+     * graph transformation.
      *
      * @param appl true if the rule should be considered applicable, false otherwise
      */
@@ -584,8 +567,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the type set associated with this rule.
-     * The type set is derived from the left-hand side graph of this rule.
+     * Returns the type set associated with this rule. The type set is derived from the left-hand side graph of this
+     * rule.
      *
      * @return the type set of this rule
      */
@@ -597,13 +580,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //	}
 
     /**
-     * Creates and adds a new nested application condition (GAC) to this rule.
-     * Note: Because the new morphism is initially empty and the LHS graph is not,
-     * it is not a morphism in theoretical terms, which demands an application condition
-     * to be a total morphism.
+     * Creates and adds a new nested application condition (GAC) to this rule. Note: Because the new morphism is
+     * initially empty and the LHS graph is not, it is not a morphism in theoretical terms, which demands an application
+     * condition to be a total morphism.
      *
-     * @return an empty nested application condition with the original set to
-     *         this rule's left-hand side graph
+     * @return an empty nested application condition with the original set to this rule's left-hand side graph
      */
     public NestedApplCond createNestedAC() {
         final NestedApplCond applicationCondition = new NestedApplCond(
@@ -618,8 +599,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates and adds a new nested application condition (GAC) to this rule.
-     * The target graph of the new GAC is constructed based on the RHS of this rule.
+     * Creates and adds a new nested application condition (GAC) to this rule. The target graph of the new GAC is
+     * constructed based on the RHS of this rule.
      *
      * @return a new nested application condition with target graph constructed from the RHS
      */
@@ -642,8 +623,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Adds the specified morphism representing a nested application condition
-     * at the specified index in the list.
+     * Adds the specified morphism representing a nested application condition at the specified index in the list.
      * <p>
      * <b>Precondition:</b> The AC's original graph must be this rule's left-hand side graph.
      *
@@ -677,8 +657,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Destroys the specified nested application condition and removes it from this rule.
-     * The target graph of the AC morphism is also disposed.
+     * Destroys the specified nested application condition and removes it from this rule. The target graph of the AC
+     * morphism is also disposed.
      *
      * @param ac the nested application condition morphism to destroy
      */
@@ -777,8 +757,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Removes the specified nested application condition from this rule.If the AC was enabled, 
-     * this method also updates the formula by patching out the evaluable and refreshing the formula.
+     * Removes the specified nested application condition from this rule.If the AC was enabled, this method also updates
+     * the formula by patching out the evaluable and refreshing the formula.
      *
      * @param applicationCondition the nested application condition morphism to remove
      * @return false if the AC was not found, true if it was removed successfully
@@ -796,8 +776,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks if any nested application condition in this rule is using the
-     * specified variable in the context of the specified attribute condition tuple.
+     * Checks if any nested application condition in this rule is using the specified variable in the context of the
+     * specified attribute condition tuple.
      *
      * @param var the variable member to check for usage
      * @param act the attribute condition tuple providing context
@@ -829,9 +809,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates a new negative application condition (NAC) and adds it to this rule.
-     * Note: Because the new morphism is initially empty and the LHS graph is not,
-     * it is not a morphism in theoretical terms, which demands a NAC to be a total morphism.
+     * Creates a new negative application condition (NAC) and adds it to this rule. Note: Because the new morphism is
+     * initially empty and the LHS graph is not, it is not a morphism in theoretical terms, which demands a NAC to be a
+     * total morphism.
      *
      * @return an empty morphism with the original set to this rule's left-hand side graph
      */
@@ -848,8 +828,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates a new negative application condition (NAC) and adds it to this rule.
-     * The target graph of the new NAC is constructed based on the RHS of this rule.
+     * Creates a new negative application condition (NAC) and adds it to this rule. The target graph of the new NAC is
+     * constructed based on the RHS of this rule.
      *
      * @return a new NAC with target graph constructed from the RHS
      */
@@ -860,9 +840,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Constructs the target graph of the specified morphism based on the RHS of this rule.
-     * This method copies nodes and arcs from the RHS to create a target graph
-     * for application conditions (NACs, PACs, or nested ACs).
+     * Constructs the target graph of the specified morphism based on the RHS of this rule. This method copies nodes and
+     * arcs from the RHS to create a target graph for application conditions (NACs, PACs, or nested ACs).
      *
      * @param morph the morphism whose target graph should be constructed
      */
@@ -949,8 +928,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Adds the specified morphism representing a negative application condition (NAC)
-     * at the specified index in the list.
+     * Adds the specified morphism representing a negative application condition (NAC) at the specified index in the
+     * list.
      * <p>
      * <b>Precondition:</b> The NAC's original graph must be this rule's left-hand side graph.
      *
@@ -973,8 +952,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Destroys the specified negative application condition and removes it from this rule.
-     * The target graph of the NAC morphism is also disposed.
+     * Destroys the specified negative application condition and removes it from this rule. The target graph of the NAC
+     * morphism is also disposed.
      *
      * @param negativeApplCond the negative application condition morphism to destroy
      */
@@ -1097,9 +1076,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates a new positive application condition (PAC) and adds it to this rule.
-     * Note: Because the new morphism is initially empty and the LHS graph is not,
-     * it is not a morphism in theoretical terms, which demands a PAC to be a total morphism.
+     * Creates a new positive application condition (PAC) and adds it to this rule. Note: Because the new morphism is
+     * initially empty and the LHS graph is not, it is not a morphism in theoretical terms, which demands a PAC to be a
+     * total morphism.
      *
      * @return an empty morphism with the original set to this rule's left-hand side graph
      */
@@ -1128,8 +1107,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Adds the specified morphism representing a positive application condition (PAC)
-     * at the specified index in the list.
+     * Adds the specified morphism representing a positive application condition (PAC) at the specified index in the
+     * list.
      * <p>
      * <b>Precondition:</b> The PAC's original graph must be this rule's left-hand side graph.
      *
@@ -1192,8 +1171,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Destroys the specified positive application condition and removes it from this rule.
-     * The target graph of the PAC morphism is also disposed.
+     * Destroys the specified positive application condition and removes it from this rule. The target graph of the PAC
+     * morphism is also disposed.
      *
      * @param positiveApplCond the positive application condition morphism to destroy
      */
@@ -1332,9 +1311,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 
     // /////////////////////////////////////
     /**
-     * Checks if the specified node type can be used to create a node in the RHS.
-     * Returns false if the node type is abstract and used in the RHS to create a node,
-     * otherwise returns true.
+     * Checks if the specified node type can be used to create a node in the RHS. Returns false if the node type is
+     * abstract and used in the RHS to create a node, otherwise returns true.
      *
      * @param nodeType the node type to check
      * @return false if the node type is abstract and used in RHS, true otherwise
@@ -1353,9 +1331,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks if any node in the RHS that has no preimage in the LHS violates
-     * type constraints regarding required arcs. Returns a TypeError if such a violation
-     * is found, otherwise null.
+     * Checks if any node in the RHS that has no preimage in the LHS violates type constraints regarding required arcs.
+     * Returns a TypeError if such a violation is found, otherwise null.
      *
      * @return a TypeError describing the constraint violation, or {@code null} if all nodes satisfy constraints
      */
@@ -1380,8 +1357,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Attempts to destroy all graph objects of the specified type from all graphs
-     * associated with this rule (LHS, RHS, NACs, PACs, nested ACs).
+     * Attempts to destroy all graph objects of the specified type from all graphs associated with this rule (LHS, RHS,
+     * NACs, PACs, nested ACs).
      *
      * @param t the type of graph objects to destroy
      * @return true if all objects of the specified type were successfully destroyed, false otherwise
@@ -1432,8 +1409,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Attempts to destroy all graph objects of the specified types from all graphs
-     * associated with this rule (LHS, RHS, NACs, PACs, nested ACs).
+     * Attempts to destroy all graph objects of the specified types from all graphs associated with this rule (LHS, RHS,
+     * NACs, PACs, nested ACs).
      *
      * @param types the list of types whose objects should be destroyed
      * @return a list of names of types that could not be destroyed completely
@@ -1470,8 +1447,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the morphism between the left and right graphs of this rule.
-     * This is the rule itself, as Rule extends OrdinaryMorphism.
+     * Returns the morphism between the left and right graphs of this rule. This is the rule itself, as Rule extends
+     * OrdinaryMorphism.
      *
      * @return this rule as an OrdinaryMorphism
      */
@@ -1489,9 +1466,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks the type compatibility of two graph objects.
-     * The first object should belong to the LHS, the second to the RHS,
-     * to be used for a mapping of the rule morphism.
+     * Checks the type compatibility of two graph objects. The first object should belong to the LHS, the second to the
+     * RHS, to be used for a mapping of the rule morphism.
      *
      * @param orig the original type from the LHS
      * @param image the image type from the RHS
@@ -1502,8 +1478,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates attribute instances where needed for all graphs in this rule
-     * (LHS, RHS, NACs, PACs, nested ACs).
+     * Creates attribute instances where needed for all graphs in this rule (LHS, RHS, NACs, PACs, nested ACs).
      */
     public void createAttrInstanceWhereNeeded() {
         this.itsOrig.createAttrInstanceWhereNeeded();
@@ -1520,8 +1495,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Creates attribute instances of the specified type where needed for all graphs
-     * in this rule (LHS, RHS, NACs, PACs, nested ACs).
+     * Creates attribute instances of the specified type where needed for all graphs in this rule (LHS, RHS, NACs, PACs,
+     * nested ACs).
      *
      * @param t the type for which to create attribute instances
      */
@@ -1540,8 +1515,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Generates rule post application conditions from its constraints (formulas).
-     * Returns an error message if something went wrong, otherwise an empty string.
+     * Generates rule post application conditions from its constraints (formulas). Returns an error message if something
+     * went wrong, otherwise an empty string.
      *
      * @return an error message if conversion failed, or empty string if successful
      */
@@ -1666,8 +1641,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Sets the constraints (formulas) which will be used for generating post application conditions.
-     * This method also extracts any atomic constraints from the formulas.
+     * Sets the constraints (formulas) which will be used for generating post application conditions. This method also
+     * extracts any atomic constraints from the formulas.
      *
      * @param formulasToUse the list of formulas to use for generating post application conditions
      */
@@ -1703,8 +1678,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns a list of atomic graph constraints used for generating post application conditions.
-     * The elements are of type agg.cons.AtomConstraint.
+     * Returns a list of atomic graph constraints used for generating post application conditions. The elements are of
+     * type agg.cons.AtomConstraint.
      *
      * @return a list of atomic constraints, or an empty list if none exist
      */
@@ -1713,8 +1688,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the list of constraints (formulas) used for generating post application conditions.
-     * The elements are of type agg.cons.Formula.
+     * Returns the list of constraints (formulas) used for generating post application conditions. The elements are of
+     * type agg.cons.Formula.
      *
      * @return a list of formulas, or an empty list if none exist
      */
@@ -1723,8 +1698,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Clears all lists of graph constraints if the specified atomic graph constraint
-     * belongs to this rule's constraints.
+     * Clears all lists of graph constraints if the specified atomic graph constraint belongs to this rule's
+     * constraints.
      *
      * @param atomConstraint the atomic constraint to check for presence before clearing
      */
@@ -1735,8 +1710,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Clears all lists of graph constraints if the specified formula constraint
-     * belongs to this rule's constraints.
+     * Clears all lists of graph constraints if the specified formula constraint belongs to this rule's constraints.
      *
      * @param formula the formula to check for presence before clearing
      */
@@ -1747,8 +1721,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Clears all lists of graph constraints (used atomics, used formulas,
-     * constraints, and atom application conditions).
+     * Clears all lists of graph constraints (used atomics, used formulas, constraints, and atom application
+     * conditions).
      */
     public void clearConstraints() {
         if (this.itsUsedAtomics != null) {
@@ -1825,9 +1799,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Removes the specified atomic application condition from the post application conditions.
-     * This method recursively searches through the nested structure of evaluation sets
-     * to find and remove the specified atomic condition.
+     * Removes the specified atomic application condition from the post application conditions. This method recursively
+     * searches through the nested structure of evaluation sets to find and remove the specified atomic condition.
      *
      * @param atomApplCond the atomic application condition to remove
      */
@@ -1876,10 +1849,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Sets this rule to be a trigger rule of its layer.
-     * A trigger rule will be the first rule to apply on its layer.
-     * It can be applied one time only. All other rules on this layer can be applied
-     * as long as possible.
+     * Sets this rule to be a trigger rule of its layer. A trigger rule will be the first rule to apply on its layer. It
+     * can be applied one time only. All other rules on this layer can be applied as long as possible.
      *
      * @param trigger true to set this rule as a trigger rule, false otherwise
      */
@@ -1897,8 +1868,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the layer associated with this rule.
-     * The layer is used by layered grammars to organize rules in layers.
+     * Returns the layer associated with this rule. The layer is used by layered grammars to organize rules in layers.
      *
      * @return the layer number of this rule
      */
@@ -1907,8 +1877,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Sets the layer associated with this rule.
-     * The layer is used by layered grammars to organize rules in layers.
+     * Sets the layer associated with this rule. The layer is used by layered grammars to organize rules in layers.
      *
      * @param l the layer number to assign to this rule
      */
@@ -1917,8 +1886,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the priority of this rule.
-     * The priority can be used during graph transformation to determine rule application order.
+     * Returns the priority of this rule. The priority can be used during graph transformation to determine rule
+     * application order.
      *
      * @return the priority number of this rule
      */
@@ -1927,8 +1896,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Sets the priority of this rule.
-     * The priority can be used during graph transformation to determine rule application order.
+     * Sets the priority of this rule. The priority can be used during graph transformation to determine rule
+     * application order.
      *
      * @param p the priority number to assign to this rule
      */
@@ -1937,9 +1906,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Trims the capacity of used lists to match their current size.
-     * This method optimizes memory usage by reducing the internal capacity
-     * of the list of used atomic constraints.
+     * Trims the capacity of used lists to match their current size. This method optimizes memory usage by reducing the
+     * internal capacity of the list of used atomic constraints.
      */
     public void trimToSize() {
         if (this.itsUsedAtomics != null) {
@@ -1967,8 +1935,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks if this rule or any of its application conditions (NACs, PACs, nested ACs)
-     * are using the specified type graph object (node or edge).
+     * Checks if this rule or any of its application conditions (NACs, PACs, nested ACs) are using the specified type
+     * graph object (node or edge).
      *
      * @param typeObj the type graph object to check for usage
      * @return true if the type object is used anywhere in this rule, false otherwise
@@ -2068,8 +2036,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Implements the interface of XMLObject.
-     * Writes this rule to the specified XML helper.
+     * Implements the interface of XMLObject. Writes this rule to the specified XML helper.
      *
      * @param h the XML helper to write to
      */
@@ -2191,8 +2158,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Implements the interface of XMLObject.
-     * Reads this rule from the specified XML helper.
+     * Implements the interface of XMLObject. Reads this rule from the specified XML helper.
      *
      * @param h the XML helper to read from
      */
@@ -2380,7 +2346,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 }
                 h.close();
             }
-           
+
             h.close();
             this.applicable = true;
             setUsedFormulas(tempFormulas);
@@ -2447,10 +2413,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     // ------ additional methods according to Gabi's new AGG design ---------
     // ----------- attention: yet untested! (SG, Aug.1999) ------------------
     /**
-     * Returns an inverted rule.
-     * This rule has to be injective, otherwise returns null.
-     * The attribute mappings are NOT inverted, thus the resulting left and right-hand side
-     * graphs are not attributed anymore.
+     * Returns an inverted rule. This rule has to be injective, otherwise returns null. The attribute mappings are NOT
+     * inverted, thus the resulting left and right-hand side graphs are not attributed anymore.
      *
      * @return the inverted rule, or null if this rule is not injective
      */
@@ -2531,14 +2495,12 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Tries to invert this rule. The rule has to be injective.
-     * The attribute mappings are NOT inverted, thus the resulting left and right-hand side
-     * graphs are not attributed anymore.
+     * Tries to invert this rule. The rule has to be injective. The attribute mappings are NOT inverted, thus the
+     * resulting left and right-hand side graphs are not attributed anymore.
      * <p>
-     * Returns the pair with an inverted rule as the first element and a help pair of two
-     * graph morphisms as the second element. The first morphism is between the LHS of this
-     * and the RHS of the inverted rule, the second morphism is between the RHS of this
-     * and the LHS of the inverted rule. If this rule is not injective, returns null.
+     * Returns the pair with an inverted rule as the first element and a help pair of two graph morphisms as the second
+     * element. The first morphism is between the LHS of this and the RHS of the inverted rule, the second morphism is
+     * between the RHS of this and the LHS of the inverted rule. If this rule is not injective, returns null.
      *
      * @return a pair containing the inverted rule and morphism information, or null if not injective
      */
@@ -2622,10 +2584,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the rule scheme for this rule.
-     * A plain rule returns null. Its subclasses <code>KernelRule</code>,
-     * <code>MultiRule</code>, <code>RuleScheme</code>,
-     * <code>AmalgamatedRule</code> override this method to return its <code>RuleScheme</code>.
+     * Returns the rule scheme for this rule. A plain rule returns null. Its subclasses <code>KernelRule</code>,
+     * <code>MultiRule</code>, <code>RuleScheme</code>, <code>AmalgamatedRule</code> override this method to return its
+     * <code>RuleScheme</code>.
      *
      * @return the rule scheme, or null for plain rules
      */
@@ -2643,8 +2604,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Compares attribute value of the specified objects due to constant value of the first object.
-     * Failed attribute value of the second object will be unset. Checks all members of the attribute tuple.
+     * Compares attribute value of the specified objects due to constant value of the first object. Failed attribute
+     * value of the second object will be unset. Checks all members of the attribute tuple.
      *
      * @param src first object (an object of the LHS of a rule)
      * @param tgt second object (an object of a NAC, PAC of a rule)
@@ -2674,9 +2635,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Compares attribute value of the specified objects due to constant value of the first object.
-     * Failed attribute value of the second object will be unset.
-     * The check breaks after at least one attribute failed.
+     * Compares attribute value of the specified objects due to constant value of the first object. Failed attribute
+     * value of the second object will be unset. The check breaks after at least one attribute failed.
      *
      * @param sourceObj first object (an object of the LHS of a rule)
      * @param targetObj second object (an object of a NAC, PAC of a rule)
@@ -2704,8 +2664,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Compares its LHS, RHS, morphism, NACs, PACs and attribute context to the appropriate elements
-     * of the specified rule. Returns true if all elements are equal.
+     * Compares its LHS, RHS, morphism, NACs, PACs and attribute context to the appropriate elements of the specified
+     * rule. Returns true if all elements are equal.
      *
      * @param otherRule the rule to compare to
      * @return true if all elements are equal, false otherwise
@@ -2900,8 +2860,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns variables of the attribute context of this rule which are used as
-     * input parameter for the rule application.
+     * Returns variables of the attribute context of this rule which are used as input parameter for the rule
+     * application.
      *
      * @return a list of input parameter variable members
      */
@@ -2936,8 +2896,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns input parameters from the attribute context that are marked for the right-hand side
-     * or NACs.
+     * Returns input parameters from the attribute context that are marked for the right-hand side or NACs.
      *
      * @return a list of input parameter variable members marked for RHS or NAC
      */
@@ -2956,8 +2915,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns variables of the attribute context of this rule which are used by
-     * attributes of the specified graph object as an input parameter for the rule application.
+     * Returns variables of the attribute context of this rule which are used by attributes of the specified graph
+     * object as an input parameter for the rule application.
      *
      * @param go the graph object to check
      * @param var the variable tuple containing the variables to check
@@ -2982,8 +2941,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns all non-input parameters used by newly created graph objects in the RHS.
-     * Newly created objects are those that have no preimage in the LHS.
+     * Returns all non-input parameters used by newly created graph objects in the RHS. Newly created objects are those
+     * that have no preimage in the LHS.
      *
      * @return a list of non-input parameter variable members used by new graph objects
      */
@@ -3029,8 +2988,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks if all NACs in this rule are valid.
-     * Currently always returns true as it is not yet fully implemented.
+     * Checks if all NACs in this rule are valid. Currently always returns true as it is not yet fully implemented.
      *
      * @return true if all NACs are valid, false otherwise
      */
@@ -3052,8 +3010,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 //	}
 
     /**
-     * Checks if the specified NAC is valid.
-     * Currently always returns true as it is not yet fully implemented.
+     * Checks if the specified NAC is valid. Currently always returns true as it is not yet fully implemented.
      *
      * @param nac the negative application condition to validate
      * @return true if the NAC is valid, false otherwise
@@ -3063,8 +3020,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks if shifting of an application condition is possible.
-     * Shift is not possible when it may cause a dangling edge.
+     * Checks if shifting of an application condition is possible. Shift is not possible when it may cause a dangling
+     * edge.
      *
      * @param ac the application condition to check
      * @return true if the AC can be shifted, false otherwise
@@ -3130,8 +3087,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks dangling edges of the given nested application condition.
-     * Returns true if no dangling edge exists, otherwise false.
+     * Checks dangling edges of the given nested application condition. Returns true if no dangling edge exists,
+     * otherwise false.
      *
      * @param ac the nested application condition to validate
      * @return true if the GAC has no dangling edges, false otherwise
@@ -3144,8 +3101,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks dangling edges of all nested application conditions in this rule.
-     * Returns true if no dangling edge exists, otherwise false.
+     * Checks dangling edges of all nested application conditions in this rule. Returns true if no dangling edge exists,
+     * otherwise false.
      *
      * @return true if all GACs have no dangling edges, false otherwise
      */
@@ -3160,8 +3117,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks dangling edges of all PACs and nested ACs in this rule.
-     * Returns true if no dangling edge exists, otherwise false.
+     * Checks dangling edges of all PACs and nested ACs in this rule. Returns true if no dangling edge exists, otherwise
+     * false.
      *
      * @return true if all application conditions have no dangling edges, false otherwise
      */
@@ -3182,8 +3139,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Copies nodes and edges of its PACs in the LHS resp. RHS and extends the rule mapping.
-     * The PACs will be disabled.
+     * Copies nodes and edges of its PACs in the LHS resp. RHS and extends the rule mapping. The PACs will be disabled.
      *
      * @return true if the extension was successful, false otherwise
      */
@@ -3266,8 +3222,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Undo the copy of its PACs done by <code>extendByPacs</code>. The PACs
-     * will be enabled.
+     * Undo the copy of its PACs done by <code>extendByPacs</code>. The PACs will be enabled.
      */
     public boolean extendByPacsUndo() {
         for (int i = 0; i < this.itsPACs.size(); i++) {
@@ -3315,9 +3270,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks existing variables of the attribute context against the attribute
-     * context of its current match and adjusts the attribute context of its
-     * match, if needed.
+     * Checks existing variables of the attribute context against the attribute context of its current match and adjusts
+     * the attribute context of its match, if needed.
      */
     public void adjustAttrContextOfMatch(boolean inputParameterOnly) {
         if (this.itsMatch != null) {
@@ -3344,8 +3298,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Attribute context variable which is an input parameter is no more input
-     * parameter after this method applied.
+     * Attribute context variable which is an input parameter is no more input parameter after this method applied.
      */
     public void unsetInputParameter() {
         AttrVariableTuple attrVariableTuple = getAttrContext().getVariables();
@@ -3374,10 +3327,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the name of an unset input parameter variable from the attribute context.
-     * If the specified parameter is true, the LHS (NACs, PACs) with an input parameter
-     * for matching are taken into account. If false, the RHS (NACs, PACs) with an input
-     * parameter for matching are taken into account.
+     * Returns the name of an unset input parameter variable from the attribute context. If the specified parameter is
+     * true, the LHS (NACs, PACs) with an input parameter for matching are taken into account. If false, the RHS (NACs,
+     * PACs) with an input parameter for matching are taken into account.
      *
      * @param left true to check LHS, false to check RHS
      * @return the name of the first unset input parameter in the specified context, or null if all are set
@@ -3449,9 +3401,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks attribute setting of RHS, variable declarations and attribute
-     * conditions. If all checks successful, it prepares infos about this rule.
-     * The method getErrorMessage() gives more information about fails.
+     * Checks attribute setting of RHS, variable declarations and attribute conditions. If all checks successful, it
+     * prepares infos about this rule. The method getErrorMessage() gives more information about fails.
      */
     public boolean isReadyToTransform() {
         this.isReady = true;
@@ -4064,11 +4015,9 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Prepares info about this rule: node, edges to preserve, change, delete,
-     * create; types which should be checked due to node resp. edge type
-     * multiplicity. These infos can be called by methods:
-     * getElementsToPreserve(), getElementsToChange(), getElementsToDelete(),
-     * getElementsToCreate(), getTypesWhichNeedMultiplicityCheck.
+     * Prepares info about this rule: node, edges to preserve, change, delete, create; types which should be checked due
+     * to node resp. edge type multiplicity. These infos can be called by methods: getElementsToPreserve(),
+     * getElementsToChange(), getElementsToDelete(), getElementsToCreate(), getTypesWhichNeedMultiplicityCheck.
      */
     public void prepareRuleInfo() {
         this.preserved = this.findElementsToPreserve();
@@ -4122,8 +4071,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
 	}
      */
     /**
-     * Return true if its left and right graphs are empty and there aren't any
-     * application conditions, otherwise - false.
+     * Return true if its left and right graphs are empty and there aren't any application conditions, otherwise -
+     * false.
      */
     public boolean isEmptyRule() {
         return (this.itsOrig.isEmpty()
@@ -4240,8 +4189,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true if this rule will create new graph elements, otherwise -
-     * false.
+     * Returns true if this rule will create new graph elements, otherwise - false.
      */
     public boolean isCreating() {
         // LHS graph size > rule mapping size
@@ -4253,8 +4201,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true if this rule will delete some graph elements, otherwise -
-     * false.
+     * Returns true if this rule will delete some graph elements, otherwise - false.
      */
     public boolean isDeleting() {
         // LHS graph size > rule mapping size
@@ -4279,9 +4226,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Checks if this rule may cause a dangling edge problem.
-     * Returns true if the rule is deleting nodes and after deleting a dangling-edge
-     * problem may occur.
+     * Checks if this rule may cause a dangling edge problem. Returns true if the rule is deleting nodes and after
+     * deleting a dangling-edge problem may occur.
      *
      * @return true if the rule may cause dangling edges, false otherwise
      */
@@ -4471,8 +4417,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns preserved elements which attributes should be changed. The key is
-     * an object of the LHS, the value - its image of the RHS.
+     * Returns preserved elements which attributes should be changed. The key is an object of the LHS, the value - its
+     * image of the RHS.
      */
     public Map<GraphObject, GraphObject> getElementsToChange() {
         if (this.changedPreserved == null
@@ -4551,8 +4497,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true if this rule will change some attributes of the graph
-     * elements, otherwise - false.
+     * Returns true if this rule will change some attributes of the graph elements, otherwise - false.
      */
     public boolean isChanging() {
         for (int i = 0; i < this.itsDomObjects.size(); i++) {
@@ -4602,12 +4547,11 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         }
         return false;
     }
- 
+
     /**
-     * Restores variable declarations of the RHS, NACs and PACs. The reason is:
-     * the variables declarations can be lost after a step. Before the next
-     * application of this rule can be done the lost variable declarations have
-     * to be restored. This method is called during Critical Pair Analysis.
+     * Restores variable declarations of the RHS, NACs and PACs. The reason is: the variables declarations can be lost
+     * after a step. Before the next application of this rule can be done the lost variable declarations have to be
+     * restored. This method is called during Critical Pair Analysis.
      */
     protected void restoreVariableDeclaration() {
         VarTuple vart = (VarTuple) getAttrContext().getVariables();
@@ -4717,8 +4661,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns true if this rule can make a match basically. It works for
-     * INJECTIVE matching, only.
+     * Returns true if this rule can make a match basically. It works for INJECTIVE matching, only.
      */
     public boolean canMatch(Graph g, MorphCompletionStrategy strategy) {
         // check graph size if injective morphism
@@ -4773,20 +4716,17 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Allows to define the CSP solver has to do next match completion starting
-     * always by first CSP variable. This works for parallel match only. The
-     * method <code>setParallelMatchingEnabled(true)</code> should be called
-     * before.
+     * Allows to define the CSP solver has to do next match completion starting always by first CSP variable. This works
+     * for parallel match only. The method <code>setParallelMatchingEnabled(true)</code> should be called before.
      */
     public void setStartParallelMatchingByFirst(boolean b) {
         this.startParallelMatchByFirstCSPVar = b;
     }
 
     /**
-     * Set value of the input parameter of its attribute context. The specified
-     * parameters contain: String - is a name of an input parameter, first
-     * Object of a List - is the value, second Object of a List - is the type of
-     * this input parameter.
+     * Set value of the input parameter of its attribute context. The specified parameters contain: String - is a name
+     * of an input parameter, first Object of a List - is the value, second Object of a List - is the type of this input
+     * parameter.
      */
     public void setInputParameters(HashMap<String, List<Object>> parameters) {
         VarTuple varTuple = (VarTuple) getAttrContext().getVariables();
@@ -4956,8 +4896,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Set a boolean formula represented by the specified bnf string above
-     * nested application conditions.
+     * Set a boolean formula represented by the specified bnf string above nested application conditions.
      *
      * @param bnfFormula the boolean formula string to set
      */
@@ -4970,8 +4909,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Set a boolean formula represented by the specified bnf string above
-     * nested application conditions.
+     * Set a boolean formula represented by the specified bnf string above nested application conditions.
      *
      * @param bnfFormula the boolean formula string to set
      * @param nestedApplCondList the list of nested application conditions
@@ -5023,17 +4961,16 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns the formula string as internal represantation like this:
-     * (1&2).>br> This method shoud be used for all actions relationg to Formula
-     * objects.
+     * Returns the formula string as internal represantation like this: (1&2).>br> This method shoud be used for all
+     * actions relationg to Formula objects.
      */
     public String getFormulaStr() {
         return this.formStr;
     }
 
     /**
-     * Returns the formula string as readable representation like this: (nameOf1
-     * & nameOf2). This method should be used for messages.
+     * Returns the formula string as readable representation like this: (nameOf1 & nameOf2). This method should be used
+     * for messages.
      */
     public String getFormulaText() {
         return this.formReadStr;
@@ -5075,8 +5012,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns a list with names of enabled general application conditions and
-     * its nested ACs inclusively.
+     * Returns a list with names of enabled general application conditions and its nested ACs inclusively.
      */
     public List<String> getNameOfEnabledNestedACs() {
         final List<String> vars = new ArrayList<>();
@@ -5091,8 +5027,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Returns a list with names of all general application conditions and its
-     * nested ACs inclusively.
+     * Returns a list with names of all general application conditions and its nested ACs inclusively.
      */
     public List<String> getNameOfNestedACs() {
         final List<String> vars = new ArrayList<>();
@@ -5105,20 +5040,19 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Makes the minimal rule from the given rule.A minimal rule comprises 
-     * the effects of a given rule in a minimal context.
-     * 
-     * @return 
+     * Makes the minimal rule from the given rule.A minimal rule comprises the effects of a given rule in a minimal
+     * context.
+     *
+     * @return
      */
     public Rule getMinimalRule() {
         return BaseFactory.theBaseFactory.makeMinimalOfRule(this);
     }
 
     /**
-     * Returns an inverse construction of this rule.This rule has to be 
-     * injective, otherwise returns null. Note: This method is mainly 
-     * used during critical pair analysis.
-     * 
+     * Returns an inverse construction of this rule.This rule has to be injective, otherwise returns null. Note: This
+     * method is mainly used during critical pair analysis.
+     *
      * @return
      */
     public InverseRuleConstructData getInverseConstructData() {
@@ -5132,9 +5066,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * This method does not destroy the Rule and OrdinaryMorphism instances of
-     * the inverse construction. They must be disposed by the user object
-     * explicitly. The local pair references set to null, only.
+     * This method does not destroy the Rule and OrdinaryMorphism instances of the inverse construction. They must be
+     * disposed by the user object explicitly. The local pair references set to null, only.
      */
     public void disposeInverseConstruct() {
         if (this.invConstruct != null) {
@@ -5144,8 +5077,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     }
 
     /**
-     * Destroys the Rule and OrdinaryMorphism instances of the inverse
-     * construction. The local pair references set to null.
+     * Destroys the Rule and OrdinaryMorphism instances of the inverse construction. The local pair references set to
+     * null.
      */
     public void destroyInverseConstruct() {
         if (this.invConstruct != null) {
