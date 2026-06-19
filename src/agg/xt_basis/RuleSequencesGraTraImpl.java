@@ -1,12 +1,10 @@
 /**
  * ***************************************************************************
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
- * </copyright>
- * *****************************************************************************
+ * </copyright> *****************************************************************************
  */
 package agg.xt_basis;
 
@@ -43,11 +41,13 @@ public class RuleSequencesGraTraImpl extends GraTra {
     public RuleSequencesGraTraImpl() {
     }
 
+    @Override
     public void dispose() {
         this.clearRuleSequence();
         super.dispose();
     }
 
+    @Override
     public boolean setGraGra(GraGra gg) {
         boolean res = super.setGraGra(gg);
         if (this.grammar.getRuleSequenceList() != null) {
@@ -64,6 +64,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
         return this.eachRuleToApply;
     }
 
+    @Override
     public boolean apply() {
         if (this.ruleSequence != null) {
             this.addGraTraListener(this.ruleSequence);
@@ -99,21 +100,20 @@ public class RuleSequencesGraTraImpl extends GraTra {
 
     protected void setRuleSequence(
             final List<Pair<List<Pair<String, String>>, String>> sequence) {
-        this.ruleSubsequences = new ArrayList<Pair<List<Pair<Rule, String>>, String>>(
+        this.ruleSubsequences = new ArrayList<>(
                 sequence.size());
         for (int i = 0; i < sequence.size(); i++) {
             Pair<List<Pair<String, String>>, String> pi = sequence.get(i);
             List<Pair<String, String>> v = pi.first;
-            List<Pair<Rule, String>> vec = new ArrayList<Pair<Rule, String>>(v
+            List<Pair<Rule, String>> vec = new ArrayList<>(v
                     .size());
             for (int j = 0; j < v.size(); j++) {
                 Pair<String, String> pj = v.get(j);
                 Rule r = this.grammar.getRuleByQualifiedName(pj.first);
-                Pair<Rule, String> p = new Pair<Rule, String>(r, pj.second);
+                Pair<Rule, String> p = new Pair<>(r, pj.second);
                 vec.add(p);
             }
-            this.ruleSubsequences.add(
-                    new Pair<List<Pair<Rule, String>>, String>(vec, pi.second));
+            this.ruleSubsequences.add(new Pair<>(vec, pi.second));
         }
     }
 
@@ -168,20 +168,16 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 }
             }
         } else {
-            long N = (new Long(iters)).longValue();
-            for (long i = 0; i < N && !this.stopping; i++) {
+            long count = Long.valueOf(iters);
+            for (long i = 0; i < count && !this.stopping; i++) {
                 if (this.options.hasOption(GraTraOptions.WAIT_AFTER_STEP)) {
                     fireGraTra(new GraTraEvent(this, GraTraEvent.RULE, r));
                 }
                 if (this.ruleSequence.isTrafoByObjFlow()
                         && !this.ruleSequence.getObjectFlow().isEmpty()) {
                     this.indx++;
-//					if (this.ruleSequence.getRule(this.indx) != r
-//							|| this.ruleSequence.getRule(this.indx-1) != r) {
-                    ////						this.indx++;
-//						this.ruleSequence.getMatchSequence().setTrafoIndex(this.indx);
-//					}
-					this.ruleSequence.getMatchSequence().setTrafoIndex(this.indx);
+
+                    this.ruleSequence.getMatchSequence().setTrafoIndex(this.indx);
                     propagateObjFlowOfRule(this.indx, r);
                 }
                 if (!this.stopping) {
@@ -265,10 +261,10 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 }
             }
         } else {
-            long N = (new Long(iters)).longValue();
+            long count = Long.valueOf(iters);
 //			if (N > 1)
 //				System.out.println("\n	apply  " + N + "  time(s)");
-            for (long i = 0; i < N && !this.stopping; i++) {
+            for (long i = 0; i < count && !this.stopping; i++) {
                 long time0 = System.currentTimeMillis();
                 for (int j = 0; j < group.size() && !this.stopping; j++) {
                     Pair<Rule, String> p = group.get(j);
@@ -293,6 +289,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
         return this.appliedOnce;
     }
 
+    @Override
     public boolean apply(Rule r) {
 //		System.out.println("RuleSequenceGraTra.apply(Rule) : "+r.getName()+"   "+updateTypeObjectsMapAfterStep);
         this.stoppingRule = false;
@@ -418,6 +415,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
         return result;
     }
 
+    @Override
     public void transform(List<Rule> rules) {
         if (this.grammar == null
                 || this.ruleSubsequences == null || this.ruleSubsequences.isEmpty()) {
@@ -426,6 +424,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
         apply();
     }
 
+    @Override
     public void transform() {
         System.out.println("GraTra   by  " + this.getClass().getName() + "  running");
         this.stopping = false;
@@ -473,17 +472,19 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 }
             } // now check the host graph
             else if (!this.grammar.isGraphReadyForTransform()) {
-                String s = "Graph of the grammar isn't fine."
-                        + "\nPlease check attribute settings of the objects."
-                        + "\nTransformation is stopped.";
+                String s = """
+                           Graph of the grammar isn't fine.
+                           Please check attribute settings of the objects.
+                           Transformation is stopped.""";
                 ((GraTra) this).fireGraTra(new GraTraEvent(this,
                         GraTraEvent.GRAPH_FAILED, s));
                 transformFailed(s);
                 return;
             } else if (!this.checkGraphConsistency()) {
-                String s = "Graph consistency failed."
-                        + "\nPlease check the host graph against the graph constraints."
-                        + "\nTransformation is stopped.";
+                String s = """
+                           Graph consistency failed.
+                           Please check the host graph against the graph constraints.
+                           Transformation is stopped.""";
                 ((GraTra) this).fireGraTra(new GraTraEvent(this,
                         GraTraEvent.GRAPH_FAILED, s));
                 transformFailed(s);
@@ -511,7 +512,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
     }
 
     protected List<Rule> getEnabledRules(List<Rule> ruleSet) {
-        List<Rule> vec = new ArrayList<Rule>(ruleSet.size());
+        List<Rule> vec = new ArrayList<>(ruleSet.size());
         for (int j = 0; j < ruleSet.size(); j++) {
             if (ruleSet.get(j).isEnabled()) {
                 vec.add(ruleSet.get(j));
@@ -531,6 +532,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
         closeTransformProtocol();
     }
 
+    @Override
     public boolean transformationDone() {
         return this.appliedOnce;
     }
@@ -640,6 +642,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
         }
     }
 
+    @Override
     public Pair<Morphism, Morphism> derivation(Match m) /**
      * not implemented yet! *
      */
@@ -648,7 +651,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
     }
 
     public String getRuleSequenceAsText() {
-        this.ruleNameSequences = new ArrayList<String>(this.ruleSubsequences.size());
+        this.ruleNameSequences = new ArrayList<>(this.ruleSubsequences.size());
         String s = "";
         for (int i = 0; i < this.ruleSubsequences.size(); i++) {
             Pair<List<Pair<Rule, String>>, String> grp = this.ruleSubsequences.get(i);
@@ -659,7 +662,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
             if (grpItersStr.equals("*")) {
                 grpStr = grpStr + "( ";
             } else {
-                grpIters = (new Long(grp.second)).longValue();
+                grpIters = Long.valueOf(grp.second);
                 if (grpRules.size() > 1 || grpIters > 1) {
                     grpStr = grpStr + "( ";
                 }
@@ -676,7 +679,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
                 if (ruleItersStr.equals("*")) {
                     grpStr = grpStr + "{" + ruleItersStr + "}";
                 } else {
-                    ruleIters = (new Long(p.second)).longValue();
+                    ruleIters = Long.valueOf(p.second);
                     if (ruleIters > 1) {
                         grpStr = grpStr + "{" + ruleIters + "}";
                     }
@@ -688,7 +691,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
             } else if (grpRules.size() > 1 || grpIters > 1) {
                 grpStr = grpStr + ")";
             }
-            if (grpRules.size() > 0) {
+            if (!grpRules.isEmpty()) {
                 if (grpItersStr.equals("*")) {
                     grpStr = grpStr + "{" + grpItersStr + "}";
                 } else if (grpIters > 1) {
@@ -704,6 +707,7 @@ public class RuleSequencesGraTraImpl extends GraTra {
         return s;
     }
 
+    @Override
     protected boolean isInputParameterSet(
             final Graph g,
             boolean left,

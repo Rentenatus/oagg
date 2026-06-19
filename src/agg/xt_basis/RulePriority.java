@@ -29,7 +29,7 @@ public class RulePriority {
 
     private Map<Rule, Integer> rulePriority;
 //	private Enumeration<Rule> rules;
-    private List<Rule> rulesVec;
+    private final List<Rule> rulesVec;
 
     /**
      * Creates a new set of rule priorities for a given graph grammar.
@@ -38,7 +38,7 @@ public class RulePriority {
      */
     public RulePriority(Enumeration<Rule> rules) {
 //		this.rules = rules;
-        this.rulesVec = new ArrayList<Rule>(0);
+        this.rulesVec = new ArrayList<>(0);
         while (rules.hasMoreElements()) {
             this.rulesVec.add(rules.nextElement());
         }
@@ -46,7 +46,7 @@ public class RulePriority {
     }
 
     public RulePriority(List<Rule> rules) {
-        this.rulesVec = new ArrayList<Rule>(0);
+        this.rulesVec = new ArrayList<>(0);
         for (int i = 0; i < rules.size(); i++) {
             this.rulesVec.add(rules.get(i));
         }
@@ -56,19 +56,21 @@ public class RulePriority {
 
     /**
      * Sets the priority of the specified rule
+     * @param rule
+     * @param p
      */
     public void setPriority(Rule rule, int p) {
         rule.setPriority(p);
-        this.rulePriority.put(rule, Integer.valueOf(p));
+        this.rulePriority.put(rule, p);
         // System.out.println("rule priority: "+((Integer)
         // rulePriority.get(rule)).toString());
     }
 
     private void initRulePriority() {
-        this.rulePriority = new HashMap<Rule, Integer>();
+        this.rulePriority = new HashMap<>();
         for (int i = 0; i < this.rulesVec.size(); i++) {
             Rule rule = this.rulesVec.get(i);
-            this.rulePriority.put(rule, Integer.valueOf(rule.getPriority()));
+            this.rulePriority.put(rule, rule.getPriority());
             // Object rule = rulesVec.get(i);
             // if(rule instanceof Rule)
             // rulePriority.put(rule, Integer.valueOf(((Rule) rule).getPriority()));
@@ -97,8 +99,8 @@ public class RulePriority {
         Integer result = null;
         for (Rule key : this.rulePriority.keySet()) {
             Integer p = this.rulePriority.get(key);
-            if (p.intValue() < startPriority) {
-                startPriority = p.intValue();
+            if (p < startPriority) {
+                startPriority = p;
                 result = p;
             }
         }
@@ -112,12 +114,12 @@ public class RulePriority {
      * @return The inverted set.
      */
     public Map<Integer, HashSet<Rule>> invertPriority() {
-        Map<Integer, HashSet<Rule>> inverted = new HashMap<Integer, HashSet<Rule>>();
+        Map<Integer, HashSet<Rule>> inverted = new HashMap<>();
         for (Rule key : this.rulePriority.keySet()) {
             Integer value = this.rulePriority.get(key);
             HashSet<Rule> invertedValue = inverted.get(value);
             if (invertedValue == null) {
-                invertedValue = new HashSet<Rule>();
+                invertedValue = new HashSet<>();
                 invertedValue.add(key);
                 inverted.put(value, invertedValue);
             } else {
