@@ -532,6 +532,7 @@ public class Match extends OrdinaryMorphism implements XMLObject {
      * @return <code>true</code> iff this is a total morphism and all conditions
      * of its rule are satisfied.
      */
+    @Override
     public final boolean isValid() {
         return isValid(false);
     }

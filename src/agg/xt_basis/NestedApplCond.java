@@ -75,9 +75,10 @@ public class NestedApplCond extends OrdinaryMorphism implements Evaluable {
     }
 
     /**
-     * Checks dangling edges of this and its nested application conditions.
-     * Returns true if no dangling edge exists, otherwise false.
+     * Checks dangling edges of this and its nested application conditions.Returns true if no dangling edge exists, otherwise false.
+     * @return
      */
+    @Override
     public boolean isValid() {
         if (this.isEnabled()) {
             final Iterator<Node> objects = this.itsOrig.getNodesSet().iterator();

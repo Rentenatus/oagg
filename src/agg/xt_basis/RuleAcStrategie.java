@@ -14,7 +14,6 @@ package agg.xt_basis;
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
 import agg.attribute.AttrVariableTuple;
-import agg.attribute.impl.CondMember;
 import agg.attribute.impl.VarMember;
 import agg.cons.Evaluable;
 import java.util.ArrayList;
@@ -25,13 +24,10 @@ import java.util.Map;
 /**
  * Strategy class for managing Nested Application Conditions (AC/GAC) in a Rule.
  */
-public class RuleAcStrategie {
+public class RuleAcStrategie extends RuleConditionStrategy {
 
-    final protected List<OrdinaryMorphism> itsACs = new ArrayList<>();
     transient protected Map<GraphObject, GraphObject> changedPreserved;
     transient protected List<String> typesWhichNeedMultiplicityCheck;
-
-    private Rule itsRule;
 
     /**
      * Creates a new AC strategy for the specified rule.
@@ -39,7 +35,7 @@ public class RuleAcStrategie {
      * @param rule the rule this strategy belongs to
      */
     public RuleAcStrategie(Rule rule) {
-        this.itsRule = rule;
+        super(rule);
     }
 
     /**
@@ -49,7 +45,8 @@ public class RuleAcStrategie {
      *
      * @return an empty nested application condition with the original set to this rule's left-hand side graph
      */
-    public NestedApplCond createNestedAc() {
+    @Override
+    public NestedApplCond createAc() {
         final NestedApplCond applicationCondition = new NestedApplCond(
                 getRule().getLeft(),
                 BaseFactory.theFactory().createGraph(getRule().getRight().getTypeSet()),
@@ -68,9 +65,9 @@ public class RuleAcStrategie {
      * @return a new nested application condition with target graph constructed from the RHS
      */
     public NestedApplCond createNestedAcDuetoRHS() {
-        final NestedApplCond nac = createNestedAc();
-        getRule().makeACDuetoRHS(nac);
-        return nac;
+        final NestedApplCond nestedApplCond = createAc();
+        getRule().makeACDuetoRHS(nestedApplCond);
+        return nestedApplCond;
     }
 
     /**
@@ -82,7 +79,7 @@ public class RuleAcStrategie {
      * @return true if the AC was added successfully, false if it was already present
      */
     public boolean addNestedAc(final OrdinaryMorphism ac) {
-        return this.addNestedAc(-1, ac);
+        return this.addAc(-1, ac);
     }
 
     /**
@@ -94,7 +91,7 @@ public class RuleAcStrategie {
      * @param ac the nested application condition morphism to add
      * @return true if the AC was added successfully, false if it was already present
      */
-    public boolean addNestedAc(int indx, final OrdinaryMorphism ac) {
+    public boolean addAc(int indx, final OrdinaryMorphism ac) {
         if (!this.itsACs.contains(ac)) {
             ac.getTarget().setKind(GraphKind.AC);
             if (indx >= 0 && indx < this.itsACs.size()) {
@@ -106,46 +103,6 @@ public class RuleAcStrategie {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Enables or disables all nested application conditions (ACs) of this rule.
-     *
-     * @param enable true to enable all ACs, false to disable them
-     */
-    public void enableNestedAc(boolean enable) {
-        for (int index = 0; index < this.itsACs.size(); index++) {
-            this.itsACs.get(index).setEnabled(enable);
-        }
-    }
-
-    /**
-     * Destroys the specified nested application condition and removes it from this rule. The target graph of the AC
-     * morphism is also disposed.
-     *
-     * @param ac the nested application condition morphism to destroy
-     */
-    public void destroyNestedAc(final OrdinaryMorphism ac) {
-        this.itsACs.remove(ac);
-        ac.getImage().dispose();
-    }
-
-    /**
-     * Checks if this rule contains any nested application conditions.
-     *
-     * @return true if the rule has at least one nested AC, false otherwise
-     */
-    public boolean hasNestedAcs() {
-        return !this.itsACs.isEmpty();
-    }
-
-    /**
-     * Returns an iterator over all nested application conditions of this rule.
-     *
-     * @return an iterator of all nested AC morphisms
-     */
-    public Iterator<OrdinaryMorphism> getNestedAcs() {
-        return this.itsACs.iterator();
     }
 
     /**
@@ -165,15 +122,6 @@ public class RuleAcStrategie {
     }
 
     /**
-     * Returns the list of all nested application condition morphisms of this rule.
-     *
-     * @return the list of nested AC morphisms
-     */
-    public List<OrdinaryMorphism> getNestedAcsList() {
-        return this.itsACs;
-    }
-
-    /**
      * Returns a list of all enabled nested application conditions as evaluable objects.
      *
      * @return a list of all enabled nested AC morphisms as evaluable objects
@@ -187,36 +135,6 @@ public class RuleAcStrategie {
             }
         }
         return evaluableList;
-    }
-
-    /**
-     * Returns the nested application condition morphism with the specified name.
-     *
-     * @param name the name of the nested AC to find
-     * @return the nested AC morphism with the specified name, or null if not found
-     */
-    public OrdinaryMorphism getNestedAc(String name) {
-        for (int index = 0; index < this.itsACs.size(); index++) {
-            OrdinaryMorphism nestedApplCond = this.itsACs.get(index);
-            if (nestedApplCond.getName().equals(name)) {
-                return nestedApplCond;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns the nested application condition morphism at the specified index.
-     *
-     * @param index the index of the nested AC to retrieve
-     * @return the nested AC morphism at the specified index, or null if index is out of bounds
-     */
-    public OrdinaryMorphism getNestedAc(int index) {
-        if (index >= 0 && index < this.itsACs.size()) {
-            return this.itsACs.get(index);
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -249,26 +167,7 @@ public class RuleAcStrategie {
     public boolean nestedAcIsUsingVariable(
             final VarMember var,
             final AttrConditionTuple act) {
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            final OrdinaryMorphism applicationCondition = this.itsACs.get(i);
-            if (applicationCondition.getTarget().isUsingVariable(var)) {
-                return true;
-            }
-            List<String> acVars = applicationCondition.getTarget()
-                    .getVariableNamesOfAttributes();
-            for (int j = 0; j < acVars.size(); j++) {
-                String varName = acVars.get(j);
-                for (int k = 0; k < act.getNumberOfEntries(); k++) {
-                    CondMember cond = (CondMember) act.getMemberAt(k);
-                    List<String> condVars = cond.getAllVariables();
-                    if (condVars.contains(varName)
-                            && condVars.contains(var.getName())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return acIsUsingVariable(var, act);
     }
 
     /**
@@ -289,25 +188,10 @@ public class RuleAcStrategie {
      * @param ac the nested application condition to validate
      * @return true if the GAC has no dangling edges, false otherwise
      */
-    public boolean isAcValid(NestedApplCond ac) {
+    @Override
+    public boolean isAcValid(OrdinaryMorphism ac) {
         if (ac.isEnabled()) {
             return ac.isValid();
-        }
-        return true;
-    }
-
-    /**
-     * Checks dangling edges of all nested application conditions in this rule. Returns true if no dangling edge exists,
-     * otherwise false.
-     *
-     * @return true if all GACs have no dangling edges, false otherwise
-     */
-    public boolean areAcsValid() {
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            NestedApplCond applicationCondition = (NestedApplCond) this.itsACs.get(i);
-            if (!this.isAcValid(applicationCondition)) {
-                return false;
-            }
         }
         return true;
     }
@@ -337,48 +221,4 @@ public class RuleAcStrategie {
         getRule().markUsedVars(nodes, arcs, avt, mark);
     }
 
-    /**
-     * Clears all nested application conditions from this strategy.
-     */
-    public void clearNestedAcs() {
-        this.itsACs.clear();
-    }
-
-    /**
-     * Disposes all nested application conditions in this strategy.
-     */
-    public void disposeAllNestedAcs() {
-        while (!this.itsACs.isEmpty()) {
-            this.itsACs.get(0).dispose(false, true);
-            this.itsACs.remove(0);
-        }
-        this.itsACs.clear();
-    }
-
-    /**
-     * Returns the list of all nested application condition morphisms. Package-private for internal use by Rule class.
-     *
-     * @return the list of nested AC morphisms
-     */
-    public List<OrdinaryMorphism> getAcsListInternal() {
-        return this.itsACs;
-    }
-
-    /**
-     * Returns the rule this strategy belongs to.
-     *
-     * @return the rule
-     */
-    public Rule getRule() {
-        return itsRule;
-    }
-
-    /**
-     * Sets the rule this strategy belongs to.
-     *
-     * @param rule the rule
-     */
-    public void setRule(Rule rule) {
-        this.itsRule = rule;
-    }
 }

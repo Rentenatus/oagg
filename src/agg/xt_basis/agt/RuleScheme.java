@@ -610,7 +610,9 @@ public class RuleScheme extends Rule //implements Observer
     /**
      * Checks the kernel rule and all enabled multi rules are ready to
      * transform.
+     * @return 
      */
+    @Override
     public boolean isValid() {
         this.valid = this.isReadyToTransform();
         return this.valid;

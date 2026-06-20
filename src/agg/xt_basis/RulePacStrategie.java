@@ -11,10 +11,7 @@
  */
 package agg.xt_basis;
 
-import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
-import agg.attribute.impl.CondMember;
-import agg.attribute.impl.VarMember;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,12 +21,9 @@ import java.util.Map;
 /**
  * Strategy class for managing Positive Application Conditions (PAC) in a Rule.
  */
-public class RulePacStrategie {
+public class RulePacStrategie extends RuleConditionStrategy {
 
-    final protected List<OrdinaryMorphism> itsACs = new ArrayList<>();
     protected List<ShiftedPAC> itsShiftedPACs;
-
-    private Rule itsRule;
 
     /**
      * Creates a new PAC strategy for the specified rule.
@@ -37,16 +31,10 @@ public class RulePacStrategie {
      * @param rule the rule this strategy belongs to
      */
     public RulePacStrategie(Rule rule) {
-        this.itsRule = rule;
+        super(rule);
     }
 
-    /**
-     * Creates a new positive application condition (PAC) and adds it to this rule. Note: Because the new morphism is
-     * initially empty and the LHS graph is not, it is not a morphism in theoretical terms, which demands a PAC to be a
-     * total morphism.
-     *
-     * @return an empty morphism with the original set to this rule's left-hand side graph
-     */
+    @Override
     public OrdinaryMorphism createAc() {
         final OrdinaryMorphism positiveApplCond = new OrdinaryMorphism(
                 getRule().getLeft(),
@@ -57,42 +45,6 @@ public class RulePacStrategie {
         positiveApplCond.getImage().setAttrContext(positiveApplCondContext);
         positiveApplCond.getImage().setKind(GraphKind.PAC);
         return positiveApplCond;
-    }
-
-    /**
-     * Adds the specified morphism representing a positive application condition (PAC).
-     * <p>
-     * <b>Precondition:</b> The PAC's original graph must be this rule's left-hand side graph.
-     *
-     * @param positiveApplCond the positive application condition morphism to add
-     * @return true if the PAC was added successfully, false if it was already present
-     */
-    public boolean addAc(final OrdinaryMorphism positiveApplCond) {
-        return this.addAc(-1, positiveApplCond);
-    }
-
-    /**
-     * Adds the specified morphism representing a positive application condition (PAC) at the specified index in the
-     * list.
-     * <p>
-     * <b>Precondition:</b> The PAC's original graph must be this rule's left-hand side graph.
-     *
-     * @param index the index at which to insert the PAC, or -1 to append to the end
-     * @param positiveApplCond the positive application condition morphism to add
-     * @return true if the PAC was added successfully, false if it was already present
-     */
-    public boolean addAc(int index, final OrdinaryMorphism positiveApplCond) {
-        if (!this.itsACs.contains(positiveApplCond)) {
-            positiveApplCond.getTarget().setKind(GraphKind.PAC);
-            if (index >= 0 && index < this.itsACs.size()) {
-                this.itsACs.add(index, positiveApplCond);
-            } else {
-                this.itsACs.add(positiveApplCond);
-            }
-            getRule().changed = true;
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -135,58 +87,19 @@ public class RulePacStrategie {
         return false;
     }
 
-    /**
-     * Enables or disables all positive application conditions (PACs) of this rule.
-     *
-     * @param enable true to enable all PACs, false to disable them
-     */
-    public void enableAcs(boolean enable) {
-        for (int index = 0; index < this.itsACs.size(); index++) {
-            this.itsACs.get(index).setEnabled(enable);
-        }
-    }
-
-    /**
-     * Destroys the specified positive application condition and removes it from this rule. The target graph of the PAC
-     * morphism is also disposed.
-     *
-     * @param positiveApplCond the positive application condition morphism to destroy
-     */
-    public void destroyAc(final OrdinaryMorphism positiveApplCond) {
-        this.itsACs.remove(positiveApplCond);
-        positiveApplCond.getImage().dispose();
-    }
-
-    /**
-     * Checks if this rule contains any positive application conditions.
-     *
-     * @return true if the rule has at least one PAC, false otherwise
-     */
-    public boolean hasAcs() {
-        return !this.itsACs.isEmpty();
-    }
-
-    /**
-     * Checks if this rule has at least one enabled positive application condition.
-     *
-     * @return true if the rule has at least one enabled PAC, false otherwise
-     */
-    public boolean hasEnabledAcs() {
-        for (OrdinaryMorphism positiveApplCond : this.itsACs) {
-            if (positiveApplCond.isEnabled()) {
-                return true;
+    @Override
+    public boolean addAc(int index, final OrdinaryMorphism positiveApplCond) {
+        if (!this.itsACs.contains(positiveApplCond)) {
+            positiveApplCond.getTarget().setKind(GraphKind.PAC);
+            if (index >= 0 && index < this.itsACs.size()) {
+                this.itsACs.add(index, positiveApplCond);
+            } else {
+                this.itsACs.add(positiveApplCond);
             }
+            getRule().changed = true;
+            return true;
         }
         return false;
-    }
-
-    /**
-     * Returns an iterator over all positive application conditions of this rule.
-     *
-     * @return an iterator of all PAC morphisms
-     */
-    public Iterator<OrdinaryMorphism> getAcs() {
-        return this.itsACs.iterator();
     }
 
     /**
@@ -204,93 +117,7 @@ public class RulePacStrategie {
         return enabledPacsList.iterator();
     }
 
-    /**
-     * Returns the list of all positive application condition morphisms of this rule.
-     *
-     * @return the list of PAC morphisms
-     */
-    public List<OrdinaryMorphism> getAcsList() {
-        return this.itsACs;
-    }
-
-    /**
-     * Returns the positive application condition morphism with the specified name.
-     *
-     * @param name the name of the PAC to find
-     * @return the PAC morphism with the specified name, or {@code null} if not found
-     */
-    public OrdinaryMorphism getAc(String name) {
-        for (int index = 0; index < this.itsACs.size(); index++) {
-            OrdinaryMorphism positiveApplCond = this.itsACs.get(index);
-            if (positiveApplCond.getName().equals(name)) {
-                return positiveApplCond;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns the positive application condition morphism at the specified index.
-     *
-     * @param index the index of the PAC to retrieve
-     * @return the PAC morphism at the specified index, or {@code null} if index is out of bounds
-     */
-    public OrdinaryMorphism getAc(int index) {
-        if (index >= 0 && index < this.itsACs.size()) {
-            return this.itsACs.get(index);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the positive application condition morphism with the specified target graph.
-     *
-     * @param graph the target graph to search for
-     * @return the PAC morphism with the specified target graph, or {@code null} if not found
-     */
-    public OrdinaryMorphism getAc(final Graph graph) {
-        for (int index = 0; index < this.itsACs.size(); index++) {
-            OrdinaryMorphism applCond = this.itsACs.get(index);
-            if (applCond.getTarget() == graph) {
-                return applCond;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Checks if the specified graph is the target graph of any positive application condition.
-     *
-     * @param graph the graph to check
-     * @return true if the graph is a target of any PAC, false otherwise
-     */
-    public boolean hasAc(final Graph graph) {
-        for (int index = 0; index < this.itsACs.size(); index++) {
-            OrdinaryMorphism applCond = this.itsACs.get(index);
-            if (applCond.getTarget() == graph) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Removes the specified positive application condition from this rule.
-     *
-     * @param positiveApplCond the positive application condition morphism to remove
-     * @return false if the PAC was not found, true if it was removed successfully
-     */
-    public final boolean removeAc(OrdinaryMorphism positiveApplCond) {
-        return this.itsACs.remove(positiveApplCond);
-    }
-
-    /**
-     * Checks dangling edges of the given PAC. Returns true if no dangling edge exists, otherwise false.
-     *
-     * @param ac the positive application condition to validate
-     * @return true if the PAC has no dangling edges, false otherwise
-     */
+    @Override
     public boolean isAcValid(OrdinaryMorphism ac) {
         if (ac.isEnabled()) {
             final Iterator<Node> objects = getRule().getLeft().getNodesSet().iterator();
@@ -309,11 +136,7 @@ public class RulePacStrategie {
         return true;
     }
 
-    /**
-     * Checks dangling edges of all PACs in this rule. Returns true if no dangling edge exists, otherwise false.
-     *
-     * @return true if all PACs have no dangling edges, false otherwise
-     */
+    @Override
     public boolean areAcsValid() {
         for (int i = 0; i < this.itsACs.size(); i++) {
             OrdinaryMorphism applicationCondition = this.itsACs.get(i);
@@ -411,7 +234,8 @@ public class RulePacStrategie {
     }
 
     /**
-     * Undo the copy of its PACs done by <code>extendByPacs</code>. The PACs will be enabled.
+     * Undo the copy of its PACs done by <code>extendByAcs</code>.The PACs will be enabled.
+     * @return 
      */
     public boolean extendByAcsUndo() {
         for (int i = 0; i < this.itsACs.size(); i++) {
@@ -459,66 +283,6 @@ public class RulePacStrategie {
     }
 
     /**
-     * Checks if the specified PAC is using the specified variable in the context of the specified attribute condition
-     * tuple.
-     *
-     * @param var the variable member to check for usage
-     * @param act the attribute condition tuple providing context
-     * @return true if the PAC uses the variable in the given context, false otherwise
-     */
-    public boolean acIsUsingVariable(
-            final VarMember var,
-            final AttrConditionTuple act) {
-        for (int i = 0; i < this.itsACs.size(); i++) {
-            final OrdinaryMorphism pac = this.itsACs.get(i);
-            if (pac.getTarget().isUsingVariable(var)) {
-                return true;
-            }
-            List<String> pacVars = pac.getTarget()
-                    .getVariableNamesOfAttributes();
-            for (int j = 0; j < pacVars.size(); j++) {
-                String varName = pacVars.get(j);
-                for (int k = 0; k < act.getNumberOfEntries(); k++) {
-                    CondMember cond = (CondMember) act.getMemberAt(k);
-                    List<String> condVars = cond.getAllVariables();
-                    if (condVars.contains(varName)
-                            && condVars.contains(var.getName())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Clears all positive application conditions from this strategy.
-     */
-    public void clearACs() {
-        this.itsACs.clear();
-    }
-
-    /**
-     * Disposes all positive application conditions in this strategy.
-     */
-    public void disposeAllACs() {
-        while (!this.itsACs.isEmpty()) {
-            this.itsACs.get(0).dispose(false, true);
-            this.itsACs.remove(0);
-        }
-        this.itsACs.clear();
-    }
-
-    /**
-     * Returns the list of all positive application condition morphisms. Package-private for internal use by Rule class.
-     *
-     * @return the list of PAC morphisms
-     */
-    public List<OrdinaryMorphism> getACsListInternal() {
-        return this.itsACs;
-    }
-
-    /**
      * Returns the list of shifted PACs. Package-private for internal use by Rule class.
      *
      * @return the list of shifted PACs
@@ -534,23 +298,5 @@ public class RulePacStrategie {
      */
     void setShiftedPACsInternal(List<ShiftedPAC> shiftedPACs) {
         this.itsShiftedPACs = shiftedPACs;
-    }
-
-    /**
-     * Returns the rule this strategy belongs to.
-     *
-     * @return the rule
-     */
-    public Rule getRule() {
-        return itsRule;
-    }
-
-    /**
-     * Sets the rule this strategy belongs to.
-     *
-     * @param rule the rule
-     */
-    public void setRule(Rule rule) {
-        this.itsRule = rule;
     }
 }

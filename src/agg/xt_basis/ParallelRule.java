@@ -101,6 +101,7 @@ public class ParallelRule extends Rule {
      *
      * @return true if this parallel rule has source rules, false otherwise
      */
+    @Override
     public boolean isValid() {
         return (sources == null || sources.isEmpty()) ? false : true;
     }

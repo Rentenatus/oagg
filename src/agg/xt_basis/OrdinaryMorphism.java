@@ -249,6 +249,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
         return this.enabled;
     }
 
+    public boolean isValid() {
+        return true;
+    }
+
     /*
 	 * This method is used for internal computations only. 
      */
@@ -2769,9 +2773,10 @@ public class OrdinaryMorphism extends ExtObservable implements Morphism // , Obs
      * Test if the specified morphism h is isomorphic to this morphism, assuming that : - this and h are total, - this
      * and h have one and the same original graph, - the target graph of this is the source graph of targetIso, - the
      * target graph of h is the target graph of targetIso, - targetIso is an isomorphism.
+     *
      * @param h
      * @param targetIso
-     * @return 
+     * @return
      */
     public boolean isIsomorphicTo(final OrdinaryMorphism h, final OrdinaryMorphism targetIso) {
         // System.out.println("OrdinaryMorphism.isIsomorphicTo(h, targetIso)

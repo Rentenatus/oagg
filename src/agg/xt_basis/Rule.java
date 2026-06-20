@@ -226,8 +226,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     public void dispose() {
         super.dispose();
         this.nacStrategie.disposeAllAcs();
-        this.pacStrategie.disposeAllACs();
-        this.acStrategie.disposeAllNestedAcs();
+        this.pacStrategie.disposeAllAcs();
+        this.acStrategie.disposeAllAcs();
         this.disposeInverseConstruct();
         this.itsOrig.dispose();
         this.itsImag.dispose();
@@ -284,8 +284,8 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
     public void clearRule() {
         disposeMatch();
         this.nacStrategie.disposeAllAcs();
-        this.pacStrategie.disposeAllACs();
-        this.acStrategie.disposeAllNestedAcs();
+        this.pacStrategie.disposeAllAcs();
+        this.acStrategie.disposeAllAcs();
         super.clear();
         this.changed = false;
         this.itsOrig.clear();
@@ -320,7 +320,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 return true;
             }
         }
-        for (OrdinaryMorphism ordMorph : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism ordMorph : this.pacStrategie.getAcsListInternal()) {
             if (ordMorph.getTarget() == graph) {
                 return true;
             }
@@ -476,14 +476,14 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         if (result) {
             result = false;
             Map<OrdinaryMorphism, Boolean> applcond2enable = new HashMap<>(
-                    this.nacStrategie.getAcsListInternal().size() + this.pacStrategie.getACsListInternal().size() + this.acStrategie.getAcsListInternal().size());
+                    this.nacStrategie.getAcsListInternal().size() + this.pacStrategie.getAcsListInternal().size() + this.acStrategie.getAcsListInternal().size());
             // store nac.isEnabled() setting and disable nac 
             for (OrdinaryMorphism negativeApplCond : this.nacStrategie.getAcsListInternal()) {
                 applcond2enable.put(negativeApplCond, Boolean.valueOf(negativeApplCond.isEnabled()));
                 negativeApplCond.setEnabled(false);
             }
             // store pac.isEnabled() setting and disable pac 
-            for (OrdinaryMorphism positiveApplCond : this.pacStrategie.getACsListInternal()) {
+            for (OrdinaryMorphism positiveApplCond : this.pacStrategie.getAcsListInternal()) {
                 applcond2enable.put(positiveApplCond, Boolean.valueOf(positiveApplCond.isEnabled()));
                 positiveApplCond.setEnabled(false);
             }
@@ -505,7 +505,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             for (OrdinaryMorphism negativeApplCond : this.nacStrategie.getAcsListInternal()) {
                 negativeApplCond.setEnabled(applcond2enable.get(negativeApplCond).booleanValue());
             }
-            for (OrdinaryMorphism positiveApplCond : this.pacStrategie.getACsListInternal()) {
+            for (OrdinaryMorphism positiveApplCond : this.pacStrategie.getAcsListInternal()) {
                 positiveApplCond.setEnabled(applcond2enable.get(positiveApplCond).booleanValue());
             }
             for (OrdinaryMorphism nestedApplCond : this.acStrategie.getAcsListInternal()) {
@@ -564,7 +564,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return an empty nested application condition with the original set to this rule's left-hand side graph
      */
     public NestedApplCond createNestedAC() {
-        return this.acStrategie.createNestedAc();
+        return this.acStrategie.createAc();
     }
 
     /**
@@ -599,7 +599,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return true if the AC was added successfully, false if it was already present
      */
     public boolean addNestedAC(int indx, final OrdinaryMorphism ac) {
-        return this.acStrategie.addNestedAc(indx, ac);
+        return this.acStrategie.addAc(indx, ac);
     }
 
     /**
@@ -608,7 +608,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @param enable true to enable all ACs, false to disable them
      */
     public void enableNestedAC(boolean enable) {
-        this.acStrategie.enableNestedAc(enable);
+        this.acStrategie.enableAcs(enable);
     }
 
     /**
@@ -618,7 +618,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @param ac the nested application condition morphism to destroy
      */
     public void destroyNestedAC(final OrdinaryMorphism ac) {
-        this.acStrategie.destroyNestedAc(ac);
+        this.acStrategie.destroyAc(ac);
     }
 
     /**
@@ -627,7 +627,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return true if the rule has at least one nested AC, false otherwise
      */
     public boolean hasNestedACs() {
-        return this.acStrategie.hasNestedAcs();
+        return this.acStrategie.hasAcs();
     }
 
     /**
@@ -636,7 +636,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return an iterator of all nested AC morphisms
      */
     public Iterator<OrdinaryMorphism> getNestedACs() {
-        return this.acStrategie.getNestedAcs();
+        return this.acStrategie.getAcs();
     }
 
     /**
@@ -654,7 +654,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return the list of nested AC morphisms
      */
     public List<OrdinaryMorphism> getNestedACsList() {
-        return this.acStrategie.getNestedAcsList();
+        return this.acStrategie.getAcsList();
     }
 
     /**
@@ -673,7 +673,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return the nested AC morphism with the specified name, or null if not found
      */
     public OrdinaryMorphism getNestedAC(String name) {
-        return this.acStrategie.getNestedAc(name);
+        return this.acStrategie.getAc(name);
     }
 
     /**
@@ -683,7 +683,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
      * @return the nested AC morphism at the specified index, or null if index is out of bounds
      */
     public OrdinaryMorphism getNestedAC(int index) {
-        return this.acStrategie.getNestedAc(index);
+        return this.acStrategie.getAc(index);
     }
 
     /**
@@ -1162,7 +1162,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                         return false;
                     }
                 }
-                for (OrdinaryMorphism positiveApplCond : this.pacStrategie.getACsListInternal()) {
+                for (OrdinaryMorphism positiveApplCond : this.pacStrategie.getAcsListInternal()) {
                     if (!positiveApplCond.getTarget().destroyObjectsOfType(type)) {
                         return false;
                     }
@@ -1274,7 +1274,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         for (OrdinaryMorphism ordMorph : this.nacStrategie.getAcsListInternal()) {
             ordMorph.getTarget().createAttrInstanceWhereNeeded();
         }
-        for (OrdinaryMorphism ordMorph : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism ordMorph : this.pacStrategie.getAcsListInternal()) {
             ordMorph.getTarget().createAttrInstanceWhereNeeded();
         }
         for (OrdinaryMorphism ordMorph : this.acStrategie.getAcsListInternal()) {
@@ -1294,7 +1294,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         for (OrdinaryMorphism ordMorph : this.nacStrategie.getAcsListInternal()) {
             ordMorph.getTarget().createAttrInstanceOfTypeWhereNeeded(type);
         }
-        for (OrdinaryMorphism ordMorph : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism ordMorph : this.pacStrategie.getAcsListInternal()) {
             ordMorph.getTarget().createAttrInstanceOfTypeWhereNeeded(type);
         }
         for (OrdinaryMorphism ordMorph : this.acStrategie.getAcsListInternal()) {
@@ -1714,7 +1714,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         for (OrdinaryMorphism ordMorph : this.nacStrategie.getAcsListInternal()) {
             ordMorph.getTarget().refreshAttributed();
         }
-        for (OrdinaryMorphism ordMorph : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism ordMorph : this.pacStrategie.getAcsListInternal()) {
             ordMorph.getTarget().refreshAttributed();
         }
         for (OrdinaryMorphism ordMorph : this.acStrategie.getAcsListInternal()) {
@@ -1741,7 +1741,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                 return true;
             }
         }
-        for (OrdinaryMorphism ordMorph : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism ordMorph : this.pacStrategie.getAcsListInternal()) {
             if (ordMorph.getTarget().isUsingType(typeObj)) {
                 return true;
             }
@@ -2046,7 +2046,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                     positiveApplCond.setEnabled(positiveApplCondEnabled);
                     positiveApplCond.getTarget().setHelpInfo("");
                     if (positiveApplCond.getName().isEmpty()) {
-                        positiveApplCond.setName("pac".concat(String.valueOf(this.pacStrategie.getACsListInternal().size())));
+                        positiveApplCond.setName("pac".concat(String.valueOf(this.pacStrategie.getAcsListInternal().size())));
                     }
                 }
                 while (h.readSubTag("NestedAC")) {
@@ -3015,7 +3015,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                         }
                     }
                 }
-                for (OrdinaryMorphism positiveApplCond : this.pacStrategie.getACsListInternal()) {
+                for (OrdinaryMorphism positiveApplCond : this.pacStrategie.getAcsListInternal()) {
                     List<String> varNames = positiveApplCond.getTarget()
                             .getVariableNamesOfAttributes();
                     for (int nameIndex = 0; nameIndex < varNames.size(); nameIndex++) {
@@ -3074,7 +3074,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             return false;
         }
         // check  PAC is valid: check dangling edge of nodes to delete which are used in a PAC
-        for (OrdinaryMorphism pac : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism pac : this.pacStrategie.getAcsListInternal()) {
             this.isReady = this.isPACValid(pac);
             if (!this.isReady) {
                 return false;
@@ -3095,7 +3095,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             addVarDecl(nac.getImage(), varDeclPairs);
         }
         // add vars of PACs to varDeclPairs
-        for (OrdinaryMorphism pac : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism pac : this.pacStrategie.getAcsListInternal()) {
             addVarDecl(pac.getImage(), varDeclPairs);
         }
         // add vars of nested ACs to varDeclPairs
@@ -3193,7 +3193,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             if (attributed) break;
         }
         if (!attributed) {
-            for (OrdinaryMorphism ordMorph : this.pacStrategie.getACsListInternal()) {
+            for (OrdinaryMorphism ordMorph : this.pacStrategie.getAcsListInternal()) {
                 attributed = ordMorph.getImage().isAttributed();
                 if (attributed) break;
             }
@@ -3541,7 +3541,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
                     avt, VarMember.NAC);
         }
         // inside PACs	
-        for (OrdinaryMorphism ordMorph : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism ordMorph : this.pacStrategie.getAcsListInternal()) {
             Graph g = ordMorph.getImage();
             markUsedVars(g.getNodesSet().iterator(),
                     g.getArcsSet().iterator(),
@@ -3696,7 +3696,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
         return (this.itsOrig.isEmpty()
                 && this.itsImag.isEmpty()
                 && this.nacStrategie.getAcsListInternal().isEmpty()
-                && this.pacStrategie.getACsListInternal().isEmpty()
+                && this.pacStrategie.getAcsListInternal().isEmpty()
                 && this.acStrategie.getAcsListInternal().isEmpty());
     }
 
@@ -4183,7 +4183,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             }
         }
         // check vars of PACs
-        for (OrdinaryMorphism pac : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism pac : this.pacStrategie.getAcsListInternal()) {
             if (pac.getImage().isAttributed()) {
                 this.restoreVarDecl(pac.getImage(), vart);
             }
@@ -4235,7 +4235,7 @@ public class Rule extends OrdinaryMorphism implements XMLObject {
             addUsedTypes(ordMorph.getTarget(), typeVec);
         }
         // add types of PACs
-        for (OrdinaryMorphism ordMorph : this.pacStrategie.getACsListInternal()) {
+        for (OrdinaryMorphism ordMorph : this.pacStrategie.getAcsListInternal()) {
             addUsedTypes(ordMorph.getTarget(), typeVec);
         }
         // add types of nested ACs
