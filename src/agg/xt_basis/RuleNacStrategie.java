@@ -13,26 +13,18 @@ package agg.xt_basis;
 
 import agg.attribute.AttrConditionTuple;
 import agg.attribute.AttrContext;
-import agg.attribute.AttrInstance;
-import agg.attribute.AttrVariableTuple;
 import agg.attribute.impl.CondMember;
-import agg.attribute.impl.ValueMember;
-import agg.attribute.impl.ValueTuple;
 import agg.attribute.impl.VarMember;
-import agg.cons.Evaluable;
-import agg.util.Pair;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Strategy class for managing Negative Application Conditions (NAC) in a Rule.
  */
 public class RuleNacStrategie {
 
-    final protected List<OrdinaryMorphism> itsNACs = new ArrayList<>();
+    final protected List<OrdinaryMorphism> itsACs = new ArrayList<>();
 
     private Rule itsRule;
 
@@ -52,12 +44,12 @@ public class RuleNacStrategie {
      *
      * @return an empty morphism with the original set to this rule's left-hand side graph
      */
-    public OrdinaryMorphism createNAC() {
+    public OrdinaryMorphism createAc() {
         final OrdinaryMorphism negativeApplCond = new OrdinaryMorphism(
                 getRule().getLeft(),
                 BaseFactory.theFactory().createGraph(getRule().getRight().getTypeSet()),
                 getRule().getRight().getAttrContext());
-        this.itsNACs.add(negativeApplCond);
+        this.itsACs.add(negativeApplCond);
         AttrContext negativeApplCondContext = negativeApplCond.getAttrContext();
         negativeApplCond.getImage().setAttrContext(negativeApplCondContext);
         negativeApplCond.getImage().setKind(GraphKind.NAC);
@@ -70,8 +62,8 @@ public class RuleNacStrategie {
      *
      * @return a new NAC with target graph constructed from the RHS
      */
-    public OrdinaryMorphism createNACDuetoRHS() {
-        final OrdinaryMorphism negativeApplCond = createNAC();
+    public OrdinaryMorphism createAcDuetoRHS() {
+        final OrdinaryMorphism negativeApplCond = createAc();
         getRule().makeACDuetoRHS(negativeApplCond);
         return negativeApplCond;
     }
@@ -84,8 +76,8 @@ public class RuleNacStrategie {
      * @param negativeApplCond the negative application condition morphism to add
      * @return true if the NAC was added successfully, false if it was already present
      */
-    public boolean addNAC(final OrdinaryMorphism negativeApplCond) {
-        return this.addNAC(-1, negativeApplCond);
+    public boolean addAc(final OrdinaryMorphism negativeApplCond) {
+        return this.addAc(-1, negativeApplCond);
     }
 
     /**
@@ -98,13 +90,13 @@ public class RuleNacStrategie {
      * @param negativeApplCond the negative application condition morphism to add
      * @return true if the NAC was added successfully, false if it was already present
      */
-    public boolean addNAC(int index, final OrdinaryMorphism negativeApplCond) {
-        if (!this.itsNACs.contains(negativeApplCond)) {
+    public boolean addAc(int index, final OrdinaryMorphism negativeApplCond) {
+        if (!this.itsACs.contains(negativeApplCond)) {
             negativeApplCond.getTarget().setKind(GraphKind.NAC);
-            if (index >= 0 && index < this.itsNACs.size()) {
-                this.itsNACs.add(index, negativeApplCond);
+            if (index >= 0 && index < this.itsACs.size()) {
+                this.itsACs.add(index, negativeApplCond);
             } else {
-                this.itsNACs.add(negativeApplCond);
+                this.itsACs.add(negativeApplCond);
             }
             getRule().changed = true;
             return true;
@@ -117,9 +109,9 @@ public class RuleNacStrategie {
      *
      * @param enable true to enable all NACs, false to disable them
      */
-    public void enableNACs(boolean enable) {
-        for (int index = 0; index < this.itsNACs.size(); index++) {
-            this.itsNACs.get(index).setEnabled(enable);
+    public void enableAcs(boolean enable) {
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            this.itsACs.get(index).setEnabled(enable);
         }
     }
 
@@ -129,8 +121,8 @@ public class RuleNacStrategie {
      *
      * @param negativeApplCond the negative application condition morphism to destroy
      */
-    public void destroyNAC(OrdinaryMorphism negativeApplCond) {
-        this.itsNACs.remove(negativeApplCond);
+    public void destroyAc(OrdinaryMorphism negativeApplCond) {
+        this.itsACs.remove(negativeApplCond);
         negativeApplCond.getImage().dispose();
     }
 
@@ -139,8 +131,8 @@ public class RuleNacStrategie {
      *
      * @return true if the rule has at least one NAC, false otherwise
      */
-    public boolean hasNACs() {
-        return !this.itsNACs.isEmpty();
+    public boolean hasAcs() {
+        return !this.itsACs.isEmpty();
     }
 
     /**
@@ -148,8 +140,8 @@ public class RuleNacStrategie {
      *
      * @return true if the rule has at least one enabled NAC, false otherwise
      */
-    public boolean hasEnabledNACs() {
-        for (OrdinaryMorphism negativeApplCond : this.itsNACs) {
+    public boolean hasEnabledAcs() {
+        for (OrdinaryMorphism negativeApplCond : this.itsACs) {
             if (negativeApplCond.isEnabled()) {
                 return true;
             }
@@ -162,8 +154,8 @@ public class RuleNacStrategie {
      *
      * @return an iterator of all NAC morphisms
      */
-    public Iterator<OrdinaryMorphism> getNACs() {
-        return this.itsNACs.iterator();
+    public Iterator<OrdinaryMorphism> getAcs() {
+        return this.itsACs.iterator();
     }
 
     /**
@@ -171,8 +163,8 @@ public class RuleNacStrategie {
      *
      * @return the list of NAC morphisms
      */
-    public List<OrdinaryMorphism> getNACsList() {
-        return this.itsNACs;
+    public List<OrdinaryMorphism> getAcsList() {
+        return this.itsACs;
     }
 
     /**
@@ -181,9 +173,9 @@ public class RuleNacStrategie {
      * @param name the name of the NAC to find
      * @return the NAC morphism with the specified name, or {@code null} if not found
      */
-    public OrdinaryMorphism getNAC(String name) {
-        for (int index = 0; index < this.itsNACs.size(); index++) {
-            OrdinaryMorphism negativeApplCond = this.itsNACs.get(index);
+    public OrdinaryMorphism getAc(String name) {
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            OrdinaryMorphism negativeApplCond = this.itsACs.get(index);
             if (negativeApplCond.getName().equals(name)) {
                 return negativeApplCond;
             }
@@ -197,9 +189,9 @@ public class RuleNacStrategie {
      * @param index the index of the NAC to retrieve
      * @return the NAC morphism at the specified index, or {@code null} if index is out of bounds
      */
-    public OrdinaryMorphism getNAC(int index) {
-        if (index >= 0 && index < this.itsNACs.size()) {
-            return this.itsNACs.get(index);
+    public OrdinaryMorphism getAc(int index) {
+        if (index >= 0 && index < this.itsACs.size()) {
+            return this.itsACs.get(index);
         } else {
             return null;
         }
@@ -211,9 +203,9 @@ public class RuleNacStrategie {
      * @param graph the target graph to search for
      * @return the NAC morphism with the specified target graph, or {@code null} if not found
      */
-    public OrdinaryMorphism getNAC(final Graph graph) {
-        for (int index = 0; index < this.itsNACs.size(); index++) {
-            OrdinaryMorphism applCond = this.itsNACs.get(index);
+    public OrdinaryMorphism getAc(final Graph graph) {
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            OrdinaryMorphism applCond = this.itsACs.get(index);
             if (applCond.getTarget() == graph) {
                 return applCond;
             }
@@ -227,9 +219,9 @@ public class RuleNacStrategie {
      * @param graph the graph to check
      * @return true if the graph is a target of any NAC, false otherwise
      */
-    public boolean hasNAC(final Graph graph) {
-        for (int index = 0; index < this.itsNACs.size(); index++) {
-            OrdinaryMorphism applCond = this.itsNACs.get(index);
+    public boolean hasAc(final Graph graph) {
+        for (int index = 0; index < this.itsACs.size(); index++) {
+            OrdinaryMorphism applCond = this.itsACs.get(index);
             if (applCond.getTarget() == graph) {
                 return true;
             }
@@ -243,8 +235,8 @@ public class RuleNacStrategie {
      * @param negativeApplCond the negative application condition morphism to remove
      * @return false if the NAC was not found, true if it was removed successfully
      */
-    public final boolean removeNAC(OrdinaryMorphism negativeApplCond) {
-        return this.itsNACs.remove(negativeApplCond);
+    public final boolean removeAc(OrdinaryMorphism negativeApplCond) {
+        return this.itsACs.remove(negativeApplCond);
     }
 
     /**
@@ -252,7 +244,7 @@ public class RuleNacStrategie {
      *
      * @return true if all NACs are valid, false otherwise
      */
-    public boolean areNACsValid() {
+    public boolean areAcsValid() {
         return true;
     }
 
@@ -262,23 +254,23 @@ public class RuleNacStrategie {
      * @param nac the negative application condition to validate
      * @return true if the NAC is valid, false otherwise
      */
-    public boolean isNACValid(OrdinaryMorphism nac) {
+    public boolean isAcValid(OrdinaryMorphism nac) {
         return true;
     }
 
     /**
-     * Checks if the specified NAC is using the specified variable in the context of the
-     * specified attribute condition tuple.
+     * Checks if the specified NAC is using the specified variable in the context of the specified attribute condition
+     * tuple.
      *
      * @param var the variable member to check for usage
      * @param act the attribute condition tuple providing context
      * @return true if the NAC uses the variable in the given context, false otherwise
      */
-    public boolean nacIsUsingVariable(
+    public boolean acIsUsingVariable(
             final VarMember var,
             final AttrConditionTuple act) {
-        for (int i = 0; i < this.itsNACs.size(); i++) {
-            final OrdinaryMorphism nac = this.itsNACs.get(i);
+        for (int i = 0; i < this.itsACs.size(); i++) {
+            final OrdinaryMorphism nac = this.itsACs.get(i);
             if (nac.getTarget().isUsingVariable(var)) {
                 return true;
             }
@@ -302,29 +294,28 @@ public class RuleNacStrategie {
     /**
      * Clears all negative application conditions from this strategy.
      */
-    public void clearNACs() {
-        this.itsNACs.clear();
+    public void clearAcs() {
+        this.itsACs.clear();
     }
 
     /**
      * Disposes all negative application conditions in this strategy.
      */
-    public void disposeAllNACs() {
-        while (!this.itsNACs.isEmpty()) {
-            this.itsNACs.get(0).dispose(false, true);
-            this.itsNACs.remove(0);
+    public void disposeAllAcs() {
+        while (!this.itsACs.isEmpty()) {
+            this.itsACs.get(0).dispose(false, true);
+            this.itsACs.remove(0);
         }
-        this.itsNACs.clear();
+        this.itsACs.clear();
     }
 
     /**
-     * Returns the list of all negative application condition morphisms.
-     * Package-private for internal use by Rule class.
+     * Returns the list of all negative application condition morphisms. Package-private for internal use by Rule class.
      *
      * @return the list of NAC morphisms
      */
-    public List<OrdinaryMorphism> getNACsListInternal() {
-        return this.itsNACs;
+    public List<OrdinaryMorphism> getAcsListInternal() {
+        return this.itsACs;
     }
 
     /**
