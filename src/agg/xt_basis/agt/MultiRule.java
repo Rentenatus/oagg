@@ -125,25 +125,25 @@ public class MultiRule extends Rule implements Observer {
     public void addShiftedKernelApplCond(OrdinaryMorphism cond, boolean pac) {
         this.shiftedApplConds.add(cond);
         if (pac) {
-            this.itsPACs.add(0, cond);
+            this.pacStrategie.getPACsListInternal().add(0, cond);
         } else {
-            this.itsNACs.add(0, cond);
+            this.nacStrategie.getNACsListInternal().add(0, cond);
         }
     }
 
     public void addShiftedKernelNestedApplCond(NestedApplCond cond) {
         this.shiftedApplConds.add(cond);
-        this.itsACs.add(0, cond);
+        this.acStrategie.getACsListInternal().add(0, cond);
     }
 
     public void removeShiftedKernelApplConds() {
         for (int i = 0; i < this.shiftedApplConds.size(); i++) {
             OrdinaryMorphism cond = this.shiftedApplConds.get(i);
-            if (this.itsACs.contains(cond)) {
+            if (this.acStrategie.getACsListInternal().contains(cond)) {
                 this.destroyNestedAC(cond);
-            } else if (this.itsPACs.contains(cond)) {
+            } else if (this.pacStrategie.getPACsListInternal().contains(cond)) {
                 this.destroyPAC(cond);
-            } else if (this.itsNACs.contains(cond)) {
+            } else if (this.nacStrategie.getNACsListInternal().contains(cond)) {
                 this.destroyNAC(cond);
             }
         }
