@@ -10,7 +10,7 @@
  */
 package agg.attribute;
 
-import java.util.Vector;
+import java.util.List;
 import agg.attribute.impl.VarMember;
 
 /**
@@ -42,7 +42,7 @@ public interface AttrVariableTuple extends AttrInstance {
 
     public VarMember getVarMemberAt(int index);
 
-    public Vector<String> getVariableNames();
+    public List<String> getVariableNames();
 }
 /*
  * $Log: AttrVariableTuple.java,v $

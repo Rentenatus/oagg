@@ -2143,7 +2143,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * @return Iterator of graph objects of the specified type.
      */
     public Iterator<GraphObject> getElementsOfType(final Type type) {
-        return getElementsOfTypeAsVector(type).iterator();
+        return getElementsOfTypeAsList(type).iterator();
     }
 
     /**
@@ -2152,7 +2152,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * @param type The type to search for.
      * @return List of graph objects of the specified type.
      */
-    public List<GraphObject> getElementsOfTypeAsVector(final Type type) {
+    public List<GraphObject> getElementsOfTypeAsList(final Type type) {
         final List<GraphObject> elems = new ArrayList<>();
         if (!this.getElemsOfType(type, this.itsNodes.iterator(), elems)) {
             this.getElemsOfType(type, this.itsArcs.iterator(), elems);
@@ -2271,7 +2271,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * @param withChildren If true, includes child types.
      * @return List of graph objects of the specified type.
      */
-    public List<GraphObject> getElementsOfTypeAsVector(final Type type, boolean withChildren) {
+    public List<GraphObject> getElementsOfTypeAsList(final Type type, boolean withChildren) {
         final List<GraphObject> elems = new ArrayList<>();
         Iterator<?> iter = this.itsNodes.iterator();
         while (iter.hasNext()) {
@@ -2305,7 +2305,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * @see agg.xt_basis.GraphObject
      */
     public Iterator<GraphObject> getElementsOfType(Type type, Type src, Type tar) {
-        return getElementsOfTypeAsVector(type, src, tar).iterator();
+        return  getElementsOfTypeAsList(type, src, tar).iterator();
     }
 
     /**
@@ -2319,7 +2319,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * @return List of graph objects matching the criteria.
      * @see agg.xt_basis.GraphObject
      */
-    public List<GraphObject> getElementsOfTypeAsVector(final Type type, final Type src,
+    public List<GraphObject> getElementsOfTypeAsList(final Type type, final Type src,
             final Type tar) {
         final List<GraphObject> elems = new ArrayList<>();
         Iterator<Arc> iter = this.itsArcs.iterator();
@@ -2345,7 +2345,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * @see agg.xt_basis.GraphObject
      */
     public Iterator<GraphObject> getElementsOfType(final GraphObject type) {
-        return getElementsOfTypeAsVector(type).iterator();
+        return getElementsOfTypeAsList(type).iterator();
     }
 
     /**
@@ -2356,15 +2356,15 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
      * @return List of graph objects matching the type.
      * @see agg.xt_basis.GraphObject
      */
-    public List<GraphObject> getElementsOfTypeAsVector(final GraphObject type) {
+    public List<GraphObject> getElementsOfTypeAsList(final GraphObject type) {
         List<GraphObject> elems;
         if (type.isNode()) {
-            elems = getElementsOfTypeAsVector(type.getType());
+            elems =  getElementsOfTypeAsList(type.getType());
             if (!elems.isEmpty()) {
                 return elems;
             }
         } else {
-            elems = getElementsOfTypeAsVector(type.getType(), ((Arc) type)
+            elems =  getElementsOfTypeAsList(type.getType(), ((Arc) type)
                     .getSource().getType(), ((Arc) type).getTarget().getType());
             if (!elems.isEmpty()) {
                 return elems;
@@ -3677,7 +3677,7 @@ public class Graph extends ExtObservable implements Observer, XMLObject {
     }
 
     /**
-     * Returns true if this graph is used as a type graph.This works only if
+     * Returns true if this graph is used as a type graph. This works only if
      * this graph is registered as type graph in its own {@link TypeSet}.
      *
      * @return

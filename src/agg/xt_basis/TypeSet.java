@@ -853,7 +853,7 @@ public class TypeSet {
                     Type t = getTypeByNameAndAdditionalRepr(other_t
                             .getStringRepr(), other_t.getAdditionalRepr());
                     List<GraphObject> v = this.typeGraph
-                            .getElementsOfTypeAsVector(t);
+                            .getElementsOfTypeAsList(t);
                     if (!v.isEmpty() && v.get(0).isNode()) {
                         if (!t.getParents().isEmpty()) {
                             oldInheritance.put(t, t.getParents());

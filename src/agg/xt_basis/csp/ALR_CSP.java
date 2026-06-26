@@ -61,7 +61,6 @@ public class ALR_CSP extends CSP {
      *
      * @see agg.xt_basis.Type
      * @see agg.xt_basis.GraphObject
-     * @see java.util.Vector
      */
     final private Map<String, HashSet<GraphObject>> itsTypeMap
             = new HashMap<String, HashSet<GraphObject>>();

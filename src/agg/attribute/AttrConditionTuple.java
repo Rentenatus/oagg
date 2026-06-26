@@ -10,7 +10,7 @@
  */
 package agg.attribute;
 
-import java.util.Vector;
+import java.util.List;
 
 /**
  * The interface for a condition tuple.
@@ -47,7 +47,7 @@ public interface AttrConditionTuple extends AttrInstance {
     /**
      * Getting all variable names of conditions.
      */
-    public Vector<String> getAllVariables();
+    public List<String> getAllVariables();
 }
 /*
  * $Log: AttrConditionTuple.java,v $

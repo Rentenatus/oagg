@@ -2434,7 +2434,7 @@ public final class ExcludePairHelper {
         boolean pacCritical = false;
         for (int j = 0; j < criticalContext.size() && !pacCritical; j++) {
             GraphObject o = criticalContext.get(j);
-            List<GraphObject> v = pac.getTarget().getElementsOfTypeAsVector(o.getType());
+            List<GraphObject> v = pac.getTarget().getElementsOfTypeAsList(o.getType());
             if (!v.isEmpty()) {
                 for (int i = 0; i < v.size(); i++) {
                     GraphObject go = v.get(i);

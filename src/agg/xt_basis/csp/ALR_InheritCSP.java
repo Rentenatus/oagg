@@ -66,7 +66,6 @@ public class ALR_InheritCSP extends CSP {
      *
      * @see agg.xt_basis.Type
      * @see agg.xt_basis.GraphObject
-     * @see java.util.Vector
      */
     final private Map<String, HashSet<GraphObject>> itsTypeMap = new HashMap<String, HashSet<GraphObject>>();
 
@@ -392,7 +391,7 @@ public class ALR_InheritCSP extends CSP {
                     List<Type> parents = lhsobj.getType().getAllParents();
                     for (int p = 1; p < parents.size(); p++) {
                         Type pt = parents.get(p);
-                        List<GraphObject> vp = g.getElementsOfTypeAsVector(pt);
+                        List<GraphObject> vp = g.getElementsOfTypeAsList(pt);
                         for (int i = 0; i < vp.size(); i++) {
                             if (!v.contains(vp.get(i))) {
                                 v.add(vp.get(i));
@@ -407,7 +406,7 @@ public class ALR_InheritCSP extends CSP {
                     List<Type> tar_parents = tar.getType().getAllParents();
                     for (int i = 0; i < src_parents.size(); i++) {
                         Type srcp = src_parents.get(i);
-                        List<GraphObject> vsrcp = g.getElementsOfTypeAsVector(lhsobj.getType(), srcp, tar.getType());
+                        List<GraphObject> vsrcp = g.getElementsOfTypeAsList(lhsobj.getType(), srcp, tar.getType());
                         for (int k = 0; k < vsrcp.size(); k++) {
                             if (!v.contains(vsrcp.get(k))) {
                                 v.add(vsrcp.get(k));
@@ -415,7 +414,7 @@ public class ALR_InheritCSP extends CSP {
                         }
                         for (int j = 0; j < tar_parents.size(); j++) {
                             Type tarp = tar_parents.get(j);
-                            List<GraphObject> vtarp = g.getElementsOfTypeAsVector(lhsobj.getType(), srcp, tarp);
+                            List<GraphObject> vtarp = g.getElementsOfTypeAsList(lhsobj.getType(), srcp, tarp);
                             for (int l = 0; l < vtarp.size(); l++) {
                                 if (!v.contains(vtarp.get(l))) {
                                     v.add(vtarp.get(l));
