@@ -1,17 +1,15 @@
 /**
  * <copyright>
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License
- * v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.xt_basis;
 
 /**
- * Factory class for creating graph elements (Graphs, Nodes, Arcs).
- * This class provides a centralized way to create graph objects with consistent
- * configuration and validation.
+ * Factory class for creating graph elements (Graphs, Nodes, Arcs). This class provides a centralized way to create
+ * graph objects with consistent configuration and validation.
  *
  * @author Janusch Rentenatus
  */
@@ -21,7 +19,7 @@ public final class GraphFactory {
      * Private constructor to prevent instantiation.
      */
     private GraphFactory() {
-        // Utility class - private constructor
+        throw new IllegalStateException("Utility class");
     }
 
     /**

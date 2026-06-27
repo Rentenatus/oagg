@@ -984,8 +984,8 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                 for (int j = 0; j < rules.size(); j++) {
                     Rule r = rules.get(j);
                     if (key.second == null) { // node type
-                        if (r.getLeft().getElementsOfTypeAsVector(t.getType()).size() <= r
-                                .getRight().getElementsOfTypeAsVector(t.getType()).size()) {
+                        if (r.getLeft().getElementsOfTypeAsList(t.getType()).size() <= r
+                                .getRight().getElementsOfTypeAsList(t.getType()).size()) {
                             String test = "Rule <" + r.getName() + "> does not decrease";
                             if (this.errMsg.indexOf(test) < 0) {
                                 this.errMsg = "Rule <" + r.getName()
@@ -996,10 +996,10 @@ public class TerminationLGTSTypedByTypeGraph implements TerminationLGTSInterface
                             return false;
                         }
                     } else { // arc type
-                        if (r.getLeft().getElementsOfTypeAsVector(t.getType(),
+                        if (r.getLeft().getElementsOfTypeAsList(t.getType(),
                                 ((GraphObject) ((Pair<?, ?>) key.second).first).getType(),
                                 ((GraphObject) ((Pair<?, ?>) key.second).second).getType())
-                                .size() <= r.getRight().getElementsOfTypeAsVector(t.getType(),
+                                .size() <= r.getRight().getElementsOfTypeAsList(t.getType(),
                                         ((GraphObject) ((Pair<?, ?>) key.second).first).getType(),
                                         ((GraphObject) ((Pair<?, ?>) key.second).second).getType())
                                         .size()) {

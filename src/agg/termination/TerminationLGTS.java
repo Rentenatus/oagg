@@ -919,8 +919,8 @@ public class TerminationLGTS implements TerminationLGTSInterface {
                 for (int j = 0; j < rules.size(); j++) {
                     Rule r = rules.get(j);
                     if (key.second == null) { // node type
-                        if (r.getLeft().getElementsOfTypeAsVector(t).size() <= r
-                                .getRight().getElementsOfTypeAsVector(t).size()) {
+                        if (r.getLeft().getElementsOfTypeAsList(t).size() <= r
+                                .getRight().getElementsOfTypeAsList(t).size()) {
                             this.errMsg = "Rule <" + r.getName()
                                     + "> does not decrease the number of graph items of one special type <"
                                     + t.getName() + ">";
@@ -928,10 +928,10 @@ public class TerminationLGTS implements TerminationLGTSInterface {
                             return false;
                         }
                     } else { // arc type
-                        if (r.getLeft().getElementsOfTypeAsVector(t,
+                        if (r.getLeft().getElementsOfTypeAsList(t,
                                 (Type) ((Pair<?, ?>) key.second).first,
                                 (Type) ((Pair<?, ?>) key.second).second).size() <= r
-                                        .getRight().getElementsOfTypeAsVector(t,
+                                        .getRight().getElementsOfTypeAsList(t,
                                                 (Type) ((Pair<?, ?>) key.second).first,
                                                 (Type) ((Pair<?, ?>) key.second).second)
                                         .size()) {

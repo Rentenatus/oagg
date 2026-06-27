@@ -803,12 +803,12 @@ public class ExcludePair implements CriticalPair {
         }
         List<GraphObject> vec2 = table.get(goLHS1.getType());
         if (vec2 == null) {
-            vec2 = r2.getLeft().getElementsOfTypeAsVector(goLHS1.getType());
+            vec2 = r2.getLeft().getElementsOfTypeAsList(goLHS1.getType());
             if (vec2.isEmpty()) {
                 List<Type> parents = goLHS1.getType().getAllParents();
                 for (int p = 1; p < parents.size(); p++) {
                     Type pt = parents.get(p);
-                    List<GraphObject> v = r2.getLeft().getElementsOfTypeAsVector(pt);
+                    List<GraphObject> v = r2.getLeft().getElementsOfTypeAsList(pt);
                     if (!v.isEmpty()) {
                         vec2.addAll(v);
                     }
@@ -818,7 +818,7 @@ public class ExcludePair implements CriticalPair {
             while (pacs_r2.hasNext()) {
                 final OrdinaryMorphism pac2 = pacs_r2.next();
                 if (pac2.isEnabled()) {
-                    vec2.addAll(pac2.getTarget().getElementsOfTypeAsVector(goLHS1.getType()));
+                    vec2.addAll(pac2.getTarget().getElementsOfTypeAsList(goLHS1.getType()));
                 }
             }
             table.put(goLHS1.getType(), vec2);
