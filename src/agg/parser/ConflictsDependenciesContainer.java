@@ -1,44 +1,37 @@
 /**
  * <copyright>
- * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  *
- * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
- * materials are made available under the terms of the Eclipse Public License
- * v2.0 which accompanies this distribution, and is available at
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v2.0 which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v20.html
  * </copyright>
  */
 package agg.parser;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
-import java.util.Vector;
+import agg.parser.ExcludePairContainer.Entry;
+import agg.util.Pair;
+import agg.util.XMLHelper;
+import agg.util.XMLObject;
+import agg.xt_basis.Arc;
+import agg.xt_basis.BadMappingException;
 import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.GraphObject;
 import agg.xt_basis.Node;
-import agg.xt_basis.Arc;
-import agg.xt_basis.TypeException;
 import agg.xt_basis.OrdinaryMorphism;
-import agg.xt_basis.BadMappingException;
 import agg.xt_basis.Rule;
 import agg.xt_basis.Type;
-import agg.editor.impl.EdGraph;
-import agg.editor.impl.EdType;
-import agg.parser.ExcludePairContainer.Entry;
-import agg.util.XMLHelper;
-import agg.util.XMLObject;
-import agg.util.Pair;
+import agg.xt_basis.TypeException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import org.w3c.dom.Element;
 
 public class ConflictsDependenciesContainer implements XMLObject {
@@ -53,13 +46,11 @@ public class ConflictsDependenciesContainer implements XMLObject {
     protected boolean priority;
     protected GraGra pairsGrammar;
     protected Graph cpaBasisGraph;
-    protected EdGraph cpaGraph;
     protected int count;
     protected final List<Pair<String, String>> cpaOptions = new Vector<Pair<String, String>>();
 
     public ConflictsDependenciesContainer() {
         this.cpaBasisGraph = null;
-        this.cpaGraph = null;
     }
 
     public ConflictsDependenciesContainer(
@@ -110,17 +101,6 @@ public class ConflictsDependenciesContainer implements XMLObject {
         this.cpaBasisGraph = conflictDependencyGraph;
     }
 
-    public ConflictsDependenciesContainer(
-            final PairContainer conflict,
-            final PairContainer dependency,
-            final EdGraph conflictDependencyGraph) {
-        this(conflict, dependency);
-        this.cpaGraph = conflictDependencyGraph;
-        if (this.cpaGraph != null) {
-            this.cpaBasisGraph = conflictDependencyGraph.getBasisGraph();
-        }
-    }
-
     public ExcludePairContainer getExcludePairContainer() {
         return this.epc;
     }
@@ -145,12 +125,12 @@ public class ConflictsDependenciesContainer implements XMLObject {
         return this.pdpc;
     }
 
-    public EdGraph getCPAGraph() {
-        return this.cpaGraph;
-    }
-
     public Graph getCPABasisGraph() {
         return this.cpaBasisGraph;
+    }
+
+    public Object getCPAGraph() {
+        return null;
     }
 
     public boolean isPriority() {
@@ -422,7 +402,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     h.addObject("R1", r1, false);
                     Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
                             .get(r1);
-                    for (Rule r2 : secondPart.keySet()) { 
+                    for (Rule r2 : secondPart.keySet()) {
                         entry = ((ExcludePairContainer) pc1).getEntry(r1, r2);
                         h.openSubTag("Rule");
                         h.addObject("R2", r2, false);
@@ -519,7 +499,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
                     h.addObject("R1", r1, false);
                     Map<Rule, Pair<Boolean, List<Pair<Pair<OrdinaryMorphism, OrdinaryMorphism>, Pair<OrdinaryMorphism, OrdinaryMorphism>>>>> secondPart = conflictFreeContainer
                             .get(r1);
-                    for (Rule r2 : secondPart.keySet()) { 
+                    for (Rule r2 : secondPart.keySet()) {
                         entry = ((ExcludePairContainer) pc2).getEntry(r1, r2);
                         h.openSubTag("Rule");
                         h.addObject("R2", r2, false);
@@ -548,10 +528,6 @@ public class ConflictsDependenciesContainer implements XMLObject {
             h.close();
             h.addObject("", this.cpaBasisGraph, true);
             h.close();
-        }
-        if (this.cpaGraph != null) {
-            //this.cpaGraph.XwriteObject(h);
-            h.addObject("Graph", this.cpaGraph, false);
         }
     }
 
@@ -1156,20 +1132,7 @@ public class ConflictsDependenciesContainer implements XMLObject {
             if (gn.contains("ofRules")) {
                 this.cpaBasisGraph.setName("CPA_RuleGraph:Conflicts_(red)-Dependencies_(blue)");
             }
-            this.cpaGraph = new EdGraph(this.cpaBasisGraph);
-            this.cpaGraph.setCPAgraph(true);
-            h.enrichObject(this.cpaGraph);
-            h.close();
-            List<EdType> cpaEdgeTypes = this.cpaGraph.getTypeSet().getArcTypes();
-            for (int i = 0; i < cpaEdgeTypes.size(); i++) {
-                EdType t = cpaEdgeTypes.get(i);
-                if (t.getBasisType().getName().equals("c")) {
-                    t.setColor(Color.RED);
-                } else if (t.getBasisType().getName().equals("d")) {
-                    t.setColor(Color.BLUE);
-                }
-                t.setAdditionalReprOfBasisType();
-            }
+
         }
     }
 
