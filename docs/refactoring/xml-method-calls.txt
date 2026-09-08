@@ -1,0 +1,39 @@
+./src/agg/convert/AGG2ColorGraph.java:381:			if (h.read_from_xml(fName)) {
+./src/agg/convert/ConverterWSDL.java:49:            return xmlH.read_from_xml(fName);
+./src/agg/parser/ComputeCriticalPairs.java:113:        h.save_to_xml(this.outfname);
+./src/agg/parser/ComputeCriticalPairs.java:127:        h.save_to_xml(this.outfname);
+./src/agg/parser/ComputeCriticalPairs.java:277:            if (h.read_from_xml(this.fname)) {
+./src/agg/ruleappl/ApplRuleSequence.java:251:        xmlh.save_to_xml(outfileName);
+./src/agg/ruleappl/ApplRuleSequence.java:260:                if (h.read_from_xml(filename)) {
+./src/agg/ruleappl/ApplRuleSequence.java:287:                if (h.read_from_xml(filename)) {
+./src/agg/ruleappl/RuleSequence.java:929:            xmlh.save_to_xml(aname);
+./src/agg/util/XMLHelper.java:119:    public boolean save_to_xml(String fname) {
+./src/agg/util/XMLHelper.java:122:        // System.out.println("XMLHelper.save_to_xml file: "+f.getParent() +"
+./src/agg/util/XMLHelper.java:133:                            .println("XMLHelper.save_to_xml: cannot write file to  "
+./src/agg/util/XMLHelper.java:155:    public boolean read_from_xml(String fname) {
+./src/agg/util/XMLHelper.java:165:                    System.out.println("XMLHelper.read_from_xml "
+./src/agg/util/XMLHelper.java:172:            System.out.println("XMLHelper.read_from_xml::  Cannot read! File: "
+./src/agg/util/XMLHelper.java:189:                System.out.println("XMLHelper.read_from_xml -> DOMParser.parse: " + saxex.getLocalizedMessage());
+./src/agg/util/XMLHelper.java:193:            System.out.println("XMLHelper.read_from_xml: " + iox.getLocalizedMessage());
+./src/agg/util/XMLHelper.java:197:            System.out.println("XMLHelper.read_from_xml: " + e.getLocalizedMessage());
+./src/agg/xt_basis/AGGBasicAppl.java:267:            if (h.read_from_xml(fName)) {
+./src/agg/xt_basis/AGGBasicAppl.java:366:                if (h.read_from_xml(out)) {
+./src/agg/xt_basis/AGGBasicAppl.java:432:                if (h.read_from_xml(out)) {
+./src/agg/xt_basis/AGGBasicAppl.java:523:            xmlh.save_to_xml(outputFileName);
+./src/agg/xt_basis/GraGra.java:3973:            xmlh.save_to_xml(outfileName);
+./src/agg/xt_basis/GraGra.java:4009:                if (h.read_from_xml(filename)) {
+./src/agg/xt_basis/GraGra.java:4043:                if (h.read_from_xml(filename)) {
+./src_ui/agg/editor/impl/EdGraGra.java:3146:        if (xmlh.save_to_xml(this.dirName + File.separator + fname)) {
+./src_ui/agg/gui/parser/PairIOGUI.java:243:                xmlh.save_to_xml(dir + file);
+./src_ui/agg/gui/parser/PairIOGUI.java:247:                xmlh.save_to_xml(dir + file);
+./src_ui/agg/gui/parser/PairIOGUI.java:252:            xmlh.save_to_xml(dir + file);
+./src_ui/agg/gui/parser/PairIOGUI.java:346:        if (h.read_from_xml(this.directory + this.fileName)) {
+./src_ui/agg/gui/parser/PairIOGUI.java:375:        if (h.read_from_xml(fullFileName)) {
+./src_ui/agg/gui/ruleappl/ApplRuleSequenceSaveLoad.java:65:            if (xmlh.save_to_xml(this.dirName + File.separator + this.fname)) {
+./src_ui/agg/gui/saveload/GraGraLoad.java:131:                if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
+./src_ui/agg/gui/saveload/GraGraLoad.java:132:                        || h.read_from_xml(this.dirName + this.fileName)) {
+./src_ui/agg/gui/saveload/GraGraLoad.java:271:            if ((this.dirName.equals("") && h.read_from_xml(this.fileName))
+./src_ui/agg/gui/saveload/GraGraLoad.java:272:                    || h.read_from_xml(this.dirName + this.fileName)) {
+./src_ui/agg/gui/saveload/GraGraSave.java:110:            if (xmlh.save_to_xml(this.dirName + this.fileName)) {
+./src_ui/agg/gui/saveload/GraGraSave.java:172:                if (xmlh.save_to_xml(this.dirName + this.fileName)) {
+./src_ui/agg/gui/treeview/GraGraTreeView.java:4820:                    if (h.read_from_xml(fullFileName)) {

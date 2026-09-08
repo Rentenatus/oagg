@@ -1,0 +1,247 @@
+@startuml
+skinparam monochrome true
+left to right direction
+
+
+' ===== CORE XML CLASSES =====
+package "Core XML" {
+  class XMLHelper
+  interface XMLObject
+}
+
+' ===== DOMAIN CLASSES (agg.xt_basis) =====
+package "Domain" {
+  class Graph
+  class Rule
+  class Node
+  class Arc
+  class GraGra
+  class TypeGraph
+  class Match
+  class TypeImpl
+  class NodeTypeImpl
+  class ArcTypeImpl
+  class GraphObject
+  class GraphElement
+  class OrdinaryMorphism
+  class AGGBasicAppl
+  class MultiRule
+  class RuleScheme
+  class NestedApplCond
+}
+
+' ===== ATTRIBUTE CLASSES =====
+package "Attribute" {
+  class AttrManager
+  class AttrTupleManager
+  class CondMember
+  class CondTuple
+  class DeclMember
+  class DeclTuple
+  class ValueMember
+  class ValueTuple
+  class VarTuple
+  class AtomConstraint
+  class Formula
+}
+
+' ===== PARSER CLASSES =====
+package "Parser" {
+  class ConflictsDependenciesContainer
+  class DependencyPairContainer
+  class ExcludePairContainer
+  class LayeredDependencyPairContainer
+  class LayeredExcludePairContainer
+  class PriorityDependencyPairContainer
+  class PriorityExcludePairContainer
+  class LayerFunction
+  class ComputeCriticalPairs
+}
+
+' ===== RULE APPLICATION CLASSES =====
+package "RuleAppl" {
+  class ApplRuleSequence
+  class RuleSequence
+}
+
+' ===== CONVERT CLASSES =====
+package "Convert" {
+  class AGG2ColorGraph
+  class ConverterWSDL
+  class WSDL2ggx
+}
+
+' ===== EDITOR CLASSES =====
+package "Editor" {
+  class EdArc
+  class EdAtomic
+  class EdConstraint
+  class EdGraGra
+  class EdGraph
+  class EdNestedApplCond
+  class EdNode
+  class EdRule
+  class EdRuleScheme
+  class EdType
+}
+
+' ===== GUI CLASSES =====
+package "GUI" {
+  class ConflictsDependenciesContainerSaveLoad
+  class PairIOGUI
+  class ApplRuleSequenceSaveLoad
+  class GraGraLoad
+  class GraGraSave
+  class GraGraTreeView
+}
+
+' ===== LAYOUT CLASSES =====
+package "Layout" {
+  class LayoutArc
+  class LayoutNode
+  class LayoutPattern
+}
+
+' ===== RELATIONSHIPS =====
+' XMLObject implementations
+XMLObject <|-- Graph
+XMLObject <|-- Rule
+XMLObject <|-- Node
+XMLObject <|-- Arc
+XMLObject <|-- GraGra
+XMLObject <|-- TypeGraph
+XMLObject <|-- Match
+XMLObject <|-- TypeImpl
+XMLObject <|-- NodeTypeImpl
+XMLObject <|-- ArcTypeImpl
+
+XMLObject <|-- MultiRule
+XMLObject <|-- RuleScheme
+XMLObject <|-- NestedApplCond
+
+' Editor classes implementing XMLObject
+XMLObject <|-- EdArc
+XMLObject <|-- EdAtomic
+XMLObject <|-- EdConstraint
+XMLObject <|-- EdGraGra
+XMLObject <|-- EdGraph
+XMLObject <|-- EdNestedApplCond
+XMLObject <|-- EdNode
+XMLObject <|-- EdRule
+XMLObject <|-- EdRuleScheme
+XMLObject <|-- EdType
+
+' Layout classes implementing XMLObject
+XMLObject <|-- LayoutArc
+XMLObject <|-- LayoutNode
+XMLObject <|-- LayoutPattern
+
+' Attribute classes implementing XMLObject
+XMLObject <|-- AttrManager
+XMLObject <|-- AttrTupleManager
+XMLObject <|-- CondMember
+XMLObject <|-- CondTuple
+XMLObject <|-- DeclMember
+XMLObject <|-- DeclTuple
+XMLObject <|-- ValueMember
+XMLObject <|-- ValueTuple
+XMLObject <|-- VarTuple
+XMLObject <|-- AtomConstraint
+XMLObject <|-- Formula
+
+' Parser classes implementing XMLObject
+XMLObject <|-- ConflictsDependenciesContainer
+XMLObject <|-- DependencyPairContainer
+XMLObject <|-- ExcludePairContainer
+XMLObject <|-- LayeredDependencyPairContainer
+XMLObject <|-- LayeredExcludePairContainer
+XMLObject <|-- PriorityDependencyPairContainer
+XMLObject <|-- PriorityExcludePairContainer
+XMLObject <|-- LayerFunction
+
+' RuleAppl classes implementing XMLObject
+XMLObject <|-- ApplRuleSequence
+XMLObject <|-- RuleSequence
+
+' Convert classes implementing XMLObject
+XMLObject <|-- WSDL2ggx
+
+' GUI classes implementing XMLObject
+XMLObject <|-- ConflictsDependenciesContainerSaveLoad
+XMLObject <|-- ApplRuleSequenceSaveLoad
+
+' Domain -> XMLHelper (via XwriteObject/XreadObject)
+Graph --> XMLHelper : XwriteObject / XreadObject
+Rule --> XMLHelper : XwriteObject / XreadObject
+Node --> XMLHelper : XwriteObject / XreadObject
+Arc --> XMLHelper : XwriteObject / XreadObject
+GraGra --> XMLHelper : XwriteObject / XreadObject + save_to_xml
+TypeGraph --> XMLHelper : XwriteObject / XreadObject
+Match --> XMLHelper : XwriteObject / XreadObject
+TypeImpl --> XMLHelper : XwriteObject / XreadObject
+NodeTypeImpl --> XMLHelper : XwriteObject / XreadObject
+ArcTypeImpl --> XMLHelper : XwriteObject / XreadObject
+AGGBasicAppl --> XMLHelper : read_from_xml
+MultiRule --> XMLHelper : XwriteObject / XreadObject
+RuleScheme --> XMLHelper : XwriteObject / XreadObject
+NestedApplCond --> XMLHelper : XwriteObject / XreadObject
+OrdinaryMorphism --> XMLHelper : XwriteObject / XreadObject
+
+' Editor -> XMLHelper
+EdGraGra --> XMLHelper : XwriteObject + saveToXML
+EdArc --> XMLHelper : XwriteObject / XreadObject
+EdAtomic --> XMLHelper : XwriteObject / XreadObject
+EdConstraint --> XMLHelper : XwriteObject / XreadObject
+EdGraph --> XMLHelper : XwriteObject / XreadObject
+EdNestedApplCond --> XMLHelper : XwriteObject / XreadObject
+EdNode --> XMLHelper : XwriteObject / XreadObject
+EdRule --> XMLHelper : XwriteObject / XreadObject
+EdRuleScheme --> XMLHelper : XwriteObject / XreadObject
+EdType --> XMLHelper : XwriteObject / XreadObject
+
+' Parser -> XMLHelper
+ConflictsDependenciesContainer --> XMLHelper : XwriteObject / XreadObject
+DependencyPairContainer --> XMLHelper : XwriteObject / XreadObject
+ExcludePairContainer --> XMLHelper : XwriteObject / XreadObject
+LayeredDependencyPairContainer --> XMLHelper : XwriteObject / XreadObject
+LayeredExcludePairContainer --> XMLHelper : XwriteObject / XreadObject
+PriorityDependencyPairContainer --> XMLHelper : XwriteObject / XreadObject
+PriorityExcludePairContainer --> XMLHelper : XwriteObject / XreadObject
+LayerFunction --> XMLHelper : XwriteObject / XreadObject
+ComputeCriticalPairs --> XMLHelper : save_to_xml / read_from_xml
+
+' RuleAppl -> XMLHelper
+ApplRuleSequence --> XMLHelper : XwriteObject / XreadObject + save_to_xml / read_from_xml
+RuleSequence --> XMLHelper : save_to_xml
+
+' Convert -> XMLHelper
+AGG2ColorGraph --> XMLHelper : read_from_xml
+ConverterWSDL --> XMLHelper : read_from_xml
+WSDL2ggx --> XMLHelper : XwriteObject / XreadObject + read_from_xml
+
+' GUI -> XMLHelper
+GraGraLoad --> XMLHelper : read_from_xml
+GraGraSave --> XMLHelper : save_to_xml
+GraGraTreeView --> XMLHelper : read_from_xml
+PairIOGUI --> XMLHelper : save_to_xml / read_from_xml
+ConflictsDependenciesContainerSaveLoad --> XMLHelper : XwriteObject / XreadObject
+ApplRuleSequenceSaveLoad --> XMLHelper : XwriteObject / XreadObject
+
+' Layout -> XMLHelper
+LayoutArc --> XMLHelper : XwriteObject / XreadObject
+LayoutNode --> XMLHelper : XwriteObject / XreadObject
+LayoutPattern --> XMLHelper : XwriteObject / XreadObject
+
+' XMLHelper -> DOM
+XMLHelper --> Document : uses
+XMLHelper --> Element : uses
+XMLHelper --> Node : uses
+XMLHelper --> Text : uses
+
+' XMLHelper -> External Libraries
+XMLHelper --> DOMParser : uses (Apache Xerces)
+XMLHelper --> XMLSerializer : uses (Apache XML)
+XMLHelper --> OutputFormat : uses (Apache XML)
+XMLHelper --> DocumentImpl : uses (Apache Xerces)
+
+@enduml
