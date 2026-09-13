@@ -6,7 +6,7 @@
  */
 package agg.xml.adapter;
 
-import agg.util.XMLHelper;
+import agg.xt_basis.BaseFactory;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
 import agg.xt_basis.Rule;
@@ -208,36 +208,182 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
         }
 
         try {
-            // Get the document from the context
             Element contextElement = context.getCurrentElement();
-            Document contextDoc = contextElement.getOwnerDocument();
+            DOMSerializationRegistry registry = new DOMSerializationRegistry();
+            hostGraphsCleared = false;
 
-            // Build a Document that XMLHelper can read
-            XMLHelper helper = new XMLHelper();
-            Document helperDoc = helper.getDoc();
-
-            // Find and import the GraphTransformationSystem element
+            // Find the GraphTransformationSystem element
             Element gtsElement = findChildElement(contextElement, "GraphTransformationSystem");
             if (gtsElement == null) {
-                // Try from the document root
-                gtsElement = findChildElement(contextDoc.getDocumentElement(),
-                        "GraphTransformationSystem");
+                gtsElement = findChildElement(
+                    contextElement.getOwnerDocument().getDocumentElement(),
+                    "GraphTransformationSystem");
             }
             if (gtsElement == null) {
                 throw new XMLSerializationException(
                     "GraphTransformationSystem element not found in document");
             }
 
-            // Import the GTS element into the helper's document
-            Node imported = helperDoc.importNode(gtsElement, true);
-            helperDoc.getDocumentElement().appendChild(imported);
+            // Register GraGra
+            String gtsId = gtsElement.getAttribute("ID");
+            if (!gtsId.isEmpty()) {
+                registry.registerWithId(graGra, gtsId);
+            }
 
-            // Use XMLHelper to read the top object
-            helper.getTopObject(graGra);
+            // Read GTS attributes
+            String name = gtsElement.getAttribute("name");
+            if (name != null && !name.isEmpty()) {
+                graGra.setName(name);
+            }
+            TypeSet typeSet = graGra.getTypeSet();
+            if (typeSet != null) {
+                String directed = gtsElement.getAttribute("directed");
+                if (!directed.isEmpty()) {
+                    typeSet.setArcDirected(Boolean.valueOf(directed));
+                }
+                String parallel = gtsElement.getAttribute("parallel");
+                if (!parallel.isEmpty()) {
+                    typeSet.setArcParallel(Boolean.valueOf(parallel));
+                }
+            }
+
+            // Parse children in order: TaggedValues, Types, Graphs, Constraints, Rules
+            NodeList children = gtsElement.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                org.w3c.dom.Node child = children.item(i);
+                if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                    continue;
+                }
+                Element childElem = (Element) child;
+                String tagName = childElem.getTagName();
+
+                if ("Types".equals(tagName)) {
+                    deserializeTypes(childElem, graGra, registry);
+                } else if ("Graph".equals(tagName)) {
+                    deserializeHostGraph(childElem, graGra, registry);
+                } else if ("Constraints".equals(tagName)) {
+                    deserializeConstraints(childElem, graGra, registry);
+                } else if ("Rule".equals(tagName)) {
+                    deserializeRule(childElem, graGra, registry);
+                }
+            }
         } catch (XMLSerializationException e) {
             throw e;
         } catch (Exception e) {
             throw new XMLSerializationException("Failed to deserialize GraGra", e);
+        }
+    }
+
+    private void deserializeTypes(Element typesElem, GraGra graGra,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        TypeSet typeSet = graGra.getTypeSet();
+        if (typeSet == null) {
+            return;
+        }
+
+        NodeList children = typesElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element typeElem = (Element) child;
+            String tagName = typeElem.getTagName();
+
+            if ("NodeType".equals(tagName)) {
+                Type type = graGra.createNodeType(false);
+                if (type != null) {
+                    String id = typeElem.getAttribute("ID");
+                    if (!id.isEmpty()) {
+                        registry.registerWithId(type, id);
+                    }
+                    // TODO: load type attributes via TypeImplAdapter.deserializeFromElement
+                }
+            } else if ("EdgeType".equals(tagName)) {
+                Type type = graGra.createArcType(false);
+                if (type != null) {
+                    String id = typeElem.getAttribute("ID");
+                    if (!id.isEmpty()) {
+                        registry.registerWithId(type, id);
+                    }
+                }
+            } else if ("Type".equals(tagName)) {
+                Type type = graGra.createType();
+                if (type != null) {
+                    String id = typeElem.getAttribute("ID");
+                    if (!id.isEmpty()) {
+                        registry.registerWithId(type, id);
+                    }
+                }
+            } else if ("Graph".equals(tagName)) {
+                // Type graph
+                Graph typeGraph = graGra.createTypeGraph();
+                if (typeGraph != null) {
+                    GraphAdapter tgAdapter = new GraphAdapter(typeGraph);
+                    tgAdapter.deserializeFromElement(typeElem, registry);
+                    typeSet.setTypeGraph(typeGraph);
+                }
+            }
+        }
+    }
+
+    private void deserializeHostGraph(Element graphElem, GraGra graGra,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        // Skip the type graph (kind="TG") -- it's handled in Types
+        String kind = graphElem.getAttribute("kind");
+        if ("TG".equals(kind)) {
+            return;
+        }
+
+        // Clear existing graphs on first host graph load
+        if (!hostGraphsCleared) {
+            graGra.getGraphsVec().clear();
+            hostGraphsCleared = true;
+        }
+
+        Graph graph = BaseFactory.theFactory().createGraph(graGra.getTypeSet(), true);
+        if (graph != null) {
+            GraphAdapter graphAdapter = new GraphAdapter(graph);
+            graphAdapter.deserializeFromElement(graphElem, registry);
+            graGra.getGraphsVec().add(graph);
+        }
+    }
+
+    private boolean hostGraphsCleared = false;
+
+    private void deserializeConstraints(Element constraintsElem, GraGra graGra,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        NodeList children = constraintsElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element childElem = (Element) child;
+            String tagName = childElem.getTagName();
+
+            if ("Graphconstraint_Atomic".equals(tagName)) {
+                agg.cons.AtomConstraint ac = graGra.createAtomic("");
+                if (ac != null) {
+                    AtomConstraintAdapter acAdapter = new AtomConstraintAdapter(ac);
+                    acAdapter.deserializeFromElement(childElem, registry);
+                }
+            } else if ("Formula".equals(tagName)) {
+                agg.cons.Formula formula = graGra.createConstraint("");
+                if (formula != null) {
+                    FormulaAdapter fAdapter = new FormulaAdapter(formula);
+                    fAdapter.deserializeFromElement(childElem, registry);
+                }
+            }
+        }
+    }
+
+    private void deserializeRule(Element ruleElem, GraGra graGra,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        Rule rule = graGra.createRule();
+        if (rule != null) {
+            RuleAdapter ruleAdapter = new RuleAdapter(rule);
+            ruleAdapter.deserializeFromElement(ruleElem, registry);
         }
     }
 
