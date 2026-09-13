@@ -7,6 +7,7 @@
 package agg.xml.migration;
 
 import agg.xt_basis.GraGra;
+import agg.xt_basis.Graph;
 import agg.xml.TestDataHelper;
 import agg.xml.legacy.XMLSaveLoad;
 import org.testng.annotations.AfterTest;
@@ -165,5 +166,92 @@ public class FeatureFlagTest {
         assertTrue(tempFile.exists(), "File should exist after GraGra.save via legacy path");
         assertTrue(tempFile.length() > 0, "File should not be empty");
         tempFile.delete();
+    }
+
+    /**
+     * Deep roundtrip test via the new DOM path:
+     * load -> save -> reload -> compare graph count, node count, edge count.
+     */
+    @Test
+    public void testNewXmlRoundtripDeepVerification() throws Exception {
+        GraGraMigration.setUseNewXml(true);
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+
+        // Load via new DOM path
+        GraGra original = new GraGra();
+        GraGraMigration.load(original, file.getAbsolutePath());
+        assertNotNull(original.getName(), "Original should load");
+        int originalGraphCount = original.getGraphsVec().size();
+        int originalNodeCount = 0;
+        int originalEdgeCount = 0;
+        for (Graph g : original.getGraphsVec()) {
+            originalNodeCount += g.getNodesCount();
+            originalEdgeCount += g.getArcsCount();
+        }
+
+        // Save via new DOM path
+        File tempFile = new File("target/feature-flag-roundtrip-new.ggx");
+        tempFile.getParentFile().mkdirs();
+        GraGraMigration.save(original, tempFile.getAbsolutePath());
+        assertTrue(tempFile.exists(), "Saved file should exist");
+        assertTrue(tempFile.length() > 0, "Saved file should not be empty");
+
+        // Reload via new DOM path
+        GraGra reloaded = new GraGra();
+        GraGraMigration.load(reloaded, tempFile.getAbsolutePath());
+        assertNotNull(reloaded.getName(), "Reloaded should load");
+
+        // Deep comparison
+        assertEquals(reloaded.getName(), original.getName(),
+            "Name should match after new XML roundtrip");
+        assertEquals(reloaded.getGraphsVec().size(), originalGraphCount,
+            "Graph count should match after new XML roundtrip");
+
+        int reloadedNodeCount = 0;
+        int reloadedEdgeCount = 0;
+        for (Graph g : reloaded.getGraphsVec()) {
+            reloadedNodeCount += g.getNodesCount();
+            reloadedEdgeCount += g.getArcsCount();
+        }
+        assertEquals(reloadedNodeCount, originalNodeCount,
+            "Total node count should match after new XML roundtrip");
+        assertEquals(reloadedEdgeCount, originalEdgeCount,
+            "Total edge count should match after new XML roundtrip");
+
+        tempFile.delete();
+    }
+
+    /**
+     * Roundtrip with all 4 sample files via the new DOM path.
+     */
+    @Test
+    public void testNewXmlRoundtripAllFiles() throws Exception {
+        GraGraMigration.setUseNewXml(true);
+
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
+
+            // Load
+            GraGra original = new GraGra();
+            GraGraMigration.load(original, file.getAbsolutePath());
+            assertNotNull(original.getName(), "Should load: " + filename);
+
+            // Save
+            File tempFile = new File("target/feature-flag-roundtrip-" + filename);
+            tempFile.getParentFile().mkdirs();
+            GraGraMigration.save(original, tempFile.getAbsolutePath());
+            assertTrue(tempFile.exists(), "Saved file should exist: " + filename);
+            assertTrue(tempFile.length() > 0, "Saved file should not be empty: " + filename);
+
+            // Reload
+            GraGra reloaded = new GraGra();
+            GraGraMigration.load(reloaded, tempFile.getAbsolutePath());
+            assertEquals(reloaded.getName(), original.getName(),
+                "Name should match for " + filename);
+            assertEquals(reloaded.getGraphsVec().size(), original.getGraphsVec().size(),
+                "Graph count should match for " + filename);
+
+            tempFile.delete();
+        }
     }
 }

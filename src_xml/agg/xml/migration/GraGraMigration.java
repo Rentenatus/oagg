@@ -8,6 +8,11 @@ package agg.xml.migration;
 
 import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
+import agg.xml.adapter.GraGraAdapter;
+import agg.xml.core.DOMXMLDeserializer;
+import agg.xml.core.DOMXMLDeserializerContext;
+import agg.xml.core.DOMXMLSerializer;
+import agg.xml.core.DOMXMLSerializerContext;
 import agg.xml.core.XMLSerializationException;
 import agg.xml.legacy.LegacyCompatibility;
 import agg.xml.legacy.XMLSaveLoad;
@@ -119,7 +124,12 @@ public class GraGraMigration {
                 outfileName = outfileName.concat(".ggx");
             }
             File outputFile = new File(outfileName);
-            XMLSaveLoad.saveObject(graGra, outputFile);
+
+            // Use DOMXMLSerializer with GraGraAdapter
+            GraGraAdapter adapter = new GraGraAdapter(graGra);
+            DOMXMLSerializer serializer = new DOMXMLSerializer();
+            serializer.serializeToFile(adapter, outputFile);
+
             updateFileNames(graGra, outfileName);
             return true;
         } catch (XMLSerializationException e) {
@@ -153,7 +163,10 @@ public class GraGraMigration {
             throw new Exception("File \"" + filename + "\" is not a \".ggx\" file!");
         }
         try {
-            LegacyCompatibility.deserializeFromFile(f, graGra);
+            // Use DOMXMLDeserializer with GraGraAdapter
+            DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(f);
+            GraGraAdapter adapter = new GraGraAdapter(graGra);
+            adapter.deserialize(context);
             updateFileNames(graGra, filename);
             return true;
         } catch (XMLSerializationException e) {
