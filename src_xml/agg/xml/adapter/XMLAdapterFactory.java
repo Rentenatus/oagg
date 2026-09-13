@@ -59,19 +59,24 @@ public class XMLAdapterFactory {
             return null;
         }
         
-        // Check for specific types and return appropriate adapter
-        if (xmlObject instanceof Graph) {
+        // Check for specific types and return appropriate adapter.
+        // Order matters: most-specific subtypes must be checked before their supertypes.
+        if (xmlObject instanceof GraGra) {
+            return new GraGraAdapter((GraGra) xmlObject);
+        } else if (xmlObject instanceof TypeGraph) {
+            return new TypeGraphAdapter((TypeGraph) xmlObject);
+        } else if (xmlObject instanceof Graph) {
             return new GraphAdapter((Graph) xmlObject);
         } else if (xmlObject instanceof Node) {
             return new NodeAdapter((Node) xmlObject);
         } else if (xmlObject instanceof Arc) {
             return new ArcAdapter((Arc) xmlObject);
+        } else if (xmlObject instanceof RuleScheme) {
+            return new AgtAdapters.RuleSchemeAdapter((RuleScheme) xmlObject);
+        } else if (xmlObject instanceof MultiRule) {
+            return new AgtAdapters.MultiRuleAdapter((MultiRule) xmlObject);
         } else if (xmlObject instanceof Rule) {
             return new RuleAdapter((Rule) xmlObject);
-        } else if (xmlObject instanceof GraGra) {
-            return new GraGraAdapter((GraGra) xmlObject);
-        } else if (xmlObject instanceof TypeGraph) {
-            return new TypeGraphAdapter((TypeGraph) xmlObject);
         } else if (xmlObject instanceof Match) {
             return new MatchAdapter((Match) xmlObject);
         } else if (xmlObject instanceof NodeTypeImpl) {
@@ -80,10 +85,6 @@ public class XMLAdapterFactory {
             return new ArcTypeImplAdapter((ArcTypeImpl) xmlObject);
         } else if (xmlObject instanceof TypeImpl) {
             return new TypeImplAdapter((TypeImpl) xmlObject);
-        } else if (xmlObject instanceof RuleScheme) {
-            return new AgtAdapters.RuleSchemeAdapter((RuleScheme) xmlObject);
-        } else if (xmlObject instanceof MultiRule) {
-            return new AgtAdapters.MultiRuleAdapter((MultiRule) xmlObject);
         } else if (xmlObject instanceof ValueTuple) {
             return new ValueTupleAdapter((ValueTuple) xmlObject);
         } else if (xmlObject instanceof VarTuple) {
@@ -106,18 +107,18 @@ public class XMLAdapterFactory {
             return new ApplRuleSequenceAdapter((ApplRuleSequence) xmlObject);
         } else if (xmlObject instanceof ConflictsDependenciesContainer) {
             return new ParserAdapters.ConflictsDependenciesContainerAdapter((ConflictsDependenciesContainer) xmlObject);
-        } else if (xmlObject instanceof ExcludePairContainer) {
-            return new ParserAdapters.ExcludePairContainerAdapter((ExcludePairContainer) xmlObject);
-        } else if (xmlObject instanceof DependencyPairContainer) {
-            return new ParserAdapters.DependencyPairContainerAdapter((DependencyPairContainer) xmlObject);
-        } else if (xmlObject instanceof LayeredExcludePairContainer) {
-            return new ParserAdapters.LayeredExcludePairContainerAdapter((LayeredExcludePairContainer) xmlObject);
         } else if (xmlObject instanceof LayeredDependencyPairContainer) {
             return new ParserAdapters.LayeredDependencyPairContainerAdapter((LayeredDependencyPairContainer) xmlObject);
-        } else if (xmlObject instanceof PriorityExcludePairContainer) {
-            return new ParserAdapters.PriorityExcludePairContainerAdapter((PriorityExcludePairContainer) xmlObject);
+        } else if (xmlObject instanceof LayeredExcludePairContainer) {
+            return new ParserAdapters.LayeredExcludePairContainerAdapter((LayeredExcludePairContainer) xmlObject);
         } else if (xmlObject instanceof PriorityDependencyPairContainer) {
             return new ParserAdapters.PriorityDependencyPairContainerAdapter((PriorityDependencyPairContainer) xmlObject);
+        } else if (xmlObject instanceof PriorityExcludePairContainer) {
+            return new ParserAdapters.PriorityExcludePairContainerAdapter((PriorityExcludePairContainer) xmlObject);
+        } else if (xmlObject instanceof DependencyPairContainer) {
+            return new ParserAdapters.DependencyPairContainerAdapter((DependencyPairContainer) xmlObject);
+        } else if (xmlObject instanceof ExcludePairContainer) {
+            return new ParserAdapters.ExcludePairContainerAdapter((ExcludePairContainer) xmlObject);
         } else if (xmlObject instanceof LayerFunction) {
             return new ParserAdapters.LayerFunctionAdapter((LayerFunction) xmlObject);
         }
