@@ -292,29 +292,13 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
 
             if ("NodeType".equals(tagName)) {
                 Type type = graGra.createNodeType(false);
-                if (type != null) {
-                    String id = typeElem.getAttribute("ID");
-                    if (!id.isEmpty()) {
-                        registry.registerWithId(type, id);
-                    }
-                    // TODO: load type attributes via TypeImplAdapter.deserializeFromElement
-                }
+                loadTypeDetails(type, typeElem, registry);
             } else if ("EdgeType".equals(tagName)) {
                 Type type = graGra.createArcType(false);
-                if (type != null) {
-                    String id = typeElem.getAttribute("ID");
-                    if (!id.isEmpty()) {
-                        registry.registerWithId(type, id);
-                    }
-                }
+                loadTypeDetails(type, typeElem, registry);
             } else if ("Type".equals(tagName)) {
                 Type type = graGra.createType();
-                if (type != null) {
-                    String id = typeElem.getAttribute("ID");
-                    if (!id.isEmpty()) {
-                        registry.registerWithId(type, id);
-                    }
-                }
+                loadTypeDetails(type, typeElem, registry);
             } else if ("Graph".equals(tagName)) {
                 // Type graph
                 Graph typeGraph = graGra.createTypeGraph();
@@ -322,6 +306,98 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                     GraphAdapter tgAdapter = new GraphAdapter(typeGraph);
                     tgAdapter.deserializeFromElement(typeElem, registry);
                     typeSet.setTypeGraph(typeGraph);
+                }
+            }
+        }
+    }
+
+    /**
+     * Loads type details from a DOM element onto a newly created Type.
+     * Parses the name string (containing name%additionalRepr:[NODE/EDGE]:),
+     * the abstract flag, and registers the DeclMember AttrType children.
+     *
+     * @param type     The newly created Type to populate
+     * @param typeElem The type DOM element
+     * @param registry The ID registry
+     */
+    private void loadTypeDetails(Type type, Element typeElem,
+            DOMSerializationRegistry registry) {
+        if (type == null || typeElem == null) {
+            return;
+        }
+
+        String id = typeElem.getAttribute("ID");
+        if (!id.isEmpty()) {
+            registry.registerWithId(type, id);
+        }
+
+        // Parse name: the format is "name%:additionalRepr:[NODE]:" or "name%:additionalRepr:[EDGE]:"
+        String name = typeElem.getAttribute("name");
+        if (name != null && !name.isEmpty()) {
+            int pct = name.indexOf('%');
+            if (pct != -1) {
+                String typeName = name.substring(0, pct);
+                String additional = name.substring(pct + 1);
+                // Set the string representation (the type name)
+                if (type instanceof agg.xt_basis.TypeImpl) {
+                    ((agg.xt_basis.TypeImpl) type).setStringRepr(typeName);
+                } else if (type instanceof agg.xt_basis.NodeTypeImpl) {
+                    ((agg.xt_basis.NodeTypeImpl) type).setStringRepr(typeName);
+                } else if (type instanceof agg.xt_basis.ArcTypeImpl) {
+                    ((agg.xt_basis.ArcTypeImpl) type).setStringRepr(typeName);
+                }
+                // Set the additional representation
+                additional = additional.replaceAll("::", ":");
+                type.setAdditionalRepr(additional);
+            } else {
+                if (type instanceof agg.xt_basis.TypeImpl) {
+                    ((agg.xt_basis.TypeImpl) type).setStringRepr(name);
+                } else if (type instanceof agg.xt_basis.NodeTypeImpl) {
+                    ((agg.xt_basis.NodeTypeImpl) type).setStringRepr(name);
+                } else if (type instanceof agg.xt_basis.ArcTypeImpl) {
+                    ((agg.xt_basis.ArcTypeImpl) type).setStringRepr(name);
+                }
+            }
+        }
+
+        // Parse abstract attribute
+        String abs = typeElem.getAttribute("abstract");
+        if ("false".equals(abs)) {
+            // createNodeType/createArcType default to non-abstract, nothing to do
+        } else if ("true".equals(abs)) {
+            if (type instanceof agg.xt_basis.TypeImpl) {
+                ((agg.xt_basis.TypeImpl) type).setAbstract(true);
+            } else if (type instanceof agg.xt_basis.NodeTypeImpl) {
+                ((agg.xt_basis.NodeTypeImpl) type).setAbstract(true);
+            } else if (type instanceof agg.xt_basis.ArcTypeImpl) {
+                ((agg.xt_basis.ArcTypeImpl) type).setAbstract(true);
+            }
+        }
+
+        // Register AttrType children (DeclMember) for reference resolution
+        // Each AttrType element has an ID that is referenced by Attribute elements
+        NodeList attrChildren = typeElem.getChildNodes();
+        for (int i = 0; i < attrChildren.getLength(); i++) {
+            org.w3c.dom.Node ac = attrChildren.item(i);
+            if (ac.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element attrElem = (Element) ac;
+            if ("AttrType".equals(attrElem.getTagName())) {
+                String attrId = attrElem.getAttribute("ID");
+                String attrName = attrElem.getAttribute("attrname");
+                // Find the DeclMember by name in the type's AttrType
+                if (!attrId.isEmpty() && type.getAttrType() != null) {
+                    agg.attribute.impl.DeclTuple declTuple =
+                        (agg.attribute.impl.DeclTuple) type.getAttrType();
+                    for (int j = 0; j < declTuple.getSize(); j++) {
+                        agg.attribute.impl.DeclMember dm =
+                            (agg.attribute.impl.DeclMember) declTuple.getMemberAt(j);
+                        if (dm != null && attrName.equals(dm.getName())) {
+                            registry.registerWithId(dm, attrId);
+                            break;
+                        }
+                    }
                 }
             }
         }
