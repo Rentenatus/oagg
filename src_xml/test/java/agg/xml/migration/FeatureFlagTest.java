@@ -7,9 +7,11 @@
 package agg.xml.migration;
 
 import agg.xt_basis.GraGra;
+import agg.xml.TestDataHelper;
 import agg.xml.legacy.XMLSaveLoad;
-import org.testng.annotations.Test;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 import java.io.File;
@@ -20,7 +22,10 @@ import java.io.File;
  */
 public class FeatureFlagTest {
 
-    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
+    @BeforeClass
+    public void setUp() {
+        TestDataHelper.requireAllSamples();
+    }
 
     @AfterTest
     public void tearDown() {
@@ -48,8 +53,7 @@ public class FeatureFlagTest {
     @Test
     public void testSaveLegacyPath() {
         GraGraMigration.setUseNewXml(false);
-        File file = new File(BASELINE_DIR + "small_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
 
         GraGra graGra = new GraGra();
         try {
@@ -69,8 +73,7 @@ public class FeatureFlagTest {
     @Test
     public void testSaveNewXmlPath() {
         GraGraMigration.setUseNewXml(true);
-        File file = new File(BASELINE_DIR + "small_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
 
         GraGra graGra = new GraGra();
         try {
@@ -89,8 +92,7 @@ public class FeatureFlagTest {
 
     @Test
     public void testValidateReturnsTrue() {
-        File file = new File(BASELINE_DIR + "small_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
 
         assertTrue(GraGraMigration.validate(file.getAbsolutePath()),
             "Validation should return true for valid .ggx file");

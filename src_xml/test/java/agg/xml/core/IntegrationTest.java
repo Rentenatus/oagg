@@ -8,6 +8,7 @@ package agg.xml.core;
 
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
+import agg.xml.TestDataHelper;
 import agg.xt_basis.Graph;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
@@ -24,14 +25,14 @@ import java.io.IOException;
  * the legacy XMLHelper implementation.
  */
 public class IntegrationTest {
-    
-    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
+
     private static final String OUTPUT_DIR = "target/test-output/";
-    
+
     private File tempOutputDir;
-    
+
     @BeforeClass
     public void setUp() throws Exception {
+        TestDataHelper.requireAllSamples();
         // Create temporary output directory
         tempOutputDir = new File(OUTPUT_DIR);
         if (!tempOutputDir.exists()) {
@@ -50,9 +51,8 @@ public class IntegrationTest {
      */
     @Test
     public void testLoadSmallGraphWithDOMContext() throws Exception {
-        File ggxFile = new File(BASELINE_DIR + "small_graph.ggx");
-        assertTrue(ggxFile.exists(), "Test file should exist: " + ggxFile.getAbsolutePath());
-        
+        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
+
         // Load using new DOM-based deserializer
         DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(ggxFile);
         assertNotNull(context, "Deserializer context should not be null");
@@ -68,17 +68,11 @@ public class IntegrationTest {
      */
     @Test
     public void testLoadAllSampleFiles() throws Exception {
-        String[] sampleFiles = {
-            "small_graph.ggx",
-            "small_graph_layered.ggx", 
-            "medium_graph.ggx",
-            "large_graph.ggx"
-        };
+        String[] sampleFiles = TestDataHelper.SAMPLE_FILES;
         
-        for (String filename : sampleFiles) {
-            File ggxFile = new File(BASELINE_DIR + filename);
-            assertTrue(ggxFile.exists(), "Test file should exist: " + filename);
-            
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File ggxFile = TestDataHelper.resolveSample(filename);
+
             // Test loading with new DOMXMLDeserializerContext
             DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(ggxFile);
             assertNotNull(context, "Failed to load: " + filename);
@@ -165,8 +159,8 @@ public class IntegrationTest {
      */
     @Test
     public void testLegacyVsNewDOMStructure() throws Exception {
-        File ggxFile = new File(BASELINE_DIR + "small_graph.ggx");
-        
+        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
+
         // Load with legacy XMLHelper
         XMLHelper legacyHelper = new XMLHelper();
         boolean legacyLoaded = legacyHelper.read_from_xml(ggxFile.getAbsolutePath());

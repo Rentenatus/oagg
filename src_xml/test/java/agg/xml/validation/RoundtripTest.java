@@ -9,12 +9,13 @@ package agg.xml.validation;
 import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
 import agg.xt_basis.Graph;
+import agg.xml.TestDataHelper;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.core.DOMXMLSerializerContext;
 import agg.xml.legacy.LegacyCompatibility;
-import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 import java.io.ByteArrayInputStream;
@@ -27,25 +28,17 @@ import java.io.File;
  */
 public class RoundtripTest {
 
-    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
-
-    private File[] sampleFiles;
-
     @BeforeClass
     public void setUp() {
-        sampleFiles = new File[] {
-            new File(BASELINE_DIR + "small_graph.ggx"),
-            new File(BASELINE_DIR + "small_graph_layered.ggx"),
-            new File(BASELINE_DIR + "medium_graph.ggx"),
-            new File(BASELINE_DIR + "large_graph.ggx")
-        };
+        TestDataHelper.requireAllSamples();
     }
 
     @DataProvider(name = "sampleFiles")
     public Object[][] sampleFiles() {
-        Object[][] data = new Object[sampleFiles.length][1];
-        for (int i = 0; i < sampleFiles.length; i++) {
-            data[i][0] = sampleFiles[i];
+        File[] files = TestDataHelper.getSampleFiles();
+        Object[][] data = new Object[files.length][1];
+        for (int i = 0; i < files.length; i++) {
+            data[i][0] = files[i];
         }
         return data;
     }
@@ -55,9 +48,6 @@ public class RoundtripTest {
      */
     @Test(dataProvider = "sampleFiles")
     public void testLegacyLoadAndInspect(File ggxFile) throws Exception {
-        if (!ggxFile.exists()) {
-            return;
-        }
         GraGra graGra = new GraGra();
         graGra.load(ggxFile.getAbsolutePath());
         assertNotNull(graGra.getName(), "GraGra name should not be null");
@@ -66,13 +56,10 @@ public class RoundtripTest {
 
     /**
      * Roundtrip: load -> save -> reload via legacy XMLHelper.
+     * Verifies graph count, rule count, name, and node/edge counts.
      */
     @Test(dataProvider = "sampleFiles")
     public void testLegacyRoundtrip(File ggxFile) throws Exception {
-        if (!ggxFile.exists()) {
-            return;
-        }
-
         // Load original
         GraGra original = new GraGra();
         original.load(ggxFile.getAbsolutePath());
@@ -95,18 +82,25 @@ public class RoundtripTest {
         assertEquals(reloaded.getName(), original.getName(),
             "Name should match after roundtrip");
 
+        // Deep comparison: node and edge counts per graph
+        for (int i = 0; i < original.getGraphsVec().size(); i++) {
+            Graph origGraph = original.getGraphsVec().get(i);
+            Graph reloadedGraph = reloaded.getGraphsVec().get(i);
+            assertEquals(reloadedGraph.getNodesCount(), origGraph.getNodesCount(),
+                "Node count should match for graph " + i);
+            assertEquals(reloadedGraph.getArcsCount(), origGraph.getArcsCount(),
+                "Edge count should match for graph " + i);
+        }
+
         tempFile.delete();
     }
 
     /**
      * DOM roundtrip: parse -> serialize to string -> re-parse.
+     * Verifies root element, child count, and version attribute.
      */
     @Test(dataProvider = "sampleFiles")
     public void testDomRoundtrip(File ggxFile) throws Exception {
-        if (!ggxFile.exists()) {
-            return;
-        }
-
         // Parse with new DOM context
         DOMXMLDeserializerContext deserializer = new DOMXMLDeserializerContext(ggxFile);
         assertNotNull(deserializer.getDocument(), "Document should be parsed");
@@ -123,6 +117,18 @@ public class RoundtripTest {
         assertNotNull(reloaded.getDocument(), "Re-parsed document should not be null");
         assertEquals(reloaded.getCurrentElement().getNodeName(), "Document",
             "Root should be Document after roundtrip");
+
+        // Verify version attribute preserved
+        String originalVersion = deserializer.getCurrentElement().getAttribute("version");
+        String reloadedVersion = reloaded.getCurrentElement().getAttribute("version");
+        assertEquals(reloadedVersion, originalVersion,
+            "Version attribute should survive DOM roundtrip");
+
+        // Verify child element count matches
+        int originalChildCount = deserializer.getCurrentElement().getChildNodes().getLength();
+        int reloadedChildCount = reloaded.getCurrentElement().getChildNodes().getLength();
+        assertEquals(reloadedChildCount, originalChildCount,
+            "Child node count should match after DOM roundtrip");
     }
 
     /**
@@ -130,10 +136,6 @@ public class RoundtripTest {
      */
     @Test(dataProvider = "sampleFiles")
     public void testCrossSystemCompatibility(File ggxFile) throws Exception {
-        if (!ggxFile.exists()) {
-            return;
-        }
-
         // Load via legacy
         XMLHelper legacyHelper = new XMLHelper();
         assertTrue(legacyHelper.read_from_xml(ggxFile.getAbsolutePath()),
@@ -156,8 +158,7 @@ public class RoundtripTest {
      */
     @Test
     public void testSmallGraphStructureCounts() throws Exception {
-        File file = new File(BASELINE_DIR + "small_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
 
         GraGra graGra = new GraGra();
         graGra.load(file.getAbsolutePath());
@@ -176,8 +177,7 @@ public class RoundtripTest {
      */
     @Test
     public void testLegacyCompatibilityRoundtrip() throws Exception {
-        File file = new File(BASELINE_DIR + "small_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
 
         // Load via legacy
         GraGra original = new GraGra();
@@ -198,6 +198,16 @@ public class RoundtripTest {
             "Names should match after LegacyCompatibility roundtrip");
         assertEquals(reloaded.getGraphsVec().size(), original.getGraphsVec().size(),
             "Graph counts should match");
+
+        // Deep comparison: node and edge counts
+        for (int i = 0; i < original.getGraphsVec().size(); i++) {
+            Graph origGraph = original.getGraphsVec().get(i);
+            Graph reloadedGraph = reloaded.getGraphsVec().get(i);
+            assertEquals(reloadedGraph.getNodesCount(), origGraph.getNodesCount(),
+                "Node count should match for graph " + i);
+            assertEquals(reloadedGraph.getArcsCount(), origGraph.getArcsCount(),
+                "Edge count should match for graph " + i);
+        }
 
         tempFile.delete();
     }

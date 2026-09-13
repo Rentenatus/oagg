@@ -8,8 +8,10 @@ package agg.xml.validation;
 
 import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
+import agg.xml.TestDataHelper;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.core.DOMXMLSerializerContext;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
@@ -22,13 +24,16 @@ import java.io.File;
  */
 public class StressTest {
 
-    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
     private static final int REPEAT_COUNT = 10;
+
+    @BeforeClass
+    public void setUp() {
+        TestDataHelper.requireAllSamples();
+    }
 
     @Test
     public void testRepeatedLegacyLoad() throws Exception {
-        File file = new File(BASELINE_DIR + "large_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("large_graph.ggx");
 
         for (int i = 0; i < REPEAT_COUNT; i++) {
             XMLHelper helper = new XMLHelper();
@@ -40,8 +45,7 @@ public class StressTest {
 
     @Test
     public void testRepeatedDomLoad() throws Exception {
-        File file = new File(BASELINE_DIR + "large_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("large_graph.ggx");
 
         for (int i = 0; i < REPEAT_COUNT; i++) {
             DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(file);
@@ -51,8 +55,7 @@ public class StressTest {
 
     @Test
     public void testRepeatedGraGraLoad() throws Exception {
-        File file = new File(BASELINE_DIR + "small_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
 
         for (int i = 0; i < REPEAT_COUNT; i++) {
             GraGra graGra = new GraGra();
@@ -63,8 +66,7 @@ public class StressTest {
 
     @Test
     public void testRepeatedDomRoundtrip() throws Exception {
-        File file = new File(BASELINE_DIR + "medium_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("medium_graph.ggx");
 
         for (int i = 0; i < REPEAT_COUNT; i++) {
             DOMXMLDeserializerContext deserializer = new DOMXMLDeserializerContext(file);
@@ -80,8 +82,7 @@ public class StressTest {
 
     @Test
     public void testLargeFileLoadPerformance() throws Exception {
-        File file = new File(BASELINE_DIR + "large_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("large_graph.ggx");
 
         long start = System.currentTimeMillis();
         DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(file);
@@ -93,8 +94,7 @@ public class StressTest {
 
     @Test
     public void testMemoryStability() throws Exception {
-        File file = new File(BASELINE_DIR + "small_graph.ggx");
-        if (!file.exists()) return;
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
 
         Runtime runtime = Runtime.getRuntime();
         long initialMemory = runtime.totalMemory() - runtime.freeMemory();
@@ -116,12 +116,8 @@ public class StressTest {
 
     @Test
     public void testAllFilesLoadUnderBothSystems() throws Exception {
-        String[] files = {"small_graph.ggx", "small_graph_layered.ggx",
-                          "medium_graph.ggx", "large_graph.ggx"};
-
-        for (String filename : files) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             // Legacy
             XMLHelper legacy = new XMLHelper();

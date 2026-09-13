@@ -6,9 +6,10 @@
  */
 package agg.xml.validation;
 
+import agg.xml.TestDataHelper;
 import agg.xml.core.XMLSerializationException;
-import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 import java.io.ByteArrayInputStream;
@@ -19,11 +20,11 @@ import java.io.File;
  */
 public class XMLValidatorTest {
 
-    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
     private XMLValidator validator;
 
     @BeforeClass
     public void setUp() throws XMLSerializationException {
+        TestDataHelper.requireAllSamples();
         validator = new XMLValidator();
     }
 
@@ -72,22 +73,17 @@ public class XMLValidatorTest {
 
     @Test
     public void testValidateFile() throws XMLSerializationException {
-        File ggxFile = new File(BASELINE_DIR + "small_graph.ggx");
-        if (ggxFile.exists()) {
-            boolean valid = validator.validate(ggxFile);
-            assertTrue(valid, "Sample .ggx file should be valid: " + validator.getIssues());
-        }
+        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
+        boolean valid = validator.validate(ggxFile);
+        assertTrue(valid, "Sample .ggx file should be valid: " + validator.getIssues());
     }
 
     @Test
     public void testValidateAllSampleFiles() throws XMLSerializationException {
-        String[] files = {"small_graph.ggx", "small_graph_layered.ggx", "medium_graph.ggx", "large_graph.ggx"};
-        for (String filename : files) {
-            File file = new File(BASELINE_DIR + filename);
-            if (file.exists()) {
-                boolean valid = validator.validate(file);
-                assertTrue(valid, filename + " should be valid. Issues: " + validator.getIssues());
-            }
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
+            boolean valid = validator.validate(file);
+            assertTrue(valid, filename + " should be valid. Issues: " + validator.getIssues());
         }
     }
 
@@ -107,5 +103,17 @@ public class XMLValidatorTest {
             XMLValidator customValidator = new XMLValidator(schemaFile);
             assertNotNull(customValidator, "Should create validator from schema file");
         }
+    }
+
+    @Test
+    public void testFatalErrorCausesValidationFailure() throws XMLSerializationException {
+        // Unclosed tag triggers a fatal parse error
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                     "<Document version=\"1.0\">\n" +
+                     "  <GraphTransformationSystem>\n" +
+                     "</Document>";
+        ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
+        boolean valid = validator.validate(stream);
+        assertFalse(valid, "Malformed XML with unclosed tag should fail validation");
     }
 }

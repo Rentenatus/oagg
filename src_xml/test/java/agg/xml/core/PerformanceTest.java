@@ -7,6 +7,7 @@
 package agg.xml.core;
 
 import agg.util.XMLHelper;
+import agg.xml.TestDataHelper;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.AfterClass;
@@ -22,24 +23,24 @@ import java.util.List;
  * serialization against the legacy XMLHelper implementation.
  */
 public class PerformanceTest {
-    
-    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
+
     private static final int ITERATIONS = 5;
-    
+
     private List<String> testFiles;
     private List<Long> legacyLoadTimes;
     private List<Long> legacySaveTimes;
     private List<Long> newLoadTimes;
     private List<Long> newSaveTimes;
-    
+
     @BeforeClass
     public void setUp() throws Exception {
+        TestDataHelper.requireAllSamples();
         testFiles = new ArrayList<>();
         testFiles.add("small_graph.ggx");
         testFiles.add("small_graph_layered.ggx");
         testFiles.add("medium_graph.ggx");
         testFiles.add("large_graph.ggx");
-        
+
         legacyLoadTimes = new ArrayList<>();
         legacySaveTimes = new ArrayList<>();
         newLoadTimes = new ArrayList<>();
@@ -77,7 +78,7 @@ public class PerformanceTest {
         System.out.println("\n=== Testing Legacy Load Performance ===");
         
         for (String filename : testFiles) {
-            File file = new File(BASELINE_DIR + filename);
+            File file = TestDataHelper.resolveSample(filename);
             long totalTime = 0;
             
             for (int i = 0; i < ITERATIONS; i++) {
@@ -104,7 +105,7 @@ public class PerformanceTest {
         System.out.println("\n=== Testing New Load Performance ===");
         
         for (String filename : testFiles) {
-            File file = new File(BASELINE_DIR + filename);
+            File file = TestDataHelper.resolveSample(filename);
             long totalTime = 0;
             
             for (int i = 0; i < ITERATIONS; i++) {
@@ -131,7 +132,7 @@ public class PerformanceTest {
         System.out.println("\n=== Testing Legacy Save Performance ===");
         
         for (String filename : testFiles) {
-            File inputFile = new File(BASELINE_DIR + filename);
+            File inputFile = TestDataHelper.resolveSample(filename);
             File outputFile = new File("target/perf-test/legacy_" + filename);
             outputFile.getParentFile().mkdirs();
             
@@ -165,7 +166,7 @@ public class PerformanceTest {
         System.out.println("\n=== Testing New Save Performance ===");
         
         for (String filename : testFiles) {
-            File inputFile = new File(BASELINE_DIR + filename);
+            File inputFile = TestDataHelper.resolveSample(filename);
             File outputFile = new File("target/perf-test/new_" + filename);
             outputFile.getParentFile().mkdirs();
             

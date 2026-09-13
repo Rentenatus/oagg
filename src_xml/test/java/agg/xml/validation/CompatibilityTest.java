@@ -8,12 +8,12 @@ package agg.xml.validation;
 
 import agg.util.XMLHelper;
 import agg.xt_basis.GraGra;
+import agg.xml.TestDataHelper;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.legacy.LegacyCompatibility;
-import agg.xml.legacy.XMLSaveLoad;
 import agg.xml.migration.GraGraMigration;
-import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 import java.io.File;
@@ -21,26 +21,18 @@ import java.io.File;
 /**
  * Compatibility tests verifying that all existing .ggx files can be loaded
  * by both the legacy XMLHelper and the new DOM-based system.
- *
- * <p>These tests ensure 100% backward compatibility as required by the
- * refactoring plan's success criteria.</p>
  */
 public class CompatibilityTest {
 
-    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
-
-    private static final String[] SAMPLE_FILES = {
-        "small_graph.ggx",
-        "small_graph_layered.ggx",
-        "medium_graph.ggx",
-        "large_graph.ggx"
-    };
+    @BeforeClass
+    public void setUp() {
+        TestDataHelper.requireAllSamples();
+    }
 
     @Test
     public void testAllFilesLoadWithLegacyHelper() {
-        for (String filename : SAMPLE_FILES) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             XMLHelper helper = new XMLHelper();
             boolean loaded = helper.read_from_xml(file.getAbsolutePath());
@@ -53,9 +45,8 @@ public class CompatibilityTest {
 
     @Test
     public void testAllFilesLoadWithDomContext() throws Exception {
-        for (String filename : SAMPLE_FILES) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(file);
             assertNotNull(context.getDocument(), "DOM document should exist: " + filename);
@@ -66,9 +57,8 @@ public class CompatibilityTest {
 
     @Test
     public void testAllFilesLoadWithGraGra() throws Exception {
-        for (String filename : SAMPLE_FILES) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             GraGra graGra = new GraGra();
             graGra.load(file.getAbsolutePath());
@@ -79,9 +69,8 @@ public class CompatibilityTest {
     @Test
     public void testAllFilesValidWithSchema() throws Exception {
         XMLValidator validator = new XMLValidator();
-        for (String filename : SAMPLE_FILES) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             assertTrue(validator.validate(file),
                 filename + " should be schema-valid. Issues: " + validator.getIssues());
@@ -90,9 +79,8 @@ public class CompatibilityTest {
 
     @Test
     public void testLegacyCompatibilityCanLoad() {
-        for (String filename : SAMPLE_FILES) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             assertTrue(LegacyCompatibility.canLoad(file),
                 "LegacyCompatibility.canLoad should return true: " + filename);
@@ -102,9 +90,8 @@ public class CompatibilityTest {
     @Test
     public void testGraGraMigrationLegacyPath() throws Exception {
         GraGraMigration.setUseNewXml(false);
-        for (String filename : SAMPLE_FILES) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             GraGra graGra = new GraGra();
             boolean loaded = GraGraMigration.load(graGra, file.getAbsolutePath());
@@ -114,9 +101,8 @@ public class CompatibilityTest {
 
     @Test
     public void testGraGraMigrationValidation() {
-        for (String filename : SAMPLE_FILES) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             assertTrue(GraGraMigration.validate(file.getAbsolutePath()),
                 "GraGraMigration.validate should return true: " + filename);
@@ -125,9 +111,8 @@ public class CompatibilityTest {
 
     @Test
     public void testVersionAttributePreserved() throws Exception {
-        for (String filename : SAMPLE_FILES) {
-            File file = new File(BASELINE_DIR + filename);
-            if (!file.exists()) continue;
+        for (String filename : TestDataHelper.SAMPLE_FILES) {
+            File file = TestDataHelper.resolveSample(filename);
 
             XMLHelper helper = new XMLHelper();
             helper.read_from_xml(file.getAbsolutePath());
