@@ -89,6 +89,9 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 gtsElem.setAttribute("parallel", String.valueOf(typeSet.isArcParallel()));
             }
 
+            // TaggedValues: AttrHandler+Packages, Options, TypeGraphLevel
+            serializeTaggedValues(graGra, contextDoc, gtsElem);
+
             // Types section
             Element typesElem = contextDoc.createElement("Types");
             if (typeSet != null) {
@@ -182,7 +185,23 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 }
             }
 
-            // TODO: Matches, RuleSequences
+            // RuleSequences
+            java.util.List<agg.ruleappl.RuleSequence> ruleSeqs = graGra.getRuleSequences();
+            if (ruleSeqs != null && !ruleSeqs.isEmpty()) {
+                Element rsElem = contextDoc.createElement("RuleSequences");
+                for (agg.ruleappl.RuleSequence seq : ruleSeqs) {
+                    Element seqElem = contextDoc.createElement("Sequence");
+                    seqElem.setAttribute("name", seq.getName() != null ? seq.getName() : "");
+                    if (seq.isTrafoByARS()) {
+                        seqElem.setAttribute(agg.ruleappl.RuleSequence.TRAFO_BY_ARS, "true");
+                    }
+                    if (seq.isTrafoByObjFlow()) {
+                        seqElem.setAttribute(agg.ruleappl.RuleSequence.TRAFO_BY_OBJECT_FLOW, "true");
+                    }
+                    rsElem.appendChild(seqElem);
+                }
+                gtsElem.appendChild(rsElem);
+            }
 
             contextRoot.appendChild(gtsElem);
         } catch (Exception e) {
@@ -248,6 +267,10 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             }
 
             // Parse children in order: TaggedValues, Types, Graphs, Constraints, Rules
+            // First pass: read TaggedValues (before Types)
+            deserializeTaggedValues(gtsElement, graGra);
+
+            // Second pass: read structural elements
             NodeList children = gtsElement.getChildNodes();
             for (int i = 0; i < children.getLength(); i++) {
                 org.w3c.dom.Node child = children.item(i);
@@ -460,6 +483,142 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
         if (rule != null) {
             RuleAdapter ruleAdapter = new RuleAdapter(rule);
             ruleAdapter.deserializeFromElement(ruleElem, registry);
+        }
+    }
+
+    /**
+     * Serializes TaggedValues (AttrHandler+Packages, Options, TypeGraphLevel)
+     * as child elements of the GraphTransformationSystem element.
+     */
+    private void serializeTaggedValues(GraGra graGra, Document doc, Element gtsElem) {
+        // AttrHandler + Packages
+        java.util.List<agg.util.Pair<String, java.util.List<String>>> packages = graGra.getPackages();
+        if (packages != null) {
+            for (agg.util.Pair<String, java.util.List<String>> p : packages) {
+                Element handlerElem = doc.createElement("TaggedValue");
+                handlerElem.setAttribute("Tag", "AttrHandler");
+                handlerElem.setAttribute("TagValue", p.first != null ? p.first : "");
+                if (p.second != null) {
+                    for (String pkg : p.second) {
+                        Element pkgElem = doc.createElement("TaggedValue");
+                        pkgElem.setAttribute("Tag", "Package");
+                        pkgElem.setAttribute("TagValue", pkg);
+                        handlerElem.appendChild(pkgElem);
+                    }
+                }
+                gtsElem.appendChild(handlerElem);
+            }
+        }
+
+        // GraTra options (CSP, injective, dangling, NACs, PACs, GACs, consistency)
+        java.util.List<String> options = graGra.getGraTraOptions();
+        if (options != null) {
+            for (String opt : options) {
+                Element optElem = doc.createElement("TaggedValue");
+                optElem.setAttribute("Tag", opt);
+                optElem.setAttribute("TagValue", "true");
+                gtsElem.appendChild(optElem);
+            }
+        }
+
+        // TypeGraphLevel
+        TypeSet typeSet = graGra.getTypeSet();
+        if (typeSet != null) {
+            Element tglElem = doc.createElement("TaggedValue");
+            tglElem.setAttribute("Tag", "TypeGraphLevel");
+            int level = graGra.getLevelOfTypeGraphCheck();
+            String levelStr;
+            switch (level) {
+                case TypeSet.ENABLED:
+                    levelStr = "ENABLED";
+                    break;
+                case TypeSet.ENABLED_MAX:
+                    levelStr = "ENABLED_MAX";
+                    break;
+                case TypeSet.ENABLED_MAX_MIN:
+                    levelStr = "ENABLED_MAX_MIN";
+                    break;
+                default:
+                    levelStr = "DISABLED";
+            }
+            tglElem.setAttribute("TagValue", levelStr);
+            gtsElem.appendChild(tglElem);
+        }
+    }
+
+    /**
+     * Deserializes TaggedValues from the GraphTransformationSystem element.
+     * Reads AttrHandler+Packages, GraTra options, and TypeGraphLevel.
+     */
+    private void deserializeTaggedValues(Element gtsElem, GraGra graGra) {
+        java.util.List<String> options = new java.util.ArrayList<>();
+        int loadedLevel = TypeSet.DISABLED;
+
+        NodeList children = gtsElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element tvElem = (Element) child;
+            if (!"TaggedValue".equals(tvElem.getTagName())) {
+                continue;
+            }
+
+            String tag = tvElem.getAttribute("Tag");
+            String tagValue = tvElem.getAttribute("TagValue");
+
+            if ("AttrHandler".equals(tag)) {
+                // Read nested Package TaggedValues
+                java.util.List<String> packs = new java.util.ArrayList<>();
+                NodeList pkgChildren = tvElem.getChildNodes();
+                for (int j = 0; j < pkgChildren.getLength(); j++) {
+                    org.w3c.dom.Node pkgChild = pkgChildren.item(j);
+                    if (pkgChild.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                        Element pkgElem = (Element) pkgChild;
+                        if ("TaggedValue".equals(pkgElem.getTagName())
+                                && "Package".equals(pkgElem.getAttribute("Tag"))) {
+                            String pkg = pkgElem.getAttribute("TagValue");
+                            if (pkg != null && !pkg.isEmpty()) {
+                                packs.add(pkg.trim());
+                            }
+                        }
+                    }
+                }
+                // Add to packages list
+                graGra.getPackages().add(
+                    new agg.util.Pair<>(tagValue, packs));
+            } else if ("TypeGraphLevel".equals(tag)) {
+                if ("ENABLED".equalsIgnoreCase(tagValue)) {
+                    loadedLevel = TypeSet.ENABLED;
+                } else if ("ENABLED_MAX".equalsIgnoreCase(tagValue)) {
+                    loadedLevel = TypeSet.ENABLED_MAX;
+                } else if ("ENABLED_MAX_MIN".equalsIgnoreCase(tagValue)) {
+                    loadedLevel = TypeSet.ENABLED_MAX_MIN;
+                } else {
+                    loadedLevel = TypeSet.DISABLED;
+                }
+            } else if (tag != null && !tag.isEmpty() && !tag.equals("AttrHandler")) {
+                // GraTra option
+                if (tagValue != null && !tagValue.isEmpty()) {
+                    if ("true".equalsIgnoreCase(tagValue)) {
+                        options.add(tag);
+                    }
+                } else {
+                    options.add(tag);
+                }
+            }
+        }
+
+        // Set options
+        if (!options.isEmpty()) {
+            graGra.setGraTraOptions(options);
+        }
+
+        // Set type graph level (will be applied after types are loaded)
+        if (loadedLevel != TypeSet.DISABLED && graGra.getTypeSet() != null
+                && graGra.getTypeSet().getTypeGraph() != null) {
+            graGra.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
         }
     }
 
