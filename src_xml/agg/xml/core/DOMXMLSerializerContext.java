@@ -6,6 +6,7 @@
  */
 package agg.xml.core;
 
+import agg.xml.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -60,7 +61,7 @@ public class DOMXMLSerializerContext implements XMLSerializerContext {
      */
     private static Document createNewDocument() {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.createSecureDocumentBuilderFactory(false);
             DocumentBuilder builder = factory.newDocumentBuilder();
             return builder.newDocument();
         } catch (Exception e) {

@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,6 +31,50 @@ public final class XMLUtils {
     }
 
     /**
+     * Creates a DocumentBuilderFactory with XXE protection enabled.
+     *
+     * <p>Disables external entities, external DTDs, and enables secure processing
+     * to prevent XXE injection attacks when parsing untrusted XML files.</p>
+     *
+     * @param namespaceAware whether the factory should be namespace-aware
+     * @return a hardened DocumentBuilderFactory
+     * @throws ParserConfigurationException if a feature cannot be set
+     */
+    public static DocumentBuilderFactory createSecureDocumentBuilderFactory(boolean namespaceAware)
+            throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
+        factory.setNamespaceAware(namespaceAware);
+        // Best-effort XXE hardening: set features that may not be supported by all parsers
+        setFeatureIfSupported(factory, "http://apache.org/xml/features/disallow-doctype-decl", true);
+        setFeatureIfSupported(factory, "http://xml.org/sax/features/external-general-entities", false);
+        setFeatureIfSupported(factory, "http://xml.org/sax/features/external-parameter-entities", false);
+        setFeatureIfSupported(factory, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        return factory;
+    }
+
+    private static void setFeatureIfSupported(DocumentBuilderFactory factory, String feature, boolean value) {
+        try {
+            factory.setFeature(feature, value);
+        } catch (ParserConfigurationException ignored) {
+            // Feature not supported by this parser -- safe to skip
+        }
+    }
+
+    /**
+     * Creates a DocumentBuilderFactory with XXE protection enabled (namespace-aware).
+     *
+     * @return a hardened DocumentBuilderFactory
+     * @throws ParserConfigurationException if a feature cannot be set
+     */
+    public static DocumentBuilderFactory createSecureDocumentBuilderFactory()
+            throws ParserConfigurationException {
+        return createSecureDocumentBuilderFactory(true);
+    }
+
+    /**
      * Creates a new empty DOM document.
      *
      * @return A new Document instance
@@ -37,8 +82,7 @@ public final class XMLUtils {
      */
     public static Document createDocument() {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
+            DocumentBuilderFactory factory = createSecureDocumentBuilderFactory(true);
             DocumentBuilder builder = factory.newDocumentBuilder();
             return builder.newDocument();
         } catch (ParserConfigurationException e) {

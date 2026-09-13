@@ -10,6 +10,8 @@ import agg.xml.core.XMLSerializationException;
 import org.w3c.dom.Document;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.XMLConstants;
@@ -87,7 +89,7 @@ public class XMLValidator {
             Validator validator = schema.newValidator();
             validator.setErrorHandler(new CollectingErrorHandler(issues));
             validator.validate(new StreamSource(xmlFile));
-            return issues.stream().noneMatch(i -> i.getSeverity() == Severity.ERROR);
+            return issues.stream().noneMatch(i -> i.getSeverity() == Severity.ERROR || i.getSeverity() == Severity.FATAL);
         } catch (SAXException e) {
             issues.add(new ValidationIssue(Severity.ERROR, e.getMessage(), -1, -1));
             return false;
@@ -109,7 +111,7 @@ public class XMLValidator {
             Validator validator = schema.newValidator();
             validator.setErrorHandler(new CollectingErrorHandler(issues));
             validator.validate(new DOMSource(document));
-            return issues.stream().noneMatch(i -> i.getSeverity() == Severity.ERROR);
+            return issues.stream().noneMatch(i -> i.getSeverity() == Severity.ERROR || i.getSeverity() == Severity.FATAL);
         } catch (SAXException e) {
             issues.add(new ValidationIssue(Severity.ERROR, e.getMessage(), -1, -1));
             return false;
@@ -131,7 +133,7 @@ public class XMLValidator {
             Validator validator = schema.newValidator();
             validator.setErrorHandler(new CollectingErrorHandler(issues));
             validator.validate(new StreamSource(xmlStream));
-            return issues.stream().noneMatch(i -> i.getSeverity() == Severity.ERROR);
+            return issues.stream().noneMatch(i -> i.getSeverity() == Severity.ERROR || i.getSeverity() == Severity.FATAL);
         } catch (SAXException e) {
             issues.add(new ValidationIssue(Severity.ERROR, e.getMessage(), -1, -1));
             return false;
@@ -155,7 +157,7 @@ public class XMLValidator {
      * @return true if there are error-severity issues
      */
     public boolean hasErrors() {
-        return issues.stream().anyMatch(i -> i.getSeverity() == Severity.ERROR);
+        return issues.stream().anyMatch(i -> i.getSeverity() == Severity.ERROR || i.getSeverity() == Severity.FATAL);
     }
 
     /**
@@ -179,9 +181,11 @@ public class XMLValidator {
         if (schemaFile == null || !schemaFile.exists()) {
             throw new XMLSerializationException("Schema file not found: " + schemaFile);
         }
-        try {
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            return factory.newSchema(schemaFile);
+        try (InputStream stream = new java.io.FileInputStream(schemaFile)) {
+            SchemaFactory factory = createSecureSchemaFactory();
+            return factory.newSchema(new StreamSource(stream));
+        } catch (java.io.IOException e) {
+            throw new XMLSerializationException("Failed to read schema file: " + schemaFile, e);
         } catch (SAXException e) {
             throw new XMLSerializationException("Failed to load schema: " + schemaFile, e);
         }
@@ -189,11 +193,33 @@ public class XMLValidator {
 
     private static Schema loadSchemaFromStream(InputStream schemaStream) throws XMLSerializationException {
         try {
-            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory factory = createSecureSchemaFactory();
             return factory.newSchema(new StreamSource(schemaStream));
         } catch (SAXException e) {
             throw new XMLSerializationException("Failed to load schema from stream", e);
+        } finally {
+            try {
+                schemaStream.close();
+            } catch (java.io.IOException ignored) {
+            }
         }
+    }
+
+    private static SchemaFactory createSecureSchemaFactory() {
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        try {
+            factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        } catch (SAXException ignored) {
+        }
+        try {
+            factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        } catch (SAXNotRecognizedException | SAXNotSupportedException ignored) {
+        }
+        try {
+            factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        } catch (SAXNotRecognizedException | SAXNotSupportedException ignored) {
+        }
+        return factory;
     }
 
     /**

@@ -6,6 +6,7 @@
  */
 package agg.xml.core;
 
+import agg.xml.util.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -13,6 +14,7 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -78,7 +80,7 @@ public class DOMXMLDeserializerContext implements XMLDeserializerContext {
      */
     private void parseDocument(File file) throws XMLSerializationException {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.createSecureDocumentBuilderFactory(false);
             DocumentBuilder builder = factory.newDocumentBuilder();
             document = builder.parse(file);
             document.getDocumentElement().normalize();
@@ -96,7 +98,7 @@ public class DOMXMLDeserializerContext implements XMLDeserializerContext {
      */
     private void parseDocument(InputStream inputStream) throws XMLSerializationException {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = XMLUtils.createSecureDocumentBuilderFactory(false);
             DocumentBuilder builder = factory.newDocumentBuilder();
             document = builder.parse(inputStream);
             document.getDocumentElement().normalize();
