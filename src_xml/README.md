@@ -32,9 +32,9 @@ agg-xml/
 │   ├── XMLHelperDeserializerContext.java # XMLHelper wrapper for deserialization
 │   └── XMLAdapterFactory.java          # Factory for creating adapters
 │
-├── mapper/            # (Planned) Type-specific mappers
-├── legacy/            # (Planned) Legacy compatibility layer
-├── util/              # (Planned) Utility classes
+├── mapper/            # Type registry and reference resolver
+├── legacy/            # Legacy compatibility layer
+├── util/              # Utility classes (XMLUtils with XXE protection)
 └── pom.xml            # Maven build configuration
 ```
 
@@ -141,7 +141,7 @@ graphAdapter.deserialize(deserializerContext);
 
 The module uses Maven for build management. See `pom.xml` for dependencies:
 - Xerces 2.12.2 for XML parsing
-- JUnit 4.13.2 for testing
+- TestNG 7.8.0 for testing
 - SLF4J for logging
 
 ## Migration Status
@@ -172,8 +172,16 @@ The module uses Maven for build management. See `pom.xml` for dependencies:
 
 ### Phase 4 (Completed)
 - Adapter layer for all critical domain classes
-- 28+ type-specific adapters in XMLAdapterFactory
+- 28+ type-specific adapters in XMLAdapterFactory (thin wrappers delegating to XwriteObject/XreadObject)
 - Core domain, attribute, constraint, parser, AGT, ruleapp adapters
+- Note: Adapters are thin wrappers. Real DOM serialization logic is not yet
+  implemented -- adapters delegate to legacy XMLObject methods.
+
+### Phase 5 (Completed)
+- GraGraMigration with feature flag (agg.xml.newxml system property)
+- Save/Load dispatch via GraGraMigration.save()/load()
+- Note: Both legacy and new paths currently delegate to XMLHelper internally.
+  True DOM-based serialization requires adapter implementations (AP-2, pending).
 
 ### Phase 6 (Completed)
 - Domain adapters for all XMLObject types
@@ -186,23 +194,25 @@ The module uses Maven for build management. See `pom.xml` for dependencies:
 - ApplRuleSequenceAdapter
 
 ### Phase 7 (Completed)
-- Roundtrip tests (legacy and DOM)
+- Roundtrip tests (legacy and DOM, with deep verification of node/edge counts)
 - Compatibility tests (all .ggx files, both systems)
 - Stress tests (repeated loads, memory stability, performance)
 - Feature flag tests (both paths verified)
-- 131 tests passing, 0 failures
+- 150 tests passing, 0 failures, 0 skipped
 
-### Phase 8 (In Progress)
+### Phase 8 (Completed)
 - Feature flag mechanism tested and verified
 - Code cleanup and documentation updates
+- XXE protection added to all XML parsers
+- Dead code removed, DRY violations fixed
 
 ## Architecture Summary
 
 ```
 agg-xml/
-├── core/           (14 classes: interfaces, DOM impl, serializers, factories)
+├── core/           (13 classes: interfaces, DOM impl, serializers, factories)
 ├── mapper/         (2 classes: ReferenceResolver, TypeRegistry)
-├── adapter/        (20+ classes: adapter pattern for all XMLObject types)
+├── adapter/        (22 files: adapter pattern for all XMLObject types)
 ├── legacy/         (3 classes: LegacyCompatibility, XMLHelperWrapper, XMLSaveLoad)
 ├── migration/      (1 class: GraGraMigration with feature flags)
 ├── validation/     (2 files: XMLValidator + XSD schema)
