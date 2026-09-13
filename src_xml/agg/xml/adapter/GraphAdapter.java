@@ -67,6 +67,16 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
         }
         graphElem.setAttribute("name", graph.getName() != null ? graph.getName() : "");
 
+        // Comment and info
+        String comment = graph.getTextualComment();
+        if (comment != null && !comment.isEmpty()) {
+            graphElem.setAttribute("comment", comment);
+        }
+        String info = graph.getHelpInfo();
+        if (info != null && !info.isEmpty()) {
+            graphElem.setAttribute("info", info);
+        }
+
         // Serialize nodes
         Set<Node> nodes = graph.getNodesSet();
         if (nodes != null) {
@@ -116,6 +126,16 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
         String name = graphElem.getAttribute("name");
         if (name != null && !name.isEmpty()) {
             graph.setName(name);
+        }
+
+        String comment = graphElem.getAttribute("comment");
+        if (comment != null && !comment.isEmpty()) {
+            graph.setTextualComment(comment);
+        }
+
+        String info = graphElem.getAttribute("info");
+        if (info != null && !info.isEmpty()) {
+            graph.setHelpInfo(info);
         }
 
         // Parse child nodes and edges

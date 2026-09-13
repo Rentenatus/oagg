@@ -434,6 +434,18 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             }
         }
 
+        // Parse comment
+        String comment = typeElem.getAttribute("comment");
+        if (comment != null && !comment.isEmpty()) {
+            if (type instanceof agg.xt_basis.TypeImpl) {
+                ((agg.xt_basis.TypeImpl) type).setTextualComment(comment);
+            } else if (type instanceof agg.xt_basis.NodeTypeImpl) {
+                ((agg.xt_basis.NodeTypeImpl) type).setTextualComment(comment);
+            } else if (type instanceof agg.xt_basis.ArcTypeImpl) {
+                ((agg.xt_basis.ArcTypeImpl) type).setTextualComment(comment);
+            }
+        }
+
         // Register AttrType children (DeclMember) for reference resolution
         // Each AttrType element has an ID that is referenced by Attribute elements
         NodeList attrChildren = typeElem.getChildNodes();

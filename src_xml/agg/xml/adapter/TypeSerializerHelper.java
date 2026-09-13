@@ -54,6 +54,14 @@ final class TypeSerializerHelper {
         typeElem.setAttribute("name", name);
         typeElem.setAttribute("abstract", String.valueOf(type.isAbstract()));
 
+        // Comment
+        if (type instanceof agg.xt_basis.TypeImpl) {
+            String comment = ((agg.xt_basis.TypeImpl) type).getTextualComment();
+            if (comment != null && !comment.isEmpty()) {
+                typeElem.setAttribute("comment", comment);
+            }
+        }
+
         // Serialize Parent elements (multiple inheritance for node types)
         if (type instanceof agg.xt_basis.TypeImpl) {
             java.util.List<agg.xt_basis.Type> parents = ((agg.xt_basis.TypeImpl) type).getParents();

@@ -48,6 +48,12 @@ public class FormulaAdapter extends DomainObjectAdapter<Formula> {
         formulaElem.setAttribute("name", formula.getName() != null ? formula.getName() : "");
         formulaElem.setAttribute("enabled", String.valueOf(formula.isEnabled()));
 
+        // Comment
+        String comment = formula.getTextualComment();
+        if (comment != null && !comment.isEmpty()) {
+            formulaElem.setAttribute("comment", comment);
+        }
+
         // Layer
         Element layerElem = doc.createElement("Layer");
         if (formula.getLayer() != null && formula.getLayer().size() > 0) {
@@ -97,6 +103,11 @@ public class FormulaAdapter extends DomainObjectAdapter<Formula> {
 
         String enabled = formulaElem.getAttribute("enabled");
         formula.setEnabled(!"false".equals(enabled));
+
+        String comment = formulaElem.getAttribute("comment");
+        if (comment != null && !comment.isEmpty()) {
+            formula.setTextualComment(comment);
+        }
 
         // Parse Layer and Priority children
         NodeList children = formulaElem.getChildNodes();

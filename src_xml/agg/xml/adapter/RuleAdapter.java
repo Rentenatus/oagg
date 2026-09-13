@@ -84,6 +84,25 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
             ruleElem.setAttribute("waitBeforeApply", "true");
         }
 
+        // Variables (rule parameters)
+        agg.attribute.AttrVariableTuple variables = rule.getAttrContext().getVariables();
+        if (variables instanceof agg.attribute.impl.VarTuple) {
+            agg.attribute.impl.VarTuple varTuple = (agg.attribute.impl.VarTuple) variables;
+            for (int i = 0; i < varTuple.getSize(); i++) {
+                agg.attribute.impl.VarMember vm = varTuple.getVarMemberAt(i);
+                if (vm != null && vm.isSet()) {
+                    Element paramElem = doc.createElement("Parameter");
+                    paramElem.setAttribute("name", vm.getName() != null ? vm.getName() : "");
+                    if (vm.getExpr() != null) {
+                        String typeName = vm.getDeclaration() != null && vm.getDeclaration().getType() != null
+                            ? vm.getDeclaration().getType().toString() : "String";
+                        paramElem.setAttribute("type", typeName);
+                    }
+                    ruleElem.appendChild(paramElem);
+                }
+            }
+        }
+
         // LHS graph
         Graph lhs = rule.getLeft();
         if (lhs != null) {
