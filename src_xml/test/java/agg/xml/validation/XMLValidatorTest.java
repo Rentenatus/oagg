@@ -106,6 +106,17 @@ public class XMLValidatorTest {
     }
 
     @Test
+    public void testDocumentWithoutGraphTransformationSystemFails() throws XMLSerializationException {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                     "<Document version=\"1.0\">\n" +
+                     "  <WrongElement/>\n" +
+                     "</Document>";
+        ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes());
+        boolean valid = validator.validate(stream);
+        assertFalse(valid, "Document without GraphTransformationSystem should fail validation");
+    }
+
+    @Test
     public void testFatalErrorCausesValidationFailure() throws XMLSerializationException {
         // Unclosed tag triggers a fatal parse error
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

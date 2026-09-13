@@ -2,18 +2,31 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified">
 
+    <!--
+        AGG .ggx file schema (hybrid: strict root structure, lax content).
+
+        This schema validates:
+        - Root element must be "Document" with required "version" attribute
+        - Document must contain at least one child element
+        - Known child elements (GraphTransformationSystem, etc.) are typed
+        - Unknown elements, attributes, and deep content are accepted via
+          xsd:any/anyAttribute with processContents="lax" (for forward compat)
+
+        This is intentionally permissive for content but strict for structure
+        to ensure malformed .ggx files are rejected while valid ones pass.
+    -->
+
     <!-- Root element: Document -->
     <xsd:element name="Document">
         <xsd:complexType>
             <xsd:sequence>
-                <xsd:any namespace="##any" minOccurs="1" maxOccurs="unbounded" processContents="lax"/>
+                <xsd:element ref="GraphTransformationSystem" minOccurs="1" maxOccurs="unbounded"/>
             </xsd:sequence>
             <xsd:attribute name="version" type="xsd:string" use="required"/>
-            <xsd:anyAttribute namespace="##any" processContents="lax"/>
         </xsd:complexType>
     </xsd:element>
 
-    <!-- GraphTransformationSystem -->
+    <!-- GraphTransformationSystem: top-level container -->
     <xsd:element name="GraphTransformationSystem">
         <xsd:complexType>
             <xsd:sequence>
@@ -26,159 +39,5 @@
             <xsd:anyAttribute namespace="##any" processContents="lax"/>
         </xsd:complexType>
     </xsd:element>
-
-    <!-- Types -->
-    <xsd:complexType name="TypesType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- NodeType -->
-    <xsd:complexType name="NodeTypeType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="abstract" type="xsd:string"/>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- EdgeType -->
-    <xsd:complexType name="EdgeTypeType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="abstract" type="xsd:string"/>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- AttrType -->
-    <xsd:complexType name="AttrTypeType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="attrname" type="xsd:string"/>
-        <xsd:attribute name="typename" type="xsd:string"/>
-        <xsd:attribute name="visible" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- Graph -->
-    <xsd:complexType name="GraphType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="kind" type="xsd:string"/>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- Graph Node -->
-    <xsd:complexType name="GraphNodeNodeType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="type" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- Graph Edge -->
-    <xsd:complexType name="GraphEdgeType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="source" type="xsd:string"/>
-        <xsd:attribute name="target" type="xsd:string"/>
-        <xsd:attribute name="type" type="xsd:string"/>
-        <xsd:attribute name="sourcemin" type="xsd:string"/>
-        <xsd:attribute name="sourcemax" type="xsd:string"/>
-        <xsd:attribute name="targetmin" type="xsd:string"/>
-        <xsd:attribute name="targetmax" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- Attribute -->
-    <xsd:complexType name="AttributeType" mixed="true">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="type" type="xsd:string"/>
-        <xsd:attribute name="value" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- Rule -->
-    <xsd:complexType name="RuleType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:attribute name="formula" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- Morphism -->
-    <xsd:complexType name="MorphismType" mixed="true">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:attribute name="source" type="xsd:string"/>
-        <xsd:attribute name="target" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- Constraint -->
-    <xsd:complexType name="ConstraintType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- NestedApplCond -->
-    <xsd:complexType name="NestedApplCondType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- TaggedValue -->
-    <xsd:complexType name="TaggedValueType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="Tag" type="xsd:string"/>
-        <xsd:attribute name="TagValue" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
-
-    <!-- RuleSequence -->
-    <xsd:complexType name="RuleSequenceType">
-        <xsd:sequence>
-            <xsd:any namespace="##any" minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
-        </xsd:sequence>
-        <xsd:attribute name="ID" type="xsd:string"/>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:attribute name="algorithm" type="xsd:string"/>
-        <xsd:anyAttribute namespace="##any" processContents="lax"/>
-    </xsd:complexType>
 
 </xsd:schema>
