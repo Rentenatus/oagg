@@ -11,7 +11,7 @@ import agg.ruleappl.ApplRuleSequence;
 /**
  * Adapter for ApplRuleSequence objects that implements the new XMLSerializable interface.
  */
-public class ApplRuleSequenceAdapter extends DomainObjectAdapter<ApplRuleSequence> implements agg.xml.core.XMLSerializable {
+public class ApplRuleSequenceAdapter extends DomainObjectAdapter<ApplRuleSequence> {
 
     public ApplRuleSequenceAdapter(ApplRuleSequence applRuleSequence) {
         super(applRuleSequence);

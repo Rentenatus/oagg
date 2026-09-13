@@ -11,7 +11,7 @@ import agg.xt_basis.TypeGraph;
 /**
  * Adapter for TypeGraph objects that implements the new XMLSerializable interface.
  */
-public class TypeGraphAdapter extends DomainObjectAdapter<TypeGraph> implements agg.xml.core.XMLSerializable {
+public class TypeGraphAdapter extends DomainObjectAdapter<TypeGraph> {
 
     public TypeGraphAdapter(TypeGraph typeGraph) {
         super(typeGraph);

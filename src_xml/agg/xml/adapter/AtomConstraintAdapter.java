@@ -11,7 +11,7 @@ import agg.cons.AtomConstraint;
 /**
  * Adapter for AtomConstraint objects that implements the new XMLSerializable interface.
  */
-public class AtomConstraintAdapter extends DomainObjectAdapter<AtomConstraint> implements agg.xml.core.XMLSerializable {
+public class AtomConstraintAdapter extends DomainObjectAdapter<AtomConstraint> {
 
     public AtomConstraintAdapter(AtomConstraint atomConstraint) {
         super(atomConstraint);

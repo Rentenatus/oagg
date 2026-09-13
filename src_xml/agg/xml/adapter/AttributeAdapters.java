@@ -23,32 +23,32 @@ public final class AttributeAdapters {
     private AttributeAdapters() {
     }
 
-    public static final class VarTupleAdapter extends DomainObjectAdapter<VarTuple> implements agg.xml.core.XMLSerializable {
+    public static final class VarTupleAdapter extends DomainObjectAdapter<VarTuple> {
         public VarTupleAdapter(VarTuple varTuple) { super(varTuple); }
         public VarTuple getVarTuple() { return getDomainObject(); }
     }
 
-    public static final class CondTupleAdapter extends DomainObjectAdapter<CondTuple> implements agg.xml.core.XMLSerializable {
+    public static final class CondTupleAdapter extends DomainObjectAdapter<CondTuple> {
         public CondTupleAdapter(CondTuple condTuple) { super(condTuple); }
         public CondTuple getCondTuple() { return getDomainObject(); }
     }
 
-    public static final class DeclTupleAdapter extends DomainObjectAdapter<DeclTuple> implements agg.xml.core.XMLSerializable {
+    public static final class DeclTupleAdapter extends DomainObjectAdapter<DeclTuple> {
         public DeclTupleAdapter(DeclTuple declTuple) { super(declTuple); }
         public DeclTuple getDeclTuple() { return getDomainObject(); }
     }
 
-    public static final class ValueMemberAdapter extends DomainObjectAdapter<ValueMember> implements agg.xml.core.XMLSerializable {
+    public static final class ValueMemberAdapter extends DomainObjectAdapter<ValueMember> {
         public ValueMemberAdapter(ValueMember valueMember) { super(valueMember); }
         public ValueMember getValueMember() { return getDomainObject(); }
     }
 
-    public static final class CondMemberAdapter extends DomainObjectAdapter<CondMember> implements agg.xml.core.XMLSerializable {
+    public static final class CondMemberAdapter extends DomainObjectAdapter<CondMember> {
         public CondMemberAdapter(CondMember condMember) { super(condMember); }
         public CondMember getCondMember() { return getDomainObject(); }
     }
 
-    public static final class DeclMemberAdapter extends DomainObjectAdapter<DeclMember> implements agg.xml.core.XMLSerializable {
+    public static final class DeclMemberAdapter extends DomainObjectAdapter<DeclMember> {
         public DeclMemberAdapter(DeclMember declMember) { super(declMember); }
         public DeclMember getDeclMember() { return getDomainObject(); }
     }

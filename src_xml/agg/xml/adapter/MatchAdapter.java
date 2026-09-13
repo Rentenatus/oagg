@@ -11,7 +11,7 @@ import agg.xt_basis.Match;
 /**
  * Adapter for Match objects that implements the new XMLSerializable interface.
  */
-public class MatchAdapter extends DomainObjectAdapter<Match> implements agg.xml.core.XMLSerializable {
+public class MatchAdapter extends DomainObjectAdapter<Match> {
 
     public MatchAdapter(Match match) {
         super(match);

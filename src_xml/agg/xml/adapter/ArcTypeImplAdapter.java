@@ -11,7 +11,7 @@ import agg.xt_basis.ArcTypeImpl;
 /**
  * Adapter for ArcTypeImpl objects that implements the new XMLSerializable interface.
  */
-public class ArcTypeImplAdapter extends DomainObjectAdapter<ArcTypeImpl> implements agg.xml.core.XMLSerializable {
+public class ArcTypeImplAdapter extends DomainObjectAdapter<ArcTypeImpl> {
 
     public ArcTypeImplAdapter(ArcTypeImpl arcTypeImpl) {
         super(arcTypeImpl);

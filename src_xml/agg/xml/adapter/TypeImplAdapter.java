@@ -11,7 +11,7 @@ import agg.xt_basis.TypeImpl;
 /**
  * Adapter for TypeImpl objects that implements the new XMLSerializable interface.
  */
-public class TypeImplAdapter extends DomainObjectAdapter<TypeImpl> implements agg.xml.core.XMLSerializable {
+public class TypeImplAdapter extends DomainObjectAdapter<TypeImpl> {
 
     public TypeImplAdapter(TypeImpl typeImpl) {
         super(typeImpl);

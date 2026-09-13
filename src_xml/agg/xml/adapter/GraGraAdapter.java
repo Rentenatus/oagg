@@ -13,7 +13,7 @@ import agg.xt_basis.GraGra;
  * This adapter wraps a GraGra instance and delegates serialization calls to
  * its XMLObject methods (XwriteObject/XreadObject).
  */
-public class GraGraAdapter extends DomainObjectAdapter<GraGra> implements agg.xml.core.XMLSerializable {
+public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
 
     public GraGraAdapter(GraGra graGra) {
         super(graGra);

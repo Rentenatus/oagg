@@ -7,15 +7,13 @@
 package agg.xml.adapter;
 
 import agg.xt_basis.Arc;
-import agg.util.XMLHelper;
-import agg.xml.core.XMLSerializable;
 
 /**
  * Adapter for Arc objects that implements the new XMLSerializable interface.
  * This adapter wraps an Arc instance and delegates serialization calls to
  * its XMLObject methods (XwriteObject/XreadObject).
  */
-public class ArcAdapter extends DomainObjectAdapter<Arc> implements XMLSerializable {
+public class ArcAdapter extends DomainObjectAdapter<Arc> {
     
     /**
      * Creates a new adapter for the specified Arc.

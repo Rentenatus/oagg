@@ -11,7 +11,7 @@ import agg.xt_basis.NodeTypeImpl;
 /**
  * Adapter for NodeTypeImpl objects that implements the new XMLSerializable interface.
  */
-public class NodeTypeImplAdapter extends DomainObjectAdapter<NodeTypeImpl> implements agg.xml.core.XMLSerializable {
+public class NodeTypeImplAdapter extends DomainObjectAdapter<NodeTypeImpl> {
 
     public NodeTypeImplAdapter(NodeTypeImpl nodeTypeImpl) {
         super(nodeTypeImpl);

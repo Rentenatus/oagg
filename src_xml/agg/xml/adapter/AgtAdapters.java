@@ -19,14 +19,14 @@ public final class AgtAdapters {
 
     public static final class MultiRuleAdapter
             extends DomainObjectAdapter<MultiRule>
-            implements agg.xml.core.XMLSerializable {
+ {
         public MultiRuleAdapter(MultiRule multiRule) { super(multiRule); }
         public MultiRule getMultiRule() { return getDomainObject(); }
     }
 
     public static final class RuleSchemeAdapter
             extends DomainObjectAdapter<RuleScheme>
-            implements agg.xml.core.XMLSerializable {
+ {
         public RuleSchemeAdapter(RuleScheme ruleScheme) { super(ruleScheme); }
         public RuleScheme getRuleScheme() { return getDomainObject(); }
     }

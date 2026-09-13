@@ -7,15 +7,13 @@
 package agg.xml.adapter;
 
 import agg.xt_basis.Rule;
-import agg.util.XMLHelper;
-import agg.xml.core.XMLSerializable;
 
 /**
  * Adapter for Rule objects that implements the new XMLSerializable interface.
  * This adapter wraps a Rule instance and delegates serialization calls to
  * its XMLObject methods (XwriteObject/XreadObject).
  */
-public class RuleAdapter extends DomainObjectAdapter<Rule> implements XMLSerializable {
+public class RuleAdapter extends DomainObjectAdapter<Rule> {
     
     /**
      * Creates a new adapter for the specified Rule.

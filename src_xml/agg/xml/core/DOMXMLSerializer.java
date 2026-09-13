@@ -25,7 +25,7 @@ import java.io.Writer;
  * from an object's {@link XMLSerializable#serialize} call, then writes the document
  * to a file, output stream, or string.</p>
  */
-public class DOMXMLSerializer extends AbstractXMLSerializer {
+public class DOMXMLSerializer implements XMLSerializer {
 
     private final String encoding;
     private final boolean indent;

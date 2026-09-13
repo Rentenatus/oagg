@@ -11,7 +11,7 @@ import agg.cons.Formula;
 /**
  * Adapter for Formula objects that implements the new XMLSerializable interface.
  */
-public class FormulaAdapter extends DomainObjectAdapter<Formula> implements agg.xml.core.XMLSerializable {
+public class FormulaAdapter extends DomainObjectAdapter<Formula> {
 
     public FormulaAdapter(Formula formula) {
         super(formula);
