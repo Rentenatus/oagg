@@ -26,28 +26,15 @@ import java.io.File;
  *
  * <p>The methods delegate to {@link GraGraMigration} which uses a feature flag
  * ({@code agg.xml.newxml} system property) to switch between the legacy
- * XMLHelper path and the new DOM-based path:</p>
+ * XMLHelper path and the new DOM-based path.</p>
  *
- * <pre>{@code
- * // Save a GraGra
- * XMLSerialization.save(graGra, "mygrammar.ggx");
- *
- * // Load a GraGra
- * GraGra graGra = new GraGra();
- * XMLSerialization.load(graGra, "mygrammar.ggx");
- *
- * // Enable the new DOM path
- * XMLSerialization.setUseNewXml(true);
- *
- * // Check if file is a valid .ggx
- * if (XMLSerialization.canLoad("mygrammar.ggx")) { ... }
- * }</pre>
- *
- * <p><b>Feature flag control:</b></p>
+ * <p><b>Supported object types:</b></p>
  * <ul>
- *   <li>{@code agg.xml.newxml=false} (default): uses legacy XMLHelper</li>
- *   <li>{@code agg.xml.newxml=true}: uses new DOM-based serialization
- *       via GraGraAdapter and sub-adapters</li>
+ *   <li>{@link GraGra} -- .ggx files (grammar with types, graphs, rules, constraints)</li>
+ *   <li>{@link agg.ruleappl.ApplRuleSequence} -- .rsx files (rule sequence applicability)</li>
+ *   <li>{@link agg.parser.ConflictsDependenciesContainer} -- .cpx files (critical pairs)</li>
+ *   <li>{@link agg.xt_basis.AGGBasicAppl} -- static GraGra load/save helpers</li>
+ *   <li>Generic {@link XMLObject} -- any XMLObject via legacy XMLHelper</li>
  * </ul>
  *
  * @see GraGraMigration
@@ -273,5 +260,223 @@ public final class XMLSerialization {
         }
         helper.getTopObject(template);
         return true;
+    }
+
+    // ---- ApplRuleSequence save/load (.rsx files) ----
+
+    /**
+     * Saves an ApplRuleSequence to a .rsx file.
+     *
+     * <p>If the filename does not end with {@code .rsx}, the extension
+     * is appended automatically.</p>
+     *
+     * @param applRuleSeq The ApplRuleSequence to save
+     * @param filename    The output filename
+     * @return true if saving succeeded
+     */
+    public static boolean save(agg.ruleappl.ApplRuleSequence applRuleSeq, String filename) {
+        if (applRuleSeq == null || filename == null) {
+            return false;
+        }
+        String outfileName = filename;
+        if (outfileName.indexOf(".rsx") == -1) {
+            outfileName = outfileName.concat(".rsx");
+        }
+        agg.util.XMLHelper helper = new agg.util.XMLHelper();
+        helper.addTopObject(applRuleSeq);
+        return helper.save_to_xml(outfileName);
+    }
+
+    /**
+     * Loads an ApplRuleSequence from a .rsx file.
+     *
+     * @param applRuleSeq The ApplRuleSequence instance to populate
+     * @param filename    The input filename (.rsx)
+     * @return the loaded GraGra, or null if loading failed
+     * @throws Exception if loading fails
+     */
+    public static GraGra load(agg.ruleappl.ApplRuleSequence applRuleSeq, String filename)
+            throws Exception {
+        if (applRuleSeq == null || filename == null) {
+            return null;
+        }
+        File f = new File(filename);
+        if (!f.exists()) {
+            throw new Exception("File \"" + filename + "\" doesn't exist!");
+        }
+        if (!filename.endsWith(".rsx")) {
+            throw new Exception("File \"" + filename + "\" is not a \".rsx\" file!");
+        }
+        agg.util.XMLHelper helper = new agg.util.XMLHelper();
+        if (helper.read_from_xml(filename)) {
+            helper.getTopObject(applRuleSeq);
+            return applRuleSeq.getGraGra();
+        }
+        throw new Exception("File \"" + filename + "\" is not an AGG .rsx file!");
+    }
+
+    // ---- ConflictsDependenciesContainer save/load (.cpx files) ----
+
+    /**
+     * Saves a ConflictsDependenciesContainer to a .cpx file.
+     *
+     * <p>ConflictsDependenciesContainer holds computed critical pairs
+     * (exclude/dependency pairs) and is saved in .cpx format.</p>
+     *
+     * @param container The ConflictsDependenciesContainer to save
+     * @param filename  The output filename
+     * @return true if saving succeeded
+     */
+    public static boolean save(agg.parser.ConflictsDependenciesContainer container,
+            String filename) {
+        if (container == null || filename == null) {
+            return false;
+        }
+        agg.util.XMLHelper helper = new agg.util.XMLHelper();
+        helper.addTopObject(container);
+        return helper.save_to_xml(filename);
+    }
+
+    /**
+     * Loads a ConflictsDependenciesContainer from a .cpx file.
+     *
+     * @param filename The input filename (.cpx)
+     * @return the loaded ConflictsDependenciesContainer, or null if loading failed
+     */
+    public static agg.parser.ConflictsDependenciesContainer loadConflictsDependencies(
+            String filename) {
+        if (filename == null) {
+            return null;
+        }
+        File f = new File(filename);
+        if (!f.exists()) {
+            return null;
+        }
+        agg.util.XMLHelper helper = new agg.util.XMLHelper();
+        if (helper.read_from_xml(filename)) {
+            agg.parser.ConflictsDependenciesContainer cdc =
+                new agg.parser.ConflictsDependenciesContainer();
+            Object result = helper.getTopObject(cdc);
+            if (result != null) {
+                return (agg.parser.ConflictsDependenciesContainer) result;
+            }
+        }
+        return null;
+    }
+
+    // ---- AGGBasicAppl static helpers ----
+
+    /**
+     * Loads a GraGra from a .ggx file and returns it.
+     *
+     * <p>This replaces {@code AGGBasicAppl.load(fName)}. It creates a new
+     * GraGra via BaseFactory, loads it, and sets the file name.</p>
+     *
+     * @param filename The input filename (.ggx)
+     * @return the loaded GraGra, or null if loading failed
+     */
+    public static GraGra loadGraGra(String filename) {
+        if (filename == null || !filename.endsWith(".ggx")) {
+            return null;
+        }
+        try {
+            GraGra graGra = agg.xt_basis.BaseFactory.theFactory().createGraGra(false);
+            load(graGra, filename);
+            graGra.setFileName(filename);
+            return graGra;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Saves a GraGra to a .ggx file.
+     *
+     * <p>This replaces {@code AGGBasicAppl.save(gra, outFileName)}. If the
+     * filename is empty, a default name is generated from the GraGra name.</p>
+     *
+     * @param graGra     The GraGra to save
+     * @param filename   The output filename
+     * @return true if saving succeeded
+     */
+    public static boolean saveGraGra(GraGra graGra, String filename) {
+        if (graGra == null) {
+            return false;
+        }
+        String outfileName = filename;
+        if (outfileName == null || outfileName.isEmpty()) {
+            outfileName = graGra.getName() + "_out.ggx";
+        } else if (!outfileName.contains(".ggx")) {
+            outfileName = outfileName.concat(".ggx");
+        }
+        return save(graGra, outfileName);
+    }
+
+    // ---- WSDL load (.wsdl files) ----
+
+    /**
+     * Loads XML from a .wsdl file into an XMLHelper.
+     *
+     * <p>This replaces {@code ConverterWSDL.load(fName)}. WSDL files use
+     * the same XML parsing infrastructure but are not .ggx files.</p>
+     *
+     * @param filename The input filename (.wsdl)
+     * @return an XMLHelper with the parsed document, or null if loading failed
+     */
+    public static agg.util.XMLHelper loadWSDL(String filename) {
+        if (filename == null || !filename.endsWith(".wsdl")) {
+            return null;
+        }
+        File f = new File(filename);
+        if (!f.exists()) {
+            return null;
+        }
+        agg.util.XMLHelper helper = new agg.util.XMLHelper();
+        if (helper.read_from_xml(filename)) {
+            return helper;
+        }
+        return null;
+    }
+
+    // ---- File extension helpers ----
+
+    /**
+     * Checks if a filename has a .ggx extension (case-insensitive).
+     *
+     * @param filename The filename to check
+     * @return true if the filename ends with .ggx
+     */
+    public static boolean isGgxFile(String filename) {
+        return filename != null && filename.toLowerCase().endsWith(".ggx");
+    }
+
+    /**
+     * Checks if a filename has a .cpx extension (case-insensitive).
+     *
+     * @param filename The filename to check
+     * @return true if the filename ends with .cpx
+     */
+    public static boolean isCpxFile(String filename) {
+        return filename != null && filename.toLowerCase().endsWith(".cpx");
+    }
+
+    /**
+     * Checks if a filename has a .rsx extension (case-insensitive).
+     *
+     * @param filename The filename to check
+     * @return true if the filename ends with .rsx
+     */
+    public static boolean isRsxFile(String filename) {
+        return filename != null && filename.toLowerCase().endsWith(".rsx");
+    }
+
+    /**
+     * Checks if a filename has a .wsdl extension (case-insensitive).
+     *
+     * @param filename The filename to check
+     * @return true if the filename ends with .wsdl
+     */
+    public static boolean isWsdlFile(String filename) {
+        return filename != null && filename.toLowerCase().endsWith(".wsdl");
     }
 }

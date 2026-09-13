@@ -154,4 +154,50 @@ public class XMLSerializationTest {
 
         tempFile.delete();
     }
+
+    // ---- File extension helpers ----
+
+    @Test
+    public void testFileExtensionHelpers() {
+        assertTrue(XMLSerialization.isGgxFile("test.ggx"), "Should detect .ggx");
+        assertTrue(XMLSerialization.isGgxFile("test.GGX"), "Should detect .GGX (case-insensitive)");
+        assertFalse(XMLSerialization.isGgxFile("test.rsx"), "Should not detect .rsx as .ggx");
+
+        assertTrue(XMLSerialization.isCpxFile("test.cpx"), "Should detect .cpx");
+        assertTrue(XMLSerialization.isRsxFile("test.rsx"), "Should detect .rsx");
+        assertTrue(XMLSerialization.isWsdlFile("test.wsdl"), "Should detect .wsdl");
+
+        assertFalse(XMLSerialization.isGgxFile(null), "null should return false");
+        assertFalse(XMLSerialization.isCpxFile(null), "null should return false");
+    }
+
+    // ---- loadGraGra / saveGraGra ----
+
+    @Test
+    public void testLoadGraGra() {
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = XMLSerialization.loadGraGra(file.getAbsolutePath());
+        assertNotNull(graGra, "Should load GraGra");
+        assertNotNull(graGra.getName(), "Name should not be null");
+    }
+
+    @Test
+    public void testSaveGraGra() throws Exception {
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = new GraGra();
+        graGra.load(file.getAbsolutePath());
+
+        File tempFile = new File("target/xmlserialization-savegragra.ggx");
+        tempFile.getParentFile().mkdirs();
+        assertTrue(XMLSerialization.saveGraGra(graGra, tempFile.getAbsolutePath()),
+            "saveGraGra should succeed");
+        assertTrue(tempFile.exists(), "File should exist");
+        tempFile.delete();
+    }
+
+    @Test
+    public void testLoadGraGraReturnsNullForNonGgx() {
+        assertNull(XMLSerialization.loadGraGra("test.txt"), "Should return null for non-.ggx");
+        assertNull(XMLSerialization.loadGraGra(null), "Should return null for null");
+    }
 }
