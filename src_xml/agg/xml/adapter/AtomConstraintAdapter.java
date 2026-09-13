@@ -7,9 +7,12 @@
 package agg.xml.adapter;
 
 import agg.cons.AtomConstraint;
+import agg.xt_basis.BaseFactory;
 import agg.xt_basis.Graph;
+import agg.xml.core.XMLSerializationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.util.Enumeration;
 
@@ -89,5 +92,84 @@ public class AtomConstraintAdapter extends DomainObjectAdapter<AtomConstraint> {
         }
 
         return atomicElem;
+    }
+
+    /**
+     * Deserializes an AtomConstraint from a DOM element.
+     *
+     * <p>Reads the name, loads the Premise graph, and creates Conclusion
+     * children with their graphs and morphisms.</p>
+     *
+     * @param atomicElem The Graphconstraint_Atomic DOM element
+     * @param registry   The ID registry for cross-references
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public void deserializeFromElement(Element atomicElem, DOMSerializationRegistry registry)
+            throws XMLSerializationException {
+        AtomConstraint constraint = getAtomConstraint();
+        if (constraint == null || atomicElem == null) {
+            return;
+        }
+
+        String id = atomicElem.getAttribute("ID");
+        if (!id.isEmpty()) {
+            registry.registerWithId(constraint, id);
+        }
+
+        String name = atomicElem.getAttribute("name");
+        if (name != null) {
+            constraint.setAtomicName(name);
+        }
+
+        NodeList children = atomicElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element childElem = (Element) child;
+            String tagName = childElem.getTagName();
+
+            if ("Premise".equals(tagName)) {
+                // Load premise graph
+                Element premiseGraphElem = findChildElement(childElem, "Graph");
+                if (premiseGraphElem != null && constraint.getSource() != null) {
+                    constraint.getSource().setName("Premise of " + name);
+                    GraphAdapter premiseAdapter = new GraphAdapter(constraint.getSource());
+                    premiseAdapter.deserializeFromElement(premiseGraphElem, registry);
+                }
+            } else if ("Conclusion".equals(tagName)) {
+                // Create a new conclusion
+                Graph conclusionGraph = BaseFactory.theFactory().createGraph(
+                    constraint.getSource().getTypeSet());
+                AtomConstraint conclusion = constraint.createNextConclusion(conclusionGraph);
+
+                // Load conclusion graph
+                Element concGraphElem = findChildElement(childElem, "Graph");
+                if (concGraphElem != null && conclusionGraph != null) {
+                    conclusionGraph.setName("Conclusion of " + name);
+                    GraphAdapter concAdapter = new GraphAdapter(conclusionGraph);
+                    concAdapter.deserializeFromElement(concGraphElem, registry);
+                }
+
+                // Load conclusion morphism
+                Element concMorphElem = findChildElement(childElem, "Morphism");
+                if (concMorphElem != null) {
+                    RuleAdapter.deserializeMorphism(conclusion, concMorphElem, registry);
+                }
+            }
+        }
+    }
+
+    private static Element findChildElement(Element parent, String name) {
+        NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && name.equals(child.getNodeName())) {
+                return (Element) child;
+            }
+        }
+        return null;
     }
 }
