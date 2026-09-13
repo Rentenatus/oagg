@@ -119,7 +119,7 @@ public class GraGraMigration {
         if (!f.exists()) {
             throw new Exception("File \"" + filename + "\" doesn't exist!");
         }
-        if (!filename.endsWith(".ggx")) {
+        if (!filename.toLowerCase().endsWith(".ggx")) {
             throw new Exception("File \"" + filename + "\" is not a \".ggx\" file!");
         }
         XMLHelper h = new XMLHelper();
@@ -135,7 +135,7 @@ public class GraGraMigration {
         if (!f.exists()) {
             throw new Exception("File \"" + filename + "\" doesn't exist!");
         }
-        if (!filename.endsWith(".ggx")) {
+        if (!filename.toLowerCase().endsWith(".ggx")) {
             throw new Exception("File \"" + filename + "\" is not a \".ggx\" file!");
         }
         try {

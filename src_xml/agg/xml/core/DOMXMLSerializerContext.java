@@ -22,7 +22,6 @@ public class DOMXMLSerializerContext implements XMLSerializerContext {
     
     private final Document document;
     private final Stack<Element> elementStack;
-    private final StringBuilder xmlOutput;
     
     /**
      * Creates a new serializer context with a new document.
@@ -42,7 +41,6 @@ public class DOMXMLSerializerContext implements XMLSerializerContext {
         }
         this.document = document;
         this.elementStack = new Stack<>();
-        this.xmlOutput = new StringBuilder();
 
         Element root = document.getDocumentElement();
         if (root == null) {

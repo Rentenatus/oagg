@@ -41,7 +41,6 @@ public class DOMXMLDeserializer implements XMLDeserializer {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T deserialize(Class<T> targetClass, XMLDeserializerContext context) throws XMLSerializationException {
         try {
             T object = targetClass.getDeclaredConstructor().newInstance();
@@ -126,7 +125,7 @@ public class DOMXMLDeserializer implements XMLDeserializer {
      */
     public <T> T deserializeFromElement(Element element, Class<T> targetClass) throws XMLSerializationException {
         Document doc = element.getOwnerDocument();
-        DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(doc);
+        DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(doc, element);
         return deserialize(targetClass, context);
     }
 

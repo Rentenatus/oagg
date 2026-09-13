@@ -219,7 +219,7 @@ public class TypeRegistry {
                 Class<?> type = Class.forName(className);
                 registerType(type, type.getSimpleName());
             } catch (ClassNotFoundException e) {
-                // Skip types that are not on the classpath
+                System.err.println("Warning: AGG type not found on classpath, skipping: " + className);
             }
         }
     }

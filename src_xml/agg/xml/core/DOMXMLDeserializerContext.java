@@ -71,6 +71,23 @@ public class DOMXMLDeserializerContext implements XMLDeserializerContext {
             elementStack.push(document.getDocumentElement());
         }
     }
+
+    /**
+     * Creates a new deserializer context with the specified document,
+     * starting deserialization at the given element rather than the document root.
+     *
+     * @param document      The DOM document
+     * @param startElement  The element to start deserialization from
+     */
+    public DOMXMLDeserializerContext(Document document, Element startElement) {
+        this();
+        this.document = document;
+        if (startElement != null) {
+            elementStack.push(startElement);
+        } else if (document != null) {
+            elementStack.push(document.getDocumentElement());
+        }
+    }
     
     /**
      * Parses an XML file.
@@ -274,7 +291,6 @@ public class DOMXMLDeserializerContext implements XMLDeserializerContext {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public <T> T deserializeObject(Class<T> targetClass) throws XMLSerializationException {
         try {
             // Create a new instance and deserialize it
@@ -286,6 +302,8 @@ public class DOMXMLDeserializerContext implements XMLDeserializerContext {
             }
             throw new XMLSerializationException(
                 "Target class does not implement XMLSerializable: " + targetClass.getName());
+        } catch (XMLSerializationException e) {
+            throw e;
         } catch (Exception e) {
             throw new XMLSerializationException(
                 "Failed to deserialize object of type " + targetClass.getName(), e);

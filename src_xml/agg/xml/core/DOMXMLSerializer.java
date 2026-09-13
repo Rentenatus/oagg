@@ -6,7 +6,6 @@
  */
 package agg.xml.core;
 
-import agg.xml.adapter.XMLAdapterFactory;
 import org.w3c.dom.Document;
 
 import javax.xml.transform.OutputKeys;
@@ -59,13 +58,6 @@ public class DOMXMLSerializer extends AbstractXMLSerializer {
         }
         if (object instanceof XMLSerializable) {
             ((XMLSerializable) object).serialize(context);
-        } else if (object instanceof agg.util.XMLObject) {
-            XMLSerializable adapter = XMLAdapterFactory.createAdapter((agg.util.XMLObject) object);
-            if (adapter != null) {
-                adapter.serialize(context);
-            } else {
-                context.setTextContent(object.toString());
-            }
         } else {
             context.setTextContent(object.toString());
         }
@@ -194,7 +186,12 @@ public class DOMXMLSerializer extends AbstractXMLSerializer {
         transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
         if (indent) {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", indentString.length() + "");
+            try {
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
+                    String.valueOf(indentString.length()));
+            } catch (IllegalArgumentException ignored) {
+                // Apache Xalan-specific property; not all XSLT engines support it
+            }
         }
         return transformer;
     }

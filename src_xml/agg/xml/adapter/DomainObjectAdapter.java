@@ -8,10 +8,6 @@ package agg.xml.adapter;
 
 import agg.util.XMLObject;
 import agg.util.XMLHelper;
-import agg.xml.core.XMLSerializable;
-import agg.xml.core.XMLSerializerContext;
-import agg.xml.core.XMLDeserializerContext;
-import agg.xml.core.XMLSerializationException;
 
 /**
  * Base adapter class for AGG domain objects (Graph, Rule, Node, Arc, etc.)
@@ -22,17 +18,14 @@ import agg.xml.core.XMLSerializationException;
  * can extend this class.</p>
  */
 public class DomainObjectAdapter<T extends XMLObject> extends XMLObjectAdapter {
-    
-    private final T domainObject;
-    
+
     /**
      * Creates a new adapter for the specified domain object.
-     * 
+     *
      * @param domainObject The domain object to adapt
      */
     public DomainObjectAdapter(T domainObject) {
         super(domainObject);
-        this.domainObject = domainObject;
     }
     
     /**
