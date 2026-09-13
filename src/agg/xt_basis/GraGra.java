@@ -3955,6 +3955,10 @@ public class GraGra implements Disposable, XMLObject {
      * @param filename
      */
     public void save(String filename) {
+        if (agg.xml.migration.GraGraMigration.isUseNewXml()) {
+            agg.xml.migration.GraGraMigration.save(this, filename);
+            return;
+        }
         String ggx = ".ggx";
         storeUsedClassPackages();
         String outfileName = "";
@@ -3995,6 +3999,10 @@ public class GraGra implements Disposable, XMLObject {
      * @param filename
      */
     public void load(String filename) throws Exception {
+        if (agg.xml.migration.GraGraMigration.isUseNewXml()) {
+            agg.xml.migration.GraGraMigration.load(this, filename);
+            return;
+        }
         File f = new File(filename);
         if (f.exists()) {
             if (filename.endsWith(".ggx")) {

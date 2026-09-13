@@ -99,15 +99,28 @@ public class GraGraMigration {
     }
 
     private static boolean saveUsingLegacyXml(GraGra graGra, String filename) {
+        String outfileName = filename;
+        if (outfileName.indexOf(".ggx") == -1) {
+            outfileName = outfileName.concat(".ggx");
+        }
         XMLHelper xmlh = new XMLHelper();
         xmlh.addTopObject(graGra);
-        return xmlh.save_to_xml(filename);
+        boolean saved = xmlh.save_to_xml(outfileName);
+        if (saved) {
+            updateFileNames(graGra, outfileName);
+        }
+        return saved;
     }
 
     private static boolean saveUsingNewXml(GraGra graGra, String filename) {
         try {
-            File outputFile = new File(filename);
+            String outfileName = filename;
+            if (outfileName.indexOf(".ggx") == -1) {
+                outfileName = outfileName.concat(".ggx");
+            }
+            File outputFile = new File(outfileName);
             XMLSaveLoad.saveObject(graGra, outputFile);
+            updateFileNames(graGra, outfileName);
             return true;
         } catch (XMLSerializationException e) {
             return false;
@@ -125,6 +138,7 @@ public class GraGraMigration {
         XMLHelper h = new XMLHelper();
         if (h.read_from_xml(filename)) {
             h.getTopObject(graGra);
+            updateFileNames(graGra, filename);
             return true;
         }
         throw new Exception("File \"" + filename + "\" is not an AGG file!");
@@ -140,9 +154,26 @@ public class GraGraMigration {
         }
         try {
             LegacyCompatibility.deserializeFromFile(f, graGra);
+            updateFileNames(graGra, filename);
             return true;
         } catch (XMLSerializationException e) {
-            throw new Exception("Failed to load: " + filename, e);
+            throw new XMLSerializationException("Failed to load: " + filename, e);
+        }
+    }
+
+    /**
+     * Updates the fileName and dirName fields on the GraGra instance,
+     * matching the behavior of the original GraGra.save()/load() methods.
+     */
+    private static void updateFileNames(GraGra graGra, String filename) {
+        File f = new File(filename);
+        if (f.exists()) {
+            graGra.setFileName(f.getName());
+            if (f.getParent() == null) {
+                graGra.setDirName("." + File.separator);
+            } else {
+                graGra.setDirName(f.getParent() + File.separator);
+            }
         }
     }
 }

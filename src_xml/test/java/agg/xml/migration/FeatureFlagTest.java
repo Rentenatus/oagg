@@ -121,4 +121,49 @@ public class FeatureFlagTest {
             GraGraMigration.load(graGra, "test.txt");
         });
     }
+
+    /**
+     * Verify that GraGra.save()/load() dispatches to GraGraMigration
+     * when the feature flag is enabled.
+     */
+    @Test
+    public void testGraGraSaveDispatchesToMigrationWhenFlagEnabled() throws Exception {
+        GraGraMigration.setUseNewXml(true);
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+
+        // Load via GraGra.load (should use new path)
+        GraGra graGra = new GraGra();
+        graGra.load(file.getAbsolutePath());
+        assertNotNull(graGra.getName(), "GraGra should load via new XML path");
+
+        // Save via GraGra.save (should use new path)
+        File tempFile = new File("target/feature-flag-test-gragra-new.ggx");
+        tempFile.getParentFile().mkdirs();
+        graGra.save(tempFile.getAbsolutePath());
+        assertTrue(tempFile.exists(), "File should exist after GraGra.save via new path");
+        assertTrue(tempFile.length() > 0, "File should not be empty");
+        tempFile.delete();
+    }
+
+    /**
+     * Verify that GraGra.save()/load() uses legacy path when flag is disabled.
+     */
+    @Test
+    public void testGraGraSaveUsesLegacyWhenFlagDisabled() throws Exception {
+        GraGraMigration.setUseNewXml(false);
+        File file = TestDataHelper.resolveSample("small_graph.ggx");
+
+        // Load via GraGra.load (should use legacy path)
+        GraGra graGra = new GraGra();
+        graGra.load(file.getAbsolutePath());
+        assertNotNull(graGra.getName(), "GraGra should load via legacy path");
+
+        // Save via GraGra.save (should use legacy path)
+        File tempFile = new File("target/feature-flag-test-gragra-legacy.ggx");
+        tempFile.getParentFile().mkdirs();
+        graGra.save(tempFile.getAbsolutePath());
+        assertTrue(tempFile.exists(), "File should exist after GraGra.save via legacy path");
+        assertTrue(tempFile.length() > 0, "File should not be empty");
+        tempFile.delete();
+    }
 }
