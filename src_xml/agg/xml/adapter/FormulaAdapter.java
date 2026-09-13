@@ -9,6 +9,9 @@ package agg.xml.adapter;
 import agg.cons.Formula;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import java.util.Vector;
 
 /**
  * Adapter for Formula objects with real DOM serialization logic.
@@ -68,5 +71,72 @@ public class FormulaAdapter extends DomainObjectAdapter<Formula> {
         formulaElem.appendChild(priorityElem);
 
         return formulaElem;
+    }
+
+    /**
+     * Deserializes a Formula from a DOM element into the wrapped Formula instance.
+     *
+     * @param formulaElem The Formula DOM element
+     * @param registry    The ID registry for cross-references
+     */
+    public void deserializeFromElement(Element formulaElem, DOMSerializationRegistry registry) {
+        Formula formula = getFormula();
+        if (formula == null || formulaElem == null) {
+            return;
+        }
+
+        String id = formulaElem.getAttribute("ID");
+        if (!id.isEmpty()) {
+            registry.registerWithId(formula, id);
+        }
+
+        String name = formulaElem.getAttribute("name");
+        if (name != null) {
+            formula.setName(name);
+        }
+
+        String enabled = formulaElem.getAttribute("enabled");
+        formula.setEnabled(!"false".equals(enabled));
+
+        // Parse Layer and Priority children
+        NodeList children = formulaElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element childElem = (Element) child;
+            String tagName = childElem.getTagName();
+
+            if ("Layer".equals(tagName)) {
+                String layerStr = childElem.getAttribute("Layer");
+                if (layerStr != null && !layerStr.isEmpty()) {
+                    Vector<Integer> layers = new Vector<>();
+                    for (String s : layerStr.split(",")) {
+                        try {
+                            layers.add(Integer.parseInt(s.trim()));
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                    if (!layers.isEmpty()) {
+                        formula.setLayer(layers);
+                    }
+                }
+            } else if ("Priority".equals(tagName)) {
+                String priorityStr = childElem.getAttribute("Priority");
+                if (priorityStr != null && !priorityStr.isEmpty()) {
+                    Vector<Integer> priorities = new Vector<>();
+                    for (String s : priorityStr.split(",")) {
+                        try {
+                            priorities.add(Integer.parseInt(s.trim()));
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                    if (!priorities.isEmpty()) {
+                        formula.setPriority(priorities);
+                    }
+                }
+            }
+        }
     }
 }

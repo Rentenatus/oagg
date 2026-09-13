@@ -7,8 +7,10 @@
 package agg.xml.adapter;
 
 import agg.xt_basis.Match;
+import agg.xml.core.XMLSerializationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Adapter for Match objects with real DOM serialization logic.
@@ -47,5 +49,34 @@ public class MatchAdapter extends DomainObjectAdapter<Match> {
         RuleAdapter.serializeMorphism(match, doc, registry, matchElem);
 
         return matchElem;
+    }
+
+    /**
+     * Deserializes a Match from a DOM element into the wrapped Match instance.
+     *
+     * @param matchElem The Match DOM element
+     * @param registry  The ID registry for cross-references
+     */
+    public void deserializeFromElement(Element matchElem, DOMSerializationRegistry registry) {
+        Match match = getMatch();
+        if (match == null || matchElem == null) {
+            return;
+        }
+
+        String id = matchElem.getAttribute("ID");
+        if (!id.isEmpty()) {
+            registry.registerWithId(match, id);
+        }
+
+        // Find and deserialize the Morphism child
+        NodeList children = matchElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && "Morphism".equals(child.getNodeName())) {
+                RuleAdapter.deserializeMorphism(match, (Element) child, registry);
+                break;
+            }
+        }
     }
 }

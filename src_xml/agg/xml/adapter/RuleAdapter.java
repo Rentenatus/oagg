@@ -9,8 +9,10 @@ package agg.xml.adapter;
 import agg.xt_basis.Graph;
 import agg.xt_basis.OrdinaryMorphism;
 import agg.xt_basis.Rule;
+import agg.xml.core.XMLSerializationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import java.util.Iterator;
 import java.util.List;
@@ -250,6 +252,211 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
 
         if (hasConditions) {
             ruleElem.appendChild(applElem);
+        }
+    }
+
+    /**
+     * Deserializes a Rule from a DOM element into the wrapped Rule instance.
+     *
+     * <p>Reads the Rule attributes, loads LHS and RHS graphs via GraphAdapter,
+     * restores the morphism (Mapping elements), and creates NACs/PACs/nested
+     * ACs from the ApplCondition child.</p>
+     *
+     * @param ruleElem The Rule DOM element
+     * @param registry  The ID registry for cross-references
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public void deserializeFromElement(Element ruleElem, DOMSerializationRegistry registry)
+            throws XMLSerializationException {
+        Rule rule = getRule();
+        if (rule == null || ruleElem == null) {
+            return;
+        }
+
+        String id = ruleElem.getAttribute("ID");
+        if (!id.isEmpty()) {
+            registry.registerWithId(rule, id);
+        }
+
+        String name = ruleElem.getAttribute("name");
+        if (name != null && !name.isEmpty()) {
+            rule.setName(name);
+        }
+
+        String enabled = ruleElem.getAttribute("enabled");
+        if ("false".equals(enabled)) {
+            rule.setEnabled(false);
+        }
+
+        // Parse child elements: LHS, RHS, Morphism, ApplCondition, TaggedValue
+        NodeList children = ruleElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element childElem = (Element) child;
+            String tagName = childElem.getTagName();
+
+            if ("Graph".equals(tagName)) {
+                String kind = childElem.getAttribute("kind");
+                Graph targetGraph;
+                if ("LHS".equals(kind)) {
+                    targetGraph = rule.getLeft();
+                } else if ("RHS".equals(kind)) {
+                    targetGraph = rule.getRight();
+                } else {
+                    continue;
+                }
+                if (targetGraph != null) {
+                    GraphAdapter graphAdapter = new GraphAdapter(targetGraph);
+                    graphAdapter.deserializeFromElement(childElem, registry);
+                }
+            } else if ("Morphism".equals(tagName)) {
+                deserializeMorphism(rule, childElem, registry);
+            } else if ("ApplCondition".equals(tagName)) {
+                deserializeApplConditions(rule, childElem, registry);
+            }
+        }
+
+        // Set names and kinds after loading
+        rule.getSource().setName("LeftOf_" + rule.getName());
+        rule.getTarget().setName("RightOf_" + rule.getName());
+    }
+
+    /**
+     * Deserializes a morphism from a Morphism DOM element.
+     * Reads Mapping children and adds them to the morphism.
+     * Nodes are mapped first, then arcs (matching OrdinaryMorphism.readMorphism).
+     *
+     * @param morphism  The morphism to populate
+     * @param morphElem The Morphism DOM element
+     * @param registry  The ID registry for resolving references
+     */
+    static void deserializeMorphism(agg.xt_basis.OrdinaryMorphism morphism,
+            Element morphElem, DOMSerializationRegistry registry) {
+        if (morphism == null || morphElem == null) {
+            return;
+        }
+
+        String name = morphElem.getAttribute("name");
+        if (name != null) {
+            morphism.setName(name.replaceAll(" ", ""));
+        }
+
+        // Collect all mappings, apply nodes first, then arcs
+        java.util.List<MappingEntry> arcMappings = new java.util.ArrayList<>();
+        NodeList children = morphElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element mappingElem = (Element) child;
+            if (!"Mapping".equals(mappingElem.getTagName())) {
+                continue;
+            }
+
+            String origId = mappingElem.getAttribute("orig");
+            String imageId = mappingElem.getAttribute("image");
+            Object orig = registry.getObject(origId);
+            Object image = registry.getObject(imageId);
+
+            if (orig instanceof agg.xt_basis.Node && image instanceof agg.xt_basis.Node) {
+                try {
+                    morphism.addMapping((agg.xt_basis.GraphObject) orig,
+                        (agg.xt_basis.GraphObject) image);
+                } catch (agg.xt_basis.BadMappingException ignored) {
+                }
+            } else if (orig instanceof agg.xt_basis.Arc && image instanceof agg.xt_basis.Arc) {
+                arcMappings.add(new MappingEntry(orig, image));
+            }
+        }
+
+        // Now apply arc mappings (nodes must be mapped first)
+        for (MappingEntry entry : arcMappings) {
+            try {
+                morphism.addMapping((agg.xt_basis.GraphObject) entry.orig,
+                    (agg.xt_basis.GraphObject) entry.image);
+            } catch (agg.xt_basis.BadMappingException ignored) {
+            }
+        }
+    }
+
+    private void deserializeApplConditions(Rule rule, Element applElem,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        NodeList children = applElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element childElem = (Element) child;
+            String tagName = childElem.getTagName();
+
+            if ("NAC".equals(tagName)) {
+                OrdinaryMorphism nac = rule.createNAC();
+                String enabled = childElem.getAttribute("enabled");
+                nac.setEnabled(!"false".equals(enabled));
+
+                // Deserialize NAC graph
+                Element nacGraphElem = findChildElement(childElem, "Graph");
+                if (nacGraphElem != null && nac.getTarget() != null) {
+                    GraphAdapter nacAdapter = new GraphAdapter(nac.getTarget());
+                    nacAdapter.deserializeFromElement(nacGraphElem, registry);
+                }
+
+                // Deserialize NAC morphism
+                Element nacMorphElem = findChildElement(childElem, "Morphism");
+                if (nacMorphElem != null) {
+                    deserializeMorphism(nac, nacMorphElem, registry);
+                }
+
+                if (nac.getName() == null || nac.getName().isEmpty()) {
+                    nac.setName("nac" + rule.getNACsList().size());
+                }
+            } else if ("PAC".equals(tagName)) {
+                OrdinaryMorphism pac = rule.createPAC();
+                String enabled = childElem.getAttribute("enabled");
+                pac.setEnabled(!"false".equals(enabled));
+
+                Element pacGraphElem = findChildElement(childElem, "Graph");
+                if (pacGraphElem != null && pac.getTarget() != null) {
+                    GraphAdapter pacAdapter = new GraphAdapter(pac.getTarget());
+                    pacAdapter.deserializeFromElement(pacGraphElem, registry);
+                }
+
+                Element pacMorphElem = findChildElement(childElem, "Morphism");
+                if (pacMorphElem != null) {
+                    deserializeMorphism(pac, pacMorphElem, registry);
+                }
+
+                if (pac.getName() == null || pac.getName().isEmpty()) {
+                    pac.setName("pac" + rule.getPACsList().size());
+                }
+            }
+        }
+    }
+
+    private static Element findChildElement(Element parent, String name) {
+        NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && name.equals(child.getNodeName())) {
+                return (Element) child;
+            }
+        }
+        return null;
+    }
+
+    private static class MappingEntry {
+        final Object orig;
+        final Object image;
+
+        MappingEntry(Object orig, Object image) {
+            this.orig = orig;
+            this.image = image;
         }
     }
 }
