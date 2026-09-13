@@ -42,11 +42,14 @@ public class DOMXMLSerializerContext implements XMLSerializerContext {
         this.document = document;
         this.elementStack = new Stack<>();
         this.xmlOutput = new StringBuilder();
-        
-        // Create root element
-        Element root = document.createElement("Document");
-        root.setAttribute("version", "1.0");
-        document.appendChild(root);
+
+        Element root = document.getDocumentElement();
+        if (root == null) {
+            // Create root element for new documents
+            root = document.createElement("Document");
+            root.setAttribute("version", "1.0");
+            document.appendChild(root);
+        }
         elementStack.push(root);
     }
     

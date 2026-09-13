@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class AdapterIntegrationTest {
     
-    private static final String BASELINE_DIR = "../../../../test_xml/baseline/samples/";
+    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
     
     private XMLHelper xmlHelper;
     

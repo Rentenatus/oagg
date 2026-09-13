@@ -25,7 +25,7 @@ import java.io.IOException;
  */
 public class IntegrationTest {
     
-    private static final String BASELINE_DIR = "../../../test_xml/baseline/samples/";
+    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
     private static final String OUTPUT_DIR = "target/test-output/";
     
     private File tempOutputDir;
@@ -125,31 +125,37 @@ public class IntegrationTest {
         // Create and serialize
         DOMXMLSerializerContext serializer = new DOMXMLSerializerContext();
         serializer.setAttribute("version", "1.0");
-        serializer.createAndAppendElement("Graph");
+
+        org.w3c.dom.Element graphElem = serializer.createAndAppendElement("Graph");
+        serializer.pushElement(graphElem);
         serializer.setAttribute("name", "RoundTripTest");
         serializer.setAttribute("nodes", 10);
-        serializer.createAndAppendElement("Metadata");
+
+        org.w3c.dom.Element metaElem = serializer.createAndAppendElement("Metadata");
+        serializer.pushElement(metaElem);
         serializer.setTextContent("Test content");
-        
+        serializer.popElement(); // pop Metadata
+        serializer.popElement(); // pop Graph
+
         String xml = serializer.toXMLString();
         assertNotNull(xml, "Serialized XML should not be null");
-        
+
         // Parse back
-        java.io.ByteArrayInputStream inputStream = 
+        java.io.ByteArrayInputStream inputStream =
             new java.io.ByteArrayInputStream(xml.getBytes("UTF-8"));
         DOMXMLDeserializerContext deserializer = new DOMXMLDeserializerContext(inputStream);
-        
+
         assertNotNull(deserializer, "Deserializer should not be null");
-        assertEquals(deserializer.getCurrentElement().getNodeName(), "Document", 
+        assertEquals(deserializer.getCurrentElement().getNodeName(), "Document",
                     "Root element should be Document");
-        
+
         // Navigate to Graph
-        deserializer.moveToFirstChild();
-        assertEquals(deserializer.getCurrentElement().getNodeName(), "Graph", 
+        assertTrue(deserializer.moveToFirstChild(), "Should move to first child");
+        assertEquals(deserializer.getCurrentElement().getNodeName(), "Graph",
                     "First child should be Graph");
-        assertEquals(deserializer.getAttribute("name"), "RoundTripTest", 
+        assertEquals(deserializer.getAttribute("name"), "RoundTripTest",
                     "Graph name should match");
-        assertEquals(deserializer.getAttribute("nodes"), 10, 
+        assertEquals(deserializer.getAttribute("nodes", 0), 10,
                     "Node count should match");
     }
     

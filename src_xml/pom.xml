@@ -8,11 +8,10 @@
         <groupId>agg</groupId>
         <artifactId>agg-parent</artifactId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>agg</groupId>
     <artifactId>agg-xml</artifactId>
-    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>AGG XML Serialization Module</name>
@@ -22,129 +21,78 @@
         for AGG domain objects using the Adapter Pattern.
     </description>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
-
     <dependencies>
-        <!-- Core AGG module dependency -->
         <dependency>
             <groupId>agg</groupId>
             <artifactId>agg-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
-        <!-- XML Parsing Dependencies -->
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-            <version>2.12.2</version>
         </dependency>
 
-        <!-- Java Standard XML APIs (if not provided by JDK) -->
         <dependency>
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
-            <version>1.4.01</version>
         </dependency>
 
-        <!-- ndimcol Library for AGG dependencies -->
         <dependency>
             <groupId>de.jare.ndimcol</groupId>
             <artifactId>andimcol</artifactId>
             <version>1.0</version>
-            <systemPath>D:/sdk_workspaces/andimcol/dist/andimcol.jar</systemPath>
             <scope>system</scope>
+            <systemPath>D:/sdk_workspaces/andimcol/dist/andimcol.jar</systemPath>
         </dependency>
 
-        <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.9</version>
         </dependency>
 
-        <!-- Testing Dependencies -->
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>7.8.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
-        <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>test</testSourceDirectory>
-        
+        <sourceDirectory>.</sourceDirectory>
+        <testSourceDirectory>test/java</testSourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>agg/xml/validation</directory>
+                <includes>
+                    <include>*.xsd</include>
+                </includes>
+                <targetPath>agg/xml/validation</targetPath>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                    <encoding>UTF-8</encoding>
+                    <testExcludes>
+                        <testExclude>nothing</testExclude>
+                    </testExcludes>
+                    <excludes>
+                        <exclude>test/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.testng</groupId>
-                        <artifactId>testng</artifactId>
-                        <version>7.8.0</version>
-                    </dependency>
-                </dependencies>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                    <testNGArtifactName>testng:testng</testNGArtifactName>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <!-- Profile for local development with file system dependency on agg-core -->
-    <profiles>
-        <profile>
-            <id>local-dev</id>
-            <activation>
-                <property>
-                    <name>env</name>
-                    <value>local</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>agg</groupId>
-                    <artifactId>agg-core</artifactId>
-                    <version>1.0.0</version>
-                    <systemPath>${project.basedir}/../src</systemPath>
-                    <scope>system</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>

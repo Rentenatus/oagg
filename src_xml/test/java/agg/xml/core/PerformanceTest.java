@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class PerformanceTest {
     
-    private static final String BASELINE_DIR = "../../../../test_xml/baseline/samples/";
+    private static final String BASELINE_DIR = "../test_xml/baseline/samples/";
     private static final int ITERATIONS = 5;
     
     private List<String> testFiles;
