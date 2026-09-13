@@ -9,15 +9,22 @@ package agg.xml.adapter;
 import agg.util.XMLHelper;
 import agg.util.XMLObject;
 import agg.xt_basis.Graph;
+import agg.xt_basis.GraGra;
 import agg.xt_basis.Node;
+import agg.xt_basis.Rule;
 import agg.xml.TestDataHelper;
 import agg.xml.core.XMLSerializable;
 import agg.xml.core.DOMXMLDeserializerContext;
+import agg.xml.core.DOMXMLSerializerContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 import java.io.File;
+import java.util.List;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Integration tests for the adapter pattern implementation.
@@ -127,5 +134,128 @@ public class AdapterIntegrationTest {
 
         assertNotNull(legacyHelper.getDoc(), "Legacy should have document");
         assertNotNull(newContext.getDocument(), "New should have document");
+    }
+
+    /**
+     * Test that RuleAdapter.serializeToElement produces a Rule DOM element
+     * with correct attributes and child structure.
+     */
+    @Test
+    public void testRuleAdapterSerializeToElement() throws Exception {
+        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = new GraGra();
+        graGra.load(ggxFile.getAbsolutePath());
+
+        List<Rule> rules = graGra.getRulesVec();
+        assertTrue(rules.size() > 0, "Should have rules");
+
+        DOMSerializationRegistry registry = new DOMSerializationRegistry();
+        Document doc = new DOMXMLSerializerContext().getDocument();
+
+        for (Rule rule : rules) {
+            RuleAdapter ruleAdapter = new RuleAdapter(rule);
+            Element ruleElem = ruleAdapter.serializeToElement(doc, registry);
+            assertNotNull(ruleElem, "Rule element should not be null");
+            assertEquals(ruleElem.getTagName(), "Rule", "Tag should be Rule");
+            assertTrue(ruleElem.hasAttribute("ID"), "Should have ID attribute");
+            assertTrue(ruleElem.hasAttribute("name"), "Should have name attribute");
+            assertEquals(ruleElem.getAttribute("name"), rule.getName(),
+                "Name should match");
+
+            // Should have at least LHS and RHS graph children
+            int graphCount = countChildElements(ruleElem, "Graph");
+            assertTrue(graphCount >= 2, "Rule should have at least 2 Graph children (LHS+RHS)");
+
+            // Should have Morphism child
+            int morphismCount = countChildElements(ruleElem, "Morphism");
+            assertTrue(morphismCount >= 1, "Rule should have a Morphism child");
+
+            // Should have TaggedValue children for layer and priority
+            int taggedValueCount = countChildElements(ruleElem, "TaggedValue");
+            assertTrue(taggedValueCount >= 2, "Rule should have layer and priority TaggedValues");
+        }
+    }
+
+    /**
+     * Test that GraphAdapter.serializeToElement produces a Graph DOM element
+     * with correct node and edge children.
+     */
+    @Test
+    public void testGraphAdapterSerializeToElement() throws Exception {
+        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = new GraGra();
+        graGra.load(ggxFile.getAbsolutePath());
+
+        assertTrue(graGra.getGraphsVec().size() > 0, "Should have graphs");
+
+        DOMSerializationRegistry registry = new DOMSerializationRegistry();
+        Document doc = new DOMXMLSerializerContext().getDocument();
+
+        for (Graph graph : graGra.getGraphsVec()) {
+            GraphAdapter graphAdapter = new GraphAdapter(graph);
+            Element graphElem = graphAdapter.serializeToElement(doc, registry);
+            assertNotNull(graphElem, "Graph element should not be null");
+            assertEquals(graphElem.getTagName(), "Graph", "Tag should be Graph");
+            assertTrue(graphElem.hasAttribute("ID"), "Should have ID attribute");
+
+            // Should have Node and Edge children
+            int nodeCount = countChildElements(graphElem, "Node");
+            int edgeCount = countChildElements(graphElem, "Edge");
+            assertEquals(nodeCount, graph.getNodesCount(),
+                "Node count should match");
+            assertEquals(edgeCount, graph.getArcsCount(),
+                "Edge count should match");
+        }
+    }
+
+    /**
+     * Test that FormulaAdapter and AtomConstraintAdapter serialize to elements.
+     */
+    @Test
+    public void testConstraintAdaptersSerializeToElement() throws Exception {
+        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = new GraGra();
+        graGra.load(ggxFile.getAbsolutePath());
+
+        DOMSerializationRegistry registry = new DOMSerializationRegistry();
+        Document doc = new DOMXMLSerializerContext().getDocument();
+
+        // Test Formula serialization
+        List<agg.cons.Formula> formulas = graGra.getConstraintsVec();
+        for (agg.cons.Formula formula : formulas) {
+            FormulaAdapter formulaAdapter = new FormulaAdapter(formula);
+            Element formulaElem = formulaAdapter.serializeToElement(doc, registry);
+            assertNotNull(formulaElem, "Formula element should not be null");
+            assertEquals(formulaElem.getTagName(), "Formula",
+                "Tag should be Formula");
+            assertTrue(formulaElem.hasAttribute("name"),
+                "Should have name attribute");
+        }
+
+        // Test AtomConstraint serialization
+        java.util.Enumeration<agg.cons.AtomConstraint> atomics = graGra.getAtomics();
+        while (atomics.hasMoreElements()) {
+            agg.cons.AtomConstraint atom = atomics.nextElement();
+            AtomConstraintAdapter atomAdapter = new AtomConstraintAdapter(atom);
+            Element atomElem = atomAdapter.serializeToElement(doc, registry);
+            assertNotNull(atomElem, "AtomConstraint element should not be null");
+            assertEquals(atomElem.getTagName(), "Graphconstraint_Atomic",
+                "Tag should be Graphconstraint_Atomic");
+            assertTrue(atomElem.hasAttribute("name"),
+                "Should have name attribute");
+        }
+    }
+
+    private static int countChildElements(Element parent, String tagName) {
+        int count = 0;
+        org.w3c.dom.NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && tagName.equals(child.getNodeName())) {
+                count++;
+            }
+        }
+        return count;
     }
 }
