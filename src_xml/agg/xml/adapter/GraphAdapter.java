@@ -162,7 +162,12 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
                 node.setObjectName(objName);
             }
 
-            // TODO: deserialize attributes (AttrInstance)
+            // Deserialize attributes (AttrInstance)
+            agg.attribute.AttrInstance attrInst = node.getAttribute();
+            if (attrInst instanceof agg.attribute.impl.ValueTuple) {
+                AttributeSerializer.deserializeAttributes(
+                    nodeElem, (agg.attribute.impl.ValueTuple) attrInst, registry);
+            }
         } catch (Exception e) {
             throw new XMLSerializationException("Failed to create Node in graph", e);
         }
@@ -208,7 +213,12 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
                 arc.setObjectName(objName);
             }
 
-            // TODO: deserialize attributes (AttrInstance)
+            // Deserialize attributes (AttrInstance)
+            agg.attribute.AttrInstance arcAttrInst = arc.getAttribute();
+            if (arcAttrInst instanceof agg.attribute.impl.ValueTuple) {
+                AttributeSerializer.deserializeAttributes(
+                    arcElem, (agg.attribute.impl.ValueTuple) arcAttrInst, registry);
+            }
         } catch (Exception e) {
             throw new XMLSerializationException("Failed to create Arc in graph", e);
         }

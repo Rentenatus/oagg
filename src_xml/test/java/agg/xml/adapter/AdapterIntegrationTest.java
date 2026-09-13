@@ -258,4 +258,70 @@ public class AdapterIntegrationTest {
         }
         return count;
     }
+
+    /**
+     * Test that NodeAdapter serializes attributes (Attribute children).
+     */
+    @Test
+    public void testNodeAdapterSerializesAttributes() throws Exception {
+        File ggxFile = TestDataHelper.resolveSample("small_graph.ggx");
+        GraGra graGra = new GraGra();
+        graGra.load(ggxFile.getAbsolutePath());
+
+        assertTrue(graGra.getGraphsVec().size() > 0, "Should have graphs");
+
+        DOMSerializationRegistry registry = new DOMSerializationRegistry();
+        Document doc = new DOMXMLSerializerContext().getDocument();
+
+        // Find the host graph and serialize it
+        for (Graph graph : graGra.getGraphsVec()) {
+            String kind = graph.getKind();
+            if (kind != null && "HOST".equals(kind)) {
+                // Register all types first (needed for ID references)
+                de.jare.ndimcol.ref.IteratorWalker<agg.xt_basis.Type> typeIter =
+                    graGra.getTypeSet().getTypeWalker();
+                while (typeIter != null && typeIter.hasNext()) {
+                    registry.register(typeIter.next());
+                }
+
+                GraphAdapter graphAdapter = new GraphAdapter(graph);
+                Element graphElem = graphAdapter.serializeToElement(doc, registry);
+
+                // Find at least one Node with Attribute children
+                boolean foundAttribute = false;
+                org.w3c.dom.NodeList children = graphElem.getChildNodes();
+                for (int i = 0; i < children.getLength(); i++) {
+                    org.w3c.dom.Node child = children.item(i);
+                    if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                            && "Node".equals(child.getNodeName())) {
+                        Element nodeElem = (Element) child;
+                        int attrCount = countChildElements(nodeElem, "Attribute");
+                        if (attrCount > 0) {
+                            foundAttribute = true;
+                            // Verify the Attribute has a Value child
+                            org.w3c.dom.NodeList nodeChildren = nodeElem.getChildNodes();
+                            for (int j = 0; j < nodeChildren.getLength(); j++) {
+                                org.w3c.dom.Node nc = nodeChildren.item(j);
+                                if (nc.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                                        && "Attribute".equals(nc.getNodeName())) {
+                                    Element attrElem = (Element) nc;
+                                    assertTrue(attrElem.hasAttribute("type"),
+                                        "Attribute should have type reference");
+                                    assertTrue(attrElem.hasAttribute("constant") || attrElem.hasAttribute("variable"),
+                                        "Attribute should have constant or variable flag");
+                                    int valueCount = countChildElements(attrElem, "Value");
+                                    assertTrue(valueCount >= 1,
+                                        "Attribute should have a Value child");
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                assertTrue(foundAttribute,
+                    "Should find at least one Node with Attribute children in host graph");
+                break;
+            }
+        }
+    }
 }
