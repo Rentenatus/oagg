@@ -77,6 +77,12 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
         if (rule.isTriggerOfLayer()) {
             ruleElem.setAttribute("trigger", "true");
         }
+        if (rule.isParallelApplyEnabled()) {
+            ruleElem.setAttribute("parallel", "true");
+        }
+        if (rule.isWaitBeforeApplyEnabled()) {
+            ruleElem.setAttribute("waitBeforeApply", "true");
+        }
 
         // LHS graph
         Graph lhs = rule.getLeft();
@@ -288,6 +294,26 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
             rule.setEnabled(false);
         }
 
+        String formula = ruleElem.getAttribute("formula");
+        if (formula != null && !formula.isEmpty()) {
+            rule.setFormula(formula);
+        }
+
+        String trigger = ruleElem.getAttribute("trigger");
+        if ("true".equals(trigger)) {
+            rule.setTriggerForLayer(true);
+        }
+
+        String parallel = ruleElem.getAttribute("parallel");
+        if ("true".equals(parallel)) {
+            rule.setParallelMatchingEnabled(true);
+        }
+
+        String waitBeforeApply = ruleElem.getAttribute("waitBeforeApply");
+        if ("true".equals(waitBeforeApply)) {
+            rule.setWaitBeforeApplyEnabled(true);
+        }
+
         // Parse child elements: LHS, RHS, Morphism, ApplCondition, TaggedValue
         NodeList children = ruleElem.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
@@ -316,6 +342,20 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
                 deserializeMorphism(rule, childElem, registry);
             } else if ("ApplCondition".equals(tagName)) {
                 deserializeApplConditions(rule, childElem, registry);
+            } else if ("TaggedValue".equals(tagName)) {
+                String tag = childElem.getAttribute("Tag");
+                String tagValue = childElem.getAttribute("TagValue");
+                if ("layer".equals(tag)) {
+                    try {
+                        rule.setLayer(Integer.parseInt(tagValue));
+                    } catch (NumberFormatException ignored) {
+                    }
+                } else if ("priority".equals(tag)) {
+                    try {
+                        rule.setPriority(Integer.parseInt(tagValue));
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
             }
         }
 
@@ -433,6 +473,25 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
 
                 if (pac.getName() == null || pac.getName().isEmpty()) {
                     pac.setName("pac" + rule.getPACsList().size());
+                }
+            } else if ("NestedAC".equals(tagName)) {
+                agg.xt_basis.NestedApplCond nestedAc = rule.createNestedAC();
+                String enabled = childElem.getAttribute("enabled");
+                nestedAc.setEnabled(!"false".equals(enabled));
+
+                Element acGraphElem = findChildElement(childElem, "Graph");
+                if (acGraphElem != null && nestedAc.getTarget() != null) {
+                    GraphAdapter acAdapter = new GraphAdapter(nestedAc.getTarget());
+                    acAdapter.deserializeFromElement(acGraphElem, registry);
+                }
+
+                Element acMorphElem = findChildElement(childElem, "Morphism");
+                if (acMorphElem != null) {
+                    deserializeMorphism(nestedAc, acMorphElem, registry);
+                }
+
+                if (nestedAc.getName() == null || nestedAc.getName().isEmpty()) {
+                    nestedAc.setName("gac" + rule.getNestedACsList().size());
                 }
             }
         }

@@ -198,6 +198,31 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                     if (seq.isTrafoByObjFlow()) {
                         seqElem.setAttribute(agg.ruleappl.RuleSequence.TRAFO_BY_OBJECT_FLOW, "true");
                     }
+                    if (seq.getGraph() != null) {
+                        Element seqGraphElem = contextDoc.createElement("Graph");
+                        String graphId = registry.getId(seq.getGraph());
+                        if (graphId.isEmpty()) {
+                            graphId = registry.register(seq.getGraph());
+                        }
+                        seqGraphElem.setAttribute("id", graphId);
+                        seqElem.appendChild(seqGraphElem);
+                    }
+                    java.util.List<agg.util.Pair<java.util.List<agg.util.Pair<String, String>>, String>> subSeqs = seq.getSubSequenceList();
+                    if (subSeqs != null) {
+                        for (agg.util.Pair<java.util.List<agg.util.Pair<String, String>>, String> subSeq : subSeqs) {
+                            Element subSeqElem = contextDoc.createElement("Subsequence");
+                            subSeqElem.setAttribute("iterations", subSeq.second != null ? subSeq.second : "");
+                            if (subSeq.first != null) {
+                                for (agg.util.Pair<String, String> item : subSeq.first) {
+                                    Element itemElem = contextDoc.createElement("Item");
+                                    itemElem.setAttribute("rule", item.first != null ? item.first : "");
+                                    itemElem.setAttribute("iterations", item.second != null ? item.second : "");
+                                    subSeqElem.appendChild(itemElem);
+                                }
+                            }
+                            seqElem.appendChild(subSeqElem);
+                        }
+                    }
                     rsElem.appendChild(seqElem);
                 }
                 gtsElem.appendChild(rsElem);
@@ -282,14 +307,26 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
 
                 if ("Types".equals(tagName)) {
                     deserializeTypes(childElem, graGra, registry);
+                    // After types loaded: refresh inheritance arcs
+                    if (graGra.getTypeSet() != null) {
+                        graGra.getTypeSet().refreshInheritanceArcs();
+                    }
                 } else if ("Graph".equals(tagName)) {
                     deserializeHostGraph(childElem, graGra, registry);
                 } else if ("Constraints".equals(tagName)) {
                     deserializeConstraints(childElem, graGra, registry);
                 } else if ("Rule".equals(tagName)) {
                     deserializeRule(childElem, graGra, registry);
+                } else if ("Matches".equals(tagName)) {
+                    deserializeMatches(childElem, graGra, registry);
+                } else if ("RuleSequences".equals(tagName)) {
+                    deserializeRuleSequences(childElem, graGra, registry);
                 }
             }
+
+            // Post-load setup
+            graGra.setUsedClassPackages();
+            graGra.isReadyToTransform();
         } catch (XMLSerializationException e) {
             throw e;
         } catch (Exception e) {
@@ -405,10 +442,21 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             if (ac.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
                 continue;
             }
-            Element attrElem = (Element) ac;
-            if ("AttrType".equals(attrElem.getTagName())) {
-                String attrId = attrElem.getAttribute("ID");
-                String attrName = attrElem.getAttribute("attrname");
+            Element childElem = (Element) ac;
+            String childTag = childElem.getTagName();
+
+            if ("Parent".equals(childTag)) {
+                // Resolve parent type reference (multiple inheritance)
+                String parentId = childElem.getAttribute("pID");
+                if (!parentId.isEmpty() && type instanceof agg.xt_basis.TypeImpl) {
+                    Object parentObj = registry.getObject(parentId);
+                    if (parentObj instanceof agg.xt_basis.Type) {
+                        ((agg.xt_basis.TypeImpl) type).addParent((agg.xt_basis.Type) parentObj);
+                    }
+                }
+            } else if ("AttrType".equals(childTag)) {
+                String attrId = childElem.getAttribute("ID");
+                String attrName = childElem.getAttribute("attrname");
                 // Find the DeclMember by name in the type's AttrType
                 if (!attrId.isEmpty() && type.getAttrType() != null) {
                     agg.attribute.impl.DeclTuple declTuple =
@@ -483,6 +531,74 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
         if (rule != null) {
             RuleAdapter ruleAdapter = new RuleAdapter(rule);
             ruleAdapter.deserializeFromElement(ruleElem, registry);
+        }
+    }
+
+    /**
+     * Deserializes Matches from a {@code <Matches>} element.
+     * Each child is a {@code <MatchOf>} containing a Rule reference and a Match.
+     */
+    private void deserializeMatches(Element matchesElem, GraGra graGra,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        NodeList children = matchesElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element matchOfElem = (Element) child;
+            if (!"MatchOf".equals(matchOfElem.getTagName())) {
+                continue;
+            }
+
+            // Resolve Rule reference
+            String ruleId = matchOfElem.getAttribute("Rule");
+            if (ruleId == null || ruleId.isEmpty()) {
+                // Try to find Rule child element with id attribute
+                Element ruleRefElem = findChildElement(matchOfElem, "Rule");
+                if (ruleRefElem != null) {
+                    ruleId = ruleRefElem.getAttribute("id");
+                }
+            }
+            if (ruleId != null && !ruleId.isEmpty()) {
+                Object ruleObj = registry.getObject(ruleId);
+                if (ruleObj instanceof Rule) {
+                    Rule rule = (Rule) ruleObj;
+                    agg.xt_basis.Match match = graGra.createMatch(rule);
+                    if (match != null) {
+                        // Find and deserialize the Match child
+                        Element matchElem = findChildElement(matchOfElem, "Match");
+                        if (matchElem != null) {
+                            MatchAdapter matchAdapter = new MatchAdapter(match);
+                            matchAdapter.deserializeFromElement(matchElem, registry);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Deserializes RuleSequences from a {@code <RuleSequences>} element.
+     * Each child is a {@code <Sequence>} with name, subsequences, and items.
+     */
+    private void deserializeRuleSequences(Element rsElem, GraGra graGra,
+            DOMSerializationRegistry registry) {
+        NodeList children = rsElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element seqElem = (Element) child;
+            if (!"Sequence".equals(seqElem.getTagName())) {
+                continue;
+            }
+
+            String seqName = seqElem.getAttribute("name");
+            // TODO: Create RuleSequence and populate (requires GraGra API for creating sequences)
+            // RuleSequence creation is complex and requires graGra.createRuleSequence()
+            // For now, we skip deserialization of rule sequence detail
         }
     }
 

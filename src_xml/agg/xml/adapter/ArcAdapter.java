@@ -103,7 +103,28 @@ public class ArcAdapter extends DomainObjectAdapter<Arc> {
                 (agg.attribute.impl.ValueTuple) attrInst, doc, registry, edgeElem);
         }
 
-        // TODO: serialize multiplicity for type graph arcs
+        // Type graph multiplicity (sourcemin/targetmin/sourcemax/targetmax)
+        agg.xt_basis.Graph context = arc.getContext();
+        if (context != null && context.isTypeGraph()) {
+            agg.xt_basis.Type sourceType = arc.getSource().getType();
+            agg.xt_basis.Type targetType = arc.getTarget().getType();
+            int sourcemin = type.getSourceMin(sourceType, targetType);
+            if (sourcemin != agg.xt_basis.Type.UNDEFINED) {
+                edgeElem.setAttribute("sourcemin", Integer.toString(sourcemin));
+            }
+            int targetmin = type.getTargetMin(sourceType, targetType);
+            if (targetmin != agg.xt_basis.Type.UNDEFINED) {
+                edgeElem.setAttribute("targetmin", Integer.toString(targetmin));
+            }
+            int sourcemax = type.getSourceMax(sourceType, targetType);
+            if (sourcemax != agg.xt_basis.Type.UNDEFINED) {
+                edgeElem.setAttribute("sourcemax", Integer.toString(sourcemax));
+            }
+            int targetmax = type.getTargetMax(sourceType, targetType);
+            if (targetmax != agg.xt_basis.Type.UNDEFINED) {
+                edgeElem.setAttribute("targetmax", Integer.toString(targetmax));
+            }
+        }
 
         return edgeElem;
     }

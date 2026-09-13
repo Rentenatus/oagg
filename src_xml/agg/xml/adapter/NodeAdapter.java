@@ -73,6 +73,19 @@ public class NodeAdapter extends DomainObjectAdapter<Node> {
             nodeElem.setAttribute("type", typeId);
         }
 
+        // Type graph multiplicity (sourcemin/sourcemax)
+        agg.xt_basis.Graph context = node.getContext();
+        if (context != null && context.isTypeGraph()) {
+            int sourcemin = type.getSourceMin();
+            if (sourcemin != agg.xt_basis.Type.UNDEFINED) {
+                nodeElem.setAttribute("sourcemin", Integer.toString(sourcemin));
+            }
+            int sourcemax = type.getSourceMax();
+            if (sourcemax != agg.xt_basis.Type.UNDEFINED) {
+                nodeElem.setAttribute("sourcemax", Integer.toString(sourcemax));
+            }
+        }
+
         // Serialize attributes (AttrInstance)
         agg.attribute.AttrInstance attrInst = node.getAttribute();
         if (attrInst instanceof agg.attribute.impl.ValueTuple) {

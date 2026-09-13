@@ -54,6 +54,22 @@ final class TypeSerializerHelper {
         typeElem.setAttribute("name", name);
         typeElem.setAttribute("abstract", String.valueOf(type.isAbstract()));
 
+        // Serialize Parent elements (multiple inheritance for node types)
+        if (type instanceof agg.xt_basis.TypeImpl) {
+            java.util.List<agg.xt_basis.Type> parents = ((agg.xt_basis.TypeImpl) type).getParents();
+            if (parents != null) {
+                for (agg.xt_basis.Type parent : parents) {
+                    Element parentElem = doc.createElement("Parent");
+                    String parentId = registry.getId(parent);
+                    if (parentId.isEmpty()) {
+                        parentId = registry.register(parent);
+                    }
+                    parentElem.setAttribute("pID", parentId);
+                    typeElem.appendChild(parentElem);
+                }
+            }
+        }
+
         // Serialize attribute type declarations
         AttrType attrType = type.getAttrType();
         if (attrType instanceof DeclTuple) {
