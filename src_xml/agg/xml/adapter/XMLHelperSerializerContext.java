@@ -19,7 +19,15 @@ import java.util.Stack;
  * Implementation of XMLSerializerContext that wraps an XMLHelper instance.
  * This allows the new serialization infrastructure to work with the existing
  * XMLHelper-based code.
+ *
+ * @deprecated This context has limitations due to XMLHelper's private stack
+ * management: {@code popElement()} cannot call {@code XMLHelper.pop()} (it is
+ * private), and {@code toXMLString()} returns an empty string because
+ * XMLHelper does not expose its document for direct serialization. Use
+ * {@link agg.xml.core.DOMXMLSerializerContext} instead, which provides full
+ * functionality without these limitations.
  */
+@Deprecated
 public class XMLHelperSerializerContext implements XMLSerializerContext {
     
     private final XMLHelper xmlHelper;

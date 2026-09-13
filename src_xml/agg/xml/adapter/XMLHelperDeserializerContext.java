@@ -20,7 +20,14 @@ import java.util.List;
  * Implementation of XMLDeserializerContext that wraps an XMLHelper instance.
  * This allows the new deserialization infrastructure to work with the existing
  * XMLHelper-based code.
+ *
+ * @deprecated This context has limitations due to XMLHelper's private stack
+ * management: {@code moveToParent()} always returns {@code false} because
+ * {@code XMLHelper.pop()} is private, and {@code deserializeObject()} is
+ * unimplemented. Use {@link agg.xml.core.DOMXMLDeserializerContext} instead,
+ * which provides full navigation and deserialization support.
  */
+@Deprecated
 public class XMLHelperDeserializerContext implements XMLDeserializerContext {
     
     private final XMLHelper xmlHelper;

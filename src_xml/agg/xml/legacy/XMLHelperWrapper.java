@@ -135,9 +135,12 @@ public class XMLHelperWrapper {
         if (xmlObject == null) {
             return null;
         }
-        
+
         // Use the adapter factory pattern
-        this.currentAdapter = new agg.xml.adapter.XMLObjectAdapter(xmlObject);
+        agg.xml.adapter.XMLObjectAdapter adapter =
+            new agg.xml.adapter.XMLObjectAdapter(xmlObject);
+        adapter.setXMLHelper(this.xmlHelper);
+        this.currentAdapter = adapter;
         return currentAdapter;
     }
     
