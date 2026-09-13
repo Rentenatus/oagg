@@ -608,9 +608,47 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             }
 
             String seqName = seqElem.getAttribute("name");
-            // TODO: Create RuleSequence and populate (requires GraGra API for creating sequences)
-            // RuleSequence creation is complex and requires graGra.createRuleSequence()
-            // For now, we skip deserialization of rule sequence detail
+            agg.ruleappl.RuleSequence seq = graGra.createRuleSequence(
+                seqName != null ? seqName : "");
+
+            // Parse TRAFO flags
+            if ("true".equals(seqElem.getAttribute(agg.ruleappl.RuleSequence.TRAFO_BY_ARS))) {
+                seq.setTrafoByARS(true);
+            }
+            if ("true".equals(seqElem.getAttribute(agg.ruleappl.RuleSequence.TRAFO_BY_OBJECT_FLOW))) {
+                seq.setTrafoByObjFlow(true);
+            }
+
+            // Parse Subsequence children
+            NodeList seqChildren = seqElem.getChildNodes();
+            for (int j = 0; j < seqChildren.getLength(); j++) {
+                org.w3c.dom.Node seqChild = seqChildren.item(j);
+                if (seqChild.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                    continue;
+                }
+                Element subElem = (Element) seqChild;
+                String subTag = subElem.getTagName();
+
+                if ("Subsequence".equals(subTag)) {
+                    String iterations = subElem.getAttribute("iterations");
+                    java.util.List<agg.util.Pair<String, String>> items =
+                        new java.util.ArrayList<>();
+                    NodeList itemChildren = subElem.getChildNodes();
+                    for (int k = 0; k < itemChildren.getLength(); k++) {
+                        org.w3c.dom.Node itemNode = itemChildren.item(k);
+                        if (itemNode.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                            continue;
+                        }
+                        Element itemElem = (Element) itemNode;
+                        if ("Item".equals(itemElem.getTagName())) {
+                            String ruleName = itemElem.getAttribute("rule");
+                            String itemIterations = itemElem.getAttribute("iterations");
+                            items.add(new agg.util.Pair<>(ruleName, itemIterations));
+                        }
+                    }
+                    seq.addSubsequence(items, iterations);
+                }
+            }
         }
     }
 

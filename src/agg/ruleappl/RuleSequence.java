@@ -187,6 +187,17 @@ public class RuleSequence implements GraTraEventListener {
         this.subSequenceList = list;
     }
 
+    /**
+     * Adds a subsequence with the specified rule names and iteration count.
+     *
+     * @param ruleNames  List of (ruleName, iterations) pairs
+     * @param iterations The iteration count for this subsequence
+     */
+    public void addSubsequence(final List<Pair<String, String>> ruleNames, final String iterations) {
+        this.subSequenceList.add(
+            new Pair<List<Pair<String, String>>, String>(ruleNames, iterations));
+    }
+
     private void copySubsequenceList(final List<Pair<List<Pair<String, String>>, String>> list) {
         this.subSequenceList.clear();
         for (int i = 0; i < list.size(); i++) {

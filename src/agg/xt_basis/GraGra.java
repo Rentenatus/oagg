@@ -3807,6 +3807,19 @@ public class GraGra implements Disposable, XMLObject {
         this.itsRuleSequence = seq;
     }
 
+    /**
+     * Creates and adds a new RuleSequence with the specified name.
+     *
+     * @param name The name of the rule sequence
+     * @return the newly created RuleSequence
+     */
+    public RuleSequence createRuleSequence(final String name) {
+        final RuleSequence seq = new RuleSequence(this, name);
+        this.itsRuleSequences.add(seq);
+        this.itsRuleSequence = seq;
+        return seq;
+    }
+
     public void removeRuleSequence(final RuleSequence seq) {
         if (this.itsRuleSequence == seq) {
             this.itsRuleSequence = null;
@@ -3955,8 +3968,8 @@ public class GraGra implements Disposable, XMLObject {
      * @param filename
      */
     public void save(String filename) {
-        if (agg.xml.migration.GraGraMigration.isUseNewXml()) {
-            agg.xml.migration.GraGraMigration.save(this, filename);
+        if (isUseNewXmlEnabled()) {
+            dispatchSave(this, filename);
             return;
         }
         String ggx = ".ggx";
@@ -3999,8 +4012,8 @@ public class GraGra implements Disposable, XMLObject {
      * @param filename
      */
     public void load(String filename) throws Exception {
-        if (agg.xml.migration.GraGraMigration.isUseNewXml()) {
-            agg.xml.migration.GraGraMigration.load(this, filename);
+        if (isUseNewXmlEnabled()) {
+            dispatchLoad(this, filename);
             return;
         }
         File f = new File(filename);
@@ -4832,4 +4845,46 @@ public class GraGra implements Disposable, XMLObject {
 //		else
 //			return (new ArrayList<SubGraGra>(0)).elements();
 //	}
+    // ---- Feature flag dispatch via reflection (avoids compile dependency on agg-xml) ----
+
+    private static volatile Boolean cachedUseNewXml = null;
+
+    private static boolean isUseNewXmlEnabled() {
+        if (cachedUseNewXml != null) {
+            return cachedUseNewXml;
+        }
+        try {
+            Class<?> cls = Class.forName("agg.xml.migration.GraGraMigration");
+            java.lang.reflect.Method m = cls.getMethod("isUseNewXml");
+            cachedUseNewXml = (Boolean) m.invoke(null);
+        } catch (Exception e) {
+            cachedUseNewXml = Boolean.FALSE;
+        }
+        return cachedUseNewXml;
+    }
+
+    private static void dispatchSave(GraGra graGra, String filename) {
+        try {
+            Class<?> cls = Class.forName("agg.xml.migration.GraGraMigration");
+            java.lang.reflect.Method m = cls.getMethod("save", GraGra.class, String.class);
+            m.invoke(null, graGra, filename);
+        } catch (Exception e) {
+            // Fall back to legacy
+        }
+    }
+
+    private static void dispatchLoad(GraGra graGra, String filename) throws Exception {
+        try {
+            Class<?> cls = Class.forName("agg.xml.migration.GraGraMigration");
+            java.lang.reflect.Method m = cls.getMethod("load", GraGra.class, String.class);
+            m.invoke(null, graGra, filename);
+        } catch (java.lang.reflect.InvocationTargetException e) {
+            if (e.getCause() instanceof Exception) {
+                throw (Exception) e.getCause();
+            }
+            throw e;
+        } catch (Exception e) {
+            // Fall back to legacy
+        }
+    }
 }
