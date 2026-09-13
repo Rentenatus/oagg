@@ -96,7 +96,14 @@ public class ArcAdapter extends DomainObjectAdapter<Arc> {
             edgeElem.setAttribute("target", targetId);
         }
 
-        // TODO: serialize attributes (AttrInstance) and multiplicity
+        // Serialize attributes (AttrInstance)
+        agg.attribute.AttrInstance attrInst = arc.getAttribute();
+        if (attrInst instanceof agg.attribute.impl.ValueTuple) {
+            AttributeSerializer.serializeAttributes(
+                (agg.attribute.impl.ValueTuple) attrInst, doc, registry, edgeElem);
+        }
+
+        // TODO: serialize multiplicity for type graph arcs
 
         return edgeElem;
     }

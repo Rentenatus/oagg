@@ -73,7 +73,12 @@ public class NodeAdapter extends DomainObjectAdapter<Node> {
             nodeElem.setAttribute("type", typeId);
         }
 
-        // TODO: serialize attributes (AttrInstance)
+        // Serialize attributes (AttrInstance)
+        agg.attribute.AttrInstance attrInst = node.getAttribute();
+        if (attrInst instanceof agg.attribute.impl.ValueTuple) {
+            AttributeSerializer.serializeAttributes(
+                (agg.attribute.impl.ValueTuple) attrInst, doc, registry, nodeElem);
+        }
 
         return nodeElem;
     }
