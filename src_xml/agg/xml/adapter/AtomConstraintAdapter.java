@@ -85,7 +85,27 @@ public class AtomConstraintAdapter extends DomainObjectAdapter<AtomConstraint> {
                 // Conclusion morphism
                 RuleAdapter.serializeMorphism(conclusion, doc, registry, conclusionElem);
 
-                // TODO: serialize AttrCondition
+                // Serialize AttrCondition if present
+                agg.attribute.AttrConditionTuple condTuple = conclusion.getAttrContext().getConditions();
+                if (condTuple instanceof agg.attribute.impl.CondTuple) {
+                    agg.attribute.impl.CondTuple ct = (agg.attribute.impl.CondTuple) condTuple;
+                    if (ct.getSize() > 0) {
+                        Element attrCondElem = doc.createElement("AttrCondition");
+                        for (int k = 0; k < ct.getSize(); k++) {
+                            agg.attribute.impl.CondMember cm = ct.getCondMemberAt(k);
+                            if (cm != null && cm.isSet()) {
+                                Element condElem = doc.createElement("Condition");
+                                Element valueElem = doc.createElement("Value");
+                                Element stringElem = doc.createElement("string");
+                                stringElem.setTextContent(cm.getExprAsText() != null ? cm.getExprAsText() : "");
+                                valueElem.appendChild(stringElem);
+                                condElem.appendChild(valueElem);
+                                attrCondElem.appendChild(condElem);
+                            }
+                        }
+                        conclusionElem.appendChild(attrCondElem);
+                    }
+                }
 
                 atomicElem.appendChild(conclusionElem);
             }
@@ -156,6 +176,37 @@ public class AtomConstraintAdapter extends DomainObjectAdapter<AtomConstraint> {
                 Element concMorphElem = findChildElement(childElem, "Morphism");
                 if (concMorphElem != null) {
                     RuleAdapter.deserializeMorphism(conclusion, concMorphElem, registry);
+                }
+
+                // Load AttrCondition if present
+                Element attrCondElem = findChildElement(childElem, "AttrCondition");
+                if (attrCondElem != null) {
+                    agg.attribute.AttrConditionTuple condTuple =
+                        conclusion.getAttrContext().getConditions();
+                    if (condTuple instanceof agg.attribute.impl.CondTuple) {
+                        agg.attribute.impl.CondTuple ct =
+                            (agg.attribute.impl.CondTuple) condTuple;
+                        NodeList condChildren = attrCondElem.getChildNodes();
+                        for (int j = 0; j < condChildren.getLength(); j++) {
+                            org.w3c.dom.Node condNode = condChildren.item(j);
+                            if (condNode.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                                continue;
+                            }
+                            Element condElem = (Element) condNode;
+                            if ("Condition".equals(condElem.getTagName())) {
+                                Element valueElem = findChildElement(condElem, "Value");
+                                if (valueElem != null) {
+                                    Element stringElem = findChildElement(valueElem, "string");
+                                    if (stringElem != null) {
+                                        String exprText = stringElem.getTextContent();
+                                        if (exprText != null && !exprText.isEmpty()) {
+                                            ct.addCondition(exprText.trim());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
