@@ -48,11 +48,9 @@ public class FormulaAdapter extends DomainObjectAdapter<Formula> {
         formulaElem.setAttribute("name", formula.getName() != null ? formula.getName() : "");
         formulaElem.setAttribute("enabled", String.valueOf(formula.isEnabled()));
 
-        // Comment
+        // Comment (always written, matching legacy behavior)
         String comment = formula.getTextualComment();
-        if (comment != null && !comment.isEmpty()) {
-            formulaElem.setAttribute("comment", comment);
-        }
+        formulaElem.setAttribute("comment", comment != null ? comment : "");
 
         // Layer
         Element layerElem = doc.createElement("Layer");

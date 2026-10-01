@@ -131,6 +131,9 @@ public class AtomConstraintAdapter extends DomainObjectAdapter<AtomConstraint> {
             return;
         }
 
+        // Track which conclusion we're populating (constructor creates one by default)
+        int[] conclusionCounter = {0};
+
         String id = atomicElem.getAttribute("ID");
         if (!id.isEmpty()) {
             registry.registerWithId(constraint, id);
@@ -159,10 +162,33 @@ public class AtomConstraintAdapter extends DomainObjectAdapter<AtomConstraint> {
                     premiseAdapter.deserializeFromElement(premiseGraphElem, registry);
                 }
             } else if ("Conclusion".equals(tagName)) {
-                // Create a new conclusion
-                Graph conclusionGraph = BaseFactory.theFactory().createGraph(
-                    constraint.getSource().getTypeSet());
-                AtomConstraint conclusion = constraint.createNextConclusion(conclusionGraph);
+                // Reuse existing conclusion (constructor creates one by default)
+                // or create a new one if all existing ones are already used
+                AtomConstraint conclusion;
+                Graph conclusionGraph;
+                int existingCount = constraint.getConclusionsSize();
+                int conclusionIndex = conclusionCounter[0];
+                if (conclusionIndex < existingCount) {
+                    // Reuse existing conclusion
+                    java.util.Enumeration<AtomConstraint> conclEnum = constraint.getConclusions();
+                    int idx = 0;
+                    conclusion = null;
+                    while (conclEnum.hasMoreElements()) {
+                        AtomConstraint ac = conclEnum.nextElement();
+                        if (idx == conclusionIndex) {
+                            conclusion = ac;
+                            break;
+                        }
+                        idx++;
+                    }
+                    conclusionGraph = conclusion != null ? conclusion.getImage() : null;
+                } else {
+                    // Create a new conclusion
+                    conclusionGraph = BaseFactory.theFactory().createGraph(
+                        constraint.getSource().getTypeSet());
+                    conclusion = constraint.createNextConclusion(conclusionGraph);
+                }
+                conclusionCounter[0]++;
 
                 // Load conclusion graph
                 Element concGraphElem = findChildElement(childElem, "Graph");

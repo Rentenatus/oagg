@@ -417,10 +417,6 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
                 }
             }
         }
-
-        // Set names and kinds after loading
-        rule.getSource().setName("LeftOf_" + rule.getName());
-        rule.getTarget().setName("RightOf_" + rule.getName());
     }
 
     /**

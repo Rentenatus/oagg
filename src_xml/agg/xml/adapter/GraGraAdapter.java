@@ -163,10 +163,20 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 }
                 // Serialize formulas
                 if (formulas != null) {
+                    java.util.List<agg.cons.Evaluable> atomicList = new java.util.ArrayList<>();
+                    java.util.Enumeration<agg.cons.AtomConstraint> atomicEnum = graGra.getAtomics();
+                    while (atomicEnum.hasMoreElements()) {
+                        atomicList.add(atomicEnum.nextElement());
+                    }
                     for (agg.cons.Formula formula : formulas) {
                         FormulaAdapter formulaAdapter = new FormulaAdapter(formula);
                         Element formulaElem = formulaAdapter.serializeToElement(contextDoc, registry);
                         if (formulaElem != null) {
+                            // Add formula string attribute (written by legacy GraGra.saveXML)
+                            String formulaStr = formula.getAsString(atomicList);
+                            if (formulaStr != null && !formulaStr.isEmpty()) {
+                                formulaElem.setAttribute("f", formulaStr);
+                            }
                             constraintsElem.appendChild(formulaElem);
                         }
                     }
@@ -174,14 +184,24 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 gtsElem.appendChild(constraintsElem);
             }
 
-            // Rules
+            // Rules (including RuleSchemes)
             for (Rule rule : graGra.getRulesVec()) {
                 rule.getSource().setKind("LHS");
                 rule.getTarget().setKind("RHS");
-                RuleAdapter ruleAdapter = new RuleAdapter(rule);
-                Element ruleElem = ruleAdapter.serializeToElement(contextDoc, registry);
-                if (ruleElem != null) {
-                    gtsElem.appendChild(ruleElem);
+                if (rule instanceof agg.xt_basis.agt.RuleScheme) {
+                    // RuleScheme needs legacy XwriteObject delegation
+                    agg.xt_basis.agt.RuleScheme rs = (agg.xt_basis.agt.RuleScheme) rule;
+                    rs.storeIndexOfRuleList(graGra.getRulesVec().indexOf(rule));
+                    Element rsElem = serializeRuleScheme(rs, contextDoc, registry);
+                    if (rsElem != null) {
+                        gtsElem.appendChild(rsElem);
+                    }
+                } else {
+                    RuleAdapter ruleAdapter = new RuleAdapter(rule);
+                    Element ruleElem = ruleAdapter.serializeToElement(contextDoc, registry);
+                    if (ruleElem != null) {
+                        gtsElem.appendChild(ruleElem);
+                    }
                 }
             }
 
@@ -228,6 +248,41 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 gtsElem.appendChild(rsElem);
             }
 
+            // Matches
+            java.util.List<agg.xt_basis.Match> allMatches = new java.util.ArrayList<>();
+            for (Rule rule : graGra.getRulesVec()) {
+                java.util.Iterator<agg.xt_basis.Match> matchIter = graGra.getMatches(rule);
+                while (matchIter.hasNext()) {
+                    agg.xt_basis.Match m = matchIter.next();
+                    if (m != null) {
+                        allMatches.add(m);
+                    }
+                }
+            }
+            if (!allMatches.isEmpty()) {
+                Element matchesElem = contextDoc.createElement("Matches");
+                for (agg.xt_basis.Match m : allMatches) {
+                    if (m != null && m.getRule() != null && !m.isEmpty()) {
+                        m.setName("MatchOf_" + m.getRule().getName());
+                        Element matchOfElem = contextDoc.createElement("MatchOf");
+                        // Rule reference
+                        String ruleId = registry.getId(m.getRule());
+                        if (ruleId.isEmpty()) {
+                            ruleId = registry.register(m.getRule());
+                        }
+                        matchOfElem.setAttribute("Rule", ruleId);
+                        // Match object
+                        MatchAdapter matchAdapter = new MatchAdapter(m);
+                        Element matchElem = matchAdapter.serializeToElement(contextDoc, registry);
+                        if (matchElem != null) {
+                            matchOfElem.appendChild(matchElem);
+                        }
+                        matchesElem.appendChild(matchOfElem);
+                    }
+                }
+                gtsElem.appendChild(matchesElem);
+            }
+
             contextRoot.appendChild(gtsElem);
         } catch (Exception e) {
             throw new XMLSerializationException("Failed to serialize GraGra", e);
@@ -235,7 +290,43 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
     }
 
     /**
-     * Deserializes the GraGra from the specified context by reading the DOM document.
+     * Serializes a RuleScheme to a DOM element by delegating to the legacy
+     * XwriteObject via XMLHelper and importing the result.
+     */
+    private Element serializeRuleScheme(agg.xt_basis.agt.RuleScheme rs,
+            Document contextDoc, DOMSerializationRegistry registry) {
+        try {
+            agg.util.XMLHelper helper = new agg.util.XMLHelper();
+            helper.addTopObject(rs);
+            org.w3c.dom.Document helperDoc = helper.getDoc();
+            if (helperDoc == null) {
+                return null;
+            }
+            // Find the RuleScheme element in the helper document
+            org.w3c.dom.Element helperRoot = helperDoc.getDocumentElement();
+            // The helper wraps in a Document root; find RuleScheme child
+            org.w3c.dom.NodeList children = helperRoot.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                org.w3c.dom.Node child = children.item(i);
+                if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                        && "RuleScheme".equals(child.getNodeName())) {
+                    // Import into context document
+                    org.w3c.dom.Node imported = contextDoc.importNode(child, true);
+                    return (Element) imported;
+                }
+            }
+            // If not found as child, check if root IS the RuleScheme
+            if ("RuleScheme".equals(helperRoot.getNodeName())) {
+                org.w3c.dom.Node imported = contextDoc.importNode(helperRoot, true);
+                return (Element) imported;
+            }
+        } catch (Exception e) {
+            // Fall through to return null
+        }
+        return null;
+    }
+
+    /**
      *
      * <p>This method extracts the GraphTransformationSystem element from the
      * deserializer context, wraps it in a Document suitable for XMLHelper,
@@ -254,7 +345,6 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
         try {
             Element contextElement = context.getCurrentElement();
             DOMSerializationRegistry registry = new DOMSerializationRegistry();
-            hostGraphsCleared = false;
 
             // Find the GraphTransformationSystem element
             Element gtsElement = findChildElement(contextElement, "GraphTransformationSystem");
@@ -351,10 +441,10 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             String tagName = typeElem.getTagName();
 
             if ("NodeType".equals(tagName)) {
-                Type type = graGra.createNodeType(false);
+                Type type = graGra.createNodeType(hasAttrTypeChildren(typeElem));
                 loadTypeDetails(type, typeElem, registry);
             } else if ("EdgeType".equals(tagName)) {
-                Type type = graGra.createArcType(false);
+                Type type = graGra.createArcType(hasAttrTypeChildren(typeElem));
                 loadTypeDetails(type, typeElem, registry);
             } else if ("Type".equals(tagName)) {
                 Type type = graGra.createType();
@@ -494,21 +584,14 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             return;
         }
 
-        // Clear existing graphs on first host graph load
-        if (!hostGraphsCleared) {
-            graGra.getGraphsVec().clear();
-            hostGraphsCleared = true;
-        }
-
-        Graph graph = BaseFactory.theFactory().createGraph(graGra.getTypeSet(), true);
+        // Use the existing default host graph (graGra.getGraph() / itsGraph)
+        // so that Match objects (which reference itsGraph as target) work correctly.
+        Graph graph = graGra.getGraph();
         if (graph != null) {
             GraphAdapter graphAdapter = new GraphAdapter(graph);
             graphAdapter.deserializeFromElement(graphElem, registry);
-            graGra.getGraphsVec().add(graph);
         }
     }
-
-    private boolean hostGraphsCleared = false;
 
     private void deserializeConstraints(Element constraintsElem, GraGra graGra,
             DOMSerializationRegistry registry) throws XMLSerializationException {
@@ -808,5 +891,23 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             }
         }
         return null;
+    }
+
+    /**
+     * Checks whether a type element has AttrType children.
+     */
+    private static boolean hasAttrTypeChildren(Element typeElem) {
+        if (typeElem == null) {
+            return false;
+        }
+        org.w3c.dom.NodeList children = typeElem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && "AttrType".equals(child.getNodeName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
