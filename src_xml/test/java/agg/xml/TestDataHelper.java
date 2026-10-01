@@ -23,12 +23,39 @@ public final class TestDataHelper {
     /** Base directory for .ggx sample files. */
     public static final String BASELINE_DIR = "../test_xml/baseline/samples/";
 
+    /** Directory for preserved legacy XML test fixtures (.ggx, .rsx, .cpx). */
+    public static final String LEGACY_DIR = "../assets_test/test_agg/legacy/";
+
+    /** Absolute fallback for legacy directory. */
+    public static final String ALT_LEGACY_DIR = "D:/git_oagg/assets_test/test_agg/legacy/";
+
     /** All sample .ggx file names. */
     public static final String[] SAMPLE_FILES = {
         "small_graph.ggx",
         "small_graph_layered.ggx",
         "medium_graph.ggx",
         "large_graph.ggx"
+    };
+
+    /** All legacy .ggx test fixture file names. */
+    public static final String[] LEGACY_GGX_FILES = {
+        "basic_graph_attrs.ggx",
+        "composite_all.ggx",
+        "constraints.ggx",
+        "match.ggx",
+        "rule_nac_pac.ggx",
+        "rule_scheme.ggx",
+        "rule_sequence.ggx",
+        "small_graph.ggx",
+        "small_graph_layered.ggx",
+        "medium_graph.ggx",
+        "large_graph.ggx"
+    };
+
+    /** All legacy non-.ggx test fixture file names. */
+    public static final String[] LEGACY_OTHER_FILES = {
+        "appl_rule_sequence.rsx",
+        "conflicts_deps.cpx"
     };
 
     private TestDataHelper() {
@@ -45,8 +72,21 @@ public final class TestDataHelper {
     }
 
     /**
+     * Resolves a legacy test fixture file name relative to the legacy directory.
+     *
+     * @param filename The legacy file name (e.g. "basic_graph_attrs.ggx")
+     * @return The resolved File
+     */
+    public static File resolveLegacy(String filename) {
+        File relative = new File(LEGACY_DIR + filename);
+        if (relative.exists()) {
+            return relative;
+        }
+        return new File(ALT_LEGACY_DIR + filename);
+    }
+
+    /**
      * Checks that a file exists; throws SkipException if not.
-     * Use this at the start of test methods that depend on a specific file.
      *
      * @param file The file to check
      * @throws SkipException if the file does not exist
@@ -69,7 +109,6 @@ public final class TestDataHelper {
 
     /**
      * Checks that all sample files exist; throws SkipException if any is missing.
-     * Use this in @BeforeClass to skip an entire test class when data is unavailable.
      *
      * @throws SkipException if any sample file does not exist
      */
@@ -83,6 +122,21 @@ public final class TestDataHelper {
     }
 
     /**
+     * Checks that all legacy fixture files exist; throws SkipException if any
+     * is missing.
+     *
+     * @throws SkipException if any legacy file does not exist
+     */
+    public static void requireAllLegacy() {
+        for (String filename : LEGACY_GGX_FILES) {
+            File file = resolveLegacy(filename);
+            if (!file.exists()) {
+                throw new SkipException("Legacy test data file missing: " + file.getAbsolutePath());
+            }
+        }
+    }
+
+    /**
      * Returns the array of sample files.
      *
      * @return Array of sample File objects
@@ -91,6 +145,19 @@ public final class TestDataHelper {
         File[] files = new File[SAMPLE_FILES.length];
         for (int i = 0; i < SAMPLE_FILES.length; i++) {
             files[i] = resolveSample(SAMPLE_FILES[i]);
+        }
+        return files;
+    }
+
+    /**
+     * Returns the array of legacy .ggx fixture files.
+     *
+     * @return Array of legacy File objects
+     */
+    public static File[] getLegacyGgxFiles() {
+        File[] files = new File[LEGACY_GGX_FILES.length];
+        for (int i = 0; i < LEGACY_GGX_FILES.length; i++) {
+            files[i] = resolveLegacy(LEGACY_GGX_FILES[i]);
         }
         return files;
     }
