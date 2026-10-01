@@ -20,6 +20,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.File;
 import java.util.Iterator;
 
 /**
@@ -297,6 +298,21 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             Document contextDoc, DOMSerializationRegistry registry) {
         try {
             agg.util.XMLHelper helper = new agg.util.XMLHelper();
+            // Pre-register all types from the RuleScheme's type set so that
+            // type references in kernel/multi rule graphs resolve to existing
+            // types instead of creating new <NodeType> elements inside graphs
+            TypeSet rsTypeSet = rs.getTypeSet();
+            if (rsTypeSet != null) {
+                de.jare.ndimcol.ref.IteratorWalker<Type> typeIter =
+                    rsTypeSet.getTypeWalker();
+                while (typeIter != null && typeIter.hasNext()) {
+                    Type t = typeIter.next();
+                    // Register the type in the helper (creates a DOM element
+                    // as child of Document root, but we only import the
+                    // RuleScheme element later)
+                    helper.addTopObject(t);
+                }
+            }
             helper.addTopObject(rs);
             org.w3c.dom.Document helperDoc = helper.getDoc();
             if (helperDoc == null) {
@@ -405,6 +421,8 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                     deserializeHostGraph(childElem, graGra, registry);
                 } else if ("Constraints".equals(tagName)) {
                     deserializeConstraints(childElem, graGra, registry);
+                } else if ("RuleScheme".equals(tagName)) {
+                    deserializeRuleScheme(childElem, graGra, registry);
                 } else if ("Rule".equals(tagName)) {
                     deserializeRule(childElem, graGra, registry);
                 } else if ("Matches".equals(tagName)) {
@@ -559,16 +577,30 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             } else if ("AttrType".equals(childTag)) {
                 String attrId = childElem.getAttribute("ID");
                 String attrName = childElem.getAttribute("attrname");
-                // Find the DeclMember by name in the type's AttrType
-                if (!attrId.isEmpty() && type.getAttrType() != null) {
+                String typeName = childElem.getAttribute("typename");
+                String visible = childElem.getAttribute("visible");
+                // Create a DeclMember from the XML data (matching DeclTuple.XreadObject)
+                if (attrName != null && !attrName.isEmpty()
+                        && typeName != null && !typeName.isEmpty()
+                        && type.getAttrType() instanceof agg.attribute.impl.DeclTuple) {
                     agg.attribute.impl.DeclTuple declTuple =
                         (agg.attribute.impl.DeclTuple) type.getAttrType();
-                    for (int j = 0; j < declTuple.getSize(); j++) {
-                        agg.attribute.impl.DeclMember dm =
-                            (agg.attribute.impl.DeclMember) declTuple.getMemberAt(j);
-                        if (dm != null && attrName.equals(dm.getName())) {
+                    String handlerName = agg.attribute.handler.impl.javaExpr.JexHandler
+                        .getLabelName();
+                    agg.attribute.handler.AttrHandler handler =
+                        agg.attribute.impl.AttrTupleManager.getDefaultManager()
+                            .getHandler(handlerName);
+                    agg.attribute.impl.DeclMember dm =
+                        (agg.attribute.impl.DeclMember) declTuple.addMember(
+                            handler, typeName, attrName);
+                    if (dm != null) {
+                        if ("true".equals(visible) || visible.isEmpty()) {
+                            dm.setVisible(true);
+                        } else {
+                            dm.setVisible(false);
+                        }
+                        if (!attrId.isEmpty()) {
                             registry.registerWithId(dm, attrId);
-                            break;
                         }
                     }
                 }
@@ -626,6 +658,123 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
         if (rule != null) {
             RuleAdapter ruleAdapter = new RuleAdapter(rule);
             ruleAdapter.deserializeFromElement(ruleElem, registry);
+        }
+    }
+
+    /**
+     * Deserializes a RuleScheme from a DOM element using legacy XMLHelper
+     * delegation. RuleScheme's XreadObject is complex (Kernel, Multi, Embedding)
+     * and deeply tied to XMLHelper, so we write a temp .ggx file containing
+     * the Types section and RuleScheme, load it as a GraGra via legacy path,
+     * then transfer the RuleScheme to the target GraGra.
+     */
+    private void deserializeRuleScheme(Element rsElem, GraGra graGra,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        try {
+            // Build a temp .ggx file with Types + RuleScheme
+            org.w3c.dom.Document ownerDoc = rsElem.getOwnerDocument();
+            javax.xml.parsers.DocumentBuilderFactory factory =
+                agg.xml.util.XMLUtils.createSecureDocumentBuilderFactory(false);
+            javax.xml.parsers.DocumentBuilder builder = factory.newDocumentBuilder();
+            org.w3c.dom.Document tempDoc = builder.newDocument();
+            org.w3c.dom.Element root = tempDoc.createElement("Document");
+            root.setAttribute("version", "1.0");
+            tempDoc.appendChild(root);
+
+            // Find GTS element and import with Types + RuleScheme
+            org.w3c.dom.Element gtsElem = findChildElement(
+                ownerDoc.getDocumentElement(), "GraphTransformationSystem");
+            if (gtsElem != null) {
+                org.w3c.dom.Element tempGts = (org.w3c.dom.Element)
+                    tempDoc.importNode(gtsElem, false);
+                // Copy GTS attributes (directed, name, etc.)
+                tempGts.setAttribute("name", graGra.getName());
+                tempGts.setAttribute("directed",
+                    String.valueOf(graGra.getTypeSet().isArcDirected()));
+                tempGts.setAttribute("parallel",
+                    String.valueOf(graGra.getTypeSet().isArcParallel()));
+                root.appendChild(tempGts);
+                // Import Types section
+                org.w3c.dom.Element typesElem = findChildElement(gtsElem, "Types");
+                if (typesElem != null) {
+                    tempGts.appendChild(tempDoc.importNode(typesElem, true));
+                }
+                // Import the RuleScheme element
+                tempGts.appendChild(tempDoc.importNode(rsElem, true));
+            }
+
+            File tempFile = File.createTempFile("rulescheme-", ".ggx");
+            tempFile.deleteOnExit();
+            javax.xml.transform.TransformerFactory tf =
+                javax.xml.transform.TransformerFactory.newInstance();
+            javax.xml.transform.Transformer transformer = tf.newTransformer();
+            transformer.transform(
+                new javax.xml.transform.dom.DOMSource(tempDoc),
+                new javax.xml.transform.stream.StreamResult(tempFile));
+
+            // Load via legacy GraGra.load() which handles Types + RuleScheme
+            GraGra tempGraGra = BaseFactory.theFactory().createGraGra(true);
+            tempGraGra.load(tempFile.getAbsolutePath());
+            tempFile.delete();
+
+            // Find the RuleScheme in the temp GraGra and transfer it
+            for (Rule r : tempGraGra.getRulesVec()) {
+                if (r instanceof agg.xt_basis.agt.RuleScheme) {
+                    agg.xt_basis.agt.RuleScheme loadedRs =
+                        (agg.xt_basis.agt.RuleScheme) r;
+                    // Remove auto-created RuleSchemes from graGra
+                    graGra.getRulesVec().removeIf(
+                        rule -> rule instanceof agg.xt_basis.agt.RuleScheme);
+                    // Adapt types from temp GraGra to target GraGra
+                    graGra.getTypeSet().adaptTypes(loadedRs.getTypeSet(), true);
+                    // Add the loaded RuleScheme
+                    graGra.getRulesVec().add(loadedRs);
+                    // Register its objects for reference resolution
+                    registerRuleSchemeObjects(loadedRs, registry);
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            throw new XMLSerializationException("Failed to deserialize RuleScheme", e);
+        }
+    }
+
+    /**
+     * Registers a RuleScheme and its kernel/multi rules in the DOM registry
+     * so that cross-references can resolve.
+     */
+    private void registerRuleSchemeObjects(agg.xt_basis.agt.RuleScheme rs,
+            DOMSerializationRegistry registry) {
+        // The RuleScheme itself doesn't have an ID in the XML (it's a Rule),
+        // but its kernel and multi rules have IDs
+        Rule kernel = rs.getKernelRule();
+        if (kernel != null) {
+            // Register kernel rule objects (nodes, arcs) so references resolve
+            registerGraphObjects(kernel.getLeft(), registry);
+            registerGraphObjects(kernel.getRight(), registry);
+        }
+        for (Rule multi : rs.getMultiRules()) {
+            registerGraphObjects(multi.getLeft(), registry);
+            registerGraphObjects(multi.getRight(), registry);
+        }
+    }
+
+    private void registerGraphObjects(Graph graph, DOMSerializationRegistry registry) {
+        if (graph == null) return;
+        java.util.Iterator<? extends agg.xt_basis.GraphObject> it;
+        it = graph.getNodesSet().iterator();
+        while (it.hasNext()) {
+            agg.xt_basis.GraphObject go = it.next();
+            if (!registry.isRegistered(go)) {
+                registry.register(go);
+            }
+        }
+        it = graph.getArcsSet().iterator();
+        while (it.hasNext()) {
+            agg.xt_basis.GraphObject go = it.next();
+            if (!registry.isRegistered(go)) {
+                registry.register(go);
+            }
         }
     }
 

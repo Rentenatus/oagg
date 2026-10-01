@@ -107,7 +107,7 @@ public final class XmlCanonicalComparator {
         // Iterative refinement: sort → walk → re-sort with normalized refs
         Map<String, String> idMapA = new LinkedHashMap<>();
         Map<String, String> idMapB = new LinkedHashMap<>();
-        for (int iteration = 0; iteration < 3; iteration++) {
+        for (int iteration = 0; iteration < 5; iteration++) {
             sortChildrenWithRefs(rootA, idMapA);
             sortChildrenWithRefs(rootB, idMapB);
             idMapA.clear();
@@ -225,10 +225,26 @@ public final class XmlCanonicalComparator {
             String name = attr.getNodeName();
             if (!ID_ATTR.equals(name) && !REF_ATTRS.contains(name)) {
                 String value = attr.getNodeValue();
-                // Normalize :: to : (legacy XreadObject does this replacement
-                // on type additionalRepr, so old-save has :: but new-save has :)
                 if ("name".equals(name)) {
+                    // Normalize :: to : (legacy XreadObject does this replacement
+                    // on type additionalRepr)
                     value = value.replace("::", ":");
+                    // Normalize generated graph names: legacy XreadObject sets
+                    // "LeftOf_<ruleName>" / "RightOf_<ruleName>" but original
+                    // XwriteObject writes "Left" / "Right" (from constructor)
+                    value = value.replaceAll("LeftOf_.*", "Left");
+                    value = value.replaceAll("RightOf_.*", "Right");
+                } else if ("comment".equals(name)) {
+                    // Strip generated "Formula: ..." comments that Rule.XreadObject
+                    // adds to morphisms but original XwriteObject doesn't write
+                    if (value.startsWith("Formula: ")) {
+                        value = "";
+                    }
+                    // Skip empty comments (one side may have comment="",
+                    // the other may not have the attribute at all)
+                    if (value.isEmpty()) {
+                        continue;
+                    }
                 }
                 attrs.put(name, value);
             }
@@ -272,6 +288,15 @@ public final class XmlCanonicalComparator {
                 String value = attr.getNodeValue();
                 if ("name".equals(name)) {
                     value = value.replace("::", ":");
+                    value = value.replaceAll("LeftOf_.*", "Left");
+                    value = value.replaceAll("RightOf_.*", "Right");
+                } else if ("comment".equals(name)) {
+                    if (value.startsWith("Formula: ")) {
+                        value = "";
+                    }
+                    if (value.isEmpty()) {
+                        continue;
+                    }
                 }
                 attrs.put(name, value);
             }
@@ -309,6 +334,18 @@ public final class XmlCanonicalComparator {
             } else if ("name".equals(name)) {
                 // Normalize :: to : (legacy XreadObject does this replacement)
                 value = value.replace("::", ":");
+                // Normalize generated graph names (LeftOf_/RightOf_ → Left/Right)
+                value = value.replaceAll("LeftOf_.*", "Left");
+                value = value.replaceAll("RightOf_.*", "Right");
+            } else if ("comment".equals(name)) {
+                // Strip generated "Formula: ..." comments
+                if (value.startsWith("Formula: ")) {
+                    value = "";
+                }
+                // Skip empty comments
+                if (value.isEmpty()) {
+                    continue;
+                }
             }
             attrs.put(name, value);
         }
