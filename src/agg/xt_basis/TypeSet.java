@@ -137,7 +137,7 @@ public class TypeSet {
             Type type = this.types.get(j);
             if (type.isArcType()) {
                 type.dispose();
-                this.types.remove(j);
+                this.types.removeAt(j);
                 j--;
             }
         }
@@ -149,7 +149,7 @@ public class TypeSet {
                     removeInheritanceRelation(clan.get(i), type);
                 }
             }
-            this.types.remove(j);
+            this.types.removeAt(j);
             type.dispose();
             j--;
         }
@@ -158,7 +158,7 @@ public class TypeSet {
             Type type = this.types.get(j);
             if (!type.hasChild()) {
                 type.dispose();
-                this.types.remove(j);
+                this.types.removeAt(j);
                 j--;
             }
         }
