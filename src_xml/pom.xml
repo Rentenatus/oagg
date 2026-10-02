@@ -60,11 +60,12 @@
     <build>
         <!--
             Non-standard source layout: Java sources live directly under src_xml/
-            (not under src/main/java) and tests under test/java.
-            This matches the existing AGG project structure.
+            (not under src/main/java). Test sources live under the repository-wide
+            test root test_xml/java. Tests run with the repository-wide test working
+            directory assets_test_xml.
         -->
         <sourceDirectory>.</sourceDirectory>
-        <testSourceDirectory>test/java</testSourceDirectory>
+        <testSourceDirectory>../test_xml/java</testSourceDirectory>
 
         <resources>
             <resource>
@@ -80,17 +81,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>test/**</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <workingDirectory>${project.basedir}</workingDirectory>
+                    <workingDirectory>${project.basedir}/../assets_test_xml</workingDirectory>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>

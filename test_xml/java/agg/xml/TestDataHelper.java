@@ -20,14 +20,14 @@ import java.io.File;
  */
 public final class TestDataHelper {
 
-    /** Base directory for .ggx sample files. */
+    /** Base directory for .ggx sample files, relative to the test working directory (assets_test_xml). */
     public static final String BASELINE_DIR = "../test_xml/baseline/samples/";
 
     /** Directory for preserved legacy XML test fixtures (.ggx, .rsx, .cpx). */
-    public static final String LEGACY_DIR = "../assets_test/test_agg/legacy/";
+    public static final String LEGACY_DIR = "test_agg/legacy/";
 
     /** Absolute fallback for legacy directory. */
-    public static final String ALT_LEGACY_DIR = "D:/git_oagg/assets_test/test_agg/legacy/";
+    public static final String ALT_LEGACY_DIR = "D:/git_oagg/assets_test_xml/test_agg/legacy/";
 
     /** All sample .ggx file names. */
     public static final String[] SAMPLE_FILES = {

@@ -98,7 +98,7 @@ public class XMLValidatorTest {
 
     @Test
     public void testCustomSchemaFile() throws XMLSerializationException {
-        File schemaFile = new File("agg/xml/validation/agg-ggx-schema.xsd");
+        File schemaFile = new File("../src_xml/agg/xml/validation/agg-ggx-schema.xsd");
         if (schemaFile.exists()) {
             XMLValidator customValidator = new XMLValidator(schemaFile);
             assertNotNull(customValidator, "Should create validator from schema file");
