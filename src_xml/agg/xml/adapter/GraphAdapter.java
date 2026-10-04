@@ -172,6 +172,10 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
                 registry.registerWithId(node, nodeId);
             }
 
+            // Type graph multiplicity (mirroring TypeGraph.XreadObject):
+            // apply the bound attributes when present (type graph nodes only)
+            applyNodeMultiplicity(nodeElem, node);
+
             String visible = nodeElem.getAttribute("visible");
             if ("false".equals(visible)) {
                 node.setVisible(false);
@@ -223,6 +227,10 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
                 registry.registerWithId(arc, arcId);
             }
 
+            // Type graph multiplicity (mirroring TypeGraph.XreadObject):
+            // apply the bound attributes when present (type graph edges only)
+            applyArcMultiplicity(arcElem, arc);
+
             String visible = arcElem.getAttribute("visible");
             if ("false".equals(visible)) {
                 arc.setVisible(false);
@@ -241,6 +249,63 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
             }
         } catch (Exception e) {
             throw new XMLSerializationException("Failed to create Arc in graph", e);
+        }
+    }
+
+    /**
+     * Applies the type graph multiplicity bounds of an Edge element to the
+     * arc type, mirroring the legacy TypeGraph.XreadObject behaviour. The
+     * bounds are only applied when at least one bound attribute is present
+     * (type graph edges carry them, ordinary graph edges do not).
+     */
+    private void applyArcMultiplicity(Element arcElem, Arc arc) {
+        boolean hasBounds = arcElem.hasAttribute("sourcemin")
+                || arcElem.hasAttribute("sourcemax")
+                || arcElem.hasAttribute("targetmin")
+                || arcElem.hasAttribute("targetmax");
+        if (!hasBounds) {
+            return;
+        }
+        Type arcType = arc.getType();
+        Type sourceType = arc.getSource().getType();
+        Type targetType = arc.getTarget().getType();
+        arcType.setSourceMin(sourceType, targetType,
+            parseBound(arcElem.getAttribute("sourcemin")));
+        arcType.setSourceMax(sourceType, targetType,
+            parseBound(arcElem.getAttribute("sourcemax")));
+        arcType.setTargetMin(sourceType, targetType,
+            parseBound(arcElem.getAttribute("targetmin")));
+        arcType.setTargetMax(sourceType, targetType,
+            parseBound(arcElem.getAttribute("targetmax")));
+    }
+
+    /**
+     * Applies the type graph multiplicity bounds of a Node element to the
+     * node type, mirroring the legacy TypeGraph.XreadObject behaviour.
+     */
+    private void applyNodeMultiplicity(Element nodeElem, Node node) {
+        boolean hasBounds = nodeElem.hasAttribute("sourcemin")
+                || nodeElem.hasAttribute("sourcemax");
+        if (!hasBounds) {
+            return;
+        }
+        Type nodeType = node.getType();
+        nodeType.setSourceMin(parseBound(nodeElem.getAttribute("sourcemin")));
+        nodeType.setSourceMax(parseBound(nodeElem.getAttribute("sourcemax")));
+    }
+
+    /**
+     * Parses a multiplicity bound; empty or malformed values map to
+     * {@link Type#UNDEFINED}, matching the legacy reader.
+     */
+    private int parseBound(String value) {
+        if (value == null || value.isEmpty()) {
+            return Type.UNDEFINED;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return Type.UNDEFINED;
         }
     }
 }

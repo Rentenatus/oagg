@@ -84,19 +84,42 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
             ruleElem.setAttribute("waitBeforeApply", "true");
         }
 
-        // Variables (rule parameters)
+        // Variables (rule parameters): mirror the legacy VarTuple.XwriteObject
+        // behaviour - write every variable with a non-empty type and name;
+        // value/expr and PTYPE only when set.
         agg.attribute.AttrVariableTuple variables = rule.getAttrContext().getVariables();
         if (variables instanceof agg.attribute.impl.VarTuple) {
             agg.attribute.impl.VarTuple varTuple = (agg.attribute.impl.VarTuple) variables;
             for (int i = 0; i < varTuple.getSize(); i++) {
                 agg.attribute.impl.VarMember vm = varTuple.getVarMemberAt(i);
-                if (vm != null && vm.isSet()) {
+                String varName = vm != null ? vm.getName() : null;
+                String varType = (vm != null && vm.getDeclaration() != null
+                    && vm.getDeclaration().getType() != null)
+                        ? vm.getDeclaration().getType().toString() : null;
+                if (vm != null && varName != null && varType != null
+                        && !varName.isEmpty() && !varType.isEmpty()) {
                     Element paramElem = doc.createElement("Parameter");
-                    paramElem.setAttribute("name", vm.getName() != null ? vm.getName() : "");
-                    if (vm.getExpr() != null) {
-                        String typeName = vm.getDeclaration() != null && vm.getDeclaration().getType() != null
-                            ? vm.getDeclaration().getType().toString() : "String";
-                        paramElem.setAttribute("type", typeName);
+                    if (vm.isSet() && vm.getExpr() != null) {
+                        if (vm.getExpr().isConstant()) {
+                            Object v = vm.getExpr().getValue();
+                            if (v != null) {
+                                paramElem.setAttribute("value", v.toString());
+                            }
+                        } else {
+                            String exprText = vm.getExpr().getString();
+                            if (exprText != null) {
+                                paramElem.setAttribute("expr", exprText);
+                            }
+                        }
+                    }
+                    paramElem.setAttribute("name", varName);
+                    paramElem.setAttribute("type", varType);
+                    boolean isin = vm.isInputParameter();
+                    boolean isout = vm.isOutputParameter();
+                    String inout = (isin && isout) ? "inout" : (isin) ? "input"
+                        : (isout) ? "output" : "";
+                    if (!inout.isEmpty()) {
+                        paramElem.setAttribute("PTYPE", inout);
                     }
                     ruleElem.appendChild(paramElem);
                 }
@@ -161,6 +184,11 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
 
         Element morphElem = doc.createElement("Morphism");
         morphElem.setAttribute("name", morphism.getName() != null ? morphism.getName() : "");
+        // Comment (mirroring the legacy writeMorphism behaviour)
+        String comment = morphism.getTextualComment();
+        if (comment != null && !comment.isEmpty()) {
+            morphElem.setAttribute("comment", comment);
+        }
 
         // Serialize mappings
         Iterator<agg.xt_basis.GraphObject> domain = morphism.getDomain();
@@ -401,6 +429,9 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
                 deserializeMorphism(rule, childElem, registry);
             } else if ("ApplCondition".equals(tagName)) {
                 deserializeApplConditions(rule, childElem, registry);
+            } else if ("Parameter".equals(tagName)) {
+                // Rule variables, mirroring the legacy VarTuple.XreadObject
+                deserializeVariable(rule, childElem);
             } else if ("TaggedValue".equals(tagName)) {
                 String tag = childElem.getAttribute("Tag");
                 String tagValue = childElem.getAttribute("TagValue");
@@ -437,6 +468,12 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
         String name = morphElem.getAttribute("name");
         if (name != null) {
             morphism.setName(name.replaceAll(" ", ""));
+        }
+
+        // Comment (mirroring the legacy readMorphism behaviour)
+        String comment = morphElem.getAttribute("comment");
+        if (comment != null && !comment.isEmpty()) {
+            morphism.setTextualComment(comment);
         }
 
         // Collect all mappings, apply nodes first, then arcs
@@ -620,6 +657,58 @@ public class RuleAdapter extends DomainObjectAdapter<Rule> {
         MappingEntry(Object orig, Object image) {
             this.orig = orig;
             this.image = image;
+        }
+    }
+
+    /**
+     * Deserializes a rule variable from a {@code <Parameter>} element,
+     * mirroring the legacy VarTuple.XreadObject behaviour: declare the
+     * variable with the Java handler, apply the PTYPE flags and set the
+     * value or expression text.
+     */
+    private void deserializeVariable(Rule rule, Element paramElem) {
+        String name = paramElem.getAttribute("name");
+        String typestr = paramElem.getAttribute("type");
+        if (name == null || name.isEmpty() || typestr == null || typestr.isEmpty()) {
+            return;
+        }
+        agg.attribute.AttrVariableTuple variables = rule.getAttrContext().getVariables();
+        if (!(variables instanceof agg.attribute.impl.VarTuple)) {
+            return;
+        }
+        agg.attribute.impl.VarTuple vars = (agg.attribute.impl.VarTuple) variables;
+        if (vars.getVarMemberAt(name) != null) {
+            // already declared (e.g. through an attribute expression)
+            return;
+        }
+        agg.attribute.handler.AttrHandler handler =
+            agg.attribute.facade.impl.DefaultInformationFacade.self().getJavaHandler();
+        vars.declare(handler, typestr, name);
+        agg.attribute.impl.VarMember var = vars.getVarMemberAt(name);
+        if (var == null) {
+            return;
+        }
+        String inout = paramElem.getAttribute("PTYPE");
+        boolean isin = "inout".equals(inout) || "input".equals(inout);
+        boolean isout = "inout".equals(inout) || "output".equals(inout);
+        var.setInputParameter(isin);
+        var.setOutputParameter(isout);
+        String value = paramElem.getAttribute("value");
+        if (value != null && !value.isEmpty()) {
+            if ("String".equals(typestr)) {
+                var.setExprAsText("\"" + value + "\"");
+            } else if ("Character".equals(typestr) || "char".equals(typestr)) {
+                var.setExprAsText("'" + value.charAt(0) + "'");
+            } else {
+                var.setExprAsText(value);
+            }
+            var.checkValidity();
+        } else {
+            String expr = paramElem.getAttribute("expr");
+            if (expr != null && !expr.isEmpty()) {
+                var.setExprAsText(expr);
+                var.checkValidity();
+            }
         }
     }
 }

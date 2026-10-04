@@ -399,7 +399,7 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
 
             // Parse children in order: TaggedValues, Types, Graphs, Constraints, Rules
             // First pass: read TaggedValues (before Types)
-            deserializeTaggedValues(gtsElement, graGra);
+            int loadedTypeGraphLevel = deserializeTaggedValues(gtsElement, graGra);
 
             // Second pass: read structural elements
             NodeList children = gtsElement.getChildNodes();
@@ -432,9 +432,23 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 }
             }
 
+            // Apply the type graph level like the legacy GraGra.XreadObject
+            // does at the end of the load (after the types are available).
+            if (loadedTypeGraphLevel == TypeSet.ENABLED_MAX
+                    || loadedTypeGraphLevel == TypeSet.ENABLED_MAX_MIN) {
+                graGra.setLevelOfTypeGraphCheck(loadedTypeGraphLevel);
+            } else if (graGra.getTypeSet() != null) {
+                graGra.getTypeSet().setLevelOfTypeGraph(loadedTypeGraphLevel);
+            }
+
             // Post-load setup
             graGra.setUsedClassPackages();
-            graGra.isReadyToTransform();
+            // NOTE: do NOT call graGra.isReadyToTransform() here. It has the
+            // side effect checkUsedVariables -> deleteUnusedVars, which
+            // removes rule variables that are declared but not referenced by
+            // an attribute expression. The legacy load path does not call
+            // it either, and the re-save must reproduce the frozen legacy
+            // XML (including unused <Parameter> elements).
         } catch (XMLSerializationException e) {
             throw e;
         } catch (Exception e) {
@@ -955,7 +969,7 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
      * Deserializes TaggedValues from the GraphTransformationSystem element.
      * Reads AttrHandler+Packages, GraTra options, and TypeGraphLevel.
      */
-    private void deserializeTaggedValues(Element gtsElem, GraGra graGra) {
+    private int deserializeTaggedValues(Element gtsElem, GraGra graGra) {
         java.util.List<String> options = new java.util.ArrayList<>();
         int loadedLevel = TypeSet.DISABLED;
 
@@ -1020,11 +1034,9 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             graGra.setGraTraOptions(options);
         }
 
-        // Set type graph level (will be applied after types are loaded)
-        if (loadedLevel != TypeSet.DISABLED && graGra.getTypeSet() != null
-                && graGra.getTypeSet().getTypeGraph() != null) {
-            graGra.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED);
-        }
+        // The type graph level is returned to the caller; it must be applied
+        // AFTER the types are loaded (mirroring the legacy GraGra.XreadObject).
+        return loadedLevel;
     }
 
     /**

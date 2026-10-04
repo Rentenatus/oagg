@@ -179,16 +179,22 @@ public final class XmlCanonicalComparator {
      */
     private static String parallelWalk(Element elemA, Element elemB,
             Map<String, String> idMapA, Map<String, String> idMapB, int[] counter) {
+        return parallelWalk(elemA, elemB, idMapA, idMapB, counter, "/" + elemA.getTagName());
+    }
+
+    private static String parallelWalk(Element elemA, Element elemB,
+            Map<String, String> idMapA, Map<String, String> idMapB, int[] counter, String path) {
         String tagA = elemA.getTagName();
         String tagB = elemB.getTagName();
         if (!tagA.equals(tagB)) {
-            return "Tag mismatch: <" + tagA + "> vs <" + tagB + ">";
+            return "Tag mismatch at " + path + ": <" + tagA + "> vs <" + tagB + ">";
         }
+        String pathA = path + "[" + positionAmongSiblings(elemA) + "]";
         // Compare non-ID, non-ref attributes
         Map<String, String> attrsA = collectNonIdRefAttrs(elemA);
         Map<String, String> attrsB = collectNonIdRefAttrs(elemB);
         if (!attrsA.equals(attrsB)) {
-            return "Attribute mismatch in <" + tagA + ">: " + attrsA + " vs " + attrsB;
+            return "Attribute mismatch at " + pathA + " in <" + tagA + ">: " + attrsA + " vs " + attrsB;
         }
         // Assign canonical ID if both have ID
         String idA = elemA.getAttribute(ID_ATTR);
@@ -202,17 +208,39 @@ public final class XmlCanonicalComparator {
         List<Element> childrenA = getChildElements(elemA);
         List<Element> childrenB = getChildElements(elemB);
         if (childrenA.size() != childrenB.size()) {
-            return "Child count mismatch in <" + tagA + ">: "
+            return "Child count mismatch in <" + tagA + "> at " + pathA + ": "
                 + childrenA.size() + " vs " + childrenB.size();
         }
         for (int i = 0; i < childrenA.size(); i++) {
             String err = parallelWalk(childrenA.get(i), childrenB.get(i),
-                idMapA, idMapB, counter);
+                idMapA, idMapB, counter, pathA + "/" + childrenA.get(i).getTagName());
             if (err != null) {
                 return err;
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the one-based position of the element among its sibling
+     * elements with the same tag name.
+     */
+    private static int positionAmongSiblings(Element elem) {
+        int pos = 1;
+        org.w3c.dom.Node parent = elem.getParentNode();
+        if (parent == null) {
+            return 1;
+        }
+        for (org.w3c.dom.Node n = parent.getFirstChild(); n != null; n = n.getNextSibling()) {
+            if (n == elem) {
+                return pos;
+            }
+            if (n.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && ((Element) n).getTagName().equals(elem.getTagName())) {
+                pos++;
+            }
+        }
+        return pos;
     }
 
     /**
