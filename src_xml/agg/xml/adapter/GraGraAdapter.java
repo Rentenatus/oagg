@@ -39,6 +39,14 @@ import java.util.Iterator;
 public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
 
     /**
+     * Number of host graph elements already loaded by this adapter. The
+     * first host element reuses the default host graph (itsGraph); every
+     * further element creates a new graph, mirroring the legacy reader
+     * (GraGra.XreadObject loads one fresh graph per &lt;Graph&gt; element).
+     */
+    private int hostGraphsLoaded = 0;
+
+    /**
      * Creates a new adapter for the specified GraGra.
      *
      * @param graGra The GraGra to adapt
@@ -630,13 +638,27 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             return;
         }
 
-        // Use the existing default host graph (graGra.getGraph() / itsGraph)
-        // so that Match objects (which reference itsGraph as target) work correctly.
-        Graph graph = graGra.getGraph();
+        Graph graph;
+        if (hostGraphsLoaded == 0) {
+            // First host graph: reuse the existing default host graph
+            // (graGra.getGraph() / itsGraph) so that Match objects (which
+            // reference itsGraph as target) work correctly.
+            graph = graGra.getGraph();
+        } else {
+            // Additional host graphs: create a new graph per element,
+            // mirroring the legacy reader which loads one fresh graph
+            // per <Graph> element.
+            graph = agg.xt_basis.BaseFactory.theFactory()
+                .createGraph(graGra.getTypeSet());
+            if (graph != null) {
+                graGra.addGraph(graph);
+            }
+        }
         if (graph != null) {
             GraphAdapter graphAdapter = new GraphAdapter(graph);
             graphAdapter.deserializeFromElement(graphElem, registry);
         }
+        hostGraphsLoaded++;
     }
 
     private void deserializeConstraints(Element constraintsElem, GraGra graGra,
