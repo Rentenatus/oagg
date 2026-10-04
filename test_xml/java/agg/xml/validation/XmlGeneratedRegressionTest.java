@@ -138,6 +138,16 @@ public class XmlGeneratedRegressionTest {
     }
 
     @Test
+    public void testWithRuleSchemeNac() throws Exception {
+        runRuleSchemeRoundtrip("rule_scheme_nac");
+    }
+
+    @Test
+    public void testWithRuleSchemeNacUndirected() throws Exception {
+        runRuleSchemeRoundtrip("rule_scheme_nac_undirected");
+    }
+
+    @Test
     public void testCompositeAllElementTypesUndirected() throws Exception {
         runDomRoundtrip("composite_all_undirected");
     }
@@ -192,6 +202,16 @@ public class XmlGeneratedRegressionTest {
     @Test
     public void testWithRuleSchemeUndirectedNoTG() throws Exception {
         runRuleSchemeRoundtrip("rule_scheme_undirected_noTG");
+    }
+
+    @Test
+    public void testWithRuleSchemeNacNoTG() throws Exception {
+        runRuleSchemeRoundtrip("rule_scheme_nac_noTG");
+    }
+
+    @Test
+    public void testWithRuleSchemeNacUndirectedNoTG() throws Exception {
+        runRuleSchemeRoundtrip("rule_scheme_nac_undirected_noTG");
     }
 
     @Test
@@ -282,6 +302,12 @@ public class XmlGeneratedRegressionTest {
         XMLSerialization.loadWithDom(graGraReloaded, newFile.getAbsolutePath());
         assertEquals(graGraReloaded.getRulesVec().size(), graGraNew.getRulesVec().size(),
             "Rule count should match after reload: " + baseName);
+
+        // Step 4: canonical comparison against the frozen reference
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, newFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for " + baseName + ": " + result.getMessage());
     }
 
     private File prepFile(String baseName) {

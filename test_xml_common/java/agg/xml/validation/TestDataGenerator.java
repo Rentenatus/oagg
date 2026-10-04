@@ -315,6 +315,52 @@ public final class TestDataGenerator {
         return gra;
     }
 
+    /**
+     * Creates a GraGra with a RuleScheme whose kernel rule has a NAC, to
+     * cover application conditions inside a scheme section.
+     *
+     * @param withTypeGraph whether to create a type graph
+     */
+    public static GraGra createWithRuleSchemeNac(boolean withTypeGraph) throws Exception {
+        GraGra gra = BaseFactory.theFactory().createGraGra(true);
+        gra.setName("RuleSchemeNacTest");
+
+        Type nodeType = gra.createNodeType(false);
+        nodeType.setStringRepr("Node");
+
+        // Type graph
+        if (withTypeGraph) {
+            Graph typeGraph = gra.createTypeGraph();
+            typeGraph.createNode(nodeType);
+        }
+
+        // Use the default host graph
+        Graph host = gra.getGraph();
+        host.setName("Host");
+        host.createNode(nodeType);
+
+        // Create rule scheme with a kernel NAC
+        RuleScheme rs = gra.createRuleScheme();
+        Rule kernelRule = rs.getKernelRule();
+        kernelRule.setName("kernelRule");
+        Node kernL = kernelRule.getLeft().createNode(nodeType);
+        kernelRule.getTarget().createNode(nodeType);
+
+        OrdinaryMorphism nac = kernelRule.createNAC();
+        Node nacN = nac.getTarget().createNode(nodeType);
+        nac.addMapping(kernL, nacN);
+        kernelRule.addNAC(nac);
+
+        // Add a multi-rule
+        Rule multiRule = rs.addMultiRule("multiRule1");
+        multiRule.getLeft().createNode(nodeType);
+        multiRule.getTarget().createNode(nodeType);
+
+        gra.addRuleScheme(rs);
+
+        return gra;
+    }
+
     // ---- Group 6: RuleSequence + ApplRuleSequence ----
 
     /**

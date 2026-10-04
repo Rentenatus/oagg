@@ -110,7 +110,7 @@ public class LegacyPreparationTest {
         saveLegacy(TestDataGenerator.createRuleWithNacPacNestedAC(true), "gen_rule_nac_pac.ggx");
         saveLegacy(TestDataGenerator.createWithConstraints(true), "gen_constraints.ggx");
         saveLegacy(TestDataGenerator.createWithMatch(true), "gen_match.ggx");
-        saveLegacy(TestDataGenerator.createWithRuleScheme(true), "gen_rule_scheme.ggx");
+        saveLegacy(TestDataGenerator.createWithRuleScheme(true), "gen_rule_scheme.ggx");        saveLegacy(TestDataGenerator.createWithRuleSchemeNac(true), "gen_rule_scheme_nac.ggx");
         saveLegacy(TestDataGenerator.createWithRuleSequence(true), "gen_rule_sequence.ggx");
         saveLegacy(TestDataGenerator.createCompositeAll(), "gen_composite_all.ggx");
 
@@ -126,7 +126,8 @@ public class LegacyPreparationTest {
         saveLegacy(undirected(TestDataGenerator.createWithRuleSequence(true)),
             "gen_rule_sequence_undirected.ggx");
         saveLegacy(undirected(TestDataGenerator.createWithRuleScheme(true)),
-            "gen_rule_scheme_undirected.ggx");
+            "gen_rule_scheme_undirected.ggx");        saveLegacy(undirected(TestDataGenerator.createWithRuleSchemeNac(true)),
+            "gen_rule_scheme_nac_undirected.ggx");
         saveLegacy(undirected(TestDataGenerator.createCompositeAll(true)),
             "gen_composite_all_undirected.ggx");
 
@@ -135,7 +136,7 @@ public class LegacyPreparationTest {
         saveLegacy(TestDataGenerator.createRuleWithNacPacNestedAC(false), "gen_rule_nac_pac_noTG.ggx");
         saveLegacy(TestDataGenerator.createWithConstraints(false), "gen_constraints_noTG.ggx");
         saveLegacy(TestDataGenerator.createWithMatch(false), "gen_match_noTG.ggx");
-        saveLegacy(TestDataGenerator.createWithRuleScheme(false), "gen_rule_scheme_noTG.ggx");
+        saveLegacy(TestDataGenerator.createWithRuleScheme(false), "gen_rule_scheme_noTG.ggx");        saveLegacy(TestDataGenerator.createWithRuleSchemeNac(false), "gen_rule_scheme_nac_noTG.ggx");
         saveLegacy(TestDataGenerator.createWithRuleSequence(false), "gen_rule_sequence_noTG.ggx");
         saveLegacy(TestDataGenerator.createCompositeAll(false), "gen_composite_all_noTG.ggx");
 
@@ -149,7 +150,8 @@ public class LegacyPreparationTest {
         saveLegacy(undirected(TestDataGenerator.createWithMatch(false)),
             "gen_match_undirected_noTG.ggx");
         saveLegacy(undirected(TestDataGenerator.createWithRuleScheme(false)),
-            "gen_rule_scheme_undirected_noTG.ggx");
+            "gen_rule_scheme_undirected_noTG.ggx");        saveLegacy(undirected(TestDataGenerator.createWithRuleSchemeNac(false)),
+            "gen_rule_scheme_nac_undirected_noTG.ggx");
         saveLegacy(undirected(TestDataGenerator.createWithRuleSequence(false)),
             "gen_rule_sequence_undirected_noTG.ggx");
         saveLegacy(undirected(TestDataGenerator.createCompositeAll(false)),

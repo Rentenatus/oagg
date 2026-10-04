@@ -967,7 +967,7 @@ public class RuleScheme extends Rule //implements Observer
 
     /* Create an empty multi rule.
      */
-    protected MultiRule createEmptyMultiRule() {
+    public MultiRule createEmptyMultiRule() {
         MultiRule mr = new MultiRule(this.kernelRule.getTypeSet());
         mr.setEmbeddingLeft(new OrdinaryMorphism(
                 this.kernelRule.getLeft(), mr.getLeft(),
@@ -1166,7 +1166,7 @@ public class RuleScheme extends Rule //implements Observer
     /**
      * Create mapping pairs of objects of the embedding morphisms.
      */
-    private void mapKernel2MultiObject(final MultiRule multiRule) {
+    public void mapKernel2MultiObject(final MultiRule multiRule) {
         final OrdinaryMorphism embLeft = multiRule.getEmbeddingLeft();
         final Iterator<GraphObject> domLeft = embLeft.getDomain();
         while (domLeft.hasNext()) {

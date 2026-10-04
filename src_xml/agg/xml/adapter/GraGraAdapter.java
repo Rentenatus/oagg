@@ -214,10 +214,10 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 rule.getSource().setKind("LHS");
                 rule.getTarget().setKind("RHS");
                 if (rule instanceof agg.xt_basis.agt.RuleScheme) {
-                    // RuleScheme needs legacy XwriteObject delegation
                     agg.xt_basis.agt.RuleScheme rs = (agg.xt_basis.agt.RuleScheme) rule;
                     rs.storeIndexOfRuleList(graGra.getRulesVec().indexOf(rule));
-                    Element rsElem = serializeRuleScheme(rs, contextDoc, registry);
+                    RuleSchemeAdapter rsAdapter = new RuleSchemeAdapter(rs);
+                    Element rsElem = rsAdapter.serializeToElement(contextDoc, registry);
                     if (rsElem != null) {
                         gtsElem.appendChild(rsElem);
                     }
@@ -682,7 +682,9 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 } else if ("Constraints".equals(tagName)) {
                     deserializeConstraints(childElem, graGra, registry);
                 } else if ("RuleScheme".equals(tagName)) {
-                    deserializeRuleScheme(childElem, graGra, registry);
+                    agg.xt_basis.agt.RuleScheme rs = graGra.createRuleScheme();
+                    RuleSchemeAdapter rsAdapter = new RuleSchemeAdapter(rs);
+                    rsAdapter.deserializeFromElement(childElem, registry);
                 } else if ("Rule".equals(tagName)) {
                     deserializeRule(childElem, graGra, registry);
                 } else if ("Matches".equals(tagName)) {

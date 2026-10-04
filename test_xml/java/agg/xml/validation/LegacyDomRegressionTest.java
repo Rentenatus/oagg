@@ -121,14 +121,8 @@ public class LegacyDomRegressionTest {
             ? graGra1.getTypeSet().getTypesCount() : 0;
         int typeCount2 = graGra2.getTypeSet() != null
             ? graGra2.getTypeSet().getTypesCount() : 0;
-        // RuleScheme legacy delegation may duplicate types; allow >=
-        if (!legacyFilename.contains("rule_scheme")) {
-            assertEquals(typeCount2, typeCount1,
-                "Type count should match: " + legacyFilename);
-        } else {
-            assertTrue(typeCount2 >= typeCount1,
-                "Type count should not decrease: " + legacyFilename);
-        }
+        assertEquals(typeCount2, typeCount1,
+            "Type count should match: " + legacyFilename);
 
         // Verify graph contents (nodes, edges)
         for (int i = 0; i < graGra1.getGraphsVec().size(); i++) {
@@ -188,25 +182,13 @@ public class LegacyDomRegressionTest {
         File output2 = new File(outputDir, baseName + "_stable_2.ggx");
         XMLSerialization.saveWithDom(graGraReloaded, output2.getAbsolutePath());
 
-        // Canonical comparison (skip for rule_scheme due to legacy
-        // roundtrip instabilities in graph names and morphism comments)
-        if (!legacyFilename.contains("rule_scheme")) {
-            XmlCanonicalComparator.ComparisonResult result =
-                XmlCanonicalComparator.compareFiles(output1, output2);
-            assertTrue(result.isEqual(),
-                "DOM path should be stable for " + legacyFilename + ": "
-                    + result.getMessage());
-        } else {
-            // For rule_scheme, verify structure instead of canonical XML
-            GraGra g1 = new GraGra();
-            XMLSerialization.loadWithDom(g1, output1.getAbsolutePath());
-            GraGra g2 = new GraGra();
-            XMLSerialization.loadWithDom(g2, output2.getAbsolutePath());
-            assertEquals(g2.getName(), g1.getName(),
-                "Name should match: " + legacyFilename);
-            assertEquals(g2.getRulesVec().size(), g1.getRulesVec().size(),
-                "Rule count should match: " + legacyFilename);
-        }
+        // Canonical comparison; the native RuleScheme path no longer
+        // carries the legacy reader's model side effects
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(output1, output2);
+        assertTrue(result.isEqual(),
+            "DOM path should be stable for " + legacyFilename + ": "
+                + result.getMessage());
     }
 
     // ---- Grouped element verification per legacy file ----
