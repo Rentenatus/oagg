@@ -647,6 +647,13 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 if (formula != null) {
                     FormulaAdapter fAdapter = new FormulaAdapter(formula);
                     fAdapter.deserializeFromElement(childElem, registry);
+                    // Apply the formula string over the atomic constraints,
+                    // mirroring the legacy GraGra.XreadObject behaviour:
+                    // f.setFormula(getListOfAtomicObjects(), s)
+                    String fString = childElem.getAttribute("f");
+                    if (fString != null && !fString.isEmpty()) {
+                        formula.setFormula(graGra.getListOfAtomicObjects(), fString);
+                    }
                 }
             }
         }
