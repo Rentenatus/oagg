@@ -344,6 +344,56 @@ public class LegacyPreparationTest {
     }
 
     /**
+     * Produces the UI reference variant WITHOUT a type graph, so the DOM
+     * UI path is also covered without type graph layout objects.
+     */
+    @Test
+    public void prepareUiBasicScenarioNoTypeGraph() throws Exception {
+        GraGra graGra = TestDataGenerator.createBasicGraphWithAttributes(false);
+        agg.editor.impl.EdGraGra edGraGra = new agg.editor.impl.EdGraGra(graGra);
+
+        int pos = 10;
+        pos = pinGraphPositions(edGraGra.getGraph(), pos);
+        for (int i = 0; i < edGraGra.getGraph().getArcs().size(); i++) {
+            edGraGra.getGraph().getArcs().get(i).setTextOffset(13, -7);
+        }
+
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(edGraGra);
+        File uiFile = new File(prepDir, "ui_basic_noTG.ggx");
+        assertTrue(helper.save_to_xml(uiFile.getAbsolutePath()),
+            "Frozen legacy UI save should succeed");
+        assertTrue(uiFile.exists() && uiFile.length() > 0,
+            "UI reference file should be non-empty");
+    }
+
+    /**
+     * Produces the UI reference variant with UNDIRECTED arcs (with type
+     * graph), so the DOM UI path is also covered for undirected graphs.
+     */
+    @Test
+    public void prepareUiBasicScenarioUndirected() throws Exception {
+        GraGra graGra = TestDataGenerator.createBasicGraphWithAttributes(true);
+        graGra.getTypeSet().setArcDirected(false);
+        agg.editor.impl.EdGraGra edGraGra = new agg.editor.impl.EdGraGra(graGra);
+
+        int pos = 10;
+        pos = pinGraphPositions(edGraGra.getGraph(), pos);
+        pos = pinGraphPositions(edGraGra.getTypeGraph(), pos);
+        for (int i = 0; i < edGraGra.getGraph().getArcs().size(); i++) {
+            edGraGra.getGraph().getArcs().get(i).setTextOffset(13, -7);
+        }
+
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(edGraGra);
+        File uiFile = new File(prepDir, "ui_basic_undir.ggx");
+        assertTrue(helper.save_to_xml(uiFile.getAbsolutePath()),
+            "Frozen legacy UI save should succeed");
+        assertTrue(uiFile.exists() && uiFile.length() > 0,
+            "UI reference file should be non-empty");
+    }
+
+    /**
      * Produces a UI reference for a grammar with a rule (LHS/RHS mapping),
      * NAC, PAC, nested application condition, a bent edge and a loop edge,
      * so the UI segments of rule graphs and the special edge layouts

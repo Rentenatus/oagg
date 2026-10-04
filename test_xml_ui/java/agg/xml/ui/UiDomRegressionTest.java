@@ -144,6 +144,76 @@ public class UiDomRegressionTest {
     }
 
     /**
+     * Basic graph scenario WITHOUT a type graph: the loaded editor grammar
+     * must have no type graph, the host UI state must be applied and the
+     * DOM save must match the frozen reference canonically.
+     */
+    @Test
+    public void uiBasicNoTypeGraphRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_basic_noTG.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertNull(loaded.getTypeGraph(), "Type graph should not exist");
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node 1 position");
+        assertTrue(hasNodeAt(loaded.getGraph(), 117, 217), "Host node 2 position");
+
+        EdArc hostArc = loaded.getGraph().getArcs().get(0);
+        assertEquals(hostArc.getTextOffset().x, 13, "Host arc text offset X");
+        assertEquals(hostArc.getTextOffset().y, -7, "Host arc text offset Y");
+        assertFalse(hostArc.isElementOfTypeGraph(),
+            "Host arc is not a type graph element");
+
+        roundtripAndCompare(loaded, "ui_basic_noTG_new.ggx", refFile);
+    }
+
+    /**
+     * Basic graph scenario with UNDIRECTED arcs: the loaded editor grammar
+     * must keep the undirected flag, the UI state must be applied and the
+     * DOM save must match the frozen reference canonically.
+     */
+    @Test
+    public void uiBasicUndirectedRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_basic_undir.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertNotNull(loaded.getTypeGraph(), "Type graph should exist");
+        assertFalse(loaded.getBasisGraGra().getTypeSet().isArcDirected(),
+            "Arcs should be undirected");
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node 1 position");
+        assertTrue(hasNodeAt(loaded.getTypeGraph(), 124, 224),
+            "Type graph node 1 position");
+
+        roundtripAndCompare(loaded, "ui_basic_undir_new.ggx", refFile);
+    }
+
+    /**
+     * Saves the given editor grammar with the DOM UI path and compares the
+     * result canonically against the frozen reference file.
+     */
+    private void roundtripAndCompare(EdGraGra edGraGra, String outputName,
+            File refFile) throws Exception {
+        File outFile = new File(outputDir, outputName);
+        assertTrue(UISerialization.saveWithDom(edGraGra, outFile.getPath()),
+            "DOM UI save should succeed");
+
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(refFile, outFile);
+        assertTrue(result.isEqual(),
+            "DOM UI save differs from the frozen reference: "
+            + result.getMessage());
+    }
+
+    /**
      * The rule graphs must carry the pinned UI state: distinct LHS/RHS/NAC/
      * PAC positions and the bent LHS edge.
      */
