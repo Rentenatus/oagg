@@ -1,262 +1,94 @@
 # Current Status - AGG XML Serialization Refactoring
 
-**Project:** AGG XML Serialization Extraction Refactoring  
-**Date:** 2026-09-08  
-**Overall Status:** Phase 2 Complete, Ready for Phase 3  
+**Project:** AGG XML Serialization Extraction Refactoring
+**Date:** 2026-10-04
+**Overall Status:** DOM path complete for the .ggx format (core and UI layer), regression suite green (497 tests). Removing the legacy XML code from `src` is the next phase; its preconditions are open (see roadmap below).
 
 ---
 
-## 🎯 Quick Status Overview
+## Architecture (current)
 
-| Phase | Status | Completion | Key Deliverables |
-|-------|--------|-------------|-------------------|
-| Phase 1 | ✅ **Complete** | 100% | Inventory, Analysis, Planning |
-| Phase 2 | ✅ **Complete** | 100% | XML Module, Adapters, Tests |
-| Phase 3 | ⏳ **Pending** | 0% | Mappers, Migration, Optimization |
+| Directory | Module (artifactId) | Role |
+|-----------|---------------------|------|
+| `src` | `agg-core` | Domain core (GraGra, Graph, Rule, Node, Arc, types, attributes) - still contains the legacy `XwriteObject`/`XreadObject` code |
+| `src_ui` | `agg-ui` | Editor/GUI layer (Ed* wrappers, layout, `GraGraSave`/`GraGraLoad`) - save/load entry points still use `XMLHelper` |
+| `src_xml` | `agg-xml` | DOM-based XML serialization of the core |
+| `src_uixml` | `agg-ui-xml` | DOM-based XML serialization of the UI layer (single `UISerialization` orchestrator; no per-class adapters) |
+| `test/test_agg/legacy_agg` | `agg-core-legacy` | Frozen legacy reference (verbatim clone of `src` + `src_ui`); runs the preparation suite and writes reference XML into `assets_test_xml/target/legacy_prep` |
 
----
-
-## 📊 Phase 1 - Preparation (COMPLETE ✅)
-
-**Status:** 100% Complete  
-**Duration:** Week 1-2  
-**Documentation:** [PHASE1_FINAL_STATUS.md](PHASE1_FINAL_STATUS.md)
-
-### Deliverables
-- ✅ Complete inventory of 96 XMLObject implementations
-- ✅ Analysis of .ggx file format (38 elements, 46 attributes)
-- ✅ Dependency graph and circular dependency identification
-- ✅ Test baseline infrastructure with 4 .ggx sample files
-- ✅ Performance benchmarking framework
-- ✅ Migration tracker with priority matrix
-- ✅ 22+ documentation files
-
-### Key Findings
-- **Circular Dependency:** XMLHelper → XMLObject → Domain Classes → XMLHelper
-- **Tight Coupling:** Domain classes directly depend on XMLHelper
-- **Distributed Logic:** ~95 classes each handle their own serialization
-- **Solution:** Adapter Pattern + Dependency Inversion
+Test roots: `test_xml` (DOM side, in `src_xml`), `test_xml_prep` (preparation, in `agg-core-legacy`), `test_xml_ui` (DOM side of the UI layer, in `src_uixml`), `test_xml_common` (shared helpers). Test working directory: `assets_test_xml`.
 
 ---
 
-## 📊 Phase 2 - XML Module Implementation (COMPLETE ✅)
+## Test Coverage
 
-**Status:** 100% Complete  
-**Duration:** Week 3-4  
-**Documentation:** [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md)
+All suites green as of 2026-10-04 (branch `review/014-XML-ex`):
 
-### Deliverables
+| Suite | Module | Tests | Purpose |
+|-------|--------|-------|---------|
+| `agg.xml.prep.LegacyPreparationTest` | `agg-core-legacy` | 16 | Writes fresh reference XML from the in-memory model using the frozen legacy save; also covers the attribute and morphism matrices, stability pairs and UI references |
+| DOM suite (`test_xml`) | `agg-xml` | 474 | DOM load/save roundtrips, cross-system compatibility, path stability, stress and performance |
+| `agg.xml.ui.UiDomRegressionTest` | `agg-ui-xml` | 7 | UI layer serialization scenarios (basic, rule, constraint, no type graph, undirected, composite, rule scheme) |
 
-#### Architecture (20 source files)
-- ✅ 6 Core interfaces (XMLSerializable, XMLSerializer, XMLDeserializer, etc.)
-- ✅ 4 Core implementations (AbstractXMLSerializer, DOMXMLSerializerContext, DOMXMLDeserializerContext)
-- ✅ 9 Adapter classes (XMLObjectAdapter, GraphAdapter, NodeAdapter, ArcAdapter, RuleAdapter, etc.)
-- ✅ 1 Factory class (XMLAdapterFactory)
-- ✅ 1 Legacy wrapper (XMLHelperWrapper)
-- ✅ Maven pom.xml with all dependencies
+### Generated scenario matrix (28/28 complete)
 
-#### Testing (5 test files, 33 tests)
-- ✅ XMLSerializableTest (8 tests)
-- ✅ DOMXMLContextTest (10 tests)
-- ✅ IntegrationTest (5 tests)
-- ✅ AdapterIntegrationTest (5 tests)
-- ✅ PerformanceTest (5 tests)
+7 features crossed with directed/undirected and with/without type graph:
 
-#### Documentation
-- ✅ Module README: [../../src_xml/README.md](../../src_xml/README.md)
-- ✅ Phase completion report: [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md)
-- ✅ Progress tracking: [PHASE2_PROGRESS.md](PHASE2_PROGRESS.md)
+| Feature | dir+TG | undir+TG | dir+noTG | undir+noTG |
+|---|---|---|---|---|
+| basic_graph_attrs | x | x | x | x |
+| rule_nac_pac | x | x | x | x |
+| constraints | x | x | x | x |
+| match | x | x | x | x |
+| rule_scheme | x | x | x | x |
+| rule_sequence | x | x | x | x |
+| composite_all | x | x | x | x |
 
-### Compilation Status
-- ✅ **All 24 Java classes compile successfully**
-- ✅ **0 Errors** (only warnings from existing AGG code)
-- ✅ **All dependencies resolved** (Xerces, ndimcol, TestNG)
+All non-RuleScheme scenarios pass a canonical comparison against the fresh legacy reference. RuleScheme scenarios are verified structurally plus DOM stability over two roundtrips (the legacy temp load renames rule graphs, see the regression oracle section in the root README).
 
-### Key Implementation Decisions
-1. **Adapter Pattern:** XMLObject → XMLSerializable via adapters
-2. **Dependency Inversion:** Core interfaces separate from implementations
-3. **DOM-based:** Standard W3C DOM API for serialization
-4. **Gradual Migration:** New and old code coexist
+### Further matrices
+
+- 39 legacy .ggx fixtures (11 base scenarios x orientation x type graph) plus `.rsx` and `.cpx` fixtures, each exercised through DOM roundtrip, path stability and element preservation.
+- Attribute matrix: 6 attribute types with boundary values (0, -42, MAX_INT, empty string, special characters, ...) plus mapping forms (constant, expression, variable, condition, edge).
+- Morphism matrix: 56 fixtures over LHS/RHS/mapping structures x orientation x type graph.
+
+### Regression oracle
+
+Four paths are compared against each other: legacy load, legacy save (fresh reference from the in-memory model), DOM load, DOM save. The deliberate oracle decision (DOM preserves the file, not the legacy reader's model side effects) is documented in the root README.
 
 ---
 
-## ⏳ Phase 3 - Core Infrastructure (PENDING)
+## Known Delegations and Gaps
 
-**Status:** Not Started  
-**Expected Duration:** Week 5-7  
-**Planned Deliverables:**
-- Mapper classes for specific domain types
-- Complete integration with existing AGG code
-- SAX-based parser for large files (optimization)
-- Begin domain class migration
+1. **RuleScheme**: `GraGraAdapter` serializes/deserializes rule schemes by delegating to the legacy `XwriteObject`/`XreadObject` through a temporary GraGra load. Documented decision (the legacy reader is deeply intertwined with `RuleScheme.XreadObject`); blocks legacy removal.
+2. **`.rsx` (ApplRuleSequence) and `.cpx` (ConflictsDependenciesContainer)**: legacy-only paths; the regression tests exercise the frozen path and do not enforce canonical equality.
+3. **GUI save/load entry points**: `src_ui/agg/gui/saveload/GraGraSave`/`GraGraLoad` (plus `GraphBrowserImpl`, `GraGraTreeView`, `ParserDialog`) call `XMLHelper` directly. No file in `src_ui` references `XMLSerialization`; the migration flag (`XMLSerialization.setUseNewXml` -> `GraGraMigration`) exists but is only used by tests.
+4. **convert tools**: `AGG2ColorGraph`, `ConverterWSDL`, `WSDL2ggx` use `XMLHelper` directly.
+5. **Scale**: 61 files in `src`/`src_ui` reference `XMLHelper`, 51 implement `XwriteObject`/`XreadObject` (xt_basis core, `attribute.impl`, `parser`, `ruleappl`).
 
 ---
 
-## 📁 File Structure Summary
+## Legacy Removal Roadmap
 
-```
-docs/refactoring/
-├── README.md                          # This index
-├── CURRENT_STATUS.md                 # This file - Quick status overview
-├── PHASE1_FINAL_STATUS.md            # Phase 1 completion report
-├── PHASE2_COMPLETE.md                # Phase 2 completion report
-├── PHASE2_PROGRESS.md                # Phase 2 progress (historical)
-├── MIGRATION_TRACKER.md              # Migration plan and templates
-├── REFACTORING_PLAN_XML_EXTRACTION.md # Master plan (root level)
-├── dependencies.md                    # Dependency analysis
-├── ggx-format-analysis.md             # .ggx format analysis
-├── inventory-summary.md               # Inventory summary
-├── inventory-verification.md          # Inventory verification
-└── [15+ additional analysis files]    # Detailed inventories
+The .ggx roundtrip is complete and fully regression-tested, and the frozen clone keeps the test oracle independent of `src`. Removal sequence:
 
-src_xml/
-├── README.md                          # Module documentation
-├── pom.xml                            # Maven configuration
-├── agg/xml/core/                      # Core interfaces and implementations
-│   ├── XMLSerializable.java            # Main serialization interface
-│   ├── XMLSerializer.java              # Serializer interface
-│   ├── XMLDeserializer.java            # Deserializer interface
-│   ├── XMLSerializerContext.java        # Serialization context
-│   ├── XMLDeserializerContext.java      # Deserialization context
-│   ├── XMLSerializationException.java   # Custom exception
-│   ├── AbstractXMLSerializer.java        # Base serializer
-│   ├── DOMXMLSerializerContext.java      # DOM-based serializer
-│   └── DOMXMLDeserializerContext.java    # DOM-based deserializer
-├── agg/xml/adapter/                   # Adapter classes
-│   ├── XMLObjectAdapter.java            # Generic XMLObject adapter
-│   ├── DomainObjectAdapter.java         # Base domain adapter
-│   ├── GraphAdapter.java                # Graph adapter
-│   ├── NodeAdapter.java                 # Node adapter
-│   ├── ArcAdapter.java                  # Arc adapter
-│   ├── RuleAdapter.java                 # Rule adapter
-│   ├── XMLHelperSerializerContext.java   # XMLHelper wrapper context
-│   ├── XMLHelperDeserializerContext.java # XMLHelper wrapper context
-│   └── XMLAdapterFactory.java            # Adapter factory
-├── agg/xml/legacy/                    # Legacy compatibility
-│   └── XMLHelperWrapper.java            # Complete XMLHelper wrapper
-└── test/java/agg/xml/                  # Tests
-    ├── core/                            # Core tests
-    │   ├── XMLSerializableTest.java      # Interface tests
-    │   ├── DOMXMLContextTest.java        # DOM tests
-    │   ├── IntegrationTest.java          # Integration tests
-    │   └── PerformanceTest.java          # Performance tests
-    └── adapter/                         # Adapter tests
-        └── AdapterIntegrationTest.java    # Adapter integration tests
-```
+| Step | Content | Status |
+|------|---------|--------|
+| 1 | Wire GUI save/load through the migration flag and smoke-test the application | open |
+| 2 | Native DOM adapter for RuleScheme (remove the legacy delegation) | open |
+| 3 | DOM coverage for `.rsx`/`.cpx` including canonical comparison | open |
+| 4 | Slice-wise removal of the legacy XML code from `src` (xt_basis -> attribute -> parser -> ruleappl -> convert) | open |
 
 ---
 
-## 📊 Metrics Summary
+## History
 
-### Files Created
-| Category | Count |
-|----------|-------|
-| Source Files | 20 |
-| Test Files | 5 |
-| Documentation Files | 20+ |
-| Configuration Files | 1 |
-| **Total New Files** | **45+** |
+- Phase 1 (inventory, analysis, planning): [PHASE1_FINAL_STATUS.md](PHASE1_FINAL_STATUS.md)
+- Phase 2 (module skeleton, first adapters): [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md)
+- Adapter and coverage work, UI serialization, scenario matrix completion: see the git history of branch `review/014-XML-ex`
 
-### Code Metrics
-| Metric | Value |
-|--------|-------|
-| Lines of Code (New) | ~19,200 |
-| Classes/Interfaces | 24 |
-| Unit Tests | 33 |
-| Test Coverage | High (core functionality) |
-
-### Compilation Metrics
-| Metric | Value |
-|--------|-------|
-| Compilation Errors | 0 |
-| Compilation Warnings | ~50 (from existing AGG code) |
-| Dependencies | 4 (Xerces, ndimcol, TestNG, SLF4J) |
+Unrelated pending cleanups in the core (string concatenation, iterator typing, JavaDoc) are tracked in [OPTIMIZATIONS_xt_basis.md](../../OPTIMIZATIONS_xt_basis.md).
 
 ---
 
-## 🎯 Known Issues
-
-| Issue | Status | Impact | Resolution |
-|-------|--------|--------|------------|
-| de.jare.ndimcol dependency | ✅ Resolved | Blocked compilation | Added to pom.xml |
-| XMLHelper.pop() is private | ⚠️ Workaround | Limited integration | Use separate stack in wrappers |
-| TestNG classpath | ✅ Resolved | Test execution | JAR available |
-| Performance comparison | ⏳ Pending | Benchmark not run | Execute PerformanceTest |
-
----
-
-## 📋 Quick Reference
-
-### For Developers
-- **Module Documentation:** [../../src_xml/README.md](../../src_xml/README.md)
-- **API Documentation:** Core interfaces in `agg.xml.core`
-- **Usage Examples:** See README.md in src_xml
-
-### For Testers
-- **Unit Tests:** 33 tests in 5 test classes
-- **Integration Tests:** test/java/agg/xml/core/IntegrationTest.java
-- **Performance Tests:** test/java/agg/xml/core/PerformanceTest.java
-
-### For Architects
-- **Master Plan:** [../REFACTORING_PLAN_XML_EXTRACTION.md](../REFACTORING_PLAN_XML_EXTRACTION.md)
-- **Phase 1 Results:** [PHASE1_FINAL_STATUS.md](PHASE1_FINAL_STATUS.md)
-- **Phase 2 Results:** [PHASE2_COMPLETE.md](PHASE2_COMPLETE.md)
-- **Migration Tracker:** [MIGRATION_TRACKER.md](MIGRATION_TRACKER.md)
-
----
-
-## 🔗 Important Links
-
-| Purpose | Link |
-|---------|------|
-| Project Root | [../../](../README.md) |
-| Source Code | [../../src_xml](../../src_xml) |
-| Test Files | [../../test_xml](../../test_xml) |
-| Test Samples | [../../test_xml/baseline/samples](../../test_xml/baseline/samples) |
-
----
-
-## 📅 What's Next
-
-### Immediate (Phase 3 Start)
-1. Execute PerformanceTest to establish baseline metrics
-2. Create mapper classes for domain-specific serialization
-3. Begin migration of CRITICAL priority classes
-
-### Short Term (Week 5-7)
-1. Complete Phase 3: Core Infrastructure
-2. Implement SAX-based parser for optimization
-3. Create type-specific mappers
-
-### Medium Term (Week 8-12)
-1. Phase 4: Adapter Layer completion
-2. Migrate HIGH priority classes
-3. Full integration testing
-
-### Long Term (Week 13-25)
-1. Phase 5-9: Complete migration
-2. Performance optimization
-3. Cleanup and final cutover
-
----
-
-## ✅ Verification Checklist
-
-| Item | Status | Evidence |
-|------|--------|----------|
-| Phase 1 documentation complete | ✅ | PHASE1_FINAL_STATUS.md |
-| Phase 2 documentation complete | ✅ | PHASE2_COMPLETE.md |
-| Module documentation complete | ✅ | src_xml/README.md |
-| All code compiles | ✅ | 0 errors, 24 classes |
-| All tests created | ✅ | 33 tests in 5 classes |
-| Dependencies documented | ✅ | pom.xml, docs |
-| Migration plan documented | ✅ | MIGRATION_TRACKER.md |
-| Architecture documented | ✅ | Multiple documents |
-
-**All Fortschritte, Änderungen und Erkenntnisse sind sauber in *.md Dateien dokumentiert!**
-
----
-
-*Document created: 2026-09-08*  
-*Last updated: 2026-09-08*  
-*Status: All documentation current, complete, and verified*
+*Last updated: 2026-10-04*

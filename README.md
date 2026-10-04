@@ -76,6 +76,14 @@ renames. Like the core suite, the UI tests verify RuleScheme scenarios
 structurally plus DOM stability over two roundtrips instead of a canonical
 comparison against the fresh reference.
 
+**Test coverage:** 497 tests green (preparation 16, core DOM 474, UI 7). The
+generated scenario matrix is complete: 7 features (basic graph with attributes,
+rule with NAC/PAC/nested AC, constraints, match, rule scheme, rule sequence,
+composite of all) crossed with directed/undirected and with/without type
+graph (28 combinations). 39 legacy .ggx fixtures plus attribute and morphism
+matrices exercise the remaining dimensions. Current status, known delegations
+and the legacy removal roadmap: [docs/refactoring/CURRENT_STATUS.md](docs/refactoring/CURRENT_STATUS.md).
+
 ---
 
 **Performance:**

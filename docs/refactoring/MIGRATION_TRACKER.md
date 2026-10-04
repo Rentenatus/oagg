@@ -5,7 +5,7 @@
 **Phase:** 3 - Core Infrastructure & Integration
 **Target:** Track migration progress of all XMLObject implementations to new agg-xml module
 **Generated:** 2026-09-08
-**Updated:** 2026-09-13
+**Updated:** 2026-10-04
 **Status:** Phase 3 - Complete (Mapper, Serializer/Deserializer, Validation, Migration)
 
 ---
@@ -13,6 +13,8 @@
 ## 📋 Executive Summary
 
 This document tracks the migration of **96 classes** that implement the `XMLObject` interface from the current tight coupling with `XMLHelper` to the new **Adapter Pattern** architecture in the `agg-xml` module.
+
+**Update 2026-10-04:** the migration materialized as *coverage* rather than per-class conversion: the DOM adapters in `agg-xml`/`agg-ui-xml` cover the serialization content of these classes, while the classes themselves still implement `XwriteObject`/`XreadObject` (61 files in `src`/`src_ui` reference `XMLHelper`). The status columns below therefore still read Not Started for the class migration itself; current test coverage, known delegations and the legacy removal roadmap are tracked in [CURRENT_STATUS.md](CURRENT_STATUS.md). The editor classes (priority 2) are the exception: their serialization is implemented in `agg-ui-xml` as a single `UISerialization` orchestrator (no per-class adapters) and verified by `UiDomRegressionTest`.
 
 ### 🎯 Migration Goal
 - **Zero changes** to domain classes (Graph, Rule, Node, Arc, etc.)
@@ -85,23 +87,23 @@ This document tracks the migration of **96 classes** that implement the `XMLObje
 
 ### 🟡 Priority 2: Editor Classes (agg.editor.impl) - **13 classes**
 
-**Status:** ⏳ Not Started  
+**Status:** Covered by `agg-ui-xml` (`UISerialization`, verified by `UiDomRegressionTest`)  
 **Importance:** HIGH - Editor functionality depends on these  
 **Migration Order:** Second (after core domain)  
 **Risk:** Medium - Complex classes with GUI dependencies  
 
 | # | Class | XMLObject | XMLHelper | Priority | Status | Adapter | Notes |
 |---|-------|-----------|-----------|----------|--------|----------|-------|
-| 1 | EdGraGra | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdGraGraAdapter | Editor grammar |
-| 2 | EdGraph | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdGraphAdapter | Editor graph |
-| 3 | EdRule | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdRuleAdapter | Editor rule |
-| 4 | EdNode | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdNodeAdapter | Editor node |
-| 5 | EdArc | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdArcAdapter | Editor arc |
-| 6 | EdType | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdTypeAdapter | Editor type |
-| 7 | EdAtomic | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdAtomicAdapter | Atomic conditions |
-| 8 | EdConstraint | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdConstraintAdapter | Constraints |
-| 9 | EdNestedApplCond | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdNestedApplCondAdapter | Nested conditions |
-| 10 | EdRuleScheme | ✅ | ✅ | 🟡 HIGH | ⏳ Not Started | EdRuleSchemeAdapter | Rule schemes |
+| 1 | EdGraGra | ✅ | ✅ | 🟡 HIGH | Covered | EdGraGraAdapter | Editor grammar |
+| 2 | EdGraph | ✅ | ✅ | 🟡 HIGH | Covered | EdGraphAdapter | Editor graph |
+| 3 | EdRule | ✅ | ✅ | 🟡 HIGH | Covered | EdRuleAdapter | Editor rule |
+| 4 | EdNode | ✅ | ✅ | 🟡 HIGH | Covered | EdNodeAdapter | Editor node |
+| 5 | EdArc | ✅ | ✅ | 🟡 HIGH | Covered | EdArcAdapter | Editor arc |
+| 6 | EdType | ✅ | ✅ | 🟡 HIGH | Covered | EdTypeAdapter | Editor type |
+| 7 | EdAtomic | ✅ | ✅ | 🟡 HIGH | Covered | EdAtomicAdapter | Atomic conditions |
+| 8 | EdConstraint | ✅ | ✅ | 🟡 HIGH | Covered | EdConstraintAdapter | Constraints |
+| 9 | EdNestedApplCond | ✅ | ✅ | 🟡 HIGH | Covered | EdNestedApplCondAdapter | Nested conditions |
+| 10 | EdRuleScheme | ✅ | ✅ | 🟡 HIGH | Covered | EdRuleSchemeAdapter | Rule schemes |
 
 ---
 
