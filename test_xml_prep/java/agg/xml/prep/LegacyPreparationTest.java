@@ -125,6 +125,10 @@ public class LegacyPreparationTest {
             "gen_match_undirected.ggx");
         saveLegacy(undirected(TestDataGenerator.createWithRuleSequence(true)),
             "gen_rule_sequence_undirected.ggx");
+        saveLegacy(undirected(TestDataGenerator.createWithRuleScheme(true)),
+            "gen_rule_scheme_undirected.ggx");
+        saveLegacy(undirected(TestDataGenerator.createCompositeAll(true)),
+            "gen_composite_all_undirected.ggx");
 
         // Directed without type graph
         saveLegacy(TestDataGenerator.createBasicGraphWithAttributes(false), "gen_basic_graph_attrs_noTG.ggx");
@@ -133,6 +137,7 @@ public class LegacyPreparationTest {
         saveLegacy(TestDataGenerator.createWithMatch(false), "gen_match_noTG.ggx");
         saveLegacy(TestDataGenerator.createWithRuleScheme(false), "gen_rule_scheme_noTG.ggx");
         saveLegacy(TestDataGenerator.createWithRuleSequence(false), "gen_rule_sequence_noTG.ggx");
+        saveLegacy(TestDataGenerator.createCompositeAll(false), "gen_composite_all_noTG.ggx");
 
         // Undirected without type graph
         saveLegacy(undirected(TestDataGenerator.createBasicGraphWithAttributes(false)),
@@ -147,6 +152,8 @@ public class LegacyPreparationTest {
             "gen_rule_scheme_undirected_noTG.ggx");
         saveLegacy(undirected(TestDataGenerator.createWithRuleSequence(false)),
             "gen_rule_sequence_undirected_noTG.ggx");
+        saveLegacy(undirected(TestDataGenerator.createCompositeAll(false)),
+            "gen_composite_all_undirected_noTG.ggx");
     }
 
     /**

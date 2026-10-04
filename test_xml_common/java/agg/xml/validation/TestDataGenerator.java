@@ -575,7 +575,18 @@ public final class TestDataGenerator {
      * rule with a match mapping and a rule sequence.
      */
     public static GraGra createCompositeAll() throws Exception {
-        GraGra graGra = createRuleWithNacPacNestedAC();
+        return createCompositeAll(true);
+    }
+
+    /**
+     * Creates a GraGra combining as many element types as possible:
+     * rule with NAC/PAC/nested AC, atomic constraint, formula, a second
+     * rule with a match mapping and a rule sequence.
+     *
+     * @param withTypeGraph whether to create a type graph
+     */
+    public static GraGra createCompositeAll(boolean withTypeGraph) throws Exception {
+        GraGra graGra = createRuleWithNacPacNestedAC(withTypeGraph);
 
         graGra.createAtomic("compositeAtomic");
         graGra.createConstraint("compositeFormula");

@@ -132,6 +132,16 @@ public class XmlGeneratedRegressionTest {
         runDomRoundtrip("rule_sequence_undirected");
     }
 
+    @Test
+    public void testWithRuleSchemeUndirected() throws Exception {
+        runRuleSchemeRoundtrip("rule_scheme_undirected");
+    }
+
+    @Test
+    public void testCompositeAllElementTypesUndirected() throws Exception {
+        runDomRoundtrip("composite_all_undirected");
+    }
+
     // ---- No type graph variants ----
 
     @Test
@@ -190,8 +200,18 @@ public class XmlGeneratedRegressionTest {
     }
 
     @Test
+    public void testCompositeAllElementTypesNoTG() throws Exception {
+        runDomRoundtrip("composite_all_noTG");
+    }
+
+    @Test
     public void testWithRuleSequenceUndirectedNoTG() throws Exception {
         runDomRoundtrip("rule_sequence_undirected_noTG");
+    }
+
+    @Test
+    public void testCompositeAllElementTypesUndirectedNoTG() throws Exception {
+        runDomRoundtrip("composite_all_undirected_noTG");
     }
 
     // ---- Core DOM roundtrip methods ----
