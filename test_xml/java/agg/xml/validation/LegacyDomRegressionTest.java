@@ -122,7 +122,7 @@ public class LegacyDomRegressionTest {
         int typeCount2 = graGra2.getTypeSet() != null
             ? graGra2.getTypeSet().getTypesCount() : 0;
         // RuleScheme legacy delegation may duplicate types; allow >=
-        if (!legacyFilename.equals("rule_scheme.ggx")) {
+        if (!legacyFilename.contains("rule_scheme")) {
             assertEquals(typeCount2, typeCount1,
                 "Type count should match: " + legacyFilename);
         } else {
@@ -190,7 +190,7 @@ public class LegacyDomRegressionTest {
 
         // Canonical comparison (skip for rule_scheme due to legacy
         // roundtrip instabilities in graph names and morphism comments)
-        if (!legacyFilename.equals("rule_scheme.ggx")) {
+        if (!legacyFilename.contains("rule_scheme")) {
             XmlCanonicalComparator.ComparisonResult result =
                 XmlCanonicalComparator.compareFiles(output1, output2);
             assertTrue(result.isEqual(),

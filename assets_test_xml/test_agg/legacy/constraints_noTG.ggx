@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I0" directed="true"
+        name="ConstraintTest" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="identification" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="DISABLED"/>
+        <Types>
+            <NodeType ID="I1" abstract="false" name="Node%:RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:"/>
+            <EdgeType ID="I2" abstract="false" name="edge%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:"/>
+        </Types>
+        <Graph ID="I7" kind="HOST" name="Host">
+            <Node ID="I8" type="I1"/>
+        </Graph>
+        <Constraints>
+            <Graphconstraint_Atomic ID="I9" name="AtomicConstraint1">
+                <Premise>
+                    <Graph ID="I10" kind="PREMISE" name="Graph"/>
+                </Premise>
+                <Conclusion>
+                    <Graph ID="I11" kind="CONCLUSION" name="Graph"/>
+                    <Morphism name="Conclusion0"/>
+                </Conclusion>
+            </Graphconstraint_Atomic>
+            <Formula ID="I12" comment="" enabled="true" f="T" name="Formula1">
+                <Layer Layer="" Size="0"/>
+                <Priority Priority="" Size="0"/>
+            </Formula>
+        </Constraints>
+    </GraphTransformationSystem>
+</Document>

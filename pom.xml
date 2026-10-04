@@ -21,6 +21,10 @@
 
     <modules>
         <module>src</module>
+        <!-- Frozen legacy reference: builds and runs the preparation suite
+             (writes reference XML into assets_test_xml/target/legacy_prep)
+             before the DOM-side tests in src_xml consume those files. -->
+        <module>test/test_agg/legacy_agg</module>
         <module>src_xml</module>
     </modules>
 

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>agg</groupId>
+        <artifactId>agg-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>agg-core-legacy</artifactId>
+    <packaging>jar</packaging>
+
+    <name>AGG Core (Frozen Legacy Reference)</name>
+    <description>
+        FROZEN LEGACY REFERENCE of the AGG core module.
+        This is a verbatim clone of src/ taken at the freeze point.
+        Do NOT modify: it is the reference implementation for the legacy
+        XML path (XMLHelper / XwriteObject / XreadObject). The preparation
+        test suite (test_xml_prep) runs against this clone and writes
+        reference XML files into assets_test_xml/target/legacy_prep/,
+        which the DOM-side regression tests (test_xml, running against the
+        current src) consume. Any later deviation in src shows up as a
+        mismatch against the files produced by this frozen code.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jare.ndimcol</groupId>
+            <artifactId>andimcol</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>D:/sdk_workspaces/andimcol/dist/andimcol.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>.</sourceDirectory>
+        <testSourceDirectory>../../../test_xml_prep/java</testSourceDirectory>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>add-shared-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>../../../test_xml_common/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${project.basedir}/../../../assets_test_xml</workingDirectory>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,4517 @@
+/**
+ * <copyright>
+ * Copyright (c) 1995, 2015 Technische Universitaet Berlin. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Copyright (c) 2025, Janusch Rentenatus. This program and the accompanying
+ * materials are made available under the terms of the Eclipse Public License
+ * v2.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v20.html
+ * </copyright>
+ */
+package agg.xt_basis;
+
+import agg.attribute.AttrContext;
+import agg.attribute.AttrInstance;
+import agg.attribute.AttrManager;
+import agg.attribute.AttrMapping;
+import agg.attribute.AttrType;
+import agg.attribute.impl.AttrTupleManager;
+import agg.attribute.impl.ContextView;
+import agg.attribute.impl.ValueMember;
+import agg.attribute.impl.ValueTuple;
+import agg.attribute.impl.VarMember;
+import agg.attribute.impl.VarTuple;
+import agg.util.Change;
+import agg.util.ExtObservable;
+import agg.util.LinkedGOHashSet;
+import agg.util.Pair;
+import agg.util.XMLHelper;
+import agg.util.XMLObject;
+import agg.xt_basis.csp.CompletionPropertyBits;
+import de.jare.ndimcol.ref.ArrayMovie;
+import de.jare.ndimcol.ref.ArraySeason;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+
+/**
+ * This class extends simple graphs with the possibility to have arcs between
+ * nodes.
+ *
+ * @version $Id: Graph.java,v 1.145 2010/11/16 23:34:19 olga Exp $
+ * @author $Author: olga $
+ * @author Janusch Rentenatus
+ */
+public class Graph extends ExtObservable implements Observer, XMLObject {
+
+    // test: node XY-position as attribute
+    public boolean xyAttr = false;
+    private final Object monitorMorphs = new Object();
+    private final GraphOrientation orientation;
+    protected List<Observer> observer;
+    protected LinkedGOHashSet<Node> itsNodes;
+    protected LinkedGOHashSet<Arc> itsArcs;
+    protected Map<String, HashSet<GraphObject>> itsTypeObjectsMap;
+    protected List<OrdinaryMorphism> itsUsingMorphs;
+    protected String kind;
+    protected String itsName;
+    protected String comment;
+    protected String info;
+    protected AttrContext itsAttrContext;
+    boolean notificationRequired;
+    protected boolean attributed;
+    protected boolean changed;
+    /* object for creating and checking types and holding the type graph */
+    protected TypeSet itsTypes;
+    /* true for a host graph, false - otherwise */
+    protected boolean completeGraph;
+
+    /**
+     * Creates an empty graph with an empty type set and the specified
+     * orientation. Use {@link #Graph(boolean)} to create a complete graph (a
+     * host graph).
+     *
+     * @param orientation the graph orientation (directed or undirected)
+     */
+    protected Graph(GraphOrientation orientation) {
+        this.orientation = orientation;
+        this.itsTypes = new TypeSet();
+        this.completeGraph = false;
+        init();
+    }
+
+    /**
+     * Creates an empty graph with the specified type set and orientation. Use
+     * {@link #Graph(TypeSet, boolean)} to create a complete graph (a host
+     * graph).
+     *
+     * @param orientation the graph orientation (directed or undirected)
+     * @param aTypeSet the type set to use for this graph
+     */
+    protected Graph(GraphOrientation orientation, TypeSet aTypeSet) {
+        this.orientation = orientation;
+        this.itsTypes = aTypeSet;
+        this.completeGraph = false;
+        init();
+    }
+
+    /**
+     * Creates an empty graph with an empty type set, specified orientation and
+     * completeness flag.
+     *
+     * @param orientation the graph orientation (directed or undirected)
+     * @param completeGraph true to create a host graph, false otherwise
+     */
+    protected Graph(GraphOrientation orientation, boolean completeGraph) {
+        this.orientation = orientation;
+        this.itsTypes = new TypeSet();
+        this.completeGraph = completeGraph;
+        init();
+    }
+
+    /**
+     * Creates an empty graph with the specified type set, orientation and
+     * completeness flag.
+     *
+     * @param orientation the graph orientation (directed or undirected)
+     * @param aTypeSet the type set to use for this graph
+     * @param completeGraph true to create a host graph, false otherwise
+     */
+    protected Graph(GraphOrientation orientation, TypeSet aTypeSet, boolean completeGraph) {
+        this.orientation = orientation;
+        this.itsTypes = aTypeSet;
+        this.completeGraph = completeGraph;
+        init();
+    }
+
+    /**
+     * Creates an empty graph with an empty TypeSet.
+     *
+     * Use {@link #Graph(boolean)}, to create a complete graph (a host graph).
+     */
+    public Graph() {
+        this(GraphOrientationDirected.INSTANCE);
+    }
+
+    /**
+     * Creates an empty graph with the specified TypeSet.Use
+     * {@link #Graph(TypeSet, boolean)}, to create a complete graph (a host
+     * graph).
+     *
+     * @param aTypeSet
+     */
+    public Graph(TypeSet aTypeSet) {
+        this(GraphOrientationDirected.INSTANCE, aTypeSet);
+    }
+
+    /**
+     * Creates an empty graph with an empty TypeSet.
+     *
+     * @param completeGraph true, to create a host graph
+     */
+    public Graph(boolean completeGraph) {
+        this(GraphOrientationDirected.INSTANCE, completeGraph);
+    }
+
+    /**
+     * Creates an empty graph with the specified TypeSet.
+     *
+     * @param aTypeSet the TypeSet to use
+     * @param completeGraph true, to create a host graph
+     */
+    public Graph(TypeSet aTypeSet, boolean completeGraph) {
+        this(GraphOrientationDirected.INSTANCE, aTypeSet, completeGraph);
+    }
+
+    private void init() {
+        observer = new ArrayList<>();
+        itsNodes = new LinkedGOHashSet<>();
+        itsArcs = new LinkedGOHashSet<>();
+        itsTypeObjectsMap = new HashMap<>();
+        itsUsingMorphs = new ArrayList<>();
+        kind = GraphKind.GRAPH;
+        comment = "";
+        itsName = "Graph";
+        info = "";
+    }
+
+    /**
+     * Adds an observer to this graph.
+     *
+     * @see java.util.Observable#addObserver(java.util.Observer)
+     * @param observer the observer to add
+     */
+    @Override
+    public synchronized void addObserver(Observer observer) {
+        if (!this.observer.contains(observer)) {
+            this.observer.add(observer);
+            this.notificationRequired = true;
+            super.addObserver(observer);
+        }
+    }
+
+    /**
+     * Removes an observer from this graph.
+     *
+     * @see java.util.Observable#deleteObserver(java.util.Observer)
+     * @param observer the observer to remove
+     */
+    @Override
+    public synchronized void deleteObserver(Observer observer) {
+        if (this.observer.contains(observer)) {
+            this.observer.remove(observer);
+            super.deleteObserver(observer);
+            if (this.observer.isEmpty()) {
+                this.notificationRequired = false;
+            }
+        }
+    }
+
+    public List<Observer> getObservers() {
+        return this.observer;
+    }
+
+    /**
+     * Returns the graph orientation (directed or undirected).
+     *
+     * @return the graph orientation
+     */
+    public GraphOrientation getOrientation() {
+        return this.orientation;
+    }
+
+    /**
+     * Returns whether this graph is directed.
+     *
+     * @return true if directed, false if undirected
+     */
+    public boolean isDirected() {
+        return this.orientation.isDirected();
+    }
+
+    /**
+     * Sets the observers for this graph.
+     *
+     * @param observers the list of observers to set
+     */
+    public void setObservers(List<?> observers) {
+        if (observers == null) {
+            return;
+        }
+        for (int i = 0; i < observers.size(); i++) {
+            this.addObserver((Observer) observers.get(i));
+        }
+    }
+
+    /**
+     * A kind is a role of a graph in a grammar, for exmpl.: a type graph - TG,
+     * a host graph - HOST, the left graph of a rule - LHS, the right graph of a
+     * rule - RHS, a NAC graph - NAC, a PAC graph - PAC and so on.
+     *
+     * @see agg.xt_basis.GraphKind
+     *
+     * @return the kind of this graph
+     */
+    public String getKind() {
+        return this.kind;
+    }
+
+    /**
+     * A kind is a role of a graph in a grammar, for example: a type graph - TG,
+     * a host graph - HOST, the left graph of a rule - LHS, the right graph of a
+     * rule - RHS, a NAC graph - NAC, a PAC graph - PAC and so on.
+     *
+     * @param kind the kind of graph
+     * @see agg.xt_basis.GraphKind
+     */
+    public void setKind(final String kind) {
+        this.kind = kind;
+    }
+
+    /**
+     * Sets whether notification is required for this graph.
+     *
+     * @param notificationRequired true if notification is required, false
+     * otherwise
+     */
+    public void setNotificationRequired(boolean notificationRequired) {
+        this.notificationRequired = notificationRequired;
+    }
+
+    public boolean isNotificationRequired() {
+        return this.notificationRequired;
+    }
+
+    @Override
+    public boolean hasChanged() {
+        return this.changed;
+    }
+
+    /**
+     * Set the given type set to its type set.
+     *
+     * @param types a type set which contains all types already used in this
+     * graph. This won'arcType be checked.
+     */
+    public void setTypeSet(TypeSet types) {
+        this.itsTypes = types;
+    }
+
+    /**
+     * Returns its type set.
+     *
+     * @return
+     */
+    public TypeSet getTypeSet() {
+        return this.itsTypes;
+    }
+
+    /**
+     * Tries to add a copy of the specified graph to this graph's elements. The
+     * existing type graph should be disabled.
+     *
+     * @param g The graph to copy.
+     * @param disabledTypeGraph If true, the type graph check is disabled.
+     * @return true if a copy was added, otherwise false.
+     */
+    public boolean addCopyOfGraph(Graph g, boolean disabledTypeGraph) {
+        synchronized (this) {
+            if (!disabledTypeGraph
+                    || this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
+                boolean failed = false;
+                final Map<Node, Node> memo1 = new HashMap<>(g
+                        .getSize());
+                Iterator<Node> vtxList = g.getNodesSet().iterator();
+                while (vtxList.hasNext()) {
+                    Node vtxOrig = vtxList.next();
+                    Node vtxCopy = null;
+                    Type type = this.itsTypes.getSimilarType(vtxOrig.getType());
+                    if (type == null) {
+                        type = this.itsTypes.getTypeByName(vtxOrig.getType()
+                                .getName());
+                        if (type != null && !type.isNodeType()) {
+                            type = null;
+                        }
+                    }
+                    try {
+                        if (type != null) {
+                            vtxCopy = this.createNode(type);
+                            vtxCopy.setObjectName(vtxOrig.getObjectName());
+                            vtxCopy.copyAttributes(vtxOrig);
+                            vtxCopy.setContextUsage(vtxOrig
+                                    .getContextUsage());
+                            memo1.put(vtxOrig, vtxCopy);
+                            propagateChange(new Change(
+                                    Change.OBJECT_CREATED, vtxCopy));
+                        }
+                    } catch (TypeException e) {
+                    }
+                }
+                Iterator<Arc> arcList = g.getArcsSet().iterator();
+                while (arcList.hasNext()) {
+                    Arc arcOrig = arcList.next();
+                    Arc arcCopy = null;
+                    Type type = this.itsTypes.getSimilarType(arcOrig.getType());
+                    if (type == null) {
+                        type = this.itsTypes.getTypeByName(arcOrig.getType()
+                                .getName());
+                        if (type != null && !type.isArcType()) {
+                            type = null;
+                        }
+                    }
+                    try {
+                        if (type != null) {
+                            Node source = (Node) arcOrig.getSource();
+                            Node target = (Node) arcOrig.getTarget();
+                            Node srcImg = memo1.get(source);
+                            Node tgtImg = memo1.get(target);
+                            arcCopy = this.createArc(type, srcImg, tgtImg);
+                            arcCopy.setObjectName(arcOrig.getObjectName());
+                            arcCopy.copyAttributes(arcOrig);
+                            arcCopy.setContextUsage(arcOrig
+                                    .getContextUsage());
+                            propagateChange(new Change(
+                                    Change.OBJECT_CREATED, arcCopy));
+                        }
+                    } catch (TypeException e) {
+                    }
+                }
+                memo1.clear();
+                if (!failed) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unused")
+    private boolean integrateCopyOfGraph(Graph g) {
+        synchronized (this) {
+            if (this.itsTypes.getLevelOfTypeGraphCheck() == TypeSet.DISABLED) {
+                boolean failed = false;
+                final Map<Node, Node> memo1 = new HashMap<>(g
+                        .getSize());
+                Iterator<Node> vtxList = g.getNodesSet().iterator();
+                while (vtxList.hasNext()) {
+                    Node vtxOrig = vtxList.next();
+                    Node vtxCopy = null;
+                    Type type = this.itsTypes.getSimilarType(vtxOrig.getType());
+                    if (type == null) {
+                        type = this.itsTypes.getTypeByName(vtxOrig.getType()
+                                .getName());
+                        if (type != null && !type.isNodeType()) {
+                            type = null;
+                        }
+                    }
+                    try {
+                        if (type != null) {
+                            boolean found = false;
+                            String keystr = type.convertToKey();
+                            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
+                            if (objSet != null) {
+                                Iterator<GraphObject> iter = objSet.iterator();
+                                while (iter.hasNext()) {
+                                    GraphObject o = iter.next();
+                                    if (vtxOrig.compareTo(o)) {
+                                        found = true;
+                                        memo1.put(vtxOrig, (Node) o);
+                                    }
+                                }
+                            }
+                            if (!found) {
+                                vtxCopy = this.createNode(type);
+                                vtxCopy.setObjectName(vtxOrig.getObjectName());
+                                vtxCopy.copyAttributes(vtxOrig);
+                                vtxCopy.setContextUsage(vtxOrig
+                                        .getContextUsage());
+                                memo1.put(vtxOrig, vtxCopy);
+                                propagateChange(new Change(
+                                        Change.OBJECT_CREATED, vtxCopy));
+                            }
+                        }
+                    } catch (TypeException e) {
+                    }
+                }
+                Iterator<Arc> arcList = g.getArcsSet().iterator();
+                while (arcList.hasNext()) {
+                    Arc arcOrig = arcList.next();
+                    Type type = this.itsTypes.getSimilarType(arcOrig.getType());
+                    if (type == null) {
+                        type = this.itsTypes.getTypeByName(arcOrig.getType()
+                                .getName());
+                        if (type != null && !type.isArcType()) {
+                            type = null;
+                        }
+                    }
+                    try {
+                        if (type != null) {
+                            Node source = (Node) arcOrig.getSource();
+                            Node target = (Node) arcOrig.getTarget();
+                            Node src = memo1.get(source);
+                            Node tar = memo1.get(target);
+                            boolean found = false;
+                            String keystr = src.convertToKey()
+                                    + arcOrig.getType().convertToKey()
+                                    + tar.convertToKey();
+                            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
+                            if (objSet != null) {
+                                Iterator<GraphObject> iter = objSet.iterator();
+                                while (iter.hasNext()) {
+                                    GraphObject o = iter.next();
+                                    if (arcOrig.compareTo(o)) {
+                                        found = true;
+                                    }
+                                }
+                            }
+                            if (!found) {
+                                Arc arcCopy = this.createArc(type, src, tar);
+                                arcCopy.setObjectName(arcOrig.getObjectName());
+                                arcCopy.copyAttributes(arcOrig);
+                                arcCopy.setContextUsage(arcOrig
+                                        .getContextUsage());
+                                propagateChange(new Change(
+                                        Change.OBJECT_CREATED, arcCopy));
+                            }
+                        }
+                    } catch (TypeException e) {
+                    }
+                }
+                memo1.clear();
+                if (!failed) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a lightweight copy of this graph with the specified type set.
+     *
+     * @param typeSet The type set to use for the copied graph.
+     * @return The new lightweight copy of this graph.
+     */
+    public Graph copyLight(TypeSet typeSet) {
+        synchronized (this) {
+            TypeError typeError = null;
+            int tglevel = typeSet.getLevelOfTypeGraphCheck();
+            if (tglevel == TypeSet.ENABLED_MAX_MIN) {
+                typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX);
+            }
+            boolean failed = false;
+            final Map<Node, Node> memo1 = new HashMap<>(this
+                    .getSize());
+            Graph theCopy = BaseFactory.theFactory().createGraph(typeSet);
+            theCopy.setCompleteGraph(this.isCompleteGraph());
+            if ((this.getAttrContext() != null)
+                    && ((ContextView) this.getAttrContext())
+                            .getAllowedMapping() == AttrMapping.GRAPH_MAP) {
+                agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newContext(
+                                agg.attribute.AttrMapping.GRAPH_MAP);
+                theCopy.setAttrContext(agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newRightContext(aGraphContext));
+            }
+            Iterator<?> iter = this.itsNodes.iterator();
+            while (iter.hasNext()) {
+                Node vtxOrig = (Node) iter.next();
+                Node vtxCopy = null;
+                Type type = typeSet.getSimilarType(vtxOrig.getType());
+                if (type == null) {
+                    type = typeSet.getTypeByName(vtxOrig.getType().getName());
+                    if (type != null && !type.isNodeType()) {
+                        type = null;
+                    }
+                }
+                if (type != null) {
+                    try {
+                        vtxCopy = theCopy.createNode(type);
+                        /**
+                         * side effect!
+                         */
+                        if (vtxCopy != null) {
+                            // check this graph against the type graph
+                            typeError = typeSet.checkType(vtxCopy, this
+                                    .isCompleteGraph());
+                            if (typeError != null) {
+                                theCopy.dispose();
+                                throw new TypeException(typeError);
+                            }
+                            vtxCopy.setObjectName(vtxOrig.getObjectName());
+                            if (vtxOrig.getAttribute() != null) {
+                                if (vtxCopy.getAttribute() == null) {
+                                    vtxCopy.createAttributeInstance();
+                                }
+                                ((ValueTuple) vtxCopy.getAttribute())
+                                        .copyEntriesToSimilarMembers(vtxOrig
+                                                .getAttribute());
+                            }
+                            vtxCopy.setContextUsage(vtxOrig
+                                    .getContextUsage());
+                            memo1.put(vtxOrig, vtxCopy);
+                        }
+                    } catch (TypeException e) {
+                        // e.printStackTrace();
+                        failed = true;
+                        theCopy.dispose();
+                    }
+                }
+            }
+            iter = this.itsArcs.iterator();
+            while (!failed && iter.hasNext()) {
+                Arc arcOrig = (Arc) iter.next();
+                Arc arcCopy = null;
+                Type type = typeSet.getSimilarType(arcOrig.getType());
+                if (type == null) {
+                    type = typeSet.getTypeByName(arcOrig.getType()
+                            .getName());
+                    if (type != null && !type.isArcType()) {
+                        type = null;
+                    }
+                }
+                if (type != null) {
+                    try {
+                        Node source = (Node) arcOrig.getSource();
+                        Node target = (Node) arcOrig.getTarget();
+                        Node srcImg = memo1.get(source);
+                        Node tgtImg = memo1.get(target);
+                        arcCopy = theCopy.createArc(type, srcImg, tgtImg);
+                        if (arcCopy != null) {
+                            arcCopy.setObjectName(arcOrig.getObjectName());
+                            if (arcOrig.getAttribute() != null) {
+                                if (arcCopy.getAttribute() == null) {
+                                    arcCopy.createAttributeInstance();
+                                }
+                                ((ValueTuple) arcCopy.getAttribute())
+                                        .copyEntriesToSimilarMembers(arcOrig
+                                                .getAttribute());
+                            }
+                            arcCopy.setContextUsage(arcOrig
+                                    .getContextUsage());
+                        }
+                    } catch (TypeException e) {
+                        // e.printStackTrace();
+                        failed = true;
+                        theCopy.dispose();
+                    }
+                }
+            }
+            if (!failed) {
+                if (tglevel == TypeSet.ENABLED_MAX_MIN) {
+                    typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX_MIN);
+                }
+            }
+            memo1.clear();
+            if (failed) {
+                return null;
+            }
+            return (theCopy);
+        }
+    }
+
+    /**
+     * Returns a copy of this graph using the specified type set. The specified
+     * type set should be compatible with this graph's type set.
+     *
+     * @param types The type set to use for the copied graph.
+     * @return The new copy of this graph.
+     */
+    public Graph copy(TypeSet types) {
+        return graphcopy(types);
+    }
+
+    private Graph graphcopy(final TypeSet typeSet) {
+        synchronized (this) {
+            TypeError typeError = null;
+            int tglevel = typeSet.getLevelOfTypeGraphCheck();
+            if (tglevel == TypeSet.ENABLED_MAX_MIN) {
+                typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX);
+            }
+            boolean failed = false;
+            final Map<Node, Node> memo1 = new HashMap<>(this.getSize());
+            Graph theCopy = BaseFactory.theFactory().createGraph(typeSet);
+            theCopy.setCompleteGraph(this.isCompleteGraph());
+            if ((this.getAttrContext() != null)
+                    && ((ContextView) this.getAttrContext())
+                            .getAllowedMapping() == AttrMapping.GRAPH_MAP) {
+                agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newContext(
+                                agg.attribute.AttrMapping.GRAPH_MAP);
+                theCopy.setAttrContext(agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newRightContext(aGraphContext));
+            }
+            Iterator<?> iter = this.itsNodes.iterator();
+            while (!failed && iter.hasNext()) {
+                Node vtxOrig = (Node) iter.next();
+                Node vtxCopy = null;
+                try {
+                    Type type = typeSet.getSimilarType(vtxOrig.getType());
+                    if (type != null) {
+                        vtxCopy = theCopy.createNode(type);
+                        /**
+                         * side effect!
+                         */
+                        if (vtxCopy != null) {
+                            // not a type graph, so check this graph
+                            // against the type graph
+                            typeError = typeSet.checkType(vtxCopy, this
+                                    .isCompleteGraph());
+                            if (typeError != null) {
+                                theCopy.dispose();
+                                throw new TypeException(typeError);
+                            }
+                            vtxCopy.setObjectName(vtxOrig.getObjectName());
+                            vtxCopy.copyAttributes(vtxOrig);
+                            vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                            memo1.put(vtxOrig, vtxCopy);
+                            propagateChange(new Change(Change.OBJECT_CREATED,
+                                    vtxCopy));
+                        }
+                    }
+                } catch (TypeException e) {
+                    // If this graph is checked, the copy should also be ok
+                    // so no Exception should happen.
+                    // e.printStackTrace();
+                    failed = true;
+                    theCopy.dispose();
+                }
+                /**
+                 * *************************************************************
+                 * At loop termination, the memory Map contains * information
+                 * about the node twins that are induced * by the copyprocess.
+                 * At this point, the copied graph contains its nodes but yet no
+                 * arcs.*
+                 * ************************************************************
+                 */
+            }
+            iter = this.itsArcs.iterator();
+            while (!failed && iter.hasNext()) {
+                Arc arcOrig = (Arc) iter.next();
+                Arc arcCopy = null;
+                try {
+                    Type type = typeSet.getSimilarType(arcOrig.getType());
+                    if (type != null) {
+                        Node source = (Node) arcOrig.getSource();
+                        Node target = (Node) arcOrig.getTarget();
+                        Node srcImg = memo1.get(source);
+                        Node tgtImg = memo1.get(target);
+                        arcCopy = theCopy.createArc(type, srcImg, tgtImg);
+                        if (arcCopy != null) {
+                            arcCopy.setObjectName(arcOrig.getObjectName());
+                            arcCopy.copyAttributes(arcOrig);
+                            arcCopy.setContextUsage(arcOrig.getContextUsage());
+                        }
+                    }
+                } catch (TypeException e) {
+                    // If the given graph is well typed,
+                    // the resulting graph should be also well typed
+                    // e.printStackTrace();
+                    failed = true;
+                    theCopy.dispose();
+                }
+            }
+            if (!failed) {
+                if (tglevel == TypeSet.ENABLED_MAX_MIN) {
+                    typeSet.setLevelOfTypeGraphCheck(TypeSet.ENABLED_MAX_MIN);
+                }
+                // set Observers ???
+                // for(Iterator it = getObservers().iterator();
+                // it.hasNext();)
+                // theCopy.addObserver((Observer)it.next());
+            }
+            memo1.clear();
+            if (failed) {
+                return null;
+            }
+            return (theCopy);
+        }
+    }
+
+    /**
+     * Returns a copy of this graph.
+     *
+     * @param orig2copy The specified table is used to store pairs (original,
+     * copy), where an original is a node/edge of this graph and a copy is the
+     * appropriate node/edge of the graph copy.
+     * @return A copy of this graph or null if an error occurred.
+     */
+    public Graph copy(final Map<GraphObject, GraphObject> orig2copy) {
+        return graphcopy(orig2copy);
+    }
+
+    /**
+     * Makes a copy of this graph and stores elements into the specified Map.
+     *
+     * @param orig2copy the table is used to store the relation of this graph to
+     * the copy. Keys are nodes resp. edges of this graph and values are the
+     * corresponding nodes resp. edges of the copy.
+     * @return a copy of this graph or null if an error occurred
+     */
+    private Graph graphcopy(final Map<GraphObject, GraphObject> orig2copy) {
+        synchronized (this) {
+            int currentLevelOfTGcheck = this.getTypeSet().getLevelOfTypeGraphCheck();
+            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
+                this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
+            }
+            boolean failed = false;
+            Graph theCopy = BaseFactory.theFactory().createGraph(getTypeSet());
+            if ((this.getAttrContext() != null)
+                    && ((ContextView) this.getAttrContext())
+                            .getAllowedMapping() == AttrMapping.GRAPH_MAP) {
+                agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newContext(
+                                agg.attribute.AttrMapping.GRAPH_MAP);
+                theCopy.setAttrContext(agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newRightContext(aGraphContext));
+            }
+            Iterator<?> iter = this.itsNodes.iterator();
+            while (!failed && iter.hasNext()) {
+                Node vtxOrig = (Node) iter.next();
+                Node vtxCopy = null;
+                try {
+                    vtxCopy = theCopy.copyNode(vtxOrig);
+                    /**
+                     * side effect!
+                     */
+                    vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                    orig2copy.put(vtxOrig, vtxCopy);
+                } catch (TypeException e) {
+                    // e.printStackTrace();
+                    failed = true;
+                    theCopy.dispose();
+                }
+            }
+            iter = this.itsArcs.iterator();
+            while (!failed && iter.hasNext()) {
+                Arc arcOrig = (Arc) iter.next();
+                Node source = (Node) arcOrig.getSource();
+                Node target = (Node) arcOrig.getTarget();
+                Node srcImg = (Node) orig2copy.get(source);
+                Node tgtImg = (Node) orig2copy.get(target);
+                try {
+                    Arc arcCopy = theCopy.copyArc(arcOrig, srcImg, tgtImg);
+                    arcCopy.setContextUsage(arcOrig.getContextUsage());
+                    orig2copy.put(arcOrig, arcCopy);
+                } catch (TypeException e) {
+                    // e.printStackTrace();
+                    failed = true;
+                    theCopy.dispose();
+                }
+            }
+            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
+                this.getTypeSet().setLevelOfTypeGraph(currentLevelOfTGcheck);
+            }
+            if (!failed) {
+                // set Observers ???
+                // for(Iterator it = getObservers().iterator();
+                // it.hasNext();)
+                // theCopy.addObserver((Observer)it.next());
+                return theCopy;
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Returns a copy of this graph itself.
+     *
+     * @return A copy of this graph.
+     */
+    public Graph graphcopy() {
+        synchronized (this) {
+            int currentLevelOfTGcheck = this.getTypeSet().getLevelOfTypeGraphCheck();
+            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
+                this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
+            }
+            boolean failed = false;
+            Graph theCopy = BaseFactory.theFactory().createGraph(this.itsTypes);
+            if ((this.getAttrContext() != null)
+                    && ((ContextView) this.getAttrContext())
+                            .getAllowedMapping() == AttrMapping.GRAPH_MAP) {
+                agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newContext(
+                                agg.attribute.AttrMapping.GRAPH_MAP);
+                theCopy.setAttrContext(agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newRightContext(aGraphContext));
+            }
+            theCopy.setCompleteGraph(this.isCompleteGraph());
+            theCopy.setName(this.getName() + "_copy");
+            final Map<Node, Node> memo1 = new HashMap<>(this.getSize());
+            Iterator<?> iter = this.itsNodes.iterator();
+            while (!failed && iter.hasNext()) {
+                Node vtxOrig = (Node) iter.next();
+                Node vtxCopy = null;
+                try {
+                    vtxCopy = theCopy.newNode(vtxOrig.getType());
+                    vtxCopy.setObjectName(vtxOrig.getObjectName());
+                    vtxCopy.copyAttributes(vtxOrig);
+                    vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                    memo1.put(vtxOrig, vtxCopy);
+                } catch (TypeException e) {
+                    failed = true;
+                    theCopy.dispose();
+                }
+            }
+            iter = this.itsArcs.iterator();
+            while (!failed && iter.hasNext()) {
+                Arc arcOrig = (Arc) iter.next();
+                try {
+                    Node source = (Node) arcOrig.getSource();
+                    Node target = (Node) arcOrig.getTarget();
+                    Node srcImg = memo1.get(source);
+                    Node tgtImg = memo1.get(target);
+                    Arc arcCopy = theCopy.newArc(arcOrig.getType(), srcImg,
+                            tgtImg);
+                    if (arcCopy != null) {
+                        arcCopy.setObjectName(arcOrig.getObjectName());
+                        arcCopy.copyAttributes(arcOrig);
+                        arcCopy.setContextUsage(arcOrig.getContextUsage());
+                    }
+                } catch (TypeException e) {
+                    failed = true;
+                    theCopy.dispose();
+                }
+            }
+            memo1.clear();
+            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
+                this.getTypeSet().setLevelOfTypeGraph(currentLevelOfTGcheck);
+            }
+            return failed ? null : theCopy;
+        }
+    }
+
+    /**
+     * Returns a flat copy (without references) of this graph.
+     *
+     * @return A flat copy of this graph.
+     */
+    public Graph copy() {
+        return graphcopy();
+    }
+
+    /**
+     * Copies the specified graph into this graph. Pre-condition: this graph has
+     * to be empty and has to use the same type set as the specified graph.
+     *
+     * @param g The graph to copy into this graph.
+     * @return This graph after copying.
+     */
+    public Graph graphcopy(Graph g) {
+        synchronized (g) {
+            int currentLevelOfTGcheck = this.getTypeSet().getLevelOfTypeGraphCheck();
+            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
+                this.getTypeSet().setLevelOfTypeGraph(TypeSet.ENABLED_MAX);
+            }
+            boolean failed = false;
+            final Map<Node, Node> memo1 = new HashMap<>(g.getSize());
+            Graph theCopy = this;
+            if ((g.getAttrContext() != null)
+                    && ((ContextView) g.getAttrContext()).getAllowedMapping() == AttrMapping.GRAPH_MAP) {
+                agg.attribute.AttrContext aGraphContext = agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newContext(
+                                agg.attribute.AttrMapping.GRAPH_MAP);
+                theCopy.setAttrContext(agg.attribute.impl.AttrTupleManager
+                        .getDefaultManager().newRightContext(aGraphContext));
+            }
+            Iterator<Node> vtxList = g.getNodesSet().iterator();
+            while (!failed && vtxList.hasNext()) {
+                Node vtxOrig = vtxList.next();
+                Node vtxCopy = null;
+                try {
+                    vtxCopy = theCopy.copyNode(vtxOrig);
+                    vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                    memo1.put(vtxOrig, vtxCopy);
+                } catch (TypeException e) {
+                    failed = true;
+                }
+            }
+            Iterator<Arc> arcList = g.getArcsSet().iterator();
+            while (!failed && arcList.hasNext()) {
+                try {
+                    Arc arcOrig = arcList.next();
+                    Node source = (Node) arcOrig.getSource();
+                    Node target = (Node) arcOrig.getTarget();
+                    Node srcImg = memo1.get(source);
+                    Node tgtImg = memo1.get(target);
+                    Arc arcCopy = theCopy.copyArc(arcOrig, srcImg, tgtImg);
+                    if (arcCopy != null) {
+                        arcCopy.setContextUsage(arcOrig.getContextUsage());
+                    }
+                } catch (TypeException e) {
+                    failed = true;
+                }
+            }
+            memo1.clear();
+            if (currentLevelOfTGcheck == TypeSet.ENABLED_MAX_MIN) {
+                this.getTypeSet().setLevelOfTypeGraph(currentLevelOfTGcheck);
+            }
+            if (failed) {
+                theCopy.clear();
+            }
+            return theCopy;
+        }
+    }
+
+    /**
+     * Prepares this graph for garbage collection by cutting all connections to
+     * other objects and disposing all graph objects contained.
+     */
+    @Override
+    public void dispose() {
+        if (this.observer != null) {
+            this.observer.clear();
+            super.dispose(); // dispose observer
+        }
+        synchronized (monitorMorphs) {
+            this.itsName = "Graph";
+            if (this.itsUsingMorphs != null) {
+                this.itsUsingMorphs.clear();
+            }
+            destroyArcs();
+            destroyNodes();
+        }
+        this.itsNodes = null;
+        this.itsArcs = null;
+        this.itsAttrContext = null;
+        this.itsTypes = null;
+        this.changed = false;
+//		System.out.println("Graph.dispose()  DONE  "+this.hashCode());
+    }
+
+    private void destroyNodes() {
+        if (this.itsNodes != null) {
+            Iterator<Node> iter = this.itsNodes.iterator();
+            while (iter.hasNext()) {
+                this.destroyNodeFast(iter.next());
+                iter = this.itsNodes.iterator();
+            }
+        }
+    }
+
+    private void destroyArcs() {
+        if (this.itsArcs != null) {
+            Iterator<Arc> iter = this.itsArcs.iterator();
+            while (iter.hasNext()) {
+                this.destroyArcFast(iter.next());
+                iter = this.itsArcs.iterator();
+            }
+        }
+    }
+
+    @Override
+    /**
+     * Updates this graph when the observed object changes.
+     *
+     * @param observable The observable object.
+     * @param changeEvent The change event.
+     */
+    public final void update(Observable observable, Object changeEvent) {
+    }
+
+    /**
+     * Sets the name of this graph.
+     *
+     * @param name The name to set.
+     */
+    public final void setName(String name) {
+        this.itsName = name;
+    }
+
+    /**
+     * Returns the name of this graph.
+     *
+     * @return The graph name.
+     */
+    public final String getName() {
+        return this.itsName;
+    }
+
+    /**
+     * Sets help information for this graph. Users of AGG APIs can set help info
+     * for their own purposes. They take care of usage and must unset this help
+     * info as well.
+     *
+     * @param helpInfo The help information text.
+     */
+    public void setHelpInfo(String helpInfo) {
+        this.info = helpInfo;
+    }
+
+    /**
+     * Returns the help information for this graph.
+     *
+     * @return The help information text.
+     */
+    public String getHelpInfo() {
+        return this.info;
+    }
+
+    /**
+     * Returns help information about variable equality from the stored help
+     * info.
+     *
+     * @return The help information about variable equality.
+     */
+    public String getHelpInfoAboutVariableEquality() {
+        if (this.info.contains(":VariableEquality:")) {
+            final String[] array = this.info.split(":VariableEquality:");
+            if (array.length == 1) {
+                return array[0];
+            } else if (array.length == 2) {
+                return array[1];
+            }
+        }
+        return "";
+    }
+
+    /**
+     * Returns help information about PAC from the stored help info.
+     *
+     * @return The help information about PAC.
+     */
+    public String getHelpInfoAboutPAC() {
+        if (this.info.contains(":VariableEquality:")) {
+            final String[] array = this.info.split(":VariableEquality:");
+            if (array.length == 2) {
+                if (array[0].contains("PAC")) {
+                    return array[0].replaceFirst("PAC:", "");
+                }
+            }
+        } else if (this.info.contains("PAC")) {
+            return this.info.replaceFirst("PAC:", "");
+        }
+        return "";
+    }
+
+    /**
+     * Returns help information about NAC from the stored help info.
+     *
+     * @return The help information about NAC.
+     */
+    public String getHelpInfoAboutNAC() {
+        if (this.info.contains(":VariableEquality:")) {
+            final String[] array = this.info.split(":VariableEquality:");
+            if (array.length == 2) {
+                if (array[0].contains("NAC:")) {
+                    return array[0].replaceFirst("NAC:", "");
+                }
+            }
+        } else if (this.info.contains("NAC:")) {
+            return this.info.replaceFirst("NAC:", "");
+        }
+        return "";
+    }
+
+    /**
+     * Sets textual comments (description) for this graph. This description can
+     * be used in AGG GUI.
+     *
+     * @param text The textual comment to set.
+     */
+    public void setTextualComment(String text) {
+        this.comment = text;
+    }
+
+    /**
+     * Returns textual comments of this graph.
+     *
+     * @return The textual comment.
+     */
+    public String getTextualComment() {
+        return this.comment;
+    }
+
+    /**
+     * Returns an array of all used types in this graph.
+     *
+     * @return Array of used types.
+     */
+    public ArrayMovie<Type> getUsedTypes() {
+        final ArrayMovie<Type> vec = new ArraySeason<>();
+        getTypesOfGOs(this.itsNodes.iterator(), vec);
+        getTypesOfGOs(this.itsArcs.iterator(), vec);
+        return vec;
+    }
+
+    private void getTypesOfGOs(final Iterator<?> iter, final ArrayMovie<Type> result) {
+        while (iter.hasNext()) {
+            GraphObject o = (GraphObject) iter.next();
+            if (!result.contains(o.getType())) {
+                result.add(o.getType());
+            }
+        }
+    }
+
+    /**
+     * Returns a list of all used types in this graph, including inherited
+     * types.
+     *
+     * @return List of used and inherited types.
+     */
+    public List<Type> getUsedAndInheritedTypes() {
+        final List<Type> vec = new ArrayList<>();
+        Iterator<?> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            GraphObject o = (GraphObject) iter.next();
+            Type t = o.getType();
+            if (!vec.contains(t)) {
+                vec.add(t);
+            }
+            List<Type> pars = t.getAllParents();
+            for (int i = 0; i < pars.size(); i++) {
+                Type pt = pars.get(i);
+                if (!vec.contains(pt)) {
+                    vec.add(pt);
+                }
+            }
+        }
+        iter = this.itsArcs.iterator();
+        while (iter.hasNext()) {
+            GraphObject o = (GraphObject) iter.next();
+            Type t = o.getType();
+            if (!vec.contains(t)) {
+                vec.add(t);
+            }
+        }
+        return vec;
+    }
+
+    /**
+     * Adds the specified node to this graph. The type of the specified node has
+     * to be in this graph's type set.
+     *
+     * @param node The node to add.
+     */
+    public void addNode(Node node) {
+        if (!this.itsNodes.contains(node)) {
+            this.itsNodes.add(node);
+            addToTypeObjectsMap(node);
+            this.attributed = this.attributed || node.getAttribute() != null;
+            this.changed = true;
+        }
+    }
+
+    /**
+     * Removes the specified node from this graph.
+     *
+     * @param node The node to remove.
+     */
+    protected void removeNode(final Node node) {
+        if (node.getContext() == this) {
+            synchronized (monitorMorphs) {
+                removeMapping(node);
+                Iterator<Arc> arcIterator = node.getIncomingArcsSet().iterator();
+                while (arcIterator.hasNext()) {
+                    Arc neighborArc = arcIterator.next();
+                    removeArc(neighborArc);
+                    arcIterator = node.getIncomingArcsSet().iterator();
+                }
+                arcIterator = node.getOutgoingArcsSet().iterator();
+                while (arcIterator.hasNext()) {
+                    Arc neighborArc = arcIterator.next();
+                    removeArc(neighborArc);
+                    arcIterator = node.getOutgoingArcsSet().iterator();
+                }
+            }
+            this.itsNodes.remove(node);
+            removeNodeFromTypeObjectsMap(node);
+            this.changed = true;
+        }
+    }
+
+    /**
+     * Adds the specified arc to this graph. The type of the specified arc has
+     * to be in this graph's type set.
+     *
+     * @param arc The arc to add.
+     */
+    public void addArc(Arc arc) {
+        if (!this.itsArcs.contains(arc)) {
+            this.itsArcs.add(arc);
+            addToTypeObjectsMap(arc);
+            this.attributed = this.attributed || arc.getAttribute() != null;
+            this.changed = true;
+        }
+    }
+
+    /**
+     * Removes the specified arc from this graph.
+     *
+     * @param arc The arc to remove.
+     */
+    protected void removeArc(final Arc arc) {
+        if (arc.getContext() == this)  synchronized (monitorMorphs) {
+            orientation.sourceRemoveArc(arc);
+            orientation.targetRemoveArc(arc);
+            removeMapping(arc);
+            this.itsArcs.remove(arc);
+            removeArcFromTypeObjectsMap(arc);
+            this.changed = true;
+        }
+    }
+
+    /**
+     * Creates and adds a new node.
+     *
+     * @param nodeType The type for the new node.
+     * @return The created node.
+     * @throws TypeException If the node cannot be created due to type errors.
+     */
+    protected Node newNode(Type nodeType) throws TypeException {
+        Node node = new Node(nodeType, this);
+        // check for type mismatches, also multiplicity max
+        TypeError typeError = this.itsTypes.checkType(node, this.isCompleteGraph());
+        if (typeError != null) {
+            throw new TypeException(typeError);
+        }
+        this.attributed = this.attributed || node.getAttribute() != null;
+        this.itsNodes.add(node);
+        addToTypeObjectsMap(node);
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_CREATED, node));
+        return node;
+    }
+
+    /**
+     * Creates and adds a new node without type checking.
+     *
+     * @param nodeType The type for the new node.
+     * @return The created node.
+     */
+    protected Node newNodeFast(Type nodeType) {
+        Node node = new Node(nodeType, this);
+        this.attributed = this.attributed || node.getAttribute() != null;
+        this.itsNodes.add(node);
+        addToTypeObjectsMap(node);
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_CREATED, node));
+        return node;
+    }
+
+    /**
+     * Creates and adds a new node of the specified type.
+     *
+     * @param type The node type.
+     * @return The created node.
+     * @throws TypeException If the node cannot be created due to type errors.
+     */
+    public Node createNode(Type type) throws TypeException {
+        Type adoptedType = this.itsTypes.adoptClan(type);
+        Node node = new Node(adoptedType, this);
+        // check for type mismatches
+        TypeError typeError = this.itsTypes.checkType(node, this.isCompleteGraph());
+        if (typeError != null) {
+            throw new TypeException(typeError);
+        }
+        this.attributed = this.attributed || node.getAttribute() != null;
+        this.itsNodes.add(node);
+        addToTypeObjectsMap(node);
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_CREATED, node));
+        return node;
+    }
+
+    /**
+     * Creates a new node as a copy of the specified original node.
+     *
+     * @deprecated Use the method <code>copyNode(Node orig)</code> instead.
+     * @param originalNode The node to create a copy from.
+     * @return The created node copy.
+     * @throws TypeException If the node cannot be created.
+     */
+    Node createNode(Node originalNode) throws TypeException {
+        Node node = createNode(originalNode.getType());
+        if (node != null) {
+            if (originalNode.getAttribute() != null) {
+                ((ValueTuple) node.getAttribute()).copyEntries(originalNode
+                        .getAttribute());
+            }
+        }
+        return node;
+    }
+
+    /**
+     * Creates a new node as a copy of the specified original. Only type and
+     * attributes are copied, the structural context (incoming/outgoing arcs) is
+     * not.
+     *
+     * @param originalNode The node to copy.
+     * @return The copied node.
+     * @throws TypeException If the node cannot be copied.
+     */
+    public Node copyNode(Node originalNode) throws TypeException {
+        try {
+            Node node = createNode(originalNode.getType());
+            if (node != null) {
+                node.setInputVector(originalNode.copyInputVector());
+                node.setObjectName(originalNode.getObjectName());
+                if (originalNode.getAttribute() != null) {
+                    node.createAttributeInstance();
+                    ((ValueTuple) node.getAttribute()).
+                            copyEntries(originalNode.getAttribute());
+                }
+            } else {
+                throw new TypeException("Graph.copyNode:: Cannot create a Node of type : "
+                        + originalNode.getType().getStringRepr());
+            }
+            return node;
+        } catch (TypeException ex) {
+            throw new TypeException("Graph.copyNode::  " + ex.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Deletes a node. Dangling arcs are deleted implicitly. The node is removed
+     * from this graph and from all morphism mappings using this node.
+     *
+     * @param node The node to destroy.
+     * @throws TypeException If this graph is a type graph, and there are nodes
+     * of this type node in one of other graphs, an exception is thrown.
+     */
+    public void destroyNode(Node node) throws TypeException {
+        destroyNode(node, true);
+    }
+
+    /**
+     * Deletes a node. Dangling arcs are deleted implicitly. The node is removed
+     * from this graph and from all morphism mappings using this node. If the
+     * specified parameter checkFirst is false, the node is destroyed without
+     * any checks.
+     *
+     * @param node The node to destroy.
+     * @param checkFirst If true, performs checks before destroying.
+     * @throws TypeException If this graph is a type graph, and there are nodes
+     * of this type node in one of other graphs, an exception is thrown.
+     */
+    public synchronized void destroyNode(Node node, boolean checkFirst)
+            throws TypeException {
+        destroyNode(node, checkFirst, false);
+    }
+
+    /**
+     * Deletes a node. Dangling arcs are deleted implicitly. The node is removed
+     * from this graph and from all morphism mappings using this node. If the
+     * specified parameter checkFirst is false, the node is destroyed without
+     * any checks.
+     *
+     * @param node The node to destroy.
+     * @param checkFirst If true, performs checks before destroying.
+     * @param forceDestroy If true, forces destruction without throwing
+     * exceptions.
+     * @throws TypeException If this graph is a type graph, and there are nodes
+     * of this type node in one of other graphs, an exception is thrown when
+     * forceDestroy is false, otherwise no exception is thrown.
+     */
+    public synchronized void destroyNode(final Node node, boolean checkFirst,
+            boolean forceDestroy) throws TypeException {
+        // can we remove this node?
+        // check for multiplicity
+        if (checkFirst && this.isCompleteGraph()
+                && !forceDestroy) {
+            TypeError typeError = this.itsTypes.checkIfRemovable(node);
+            if (typeError != null) {
+                typeError.setContainingGraph(this);
+                throw new TypeException(typeError);
+            }
+        }
+        synchronized (monitorMorphs) {
+            removeMapping(node);
+            // destroy incoming/outgoing arcs
+            Arc a;
+            Iterator<Arc> iter = node.getIncomingArcsSet().iterator();
+            while (iter.hasNext()) {
+                a = iter.next();
+                destroyArc(a, false, false);
+                iter = node.getIncomingArcsSet().iterator();
+            }
+            iter = node.getOutgoingArcsSet().iterator();
+            while (iter.hasNext()) {
+                a = iter.next();
+                destroyArc(a, false, false);
+                iter = node.getOutgoingArcsSet().iterator();
+            }
+        }
+        propagateChange(new Change(Change.WANT_DESTROY_OBJECT, node));
+        removeNodeFromTypeObjectsMap(node);
+        this.itsNodes.remove(node);
+        node.dispose();
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_DESTROYED, node));
+    }
+
+    /**
+     * Destroys a node quickly without performing type checks. Dangling arcs are
+     * deleted implicitly.
+     *
+     * @param node The node to destroy quickly.
+     */
+    public void destroyNodeFast(final Node node) {
+        synchronized (monitorMorphs) {
+            removeMapping(node);
+            // destroy incoming arcs
+            while (node.getIncomingArcsSet().iterator().hasNext()) {
+                destroyArcFast(node.getIncomingArcsSet().iterator().next());
+            }
+            // destroy outgoing arcs
+            while (node.getOutgoingArcsSet().iterator().hasNext()) {
+                destroyArcFast(node.getOutgoingArcsSet().iterator().next());
+            }
+        }
+        propagateChange(new Change(Change.WANT_DESTROY_OBJECT, node));
+        removeNodeFromTypeObjectsMap(node);
+        this.itsNodes.remove(node);
+        node.dispose();
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_DESTROYED, node));
+    }
+
+    /**
+     * Removes mapping of the specified object from all morphisms using this
+     * graph.
+     *
+     * @param anObject The graph object whose mapping should be removed.
+     */
+    protected void removeMapping(final GraphObject anObject) {
+        // remove mapping of node or arc
+        for (Iterator<OrdinaryMorphism> morphIter = this.itsUsingMorphs.iterator(); morphIter.hasNext();) {
+            morphIter.next().removeMapping(anObject);
+        }
+    }
+
+    /**
+     * Creates and adds a new arc.
+     *
+     * @param t The type for the new arc.
+     * @param src The source node.
+     * @param tar The target node.
+     * @return The created arc.
+     * @throws TypeException If the arc cannot be created due to type errors.
+     */
+    protected Arc newArc(Type t, Node src, Node tar) throws TypeException {
+        TypeError typeError = this.checkConnectValid(t, src, tar);
+        if (typeError != null) {
+            throw new TypeException(typeError);
+        }
+        Arc anArc = orientation.createArc(this, t, src, tar);
+//		check for type mismatches, also multiplicity max of source and target
+        typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
+        if (typeError != null) {
+            orientation.sourceRemoveArc(anArc);
+            orientation.targetRemoveArc(anArc);
+            throw new TypeException(typeError);
+        }
+        this.attributed = this.attributed || anArc.getAttribute() != null;
+        this.itsArcs.add(anArc);
+        addToTypeObjectsMap(anArc);
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_CREATED, anArc));
+        return anArc;
+    }
+
+    /**
+     * Creates and adds a new arc without type checking.
+     *
+     * @param t The type for the new arc.
+     * @param src The source node.
+     * @param tar The target node.
+     * @return The created arc.
+     */
+    protected Arc newArcFast(Type t, Node src, Node tar) {
+//		long time = System.nanoTime();
+        Arc anArc = orientation.createArc(this, t, src, tar);
+        this.attributed = this.attributed || anArc.getAttribute() != null;
+        this.itsArcs.add(anArc);
+        addToTypeObjectsMap(anArc);
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_CREATED, anArc));
+//		System.out.println("Arc created  in: "+(System.nanoTime()-time)+"nano");
+        return anArc;
+    }
+
+    /**
+     * Creates and adds a new arc of the specified type, source and target
+     * nodes, which must be part of this graph.
+     *
+     * @param type The type for the new arc.
+     * @param src The source node.
+     * @param tar The target node.
+     * @return The created arc.
+     * @throws TypeException If the arc cannot be created due to type errors.
+     */
+    public Arc createArc(Type type, Node src, Node tar) throws TypeException {
+        if (src == null || tar == null) {
+            throw new TypeException(getClass().getSimpleName() + ".createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "   Source or target node is null!");
+        } else if (!this.isNode(src) || !this.isNode(tar)) {
+            throw new TypeException(getClass().getSimpleName() + ".createArc:: Cannot create an Arc of type : " + type.getStringRepr() + "  Source or target is not a Node!");
+        }
+        Type arcType = null;
+        if (this.itsTypes.containsType(type)) {
+            arcType = type;
+        }
+        if (arcType == null) {
+            arcType = this.itsTypes.getSimilarType(type);
+            if (arcType == null) {
+                arcType = this.itsTypes.addType(type);
+            }
+            if (!arcType.getAdditionalRepr().contains("[EDGE]")) {
+                arcType.setAdditionalRepr("[EDGE]");
+            }
+        }
+        TypeError typeError = this.checkConnectValid(arcType, src, tar);
+        if (typeError != null) {
+            throw new TypeException(typeError);
+        }
+        Arc anArc = orientation.createArc(this, arcType, src, tar);
+        postCreatingArc(anArc);
+        return anArc;
+    }
+
+    /**
+     * Performs post-creation processing for the specified arc.
+     *
+     * @param anArc The arc that was created.
+     * @throws TypeException If the arc fails type checking.
+     */
+    protected void postCreatingArc(Arc anArc) throws TypeException {
+        TypeError typeError;
+        // if this is not a type graph, so check this graph
+        // against its type graph
+        typeError = this.itsTypes.checkType(anArc, this.isCompleteGraph());
+        if (typeError != null) {
+            orientation.sourceRemoveArc(anArc);
+            orientation.targetRemoveArc(anArc);
+            throw new TypeException(typeError);
+        }
+        this.attributed = this.attributed || anArc.getAttribute() != null;
+        this.itsArcs.add(anArc);
+        addToTypeObjectsMap(anArc);
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_CREATED, anArc));
+    }
+
+    /**
+     * Creates a new arc as a copy of the specified original arc. Only its type
+     * and attributes are copied, the structural context (source, target) is
+     * not. The specified source and target objects must be part of this graph,
+     * but this is not checked here.
+     *
+     * @param orig The original arc to copy.
+     * @param src The source node for the new arc.
+     * @param tar The target node for the new arc.
+     * @return The copied arc.
+     * @throws TypeException If the arc cannot be copied due to type errors.
+     */
+    public Arc copyArc(final Arc orig, final Node src, final Node tar) throws TypeException {
+        Arc arc = null;
+        try {
+            arc = createArc(orig.getType(), src, tar);
+            if (arc != null) {
+                arc.setInputVector(orig.copyInputVector());
+                arc.setObjectName(orig.getObjectName());
+                if (orig.getAttribute() != null) {
+                    arc.createAttributeInstance();
+                    ((ValueTuple) arc.getAttribute()).copyEntries(orig
+                            .getAttribute());
+                }
+            } else {
+                throw new TypeException("Graph.copyArc:: Cannot create an Arc of type : "
+                        + orig.getType().getName());
+            }
+        } catch (TypeException ex) {
+            if (src != null && tar != null) {
+                throw new TypeException("   "
+                        + orig.getType().getName()
+                        + " from  " + src.getType().getName()
+                        + " to  " + tar.getType().getName()
+                        + "   " + ex.getLocalizedMessage());
+            }
+            throw new TypeException(ex.getLocalizedMessage());
+        }
+        return arc;
+    }
+
+    /**
+     * Deletes the specified arc.The arc will be removed from this graph and
+     * from all morphism mappings with this arc.
+     *
+     * @param arc
+     * @throws TypeException If this graph is a type graph, and there are arcs
+     * of this type arc in one of other graphs, an exception is thrown.
+     */
+    public void destroyArc(Arc arc) throws TypeException {
+        destroyArc(arc, true, false);
+    }
+
+    /**
+     * Deletes the specified arc. The arc will be removed from this graph and
+     * from all morphism mappings with this arc. If the specified parameter
+     * checkFirst is false, the arc is destroyed without any checks.
+     *
+     * @param arc The arc to destroy.
+     * @param checkFirst If true, performs checks before destroying.
+     * @throws TypeException If this graph is a type graph, and there are arcs
+     * of this type arc in one of other graphs, an exception is thrown.
+     */
+    public synchronized void destroyArc(Arc arc, boolean checkFirst)
+            throws TypeException {
+        destroyArc(arc, checkFirst, false);
+    }
+
+    /**
+     * Deletes the specified arc. The arc will be removed from this graph and
+     * from all morphism mappings with this arc. If the specified parameter
+     * checkFirst is false, the arc is destroyed without any checks.
+     *
+     * @param arc The arc to destroy.
+     * @param checkFirst If true, performs checks before destroying.
+     * @param forceDestroy If true, forces destruction without throwing
+     * exceptions.
+     * @throws TypeException If this graph is a type graph, and there are arcs
+     * of this type arc in one of other graphs, an exception is thrown when
+     * forceDestroy is false, otherwise no exception is thrown.
+     */
+    public void destroyArc(
+            final Arc arc,
+            final boolean checkFirst,
+            final boolean forceDestroy) throws TypeException {
+        if (arc != null) {
+            // can we remove this arc?
+            // check for multiplicity
+            if (checkFirst
+                    && this.isCompleteGraph()
+                    && !forceDestroy) {
+                TypeError typeError = this.itsTypes.checkIfRemovable(arc);
+                if (typeError != null) {
+                    typeError.setContainingGraph(this);
+                    throw new TypeException(typeError);
+                }
+            }
+            propagateChange(new Change(Change.WANT_DESTROY_OBJECT, arc));
+            synchronized (monitorMorphs) {
+                removeMapping(arc);
+                removeArcFromTypeObjectsMap(arc);
+            }
+            this.itsArcs.remove(arc);
+            arc.dispose();
+            this.changed = true;
+            propagateChange(new Change(Change.OBJECT_DESTROYED, arc));
+        }
+    }
+
+    /**
+     * Destroys an arc quickly without performing type checks.
+     *
+     * @param arc The arc to destroy quickly.
+     */
+    public void destroyArcFast(final Arc arc) {
+        propagateChange(new Change(Change.WANT_DESTROY_OBJECT, arc));
+        synchronized (monitorMorphs) {
+            removeMapping(arc);
+            removeArcFromTypeObjectsMap(arc);
+        }
+        this.itsArcs.remove(arc);
+        arc.dispose();
+        this.changed = true;
+        propagateChange(new Change(Change.OBJECT_DESTROYED, arc));
+    }
+
+    /**
+     * Destroys the specified graph object (node or arc).
+     *
+     * @param obj The graph object to destroy.
+     * @throws TypeException If the object cannot be destroyed due to type
+     * errors.
+     */
+    public void destroyObject(GraphObject obj) throws TypeException {
+        if (obj.isNode()) {
+            destroyNode((Node) obj, true, false);
+        } else if (obj.isArc()) {
+            destroyArc((Arc) obj, true, false);
+        }
+    }
+
+    /**
+     * Forces destruction of the specified graph object (node or arc) without
+     * checks.
+     *
+     * @param obj The graph object to force destroy.
+     * @throws TypeException If the object cannot be destroyed due to type
+     * errors.
+     */
+    public void forceDestroyObject(GraphObject obj) throws TypeException {
+        if (obj.isNode()) {
+            destroyNode((Node) obj, true, true);
+        } else if (obj.isArc()) {
+            destroyArc((Arc) obj, true, true);
+        }
+    }
+
+    /**
+     * Destroys all objects of the specified type in this graph.
+     *
+     * @param t The type of objects to destroy.
+     * @return true if any objects were destroyed, false otherwise.
+     */
+    public boolean destroyObjectsOfType(Type t) {
+        boolean done = false;
+        Iterator<?> iter = this.itsArcs.iterator();
+        while (iter.hasNext()) {
+            Arc o = (Arc) iter.next();
+            if (o.getType().compareTo(t)) {
+                try {
+                    destroyArc(o, false, true);
+                    done = true;
+                } catch (TypeException e) {
+                    System.out.println("Graph.destroyObjectsOfType  FAILED! "
+                            + e.getMessage());
+                }
+            }
+        }
+        if (done) {
+            return true;
+        }
+        iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            Node o = (Node) iter.next();
+            if (t.isParentOf(o.getType())) {
+                try {
+                    destroyNode(o, false, true);
+                    done = true;
+                } catch (TypeException e) {
+                    System.out.println("Graph.destroyObjectsOfType  FAILED! "
+                            + e.getMessage());
+                }
+            }
+        }
+        return done;
+    }
+
+    /**
+     * Destroys all objects of the specified types in this graph.
+     *
+     * @param types The list of types of objects to destroy.
+     * @return null if destroy was successful, otherwise a list with failed
+     * types.
+     */
+    public List<String> destroyObjectsOfTypes(List<Type> types) {
+        List<String> failed = null;
+        for (int i = 0; i < types.size(); i++) {
+            Type t = types.get(i);
+            if (!destroyObjectsOfType(t)) {
+                if (failed == null) {
+                    failed = new ArrayList<>(5);
+                }
+                failed.add("Graph:  ".concat(this.itsName).concat("   Type:  ").concat(t.getName()));
+            }
+        }
+        return failed;
+    }
+
+    /**
+     * Returns the set of nodes in this graph.
+     *
+     * @return The set of nodes.
+     */
+    public HashSet<Node> getNodesSet() {
+        return this.itsNodes;
+    }
+
+    /**
+     * Returns the collection of nodes in this graph.
+     *
+     * @return The collection of nodes.
+     */
+    public Collection<Node> getNodesCollection() {
+        return this.itsNodes;
+    }
+
+    /**
+     * Returns the count of nodes in this graph.
+     *
+     * @return The number of nodes.
+     */
+    public int getNodesCount() {
+        return this.itsNodes.size();
+    }
+
+    /**
+     * Returns a node that has the specified attribute member.
+     *
+     * @param attrType The attribute type to search for.
+     * @param mem The value member to search for.
+     * @return The node with the specified attribute member, or null if not
+     * found.
+     */
+    public Node getNodeWithAttrMember(AttrType attrType, ValueMember mem) {
+        GraphObject go = null;
+        Iterator<Node> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            go = iter.next();
+            if (go.getAttribute() != null
+                    && go.getAttribute().getTupleType() == attrType) {
+                for (int i = 0; i < go.getAttribute().getNumberOfEntries(); i++) {
+                    if ((ValueMember) go.getAttribute().getMemberAt(i) == mem) {
+                        return (Node) go;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns an arc that has the specified attribute member.
+     *
+     * @param attrType The attribute type to search for.
+     * @param mem The value member to search for.
+     * @return The arc with the specified attribute member, or null if not
+     * found.
+     */
+    public Arc getEdgeWithAttrMember(AttrType attrType, ValueMember mem) {
+        GraphObject go = null;
+        Iterator<Arc> iter = this.itsArcs.iterator();
+        while (iter.hasNext()) {
+            go = iter.next();
+            if (go.getAttribute() != null
+                    && go.getAttribute().getTupleType() == attrType) {
+                for (int i = 0; i < go.getAttribute().getNumberOfEntries(); i++) {
+                    if ((ValueMember) go.getAttribute().getMemberAt(i) == mem) {
+                        return (Arc) go;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the set of arcs in this graph.
+     *
+     * @return The set of arcs.
+     */
+    public HashSet<Arc> getArcsSet() {
+        return this.itsArcs;
+    }
+
+    /**
+     * Returns the collection of arcs in this graph.
+     *
+     * @return The collection of arcs.
+     */
+    public Collection<Arc> getArcsCollection() {
+        return this.itsArcs;
+    }
+
+    /**
+     * Returns the count of arcs in this graph.
+     *
+     * @return The number of arcs.
+     */
+    public int getArcsCount() {
+        return this.itsArcs.size();
+    }
+
+    /**
+     * Returns edges between specified source and target objects.
+     *
+     * @param src The source graph object.
+     * @param tar The target graph object.
+     * @return List of arcs between the specified objects, or null if none
+     * found.
+     */
+    public List<Arc> getArcs(final GraphObject src, final GraphObject tar) {
+        List<Arc> res = null;
+        Iterator<Arc> outs = ((Node) src).getOutgoingArcsSet().iterator();
+        while (outs.hasNext()) {
+            Arc go = outs.next();
+            if (go.getTarget() == tar) {
+                if (res == null) {
+                    res = new ArrayList<>();
+                }
+                res.add(go);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Returns nodes of the specified type.
+     *
+     * @param t The type of nodes to find.
+     * @return List of nodes of the specified type, or null if none found.
+     */
+    public List<Node> getNodes(final Type t) {
+        List<Node> res = null;
+        Iterator<Node> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            Node go = iter.next();
+            if (t.isParentOf(go.getType())) {
+                if (res == null) {
+                    res = new ArrayList<>();
+                }
+                res.add(go);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Iterates through nodes to find related nodes of the specified parent
+     * type.
+     *
+     * @param t The parent type to search for.
+     * @return List of nodes whose type is a child of the specified type.
+     */
+    public List<Node> getNodesByParentType(final Type t) {
+        List<Node> res = null;
+        Iterator<Node> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            Node go = iter.next();
+            if (t.isParentOf(go.getType())) {
+                if (res == null) {
+                    res = new ArrayList<>();
+                }
+                res.add(go);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Iterates through nodes to find nodes with type equal to the specified
+     * type.
+     *
+     * @param t The type to compare against.
+     * @return List of nodes with type exactly equal to the specified type, or
+     * null if none found.
+     */
+    public List<Node> getNodesByCompareType(final Type t) {
+        List<Node> res = null;
+        Iterator<Node> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            Node go = iter.next();
+            if (go.getType().compareTo(t)) {
+                if (res == null) {
+                    res = new ArrayList<>();
+                }
+                res.add(go);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Iterates through edges to find edges of the specified type between the
+     * specified source and target.
+     *
+     * @param t The type of arcs to find.
+     * @param src The source graph object.
+     * @param tar The target graph object.
+     * @return List of arcs matching the criteria, or null if none found.
+     */
+    public List<Arc> getArcs(final Type t, final GraphObject src, final GraphObject tar) {
+        List<Arc> res = null;
+        Iterator<Arc> outs = ((Node) src).getOutgoingArcsSet().iterator();
+        while (outs.hasNext()) {
+            Arc go = outs.next();
+            if ((go.getTarget() == tar)
+                    && go.getType().compareTo(t) //&& go.getType().isRelatedTo(arcType)
+                    ) {
+                if (res == null) {
+                    res = new ArrayList<>();
+                }
+                res.add(go);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Iterates through edges to find edges of the specified type.
+     *
+     * @param type The type of arcs to find.
+     * @return List of arcs of the specified type, or null if none found.
+     */
+    public List<Arc> getArcs(final Type type) {
+        List<Arc> res = null;
+        Iterator<Arc> iter = this.itsArcs.iterator();
+        while (iter.hasNext()) {
+            Arc obj = iter.next();
+            if (obj.getType().compareTo(type)) {
+                if (res == null) {
+                    res = new ArrayList<>();
+                }
+                res.add(obj);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Returns type names of nodes and edges of this graph. If a type is
+     * unnamed, returns "[UNNAMED_NODE]" or "[UNNAMED_EDGE]". The order of the
+     * type names is the order of the nodes and edges of this graph.
+     *
+     * @return List of type names.
+     */
+    public List<String> getTypeNamesOfGraphObjects() {
+        final List<String> v = new ArrayList<>(getSize());
+        getTypeNamesOfGOs(this.itsNodes.iterator(), v);
+        getTypeNamesOfGOs(this.itsArcs.iterator(), v);
+        return v;
+    }
+
+    private void getTypeNamesOfGOs(final Iterator<?> iter, final List<String> result) {
+        while (iter.hasNext()) {
+            GraphObject o = (GraphObject) iter.next();
+            String goname = o.getType().getName();
+            if (goname.equals("")) {
+                goname = "[UNNAMED_NODE]";
+            }
+            result.add(goname);
+        }
+    }
+
+    /**
+     * Returns an iterator through all nodes and arcs in this graph.
+     *
+     * @return Iterator of all graph objects (nodes and arcs).
+     * @see agg.xt_basis.GraphObject
+     */
+    public Iterator<GraphObject> iteratorOfElems() {
+        List<GraphObject> elems = new ArrayList<>(this.itsNodes);
+        elems.addAll(this.itsArcs);
+        return elems.iterator();
+    }
+
+    /**
+     * Returns an iterator through all elements of the specified type name.
+     *
+     * @param typeName The name of the type to search for.
+     * @return Iterator of graph objects with the specified type name.
+     * @see agg.xt_basis.GraphObject
+     */
+    public Iterator<GraphObject> iteratorOfType(final String typeName) {
+        return getElemsOfTypeAsList(typeName).iterator();
+    }
+
+    /**
+     * Returns a list of all elements of the specified type name.
+     *
+     * @param typeName The name of the type to search for.
+     * @return List of graph objects with the specified type name.
+     * @see agg.xt_basis.GraphObject
+     */
+    public List<GraphObject> getElemsOfTypeAsList(final String typeName) {
+        final List<GraphObject> elems = new ArrayList<>();
+        if (!this.getElemsOfTypeName(typeName, this.itsNodes.iterator(), elems)) {
+            this.getElemsOfTypeName(typeName, this.itsArcs.iterator(), elems);
+        }
+        return elems;
+    }
+
+    private boolean getElemsOfTypeName(
+            final String typeName,
+            final Iterator<?> iter,
+            final List<GraphObject> result) {
+        while (iter.hasNext()) {
+            GraphObject obj = (GraphObject) iter.next();
+            if (obj.getType().getName().equals(typeName)) {
+                result.add(obj);
+            }
+        }
+        return !result.isEmpty();
+    }
+
+    /**
+     * Returns an iterator through objects of the specified type.
+     *
+     * @param type The type to search for.
+     * @return Iterator of graph objects of the specified type.
+     */
+    public Iterator<GraphObject> getElementsOfType(final Type type) {
+        return getElementsOfTypeAsList(type).iterator();
+    }
+
+    /**
+     * Returns a list of objects of the specified type.
+     *
+     * @param type The type to search for.
+     * @return List of graph objects of the specified type.
+     */
+    public List<GraphObject> getElementsOfTypeAsList(final Type type) {
+        final List<GraphObject> elems = new ArrayList<>();
+        if (!this.getElemsOfType(type, this.itsNodes.iterator(), elems)) {
+            this.getElemsOfType(type, this.itsArcs.iterator(), elems);
+        }
+        return elems;
+    }
+
+    private boolean getElemsOfType(
+            final Type type,
+            final Iterator<?> iter,
+            final List<GraphObject> result) {
+        while (iter.hasNext()) {
+            GraphObject obj = (GraphObject) iter.next();
+            if (obj.getType().compareTo(type)) {
+                result.add(obj);
+            }
+        }
+        return !result.isEmpty();
+    }
+
+    /**
+     * Returns a list of graph objects which are parent objects of the given
+     * type.
+     *
+     * @param type The type to search for parent objects.
+     * @return List of parent graph objects of the specified type.
+     */
+    public List<GraphObject> getParentsOfType(final Type type) {
+        final List<GraphObject> elems = this.getParsOfType(type, this.itsNodes.iterator(), false);
+        if (elems.isEmpty()) {
+            this.getElemsOfType(type, this.itsArcs.iterator(), elems);
+        }
+        return elems;
+    }
+
+    /**
+     * Returns a list of graph objects which are objects or parent objects of
+     * the given type.
+     *
+     * @param type The type to search for.
+     * @return List of graph objects of the specified type or its parent types.
+     */
+    public List<GraphObject> getElemsAndParentsOfType(final Type type) {
+        List<GraphObject> elems = this.getParsOfType(type, this.itsNodes.iterator(), true);
+        if (elems.isEmpty()) {
+            this.getElemsOfType(type, this.itsArcs.iterator(), elems);
+        }
+        return elems;
+    }
+
+    /**
+     * Returns a list of graph objects which are child objects of the given
+     * type.
+     *
+     * @param type The parent type to search for child objects.
+     * @return List of child graph objects of the specified type.
+     */
+    public List<GraphObject> getChildrenOfType(final Type type) {
+        List<GraphObject> elems = this.getChildsOfType(type, this.itsNodes.iterator(), false);
+        if (elems.isEmpty()) {
+            this.getElemsOfType(type, this.itsArcs.iterator(), elems);
+        }
+        return elems;
+    }
+
+    /**
+     * Returns a list of graph objects which are objects or child objects of the
+     * given type.
+     *
+     * @param type The type to search for.
+     * @return List of graph objects of the specified type or its child types.
+     */
+    public List<GraphObject> getElemsAndChildrenOfType(final Type type) {
+        final List<GraphObject> elems = this.getChildsOfType(type, this.itsNodes.iterator(), true);
+        if (elems.isEmpty()) {
+            this.getElemsOfType(type, this.itsArcs.iterator(), elems);
+        }
+        return elems;
+    }
+
+    private List<GraphObject> getChildsOfType(
+            final Type type,
+            final Iterator<?> iter,
+            boolean withElemsOfType) {
+        List<GraphObject> result = new ArrayList<>(2);
+        while (iter.hasNext()) {
+            GraphObject obj = (GraphObject) iter.next();
+            if ((withElemsOfType && obj.getType().compareTo(type))
+                    || obj.getType().isChildOf(type)) {
+                result.add(obj);
+            }
+        }
+        return result;
+    }
+
+    private List<GraphObject> getParsOfType(
+            final Type type,
+            final Iterator<?> iter,
+            boolean withElemsOfType) {
+        List<GraphObject> result = new ArrayList<>(2);
+        while (iter.hasNext()) {
+            GraphObject obj = (GraphObject) iter.next();
+            if ((withElemsOfType && obj.getType().compareTo(type))
+                    || obj.getType().isParentOf(type)) {
+                result.add(obj);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns a list of elements of the specified type, optionally including
+     * children.
+     *
+     * @param type The type to search for.
+     * @param withChildren If true, includes child types.
+     * @return List of graph objects of the specified type.
+     */
+    public List<GraphObject> getElementsOfTypeAsList(final Type type, boolean withChildren) {
+        final List<GraphObject> elems = new ArrayList<>();
+        Iterator<?> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            Node obj = (Node) iter.next();
+            if (obj.getType().compareTo(type)
+                    || (withChildren && obj.getType().isChildOf(type))) {
+                elems.add(obj);
+            }
+        }
+        if (!elems.isEmpty()) {
+            return elems;
+        }
+        iter = this.itsArcs.iterator();
+        while (iter.hasNext()) {
+            Arc obj = (Arc) iter.next();
+            if (obj.getType().compareTo(type)) {
+                elems.add(obj);
+            }
+        }
+        return elems;
+    }
+
+    /**
+     * Iterates through arcs to find all elements of type with specified type,
+     * source and target.
+     *
+     * @param type The type to search for.
+     * @param src The source type.
+     * @param tar The target type.
+     * @return Iterator of graph objects matching the criteria.
+     * @see agg.xt_basis.GraphObject
+     */
+    public Iterator<GraphObject> getElementsOfType(Type type, Type src, Type tar) {
+        return  getElementsOfTypeAsList(type, src, tar).iterator();
+    }
+
+    /**
+     * Iterates through edges to find all edges of the specified type. For all
+     * these edges holds: the source is of the specified src type and the target
+     * is of the specified tar type.
+     *
+     * @param type The arc type to search for.
+     * @param src The source type.
+     * @param tar The target type.
+     * @return List of graph objects matching the criteria.
+     * @see agg.xt_basis.GraphObject
+     */
+    public List<GraphObject> getElementsOfTypeAsList(final Type type, final Type src,
+            final Type tar) {
+        final List<GraphObject> elems = new ArrayList<>();
+        Iterator<Arc> iter = this.itsArcs.iterator();
+        while (iter.hasNext()) {
+            Arc obj = iter.next();
+            if (obj.getType().compareTo(type)
+                    && (obj.getSource().getType().compareTo(src)
+                    || obj.getSource().getType().isChildOf(src))
+                    && (obj.getTarget().getType().compareTo(tar)
+                    || obj.getTarget().getType().isChildOf(tar))) {
+                elems.add(obj);
+            }
+        }
+        return elems;
+    }
+
+    /**
+     * Iterates through nodes and arcs to find all elements of the specified
+     * type.
+     *
+     * @param type The graph object whose type to search for.
+     * @return Iterator of graph objects matching the type.
+     * @see agg.xt_basis.GraphObject
+     */
+    public Iterator<GraphObject> getElementsOfType(final GraphObject type) {
+        return getElementsOfTypeAsList(type).iterator();
+    }
+
+    /**
+     * Iterates through nodes and arcs to find all elements of the specified
+     * type.
+     *
+     * @param type The graph object whose type to search for.
+     * @return List of graph objects matching the type.
+     * @see agg.xt_basis.GraphObject
+     */
+    public List<GraphObject> getElementsOfTypeAsList(final GraphObject type) {
+        List<GraphObject> elems;
+        if (type.isNode()) {
+            elems =  getElementsOfTypeAsList(type.getType());
+            if (!elems.isEmpty()) {
+                return elems;
+            }
+        } else {
+            elems =  getElementsOfTypeAsList(type.getType(), ((Arc) type)
+                    .getSource().getType(), ((Arc) type).getTarget().getType());
+            if (!elems.isEmpty()) {
+                return elems;
+            }
+        }
+        return elems;
+    }
+
+    /**
+     * Sets the attribute context for this graph.
+     *
+     * @param context The attribute context to set.
+     */
+    public void setAttrContext(AttrContext context) {
+        this.itsAttrContext = context;
+    }
+
+    /**
+     * Returns the attribute context of this graph.
+     *
+     * @return The attribute context.
+     */
+    public AttrContext getAttrContext() {
+        return this.itsAttrContext;
+    }
+
+    /**
+     * Returns the attribute manager for this graph.
+     *
+     * @return The attribute manager.
+     */
+    public AttrManager getAttrManager() {
+        return AttrTupleManager.getDefaultManager();
+    }
+
+    /**
+     * Creates attribute instances where needed for nodes and arcs.
+     */
+    public void createAttrInstanceWhereNeeded() {
+        Iterator<Node> iterNodes = this.itsNodes.iterator();
+        while (iterNodes.hasNext()) {
+            Node go = iterNodes.next();
+            if ((!go.getType().isAttrTypeEmpty() || !go.getType().isParentAttrTypeEmpty())
+                    && go.getAttribute() == null) {
+                go.createAttributeInstance();
+            }
+        }
+        Iterator<Arc> iterArcs = this.itsArcs.iterator();
+        while (iterArcs.hasNext()) {
+            Arc go = iterArcs.next();
+            if (!go.getType().isAttrTypeEmpty()
+                    && go.getAttribute() == null) {
+                go.createAttributeInstance();
+            }
+        }
+    }
+
+    /**
+     * Creates attribute instances where needed for nodes and arcs of the
+     * specified type.
+     *
+     * @param t The type for which to create attribute instances.
+     */
+    public void createAttrInstanceOfTypeWhereNeeded(final Type t) {
+        Iterator<Node> iterNodes = this.itsNodes.iterator();
+        while (iterNodes.hasNext()) {
+            Node go = iterNodes.next();
+            if ((go.getType() == t || t.isParentOf(go.getType()))
+                    && (!t.isAttrTypeEmpty()
+                    || !t.isParentAttrTypeEmpty())
+                    && go.getAttribute() == null) {
+                go.createAttributeInstance();
+            }
+        }
+        Iterator<Arc> iterArcs = this.itsArcs.iterator();
+        while (iterArcs.hasNext()) {
+            Arc go = iterArcs.next();
+            if (go.getType() == t
+                    && !t.isAttrTypeEmpty()
+                    && go.getAttribute() == null) {
+                go.createAttributeInstance();
+            }
+        }
+    }
+
+    /**
+     * Propagates a change to all observers if notification is required.
+     *
+     * @param ch The change to propagate.
+     */
+    protected void propagateChange(agg.util.Change ch) {
+        if (this.notificationRequired) {
+            setChanged();
+            notifyObservers(ch);
+        }
+    }
+
+    /**
+     * Stores the specified morphism if it uses this graph as source or target.
+     *
+     * @param m The morphism to add.
+     */
+    public void addUsingMorph(OrdinaryMorphism m) {
+        synchronized (monitorMorphs) {
+            this.itsUsingMorphs.add(m);
+        }
+    }
+
+    /**
+     * Removes the specified morphism from stored morphisms.
+     *
+     * @param m The morphism to remove.
+     * @return true if the morphism was removed, false otherwise.
+     */
+    public boolean removeUsingMorph(final OrdinaryMorphism m) {
+        synchronized (monitorMorphs) {
+            return this.itsUsingMorphs.remove(m);
+        }
+    }
+
+    /**
+     * Checks if this graph is empty (has no nodes).
+     *
+     * @return true if this graph has no nodes, false otherwise.
+     */
+    public boolean isEmpty() {
+        return this.itsNodes.isEmpty();
+    }
+
+    /**
+     * Checks if this graph contains the specified graph object.
+     *
+     * @param obj The graph object to check.
+     * @return true if this graph contains the object, false otherwise.
+     */
+    public boolean isElement(GraphObject obj) {
+        if (this.itsNodes == null) {
+            System.out.println(this.itsName);
+        }
+        return obj.getContext() == this;
+    }
+
+    /**
+     * Checks if this graph contains the specified node.
+     *
+     * @param obj The node to check.
+     * @return true if this graph contains the node, false otherwise.
+     */
+    public boolean isNode(Node obj) {
+        return this.itsNodes.contains(obj);
+    }
+
+    /**
+     * Checks if this graph contains the specified arc.
+     *
+     * @param obj The arc to check.
+     * @return true if this graph contains the arc, false otherwise.
+     */
+    public boolean isArc(Arc obj) {
+        return this.itsArcs.contains(obj);
+    }
+
+    /**
+     * Checks if this graph uses the specified type.
+     *
+     * @param t The graph object whose type to check.
+     * @return true if this graph uses the type, false otherwise.
+     */
+    public boolean isUsingType(GraphObject t) {
+        if (t.isArc()) {
+            boolean hasTypeGraphArc = this.getTypeSet().getTypeGraphArc(
+                    t.getType(), ((Arc) t).getSource().getType(),
+                    ((Arc) t).getTarget().getType()) != null;
+            Iterator<Arc> iter = this.itsArcs.iterator();
+            while (iter.hasNext()) {
+                Arc o = iter.next();
+                if (hasTypeGraphArc) {
+                    return (orientation.isUsingArcType(o, (Arc) t));
+                } else {
+                    return (o.getType().compareTo(t.getType()));
+                }
+            }
+        } else {
+            while (this.itsNodes.iterator().hasNext()) {
+                Node o = this.itsNodes.iterator().next();
+                return (o.getType().compareTo(t.getType()))
+                        || (o.getType().isChildOf(t.getType()));
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if this graph uses the specified type.
+     *
+     * @param t The type to check.
+     * @return true if this graph uses the type, false otherwise.
+     */
+    public boolean isUsingType(Type t) {
+        return doesUseType(t, this.itsNodes.iterator())
+                || doesUseType(t, this.itsArcs.iterator());
+    }
+
+    private boolean doesUseType(final Type t, final Iterator<?> iter) {
+        while (iter.hasNext()) {
+            GraphObject go = (GraphObject) iter.next();
+            if (go.getType().compareTo(t)) {
+                return true;
+            } else if (go.getType().isChildOf(t)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if this graph uses the specified variable.
+     *
+     * @param v The variable member to check.
+     * @return true if this graph uses the variable, false otherwise.
+     */
+    public boolean isUsingVariable(VarMember v) {
+        return this.doesUseVar(v, this.itsNodes.iterator())
+                || this.doesUseVar(v, this.itsArcs.iterator());
+    }
+
+    private boolean doesUseVar(final VarMember v, final Iterator<?> iter) {
+        while (iter.hasNext()) {
+            GraphObject go = (GraphObject) iter.next();
+            if (go.getAttribute() == null) {
+                continue;
+            }
+            ValueTuple val = (ValueTuple) go.getAttribute();
+            for (int j = 0; j < val.getSize(); j++) {
+                ValueMember mem = val.getValueMemberAt(j);
+                if (mem.getExpr() != null) {
+                    if (mem.getExpr().isVariable()) {
+                        if (mem.getDeclaration().getTypeName().equals(
+                                v.getDeclaration().getTypeName())
+                                && mem.getExprAsText().equals(v.getName())) {
+                            return true;
+                        }
+                    } else if (mem.getExpr().isComplex()) {
+                        if (mem.getAllVariableNamesOfExpression().contains(
+                                v.getName())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if this graph uses constants in its attributes.
+     *
+     * @return true if this graph uses constants, false otherwise.
+     */
+    public boolean isUsingConstant() {
+        return this.doesUseConst(this.itsNodes.iterator())
+                || this.doesUseConst(this.itsArcs.iterator());
+    }
+
+    private boolean doesUseConst(final Iterator<?> iter) {
+        while (iter.hasNext()) {
+            GraphObject go = (GraphObject) iter.next();
+            if (go.getAttribute() == null) {
+                continue;
+            }
+            ValueTuple val = (ValueTuple) go.getAttribute();
+            for (int j = 0; j < val.getSize(); j++) {
+                ValueMember mem = val.getValueMemberAt(j);
+                if (mem.getExpr() != null
+                        && mem.getExpr().isConstant()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Deletes all graph objects from this graph.
+     * <p>
+     * <b>Post:</b> <code>isEmpty()</code> returns true.
+     */
+    public void clear() {
+        this.changed = false;
+        synchronized (monitorMorphs) {
+            this.itsUsingMorphs.clear();
+            this.destroyArcs();
+            this.destroyNodes();
+        }
+        propagateChange(new Change(Change.OBJECT_DESTROYED, null));
+    }
+
+    /**
+     * Tries to glue two graph objects. The context of the graph object to keep
+     * will be extended by out- and in-edges of the glue object. The unset
+     * attributes of the keep object will get the attribute value of the glue
+     * object if it is a constant. At the end the glue object will be destroyed.
+     *
+     * @param keep The object to keep.
+     * @param glue The object to glue into the keep object.
+     * @return true if the glue operation was successful, false otherwise.
+     * @throws TypeException If the glue operation fails due to type errors.
+     */
+    public synchronized boolean glue(
+            final GraphObject keep,
+            final GraphObject glue) throws TypeException {
+        return glue(keep, glue, null);
+    }
+
+    /**
+     * Tries to glue two graph objects with a target object. The context of the
+     * graph object to keep will be extended by out- and in-edges of the glue
+     * object. The unset attributes of the keep object will get the attribute
+     * value of the glue object if it is a constant.
+     *
+     * @param keep The object to keep.
+     * @param glue The object to glue into the keep object.
+     * @param targetObj The target object for the glue operation.
+     * @return true if the glue operation was successful, false otherwise.
+     * @throws TypeException If the glue operation fails due to type errors.
+     */
+    public synchronized boolean glue(
+            final GraphObject keep,
+            final GraphObject glue,
+            final GraphObject targetObj) throws TypeException {
+        if (keep.equals(glue)) {
+            return true;
+        }
+        if ((glue == null) || !glue.getType().isParentOf(keep.getType())) {
+            return false;
+        }
+//		System.out.println("Graph.glue:  keep: "+keep.getType().getName()+"  glue: "+glue.getType().getName());
+        if (keep.isArc()
+                && (!glue(((Arc) keep).getSource(), ((Arc) glue).getSource())
+                || !glue(((Arc) keep).getTarget(), ((Arc) glue).getTarget()))) {
+            return false;
+        }
+        // check attr. value
+        if (keep.getAttribute() != null && glue.getAttribute() != null) {
+            for (int i = 0; i < ((ValueTuple) keep.getAttribute())
+                    .getNumberOfEntries(); i++) {
+                ValueMember amKeep = ((ValueTuple) keep.getAttribute())
+                        .getValueMemberAt(i);
+                ValueMember amGlue = ((ValueTuple) glue.getAttribute())
+                        .getValueMemberAt(amKeep.getName());
+                if (amKeep.isSet() && amGlue != null && amGlue.isSet()) {
+                    if (amKeep.getExpr().isConstant()) {
+                        if (amGlue.getExpr().isConstant()) {
+                            if (targetObj != null) {
+                                ValueMember tarVal = ((ValueTuple) targetObj.getAttribute())
+                                        .getValueMemberAt(amKeep.getName());
+                                if (tarVal != null && !tarVal.isSet()
+                                        && !amKeep.getExprAsText().equals(amGlue.getExprAsText())) {
+                                    throw new TypeException("Graph.glue: Checking attribute constant values of objects to glue failed!");
+                                }
+                            } else if (!amKeep.getExprAsText().equals(amGlue.getExprAsText())) {
+                                throw new TypeException("Graph.glue: Checking attribute constant values of objects to glue failed!");
+                            }
+                        }
+                    } else if (!amKeep.getExpr().isVariable()) {
+                        throw new TypeException("Graph.glue: Checking attribute (expresion) values of objects to glue failed!");
+                    }
+                }
+            }
+        }
+        if (glue.isNode()) {
+            // Move Incoming Arcs context from "glue" to "keep"
+            // Inverse relations are implicitly updated
+            final List<Arc> incoms = new ArrayList<>(((Node) glue).getIncomingArcsSet());
+            for (int i = 0; i < incoms.size(); i++) {
+                Arc arc = incoms.get(i);
+                if ((this.itsTypes.checkIfRemovableFromTarget(arc) == null)
+                        && (this.itsTypes.checkIfEdgeCreatable(arc.getType(), (Node) arc
+                                .getSource(), (Node) keep) == null)) {
+                    propagateChange(new Change(Change.TARGET_UNSET, arc));
+                    arc.setTarget((Node) keep);
+                    propagateChange(new Change(Change.TARGET_SET, arc));
+                } else {
+                    throw new TypeException("Graph.glue: Checking arcs (type multiplicity) to glue failed!");
+                }
+            }
+            incoms.clear();
+            // Move Outgoing Arcs context from "glue" to "keep"
+            final List<Arc> outcoms = new ArrayList<>(((Node) glue).getOutgoingArcsSet());
+            for (int i = 0; i < outcoms.size(); i++) {
+                Arc arc = outcoms.get(i);
+                if ((this.itsTypes.checkIfRemovableFromSource(arc) == null)
+                        && (this.itsTypes.checkIfEdgeCreatable(arc.getType(),
+                                (Node) keep, (Node) arc.getTarget()) == null)) {
+                    propagateChange(new Change(Change.SOURCE_UNSET, arc));
+                    arc.setSource((Node) keep);
+                    propagateChange(new Change(Change.SOURCE_SET, arc));
+                } else {
+                    throw new TypeException("Graph.glue: Checking arcs (type multiplicity) to glue failed!");
+                }
+            }
+            outcoms.clear();
+        }
+        // set attr. value
+        if (keep.getAttribute() != null && glue.getAttribute() != null) {
+            for (int i = 0; i < ((ValueTuple) keep.getAttribute())
+                    .getNumberOfEntries(); i++) {
+                ValueMember amKeep = ((ValueTuple) keep.getAttribute())
+                        .getValueMemberAt(i);
+                ValueMember amGlue = ((ValueTuple) glue.getAttribute())
+                        .getValueMemberAt(i);
+                if ((!amKeep.isSet() || amKeep.getExpr().isVariable())
+                        && (amGlue != null && amGlue.isSet() && amGlue.getExpr().isConstant())) {
+                    amKeep.setExprAsText(amGlue.getExprAsText());
+                }
+            }
+        }
+//		propagateChange(new Change(Change.OBJECT_GLUED,
+//					new Pair<GraphObject, GraphObject>(keep, glue)));
+        try {
+            if (glue.isNode()) {
+                this.destroyNode((Node) glue, true, false);
+            } else {
+                this.destroyArc((Arc) glue, true, false);
+            }
+            propagateChange(new Change(Change.OBJECT_DESTROYED, glue));
+        } catch (TypeException e) {
+            // must not happened, because we removed all relations, 
+            // so the glue object should be removable
+            throw e; //return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns false if not all attributes of its graph objects are set,
+     * otherwise - true.
+     *
+     * @return
+     */
+    public boolean isReadyForTransform() {
+        return (isAttributeSet(this.itsNodes.iterator(), null)
+                && isAttributeSet(this.itsArcs.iterator(), null));
+    }
+
+    protected boolean isAttributeSet(
+            final Iterator<?> iter,
+            final List<GraphObject> storeOfFailedObjs) {
+        boolean failed = false;
+        while (iter.hasNext() && !failed) {
+            GraphObject o = (GraphObject) iter.next();
+            if (o.getAttribute() == null) {
+                if ((o.getType().getAttrType() != null)
+                        && (o.getType().getAttrType().getNumberOfEntries() != 0)) {
+                    o.createAttributeInstance();
+                    this.attributed = true;
+                } else {
+                    continue;
+                }
+            }
+            if (o.isNode()) {
+                failed = !applyDefaultAttrValuesOfTypeGraph((Node) o, storeOfFailedObjs);
+            } else {
+                failed = !applyDefaultAttrValuesOfTypeGraph((Arc) o, storeOfFailedObjs);
+            }
+        }
+        return !failed;
+    }
+
+    /**
+     *
+     * @param v
+     * @return
+     */
+    public GraphObject getObjectWithVariableOfAttrs(VarMember v) {
+        Iterator<Node> niter = this.itsNodes.iterator();
+        while (niter.hasNext()) {
+            Node n = niter.next();
+            if (n.getAttribute() != null) {
+                AttrInstance attrs = n.getAttribute();
+                for (int i = 0; i < attrs.getNumberOfEntries(); i++) {
+                    ValueMember val = (ValueMember) attrs.getMemberAt(i);
+                    if (val.getExpr() != null
+                            && val.getExprAsText().equals(v.getName())) {
+                        return n;
+                    }
+                }
+            }
+        }
+        Iterator<Arc> aiter = this.itsArcs.iterator();
+        while (aiter.hasNext()) {
+            Arc a = aiter.next();
+            if (a.getAttribute() != null) {
+                AttrInstance attrs = a.getAttribute();
+                for (int i = 0; i < attrs.getNumberOfEntries(); i++) {
+                    ValueMember val = (ValueMember) attrs.getMemberAt(i);
+                    if (val.getExpr() != null
+                            && val.getExprAsText().equals(v.getName())) {
+                        return a;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Checks if this graph has objects with variables or constants in their
+     * attributes.
+     *
+     * @param withvar If true, checks for variables.
+     * @param withconst If true, checks for constants.
+     * @return true if the graph has objects with the specified attribute types.
+     */
+    public boolean hasObjectWithVarOrConstInAttrs(boolean withvar, boolean withconst) {
+        Iterator<Node> niter = this.itsNodes.iterator();
+        while (niter.hasNext()) {
+            Node n = niter.next();
+            if (n.getAttribute() != null) {
+                AttrInstance attrs = n.getAttribute();
+                for (int i = 0; i < attrs.getNumberOfEntries(); i++) {
+                    ValueMember val = (ValueMember) attrs.getMemberAt(i);
+                    if (val.isSet()
+                            && ((withconst && val.getExpr().isConstant())
+                            || (withvar && val.getExpr().isVariable()))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        Iterator<Arc> aiter = this.itsArcs.iterator();
+        while (aiter.hasNext()) {
+            Arc a = aiter.next();
+            if (a.getAttribute() != null) {
+                AttrInstance attrs = a.getAttribute();
+                for (int i = 0; i < attrs.getNumberOfEntries(); i++) {
+                    ValueMember val = (ValueMember) attrs.getMemberAt(i);
+                    if (val.isSet()
+                            && ((withconst && val.getExpr().isConstant())
+                            || (withvar && val.getExpr().isVariable()))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    protected boolean applyDefaultAttrValuesOfTypeGraph(final Node go, final List<GraphObject> storeOfFailedObjs) {
+        final Node typeNode = go.getType().getTypeGraphNodeObject();
+        if (typeNode != null
+                && typeNode.getAttribute() != null) {
+            final ValueTuple value = (ValueTuple) go.getAttribute();
+            // search all parents for default attribute value
+            final List<Type> itsParents = go.getType().getAllParents();
+            for (int p = 0; p < itsParents.size(); p++) {
+                final Node pNode = itsParents.get(p).getTypeGraphNodeObject();
+                if (pNode != null) {
+                    final ValueTuple pNodeAttr = (ValueTuple) pNode.getAttribute();
+                    if (pNodeAttr == null) {
+                        continue;
+                    }
+                    for (int i = 0; i < value.getSize(); i++) {
+                        ValueMember vm = value.getValueMemberAt(i);
+                        if (!vm.isSet()) {
+                            ValueMember pnvm = pNodeAttr.getValueMemberAt(vm.getName());
+                            if (pnvm != null && pnvm.isSet()) {
+                                vm.setExpr(pnvm.getExpr());
+                            }
+                        }
+                    }
+                }
+            }
+            if (!this.getTypeSet().isEmptyAttrAllowed()) {
+                // check for not set attribute
+                for (int i = 0; i < value.getSize(); i++) {
+                    ValueMember vm = value.getValueMemberAt(i);
+                    if (!vm.isSet()) {
+                        if (storeOfFailedObjs != null) {
+                            storeOfFailedObjs.add(go);
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    protected boolean applyDefaultAttrValuesOfTypeGraph(final Arc go, final List<GraphObject> storeOfFailedObjs) {
+        final Arc typeArc = go.getType().getTypeGraphArcObject(go.getSourceType(), go.getTargetType());
+        if (typeArc != null
+                && typeArc.getAttribute() != null) {
+            final ValueTuple typeValue = (ValueTuple) typeArc.getAttribute();
+            final ValueTuple value = (ValueTuple) go.getAttribute();
+            for (int i = 0; i < value.getSize(); i++) {
+                ValueMember vm = value.getValueMemberAt(i);
+                if (!vm.isSet()) {
+                    ValueMember typevm = typeValue.getValueMemberAt(vm.getName());
+                    if (typevm != null && typevm.isSet()) {
+                        vm.setExprAsText(typevm.getExprAsText());
+                    }
+                }
+            }
+            // search for not set attribute value and return false if found
+            for (int i = 0; i < value.getSize(); i++) {
+                ValueMember vm = value.getValueMemberAt(i);
+                if (!vm.isSet()) {
+                    if (storeOfFailedObjs != null) {
+                        storeOfFailedObjs.add(go);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if this graph is ready for transformation. Returns false if not
+     * all attributes of its graph objects are set, otherwise true. The
+     * specified list will contain nodes and edges which are not initialized
+     * completely.
+     *
+     * @param storeOfFailedObjs The list to store objects that failed the check.
+     * @return true if all attributes are set and the graph is ready for
+     * transformation.
+     */
+    public boolean isReadyForTransform(final List<GraphObject> storeOfFailedObjs) {
+        return isAttributeSet(this.itsNodes.iterator(), storeOfFailedObjs)
+                && isAttributeSet(this.itsArcs.iterator(), storeOfFailedObjs);
+    }
+
+    /**
+     * Checks if this graph is isomorphic to the specified graph.
+     *
+     * @param g The graph to check isomorphism with.
+     * @return true if this graph is isomorphic to the specified graph.
+     */
+    public boolean isIsomorphicTo(Graph g) {
+        final OrdinaryMorphism h = this.getIsomorphicWith(g);
+        return h != null;
+    }
+
+    /**
+     * Tries to compute an isomorphic morphism of this graph into the specified
+     * graph.
+     *
+     * @param g The target graph of the result morphism.
+     * @return An isomorphic morphism or null if no isomorphism exists.
+     */
+    public OrdinaryMorphism getIsomorphicWith(final Graph g) {
+        if (this.getNodesCount() != g.getNodesCount()
+                || this.getArcsCount() != g.getArcsCount()) {
+            return null;
+        }
+        boolean result = false;
+        OrdinaryMorphism h = BaseFactory.theFactory().createMorphism(this, g);
+        h.setCompletionStrategy(new Completion_InjCSP());
+        if (h.nextCompletion()) {
+            result = true;
+            // additionally, check type of source - target nodes in case of
+            // Typegraph with Node Type Inheritance
+            if (this.getTypeSet().getTypeGraph() != null
+                    //					&& this.getTypeSet().getLevelOfTypeGraphCheck() >= TypeSet.ENABLED
+                    && this.getTypeSet().hasInheritance()) {
+                Iterator<Node> origs = this.itsNodes.iterator();
+                while (origs.hasNext() && result) {
+                    final Node orig = origs.next();
+                    if (!orig.getType().compareTo(h.getImage(orig).getType())) {
+                        result = false;
+                    }
+                }
+            }
+        }
+        if (!result) {
+            h.dispose();
+            h = null;
+        }
+        return h;
+    }
+
+    /**
+     * Tries to compute isomorphic morphisms of this graph into the specified
+     * graph.
+     *
+     * @param g the target graph of a morphism
+     * @param map contains morphism mappings : keys are elements of this graph,
+     * values are elements of the graph g.
+     *
+     * @return computed isomorphic morphisms or null
+     */
+    public List<OrdinaryMorphism> getIsomorphicWith(final Graph g,
+            final Map<GraphObject, GraphObject> map) {
+        // fast test
+        if (this.getNodesCount() != g.getNodesCount()
+                || this.getArcsCount() != g.getArcsCount()) {
+            return null;
+        }
+        final List<OrdinaryMorphism> isos = new ArrayList<>(5);
+        // try to get an isomorphism
+        OrdinaryMorphism h = BaseFactory.theFactory().createMorphism(this, g);
+        h.setCompletionStrategy(new Completion_InjCSP());
+        // set mappings
+        Iterator<GraphObject> keys = map.keySet().iterator();
+        while (keys.hasNext()) {
+            GraphObject o = keys.next();
+            GraphObject i = map.get(o);
+            if (o != null && i != null) {
+                try {
+                    h.addMapping(o, i);
+                } catch (BadMappingException exc) {
+                }
+            }
+        }
+        // make possible completions
+        while (h.nextCompletion()) {
+            boolean result = true;
+            // additionally, check type of source - target nodes in case of
+            // Typegraph with Node Type Inheritance
+            if (this.getTypeSet().getTypeGraph() != null
+                    && this.getTypeSet().getLevelOfTypeGraphCheck() >= TypeSet.ENABLED
+                    && this.getTypeSet().hasInheritance()) {
+                Iterator<Node> origs = this.itsNodes.iterator();
+                while (origs.hasNext() && result) {
+                    final Node orig = origs.next();
+                    if (!orig.getType().compareTo(h.getImage(orig).getType())) {
+                        result = false;
+                    }
+                }
+            }
+            if (result) {
+                // store this completion 
+                OrdinaryMorphism m = BaseFactory.theFactory().createMorphism(this, g);
+                Iterator<GraphObject> e = h.getDomain();
+                while (e.hasNext()) {
+                    GraphObject o = e.next();
+                    m.addMapping(o, h.getImage(o));
+                }
+                isos.add(m);
+            }
+        }
+        return isos.isEmpty() ? null : isos;
+    }
+
+    /**
+     * Tries to compute all isomorphic morphisms of this graph into the
+     * specified graph g.
+     *
+     * @param g is target graph of morphisms
+     * @param all is true - compute all possible isomorphic morphisms, otherwise
+     * - only first one.
+     * @return computed isomorphic morphisms or null
+     */
+    public List<OrdinaryMorphism> getIsomorphicWith(final Graph g, final boolean all) {
+        List<OrdinaryMorphism> allIsos = new ArrayList<>(5);
+        if (!all) {
+            OrdinaryMorphism h = getIsomorphicWith(g);
+            if (h != null) {
+                allIsos.add(h);
+            }
+            return allIsos;
+        }
+        if ((this.getNodesCount() != g.getNodesCount())
+                || (this.getArcsCount() != g.getArcsCount())) {
+            return null;
+        }
+        OrdinaryMorphism h = BaseFactory.theFactory().createMorphism(this, g);
+        h.setCompletionStrategy(new Completion_InjCSP());
+        // make possible completions
+        while (h.nextCompletion()) {
+            boolean result = true;
+            // additionally, check type of source - target nodes in case of
+            // Typegraph with Node Type Inheritance
+            if (this.getTypeSet().getTypeGraph() != null
+                    && this.getTypeSet().getLevelOfTypeGraphCheck() >= TypeSet.ENABLED
+                    && this.getTypeSet().hasInheritance()) {
+                Iterator<Node> origs = this.itsNodes.iterator();
+                while (origs.hasNext() && result) {
+                    final Node orig = origs.next();
+                    if (!orig.getType().compareTo(h.getImage(orig).getType())) {
+                        result = false;
+                    }
+                }
+            }
+            if (result) {
+                // store this completion 
+                OrdinaryMorphism m = BaseFactory.theFactory().createMorphism(this, g);
+                Iterator<GraphObject> e = h.getDomain();
+                while (e.hasNext()) {
+                    GraphObject o = e.next();
+                    try {
+                        m.addMapping(o, h.getImage(o));
+                    } catch (Exception ex) {
+                    }
+                }
+                allIsos.add(m);
+            }
+        }
+        return allIsos;
+    }
+
+    /**
+     * Returns an isomorphism between this graph and its ad-hoc-created copy.
+     * The attributes values are copied, too.
+     *
+     * @return morphism this --> copy
+     */
+    public OrdinaryMorphism isomorphicCopy() {
+        return this.isomorphicCopy(false);
+    }
+
+    /**
+     * @see OrdinaryMorphism isomorphicCopy()
+     * @return morphism this --> copy
+     */
+    public OrdinaryMorphism isoCopy() {
+        return this.isomorphicCopy(false);
+    }
+
+    /**
+     * Returns an isomorphism between this graph and its ad-hoc-created copy.
+     * The attributes values are copied, too.
+     *
+     * @return morphism copy --> this
+     */
+    public OrdinaryMorphism inverseIsoCopy() {
+        return this.isomorphicCopy(true);
+    }
+
+    /**
+     * Returns an isomorphism between this graph and its ad-hoc-created copy.
+     * The attributes values are copied using plain mapping.
+     *
+     * @return morphism this --> copy or null if copy creation failed
+     */
+    public OrdinaryMorphism plainCopy() {
+        synchronized (this) {
+            Graph copy = BaseFactory.theFactory().createGraph(getTypeSet(), this.isCompleteGraph());
+            OrdinaryMorphism iso = new OrdinaryMorphism(this, copy,
+                    agg.attribute.impl.AttrTupleManager
+                            .getDefaultManager().newContext(AttrMapping.PLAIN_MAP));
+            copy.setName(this.getName().concat("_copy"));
+            iso.setName("IsoMorph");
+            if (makeIsocopy(false, iso, copy)) {
+                return iso;
+            } else {
+                iso.dispose();
+                copy.dispose();
+                copy = null;
+                iso = null;
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Returns an isomorphism between this graph and its ad-hoc-created copy.
+     * The attributes values are copied, too.
+     *
+     * @return morphism this --> copy if inverse is FALSE, otherwise copy -->
+     * this
+     */
+    private OrdinaryMorphism isomorphicCopy(boolean inverse) {
+        synchronized (this) {
+            Graph copy = BaseFactory.theFactory().createGraph(getTypeSet(), this.isCompleteGraph());
+            OrdinaryMorphism iso = null;
+            if (inverse) {
+                iso = BaseFactory.theFactory().createMorphism(copy, this);
+            } else {
+                iso = BaseFactory.theFactory().createMorphism(this, copy);
+            }
+            copy.setName(this.getName().concat("_copy"));
+            iso.setName("IsoMorph");
+            if (makeIsocopy(inverse, iso, copy)) {
+                return iso;
+            } else {
+                iso.dispose();
+                copy.dispose();
+                copy = null;
+                iso = null;
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Makes the given empty graph to a copy of this graph. The attributes
+     * values are copied, too.
+     *
+     * @param inverse if true, the morphism is given by theCopy -> this,
+     * otherwise this -> theCopy
+     * @param iso the morphism to be populated with mappings
+     * @param theCopy the empty graph to be filled with copies of this graph's
+     * elements
+     * @return true if the copy was created successfully, false otherwise
+     */
+    public boolean makeIsocopy(boolean inverse, OrdinaryMorphism iso, Graph theCopy) {
+        boolean failed = false;
+        final Map<Node, Node> memo1 = new HashMap<>(this
+                .getSize());
+        Iterator<?> iter = this.itsNodes.iterator();
+        while (!failed && iter.hasNext()) {
+            Node vtxOrig = (Node) iter.next();
+            try {
+                Node vtxCopy = theCopy.copyNode(vtxOrig);
+                vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                memo1.put(vtxOrig, vtxCopy);
+                try {
+                    if (inverse) {
+                        iso.addPlainMapping(vtxCopy, vtxOrig);
+                    } else {
+                        iso.addPlainMapping(vtxOrig, vtxCopy);
+                    }
+                } catch (BadMappingException bme) {
+                    failed = true;
+                }
+            } catch (TypeException ex) {
+                failed = true;
+            }
+        }
+        iter = this.itsArcs.iterator();
+        while (!failed && iter.hasNext()) {
+            Arc arcOrig = (Arc) iter.next();
+            Node source = (Node) arcOrig.getSource();
+            Node target = (Node) arcOrig.getTarget();
+            Node srcImg = memo1.get(source);
+            Node tgtImg = memo1.get(target);
+            if ((srcImg != null) && (tgtImg != null)) {
+                try {
+                    Arc arcCopy = theCopy.copyArc(arcOrig, srcImg, tgtImg);
+                    arcCopy.setContextUsage(arcOrig.getContextUsage());
+                    try {
+                        if (inverse) {
+                            iso.addPlainMapping(arcCopy, arcOrig);
+                        } else {
+                            iso.addPlainMapping(arcOrig, arcCopy);
+                        }
+                    } catch (BadMappingException bme) {
+                        failed = true;
+                    }
+                } catch (TypeException ex) {
+                    failed = true;
+                }
+            }
+        }
+        memo1.clear();
+        return !failed;
+    }
+
+    /**
+     * Returns an isomorphism between this graph and its graph-structure copy.
+     * The attributes values are not copied.
+     *
+     * @return morphism this --> copy
+     */
+    public OrdinaryMorphism isoGraph() {
+        return isomorphicGraph(false);
+    }
+
+    /**
+     * Returns an isomorphism between a graph-structure copy and this graph. The
+     * attributes values are not copied.
+     *
+     * @return morphism copy --> this
+     */
+    public OrdinaryMorphism inverseIsoGraph() {
+        return isomorphicGraph(true);
+    }
+
+    /**
+     * Returns an isomorphism between this graph and its graph-structure copy.
+     * The attributes values are not copied.
+     *
+     * @param inverse if true, returns morphism copy --> this, otherwise this
+     * --> copy
+     * @return morphism between this graph and its copy
+     */
+    public OrdinaryMorphism isomorphicGraph(boolean inverse) {
+        synchronized (this) {
+            boolean failed = false;
+            Graph theCopy = BaseFactory.theFactory().createGraph(getTypeSet(), this.isCompleteGraph());
+            OrdinaryMorphism iso = null;
+            if (inverse) {
+                iso = BaseFactory.theFactory().createMorphism(theCopy, this);
+            } else {
+                iso = BaseFactory.theFactory().createMorphism(this, theCopy);
+            }
+            theCopy.setName(this.getName().concat("_copy"));
+            iso.setName("IsoMorph");
+            final Map<Node, Node> memo1 = new HashMap<>(this
+                    .getSize());
+            Iterator<?> iter = this.itsNodes.iterator();
+            while (!failed && iter.hasNext()) {
+                Node vtxOrig = (Node) iter.next();
+                try {
+                    Node vtxCopy = theCopy.createNode(vtxOrig.getType());
+                    vtxCopy.setObjectName(vtxOrig.getObjectName());
+                    vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                    memo1.put(vtxOrig, vtxCopy);
+                    try {
+                        if (inverse) {
+                            iso.addPlainMapping(vtxCopy, vtxOrig);
+                        } else {
+                            iso.addPlainMapping(vtxOrig, vtxCopy);
+                        }
+                    } catch (BadMappingException bme) {
+                        failed = true;
+                        iso.dispose();
+                        theCopy.dispose();
+                    }
+                } catch (TypeException ex) {
+                }
+            }
+            iter = this.itsArcs.iterator();
+            while (!failed && iter.hasNext()) {
+                Arc arcOrig = (Arc) iter.next();
+                Node srcImg = memo1.get(arcOrig.getSource());
+                Node tgtImg = memo1.get(arcOrig.getTarget());
+                if ((srcImg != null) && (tgtImg != null)) {
+                    try {
+                        Arc arcCopy = theCopy.createArc(arcOrig.getType(), srcImg, tgtImg);
+                        arcCopy.setObjectName(arcOrig.getObjectName());
+                        arcCopy.setContextUsage(arcOrig.getContextUsage());
+                        try {
+                            if (inverse) {
+                                iso.addPlainMapping(arcCopy, arcOrig);
+                            } else {
+                                iso.addPlainMapping(arcOrig, arcCopy);
+                            }
+                        } catch (BadMappingException bme) {
+                            failed = true;
+                            iso.dispose();
+                            theCopy.dispose();
+                        }
+                    } catch (TypeException ex) {
+                    }
+                }
+            }
+            memo1.clear();
+            return (iso);
+        }
+    }
+
+    /**
+     * Returns an isomorphism between an ad-hoc-created copy and this graph. The
+     * attributes values are copied, too.
+     *
+     * @return morphism copy --> this
+     */
+    public OrdinaryMorphism reverseIsomorphicCopy() {
+        synchronized (this) {
+            boolean failed = false;
+            Iterator<Arc> arcList = this.itsArcs.iterator();
+            Iterator<Node> vtxList = this.itsNodes.iterator();
+            Graph theCopy = BaseFactory.theFactory().createGraph(getTypeSet());
+            theCopy.setName(this.getName().concat("_copy"));
+            OrdinaryMorphism iso = BaseFactory.theFactory().createMorphism(
+                    theCopy, this);
+            iso.setName("IsoMorph");
+            final Map<Node, Node> memo1 = new HashMap<>(this.getSize());
+            while (vtxList.hasNext()) {
+                Node vtxOrig = vtxList.next();
+                Node vtxCopy = null;
+                try {
+                    vtxCopy = theCopy.copyNode(vtxOrig);
+                    /**
+                     * side effect!
+                     */
+                    vtxCopy.setContextUsage(vtxOrig.getContextUsage());
+                    iso.addMapping(vtxCopy, vtxOrig);
+                    /**
+                     * output construction
+                     */
+                    memo1.put(vtxOrig, vtxCopy);
+                } catch (TypeException e) {
+                    // e.printStackTrace();
+                    failed = true;
+                }
+            }
+            while (!failed && arcList.hasNext()) {
+                Arc arcOrig = arcList.next();
+                Node source = (Node) arcOrig.getSource();
+                Node target = (Node) arcOrig.getTarget();
+                Node srcImg = memo1.get(source);
+                Node tgtImg = memo1.get(target);
+                Arc arcCopy = null;
+                if ((srcImg != null) && (tgtImg != null)) {
+                    try {
+                        arcCopy = theCopy.copyArc(arcOrig, srcImg, tgtImg);
+                        arcCopy.setContextUsage(arcOrig.getContextUsage());
+                        iso.addMapping(arcCopy, arcOrig);
+                    } catch (TypeException e) {
+                        // e.printStackTrace();
+                        failed = true;
+                    }
+                }
+            }
+            memo1.clear();
+            return (iso);
+        }
+    }
+
+    /**
+     * Computes overlapping morphisms between this graph and the specified
+     * graph.
+     *
+     * @param g the target graph for overlap computation
+     * @param withIsomorphic if true, computes isomorphic overlaps
+     * @return iterator over pairs of morphisms representing overlaps
+     */
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, boolean withIsomorphic) {
+        return BaseFactory.theBaseFactory.getOverlappings(this, g, withIsomorphic);
+    }
+
+    /**
+     * Computes overlapping morphisms between this graph and the specified
+     * graph.
+     *
+     * @param g the target graph for overlap computation
+     * @param disjunion if true, uses disjoint union for overlap computation
+     * @param withIsomorphic if true, computes isomorphic overlaps
+     * @return iterator over pairs of morphisms representing overlaps
+     */
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, boolean disjunion,
+            boolean withIsomorphic) {
+        return BaseFactory.theBaseFactory.getOverlappings(this, g, disjunion, withIsomorphic);
+    }
+
+    /**
+     * Computes overlapping morphisms between this graph and the specified
+     * graph.
+     *
+     * @param g the target graph for overlap computation
+     * @param sizeOfInclusions the required size of inclusions
+     * @param withIsomorphic if true, computes isomorphic overlaps
+     * @return iterator over pairs of morphisms representing overlaps
+     */
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, int sizeOfInclusions,
+            boolean withIsomorphic) {
+        return BaseFactory.theBaseFactory.getOverlappings(this, g, sizeOfInclusions, withIsomorphic);
+    }
+
+    /**
+     * Computes overlapping morphisms between this graph and the specified
+     * graph.
+     *
+     * @param g the target graph for overlap computation
+     * @param sizeOfInclusions the required size of inclusions
+     * @param disjunion if true, uses disjoint union for overlap computation
+     * @param withIsomorphic if true, computes isomorphic overlaps
+     * @return iterator over pairs of morphisms representing overlaps
+     */
+    public Iterator<Pair<OrdinaryMorphism, OrdinaryMorphism>> getOverlappings(Graph g, int sizeOfInclusions,
+            boolean disjunion, boolean withIsomorphic) {
+        return BaseFactory.theBaseFactory.getOverlappings(this, g, sizeOfInclusions, disjunion, withIsomorphic);
+    }
+
+    /**
+     * Writes this graph to XML format using the specified helper.
+     *
+     * @param h the XML helper to use for writing
+     */
+    @Override
+    public void XwriteObject(XMLHelper h) {
+        this.refreshAttributed();
+        this.changed = false;
+        h.openNewElem("Graph", this);
+        if (!this.kind.equals("")) {
+            h.addAttr("kind", this.kind);
+        }
+        h.addAttr("name", getName());
+        if (!this.comment.equals("")) {
+            h.addAttr("comment", this.comment);
+        }
+        if (!this.info.equals("")) {
+            h.addAttr("info", this.info);
+        }
+        h.addIteration("", this.itsNodes.iterator(), true);
+        h.addIteration("", this.itsArcs.iterator(), true);
+        h.close();
+//		updateTypeObjectsMap();
+    }
+
+    /**
+     * Reads this graph from XML format using the specified helper.
+     *
+     * @param helper the XML helper to use for reading
+     */
+    @Override
+    public void XreadObject(XMLHelper helper) {
+        if (helper.isTag("Graph", this)) {
+            String str = helper.readAttr("name");
+            setName(str.replaceAll(" ", ""));
+            str = helper.readAttr("comment");
+            if (!str.equals("")) {
+                this.comment = str;
+            }
+            str = helper.readAttr("info");
+            if (!str.equals("")) {
+                this.info = str;
+            }
+            Iterator<?> en = helper.getEnumeration("", null, true, "Node");
+            while (en.hasNext()) {
+                helper.peekElement(en.next());
+                Type t = (Type) helper.getObject("type", null, false);
+                if (t != null) {
+                    Node n = null;
+                    try {
+                        n = newNode(t);
+                        n = (Node) helper.loadObject(n);
+                    } catch (TypeException e) {
+                        // while loading the type check should be disabled,
+                        // so this Exception should never be thrown
+                        System.out.println("Graph.XreadObject: cannot load a Node :  <"
+                                + t.getName() + ">  into graph  <" + this.getName() + ">   "
+                                + e.getMessage());
+                    }
+                }
+                helper.close();
+            }
+            en = helper.getEnumeration("", null, true, "Edge");
+            while (en.hasNext()) {
+                helper.peekElement(en.next());
+                Type t = (Type) helper.getObject("type", null, false);
+                Node n1 = (Node) helper.getObject("source", null, false);
+                Node n2 = (Node) helper.getObject("target", null, false);
+                if (t != null && n1 != null && n2 != null) {
+                    try {
+                        Arc a = newArc(t, n1, n2);
+                        a = (Arc) helper.loadObject(a);
+                    } catch (TypeException e) {
+                        // while loading the type check should be disabled,
+                        // so this Exception should never be thrown
+                        System.out.println("Graph.XreadObject: cannot load an Arc :  <"
+                                + t.getName() + ">  into graph <" + this.getName() + ">   "
+                                + e.getMessage());
+                    }
+                }
+                helper.close();
+            }
+            helper.close();
+        }
+//		this.showTypeMap(this.getTypeObjectsMap());	
+    }
+
+    @Override
+    public String toString() {
+        return showGraph();
+    }
+
+    /**
+     * Returns a string representation of this graph including its name, arcs,
+     * and nodes.
+     *
+     * @return string representation of the graph
+     */
+    public String showGraph() {
+        String result = this.getName();
+        result = "\nGraph: " + this.getName() + " {\n";
+        Iterator<Arc> e = this.itsArcs.iterator();
+        while (e.hasNext()) {
+            Arc arc = e.next();
+            result += ((Node) arc.getSource()).toString() + arc.toString()
+                    + ((Node) arc.getTarget()).toString();
+        }
+        if (this.isTypeGraph()) {
+            ArrayMovie<Arc> inheritArcs = this.getTypeSet().getInheritanceArcs();
+            e = inheritArcs.iterator();
+            while (e.hasNext()) {
+                Arc arc = e.next();
+                result += ((Node) arc.getSource()).toString() + "--inherits-->"
+                        + ((Node) arc.getTarget()).toString();
+            }
+        }
+        Iterator<Node> e1 = this.itsNodes.iterator();
+        while (e1.hasNext()) {
+            Node node = e1.next();
+            if (!node.getIncomingArcsSet().iterator().hasNext()
+                    && !node.getOutgoingArcsSet().iterator().hasNext()) {
+                result += node.toString();
+            }
+        }
+        result += " }\n";
+        return result;
+    }
+
+    /**
+     * Returns true if the given set of graph objects represents a valid graph.
+     *
+     * @param goSet a List of GraphObjects
+     * @return
+     *
+     * @see GraphObject
+     * @see TypeSet#checkType(Graph)
+     */
+    public boolean isGraph(final List<GraphObject> goSet) {
+        for (int i = 0; i < goSet.size(); i++) {
+            GraphObject go = goSet.get(i);
+            if (go.isArc()) {
+                if (!goSet.contains(((Arc) go).getSource())
+                        || !goSet.contains(((Arc) go).getTarget())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Returns true if this graph is used as a type graph. This works only if
+     * this graph is registered as type graph in its own {@link TypeSet}.
+     *
+     * @return
+     */
+    public boolean isTypeGraph() {
+        if (this.itsTypes == null) {
+            return false;
+        }
+        return this == this.itsTypes.getTypeGraph();
+    }
+
+    /**
+     * Checks if this graph has attributed elements.
+     *
+     * @return true if the graph has attributed elements, false otherwise
+     */
+    public boolean isAttributed() {
+        return this.attributed;
+    }
+
+    /**
+     * Checks if any attributes are set in the elements of the given iterator.
+     *
+     * @param iter iterator over graph elements to check
+     * @return true if any attributes are set, false otherwise
+     */
+    public boolean areAnyAttributesSet(final Iterator<?> iter) {
+        boolean anyAttrsSet = false;
+        while (iter.hasNext()) {
+            GraphObject a = (GraphObject) iter.next();
+            if (a.getAttribute() == null) {
+                continue;
+            }
+            ValueTuple value = (ValueTuple) a.getAttribute();
+            for (int j = 0; j < value.getSize(); j++) {
+                if (value.getValueMemberAt(j).isSet()) {
+                    anyAttrsSet = true;
+                    break;
+                }
+            }
+        }
+        return anyAttrsSet;
+    }
+
+    /**
+     * Checks if any node attributes are set in this graph.
+     *
+     * @return true if any node attributes are set, false otherwise
+     */
+    public boolean areAnyAttributesOfNodesSet() {
+        return this.areAnyAttributesSet(this.itsNodes.iterator());
+    }
+
+    /**
+     * Checks if any arc attributes are set in this graph.
+     *
+     * @return true if any arc attributes are set, false otherwise
+     */
+    public boolean areAnyAttributesOfArcsSet() {
+        return this.areAnyAttributesSet(this.itsArcs.iterator());
+    }
+
+    /**
+     * Checks if this graph is a complete graph. A complete graph is not allowed
+     * to use variables in attributes of its nodes and edges. The host graph of
+     * a gragra is always a complete graph.
+     *
+     * @return true if this graph is a complete graph, false otherwise
+     */
+    public boolean isCompleteGraph() {
+        return this.completeGraph;
+    }
+
+    /**
+     * Sets whether this graph is a complete graph. A complete graph is not
+     * allowed to use variables in attributes of its nodes and edges.
+     *
+     * @param complete true to set this graph as complete, false otherwise
+     */
+    public void setCompleteGraph(boolean complete) {
+        this.completeGraph = complete;
+    }
+
+    /**
+     * Checks if this graph is a NAC (Negative Application Condition) graph.
+     *
+     * @return true if this graph is a NAC graph, false otherwise
+     */
+    public boolean isNacGraph() {
+        return (this.kind == GraphKind.NAC);
+    }
+
+    /**
+     * Checks if this graph is a PAC (Positive Application Condition) graph.
+     *
+     * @return true if this graph is a PAC graph, false otherwise
+     */
+    public boolean isPacGraph() {
+        return (this.kind == GraphKind.PAC);
+    }
+
+    /**
+     * Checks if this graph is a nested Application Condition graph.
+     *
+     * @return true if this graph is an Application Condition graph, false
+     * otherwise
+     */
+    public boolean isApplCondGraph() {
+        return (this.kind == GraphKind.AC);
+    }
+
+    /**
+     * Compares this graph with another graph for equality. Two graphs are
+     * considered equal if they have the same structure and corresponding
+     * elements are equal according to their compareTo methods.
+     *
+     * @param g the graph to compare with
+     * @return true if the graphs are equal, false otherwise
+     */
+    public boolean compareTo(Graph g) {
+        if (this.getNodesCount() != g.getNodesCount()) {
+            return (false);
+        }
+        if (this.getArcsCount() != g.getArcsCount()) {
+            return (false);
+        }
+        boolean result = false;
+        OrdinaryMorphism m = (BaseFactory.theFactory()).createMorphism(this, g);
+        m.setCompletionStrategy(new Completion_InjCSP(), true);
+        // m.getCompletionStrategy().showProperties();
+        while (!result && m.nextCompletionWithConstantsChecking()) {
+            result = true;
+            // 1. check free objects in g
+            Iterator<?> e = g.getNodesSet().iterator();
+            while (result && e.hasNext()) {
+                GraphObject o = (GraphObject) e.next();
+                if (!m.getInverseImage(o).hasNext()) {
+                    result = false;
+                }
+            }
+            e = g.getArcsSet().iterator();
+            while (result && e.hasNext()) {
+                GraphObject o = (GraphObject) e.next();
+                if (!m.getInverseImage(o).hasNext()) {
+                    result = false;
+                }
+            }
+            // 2. check objects using compareTo
+            e = this.getNodesSet().iterator();
+            while (result && e.hasNext()) {
+                GraphObject o = (GraphObject) e.next();
+                GraphObject i = m.getImage(o);
+                if (!o.compareTo(i)) {
+                    result = false;
+                }
+            }
+            e = this.getArcsSet().iterator();
+            while (result && e.hasNext()) {
+                GraphObject o = (GraphObject) e.next();
+                GraphObject i = m.getImage(o);
+                if (!o.compareTo(i)) {
+                    result = false;
+                }
+            }
+        }
+        m.dispose();
+        m = null;
+        return result;
+    }
+
+    /**
+     * Checks if this graph contains the specified graph.
+     *
+     * @param g the graph to check for containment
+     * @return true if this graph contains the specified graph, false otherwise
+     */
+    public boolean contains(Graph g) {
+        return contains(g, null);
+    }
+
+    /**
+     * Checks if this graph contains the specified graph using a specific
+     * morphism completion strategy.
+     *
+     * @param g the graph to check for containment
+     * @param mcs the morphism completion strategy to use, or null for default
+     * @return true if this graph contains the specified graph, false otherwise
+     */
+    public boolean contains(Graph g, MorphCompletionStrategy mcs) {
+        boolean result = false;
+        if (g.isEmpty()) {
+            result = true;
+        } else if (this.getSize() >= g.getSize()) {
+            if (!this.isEmpty() && mcs != null) {
+                if (mcs.getProperties().get(CompletionPropertyBits.INJECTIVE)
+                        && this.getSize() < g.getSize()) {
+                    return false;
+                }
+                OrdinaryMorphism m = (BaseFactory.theFactory()).createMorphism(g, this);
+                m.setCompletionStrategy(mcs, true);
+                while (!result && m.nextCompletionWithConstantsChecking()) {
+                    result = true;
+                    // check objects using compareTo
+                    Iterator<?> e = g.getNodesSet().iterator();
+                    while (result && e.hasNext()) {
+                        GraphObject o = (GraphObject) e.next();
+                        GraphObject i = m.getImage(o);
+                        if (!o.compareTo(i)) {
+                            result = false;
+                        }
+                    }
+                    e = g.getArcsSet().iterator();
+                    while (result && e.hasNext()) {
+                        GraphObject o = (GraphObject) e.next();
+                        GraphObject i = m.getImage(o);
+                        if (!o.compareTo(i)) {
+                            result = false;
+                        }
+                    }
+                }
+                m.dispose();
+                m = null;
+            }
+        } else {
+            result = true;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the total size of this graph (nodes + arcs).
+     *
+     * @return the total number of nodes and arcs in this graph
+     */
+    public int getSize() {
+        return this.itsNodes.size() + this.itsArcs.size();
+    }
+
+    /**
+     * Returns the number of nodes in this graph.
+     *
+     * @return the number of nodes
+     */
+    public int getSizeOfNodes() {
+        return this.itsNodes.size();
+    }
+
+    /**
+     * Returns the number of arcs in this graph.
+     *
+     * @return the number of arcs
+     */
+    public int getSizeOfArcs() {
+        return this.itsArcs.size();
+    }
+
+    /**
+     * Checks if the specified edge to create is allowed according to the type
+     * system.
+     *
+     * @param edgeType the type of edge to check
+     * @param src the source node
+     * @param tar the target node
+     * @return TypeError if the connection is not valid, null otherwise
+     */
+    public TypeError checkConnectValid(Type edgeType, Node src, Node tar) {
+        return orientation.validateArcCreation(this, edgeType, src, tar);
+    }
+
+    /**
+     * Checks if parallel arcs of the specified type between the given nodes are
+     * allowed.
+     *
+     * @param edgeType the type of edge to check
+     * @param src the source node
+     * @param tar the target node
+     * @return true if parallel arcs are allowed, false otherwise
+     */
+    public boolean isParallelArcAllowed(Type edgeType, Node src, Node tar) {
+        return orientation.isParallelArcAllowed(this, edgeType, src, tar);
+    }
+
+    /**
+     * Checks if any node in this graph requires additional arcs according to
+     * the type graph.
+     *
+     * @param actTypeGraphLevel the current type graph level to check against
+     * @return TypeError if any node requires arcs that are not present, null
+     * otherwise
+     */
+    public TypeError checkNodeRequiresArc(final int actTypeGraphLevel) {
+        if (this.itsTypes.getTypeGraph() == null
+                || actTypeGraphLevel != TypeSet.ENABLED_MAX_MIN) {
+            return null;
+        }
+        Iterator<Node> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            Node n = iter.next();
+            List<String> list = this.itsTypes.nodeRequiresArc(n);
+            if (list != null && !list.isEmpty()) {
+                return new TypeError(TypeError.TO_LESS_ARCS,
+                        "Node type  "
+                        + "\"" + n.getType().getName() + "\" \n"
+                        + "requires edge(s) of type: \n"
+                        + list.toString(), n.getType());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns an error if the type multiplicity check failed after a node of
+     * the specified type would be created, otherwise null.
+     *
+     * @param nodeType the type of node to check
+     * @param currentTypeGraphLevel the current type graph level
+     * @return TypeError if the node cannot be created due to multiplicity
+     * constraints, null otherwise
+     */
+    public TypeError canCreateNode(
+            final Type nodeType,
+            int currentTypeGraphLevel) {
+        return this.itsTypes.canCreateNode(this, nodeType,
+                currentTypeGraphLevel);
+    }
+
+    /**
+     * Returns an error if the type multiplicity check failed after an edge of
+     * the specified type would be created, otherwise null.
+     *
+     * @param edgeType the type of edge to check
+     * @param source the source node
+     * @param target the target node
+     * @param currentTypeGraphLevel the current type graph level
+     * @return TypeError if the edge cannot be created due to multiplicity
+     * constraints, null otherwise
+     */
+    public TypeError canCreateArc(
+            final Type edgeType,
+            final Node source,
+            final Node target,
+            int currentTypeGraphLevel) {
+        return this.orientation.canCreateArc(this, edgeType, source, target, currentTypeGraphLevel);
+    }
+
+    /**
+     * Returns a list of all variable names used in attributes of this graph's
+     * nodes and arcs.
+     *
+     * @return list of variable names found in attributes
+     */
+    public List<String> getVariableNamesOfAttributes() {
+        final List<String> result = new ArrayList<>();
+        getVarNamesOfAttrs(this.itsNodes.iterator(), result);
+        getVarNamesOfAttrs(this.itsArcs.iterator(), result);
+        return result;
+    }
+
+    private void getVarNamesOfAttrs(final Iterator<?> iter, final List<String> result) {
+        while (iter.hasNext()) {
+            GraphObject o = (GraphObject) iter.next();
+            if (o.getAttribute() == null) {
+                continue;
+            }
+            List<String> vars = o.getVariableNamesOfAttribute();
+            for (int i = 0; i < vars.size(); i++) {
+                String name = vars.get(i);
+                if (!result.contains(name)) {
+                    result.add(name);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns a list of variable members that are used more than once in
+     * attributes of this graph.
+     *
+     * @return list of variable members that are duplicated in attributes
+     */
+    public List<VarMember> getSameVariablesOfAttributes() {
+        final List<VarMember> result = new ArrayList<>();
+        final AttrContext ac = getAttrContext();
+        final VarTuple avt = (VarTuple) ac.getVariables();
+        final Map<VarMember, Boolean> used = new HashMap<>(
+                avt.getSize());
+        for (int i = 0; i < avt.getSize(); i++) {
+            VarMember var = avt.getVarMemberAt(i);
+            used.put(var, false);
+        }
+        if (used.isEmpty()) {
+            return result;
+        }
+        this.getSameVarsOfAttrs(avt, this.itsNodes.iterator(), used, result);
+        this.getSameVarsOfAttrs(avt, this.itsArcs.iterator(), used, result);
+        return result;
+    }
+
+    /**
+     * Helper method to find duplicate variable usage in attributes.
+     *
+     * @param avt the variable tuple containing all variables
+     * @param iter iterator over graph elements to check
+     * @param used map tracking which variables have been used
+     * @param result list to store duplicate variables found
+     */
+    public void getSameVarsOfAttrs(
+            final VarTuple avt,
+            final Iterator<?> iter,
+            final Map<VarMember, Boolean> used,
+            final List<VarMember> result) {
+        while (iter.hasNext()) {
+            GraphObject o = (GraphObject) iter.next();
+            if (o.getAttribute() == null) {
+                continue;
+            }
+            ValueTuple vt = (ValueTuple) o.getAttribute();
+            for (int k = 0; k < vt.getSize(); k++) {
+                ValueMember vm = vt.getValueMemberAt(k);
+                if (vm.isSet()) {
+                    if (vm.getExpr().isVariable()) {
+                        VarMember var = avt.getVarMemberAt(vm.getExprAsText());
+                        if (!var.isInputParameter()) {
+                            if (used.get(var) == false) {
+                                used.put(var, true);
+                            } else {
+                                if (!result.contains(var)) {
+                                    result.add(var);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    public void graphDidChange() {
+        propagateChange(new Change(Change.MODIFIED));
+    }
+
+    /**
+     * Unsets the critical flag for all nodes and arcs in this graph.
+     */
+    public void unsetCriticalObjects() {
+        Iterator<?> e = this.itsArcs.iterator();
+        while (e.hasNext()) {
+            GraphObject o = (GraphObject) e.next();
+            o.setCritical(false);
+        }
+        e = this.itsNodes.iterator();
+        while (e.hasNext()) {
+            GraphObject o = (GraphObject) e.next();
+            o.setCritical(false);
+        }
+    }
+
+    /**
+     * Unsets all transient attribute values in this graph.
+     */
+    public void unsetTransientAttrValues() {
+        this.unsetTransAttrValues(this.itsNodes.iterator());
+        this.unsetTransAttrValues(this.itsArcs.iterator());
+    }
+
+    private void unsetTransAttrValues(final Iterator<?> iter) {
+        while (iter.hasNext()) {
+            GraphObject go = (GraphObject) iter.next();
+            if (go.getAttribute() == null) {
+                continue;
+            }
+            ValueTuple val = (ValueTuple) go.getAttribute();
+            for (int i = 0; i < val.getNumberOfEntries(); i++) {
+                ValueMember vm = val.getValueMemberAt(i);
+                if (vm.isTransient()) {
+                    vm.setExpr(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Unsets all attribute values that are variables in this graph.
+     */
+    public void unsetAttributeValueWhereVariable() {
+        this.unsetAttrValueWhichIsVar(this.itsNodes.iterator());
+        this.unsetAttrValueWhichIsVar(this.itsArcs.iterator());
+    }
+
+    private void unsetAttrValueWhichIsVar(final Iterator<?> iter) {
+        while (iter.hasNext()) {
+            GraphObject go = (GraphObject) iter.next();
+            if (go.getAttribute() == null) {
+                continue;
+            }
+            ValueTuple vt = (ValueTuple) go.getAttribute();
+            for (int j = 0; j < vt.getNumberOfEntries(); j++) {
+                ValueMember vm = vt.getValueMemberAt(j);
+                if (vm.isSet() && vm.getExpr().isVariable()) {
+                    vm.setExpr(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Tries to compute partial morphisms of this graph into the specified set
+     * of graph objects.
+     *
+     * @param set is target of morphisms
+     *
+     * @return set of computed partial morphisms, where keys are objects of this
+     * graph, values - objects of the specified target set
+     */
+    public List<Map<GraphObject, GraphObject>> getPartialMorphismIntoSet(
+            final List<GraphObject> set) {
+        if (set.isEmpty() || set.size() > this.getSize()) {
+            return null;
+        }
+        final List<Map<GraphObject, GraphObject>> result = new ArrayList<>();
+        final Map<GraphObject, GraphObject> store = new HashMap<>();
+        // create graph g from set and store new/original objects
+        Graph g = BaseFactory.theFactory().createGraph(this.getTypeSet());
+        for (int i = 0; i < set.size(); i++) {
+            GraphObject go = set.get(i);
+            if (go.isNode()) {
+                try {
+                    Node n = g.copyNode((Node) go);
+                    store.put(n, go);
+                } catch (TypeException e) {
+                }
+            } else {
+                try {
+                    Arc a = g.copyArc((Arc) go, (Node) ((Arc) go).getSource(),
+                            (Node) ((Arc) go).getTarget());
+                    store.put(a, go);
+                } catch (TypeException e) {
+                }
+            }
+        }
+        // create morphism m: g -> this 
+        OrdinaryMorphism m = BaseFactory.theFactory().createMorphism(g, this);
+        // because this can be LHS of a rule set variable attr context
+        ((AttrTupleManager) m.getAttrManager()).setVariableContext(true);
+        while (m.nextCompletion()) {
+            final Map<GraphObject, GraphObject> table = new HashMap<>();
+            Iterator<GraphObject> en = m.getDomain();
+            while (en.hasNext()) {
+                GraphObject obj = en.next();
+                GraphObject img = m.getImage(obj);
+                table.put(img, store.get(obj));
+            }
+            result.add(table);
+        }
+        return result;
+    }
+
+    /**
+     * Returns a map of object domains for used types. The key of a node type is
+     * built by <code>type.convertToKey()</code>, the key of an arc type by
+     * <code>srcNodeType.convertToKey()+type.convertToKey()+tarNodeType.convertToKey()</code>.
+     *
+     * @return map from type keys to sets of graph objects of that type
+     */
+    public Map<String, HashSet<GraphObject>> getTypeObjectsMap() {
+        if (this.itsTypeObjectsMap.isEmpty()) {
+            fillTypeObjectsMap();
+        }
+        return this.itsTypeObjectsMap;
+    }
+
+    /**
+     * Refreshes object domains for used types by clearing and refilling the
+     * type objects map.
+     */
+    public void updateTypeObjectsMap() {
+        this.itsTypeObjectsMap.clear();
+        // fill domain List of each type with new objects
+        fillTypeObjectsMap();
+    }
+
+    /**
+     * Adds the specified graph object to the type objects map.
+     *
+     * @param anObj the graph object to add to the type map
+     */
+    protected void addToTypeObjectsMap(GraphObject anObj) {
+        if (anObj.isNode()) {
+            extendTypeObjectsMapByNode((Node) anObj);
+        } else {
+            extendTypeObjectsMapByArc((Arc) anObj);
+        }
+    }
+
+    /**
+     * Removes the specified node from the type objects map.
+     *
+     * @param anObj the node to remove from the type map
+     */
+    protected void removeNodeFromTypeObjectsMap(final Node anObj) {
+        if (anObj.getType().hasParent()) {
+            List<Type> myParents = anObj.getType().getAllParents();
+            for (int i = 0; i < myParents.size(); ++i) {
+                final String keystr = myParents.get(i).convertToKey();
+                final HashSet<GraphObject> anObjVec = this.itsTypeObjectsMap.get(keystr);
+                if (anObjVec != null) {
+                    anObjVec.remove(anObj);
+                }
+            }
+        } else {
+            final String keystr = anObj.getType().convertToKey();
+            final HashSet<GraphObject> anObjVec = this.itsTypeObjectsMap.get(keystr);
+            if (anObjVec != null) {
+                anObjVec.remove(anObj);
+            }
+        }
+    }
+
+    /**
+     * Removes the specified arc from the type objects map.
+     *
+     * @param anArc the arc to remove from the type map
+     */
+    protected void removeArcFromTypeObjectsMap(final Arc anArc) {
+        if (anArc.getSource() == null || anArc.getTarget() == null) {
+            return;
+        }
+        if (anArc.getSource().getType().hasParent()
+                || anArc.getTarget().getType().hasParent()) {
+            List<Type> srcParents = anArc.getSource().getType().getAllParents();
+            List<Type> tarParents = anArc.getTarget().getType().getAllParents();
+            for (Type srcParent : srcParents) {
+                for (Type tarParent : tarParents) {
+                    String[] keystr = orientation.arcStringKeys(srcParent, anArc, tarParent);
+                    HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr[0]);
+                    if (objSet == null && keystr.length == 2) {
+                        objSet = this.itsTypeObjectsMap.get(keystr[1]);
+                    }
+                    if (objSet != null) {
+                        objSet.remove(anArc);
+                    }
+                }
+            }
+        } else {
+            String[] keystr = orientation.arcStringKeys(anArc);
+            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr[0]);
+            if (objSet == null && keystr.length == 2) {
+                objSet = this.itsTypeObjectsMap.get(keystr[1]);
+            }
+            if (objSet != null) {
+                objSet.remove(anArc);
+            }
+        }
+    }
+
+    /**
+     * Removes the specified graph object from the type objects map.
+     *
+     * @param anObj the graph object to remove from the type map
+     */
+    protected void removeFromTypeObjectsMap(final GraphObject anObj) {
+        if (anObj instanceof Node) {
+            removeNodeFromTypeObjectsMap((Node) anObj);
+        } else {
+            removeArcFromTypeObjectsMap((Arc) anObj);
+        }
+    }
+
+    /**
+     * Fills the type objects map with all nodes and arcs from this graph.
+     */
+    public void fillTypeObjectsMap() {
+        Iterator<?> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            final Node obj = (Node) iter.next();
+            extendTypeObjectsMapByNode(obj);
+        }
+        iter = this.itsArcs.iterator();
+        while (iter.hasNext()) {
+            extendTypeObjectsMapByArc((Arc) iter.next());
+        }
+    }
+
+    /**
+     * Extends the type objects map for nodes and arcs of the specified child
+     * type to include mappings for the parent type.
+     *
+     * @param childType the child type to extend from
+     * @param parentType the parent type to extend to
+     */
+    protected void extendTypeObjectsMap(final Type childType, final Type parentType) {
+        final Iterator<Node> iter = this.itsNodes.iterator();
+        while (iter.hasNext()) {
+            Node obj = iter.next();
+            if (childType.isParentOf(obj.getType())) {
+                extendTypeObjectsMapByNode(obj, parentType);
+                Iterator<Arc> iter2 = obj.getOutgoingArcsSet().iterator();
+                while (iter2.hasNext()) {
+                    extendTypeObjectsMapByArc(iter2.next());
+                }
+                iter2 = obj.getIncomingArcsSet().iterator();
+                while (iter2.hasNext()) {
+                    extendTypeObjectsMapByArc(iter2.next());
+                }
+            }
+        }
+    }
+
+    private void extendTypeObjectsMapByNode(final Node node, final Type parent) {
+        List<Type> newParents = parent.getAllParents();
+        for (int i = 0; i < newParents.size(); ++i) {
+            String keystr = newParents.get(i).convertToKey();
+            HashSet<GraphObject> anObjVec = this.itsTypeObjectsMap.get(keystr);
+            if (anObjVec == null) {
+                anObjVec = new LinkedHashSet<>();
+                this.itsTypeObjectsMap.put(keystr, anObjVec);
+            }
+            anObjVec.add(node);
+        }
+    }
+
+    /**
+     * Extends the type objects map with the specified node, including all its
+     * parent types.
+     *
+     * @param node the node to add to the type map
+     */
+    protected void extendTypeObjectsMapByNode(final Node node) {
+        if (node.getType().hasParent()) {
+            List<Type> myParents = node.getType().getAllParents();
+            for (int i = 0; i < myParents.size(); ++i) {
+                String keystr = myParents.get(i).convertToKey();
+                HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
+                if (objSet == null) {
+                    objSet = new LinkedHashSet<>();
+                    this.itsTypeObjectsMap.put(keystr, objSet);
+                }
+                objSet.add(node);
+            }
+        } else {
+            String keystr = node.convertToKey();
+            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr);
+            if (objSet == null) {
+                objSet = new LinkedHashSet<>();
+                this.itsTypeObjectsMap.put(keystr, objSet);
+            }
+            objSet.add(node);
+        }
+    }
+
+    /**
+     * Extends the type objects map with the specified arc, including all parent
+     * types of its source and target nodes if inheritance is enabled.
+     *
+     * @param anArc the arc to add to the type map
+     */
+    protected void extendTypeObjectsMapByArc(final Arc anArc) {
+        if (this.itsTypes.hasInheritance()
+                && anArc.getSource().getType().hasParent()
+                || anArc.getTarget().getType().hasParent()) {
+            List<Type> srcParents = anArc.getSource().getType().getAllParents();
+            List<Type> tarParents = anArc.getTarget().getType().getAllParents();
+            for (Type srcParent : srcParents) {
+                for (Type tarParent : tarParents) {
+                    String[] keystr = orientation.arcStringKeys(srcParent, anArc, tarParent);
+                    HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr[0]);
+                    if (objSet == null && keystr.length == 2) {
+                        objSet = this.itsTypeObjectsMap.get(keystr[1]);
+                    }
+                    if (objSet == null) {
+                        objSet = new LinkedHashSet<>();
+                        this.itsTypeObjectsMap.put(keystr[0], objSet);
+                    }
+                    objSet.add(anArc);
+                }
+            }
+        } else {
+            String[] keystr = orientation.arcStringKeys(anArc);
+            HashSet<GraphObject> objSet = this.itsTypeObjectsMap.get(keystr[0]);
+            if (objSet == null && keystr.length == 2) {
+                objSet = this.itsTypeObjectsMap.get(keystr[1]);
+            }
+            if (objSet == null) {
+                objSet = new LinkedHashSet<>();
+                this.itsTypeObjectsMap.put(keystr[0], objSet);
+            }
+            objSet.add(anArc);
+        }
+    }
+
+    /**
+     * Refreshes the attributed flag based on the current attribute types of
+     * nodes and arcs.
+     */
+    public void refreshAttributed() {
+        this.attributed = false;
+        for (GraphObject gob : this.itsNodes) {
+            if ((gob.getType().getAttrType() != null)
+                    && (gob.getType().getAttrType().getNumberOfEntries() != 0)) {
+                this.attributed = true;
+            }
+        }
+        for (GraphObject gob : this.itsArcs) {
+            if ((gob.getType().getAttrType() != null)
+                    && (gob.getType().getAttrType().getNumberOfEntries() != 0)) {
+                this.attributed = true;
+            }
+        }
+    }
+
+    /**
+     * Prints the type objects map of this graph to standard output.
+     */
+    public void showTypeMap() {
+        showTypeMap(itsTypeObjectsMap);
+    }
+
+    /**
+     * Prints the specified type objects map to standard output.
+     *
+     * @param d the type objects map to print
+     */
+    public static void showTypeMap(Map<String, HashSet<GraphObject>> d) {
+        System.out.println("******  TYPE DOMAINS  ******");
+        for (String key : d.keySet()) {
+            System.out.println("'" + key + "':");
+            for (GraphObject go : d.get(key)) {
+                System.out.print(go + "  ");
+            }
+            System.out.println();
+        }
+        System.out.println("***********");
+    }
+}

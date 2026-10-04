@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document version="1.0">
+    <GraphTransformationSystem ID="I0" directed="true"
+        name="RuleWithNacPacTest" parallel="true">
+        <TaggedValue Tag="AttrHandler" TagValue="Java Expr">
+            <TaggedValue Tag="Package" TagValue="java.lang"/>
+            <TaggedValue Tag="Package" TagValue="java.util"/>
+        </TaggedValue>
+        <TaggedValue Tag="CSP" TagValue="true"/>
+        <TaggedValue Tag="injective" TagValue="true"/>
+        <TaggedValue Tag="dangling" TagValue="true"/>
+        <TaggedValue Tag="identification" TagValue="true"/>
+        <TaggedValue Tag="NACs" TagValue="true"/>
+        <TaggedValue Tag="PACs" TagValue="true"/>
+        <TaggedValue Tag="GACs" TagValue="true"/>
+        <TaggedValue Tag="TypeGraphLevel" TagValue="DISABLED"/>
+        <Types>
+            <NodeType ID="I1" abstract="false" name="Item%:RECT:java.awt.Color[r=0,g=0,b=0]::[NODE]:"/>
+            <EdgeType ID="I2" abstract="false" name="link%:SOLID_LINE:java.awt.Color[r=0,g=0,b=0]::[EDGE]:"/>
+        </Types>
+        <Graph ID="I7" kind="HOST" name="Host">
+            <Node ID="I8" type="I1"/>
+        </Graph>
+        <Constraints>
+            <Graphconstraint_Atomic ID="I9" name="compositeAtomic">
+                <Premise>
+                    <Graph ID="I10" kind="PREMISE" name="Graph"/>
+                </Premise>
+                <Conclusion>
+                    <Graph ID="I11" kind="CONCLUSION" name="Graph"/>
+                    <Morphism name="Conclusion0"/>
+                </Conclusion>
+            </Graphconstraint_Atomic>
+            <Formula ID="I12" comment="" enabled="true" f="T" name="compositeFormula">
+                <Layer Layer="" Size="0"/>
+                <Priority Priority="" Size="0"/>
+            </Formula>
+        </Constraints>
+        <Rule ID="I13" formula="true" name="transformItem">
+            <Graph ID="I15" kind="LHS" name="Left">
+                <Node ID="I16" type="I1"/>
+                <Node ID="I17" type="I1"/>
+                <Edge ID="I18" source="I16" target="I17" type="I2"/>
+            </Graph>
+            <Graph ID="I19" kind="RHS" name="Right">
+                <Node ID="I20" type="I1"/>
+            </Graph>
+            <Morphism name="transformItem">
+                <Mapping image="I20" orig="I16"/>
+            </Morphism>
+            <ApplCondition>
+                <NAC>
+                    <Graph ID="I21" kind="NAC" name="Graph">
+                        <Node ID="I22" type="I1"/>
+                    </Graph>
+                    <Morphism name="OrdinaryMorphism">
+                        <Mapping image="I22" orig="I16"/>
+                    </Morphism>
+                </NAC>
+                <PAC>
+                    <Graph ID="I23" kind="PAC" name="Graph">
+                        <Node ID="I24" type="I1"/>
+                    </Graph>
+                    <Morphism name="OrdinaryMorphism">
+                        <Mapping image="I24" orig="I16"/>
+                    </Morphism>
+                </PAC>
+                <NestedAC>
+                    <Graph ID="I25" kind="AC" name="Graph">
+                        <Node ID="I26" type="I1"/>
+                    </Graph>
+                    <Morphism name="OrdinaryMorphism">
+                        <Mapping image="I26" orig="I16"/>
+                    </Morphism>
+                </NestedAC>
+            </ApplCondition>
+            <TaggedValue Tag="layer" TagValue="1"/>
+            <TaggedValue Tag="priority" TagValue="5"/>
+        </Rule>
+        <Rule ID="I27" formula="true" name="compositeRule2">
+            <Graph ID="I29" kind="LHS" name="Left">
+                <Node ID="I30" type="I1"/>
+            </Graph>
+            <Graph ID="I31" kind="RHS" name="Right">
+                <Node ID="I32" type="I1"/>
+            </Graph>
+            <Morphism name="compositeRule2"/>
+            <TaggedValue Tag="layer" TagValue="2"/>
+            <TaggedValue Tag="priority" TagValue="3"/>
+        </Rule>
+        <Matches>
+            <MatchOf Rule="I27">
+                <Match ID="I33">
+                    <Morphism name="MatchOf_compositeRule2">
+                        <Mapping image="I8" orig="I30"/>
+                    </Morphism>
+                </Match>
+            </MatchOf>
+        </Matches>
+        <RuleSequences>
+            <Sequence name="compositeSequence">
+                <Graph id="I7"/>
+            </Sequence>
+        </RuleSequences>
+    </GraphTransformationSystem>
+</Document>
