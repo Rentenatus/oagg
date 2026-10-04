@@ -474,6 +474,39 @@ public class LegacyPreparationTest {
     }
 
     /**
+     * Produces the broadest UI reference: a grammar with two rules (one
+     * with NAC/PAC/nested AC), an atomic constraint, a formula, a match
+     * and a rule sequence, all with pinned editor positions.
+     */
+    @Test
+    public void prepareUiCompositeScenario() throws Exception {
+        GraGra graGra = TestDataGenerator.createCompositeAll();
+        agg.editor.impl.EdGraGra edGraGra =
+            new agg.editor.impl.EdGraGra(graGra);
+
+        int pos = 10;
+        pos = pinGraphPositions(edGraGra.getGraph(), pos);
+        pos = pinGraphPositions(edGraGra.getTypeGraph(), pos);
+        for (int i = 0; i < edGraGra.getRules().size(); i++) {
+            agg.editor.impl.EdRule rule = edGraGra.getRules().get(i);
+            pos = pinGraphPositions(rule.getLeft(), pos);
+            pos = pinGraphPositions(rule.getRight(), pos);
+        }
+        for (int i = 0; i < edGraGra.getAtomics().size(); i++) {
+            pos = pinGraphPositions(edGraGra.getAtomics().get(i).getLeft(), pos);
+            pos = pinGraphPositions(edGraGra.getAtomics().get(i).getRight(), pos);
+        }
+
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(edGraGra);
+        File uiFile = new File(prepDir, "ui_composite.ggx");
+        assertTrue(helper.save_to_xml(uiFile.getAbsolutePath()),
+            "Frozen legacy UI save should succeed");
+        assertTrue(uiFile.exists() && uiFile.length() > 0,
+            "UI reference file should be non-empty");
+    }
+
+    /**
      * Assigns distinct, increasing editor positions to the nodes of the
      * given graph so the reference pins real UI state, and returns the
      * next free position counter.

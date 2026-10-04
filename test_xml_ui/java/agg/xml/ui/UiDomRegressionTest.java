@@ -197,6 +197,54 @@ public class UiDomRegressionTest {
     }
 
     /**
+     * Composite scenario: two rules (one with NAC/PAC/nested AC), an atomic
+     * constraint, a formula, a match and a rule sequence in one UI-layer
+     * save. DOM load, structural verification, DOM save and canonical
+     * comparison.
+     */
+    @Test
+    public void uiCompositeScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_composite.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertEquals(loaded.getRules().size(), 2, "Rule count");
+        assertEquals(loaded.getAtomics().size(), 1, "Atomic constraint count");
+        assertEquals(loaded.getConstraints().size(), 1, "Formula count");
+        assertNotNull(loaded.getTypeGraph(), "Type graph should exist");
+
+        EdRule firstRule = loaded.getRules().get(0);
+        assertEquals(firstRule.getName(), "transformItem", "First rule name");
+        assertEquals(firstRule.getNACs().size(), 1, "NAC count");
+        assertEquals(firstRule.getPACs().size(), 1, "PAC count");
+        assertEquals(firstRule.getNestedACs().size(), 1, "Nested AC count");
+        assertTrue(hasNodeAt(firstRule.getLeft(), 131, 231),
+            "First rule LHS node position");
+
+        EdRule secondRule = loaded.getRules().get(1);
+        assertEquals(secondRule.getName(), "compositeRule2", "Second rule name");
+        assertTrue(hasNodeAt(secondRule.getLeft(), 152, 252),
+            "Second rule LHS node position");
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node position");
+        assertTrue(hasNodeAt(loaded.getTypeGraph(), 117, 217),
+            "Type graph node position");
+
+        java.util.List<agg.ruleappl.RuleSequence> sequences =
+            loaded.getBasisGraGra().getRuleSequences();
+        assertEquals(sequences.size(), 1, "Rule sequence count");
+        assertEquals(sequences.get(0).getName(), "compositeSequence",
+            "Rule sequence name");
+        assertNotNull(sequences.get(0).getGraph(),
+            "Rule sequence start graph should be restored");
+
+        roundtripAndCompare(loaded, "ui_composite_new.ggx", refFile);
+    }
+
+    /**
      * Saves the given editor grammar with the DOM UI path and compares the
      * result canonically against the frozen reference file.
      */

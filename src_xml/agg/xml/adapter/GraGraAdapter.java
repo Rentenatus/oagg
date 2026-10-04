@@ -926,8 +926,25 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 seq.setTrafoByObjFlow(true);
             }
 
-            // Parse Subsequence children
+            // Parse the graph reference child (start graph of the sequence)
             NodeList seqChildren = seqElem.getChildNodes();
+            for (int j = 0; j < seqChildren.getLength(); j++) {
+                org.w3c.dom.Node seqChild = seqChildren.item(j);
+                if (seqChild.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
+                    continue;
+                }
+                if ("Graph".equals(seqChild.getNodeName())) {
+                    Element graphRef = (Element) seqChild;
+                    String graphId = graphRef.getAttribute("id");
+                    Object graph = registry.getObject(graphId);
+                    if (graph instanceof agg.xt_basis.Graph) {
+                        seq.setGraph((agg.xt_basis.Graph) graph);
+                    }
+                }
+            }
+
+            // Parse Subsequence children
+            seqChildren = seqElem.getChildNodes();
             for (int j = 0; j < seqChildren.getLength(); j++) {
                 org.w3c.dom.Node seqChild = seqChildren.item(j);
                 if (seqChild.getNodeType() != org.w3c.dom.Node.ELEMENT_NODE) {
