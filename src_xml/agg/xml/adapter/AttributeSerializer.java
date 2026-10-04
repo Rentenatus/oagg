@@ -88,9 +88,19 @@ final class AttributeSerializer {
                         while (v instanceof HandlerExpr) {
                             v = ((HandlerExpr) v).getValue();
                         }
-                        Element stringElem = doc.createElement("string");
-                        stringElem.setTextContent(v != null ? v.toString() : "");
-                        valueElem.appendChild(stringElem);
+                        String text = v != null ? v.toString() : "";
+                        if (text.indexOf('"') == -1) {
+                            // Plain string form (legacy parity)
+                            Element stringElem = doc.createElement("string");
+                            stringElem.setTextContent(text);
+                            valueElem.appendChild(stringElem);
+                        } else {
+                            // String containing quotes: use the XMLEncoder
+                            // form exactly like the legacy
+                            // XMLHelper.addAttrUsingXMLEncoder
+                            // (<java class="java.beans.XMLDecoder">...)
+                            appendXMLEncoderValue(doc, valueElem, text);
+                        }
                     } else {
                         Element typedElem = doc.createElement(typeName.toLowerCase());
                         typedElem.setTextContent(v != null ? v.toString() : "");
@@ -200,7 +210,15 @@ final class AttributeSerializer {
 
                 // Determine the value based on type
                 Object value = null;
-                if ("String".equals(typeName) || "string".equals(tagName) || "String".equals(tagName)) {
+                if ("java".equals(tagName)) {
+                    // XMLEncoder form (legacy XMLDecoder path): decode the
+                    // embedded fragment; fall back to the inner string text
+                    value = decodeXMLEncoderFragment(typedElem);
+                    if (value == null) {
+                        Element innerString = findChildElement(typedElem, "string");
+                        value = innerString != null ? innerString.getTextContent() : null;
+                    }
+                } else if ("String".equals(typeName) || "string".equals(tagName) || "String".equals(tagName)) {
                     value = textContent != null ? textContent.trim() : "";
                 } else if ("int".equals(typeName)) {
                     try {
@@ -255,5 +273,73 @@ final class AttributeSerializer {
                 break; // Only process first typed element child
             }
         }
+    }
+
+    /**
+     * Appends the XMLEncoder form of a value to the Value element, mirroring
+     * the legacy XMLHelper.addAttrUsingXMLEncoder: the value is written with
+     * a java.beans.XMLEncoder and the resulting {@code <java
+     * class="java.beans.XMLDecoder">} fragment is imported into the document.
+     */
+    private static void appendXMLEncoderValue(Document doc, Element valueElem, Object value) {
+        try {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            java.beans.XMLEncoder encoder = new java.beans.XMLEncoder(
+                new java.io.BufferedOutputStream(baos));
+            encoder.writeObject(value);
+            encoder.close();
+            javax.xml.parsers.DocumentBuilderFactory factory =
+                agg.xml.util.XMLUtils.createSecureDocumentBuilderFactory(false);
+            javax.xml.parsers.DocumentBuilder builder = factory.newDocumentBuilder();
+            Document tmpDoc = builder.parse(
+                new java.io.ByteArrayInputStream(baos.toByteArray()));
+            org.w3c.dom.Node imported = doc.importNode(tmpDoc.getDocumentElement(), true);
+            valueElem.appendChild(imported);
+        } catch (Exception e) {
+            // Fallback: plain string form
+            Element stringElem = doc.createElement("string");
+            stringElem.setTextContent(value != null ? value.toString() : "");
+            valueElem.appendChild(stringElem);
+        }
+    }
+
+    /**
+     * Decodes a {@code <java class="java.beans.XMLDecoder">} fragment using
+     * a java.beans.XMLDecoder, mirroring the legacy getAttrUsingXMLDecoder.
+     * Returns null if decoding fails.
+     */
+    private static Object decodeXMLEncoderFragment(Element javaElem) {
+        try {
+            java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+            javax.xml.transform.Transformer transformer =
+                javax.xml.transform.TransformerFactory.newInstance().newTransformer();
+            javax.xml.transform.dom.DOMSource source =
+                new javax.xml.transform.dom.DOMSource(javaElem);
+            javax.xml.transform.stream.StreamResult result =
+                new javax.xml.transform.stream.StreamResult(baos);
+            transformer.transform(source, result);
+            java.beans.XMLDecoder decoder = new java.beans.XMLDecoder(
+                new java.io.ByteArrayInputStream(baos.toByteArray()));
+            Object value = decoder.readObject();
+            decoder.close();
+            return value;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the first child element with the given tag name.
+     */
+    private static Element findChildElement(Element parent, String name) {
+        NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE
+                    && name.equals(child.getNodeName())) {
+                return (Element) child;
+            }
+        }
+        return null;
     }
 }

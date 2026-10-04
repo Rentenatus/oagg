@@ -107,8 +107,24 @@ public class AttributeMatrixTest {
 
         runDomRoundtripWithVerifier(refFile, baseName, loaded -> {
             Node loadedNode = firstNode(loaded.getGraph());
-            verifyValue(loadedNode, "val", typeName, KIND_CONSTANT,
-                stripQuotes(typeName, valueText), baseName);
+            if ("long".equals(typeName)) {
+                // The frozen legacy serialization does NOT support the
+                // 'long' attribute type: the reference contains neither the
+                // AttrType declaration nor the value (the type handler
+                // rejects it, so ValueMember.XwriteObject writes nothing).
+                // The DOM path must behave identically: no value survives.
+                agg.attribute.AttrInstance attr = loadedNode.getAttribute();
+                boolean dropped = attr == null
+                    || attr.getNumberOfEntries() == 0
+                    || attr.getMemberAt("val") == null
+                    || ((ValueMember) attr.getMemberAt("val")).getExpr() == null;
+                assertTrue(dropped,
+                    "long attribute values must be dropped like the frozen "
+                        + "legacy path: " + baseName);
+            } else {
+                verifyValue(loadedNode, "val", typeName, KIND_CONSTANT,
+                    stripQuotes(typeName, valueText), baseName);
+            }
         });
     }
 
