@@ -507,6 +507,46 @@ public class LegacyPreparationTest {
     }
 
     /**
+     * Produces a UI reference for a grammar with a rule scheme (kernel
+     * rule + multi rule), to see and pin which UI segments a UI-layer save
+     * writes inside the RuleScheme section.
+     */
+    @Test
+    public void prepareUiRuleSchemeScenario() throws Exception {
+        GraGra graGra = TestDataGenerator.createWithRuleScheme(true);
+        agg.editor.impl.EdGraGra edGraGra =
+            new agg.editor.impl.EdGraGra(graGra);
+
+        int pos = 10;
+        pos = pinGraphPositions(edGraGra.getGraph(), pos);
+        pos = pinGraphPositions(edGraGra.getTypeGraph(), pos);
+        // Pin the kernel/multi rule graph positions inside the scheme
+        for (int i = 0; i < edGraGra.getRules().size(); i++) {
+            agg.editor.impl.EdRule rule = edGraGra.getRules().get(i);
+            if (rule instanceof agg.editor.impl.EdRuleScheme) {
+                agg.editor.impl.EdRuleScheme scheme =
+                    (agg.editor.impl.EdRuleScheme) rule;
+                pos = pinGraphPositions(scheme.getKernelRule().getLeft(), pos);
+                pos = pinGraphPositions(scheme.getKernelRule().getRight(), pos);
+                for (int j = 0; j < scheme.getMultiRules().size(); j++) {
+                    pos = pinGraphPositions(
+                        scheme.getMultiRules().get(j).getLeft(), pos);
+                    pos = pinGraphPositions(
+                        scheme.getMultiRules().get(j).getRight(), pos);
+                }
+            }
+        }
+
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(edGraGra);
+        File uiFile = new File(prepDir, "ui_rule_scheme.ggx");
+        assertTrue(helper.save_to_xml(uiFile.getAbsolutePath()),
+            "Frozen legacy UI save should succeed");
+        assertTrue(uiFile.exists() && uiFile.length() > 0,
+            "UI reference file should be non-empty");
+    }
+
+    /**
      * Assigns distinct, increasing editor positions to the nodes of the
      * given graph so the reference pins real UI state, and returns the
      * next free position counter.

@@ -57,6 +57,25 @@ Layering rules:
   `test_xml_common` (shared test helpers, compiled into all test modules).
   Shared test data lives in `assets_test_xml` (test working directory).
 
+**Regression oracle (deliberate decision):** DOM load → DOM save is compared
+canonically against the FRESH legacy save (the reference file the frozen clone
+writes from the in-memory model). The DOM path must preserve what is in the
+file; it does NOT replicate side effects of the old READER, which mutates the
+model during load:
+
+| Legacy reader side effect (load → legacy save) | DOM behaviour (kept) |
+|---|---|
+| Rule graphs renamed to `LeftOf_<rule>` / `RightOf_<rule>` (`Rule.XreadObject`) | names preserved from the file |
+| `formula` attribute regenerated from the conditions (`true` → `1`, `1&2`, ...) | value preserved from the file |
+| Atomic constraint graphs renamed to `Premise/Conclusion of <name>` | names preserved from the file |
+| `LayoutNode.frozen` re-derived from `age` (ignores the `frozen` attribute) | value preserved from the file |
+
+Exception: the RuleScheme section is loaded through the legacy reader by the
+core path (temp GraGra load in `GraGraAdapter`), so its roundtrip shows those
+renames. Like the core suite, the UI tests verify RuleScheme scenarios
+structurally plus DOM stability over two roundtrips instead of a canonical
+comparison against the fresh reference.
+
 ---
 
 **Performance:**

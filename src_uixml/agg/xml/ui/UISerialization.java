@@ -11,6 +11,7 @@ import agg.editor.impl.EdGraGra;
 import agg.editor.impl.EdGraph;
 import agg.editor.impl.EdNode;
 import agg.editor.impl.EdRule;
+import agg.editor.impl.EdRuleScheme;
 import agg.layout.evolutionary.LayoutArc;
 import agg.layout.evolutionary.LayoutNode;
 import agg.xml.adapter.DOMSerializationRegistry;
@@ -147,7 +148,7 @@ public final class UISerialization {
         adapter.deserialize(context, registry);
 
         EdGraGra edGraGra = new EdGraGra(core);
-        applyUiSegments(edGraGra, registry);
+        applyUiSegments(edGraGra, registry, context.getDocument());
         return edGraGra;
     }
 
@@ -163,11 +164,80 @@ public final class UISerialization {
             DOMSerializationRegistry registry) {
         for (EdGraph graph : collectGraphs(edGraGra)) {
             for (EdNode node : graph.getNodes()) {
-                attachNodeSegments(node, doc, registry);
+                Element nodeElem = registry.getElement(node.getBasisNode());
+                if (nodeElem != null) {
+                    attachNodeSegments(node, nodeElem, doc);
+                }
             }
             for (EdArc arc : graph.getArcs()) {
-                attachArcSegments(arc, doc, registry);
+                Element arcElem = registry.getElement(arc.getBasisArc());
+                if (arcElem != null) {
+                    attachArcSegments(arc, arcElem, doc);
+                }
             }
+        }
+        attachRuleSchemeSegments(edGraGra, doc);
+    }
+
+    /**
+     * Attaches the UI segments of rule scheme kernel/multi rule graphs.
+     *
+     * <p>The RuleScheme section of the document is produced by the core
+     * path through a legacy helper document, so its graph objects are not
+     * bound to their elements in the registry. The elements are therefore
+     * paired structurally: the i-th RuleScheme element matches the i-th
+     * EdRuleScheme, the kernel/multi Rule elements match the kernel/multi
+     * rules in order, and Node/Edge elements match the editor graph
+     * objects in list order.</p>
+     */
+    private static void attachRuleSchemeSegments(EdGraGra edGraGra, Document doc) {
+        List<EdRuleScheme> schemes = collectRuleSchemes(edGraGra);
+        List<Element> schemeElems = collectSchemeElements(doc);
+        for (int i = 0; i < schemeElems.size() && i < schemes.size(); i++) {
+            EdRuleScheme scheme = schemes.get(i);
+            Element kernelElem = XMLUtils.getFirstChildElement(schemeElems.get(i), "Kernel");
+            if (kernelElem != null && scheme.getKernelRule() != null) {
+                Element kernelRuleElem = XMLUtils.getFirstChildElement(kernelElem, "Rule");
+                if (kernelRuleElem != null) {
+                    attachRuleElementSegments(kernelRuleElem, scheme.getKernelRule(), doc);
+                }
+            }
+            Element multiElem = XMLUtils.getFirstChildElement(schemeElems.get(i), "Multi");
+            if (multiElem != null) {
+                List<Element> multiRuleElems = XMLUtils.getChildElements(multiElem, "Rule");
+                for (int j = 0; j < multiRuleElems.size()
+                        && j < scheme.getMultiRules().size(); j++) {
+                    attachRuleElementSegments(
+                        multiRuleElems.get(j), scheme.getMultiRules().get(j), doc);
+                }
+            }
+        }
+    }
+
+    /**
+     * Attaches the UI segments of the LHS/RHS graphs of one kernel or
+     * multi rule element of a RuleScheme section.
+     */
+    private static void attachRuleElementSegments(Element ruleElem, EdRule rule,
+            Document doc) {
+        List<Element> graphElems = XMLUtils.getChildElements(ruleElem, "Graph");
+        for (Element graphElem : graphElems) {
+            EdGraph edGraph = graphForKind(rule, graphElem.getAttribute("kind"));
+            if (edGraph != null) {
+                attachGraphElementSegments(graphElem, edGraph, doc);
+            }
+        }
+    }
+
+    private static void attachGraphElementSegments(Element graphElem, EdGraph edGraph,
+            Document doc) {
+        List<Element> nodeElems = XMLUtils.getChildElements(graphElem, "Node");
+        for (int i = 0; i < nodeElems.size() && i < edGraph.getNodes().size(); i++) {
+            attachNodeSegments(edGraph.getNodes().get(i), nodeElems.get(i), doc);
+        }
+        List<Element> edgeElems = XMLUtils.getChildElements(graphElem, "Edge");
+        for (int i = 0; i < edgeElems.size() && i < edGraph.getArcs().size(); i++) {
+            attachArcSegments(edGraph.getArcs().get(i), edgeElems.get(i), doc);
         }
     }
 
@@ -175,13 +245,8 @@ public final class UISerialization {
      * Attaches NodeLayout and additionalLayout segments to the core node
      * element, mirroring EdNode.XwriteObject and LayoutNode.XwriteObject.
      */
-    private static void attachNodeSegments(EdNode node, Document doc,
-            DOMSerializationRegistry registry) {
-        Element nodeElem = registry.getElement(node.getBasisNode());
-        if (nodeElem == null) {
-            return;
-        }
-
+    private static void attachNodeSegments(EdNode node, Element nodeElem,
+            Document doc) {
         Element layoutElem = doc.createElement("NodeLayout");
         layoutElem.setAttribute("X", String.valueOf(node.getX()));
         layoutElem.setAttribute("Y", String.valueOf(node.getY()));
@@ -202,13 +267,8 @@ public final class UISerialization {
      * Attaches EdgeLayout and additionalLayout segments to the core edge
      * element, mirroring EdArc.XwriteObject and LayoutArc.XwriteObject.
      */
-    private static void attachArcSegments(EdArc arc, Document doc,
-            DOMSerializationRegistry registry) {
-        Element arcElem = registry.getElement(arc.getBasisArc());
-        if (arcElem == null) {
-            return;
-        }
-
+    private static void attachArcSegments(EdArc arc, Element arcElem,
+            Document doc) {
         Element layoutElem = doc.createElement("EdgeLayout");
         java.awt.Point textOffset = arc.getTextOffset();
         layoutElem.setAttribute("textOffsetX",
@@ -266,14 +326,76 @@ public final class UISerialization {
      * graph objects.
      */
     private static void applyUiSegments(EdGraGra edGraGra,
-            DOMSerializationRegistry registry) {
+            DOMSerializationRegistry registry, Document doc) {
         for (EdGraph graph : collectGraphs(edGraGra)) {
             for (EdNode node : graph.getNodes()) {
-                applyNodeSegments(node, registry);
+                Element nodeElem = registry.getElement(node.getBasisNode());
+                if (nodeElem != null) {
+                    applyNodeSegments(node, nodeElem);
+                }
             }
             for (EdArc arc : graph.getArcs()) {
-                applyArcSegments(arc, registry);
+                Element arcElem = registry.getElement(arc.getBasisArc());
+                if (arcElem != null) {
+                    applyArcSegments(arc, arcElem);
+                }
             }
+        }
+        applyRuleSchemeSegments(edGraGra, registry, doc);
+    }
+
+    /**
+     * Applies the UI segments of rule scheme kernel/multi rule graphs onto
+     * the editor objects, using the same structural pairing as the save
+     * side (see {@link #attachRuleSchemeSegments}).
+     */
+    private static void applyRuleSchemeSegments(EdGraGra edGraGra,
+            DOMSerializationRegistry registry, Document doc) {
+        List<EdRuleScheme> schemes = collectRuleSchemes(edGraGra);
+        List<Element> schemeElems = collectSchemeElements(doc);
+        for (int i = 0; i < schemeElems.size() && i < schemes.size(); i++) {
+            EdRuleScheme scheme = schemes.get(i);
+            Element kernelElem = XMLUtils.getFirstChildElement(schemeElems.get(i), "Kernel");
+            if (kernelElem != null && scheme.getKernelRule() != null) {
+                Element kernelRuleElem = XMLUtils.getFirstChildElement(kernelElem, "Rule");
+                if (kernelRuleElem != null) {
+                    applyRuleElementSegments(kernelRuleElem, scheme.getKernelRule());
+                }
+            }
+            Element multiElem = XMLUtils.getFirstChildElement(schemeElems.get(i), "Multi");
+            if (multiElem != null) {
+                List<Element> multiRuleElems = XMLUtils.getChildElements(multiElem, "Rule");
+                for (int j = 0; j < multiRuleElems.size()
+                        && j < scheme.getMultiRules().size(); j++) {
+                    applyRuleElementSegments(
+                        multiRuleElems.get(j), scheme.getMultiRules().get(j));
+                }
+            }
+        }
+    }
+
+    /**
+     * Applies the UI segments of the LHS/RHS graphs of one kernel or multi
+     * rule element of a RuleScheme section onto the editor objects.
+     */
+    private static void applyRuleElementSegments(Element ruleElem, EdRule rule) {
+        List<Element> graphElems = XMLUtils.getChildElements(ruleElem, "Graph");
+        for (Element graphElem : graphElems) {
+            EdGraph edGraph = graphForKind(rule, graphElem.getAttribute("kind"));
+            if (edGraph != null) {
+                applyGraphElementSegments(graphElem, edGraph);
+            }
+        }
+    }
+
+    private static void applyGraphElementSegments(Element graphElem, EdGraph edGraph) {
+        List<Element> nodeElems = XMLUtils.getChildElements(graphElem, "Node");
+        for (int i = 0; i < nodeElems.size() && i < edGraph.getNodes().size(); i++) {
+            applyNodeSegments(edGraph.getNodes().get(i), nodeElems.get(i));
+        }
+        List<Element> edgeElems = XMLUtils.getChildElements(graphElem, "Edge");
+        for (int i = 0; i < edgeElems.size() && i < edGraph.getArcs().size(); i++) {
+            applyArcSegments(edGraph.getArcs().get(i), edgeElems.get(i));
         }
     }
 
@@ -282,13 +404,7 @@ public final class UISerialization {
      * element onto the editor node, mirroring EdNode.XreadObject and
      * LayoutNode.XreadObject.
      */
-    private static void applyNodeSegments(EdNode node,
-            DOMSerializationRegistry registry) {
-        Element nodeElem = registry.getElement(node.getBasisNode());
-        if (nodeElem == null) {
-            return;
-        }
-
+    private static void applyNodeSegments(EdNode node, Element nodeElem) {
         Element layoutElem = XMLUtils.getFirstChildElement(nodeElem, "NodeLayout");
         if (layoutElem != null) {
             node.setX(XMLUtils.getIntAttribute(layoutElem, "X", 20));
@@ -311,13 +427,7 @@ public final class UISerialization {
      * element onto the editor arc, mirroring EdArc.XreadObject and
      * LayoutArc.XreadObject.
      */
-    private static void applyArcSegments(EdArc arc,
-            DOMSerializationRegistry registry) {
-        Element arcElem = registry.getElement(arc.getBasisArc());
-        if (arcElem == null) {
-            return;
-        }
-
+    private static void applyArcSegments(EdArc arc, Element arcElem) {
         Element layoutElem = XMLUtils.getFirstChildElement(arcElem, "EdgeLayout");
         if (layoutElem != null) {
             arc.setTextOffset(
@@ -388,6 +498,11 @@ public final class UISerialization {
             }
         }
         for (EdRule rule : edGraGra.getRules()) {
+            // Rule schemes are handled separately (structural pairing);
+            // their graph objects are not registered in the registry
+            if (rule instanceof EdRuleScheme) {
+                continue;
+            }
             addRuleGraphs(graphs, rule);
         }
         for (EdRule atomic : edGraGra.getAtomics()) {
@@ -428,6 +543,46 @@ public final class UISerialization {
         if (graph != null && !graphs.contains(graph)) {
             graphs.add(graph);
         }
+    }
+
+    /**
+     * Returns the LHS or RHS editor graph of the rule for the given graph
+     * kind attribute, or null for unknown kinds.
+     */
+    private static EdGraph graphForKind(EdRule rule, String kind) {
+        if ("LHS".equals(kind)) {
+            return rule.getLeft();
+        }
+        if ("RHS".equals(kind)) {
+            return rule.getRight();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the editor rule schemes of the grammar in rule order.
+     */
+    private static List<EdRuleScheme> collectRuleSchemes(EdGraGra edGraGra) {
+        List<EdRuleScheme> schemes = new ArrayList<>();
+        for (int i = 0; i < edGraGra.getRules().size(); i++) {
+            EdRule rule = edGraGra.getRules().get(i);
+            if (rule instanceof EdRuleScheme) {
+                schemes.add((EdRuleScheme) rule);
+            }
+        }
+        return schemes;
+    }
+
+    /**
+     * Returns the RuleScheme elements of the document in document order.
+     */
+    private static List<Element> collectSchemeElements(Document doc) {
+        Element gtsElem = XMLUtils.getFirstChildElement(
+            doc.getDocumentElement(), "GraphTransformationSystem");
+        if (gtsElem != null) {
+            return XMLUtils.getChildElements(gtsElem, "RuleScheme");
+        }
+        return new ArrayList<>();
     }
 
     /**

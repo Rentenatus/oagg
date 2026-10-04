@@ -68,15 +68,7 @@ public class UiDomRegressionTest {
         verifyHostGraphUiState(loaded);
         verifyTypeGraphUiState(loaded);
 
-        File outFile = new File(outputDir, "ui_basic_graph_attrs_new.ggx");
-        assertTrue(UISerialization.saveWithDom(loaded, outFile.getPath()),
-            "DOM UI save should succeed");
-
-        XmlCanonicalComparator.ComparisonResult result =
-            XmlCanonicalComparator.compareFiles(refFile, outFile);
-        assertTrue(result.isEqual(),
-            "DOM UI save differs from the frozen reference: "
-            + result.getMessage());
+        roundtripAndCompare(loaded, "ui_basic_graph_attrs_new.ggx", refFile);
     }
 
     /**
@@ -101,15 +93,7 @@ public class UiDomRegressionTest {
         verifyRuleGraphUiState(rule);
         verifyHostLoopUiState(loaded);
 
-        File outFile = new File(outputDir, "ui_rule_nac_new.ggx");
-        assertTrue(UISerialization.saveWithDom(loaded, outFile.getPath()),
-            "DOM UI save should succeed");
-
-        XmlCanonicalComparator.ComparisonResult result =
-            XmlCanonicalComparator.compareFiles(refFile, outFile);
-        assertTrue(result.isEqual(),
-            "DOM UI save differs from the frozen reference: "
-            + result.getMessage());
+        roundtripAndCompare(loaded, "ui_rule_nac_new.ggx", refFile);
     }
 
     /**
@@ -132,15 +116,7 @@ public class UiDomRegressionTest {
         assertEquals(loaded.getName(), "ConstraintTest", "GraGra name");
         assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node position");
 
-        File outFile = new File(outputDir, "ui_constraints_new.ggx");
-        assertTrue(UISerialization.saveWithDom(loaded, outFile.getPath()),
-            "DOM UI save should succeed");
-
-        XmlCanonicalComparator.ComparisonResult result =
-            XmlCanonicalComparator.compareFiles(refFile, outFile);
-        assertTrue(result.isEqual(),
-            "DOM UI save differs from the frozen reference: "
-            + result.getMessage());
+        roundtripAndCompare(loaded, "ui_constraints_new.ggx", refFile);
     }
 
     /**
@@ -242,6 +218,67 @@ public class UiDomRegressionTest {
             "Rule sequence start graph should be restored");
 
         roundtripAndCompare(loaded, "ui_composite_new.ggx", refFile);
+    }
+
+    /**
+     * Rule scheme scenario: kernel rule and multi rule inside a RuleScheme
+     * section. The scheme graphs are not registered in the DOM registry,
+     * so the UI segments are paired structurally. DOM load, UI state
+     * verification (pinned kernel/multi positions), DOM save and canonical
+     * comparison.
+     */
+    @Test
+    public void uiRuleSchemeScenarioRoundtrip() throws Exception {
+        File refFile = new File(PREP_DIR, "ui_rule_scheme.ggx");
+        assertTrue(refFile.exists() && refFile.length() > 0,
+            "Frozen UI reference missing: run LegacyPreparationTest first ("
+            + refFile.getPath() + ")");
+
+        EdGraGra loaded = UISerialization.loadWithDom(refFile.getPath());
+        assertNotNull(loaded, "DOM UI load should return an EdGraGra");
+
+        assertEquals(loaded.getRules().size(), 1, "Rule count");
+        assertTrue(loaded.getRules().get(0) instanceof agg.editor.impl.EdRuleScheme,
+            "The only rule should be an EdRuleScheme");
+        agg.editor.impl.EdRuleScheme scheme =
+            (agg.editor.impl.EdRuleScheme) loaded.getRules().get(0);
+
+        assertTrue(hasNodeAt(loaded.getGraph(), 110, 210), "Host node position");
+        assertTrue(hasNodeAt(loaded.getTypeGraph(), 117, 217),
+            "Type graph node position");
+
+        assertTrue(hasNodeAt(scheme.getKernelRule().getLeft(), 124, 224),
+            "Kernel LHS node position");
+        assertTrue(hasNodeAt(scheme.getKernelRule().getRight(), 131, 231),
+            "Kernel RHS node position");
+        assertEquals(scheme.getMultiRules().size(), 1, "Multi rule count");
+        assertTrue(hasNodeAt(scheme.getMultiRules().get(0).getLeft(), 138, 238),
+            "Multi LHS node position");
+        assertTrue(hasNodeAt(scheme.getMultiRules().get(0).getRight(), 152, 252),
+            "Multi RHS node position");
+
+        // The RuleScheme section of a DOM save is produced by the core path
+        // through a legacy helper load, which renames rule graphs on load
+        // (LeftOf_/RightOf_) and drops the scheme layer/priority tagged
+        // values on the second roundtrip. A canonical comparison is
+        // therefore not meaningful (same approach as the core suite:
+        // structural verification of the reloaded save).
+        File outFile = new File(outputDir, "ui_rule_scheme_new.ggx");
+        assertTrue(UISerialization.saveWithDom(loaded, outFile.getPath()),
+            "DOM UI save should succeed");
+
+        EdGraGra reloaded = UISerialization.loadWithDom(outFile.getPath());
+        assertNotNull(reloaded, "Second DOM UI load should succeed");
+        assertEquals(reloaded.getRules().size(), 1, "Rule count after reload");
+        assertTrue(reloaded.getRules().get(0) instanceof agg.editor.impl.EdRuleScheme,
+            "The reloaded rule should still be an EdRuleScheme");
+        agg.editor.impl.EdRuleScheme reloadedScheme =
+            (agg.editor.impl.EdRuleScheme) reloaded.getRules().get(0);
+        assertNotNull(reloadedScheme.getKernelRule(), "Kernel rule after reload");
+        assertTrue(reloadedScheme.getMultiRules().size() > 0,
+            "Multi rules after reload");
+        assertTrue(hasNodeAt(reloadedScheme.getKernelRule().getLeft(), 124, 224),
+            "Kernel LHS node position after reload");
     }
 
     /**

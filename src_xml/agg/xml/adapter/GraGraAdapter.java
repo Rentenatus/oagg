@@ -322,20 +322,17 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             Document contextDoc, DOMSerializationRegistry registry) {
         try {
             agg.util.XMLHelper helper = new agg.util.XMLHelper();
-            // Pre-register all types from the RuleScheme's type set so that
-            // type references in kernel/multi rule graphs resolve to existing
-            // types instead of creating new <NodeType> elements inside graphs
-            TypeSet rsTypeSet = rs.getTypeSet();
-            if (rsTypeSet != null) {
-                de.jare.ndimcol.ref.IteratorWalker<Type> typeIter =
-                    rsTypeSet.getTypeWalker();
-                while (typeIter != null && typeIter.hasNext()) {
-                    Type t = typeIter.next();
-                    // Register the type in the helper (creates a DOM element
-                    // as child of Document root, but we only import the
-                    // RuleScheme element later)
-                    helper.addTopObject(t);
-                }
+            // Pre-register the types referenced by the scheme's rule graphs
+            // so that node and arc serialization writes type references
+            // instead of inline <NodeType>/<EdgeType> elements. The load
+            // path adapts the scheme graph types to the GraGra's type set,
+            // so these are the objects of the Types section and the remap
+            // below rewrites the references to their registry IDs.
+            for (Type type : collectSchemeTypes(rs)) {
+                // Register the type in the helper (creates a DOM element
+                // as child of Document root, but we only import the
+                // RuleScheme element later)
+                helper.addTopObject(type);
             }
             helper.addTopObject(rs);
             org.w3c.dom.Document helperDoc = helper.getDoc();
@@ -352,18 +349,241 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                         && "RuleScheme".equals(child.getNodeName())) {
                     // Import into context document
                     org.w3c.dom.Node imported = contextDoc.importNode(child, true);
+                    remapSchemeElementIds((Element) imported, helper, registry, rs);
                     return (Element) imported;
                 }
             }
             // If not found as child, check if root IS the RuleScheme
             if ("RuleScheme".equals(helperRoot.getNodeName())) {
                 org.w3c.dom.Node imported = contextDoc.importNode(helperRoot, true);
+                remapSchemeElementIds((Element) imported, helper, registry, rs);
                 return (Element) imported;
             }
         } catch (Exception e) {
             // Fall through to return null
         }
         return null;
+    }
+
+    /**
+     * Remaps the helper-internal ID attributes of an imported RuleScheme
+     * element to the IDs of the DOM registry.
+     *
+     * <p>The scheme section is produced by a temporary XMLHelper with its
+     * own private ID space. Without the remap, the imported subtree would
+     * reference types with helper IDs that do not exist in the Types
+     * section of the target document (or collide with other IDs), so a
+     * saved file could not be loaded again: the legacy temp load in
+     * deserializeRuleScheme cannot resolve the type references and drops
+     * kernel/multi rule content.</p>
+     */
+    private void remapSchemeElementIds(Element schemeElem,
+            agg.util.XMLHelper helper, DOMSerializationRegistry registry,
+            agg.xt_basis.agt.RuleScheme rs) {
+        java.util.Map<String, String> idMap = new java.util.HashMap<>();
+        // The types are pre-registered in the helper by serializeRuleScheme;
+        // map their helper IDs to the Types section IDs of the registry
+        for (Type type : collectSchemeTypes(rs)) {
+            addSchemeIdMapping(type, helper, registry, idMap);
+        }
+        addSchemeIdMapping(rs, helper, registry, idMap);
+        Rule kernel = rs.getKernelRule();
+        if (kernel != null) {
+            addSchemeIdMapping(kernel, helper, registry, idMap);
+            addSchemeIdMapping(kernel.getLeft(), helper, registry, idMap);
+            addSchemeIdMapping(kernel.getRight(), helper, registry, idMap);
+        }
+        for (Rule multi : rs.getMultiRules()) {
+            addSchemeIdMapping(multi, helper, registry, idMap);
+            addSchemeIdMapping(multi.getLeft(), helper, registry, idMap);
+            addSchemeIdMapping(multi.getRight(), helper, registry, idMap);
+        }
+        if (rs.getAmalgamatedRule() != null) {
+            Rule amalgamated = rs.getAmalgamatedRule();
+            addSchemeIdMapping(amalgamated, helper, registry, idMap);
+            addSchemeIdMapping(amalgamated.getLeft(), helper, registry, idMap);
+            addSchemeIdMapping(amalgamated.getRight(), helper, registry, idMap);
+        }
+        remapElementIds(schemeElem, idMap, registry);
+    }
+
+    /**
+     * Returns the distinct types referenced by the nodes and arcs of the
+     * graphs the scheme serializes: LHS and RHS of the kernel, multi and
+     * amalgamated rules plus their NAC and PAC graphs.
+     */
+    private java.util.List<Type> collectSchemeTypes(agg.xt_basis.agt.RuleScheme rs) {
+        java.util.List<Type> types = new java.util.ArrayList<>();
+        java.util.Set<Object> seen = java.util.Collections.newSetFromMap(
+            new java.util.IdentityHashMap<>());
+        java.util.List<Rule> schemeRules = new java.util.ArrayList<>();
+        if (rs.getKernelRule() != null) {
+            schemeRules.add(rs.getKernelRule());
+        }
+        schemeRules.addAll(rs.getMultiRules());
+        if (rs.getAmalgamatedRule() != null) {
+            schemeRules.add(rs.getAmalgamatedRule());
+        }
+        for (Rule rule : schemeRules) {
+            addGraphTypes(rule.getLeft(), types, seen);
+            addGraphTypes(rule.getRight(), types, seen);
+            for (agg.xt_basis.OrdinaryMorphism nac : rule.getNACsList()) {
+                addGraphTypes(nac.getTarget(), types, seen);
+            }
+            for (agg.xt_basis.OrdinaryMorphism pac : rule.getPACsList()) {
+                addGraphTypes(pac.getTarget(), types, seen);
+            }
+        }
+        return types;
+    }
+
+    /**
+     * Adds the types referenced by the given graph's nodes and arcs to
+     * the list, skipping duplicates.
+     */
+    private void addGraphTypes(Graph graph, java.util.List<Type> types,
+            java.util.Set<Object> seen) {
+        if (graph == null) {
+            return;
+        }
+        java.util.Iterator<? extends agg.xt_basis.GraphObject> it;
+        it = graph.getNodesSet().iterator();
+        while (it.hasNext()) {
+            Type type = it.next().getType();
+            if (type != null && seen.add(type)) {
+                types.add(type);
+            }
+        }
+        it = graph.getArcsSet().iterator();
+        while (it.hasNext()) {
+            Type type = it.next().getType();
+            if (type != null && seen.add(type)) {
+                types.add(type);
+            }
+        }
+    }
+
+    /**
+     * Adds a helper-ID to registry-ID mapping for the given object and,
+     * for graphs, for all their nodes and arcs.
+     */
+    private void addSchemeIdMapping(Object obj, agg.util.XMLHelper helper,
+            DOMSerializationRegistry registry, java.util.Map<String, String> idMap) {
+        if (obj == null) {
+            return;
+        }
+        String helperId = helper.getO2I(obj);
+        if (helperId != null && !helperId.isEmpty()) {
+            String registryId = registry.getId(obj);
+            if (registryId.isEmpty()) {
+                registryId = registry.register(obj);
+            }
+            idMap.put(helperId, registryId);
+        }
+        if (obj instanceof Graph) {
+            Graph graph = (Graph) obj;
+            java.util.Iterator<? extends agg.xt_basis.GraphObject> nodeIter =
+                graph.getNodesSet().iterator();
+            while (nodeIter.hasNext()) {
+                addSchemeIdMapping(nodeIter.next(), helper, registry, idMap);
+            }
+            java.util.Iterator<? extends agg.xt_basis.GraphObject> arcIter =
+                graph.getArcsSet().iterator();
+            while (arcIter.hasNext()) {
+                addSchemeIdMapping(arcIter.next(), helper, registry, idMap);
+            }
+        }
+    }
+
+    /**
+     * Replaces ID-carrying attribute values of the subtree with the IDs of
+     * the DOM registry.
+     *
+     * <p>Only the attribute names the legacy format interprets as object
+     * references (ID, id, type, source, target, orig, image, f) are
+     * rewritten, so literal values that happen to look like an ID are left
+     * untouched.</p>
+     *
+     * <p>The temporary XMLHelper assigns IDs from its own private space in
+     * the same "I&lt;n&gt;" format as the registry. Every helper ID in the
+     * subtree must therefore be replaced: a leaked helper ID would silently
+     * alias an unrelated registry ID of the target document. Helper IDs
+     * without an explicit mapping (for example attribute-context tuples or
+     * formulas) are assigned a fresh, collision-free registry ID so all
+     * references inside the subtree stay consistent.</p>
+     */
+    private void remapElementIds(Element elem, java.util.Map<String, String> idMap,
+            DOMSerializationRegistry registry) {
+        // Collect helper IDs the explicit mapping does not cover
+        java.util.Map<String, String> fullMap = new java.util.HashMap<>(idMap);
+        collectUnmappedIds(elem, fullMap, registry);
+        applyIdRemap(elem, fullMap);
+    }
+
+    /**
+     * Finds ID-carrying attribute values in the subtree that are helper
+     * IDs without a registry mapping and assigns each of them a fresh
+     * registry ID.
+     */
+    private void collectUnmappedIds(Element elem, java.util.Map<String, String> idMap,
+            DOMSerializationRegistry registry) {
+        org.w3c.dom.NamedNodeMap attrs = elem.getAttributes();
+        for (int i = 0; i < attrs.getLength(); i++) {
+            org.w3c.dom.Attr attr = (org.w3c.dom.Attr) attrs.item(i);
+            if (!isIdAttribute(attr.getName())) {
+                continue;
+            }
+            String value = attr.getValue();
+            if (value != null && value.matches("I\\d+")
+                    && !idMap.containsKey(value)) {
+                // Register a placeholder: the fresh ID must be unique
+                // document-wide, but the object itself is only referenced
+                // inside the scheme subtree
+                idMap.put(value, registry.register(new Object()));
+            }
+        }
+        org.w3c.dom.NodeList children = elem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child instanceof Element) {
+                collectUnmappedIds((Element) child, idMap, registry);
+            }
+        }
+    }
+
+    /**
+     * Returns whether the given attribute name carries an object ID in
+     * the legacy XML format.
+     */
+    private boolean isIdAttribute(String name) {
+        return "ID".equals(name) || "id".equals(name) || "type".equals(name)
+            || "source".equals(name) || "target".equals(name)
+            || "orig".equals(name) || "image".equals(name) || "f".equals(name);
+    }
+
+    /**
+     * Replaces every ID-carrying attribute value of the subtree with its
+     * mapped registry ID.
+     */
+    private void applyIdRemap(Element elem, java.util.Map<String, String> idMap) {
+        org.w3c.dom.NamedNodeMap attrs = elem.getAttributes();
+        for (int i = 0; i < attrs.getLength(); i++) {
+            org.w3c.dom.Attr attr = (org.w3c.dom.Attr) attrs.item(i);
+            if (!isIdAttribute(attr.getName())) {
+                continue;
+            }
+            String mapped = idMap.get(attr.getValue());
+            if (mapped != null) {
+                attr.setValue(mapped);
+            }
+        }
+        org.w3c.dom.NodeList children = elem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            org.w3c.dom.Node child = children.item(i);
+            if (child instanceof Element) {
+                applyIdRemap((Element) child, idMap);
+            }
+        }
     }
 
     /**
@@ -802,6 +1022,11 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                         rule -> rule instanceof agg.xt_basis.agt.RuleScheme);
                     // Adapt types from temp GraGra to target GraGra
                     graGra.getTypeSet().adaptTypes(loadedRs.getTypeSet(), true);
+                    // Rewrite the type references of the scheme's graph
+                    // objects to the GraGra's types: the temp load created
+                    // private type objects, and a save would reference types
+                    // that do not exist in the Types section of the document
+                    adaptSchemeGraphTypes(loadedRs, graGra.getTypeSet());
                     // Add the loaded RuleScheme
                     graGra.getRulesVec().add(loadedRs);
                     // Register its objects for reference resolution
@@ -831,6 +1056,60 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
         for (Rule multi : rs.getMultiRules()) {
             registerGraphObjects(multi.getLeft(), registry);
             registerGraphObjects(multi.getRight(), registry);
+        }
+    }
+
+    /**
+     * Rewrites the type references of the scheme's graph objects to the
+     * equivalent types of the target type set.
+     *
+     * <p>The RuleScheme is loaded through a temporary GraGra whose reader
+     * creates private type objects. adaptTypes only adapts the type set
+     * listing, not the graph objects: without the rewrite, the scheme's
+     * nodes and arcs keep referencing the private types, and a DOM save
+     * would write type references that do not exist in the Types section
+     * of the document (the file could not be reloaded).</p>
+     */
+    private void adaptSchemeGraphTypes(agg.xt_basis.agt.RuleScheme rs, TypeSet typeSet) {
+        Rule kernel = rs.getKernelRule();
+        if (kernel != null) {
+            adaptGraphObjectTypes(kernel.getLeft(), typeSet);
+            adaptGraphObjectTypes(kernel.getRight(), typeSet);
+        }
+        for (Rule multi : rs.getMultiRules()) {
+            adaptGraphObjectTypes(multi.getLeft(), typeSet);
+            adaptGraphObjectTypes(multi.getRight(), typeSet);
+        }
+    }
+
+    /**
+     * Replaces the type of every node and arc of the graph by the
+     * equivalent type of the target type set, when one exists.
+     */
+    private void adaptGraphObjectTypes(Graph graph, TypeSet typeSet) {
+        if (graph == null || typeSet == null) {
+            return;
+        }
+        java.util.Iterator<? extends agg.xt_basis.GraphObject> it;
+        it = graph.getNodesSet().iterator();
+        while (it.hasNext()) {
+            adaptGraphObjectType(it.next(), typeSet);
+        }
+        it = graph.getArcsSet().iterator();
+        while (it.hasNext()) {
+            adaptGraphObjectType(it.next(), typeSet);
+        }
+    }
+
+    private void adaptGraphObjectType(agg.xt_basis.GraphObject graphObject, TypeSet typeSet) {
+        Type currentType = graphObject.getType();
+        if (currentType == null) {
+            return;
+        }
+        Type similar = typeSet.getTypeByNameAndAdditionalRepr(
+            currentType.getStringRepr(), currentType.getAdditionalRepr());
+        if (similar != null && similar != currentType) {
+            graphObject.setType(similar);
         }
     }
 
