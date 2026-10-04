@@ -54,12 +54,12 @@ final class TypeSerializerHelper {
         typeElem.setAttribute("name", name);
         typeElem.setAttribute("abstract", String.valueOf(type.isAbstract()));
 
-        // Comment
-        if (type instanceof agg.xt_basis.TypeImpl) {
-            String comment = ((agg.xt_basis.TypeImpl) type).getTextualComment();
-            if (comment != null && !comment.isEmpty()) {
-                typeElem.setAttribute("comment", comment);
-            }
+        // Comment (getTextualComment is part of the Type interface; the
+        // previous instanceof TypeImpl cast never matched the concrete
+        // NodeTypeImpl / ArcTypeImpl classes, losing the comment)
+        String comment = type.getTextualComment();
+        if (comment != null && !comment.isEmpty()) {
+            typeElem.setAttribute("comment", comment);
         }
 
         // Serialize Parent elements (multiple inheritance for node types)

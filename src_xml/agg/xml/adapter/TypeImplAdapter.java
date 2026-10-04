@@ -90,6 +90,12 @@ public class TypeImplAdapter extends DomainObjectAdapter<TypeImpl> {
             registry.registerWithId(type, id);
         }
 
+        // Comment (mirroring the legacy Type.XreadObject behaviour)
+        String comment = typeElem.getAttribute("comment");
+        if (comment != null && !comment.isEmpty()) {
+            type.setTextualComment(comment);
+        }
+
         // Parse AttrType children
         NodeList children = typeElem.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {

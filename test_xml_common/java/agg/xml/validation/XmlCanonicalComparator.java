@@ -104,19 +104,32 @@ public final class XmlCanonicalComparator {
     public static ComparisonResult compareDocuments(Document docA, Document docB) {
         Element rootA = docA.getDocumentElement();
         Element rootB = docB.getDocumentElement();
-        // Iterative refinement: sort → walk → re-sort with normalized refs
+        // Iterative refinement: sort -> walk -> re-sort with normalized refs.
+        // The walk does NOT stop at the first mismatch: a mismatch in an
+        // early iteration may be a mispairing caused by raw reference IDs
+        // (the idMap is still empty, so children whose sort key contains a
+        // reference attribute can be ordered differently in both
+        // documents). Walking to the end fills the idMap as far as
+        // possible; the next iteration then sorts with normalized
+        // references. Only a mismatch that survives all iterations is real.
         Map<String, String> idMapA = new LinkedHashMap<>();
         Map<String, String> idMapB = new LinkedHashMap<>();
+        String mismatch = null;
         for (int iteration = 0; iteration < 5; iteration++) {
             sortChildrenWithRefs(rootA, idMapA);
             sortChildrenWithRefs(rootB, idMapB);
             idMapA.clear();
             idMapB.clear();
             int[] counter = {0};
-            String mismatch = parallelWalk(rootA, rootB, idMapA, idMapB, counter);
-            if (mismatch != null) {
-                return new ComparisonResult(false, mismatch);
+            String[] firstError = {null};
+            parallelWalk(rootA, rootB, idMapA, idMapB, counter, firstError);
+            mismatch = firstError[0];
+            if (mismatch == null) {
+                break;
             }
+        }
+        if (mismatch != null) {
+            return new ComparisonResult(false, mismatch);
         }
         String canonA = serializeCanonical(rootA, idMapA);
         String canonB = serializeCanonical(rootB, idMapB);
@@ -147,7 +160,15 @@ public final class XmlCanonicalComparator {
     }
 
     /**
-     * Computes a sort key including normalized reference attributes.
+     * Computes a sort key from the tag name and the non-ID, non-reference
+     * attributes. Reference attributes (type, source, target, orig,
+     * image, ...) are excluded on purpose: their raw values differ
+     * between the documents (IDs are generated per document), and
+     * including them made the child ordering differ between the two
+     * documents, which mispaired structurally identical children.
+     * Children that differ only in reference attributes keep their
+     * document order; the references themselves are normalized during
+     * the walk and the canonical serialization.
      */
     private static String elementSortKeyWithRefs(Element elem, Map<String, String> idMap) {
         StringBuilder sb = new StringBuilder(elem.getTagName());
@@ -155,14 +176,10 @@ public final class XmlCanonicalComparator {
         for (int i = 0; i < elem.getAttributes().getLength(); i++) {
             Node attr = elem.getAttributes().item(i);
             String name = attr.getNodeName();
-            String value = attr.getNodeValue();
-            if (ID_ATTR.equals(name)) {
-                continue; // skip ID for sorting
+            if (ID_ATTR.equals(name) || REF_ATTRS.contains(name)) {
+                continue; // skip ID and reference attributes for sorting
             }
-            if (REF_ATTRS.contains(name) && idMap != null && !idMap.isEmpty()) {
-                value = idMap.getOrDefault(value, value);
-            }
-            attrs.put(name, value);
+            attrs.put(name, attr.getNodeValue());
         }
         for (Map.Entry<String, String> e : attrs.entrySet()) {
             sb.append('|').append(e.getKey()).append('=').append(e.getValue());
@@ -177,24 +194,30 @@ public final class XmlCanonicalComparator {
      * ID to elements at equivalent positions. Returns null on success, or an
      * error message if the structures differ.
      */
-    private static String parallelWalk(Element elemA, Element elemB,
-            Map<String, String> idMapA, Map<String, String> idMapB, int[] counter) {
-        return parallelWalk(elemA, elemB, idMapA, idMapB, counter, "/" + elemA.getTagName());
+    private static void parallelWalk(Element elemA, Element elemB,
+            Map<String, String> idMapA, Map<String, String> idMapB, int[] counter,
+            String[] firstError) {
+        parallelWalk(elemA, elemB, idMapA, idMapB, counter, firstError,
+            "/" + elemA.getTagName());
     }
 
-    private static String parallelWalk(Element elemA, Element elemB,
-            Map<String, String> idMapA, Map<String, String> idMapB, int[] counter, String path) {
+    private static void parallelWalk(Element elemA, Element elemB,
+            Map<String, String> idMapA, Map<String, String> idMapB, int[] counter,
+            String[] firstError, String path) {
         String tagA = elemA.getTagName();
         String tagB = elemB.getTagName();
         if (!tagA.equals(tagB)) {
-            return "Tag mismatch at " + path + ": <" + tagA + "> vs <" + tagB + ">";
+            recordError(firstError, "Tag mismatch at " + path + ": <" + tagA
+                + "> vs <" + tagB + ">");
+            return;
         }
         String pathA = path + "[" + positionAmongSiblings(elemA) + "]";
         // Compare non-ID, non-ref attributes
         Map<String, String> attrsA = collectNonIdRefAttrs(elemA);
         Map<String, String> attrsB = collectNonIdRefAttrs(elemB);
         if (!attrsA.equals(attrsB)) {
-            return "Attribute mismatch at " + pathA + " in <" + tagA + ">: " + attrsA + " vs " + attrsB;
+            recordError(firstError, "Attribute mismatch at " + pathA + " in <"
+                + tagA + ">: " + attrsA + " vs " + attrsB);
         }
         // Assign canonical ID if both have ID
         String idA = elemA.getAttribute(ID_ATTR);
@@ -204,21 +227,29 @@ public final class XmlCanonicalComparator {
             idMapA.put(idA, canonical);
             idMapB.put(idB, canonical);
         }
-        // Walk children in parallel
+        // Walk children in parallel; on a count mismatch continue with the
+        // smaller count so the idMap keeps filling for the next iteration
         List<Element> childrenA = getChildElements(elemA);
         List<Element> childrenB = getChildElements(elemB);
         if (childrenA.size() != childrenB.size()) {
-            return "Child count mismatch in <" + tagA + "> at " + pathA + ": "
-                + childrenA.size() + " vs " + childrenB.size();
+            recordError(firstError, "Child count mismatch in <" + tagA + "> at "
+                + pathA + ": " + childrenA.size() + " vs " + childrenB.size());
         }
-        for (int i = 0; i < childrenA.size(); i++) {
-            String err = parallelWalk(childrenA.get(i), childrenB.get(i),
-                idMapA, idMapB, counter, pathA + "/" + childrenA.get(i).getTagName());
-            if (err != null) {
-                return err;
-            }
+        int common = Math.min(childrenA.size(), childrenB.size());
+        for (int i = 0; i < common; i++) {
+            parallelWalk(childrenA.get(i), childrenB.get(i),
+                idMapA, idMapB, counter, firstError,
+                pathA + "/" + childrenA.get(i).getTagName());
         }
-        return null;
+    }
+
+    /**
+     * Records the first error; later errors do not overwrite it.
+     */
+    private static void recordError(String[] firstError, String message) {
+        if (firstError[0] == null) {
+            firstError[0] = message;
+        }
     }
 
     /**
