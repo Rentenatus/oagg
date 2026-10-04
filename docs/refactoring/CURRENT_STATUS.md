@@ -60,11 +60,10 @@ Four paths are compared against each other: legacy load, legacy save (fresh refe
 
 ## Known Delegations and Gaps
 
-1. **RuleScheme**: `GraGraAdapter` serializes/deserializes rule schemes by delegating to the legacy `XwriteObject`/`XreadObject` through a temporary GraGra load. Documented decision (the legacy reader is deeply intertwined with `RuleScheme.XreadObject`); blocks legacy removal.
-2. **`.rsx` (ApplRuleSequence) and `.cpx` (ConflictsDependenciesContainer)**: legacy-only paths; the regression tests exercise the frozen path and do not enforce canonical equality.
-3. **GUI save/load entry points**: `src_ui/agg/gui/saveload/GraGraSave`/`GraGraLoad` (plus `GraphBrowserImpl`, `GraGraTreeView`, `ParserDialog`) call `XMLHelper` directly. No file in `src_ui` references `XMLSerialization`; the migration flag (`XMLSerialization.setUseNewXml` -> `GraGraMigration`) exists but is only used by tests.
-4. **convert tools**: `AGG2ColorGraph`, `ConverterWSDL`, `WSDL2ggx` use `XMLHelper` directly.
-5. **Scale**: 61 files in `src`/`src_ui` reference `XMLHelper`, 51 implement `XwriteObject`/`XreadObject` (xt_basis core, `attribute.impl`, `parser`, `ruleappl`).
+1. **`.rsx` (ApplRuleSequence) and `.cpx` (ConflictsDependenciesContainer)**: legacy-only paths; the regression tests exercise the frozen path and do not enforce canonical equality.
+2. **GUI save/load entry points**: `src_ui/agg/gui/saveload/GraGraSave`/`GraGraLoad` (plus `GraphBrowserImpl`, `GraGraTreeView`, `ParserDialog`) call `XMLHelper` directly. No file in `src_ui` references `XMLSerialization`; the migration flag (`XMLSerialization.setUseNewXml` -> `GraGraMigration`) exists but is only used by tests.
+3. **convert tools**: `AGG2ColorGraph`, `ConverterWSDL`, `WSDL2ggx` use `XMLHelper` directly.
+4. **Scale**: 61 files in `src`/`src_ui` reference `XMLHelper`, 51 implement `XwriteObject`/`XreadObject` (xt_basis core, `attribute.impl`, `parser`, `ruleappl`).
 
 ---
 
@@ -75,7 +74,7 @@ The .ggx roundtrip is complete and fully regression-tested, and the frozen clone
 | Step | Content | Status |
 |------|---------|--------|
 | 1 | Wire GUI save/load through the migration flag and smoke-test the application | open |
-| 2 | Native DOM adapter for RuleScheme (remove the legacy delegation) | open |
+| 2 | Native DOM adapter for RuleScheme (remove the legacy delegation) | done (`RuleSchemeAdapter`, canonical verification) |
 | 3 | DOM coverage for `.rsx`/`.cpx` including canonical comparison | open |
 | 4 | Slice-wise removal of the legacy XML code from `src` (xt_basis -> attribute -> parser -> ruleappl -> convert) | open |
 
