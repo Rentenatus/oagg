@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>agg</groupId>
+        <artifactId>agg-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>agg-ui-xml</artifactId>
+    <packaging>jar</packaging>
+
+    <name>AGG UI XML Serialization Module</name>
+    <description>
+        DOM-based XML serialization of the UI layer. This module extends
+        agg-xml the same way src_ui extends src: it holds the adapters for
+        the editor wrappers (EdGraGra, EdGraph, EdNode, EdRule, ...) and
+        their own XML segments (NodeLayout, LayoutNode, LayoutArc,
+        LayoutPattern, SaveLoad orchestration) - everything in a .ggx file
+        that the core adapters in agg-xml do not cover.
+
+        Package convention: agg.xml.ui.* (mirroring agg.xml.* in src_xml).
+
+        The core stays usable without the UI, and agg-xml stays free of UI
+        concerns: UI/editor serialization belongs HERE, core serialization
+        belongs in agg-xml.
+
+        The dependency on agg-ui is declared below; it becomes effective
+        with the code of the first Ed* adapters.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>agg</groupId>
+            <artifactId>agg-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>agg</groupId>
+            <artifactId>agg-xml</artifactId>
+        </dependency>
+        <!-- Editor wrappers (EdGraGra, EdNode, layout): the UI layer this
+             module serializes. Bundled into agg-ui once src_ui joins the
+             build as a module; until then this module compiles empty. -->
+        <dependency>
+            <groupId>agg</groupId>
+            <artifactId>agg-ui</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.jare.ndimcol</groupId>
+            <artifactId>andimcol</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>D:/sdk_workspaces/andimcol/dist/andimcol.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!--
+            Non-standard source layout: Java sources live directly under src_uixml/
+            (not under src/main/java), mirroring src_xml and the existing AGG
+            project structure.
+        -->
+        <sourceDirectory>.</sourceDirectory>
+    </build>
+</project>

@@ -38,6 +38,53 @@ XMLHelper → XMLObject → Domain Classes → XMLHelper
 
 ---
 
+## Target Module Dependency Flow (2026-10 update)
+
+The module layering mirrors the core/UI separation of the source tree:
+
+```
+                    ┌─────────────┐
+                    │  agg-core   │  (src)
+                    │  domain     │
+                    └──────┬──────┘
+               ┌────────────┼────────────┐
+               ▼            ▼            │
+      ┌────────────┐  ┌────────────┐    │
+      │  agg-ui    │  │  agg-xml   │    │
+      │  (src_ui)  │  │ (src_xml)  │    │
+      │ editor     │  │ DOM XML of │    │
+      │ layer      │  │ the core   │    │
+      └─────┬──────┘  └─────┬──────┘    │
+            │               │           │
+            └───────┬───────┘           │
+                    ▼                   │
+           ┌─────────────────┐          │
+           │  agg-ui-xml     │          │
+           │  (src_uixml)    │          │
+           │  DOM XML of the │          │
+           │  UI layer       │          │
+           └─────────────────┘          │
+```
+
+* `agg-core` (src): no UI, no DOM XML.
+* `agg-ui` (src_ui): editor layer of the core (EdGraGra, EdNode, layout,
+  GraGraSave/GraGraLoad).
+* `agg-xml` (src_xml): DOM-based serialization of the core, packages
+  `agg.xml.*`.
+* `agg-ui-xml` (src_uixml): DOM-based serialization of the UI layer
+  (Ed* adapters, NodeLayout, layout objects), packages `agg.xml.ui.*`;
+  depends on `agg-xml` and `agg-ui`.
+
+This keeps the core usable without the UI and keeps the DOM XML module
+free of UI concerns. A .ggx file written by the GUI contains both
+layers: the core layer (agg-xml) and the UI layer (agg-ui-xml).
+
+The frozen legacy reference (test/test_agg/legacy_agg, module
+agg-core-legacy) is a verbatim clone of src + src_ui at the freeze point
+and carries both layers of the old XML path.
+
+---
+
 ## Dependency Matrix
 
 ### Source to Target Dependencies

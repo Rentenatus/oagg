@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>agg</groupId>
+        <artifactId>agg-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>agg-ui</artifactId>
+    <packaging>jar</packaging>
+
+    <name>AGG UI Module</name>
+    <description>
+        Editor/GUI layer of the AGG core: EdGraGra and the other Ed*
+        wrappers, layout objects, SaveLoad orchestration (GraGraSave,
+        GraGraLoad) and the GUI packages. This module extends agg-core
+        (src) the same way agg-ui-xml (src_uixml) extends agg-xml
+        (src_xml): the core stays usable without the UI.
+
+        The XML code in this module is still on the frozen legacy path
+        (XMLHelper / XwriteObject / XreadObject, own XML segments like
+        NodeLayout). Its DOM-based successors belong in agg-ui-xml
+        (src_uixml, packages agg.xml.ui.*).
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>agg</groupId>
+            <artifactId>agg-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.jare.ndimcol</groupId>
+            <artifactId>andimcol</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>D:/sdk_workspaces/andimcol/dist/andimcol.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!--
+            Non-standard source layout: Java sources live directly under src_ui/
+            (not under src/main/java). This matches the existing AGG project
+            structure (src, src_xml).
+        -->
+        <sourceDirectory>.</sourceDirectory>
+    </build>
+</project>

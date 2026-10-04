@@ -20,6 +20,47 @@ It is divided into **3 parts** due to file size limitations. Please navigate to 
 
 ---
 
+## 🏛️ Target Module Architecture (2026-10 update)
+
+The module layering mirrors the core/UI separation of the source tree, so
+that the core can be used without the UI and the DOM XML path is split the
+same way:
+
+| Directory | Module (artifactId) | Contains | Depends on |
+|-----------|---------------------|----------|------------|
+| `src` | `agg-core` | Domain core — no UI, no DOM XML | — |
+| `src_ui` | `agg-ui` | Editor/GUI layer of the core (EdGraGra, EdNode, layout, GraGraSave/GraGraLoad) | `agg-core` |
+| `src_xml` | `agg-xml` | DOM-based XML serialization of the core | `agg-core` |
+| `src_uixml` | `agg-ui-xml` | DOM-based XML serialization of the UI layer (Ed* adapters, NodeLayout, layout objects) | `agg-xml`, `agg-ui` |
+
+**Distribution rules:**
+
+* Adapters for core domain objects (GraGra, Graph, Rule, Types, Match,
+  constraints) belong in `src_xml` (packages `agg.xml.*`).
+* Adapters for editor wrappers and their own XML segments (`EdGraGra`,
+  `NodeLayout`, `LayoutNode`/`LayoutArc`/`LayoutPattern`, SaveLoad
+  orchestration) belong in `src_uixml` (packages `agg.xml.ui.*`) — exactly
+  the parts of a .ggx file that the core adapters do not cover.
+* `src` must stay free of UI code and DOM XML code; `src_xml` must stay
+  free of UI code. A .ggx file written by the GUI contains both layers:
+  the core layer (written by `src_xml`) and the UI layer (written by
+  `src_uixml`).
+
+**Frozen legacy reference:** `test/test_agg/legacy_agg` (module
+`agg-core-legacy`) holds a verbatim clone of `src` + `src_ui` at the
+freeze point. The preparation suite (`test_xml_prep`,
+`agg.xml.prep.LegacyPreparationTest`) runs against this clone and writes
+reference XML into `assets_test_xml/target/legacy_prep/`; the DOM-side
+regression tests (`test_xml`, compiled into `src_xml`) load these frozen
+references, re-save with the current code and compare canonically. Any
+later deviation from the old XML behaviour surfaces as a test failure.
+
+Reactor order: `src` → `agg-core-legacy` (preparation) → `src_xml`
+(DOM tests). `src_ui` and `src_uixml` join the build as modules in the
+same layer order.
+
+---
+
 ## 🎯 **Executive Summary**
 
 ### **The Problem**

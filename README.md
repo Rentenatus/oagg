@@ -27,6 +27,37 @@ Discord: https://discord.gg/JZtHQbxC
 
 ---
 
+## Module Architecture
+
+The repository is layered so that the core can be used without the UI and
+without the DOM XML module:
+
+| Directory | Module (artifactId) | Contains | Depends on |
+|-----------|---------------------|----------|------------|
+| `src` | `agg-core` | Domain core (GraGra, Graph, Rule, Node, Arc, types, attributes) — no UI, no DOM XML | — |
+| `src_ui` | `agg-ui` | Editor/GUI layer of the core (EdGraGra, EdNode, layout, GraGraSave/GraGraLoad) | `agg-core` |
+| `src_xml` | `agg-xml` | DOM-based XML serialization of the core (adapters for GraGra, Rule, Graph, Types, Match, ...) | `agg-core` |
+| `src_uixml` | `agg-ui-xml` | DOM-based XML serialization of the UI layer (adapters for Ed* wrappers, NodeLayout, layout objects) | `agg-xml`, `agg-ui` |
+
+Layering rules:
+
+* `src` stays free of UI code and DOM XML code.
+* Core serialization goes into `src_xml` (packages `agg.xml.*`); UI/editor
+  serialization goes into `src_uixml` (packages `agg.xml.ui.*`) — mirroring
+  how `src_ui` extends `src`.
+* The frozen legacy reference of the old XML path lives in
+  `test/test_agg/legacy_agg` (verbatim clone of `src` + `src_ui`, module
+  `agg-core-legacy`). The preparation suite in `test_xml_prep` runs against
+  this clone and writes reference XML into `assets_test_xml/target/legacy_prep`;
+  the DOM-side regression tests in `test_xml` run against the current code
+  and compare against those frozen references.
+* Test roots: `test_xml` (DOM side, compiled into `src_xml`),
+  `test_xml_prep` (preparation, compiled into `agg-core-legacy`),
+  `test_xml_common` (shared test helpers, compiled into both).
+  Shared test data lives in `assets_test_xml` (test working directory).
+
+---
+
 **Performance:**
 The current version completes reference tests in ~4% of the target time (36.21s vs. 950s) thanks to refactoring with Mistral support and integration of the ndimcol repository.
 

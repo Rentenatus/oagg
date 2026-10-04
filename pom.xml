@@ -21,11 +21,17 @@
 
     <modules>
         <module>src</module>
+        <!-- UI layer of the core (Ed* wrappers, layout, GraGraSave/GraGraLoad):
+             extends agg-core, keeps the core free of UI concerns. -->
+        <module>src_ui</module>
         <!-- Frozen legacy reference: builds and runs the preparation suite
              (writes reference XML into assets_test_xml/target/legacy_prep)
              before the DOM-side tests in src_xml consume those files. -->
         <module>test/test_agg/legacy_agg</module>
         <module>src_xml</module>
+        <!-- DOM-based XML serialization of the UI layer: extends agg-xml
+             the same way src_ui extends src. -->
+        <module>src_uixml</module>
     </modules>
 
     <dependencyManagement>
@@ -38,6 +44,16 @@
             <dependency>
                 <groupId>agg</groupId>
                 <artifactId>agg-xml</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>agg</groupId>
+                <artifactId>agg-ui</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>agg</groupId>
+                <artifactId>agg-ui-xml</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
