@@ -53,6 +53,7 @@ public class NodeAdapter extends DomainObjectAdapter<Node> {
         Element nodeElem = doc.createElement("Node");
         String nodeId = registry.register(node);
         nodeElem.setAttribute("ID", nodeId);
+        registry.bindElement(node, nodeElem);
 
         if (!node.isVisible()) {
             nodeElem.setAttribute("visible", "false");

@@ -57,14 +57,60 @@
             <scope>system</scope>
             <systemPath>D:/sdk_workspaces/andimcol/dist/andimcol.jar</systemPath>
         </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <!--
             Non-standard source layout: Java sources live directly under src_uixml/
             (not under src/main/java), mirroring src_xml and the existing AGG
-            project structure.
+            project structure. Test sources live under the repository-wide UI test
+            root test_xml_ui/java (plus the shared helpers in test_xml_common).
+            Tests run with the repository-wide test working directory
+            assets_test_xml, exactly like the DOM suite in agg-xml.
         -->
         <sourceDirectory>.</sourceDirectory>
+        <testSourceDirectory>../test_xml_ui/java</testSourceDirectory>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>add-shared-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>../test_xml_common/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${project.basedir}/../assets_test_xml</workingDirectory>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

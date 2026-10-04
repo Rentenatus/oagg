@@ -56,6 +56,7 @@ public class ArcAdapter extends DomainObjectAdapter<Arc> {
         Element edgeElem = doc.createElement("Edge");
         String arcId = registry.register(arc);
         edgeElem.setAttribute("ID", arcId);
+        registry.bindElement(arc, edgeElem);
 
         if (!arc.isVisible()) {
             edgeElem.setAttribute("visible", "false");

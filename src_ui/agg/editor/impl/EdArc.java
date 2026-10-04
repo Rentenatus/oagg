@@ -617,6 +617,43 @@ public class EdArc extends EdGraphObject implements AttrViewObserver,
     }
 
     /**
+     * Returns the layout arc (evolutionary layout data) of this editor
+     * arc. Read access for DOM-based UI serialization (agg-ui-xml).
+     */
+    public agg.layout.evolutionary.LayoutArc getLayoutArc() {
+        return this.lArc;
+    }
+
+    /**
+     * Returns whether this arc uses the default anchor (no bend).
+     */
+    public boolean hasDefaultAnchor() {
+        return this.hasDefaultAnchor;
+    }
+
+    /**
+     * Sets whether this arc uses the default anchor (no bend). Write access
+     * for DOM-based UI deserialization (agg-ui-xml).
+     */
+    public void setHasDefaultAnchor(boolean defaultAnchor) {
+        this.hasDefaultAnchor = defaultAnchor;
+    }
+
+    /**
+     * Returns the source multiplicity offset (type graph edges only).
+     */
+    public Point getSrcMultiplicityOffset() {
+        return this.srcMultiplicityOffset;
+    }
+
+    /**
+     * Returns the target multiplicity offset (type graph edges only).
+     */
+    public Point getTrgMultiplicityOffset() {
+        return this.trgMultiplicityOffset;
+    }
+
+    /**
      * Sets the text offset
      */
     public void setTextOffset(int xOffset, int yOffset) {

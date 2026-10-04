@@ -53,7 +53,8 @@ Layering rules:
   and compare against those frozen references.
 * Test roots: `test_xml` (DOM side, compiled into `src_xml`),
   `test_xml_prep` (preparation, compiled into `agg-core-legacy`),
-  `test_xml_common` (shared test helpers, compiled into both).
+  `test_xml_ui` (DOM side of the UI layer, compiled into `src_uixml`),
+  `test_xml_common` (shared test helpers, compiled into all test modules).
   Shared test data lives in `assets_test_xml` (test working directory).
 
 ---

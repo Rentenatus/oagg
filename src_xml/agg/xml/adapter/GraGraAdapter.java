@@ -76,6 +76,23 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
      */
     @Override
     public void serialize(XMLSerializerContext context) throws XMLSerializationException {
+        serialize(context, new DOMSerializationRegistry());
+    }
+
+    /**
+     * Serializes the GraGra to the specified context using a caller-provided
+     * registry.
+     *
+     * <p>The caller-controlled registry allows the UI layer (agg-ui-xml) to
+     * look up the DOM elements of core objects after serialization, e.g. to
+     * attach NodeLayout/EdgeLayout segments.</p>
+     *
+     * @param context  The serializer context to write to
+     * @param registry The ID registry to use
+     * @throws XMLSerializationException if serialization fails
+     */
+    public void serialize(XMLSerializerContext context, DOMSerializationRegistry registry)
+            throws XMLSerializationException {
         GraGra graGra = getGraGra();
         if (graGra == null) {
             throw new XMLSerializationException("GraGra is null");
@@ -84,7 +101,6 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
         try {
             Element contextRoot = context.getCurrentElement();
             Document contextDoc = contextRoot.getOwnerDocument();
-            DOMSerializationRegistry registry = new DOMSerializationRegistry();
 
             // Create GraphTransformationSystem element
             Element gtsElem = contextDoc.createElement("GraphTransformationSystem");
@@ -361,6 +377,23 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
      */
     @Override
     public void deserialize(XMLDeserializerContext context) throws XMLSerializationException {
+        deserialize(context, new DOMSerializationRegistry());
+    }
+
+    /**
+     * Deserializes the GraGra from the specified context using a
+     * caller-provided registry.
+     *
+     * <p>The caller-controlled registry allows the UI layer (agg-ui-xml) to
+     * look up the DOM elements of core objects after deserialization, e.g. to
+     * read NodeLayout/EdgeLayout segments onto the editor objects.</p>
+     *
+     * @param context  The deserializer context to read from
+     * @param registry The ID registry to use
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public void deserialize(XMLDeserializerContext context, DOMSerializationRegistry registry)
+            throws XMLSerializationException {
         GraGra graGra = getGraGra();
         if (graGra == null) {
             throw new XMLSerializationException("GraGra is null");
@@ -368,7 +401,6 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
 
         try {
             Element contextElement = context.getCurrentElement();
-            DOMSerializationRegistry registry = new DOMSerializationRegistry();
 
             // Find the GraphTransformationSystem element
             Element gtsElement = findChildElement(contextElement, "GraphTransformationSystem");

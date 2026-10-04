@@ -454,6 +454,14 @@ public class EdNode extends EdGraphObject implements AttrViewObserver,
 //		System.out.println("EdNode.applyScale::  "+this.itsScale);
     }
 
+    /**
+     * Returns the layout node (evolutionary layout data) of this editor
+     * node. Read access for DOM-based UI serialization (agg-ui-xml).
+     */
+    public agg.layout.evolutionary.LayoutNode getLayoutNode() {
+        return this.lNode;
+    }
+
     public void drawShadowGraphic(Graphics grs) {
         if (this.visible) {
             Graphics2D g = (Graphics2D) grs;

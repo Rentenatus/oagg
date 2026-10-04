@@ -308,6 +308,41 @@ public class LegacyPreparationTest {
         saveLegacy(TestDataGenerator.createEdgeAttributeRule(), "attr_edge_form.ggx");
     }
 
+    // ---- UI layer scenarios (EdGraGra roundtrip like GraGraSave) ----
+
+    /**
+     * Produces a reference .ggx saved through the editor layer exactly the
+     * way GraGraSave does: the EdGraGra is the top object, so the frozen
+     * legacy path writes the core XML and enhances it with the UI segments
+     * (NodeLayout / EdgeLayout in every node and edge element).
+     */
+    @Test
+    public void prepareUiBasicScenario() throws Exception {
+        GraGra graGra = TestDataGenerator.createBasicGraphWithAttributes(true);
+        agg.editor.impl.EdGraGra edGraGra = new agg.editor.impl.EdGraGra(graGra);
+
+        // Distinct editor data so the reference pins real UI state (the
+        // EdNode/EdArc defaults are 100,100 and 0,-22; the DOM-side test
+        // must prove that loading applies this data, not the defaults).
+        int pos = 10;
+        for (agg.editor.impl.EdNode node : edGraGra.getGraph().getNodes()) {
+            node.setX(100 + pos);
+            node.setY(200 + pos);
+            pos += 5;
+        }
+        for (agg.editor.impl.EdArc arc : edGraGra.getGraph().getArcs()) {
+            arc.setTextOffset(13, -7);
+        }
+
+        XMLHelper helper = new XMLHelper();
+        helper.addTopObject(edGraGra);
+        File uiFile = new File(prepDir, "ui_basic_graph_attrs.ggx");
+        assertTrue(helper.save_to_xml(uiFile.getAbsolutePath()),
+            "Frozen legacy UI save should succeed");
+        assertTrue(uiFile.exists() && uiFile.length() > 0,
+            "UI reference file should be non-empty");
+    }
+
     // ---- Helpers ----
 
     private void saveLegacy(GraGra graGra, String fileName) throws Exception {

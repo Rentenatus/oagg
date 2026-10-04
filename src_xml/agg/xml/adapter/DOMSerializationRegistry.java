@@ -25,6 +25,7 @@ public class DOMSerializationRegistry {
 
     private final Map<Object, String> objectToId;
     private final Map<String, Object> idToObject;
+    private final java.util.Map<Object, org.w3c.dom.Element> objectToElement;
     private int nextId;
 
     /**
@@ -33,7 +34,33 @@ public class DOMSerializationRegistry {
     public DOMSerializationRegistry() {
         this.objectToId = new IdentityHashMap<>();
         this.idToObject = new HashMap<>();
+        this.objectToElement = new IdentityHashMap<>();
         this.nextId = 0;
+    }
+
+    /**
+     * Binds the DOM element that represents the given object. Used by the
+     * UI layer (agg-ui-xml) to attach editor segments (NodeLayout,
+     * EdgeLayout, ...) to the core elements after serialization and to
+     * read them back after deserialization.
+     *
+     * @param obj The domain object
+     * @param element The DOM element representing the object
+     */
+    public void bindElement(Object obj, org.w3c.dom.Element element) {
+        if (obj != null && element != null) {
+            objectToElement.put(obj, element);
+        }
+    }
+
+    /**
+     * Returns the DOM element bound to the given object, or null.
+     *
+     * @param obj The domain object
+     * @return The bound element, or null if none was bound
+     */
+    public org.w3c.dom.Element getElement(Object obj) {
+        return obj == null ? null : objectToElement.get(obj);
     }
 
     /**

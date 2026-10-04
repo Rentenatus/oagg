@@ -171,6 +171,7 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
             if (!nodeId.isEmpty()) {
                 registry.registerWithId(node, nodeId);
             }
+            registry.bindElement(node, nodeElem);
 
             // Type graph multiplicity (mirroring TypeGraph.XreadObject):
             // apply the bound attributes when present (type graph nodes only)
@@ -226,6 +227,7 @@ public class GraphAdapter extends DomainObjectAdapter<Graph> {
             if (!arcId.isEmpty()) {
                 registry.registerWithId(arc, arcId);
             }
+            registry.bindElement(arc, arcElem);
 
             // Type graph multiplicity (mirroring TypeGraph.XreadObject):
             // apply the bound attributes when present (type graph edges only)
