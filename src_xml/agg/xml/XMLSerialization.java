@@ -8,6 +8,7 @@ package agg.xml;
 
 import agg.util.XMLObject;
 import agg.xt_basis.GraGra;
+import agg.xml.adapter.ApplRuleSequenceAdapter;
 import agg.xml.adapter.GraGraAdapter;
 import agg.xml.core.DOMXMLDeserializerContext;
 import agg.xml.core.DOMXMLSerializer;
@@ -313,6 +314,57 @@ public final class XMLSerialization {
             return applRuleSeq.getGraGra();
         }
         throw new Exception("File \"" + filename + "\" is not an AGG .rsx file!");
+    }
+
+    /**
+     * Saves an ApplRuleSequence directly using the new DOM-based
+     * serialization, bypassing the feature flag.
+     *
+     * @param applRuleSeq The ApplRuleSequence to save
+     * @param filename    The output filename
+     * @return true if saving succeeded
+     */
+    public static boolean saveWithDom(agg.ruleappl.ApplRuleSequence applRuleSeq,
+            String filename) {
+        if (applRuleSeq == null || filename == null) {
+            return false;
+        }
+        try {
+            String outfileName = filename;
+            if (!outfileName.toLowerCase().endsWith(".rsx")) {
+                outfileName = outfileName + ".rsx";
+            }
+            ApplRuleSequenceAdapter adapter = new ApplRuleSequenceAdapter(applRuleSeq);
+            DOMXMLSerializer serializer = new DOMXMLSerializer();
+            serializer.serializeToFile(adapter, new File(outfileName));
+            return true;
+        } catch (XMLSerializationException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Loads an ApplRuleSequence directly using the new DOM-based
+     * deserialization, bypassing the feature flag.
+     *
+     * @param applRuleSeq The ApplRuleSequence instance to populate
+     * @param filename    The input filename (.rsx)
+     * @return the loaded GraGra, or null if loading failed
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public static GraGra loadWithDom(agg.ruleappl.ApplRuleSequence applRuleSeq,
+            String filename) throws XMLSerializationException {
+        if (applRuleSeq == null || filename == null) {
+            return null;
+        }
+        File f = new File(filename);
+        if (!f.exists()) {
+            throw new XMLSerializationException("File not found: " + filename);
+        }
+        DOMXMLDeserializerContext context = new DOMXMLDeserializerContext(f);
+        ApplRuleSequenceAdapter adapter = new ApplRuleSequenceAdapter(applRuleSeq);
+        adapter.deserialize(context);
+        return applRuleSeq.getGraGra();
     }
 
     // ---- ConflictsDependenciesContainer save/load (.cpx files) ----

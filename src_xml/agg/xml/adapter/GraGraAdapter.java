@@ -98,6 +98,26 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             Element contextRoot = context.getCurrentElement();
             Document contextDoc = contextRoot.getOwnerDocument();
 
+            contextRoot.appendChild(serializeGraphTransformationSystem(contextDoc, registry));
+        } catch (Exception e) {
+            throw new XMLSerializationException("Failed to serialize GraGra", e);
+        }
+    }
+
+    /**
+     * Builds the GraphTransformationSystem element for this GraGra without
+     * attaching it to a parent. Reused by adapters that embed a complete
+     * grammar inside another document (e.g. ApplRuleSequence for .rsx).
+     *
+     * @param contextDoc The DOM document to create elements in
+     * @param registry The ID registry to use
+     * @return The GraphTransformationSystem element
+     * @throws XMLSerializationException if serialization fails
+     */
+    public Element serializeGraphTransformationSystem(Document contextDoc,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        GraGra graGra = getGraGra();
+        try {
             // Create GraphTransformationSystem element
             Element gtsElem = contextDoc.createElement("GraphTransformationSystem");
             String gtsId = registry.register(graGra);
@@ -303,8 +323,7 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 }
                 gtsElem.appendChild(matchesElem);
             }
-
-            contextRoot.appendChild(gtsElem);
+            return gtsElem;
         } catch (Exception e) {
             throw new XMLSerializationException("Failed to serialize GraGra", e);
         }
@@ -355,6 +374,30 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                 throw new XMLSerializationException(
                     "GraphTransformationSystem element not found in document");
             }
+
+            deserializeFromElement(gtsElement, registry);
+        } catch (XMLSerializationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new XMLSerializationException("Failed to deserialize GraGra", e);
+        }
+    }
+
+    /**
+     * Deserializes the GraGra from the given GraphTransformationSystem
+     * element. Reused by adapters that embed a complete grammar inside
+     * another document (e.g. ApplRuleSequence for .rsx).
+     *
+     * @param gtsElement The GraphTransformationSystem element
+     * @param registry The ID registry to use
+     * @throws XMLSerializationException if deserialization fails
+     */
+    public void deserializeFromElement(Element gtsElement,
+            DOMSerializationRegistry registry) throws XMLSerializationException {
+        GraGra graGra = getGraGra();
+        if (graGra == null) {
+            throw new XMLSerializationException("GraGra is null");
+        }
 
             // Register GraGra
             String gtsId = gtsElement.getAttribute("ID");
@@ -433,11 +476,6 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
             // an attribute expression. The legacy load path does not call
             // it either, and the re-save must reproduce the frozen legacy
             // XML (including unused <Parameter> elements).
-        } catch (XMLSerializationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new XMLSerializationException("Failed to deserialize GraGra", e);
-        }
     }
 
     private void deserializeTypes(Element typesElem, GraGra graGra,
@@ -766,6 +804,8 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                     Object graph = registry.getObject(graphId);
                     if (graph instanceof agg.xt_basis.Graph) {
                         seq.setGraph((agg.xt_basis.Graph) graph);
+                        // mirror the legacy GraGra.XreadObject behaviour
+                        seq.setCheckAtGraph(true);
                     }
                 }
             }
@@ -800,6 +840,10 @@ public class GraGraAdapter extends DomainObjectAdapter<GraGra> {
                     seq.addSubsequence(items, iterations);
                 }
             }
+
+            // Resolve the subsequence rule names into the sequence's rule
+            // list, mirroring the legacy GraGra.XreadObject behaviour
+            seq.makeFlatSequence();
         }
     }
 

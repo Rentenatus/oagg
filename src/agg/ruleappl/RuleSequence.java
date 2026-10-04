@@ -812,6 +812,14 @@ public class RuleSequence implements GraTraEventListener {
         this.ruleNames.add(to, r.getName());
     }
 
+    /**
+     * Marks whether the applicability of this sequence has been checked.
+     * Used by the XML load to restore the checked state.
+     */
+    public void setChecked(boolean b) {
+        this.checked = b;
+    }
+
     public boolean isChecked() {
         return this.checked;
     }

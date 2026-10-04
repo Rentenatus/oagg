@@ -58,6 +58,14 @@ public class ApplRuleSequence implements XMLObject {
         this.ruleSequences.clear();
     }
 
+    /**
+     * Returns the critical pair option this applicability container uses
+     * when it creates new rule sequences during a load.
+     */
+    public CriticalPairOption getCPAOption() {
+        return this.cpOption;
+    }
+
     public GraGra getGraGra() {
         return this.gragra;
     }

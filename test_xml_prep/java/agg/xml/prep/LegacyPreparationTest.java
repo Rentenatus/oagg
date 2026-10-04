@@ -190,6 +190,28 @@ public class LegacyPreparationTest {
             "Frozen legacy .rsx load should succeed");
         Object loaded = helper2.getTopObject(reloaded);
         assertNotNull(loaded, "Frozen legacy .rsx reload should return the top object");
+
+        // Reference re-save of the legacy .rsx fixture: the legacy load
+        // binds the grammar's rule sequences into the container (reader
+        // side effect), so a save from the LOADED state differs from the
+        // fresh reference. The DOM side compares against this re-saved
+        // reference (same pattern as the ui_*_resaved files).
+        XMLHelper fixtureHelper = new XMLHelper();
+        File fixtureFile = new File("test_agg/legacy/appl_rule_sequence.rsx");
+        assertTrue(fixtureHelper.read_from_xml(fixtureFile.getAbsolutePath()),
+            "Frozen legacy .rsx fixture load should succeed");
+        agg.ruleappl.ApplRuleSequence fixtureArs =
+            new agg.ruleappl.ApplRuleSequence(new agg.parser.CriticalPairOption());
+        fixtureArs.setGraGra(new GraGra());
+        Object fixtureTop = fixtureHelper.getTopObject(fixtureArs);
+        assertNotNull(fixtureTop, "Frozen legacy .rsx fixture should return the top object");
+        XMLHelper resaveHelper = new XMLHelper();
+        resaveHelper.addTopObject(fixtureArs);
+        File resavedFile = new File(prepDir, "appl_rule_sequence_resaved.rsx");
+        assertTrue(resaveHelper.save_to_xml(resavedFile.getAbsolutePath()),
+            "Frozen legacy .rsx re-save should succeed");
+        assertTrue(resavedFile.exists() && resavedFile.length() > 0,
+            "Re-saved .rsx reference should be non-empty");
     }
 
     /**

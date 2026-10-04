@@ -256,34 +256,49 @@ public class LegacyDomRegressionTest {
         File legacyFile = TestDataHelper.resolveLegacy("appl_rule_sequence.rsx");
         TestDataHelper.requireFile(legacyFile);
 
-        // Load via legacy XMLHelper
+        // Step 1: load the frozen reference with the DOM path
         agg.parser.CriticalPairOption option = new agg.parser.CriticalPairOption();
         agg.ruleappl.ApplRuleSequence ars = new agg.ruleappl.ApplRuleSequence(option);
-        agg.util.XMLHelper helper = new agg.util.XMLHelper();
-        assertTrue(helper.read_from_xml(legacyFile.getAbsolutePath()),
-            "Legacy .rsx load should succeed");
+        XMLSerialization.loadWithDom(ars, legacyFile.getAbsolutePath());
+        assertNotNull(ars.getGraGra(),
+            "DOM .rsx load should populate the embedded grammar");
+        assertEquals("RuleSequenceTest", ars.getGraGra().getName(),
+            "DOM .rsx load should restore the grammar name");
+        assertFalse(ars.getRuleSequences().isEmpty(),
+            "DOM .rsx load should bind the grammar's rule sequences");
 
-        // Save to output
+        // Step 2: save with the DOM path
         File outputFile = new File(outputDir, "appl_rule_sequence_dom.rsx");
-        agg.util.XMLHelper helper2 = new agg.util.XMLHelper();
-        helper2.addTopObject(ars);
-        assertTrue(helper2.save_to_xml(outputFile.getAbsolutePath()),
-            "Legacy .rsx save should succeed");
+        assertTrue(XMLSerialization.saveWithDom(ars, outputFile.getAbsolutePath()),
+            "DOM .rsx save should succeed");
         assertTrue(outputFile.exists() && outputFile.length() > 0,
             "Output .rsx should be non-empty");
 
-        // Reload and verify structure
+        // Step 3: canonical comparison against the frozen legacy re-save of
+        // the same load state (the legacy load binds the grammar's rule
+        // sequences into the container, so the fresh reference has an empty
+        // RuleSequences section)
+        File resavedFile = new File("target/legacy_prep/appl_rule_sequence_resaved.rsx");
+        assertTrue(resavedFile.exists() && resavedFile.length() > 0,
+            "Re-saved .rsx reference is missing (run the legacy preparation "
+                + "suite first: mvn test at the parent)");
+        XmlCanonicalComparator.ComparisonResult result =
+            XmlCanonicalComparator.compareFiles(resavedFile, outputFile);
+        assertTrue(result.isEqual(),
+            "Cross-system XML mismatch for appl_rule_sequence.rsx: "
+                + result.getMessage());
+
+        // Step 4: DOM stability: reload and save again
         agg.ruleappl.ApplRuleSequence reloaded =
             new agg.ruleappl.ApplRuleSequence(new agg.parser.CriticalPairOption());
-        agg.util.XMLHelper helper3 = new agg.util.XMLHelper();
-        assertTrue(helper3.read_from_xml(outputFile.getAbsolutePath()),
-            "Legacy .rsx reload should succeed");
-
-        // Verify both files have the same root element
-        XmlCanonicalComparator.ComparisonResult rootResult =
-            XmlCanonicalComparator.compareFiles(legacyFile, outputFile);
-        // For .rsx, we only require that the file can be loaded and re-saved;
-        // canonical equality is not enforced due to legacy instabilities
+        XMLSerialization.loadWithDom(reloaded, outputFile.getAbsolutePath());
+        File stableFile = new File(outputDir, "appl_rule_sequence_stable.rsx");
+        assertTrue(XMLSerialization.saveWithDom(reloaded, stableFile.getAbsolutePath()),
+            "DOM .rsx stability save should succeed");
+        XmlCanonicalComparator.ComparisonResult stableResult =
+            XmlCanonicalComparator.compareFiles(outputFile, stableFile);
+        assertTrue(stableResult.isEqual(),
+            "DOM path should be stable for .rsx: " + stableResult.getMessage());
     }
 
     /**
