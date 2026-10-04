@@ -16,15 +16,21 @@
 
     <name>AGG Core (Frozen Legacy Reference)</name>
     <description>
-        FROZEN LEGACY REFERENCE of the AGG core module.
-        This is a verbatim clone of src/ taken at the freeze point.
+        FROZEN LEGACY REFERENCE of the AGG core and UI modules.
+        This is a verbatim clone of src/ and src_ui/ taken at the freeze
+        point. The two trees are package-disjoint and were one codebase
+        before the refactoring split them, so they are cloned together
+        and compiled as one module - exactly the situation the legacy
+        XML path was written for.
         Do NOT modify: it is the reference implementation for the legacy
-        XML path (XMLHelper / XwriteObject / XreadObject). The preparation
-        test suite (test_xml_prep) runs against this clone and writes
+        XML path (XMLHelper / XwriteObject / XreadObject), including the
+        UI layer (EdGraGra, EdNode, LayoutNode, GraGraSave/GraGraLoad and
+        their own XML segments like NodeLayout). The preparation test
+        suite (test_xml_prep) runs against this clone and writes
         reference XML files into assets_test_xml/target/legacy_prep/,
         which the DOM-side regression tests (test_xml, running against the
-        current src) consume. Any later deviation in src shows up as a
-        mismatch against the files produced by this frozen code.
+        current src) consume. Any later deviation in src or src_ui shows
+        up as a mismatch against the files produced by this frozen code.
     </description>
 
     <dependencies>
